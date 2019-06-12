@@ -590,6 +590,35 @@ data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
 track.  The database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-hsapiens-ucsc-hg38-knowngene
+  (package
+    (name "r-txdb-hsapiens-ucsc-hg38-knowngene")
+    (version "3.4.6")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Hsapiens.UCSC.hg38.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12j7rri9r129v9w1yiqadg952dx462dh092sxif3r5kk8l7bxkn9"))))
+    (properties
+     `((upstream-name . "TxDb.Hsapiens.UCSC.hg38.knownGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg38.knownGene/")
+    (synopsis "Annotation package for human genome in TxDb format")
+    (description
+     "This package provides an annotation database of Homo sapiens genome
+data.  It is derived from the UCSC hg38 genome and based on the \"knownGene\"
+track.  The database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
+
 (define-public r-txdb-mmusculus-ucsc-mm9-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm9-knowngene")
