@@ -230,7 +230,10 @@ be extracted in a temporary directory."
            (metadata (string-append dirname "/METADATA")))
       (call-with-temporary-directory
        (lambda (dir)
-         (if (zero? (system* "unzip" "-q" wheel-archive "-d" dir metadata))
+         (if (zero?
+              (parameterize ((current-error-port (%make-void-port "rw+"))
+                             (current-output-port (%make-void-port "rw+")))
+                (system* "unzip" wheel-archive "-d" dir metadata)))
              (parse-wheel-metadata (string-append dir "/" metadata))
              (begin
                (warning
