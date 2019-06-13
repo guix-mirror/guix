@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -122,3 +123,26 @@ charts now and don't care if they're perfect.")))
     (description "Agate is a Python data analysis library.  It is an
 alternative to numpy and pandas that solves real-world problems with readable
 code.  Agate was previously known as journalism.")))
+
+(define-public python-agate-sql
+  (package
+    (inherit base-package)
+    (name "python-agate-sql")
+    (version "0.5.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wireservice/agate-sql.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "16q0b211n5b1qmhzkfl2jr56lda0rvyh5j1wzw26h2n4pm4wxlx2"))))
+    (propagated-inputs
+     `(("python-agate" ,python-agate)
+       ("python-crate" ,python-crate)
+       ("python-sqlalchemy" ,python-sqlalchemy)))
+    (home-page "https://agate-sql.rtfd.org")
+    (synopsis "SQL read/write support to agate")
+    (description "@code{agatesql} uses a monkey patching pattern to add SQL
+support to all @code{agate.Table} instances.")))
