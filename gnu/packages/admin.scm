@@ -2140,9 +2140,20 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
-       ;; No configure script.
-       #:phases (modify-phases %standard-phases (delete 'configure))))
-    (inputs `(("python-2" ,python-2)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/dstat")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (inputs
+     ;; Python 3 is supposedly supported but prints a DeprecationWarning.
+     ;; Upstream is dead.  See <https://github.com/dagwieers/dstat/releases>.
+     `(("python" ,python-wrapper)
+       ("python-six" ,python-six)))
     (synopsis "Versatile resource statistics tool")
     (description "Dstat is a versatile replacement for @command{vmstat},
 @command{iostat}, @command{netstat}, and @command{ifstat}.  Dstat overcomes
