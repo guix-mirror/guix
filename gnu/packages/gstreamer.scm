@@ -7,6 +7,7 @@
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,19 @@ arrays of data.")
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))))
+                            "/share/gtk-doc/html"))
+
+       ,@(if (not (target-64bit?))
+           ;; Skip test that fails on 32-bit systems:
+           ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/316>.
+           `(#:phases (modify-phases %standard-phases
+                        (add-before 'check 'disable-gstbufferpool-test
+                          (lambda _
+                            (substitute* "tests/check/Makefile"
+                              (("^[[:blank:]]+gst/gstbufferpool.*$")
+                               ""))
+                              #t))))
+           '())))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)
