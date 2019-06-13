@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
@@ -91,7 +91,7 @@
      (propagated-inputs '())
      (native-inputs
       `(("mescc-tools" ,%bootstrap-mescc-tools)
-        ("nyacc-source" ,(package-source nyacc))
+        ("nyacc-source" ,(package-source nyacc-0.86))
 
         ("coreutils" , %bootstrap-coreutils&co)
         ("bootstrap-mes" ,%bootstrap-mes)))
@@ -182,7 +182,7 @@
        (native-inputs
         `(("mes" ,mes-boot)
           ("mescc-tools" ,%bootstrap-mescc-tools)
-          ("nyacc-source" ,(package-source nyacc))
+          ("nyacc-source" ,(package-source nyacc-0.86))
 
           ("coreutils" , %bootstrap-coreutils&co)
           ("bootstrap-mes" ,%bootstrap-mes)))
