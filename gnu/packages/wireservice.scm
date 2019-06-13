@@ -25,7 +25,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages sphinx))
+  #:use-module (gnu packages sphinx)
+  #:use-module (gnu packages time))
 
 ;; Base package definition for packages from https://github.com/wireservice.
 ;; This is done so we can share how to run tests and build documentation.
@@ -89,3 +90,35 @@
     (synopsis "Python charting for 80% of humans")
     (description "Leather is a Python charting library for those who need
 charts now and don't care if they're perfect.")))
+
+(define-public python-agate
+  (package
+    (inherit base-package)
+    (name "python-agate")
+    (version "1.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wireservice/agate.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "077zj8xad8hsa3nqywvf7ircirmx3krxdipl8wr3dynv3l3khcpl"))))
+    (native-inputs
+     `(("python-cssselect" ,python-cssselect)
+       ("python-lxml" ,python-lxml)
+       ,@(package-native-inputs base-package)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-isodate" ,python-isodate)
+       ("python-leather" ,python-leather)
+       ("python-parsedatetime" ,python-parsedatetime)
+       ("python-pytimeparse" ,python-pytimeparse)
+       ("python-six" ,python-six)
+       ("python-slugify" ,python-slugify)))
+    (home-page "https://agate.rtfd.org")
+    (synopsis "Data analysis library")
+    (description "Agate is a Python data analysis library.  It is an
+alternative to numpy and pandas that solves real-world problems with readable
+code.  Agate was previously known as journalism.")))
