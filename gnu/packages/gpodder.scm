@@ -81,12 +81,12 @@
              (for-each
                (lambda (f)
                  (chmod f #o664))
-               (find-files "po"))))
+               (find-files "po"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "PREFIX" (assoc-ref outputs "out"))
-             (invoke "make" "install")
-             #t))
+             (invoke "make" "install")))
          (add-after 'install 'wrap-gpodder
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
