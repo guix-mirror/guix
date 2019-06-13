@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 Andy Wingo <wingo@pobox.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -895,6 +896,7 @@ IPP specifications.")
           (mkdir-p/perms "/var/spool/cups" user #o755)
           (mkdir-p/perms "/var/spool/cups/tmp" user #o755)
           (mkdir-p/perms "/var/log/cups" user #o755)
+          (mkdir-p/perms "/var/cache/cups" user #o770)
           (mkdir-p/perms "/etc/cups" user #o755)
           (mkdir-p/perms "/etc/cups/ssl" user #o700)
           ;; This certificate is used for HTTPS connections to the CUPS web

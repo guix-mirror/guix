@@ -33,7 +33,7 @@
 ;;; Copyright © 2017 Mike Gerwitz <mtg@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Sohom Bhattacharjee <soham.bhattacharjee15@gmail.com>
-;;; Copyright © 2018 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2018, 2019 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018, 2019 Jack Hill <jackhill@jackhill.us>
@@ -47,6 +47,7 @@
 ;;; Copyright © 2019 mikadoZero <mikadozero@yandex.com>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
+;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -545,6 +546,35 @@ handful of functions that are not resource-specific.")
 for editing Racket's Scribble documentation syntax in Emacs.")
       (license license:gpl3+))))
 
+(define-public emacs-shroud
+  (package
+    (name "emacs-shroud")
+    (version "1.15.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/o-nly/emacs-shroud.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wvm4lxqcc1p8v7rpqal3bnqgnpk1gs7v18i83f6cvi5d88jkgdg"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-bui" ,emacs-bui)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)
+       ("gnupg" ,gnupg)
+       ("shroud" ,shroud)))
+    (home-page "https://github.com/o-nly/emacs-shroud")
+    (synopsis "Emacs interface to the Shroud password manager")
+    (description
+     "This package provides an Emacs interface to the Shroud password manager,
+using the Buffers User Interface library.  You can view, copy, and edit secrets
+from within Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-unpackaged-el
   (let ((commit "f4df7f8dfea715e893b2223adda32545803f5cce")
         (revision "1"))
@@ -667,6 +697,37 @@ programs.")
 (define-public haskell-mode
   (deprecated-package "haskell-mode" emacs-haskell-mode))
 
+(define-public emacs-dante
+  (let ((commit "149dded24ca9cdff09a3d859e4b62638db4aadda")
+        (revision "1"))
+    (package
+      (name "emacs-dante")
+      (version (git-version "1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jyp/dante")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0i7kj3d6pfys6si9va5f36qzifyac9mahdl0qh40rya9m0syrkla"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-haskell-mode" ,emacs-haskell-mode)
+         ("emacs-s" ,emacs-s)
+         ("emacs-company" ,emacs-company)
+         ("emacs-lcr" ,emacs-lcr)))
+      (home-page "https://github.com/jyp/dante")
+      (synopsis "Minor mode for interactive Haskell")
+      (description
+       "This package provides a minor mode for Haskell development that
+supports type hints, definition-jumping, completion, and more.")
+      (license license:gpl3+))))
+
 (define-public emacs-flycheck
   (package
     (name "emacs-flycheck")
@@ -777,7 +838,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
        (method url-fetch)
@@ -785,7 +846,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
              "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
         (base32
-         "0xwfs2mkmgf63sfp5jwmw0ybc8pa0rlxh5aqwb348ddgmclv322f"))))
+         "1vv87h0h8ldc1mbsn45w5z1m6jq8j2js4xz23a9ixdby06g60y3g"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -804,10 +865,33 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-reformatter
+  (package
+    (name "emacs-reformatter")
+    (version "0.4")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/purcell/reformatter.el.git")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/reformatter.el")
+    (synopsis "Define commands which run reformatters on the current buffer")
+    (description
+     "This library lets elisp authors easily define an idiomatic command to
+reformat the current buffer using a command-line program, together with an
+optional minor mode which can apply this command automatically on save.")
+    (license license:gpl3+)))
+
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.7")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
@@ -815,7 +899,7 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
              "https://elpa.gnu.org/packages/relint-" version ".el"))
        (sha256
         (base32
-         "0h9nc84yv5lmbaa8any6i3bqcn6xn1gy6cv6kqaywn0nnqrm17i1"))))
+         "1bl6m2h7131acbmr0kqfnjjpv2syiv2mxfnm61g874ynnvkmmkm3"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -2500,6 +2584,28 @@ evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
 
+(define-public emacs-litable
+  (let ((commit "b0278f3f8dcff424bfbdfdefb545b1fbff33206f"))
+    (package
+      (name "emacs-litable")
+      (version (git-version "0.1" "0" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Fuco1/litable.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0bny40hv9a024n01clxns351cs4j4ifhgcc7m4743xncqf612p7g"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/Fuco1/litable/")
+      (synopsis "Dynamic evaluation replacement with Emacs")
+      (description "This packages provides dynamic evaluation in Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-string-inflection
   (package
     (name "emacs-string-inflection")
@@ -4074,23 +4180,29 @@ well as completely new features.")
     (license license:gpl3+)))
 
 (define-public emacs-highlight-symbol
-  (package
-    (name "emacs-highlight-symbol")
-    (version "1.3")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/nschum/highlight-symbol.el.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "09z13kv2g21kjjkkm3iyaz93sdjmdy2d563r8n7r7ng94acrn7f6"))))
-    (build-system emacs-build-system)
-    (home-page "https://nschum.de/src/emacs/highlight-symbol")
-    (synopsis "Automatic and manual symbol highlighting for Emacs")
-    (description
-     "Use @code{highlight-symbol} to toggle highlighting of the symbol at
+  ;; We prefer a more recent commit that provides an option to squelch
+  ;; echo-area alerts that can drown out useful information like eldoc
+  ;; messages.
+  (let ((commit "7a789c779648c55b16e43278e51be5898c121b3a")
+        (version "1.3")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-symbol")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nschum/highlight-symbol.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "19cgyk0sh8nsmf3jbi92i8qsdx4l4yilfq5jj9zfdbj9p5gvwx96"))))
+      (build-system emacs-build-system)
+      (home-page "https://nschum.de/src/emacs/highlight-symbol/")
+      (synopsis "Automatic and manual symbol highlighting for Emacs")
+      (description
+       "Use @code{highlight-symbol} to toggle highlighting of the symbol at
 point throughout the current buffer.  Use @code{highlight-symbol-mode} to keep
 the symbol at point highlighted.
 
@@ -4103,7 +4215,7 @@ bindings @code{M-p} and @code{M-p} for navigation.  When
 regardless of @code{highlight-symbol-idle-delay}.
 
 @code{highlight-symbol-query-replace} can be used to replace the symbol. ")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-hl-todo
   (package
@@ -4131,16 +4243,17 @@ regexp that matches all known keywords.")
 (define-public emacs-perspective
   (package
     (name "emacs-perspective")
-    (version "1.12")
+    (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/nex3/perspective-el/"
-                           "archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nex3/perspective-el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "078ahh0kmhdylq5ib9c81c76kz1n02xwc83pm729d00i84ibviic"))))
+         "0pd5sqrrz6y3md20yh6ffy32jdcgb1gc9b4j14pm6r54bqxik68h"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/nex3/perspective-el")
     (synopsis "Switch between named \"perspectives\"")
@@ -4223,19 +4336,17 @@ after buffer changes.")
 (define-public emacs-realgud
   (package
     (name "emacs-realgud")
-    (version "1.4.5")
+    (version "1.5.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://elpa.gnu.org/packages/realgud-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/realgud/realgud/")
+             (commit version)))
        (sha256
         (base32
-         "108wgxg7fb4byaiasgvbxv2hq7b00biq9f0mh9hy6vw4160y5w24"))
-       (patches
-        ;; Patch awaiting inclusion upstream (see:
-        ;; https://github.com/realgud/realgud/pull/226).
-        (search-patches "emacs-realgud-fix-configure-ac.patch"))))
+         "0xnick9016wxrgi8v0lycvxhyz8l2k4nfvdpjc5yq476vwrjfzbz"))
+       (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
@@ -4254,11 +4365,6 @@ after buffer changes.")
              (setenv "HOME" (getenv "TMPDIR"))))
          (add-before 'patch-el-files 'remove-realgud-pkg.el
            (lambda _
-             ;; XXX: This file is auto-generated at some point and causes
-             ;; substitute* to crash during the `patch-el-files' phase with:
-             ;; ERROR: In procedure stat: No such file or directory:
-             ;; "./realgud-pkg.el"
-             (delete-file "./realgud-pkg.el")
              ;; FIXME: `patch-el-files' crashes on this file with error:
              ;; unable to locate "bashdb".
              (delete-file "./test/test-regexp-bashdb.el"))))
@@ -4397,6 +4503,33 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-pass
+  (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-pass")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ecraven/ivy-pass.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18crb4zh2pjf0cmv3b913m9vfng27girjwfqc3mk7vqd1r5a49yk"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-password-store" ,emacs-password-store)
+         ("password-store" ,password-store)))
+      (home-page "https://github.com/ecraven/ivy-pass")
+      (synopsis "Ivy interface for password store (pass)")
+      (description "This package provides an Ivy interface for working with
+the password store @code{pass}.")
+      (license license:gpl3))))
+
 (define-public emacs-ivy-yasnippet
   (let ((commit "32580b4fd23ebf9ca7dde96704f7d53df6e253cd")
         (revision "2"))
@@ -4455,7 +4588,7 @@ show icons as well.")
 (define-public emacs-avy
   (package
     (name "emacs-avy")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -4464,7 +4597,7 @@ show icons as well.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0rq9ab264565z83cly743nbhrd9m967apmnlhqr1gy8dm4hcy7nm"))))
+        (base32 "09qdni1s74i5pv8741szl5g4ynj8fxn0x65qmwa9rmfkbimnc0fs"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/avy")
     (synopsis "Tree-based completion for Emacs")
@@ -4554,37 +4687,35 @@ navigate code in a tree-like fashion.")
       (license license:gpl3+))))
 
 (define-public emacs-lispy
-  ;; Release 0.26.0 was almost 3 years ago, and there have been ~772 commits
-  ;; since.
-  (let ((commit "f94cfc6b8f9c3afe7d028c366928049c011023de")
-        (revision "1"))
-    (package
-      (name "emacs-lispy")
-      (version (git-version "0.26.0" revision commit))
-      (home-page "https://github.com/abo-abo/lispy")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "1bm2cpwizg1qfpm377gpx1af1hm5maw69if1csnk5vwaphmv8c4g"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-ace-window" ,emacs-ace-window)
-         ("emacs-iedit" ,emacs-iedit)
-         ("emacs-ivy" ,emacs-ivy)
-         ("emacs-hydra" ,emacs-hydra)
-         ("emacs-zoutline" ,emacs-zoutline)))
-      (synopsis "Modal S-expression editing")
-      (description
-       "Due to the structure of Lisp syntax it's very rare for the programmer
+  (package
+    (name "emacs-lispy")
+    (version "0.27.0")
+    (home-page "https://github.com/abo-abo/lispy")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abo-abo/lispy")
+                    (commit version)))
+              (sha256
+               (base32
+                "1cm7f4pyl73f3vhkb7ah6bbbrj2sa7n0p31g09k7dy4zgx04bgw6"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)
+       ("emacs-zoutline" ,emacs-zoutline)))
+    (synopsis "Modal S-expression editing")
+    (description
+     "Due to the structure of Lisp syntax it's very rare for the programmer
 to want to insert characters right before \"(\" or right after \")\".  Thus
 unprefixed printable characters can be used to call commands when the point is
 at one of these special locations.  Lispy provides unprefixed keybindings for
 S-expression editing when point is at the beginning or end of an
 S-expression.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-lispyville
   (let ((commit "d28b937f0cabd8ce61e2020fe9a733ca80d82c74")
@@ -5554,7 +5685,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.1")
+    (version "3.2")
     (source
      (origin
        (method git-fetch)
@@ -5563,7 +5694,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1x3nv8zvp8vvl30bm2d83hd7zxb0ca64pc8kwb81ml9al6r3mm01"))))
+        (base32 "12yyprpgh2by2pd41i4z9gz55fxg0f90x03bfrsf791xwbhf6931"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -6915,7 +7046,7 @@ highlights quasi-quoted expressions.")
 (define-public emacspeak
   (package
     (name "emacspeak")
-    (version "49.0")
+    (version "50.0")
     (source
      (origin
        (method url-fetch)
@@ -6924,7 +7055,7 @@ highlights quasi-quoted expressions.")
              version "/emacspeak-" version ".tar.bz2"))
        (sha256
         (base32
-         "1smf26m7201z0bk49lzbw9zhbjfi6wylidfjixb8ylp6g0wnh8dx"))))
+         "0rsj7rzfyqmyidfsjrhjnxi2d43axx6r3gac1fhv5xkkbiiqzqkb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list (string-append "prefix="
@@ -6932,13 +7063,10 @@ highlights quasi-quoted expressions.")
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (lisp (string-append out
-                                         "/share/emacs/site-lisp/emacspeak")))
-               (setenv "SHELL" (which "sh"))
-               ;; Configure Emacspeak according to etc/install.org.
-               (invoke "make" "config"))))
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             ;; Configure Emacspeak according to etc/install.org.
+             (invoke "make" "config")))
          (add-after 'build 'build-espeak
            (lambda _
              (invoke "make" "espeak")))
@@ -6955,7 +7083,7 @@ highlights quasi-quoted expressions.")
                (for-each
                 (lambda (file)
                   (copy-recursively file (string-append lisp "/" file)))
-                '("etc" "info" "js" "lisp" "media" "scapes" "servers" "sounds"
+                '("etc" "info" "js" "lisp" "media" "servers" "sounds"
                   "stumpwm" "xsl"))
                ;; Make sure emacspeak is loaded from the correct directory.
                (substitute* "etc/emacspeak.sh"
@@ -7019,26 +7147,27 @@ actually changing the buffer's text.")
     (license license:gpl3+)))
 
 (define-public emacs-diff-hl
- (package
-  (name "emacs-diff-hl")
-  (version "1.8.5")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append "https://elpa.gnu.org/packages/diff-hl-"
-                          version ".tar"))
-      (sha256
+  (package
+    (name "emacs-diff-hl")
+    (version "1.8.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dgutov/diff-hl")
+             (commit version)))
+       (sha256
         (base32
-          "1vxc7z7c2qs0mx7l5sa4sybi5qbzv0s79flj74p1ynw8dl3qxg3d"))))
-  (build-system emacs-build-system)
-  (home-page "https://github.com/dgutov/diff-hl")
-  (synopsis
-    "Highlight uncommitted changes using VC")
-  (description
-    "@code{diff-hl-mode} highlights uncommitted changes on the side of the
+         "1xlsg728mz3cwhrsqvisa0aidic67nymd9g7h4c1h3q63j39yb2s"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/dgutov/diff-hl")
+    (synopsis
+     "Highlight uncommitted changes using VC")
+    (description
+     "@code{diff-hl-mode} highlights uncommitted changes on the side of the
 window (using the fringe, by default), allows you to jump between
 the hunks and revert them selectively.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-diminish
   (package
@@ -7994,6 +8123,30 @@ from within Emacs.  Restclient runs queries from a plan-text query sheet,
 displays results pretty-printed in XML or JSON with @code{restclient-mode}")
       (license license:public-domain))))
 
+(define-public emacs-whitespace-cleanup-mode
+  (let ((commit "72427144b054b0238a86e1348c45d986b8830d9d")
+        (revision "1"))
+    (package
+      (name "emacs-whitespace-cleanup-mode")
+      (version (git-version "0.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/purcell/whitespace-cleanup-mode")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1zlk534jbwrsabcg3kqlzk4h4hwya60lh6q2n1v4yn4rpf5ghsag"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/purcell/whitespace-cleanup-mode")
+      (synopsis "Intelligently call @code{whitespace-cleanup} on save")
+      (description
+       "This package provides a minor mode that calls
+@code{whitespace-cleanup} before saving the current buffer only if the
+whitespace in the buffer was initially clean.")
+      (license license:gpl3+))))
+
 (define-public emacs-eimp
   (let ((version "1.4.0")
         (commit "2e7536fe6d8f7faf1bad7a8ae37faba0162c3b4f")
@@ -8225,6 +8378,56 @@ multiplexer.")
 editing RPM spec files.")
     (license license:gpl2+)))
 
+(define-public emacs-lcr
+  (package
+    (name "emacs-lcr")
+    (version "1.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jyp/lcr")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0mc55icihxqpf8b05990q1lc2nj2792wcgyr73xsiqx0963sjaj8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/jyp/lcr")
+    (synopsis "Lightweight coroutines in Emacs Lisp")
+    (description "This package provides macros that can translate code into
+equivalent continuation-passing code, as well as miscellaneous utility
+functions written in continuation-passing style.")
+    (license license:gpl3+)))
+
+(define-public emacs-attrap
+  (let ((commit "3b092bb8f6755a97e6ecb7623b9d2dde58beba4a")
+        (revision "1"))
+    (package
+      (name "emacs-attrap")
+      (version (git-version "1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jyp/attrap")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "05d32980saji8ja1pcv65l0s3dq7w0n5hpikbf246hciy1x067pp"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-f" ,emacs-f)
+         ("emacs-flycheck" ,emacs-flycheck)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/jyp/attrap")
+      (synopsis "Fix coding error at point")
+      (description "This package provides a command to fix the Flycheck error
+at point.")
+      (license license:gpl3+))))
+
 (define-public emacs-git-messenger
   (package
     (name "emacs-git-messenger")
@@ -8355,29 +8558,32 @@ key.  Optionally, a mouse pop-up can be added by binding
     (license license:gpl3+)))
 
 (define-public emacs-idris-mode
-  (package
-    (name "emacs-idris-mode")
-    (version "0.9.19")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://stable.melpa.org/packages/idris-mode-"
-             version ".tar"))
-       (sha256
-        (base32
-         "16hl2s22l3wc9drnwzw6hn7xrm49ml9lii0s6k218dgahdgsncmf"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-prop-menu" ,emacs-prop-menu)))
-    (home-page
-     "https://github.com/idris-hackers/idris-mode")
-    (synopsis "Major mode for editing Idris code")
-    (description
-     "This is an Emacs mode for editing Idris code.  It requires the latest
+  (let ((commit "acc8835449475d7cd205aba213fdd3d41c38ba40")
+        (revision "0"))
+    (package
+      (name "emacs-idris-mode")
+      (version (git-version "0.9.19" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/idris-hackers/idris-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "0n9xbknc68id0mf8hbfmawi8qpvrs47ix807sk9ffv2g3ik32kk6"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-prop-menu" ,emacs-prop-menu)))
+      (home-page
+       "https://github.com/idris-hackers/idris-mode")
+      (synopsis "Major mode for editing Idris code")
+      (description
+       "This is an Emacs mode for editing Idris code.  It requires the latest
 version of Idris, and some features may rely on the latest Git version of
 Idris.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-browse-at-remote
   (package
@@ -9223,16 +9429,16 @@ functionality is inherited from @code{hcl-mode}.")
 (define-public emacs-exec-path-from-shell
   (package
     (name "emacs-exec-path-from-shell")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/exec-path-from-shell-"
-             version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/exec-path-from-shell")
+             (commit version)))
        (sha256
         (base32
-         "03qjgb81cq1l3j54lvlf98r75vmmgd06mj6qh5wa6mz4xzp4w26r"))))
+         "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/exec-path-from-shell")
     (synopsis "Get environment variables such as @var{PATH} from the shell")
@@ -11752,7 +11958,7 @@ Emacs minor mode to escape sequences in code.")
 (define-public emacs-dashboard
   (package
     (name "emacs-dashboard")
-    (version "1.2.4")
+    (version "1.5.0")
     (source
      (origin
        (method git-fetch)
@@ -11761,11 +11967,22 @@ Emacs minor mode to escape sequences in code.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hhh1kfsz87qfmh45wjf2r93rz79rq0vbyxlfrsl02092zjbl1zr"))))
+        (base32 "0ihpcagwgc9qy70lf2y3dvx2bm5h9lnqh4sx6643cr8pp06ysbvq"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-page-break-lines" ,emacs-page-break-lines)))
-    (arguments '(#:include '("\\.el$" "\\.txt$" "\\.png$")))
+    (arguments
+     '(#:include '("\\.el$" "\\.txt$" "\\.png$")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-dashboard-widgets
+           ;; This phase fixes compilation error.
+           (lambda _
+             (chmod "dashboard-widgets.el" #o666)
+             (emacs-substitute-variables "dashboard-widgets.el"
+               ("dashboard-init-info"
+                '(format "Loaded in %s" (emacs-init-time))))
+             #t)))))
     (home-page "https://github.com/rakanalh/emacs-dashboard")
     (synopsis "Startup screen extracted from Spacemacs")
     (description "This package provides an extensible Emacs dashboard, with
@@ -12467,16 +12684,17 @@ the GIF result.")
 (define-public emacs-google-translate
   (package
     (name "emacs-google-translate")
-    (version "0.11.16")
+    (version "0.11.17")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/atykhonov/google-translate/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/atykhonov/google-translate/")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "01n9spj1d0gjfj39x526rl3m9c28wnx9afipmf5s8y77cx3mfwhl"))))
+         "05ljjw7kbnszygw3w085kv57swfiiqxri2b5xvsf5dw3pc3g7j3c"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/atykhonov/google-translate")
     (synopsis "Emacs interface to Google Translate")
@@ -13405,7 +13623,7 @@ backends, including the @command{wordnet} offline backend.")
 (define-public emacs-editorconfig
   (package
     (name "emacs-editorconfig")
-    (version "0.7.14")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -13415,7 +13633,7 @@ backends, including the @command{wordnet} offline backend.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "19j2428ij7sqvrqs7rqg1mcnv9109y6drqba40dkv3vrkk5d2yia"))))
+         "1b2cpqz75pivl323bs60j5rszwi787x6vy68csycikqz9mhpmjn9"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/editorconfig/editorconfig-emacs")
     (synopsis "Define and maintain consistent coding styles between different
@@ -15346,7 +15564,7 @@ well as an option for visually flashing evaluated s-expressions.")
 (define-public emacs-counsel-tramp
   (package
     (name "emacs-counsel-tramp")
-    (version "0.6.2")
+    (version "0.6.3")
     (source
      (origin
        (method git-fetch)
@@ -15356,7 +15574,7 @@ well as an option for visually flashing evaluated s-expressions.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nz0733x2b9b5nkwivvhv5c8747dng451na1sdfbkx5x9fjs5gc7"))))
+         "1qy9lf7cyv6hp9mmpwh92cpdcffbxzyzchx6878d5pmk9qh6xy92"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
@@ -15616,3 +15834,26 @@ verb commands which would are normally destructive (such as deletion) are
 provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
+
+(define-public emacs-xterm-color
+  (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
+        (version "1.8")
+        (revision "1"))
+    (package
+      (name "emacs-xterm-color")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/atomontage/xterm-color.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/atomontage/xterm-color")
+      (synopsis "ANSI & xterm-256 color text property translator for Emacs")
+      (description "@code{xterm-color.el} is an ANSI control sequence to
+text-property translator.")
+      (license license:bsd-2))))

@@ -155,78 +155,142 @@ library
 
 (test-begin "hackage")
 
-(define* (eval-test-with-cabal test-cabal #:key (cabal-environment '()))
-  (mock
-   ((guix import hackage) hackage-fetch
-    (lambda (name-version)
-      (call-with-input-string test-cabal
-        read-cabal)))
-   (match (hackage->guix-package "foo" #:cabal-environment cabal-environment)
-     (('package
-        ('name "ghc-foo")
-        ('version "1.0.0")
-        ('source
-         ('origin
-           ('method 'url-fetch)
-           ('uri ('string-append
-                  "https://hackage.haskell.org/package/foo/foo-"
-                  'version
-                  ".tar.gz"))
-           ('sha256
-            ('base32
-             (? string? hash)))))
-        ('build-system 'haskell-build-system)
-        ('inputs
-         ('quasiquote
-          (("ghc-http" ('unquote 'ghc-http))
-           ("ghc-mtl" ('unquote 'ghc-mtl)))))
-        ('home-page "http://test.org")
-        ('synopsis (? string?))
-        ('description (? string?))
-        ('license 'bsd-3))
-      #t)
-     (x
-      (pk 'fail x #f)))))
+(define-syntax-rule (define-package-matcher name pattern)
+  (define* (name obj)
+    (match obj
+      (pattern #t)
+      (x       (pk 'fail x #f)))))
+
+(define-package-matcher match-ghc-foo
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-http" ('unquote 'ghc-http)))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'bsd-3)))
+
+(define* (eval-test-with-cabal test-cabal matcher #:key (cabal-environment '()))
+  (define port (open-input-string test-cabal))
+  (matcher (hackage->guix-package "foo" #:port port #:cabal-environment cabal-environment)))
 
 (test-assert "hackage->guix-package test 1"
-  (eval-test-with-cabal test-cabal-1))
+  (eval-test-with-cabal test-cabal-1 match-ghc-foo))
 
 (test-assert "hackage->guix-package test 2"
-  (eval-test-with-cabal test-cabal-2))
+  (eval-test-with-cabal test-cabal-2 match-ghc-foo))
 
 (test-assert "hackage->guix-package test 3"
-  (eval-test-with-cabal test-cabal-3
+  (eval-test-with-cabal test-cabal-3 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "hackage->guix-package test 4"
-  (eval-test-with-cabal test-cabal-4
+  (eval-test-with-cabal test-cabal-4 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "hackage->guix-package test 5"
-  (eval-test-with-cabal test-cabal-5
+  (eval-test-with-cabal test-cabal-5 match-ghc-foo
                         #:cabal-environment '(("impl" . "ghc-7.8"))))
 
+(define-package-matcher match-ghc-foo-6
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-b" ('unquote 'ghc-b))
+       ("ghc-http" ('unquote 'ghc-http)))))
+    ('native-inputs
+     ('quasiquote
+      (("ghc-haskell-gi" ('unquote 'ghc-haskell-gi)))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'bsd-3)))
+
 (test-assert "hackage->guix-package test 6"
-  (eval-test-with-cabal test-cabal-6
-                        #:cabal-environment '(("impl" . "ghc-7.8"))))
+  (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
+
+;; Check multi-line layouted description
+(define test-cabal-multiline-layout
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description:   first line
+               second line
+license: BSD3
+executable cabal
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+(test-assert "hackage->guix-package test multiline desc (layout)"
+  (eval-test-with-cabal test-cabal-multiline-layout match-ghc-foo))
+
+;; Check multi-line braced description
+(define test-cabal-multiline-braced
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: {
+first line
+second line
+}
+license: BSD3
+executable cabal
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+(test-assert "hackage->guix-package test multiline desc (braced)"
+  (eval-test-with-cabal test-cabal-multiline-braced match-ghc-foo))
 
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
     ((("name" ("test-me"))
       ('section 'library
-               (('if ('flag "base4point8")
-                    (("build-depends" ("base >= 4.8 && < 5")))
-                    (('if ('flag "base4")
-                         (("build-depends" ("base >= 4 && < 4.8")))
-                         (('if ('flag "base3")
-                              (("build-depends" ("base >= 3 && < 4")))
-                              (("build-depends" ("base < 3"))))))))
-                ('if ('or ('flag "base4point8")
-                          ('and ('flag "base4") ('flag "base3")))
-                    (("build-depends" ("random")))
-                    ())
-                ("build-depends" ("containers"))
-                ("exposed-modules" ("Test.QuickCheck.Exception")))))
+                (('if ('flag "base4point8")
+                      (("build-depends" ("base >= 4.8 && < 5")))
+                      (('if ('flag "base4")
+                            (("build-depends" ("base >= 4 && < 4.8")))
+                            (('if ('flag "base3")
+                                  (("build-depends" ("base >= 3 && < 4")))
+                                  (("build-depends" ("base < 3"))))))))
+                 ('if ('or ('flag "base4point8")
+                           ('and ('flag "base4") ('flag "base3")))
+                      (("build-depends" ("random")))
+                      ())
+                 ("build-depends" ("containers"))
+                 ("exposed-modules" ("Test.QuickCheck.Exception")))))
      #t)
     (x (pk 'fail x #f))))
 

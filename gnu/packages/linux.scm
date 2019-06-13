@@ -34,6 +34,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,6 +144,7 @@
           ((string-prefix? "alpha" arch) "alpha")
           ((string-prefix? "powerpc" arch) "powerpc") ;including "powerpc64le"
           ((string-prefix? "s390" arch) "s390")
+          ((string-prefix? "riscv" arch) "riscv")
           (else arch))))
 
 (define-public (system->defconfig system)
@@ -169,18 +171,20 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
          "mirror://gnu/linux-libre/" version "-gnu/linux-libre-"
          version "-gnu.tar.xz")))
 
-(define-public linux-libre-headers
+(define (make-linux-libre-headers version hash)
   (package
     (name "linux-libre-headers")
-    (version "4.14.67")
+    (version version)
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))))
+             (sha256 (base32 hash))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+                     ,@(if (version>=? version "4.16")
+                           `(("flex" ,flex)
+                             ("bison" ,bison))
+                           '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -246,7 +250,7 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
           "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
           "/debian/patches/bugfix/arm/"
           "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-    (file-name "linux-libre-4.19-arm-export-__sync_icache_dcache.patch")
+    (file-name "linux-libre-arm-export-__sync_icache_dcache.patch")
     (sha256
      (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
 
@@ -417,22 +421,26 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.4")
-(define %linux-libre-hash "02pzad29w2apcqsk4r4fq93539z3by8kvk1f59lb8xnl0gvhdi5v")
+(define %linux-libre-version "5.1.9")
+(define %linux-libre-hash "1l1nhq3giqyv7zir1sl8m32xbbpmqhsw8dgf90kf4qcnh6bvjin1")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
-(define-public linux-libre
+(define-public linux-libre-5.1
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.19-version "4.19.45")
-(define %linux-libre-4.19-hash "1wiy8vzpzzml4k76nv3ycjx7ky55x7dqx3mgpjqbh73mj2gcr5bx")
+(define-public linux-libre-headers-5.1
+  (make-linux-libre-headers %linux-libre-version
+                            %linux-libre-hash))
+
+(define %linux-libre-4.19-version "4.19.50")
+(define %linux-libre-4.19-hash "0j1p459al3y77cv2xwjx7ppghc8ixs3wm3w9a10sc3ckbq1hw8ly")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -445,8 +453,12 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-4.19-patches
                     #:configuration-file kernel-config))
 
-(define %linux-libre-4.14-version "4.14.121")
-(define %linux-libre-4.14-hash "1g7gyjmp056pasf9m34dqs8pa15my6hqasdd551jw8mgkbhsfnxg")
+(define-public linux-libre-headers-4.19
+  (make-linux-libre-headers %linux-libre-4.19-version
+                            %linux-libre-4.19-hash))
+
+(define %linux-libre-4.14-version "4.14.125")
+(define %linux-libre-4.14-hash "1ms7ai7c6xspq8r2amgjfsdyl87x10dc4b1c3iacrhrxaqqmab01")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -454,15 +466,19 @@ It has been modified to remove all non-free binary blobs.")
                     '("x86_64-linux" "i686-linux" "armhf-linux")
                     #:configuration-file kernel-config))
 
+(define-public linux-libre-headers-4.14
+  (make-linux-libre-headers %linux-libre-4.14-version
+                            %linux-libre-4.14-hash))
+
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.178"
-                    "1ridlkymf382qnkc6hi07pkghrrxfv2avx55snjnkfcpdccvsmrb"
+  (make-linux-libre "4.9.181"
+                    "0fdqfd6z73q00nracrixliw0i0b60f4z352jmzabcwy431wszar5"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.180"
-                    "157kfs4slii86q9yrspvqdynpiv6rff80hrrn569v6h4nkc4b7ag"
+  (make-linux-libre "4.4.181"
+                    "1ird78a3pg8k6h60258g56ka86jpgiaj0q9r2jws770qgrmy324l"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config
                     #:extra-options
@@ -472,14 +488,6 @@ It has been modified to remove all non-free binary blobs.")
                        ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
                      %default-extra-linux-options)))
 
-(define-public linux-libre-arm-generic
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
-                    #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
-
 (define-public linux-libre-arm-veyron
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
@@ -487,6 +495,21 @@ It has been modified to remove all non-free binary blobs.")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
+
+(define-public linux-libre-headers-4.14.67
+  (make-linux-libre-headers "4.14.67"
+                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
+
+(define-public linux-libre-headers linux-libre-headers-4.14.67)
+(define-public linux-libre linux-libre-5.1)
+
+(define-public linux-libre-arm-generic
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("armhf-linux")
+                    #:patches %linux-libre-5.1-patches
+                    #:defconfig "multi_v7_defconfig"
+                    #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-generic-4.19
   (make-linux-libre %linux-libre-4.19-version
@@ -525,28 +548,6 @@ It has been modified to remove all non-free binary blobs.")
                     '("armhf-linux")
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
-
-(define-public vhba-module
-  (package
-    (name "vhba-module")
-    (version "20190410")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://downloads.sourceforge.net/cdemu/vhba-module/vhba-module-"
-                    version ".tar.bz2"))
-              (sha256
-               (base32
-                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
-    (build-system linux-module-build-system)
-    (arguments
-     ;; TODO: No tests?
-     `(#:tests? #f))
-    (home-page "https://cdemu.sourceforge.io/")
-    (synopsis "Kernel module that emulates SCSI devices")
-    (description "VHBA module provides a Virtual (SCSI) HBA, which is the link
-between the CDemu userspace daemon and linux kernel.")
-    (license license:gpl2+)))
 
 
 ;;;
@@ -933,7 +934,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.44.5")
+    (version "1.45.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -942,7 +943,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1ff56h6h1h17sj2zvlddv5c88nmbx46p1fcbh6b0s5k9kl3b6pms"))))
+               "02g0cm72sgz709s9pkg4mvj56m7bgs7rwnyc2cp7cvg3j6pcjlj9"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -2535,7 +2536,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2017.03.07")
+    (version "2019.06.03")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2543,7 +2544,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "1f9mcp78sdd4sci6v32vxfcl1rfjpv205jisz1p93kkfnaisy7ip"))
+                "1gslvh0aqdkv48jyr2ddq153mw28i7qz2ybrjj9qvkk3dgc7x4fd"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(begin
@@ -2551,13 +2552,25 @@ compliance.")
                           #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'gzip-determinism
-                    (lambda _
-                      (substitute* "Makefile"
-                        (("gzip") "gzip --no-name"))
-                      #t))
-                  (delete 'configure))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'gzip-determinism
+           (lambda _
+             (substitute* "Makefile"
+               (("gzip") "gzip --no-name"))
+             #t))
+         (add-after 'unpack 'omit-signature
+           (lambda _
+             (substitute* "Makefile"
+               ;; Signing requires a REGDB_PUBCERT and REGDB_PRIVKEY which we
+               ;; don't provide (see below).  Disable it.
+               ((" regulatory\\.db\\.p7s") "")
+               ;; regulatory.db is built as a dependency of regulatory.db.p7s,
+               ;; but ‘make install’ depends only on the latter while installing
+               ;; both (and failing).  Depend on it explicitly.
+               (("^install: " all) (string-append all "regulatory.db ")))
+             #t))
+         (delete 'configure))  ; no configure script
 
        ;; The 'all' target of the makefile depends on $(REGDB_CHANGED), which
        ;; is computed and can be equal to 'maintainer-clean'; when that
@@ -2565,19 +2578,22 @@ compliance.")
        ;; just built.  Thus, build things sequentially.
        #:parallel-build? #f
 
-       #:tests? #f                                ;no tests
-       #:make-flags (let ((out (assoc-ref %outputs "out")))
-                      (list (string-append "PREFIX=" out)
-                            (string-append "LSB_ID=Guix")
-                            (string-append "DISTRO_PUBKEY=/dev/null")
-                            (string-append "DISTRO_PRIVKEY=/dev/null")
-                            (string-append "REGDB_PUBKEY=/dev/null")
+       #:tests? #f                      ; no tests
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "FIRMWARE_PATH=$(PREFIX)/lib/firmware")
 
-                            ;; Leave that empty so that db2bin.py doesn't try
-                            ;; to sign 'regulatory.bin'.  This allows us to
-                            ;; avoid managing a key pair for the whole distro.
-                            (string-append "REGDB_PRIVKEY=")))))
-    (native-inputs `(("python" ,python-2)))
+               ;; Leave this empty so that db2bin.py doesn't try to sign
+               ;; ‘regulatory.bin’.  This allows us to avoid managing a key
+               ;; pair for the whole distribution.
+               (string-append "REGDB_PRIVKEY=")
+               ;; Don't generate a public key for the same reason.  These are
+               ;; used as Makefile targets and can't be the empty string.
+               (string-append "REGDB_PUBCERT=/dev/null")
+               (string-append "REGDB_PUBKEY=/dev/null")))))
+    (native-inputs
+     `(("python" ,python-wrapper)))
     (home-page
      "https://wireless.wiki.kernel.org/en/developers/regulatory/wireless-regdb")
     (synopsis "Wireless regulatory database")
@@ -2860,12 +2876,16 @@ thanks to the use of namespaces.")
                   (substitute* "bin/singularity.in"
                     (("^PATH=.*" all)
                      (string-append "#" all "\n")))
+
+                  (substitute* (find-files "libexec/cli" "\\.exec$")
+                    (("\\$SINGULARITY_libexecdir/singularity/bin/([a-z]+)-suid"
+                      _ program)
+                     (string-append "/run/setuid-programs/singularity-"
+                                    program "-helper")))
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
-       (list "--disable-suid"
-             "--localstatedir=/var")
+     `(#:configure-flags '("--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-reference-to-squashfs-tools
@@ -4052,6 +4072,39 @@ Linux kernel to retrieve and control processor features related to power saving,
 such as frequency and voltage scaling.")
     (license license:gpl2)))
 
+(define-public x86-energy-perf-policy
+  (package
+    (name "x86-energy-perf-policy")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-subdirectory
+           (lambda _
+             (chdir "tools/power/x86/x86_energy_perf_policy")
+             #t))
+         (delete 'configure)
+         (add-before 'build 'fix-makefile
+           (lambda _
+             (substitute* "Makefile" (("/usr") ""))
+             #t)))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "DESTDIR=" out)
+               (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page (package-home-page linux-libre))
+    (synopsis "Display and update Intel-CPU energy-performance policy")
+    (description
+     "@command{x86_energy_perf_policy} displays and updates energy-performance
+policy settings specific to Intel Architecture Processors.  Settings are
+accessed via Model Specific Register (MSR) updates, no matter if the Linux
+cpufreq sub-system is enabled or not.")
+    (license license:gpl2)))
+
 (define-public haveged
   (package
     (name "haveged")
@@ -4329,15 +4382,16 @@ developers.")
 (define-public radeontop
   (package
     (name "radeontop")
-    (version "1.1")
-    (home-page "https://github.com/clbr/radeontop/")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1fv06j5c99imvzkac3j40lgjhr5b2i77fnyffhlvj92bli1fm1c6"))))
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/clbr/radeontop.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1b1m30r2nfwqkajqw6m01xmfhlq83z1qylyijxg7962mp9x2k0gw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -4361,6 +4415,7 @@ developers.")
        ("libpciaccess" ,libpciaccess)
        ("libxcb" ,libxcb)
        ("ncurses" ,ncurses)))
+    (home-page "https://github.com/clbr/radeontop/")
     (synopsis "Usage monitor for AMD Radeon graphics")
     (description "RadeonTop monitors resource consumption on supported AMD
 Radeon Graphics Processing Units (GPUs), either in real time as bar graphs on
@@ -4592,10 +4647,19 @@ interface in sysfs, which can be accomplished with the included udev rules.")
               ("sed" ,sed)
               ("usbutils" ,usbutils)
               ("util-linux" ,util-linux)
-              ("wireless-tools" ,wireless-tools)))
+              ("wireless-tools" ,wireless-tools)
+              ,@(if (let ((system (or (%current-target-system)
+                                      (%current-system))))
+                      (or (string-prefix? "i686-" system)
+                          (string-prefix? "x86_64-" system)))
+                    `(("x86-energy-perf-policy" ,x86-energy-perf-policy))
+                    '())))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ; no configure script
          (add-before 'build 'setenv
@@ -4633,30 +4697,34 @@ interface in sysfs, which can be accomplished with the included udev rules.")
              (let* ((bin (string-append (assoc-ref outputs "out") "/bin"))
                     (bin-files (find-files bin ".*")))
                (define (bin-directory input-name)
-                 (string-append (assoc-ref inputs input-name) "/bin"))
+                 (let ((p (assoc-ref inputs input-name)))
+                   (and p (string-append p "/bin"))))
                (define (sbin-directory input-name)
                  (string-append (assoc-ref inputs input-name) "/sbin"))
                (for-each (lambda (program)
                            (wrap-program program
                              `("PATH" ":" prefix
                                ,(append
-                                 (map bin-directory '("bash"
-                                                      "coreutils"
-                                                      "dbus"
-                                                      "eudev"
-                                                      "grep"
-                                                      "inetutils"
-                                                      "kmod"
-                                                      "perl"
-                                                      "sed"
-                                                      "usbutils"
-                                                      "util-linux"))
-                                 (map sbin-directory '("ethtool"
-                                                       "hdparm"
-                                                       "iw"
-                                                       "pciutils"
-                                                       "rfkill"
-                                                       "wireless-tools"))))))
+                                 (filter-map bin-directory
+                                             '("bash"
+                                               "coreutils"
+                                               "dbus"
+                                               "eudev"
+                                               "grep"
+                                               "inetutils"
+                                               "kmod"
+                                               "perl"
+                                               "sed"
+                                               "usbutils"
+                                               "util-linux"
+                                               "x86-energy-perf-policy"))
+                                 (filter-map sbin-directory
+                                             '("ethtool"
+                                               "hdparm"
+                                               "iw"
+                                               "pciutils"
+                                               "rfkill"
+                                               "wireless-tools"))))))
                          bin-files)
                #t))))))
     (home-page "http://linrunner.de/en/tlp/tlp.html")

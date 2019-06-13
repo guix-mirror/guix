@@ -697,7 +697,8 @@ written in Objective Caml.")
            (lambda* (#:key outputs #:allow-other-keys)
              (format #t "~a~%" (find-files "." ".*.so"))
              (let ((stubdir (string-append (assoc-ref outputs "out")
-                                           "/lib/ocaml/site-lib")))
+                                           "/lib/ocaml/site-lib/stublibs")))
+               (delete-file stubdir)
                (mkdir-p stubdir)
                (install-file "src/dllnums.so" stubdir))
              #t)))))
@@ -1626,7 +1627,13 @@ spans without being subject to operating system calendar time adjustments.")
                                          "/lib/ocaml/site-lib/cmdliner"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'fix-source-file-order
+           (lambda _
+             (substitute* "build.ml"
+               (("Sys.readdir dir")
+                "let a = Sys.readdir dir in Array.sort String.compare a; a"))
+             #t)))))
     (home-page "http://erratique.ch/software/cmdliner")
     (synopsis "Declarative definition of command line interfaces for OCaml")
     (description "Cmdliner is a module for the declarative definition of command
@@ -2290,6 +2297,12 @@ many additional enhancements, including:
      `(#:phases
        (modify-phases %standard-phases
          (delete 'check) ; tests are run by the build phase
+         (add-before 'build 'fix-nondeterminism
+           (lambda _
+             (substitute* "setup.ml"
+               (("Sys.readdir dirname")
+                "let a = Sys.readdir dirname in Array.sort String.compare a; a"))
+             #t))
          (replace 'build
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((files

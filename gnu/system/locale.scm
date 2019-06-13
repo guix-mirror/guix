@@ -85,20 +85,6 @@ or #f on failure."
     (_
      #f)))
 
-(define* (localedef-command locale
-                            #:key (libc (canonical-package glibc)))
-  "Return a gexp that runs 'localedef' from LIBC to build LOCALE."
-  #~(begin
-      (format #t "building locale '~a'...~%"
-              #$(locale-definition-name locale))
-      (zero? (system* (string-append #+libc "/bin/localedef")
-                      "--no-archive" "--prefix" #$output
-                      "-i" #$(locale-definition-source locale)
-                      "-f" #$(locale-definition-charset locale)
-                      (string-append #$output "/" #$(version-major+minor
-                                                     (package-version libc))
-                                     "/" #$(locale-definition-name locale))))))
-
 (define* (single-locale-directory locales
                                   #:key (libc (canonical-package glibc)))
   "Return a directory containing all of LOCALES for LIBC compiled.
@@ -110,17 +96,29 @@ of LIBC."
     (version-major+minor (package-version libc)))
 
   (define build
-    #~(begin
-        (mkdir #$output)
+    (with-imported-modules (source-module-closure
+                            '((gnu build locale)))
+     #~(begin
+         (use-modules (gnu build locale))
 
-        (mkdir (string-append #$output "/" #$version))
+         (mkdir #$output)
+         (mkdir (string-append #$output "/" #$version))
 
-        ;; 'localedef' executes 'gzip' to access compressed locale sources.
-        (setenv "PATH" (string-append #$gzip "/bin"))
+         ;; 'localedef' executes 'gzip' to access compressed locale sources.
+         (setenv "PATH"
+                 (string-append #$gzip "/bin:" #$libc "/bin"))
 
-        (exit
-         (and #$@(map (cut localedef-command <> #:libc libc)
-                      locales)))))
+         (setvbuf (current-output-port) 'line)
+         (setvbuf (current-error-port) 'line)
+         (for-each (lambda (locale codeset name)
+                     (build-locale locale
+                                   #:codeset codeset
+                                   #:name name
+                                   #:directory
+                                   (string-append #$output "/" #$version)))
+                   '#$(map locale-definition-source locales)
+                   '#$(map locale-definition-charset locales)
+                   '#$(map locale-definition-name locales)))))
 
   (computed-file (string-append "locale-" version) build))
 
@@ -216,45 +214,16 @@ pairs such as (\"oc_FR.UTF-8\" . \"UTF-8\").  Each pair corresponds to a
 locale supported by GLIBC."
   (define build
     (with-imported-modules (source-module-closure
-                            '((guix build gnu-build-system)))
+                            '((guix build gnu-build-system)
+                              (gnu build locale)))
       #~(begin
           (use-modules (guix build gnu-build-system)
-                       (srfi srfi-1)
-                       (ice-9 rdelim)
-                       (ice-9 match)
-                       (ice-9 regex)
+                       (gnu build locale)
                        (ice-9 pretty-print))
 
           (define unpack
             (assq-ref %standard-phases 'unpack))
 
-          (define locale-rx
-            ;; Regexp matching a locale line in 'localedata/SUPPORTED'.
-            (make-regexp
-             "^[[:space:]]*([[:graph:]]+)/([[:graph:]]+)[[:space:]]*\\\\$"))
-
-          (define (read-supported-locales port)
-            ;; Read the 'localedata/SUPPORTED' file from PORT.  That file is
-            ;; actually a makefile snippet, with one locale per line, and a
-            ;; header that can be discarded.
-            (let loop ((locales '()))
-              (define line
-                (read-line port))
-
-              (cond ((eof-object? line)
-                     (reverse locales))
-                    ((string-prefix? "#" (string-trim line)) ;comment
-                     (loop locales))
-                    ((string-contains line "=")  ;makefile variable assignment
-                     (loop locales))
-                    (else
-                     (match (regexp-exec locale-rx line)
-                       (#f
-                        (loop locales))
-                       (m
-                        (loop (alist-cons (match:substring m 1)
-                                          (match:substring m 2)
-                                          locales))))))))
 
           (setenv "PATH"
                   (string-append #+(file-append tar "/bin") ":"

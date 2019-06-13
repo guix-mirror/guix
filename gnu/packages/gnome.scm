@@ -162,6 +162,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -2114,7 +2115,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.44")
+    (version "1.12.45")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnumeric/"
@@ -2122,7 +2123,7 @@ Hints specification (EWMH).")
                                   "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "0147962c6ybdsj57rz95nla0rls7g545wc2n7pz59zmzyd5pksk0"))))
+                "0c8dl1kvnj3g32qy3s92qpqpqfy0in59cx005gjvvzsflahav61h"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -3940,26 +3941,15 @@ which can read a large number of file formats.")
 (define-public rhythmbox
  (package
    (name "rhythmbox")
-   (version "3.4.2")
+   (version "3.4.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
                                 (version-major+minor version) "/"
                                 name "-" version ".tar.xz"))
-            (patches
-             (list
-              ;; fmradio: Fix build with GStreamer master
-              (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://gitlab.gnome.org/GNOME/rhythmbox/commit/"
-                      "b182c6b9e1d09e601bac0b703cc5f8b159ebbc3a.patch"))
-                (sha256
-                 (base32
-                  "06n87xgf927djmv1vshal84nqx7g8nwgljza3g2vydhy7g2n1csq")))))
             (sha256
              (base32
-              "0hzcns8gf5yb0rm4ss8jd8qzarcaplp5cylk6plwilsqfvxj4xn2"))))
+              "1yx3n7p9vmv23jsv98fxwq95n78awdxqm8idhyhxx2d6vk4w1hgx"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:configure-flags
@@ -4319,15 +4309,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.60")
+    (version "0.9.62")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/3b2ceb7eb15860587db6886bfdd8a91e/"
+                                  "uploads/bb4aad19272cc636bd17f2f6602127fe/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "1s9gkzxa6457v6bh0q8n1ijq1chd2jwgvhk5kppsnya7kxvsx8qh"))))
+                "06v76hg87fnhw45dil5vvl20myvaa38n1jqsl0lmkkq6af4mk8wx"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -4441,7 +4431,7 @@ principles are simplicity and standards compliance.")
 (define-public d-feet
   (package
     (name "d-feet")
-    (version "0.3.11")
+    (version "0.3.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4449,7 +4439,7 @@ principles are simplicity and standards compliance.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hmrijm4d9vwzx2r8qzzsy8ccpj79l1y6cc569n9jjzqcq699p53"))))
+                "1m8lwiwl5jhi0x7y6x5zmd3hjplgvdjrb8a8jg74rvkygslj1p7f"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f ; tests need to run in the source directory.
@@ -4488,6 +4478,7 @@ principles are simplicity and standards compliance.")
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
        ("python" ,python-wrapper)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
        ("python-pygobject" ,python-pygobject)))
     (home-page "https://wiki.gnome.org/Apps/DFeet")
     (synopsis "D-Bus debugger")
@@ -5473,7 +5464,7 @@ to virtual private networks (VPNs) via OpenVPN.")
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
-    (version "20170310")
+    (version "20190116")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5482,10 +5473,10 @@ to virtual private networks (VPNs) via OpenVPN.")
                     "mobile-broadband-provider-info-" version ".tar.xz"))
               (sha256
                (base32
-                "0fxm11x8k9hxjg8l5inaldfmmjnwkay3ibjv899jra03bv4h6kql"))))
+                "16y5lc7pfdvai9c8xwb825zc3v46039gghbip13fqslf5gw11fic"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f)) ; No tests
+     `(#:tests? #f))                    ; no tests
     (home-page "https://wiki.gnome.org/Projects/NetworkManager")
     (synopsis "Database of broadband connection configuration")
     (description "Database of broadband connection configuration.")
@@ -5876,6 +5867,9 @@ devices using the GNOME desktop.")
                  (("\"nm-connection-editor")
                   (string-append "\"" nm-applet
                                  "/bin/nm-connection-editor")))
+               (substitute* '("panels/user-accounts/run-passwd.c")
+                 (("/usr/bin/passwd")
+                  "/run/setuid-programs/passwd"))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
@@ -7970,3 +7964,95 @@ functionality.")
     (license (list license:lgpl2.1 license:lgpl3 ; either one of these
                    license:openldap2.8 ; addressbook/gui/component/openldap-extract.h
                    license:lgpl2.1+))))  ; smime/lib/*
+
+(define-public gthumb
+  (package
+    (name "gthumb")
+    (version "3.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gthumb/"
+                                  (version-major+minor version) "/"
+                                  "gthumb-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1l2s1facq1r6yvqjqc34aqfzlvb3nhkhn79xisxbbdlgrrxdq52f"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ;; Ensure the RUNPATH contains all installed library locations.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions")
+             (string-append "-Dcpp_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/gthumb/extensions"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gtk+:bin" ,gtk+ "bin")                   ; for gtk-update-icon-cache
+       ("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)))
+    (inputs
+     `(("exiv2" ,exiv2)
+       ("gtk" ,gtk+)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gstreamer" ,gstreamer)
+       ("clutter" ,clutter)
+       ("clutter-gst" ,clutter-gst)
+       ("clutter-gtk" ,clutter-gtk)
+       ("libjpeg" ,libjpeg)
+       ("libtiff" ,libtiff)
+       ("libraw" ,libraw)))
+    (home-page "https://wiki.gnome.org/Apps/Gthumb")
+    (synopsis "GNOME image viewer and browser")
+    (description "GThumb is an image viewer, browser, organizer, editor and
+advanced image management tool")
+    (license license:gpl2+)))
+
+(define-public terminator
+  (package
+    (name "terminator")
+    (version "1.91")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://launchpad.net/" name "/"
+                                  "gtk3/" version "/" "+download/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sdyqwydmdnh7j6mn74vrywz35m416kqsbxbrqcnv5ak08y6xxwm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")                   ; for glib-compile-resources
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python2-pycairo" ,python2-pycairo)
+       ("python2-pygobject" ,python2-pygobject)
+       ("python2-psutil" ,python2-psutil)
+       ("vte" ,vte)))
+    (arguments
+     `(#:python ,python-2                          ;Python 3 not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-program
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((prog (string-append (assoc-ref outputs "out")
+                                       "/bin/terminator")))
+              (wrap-program prog
+                `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
+                `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+              #t))))))
+    (home-page "https://gnometerminator.blogspot.com/")
+    (synopsis "Store and run multiple GNOME terminals in one window")
+    (description
+     "Terminator allows you to run multiple GNOME terminals in a grid and
++tabs, and it supports drag and drop re-ordering of terminals.")
+    (license license:gpl2)))

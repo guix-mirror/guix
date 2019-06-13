@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,7 +119,7 @@ requests, and the library is intended for implementing Ajax APIs.")
 (define-public ghc-http-types
   (package
     (name "ghc-http-types")
-    (version "0.12.1")
+    (version "0.12.3")
     (source
      (origin
        (method url-fetch)
@@ -126,7 +127,7 @@ requests, and the library is intended for implementing Ajax APIs.")
                            "http-types-" version ".tar.gz"))
        (sha256
         (base32
-         "1wv9k6nlvkdsxwlr7gaynphvzmvi5211gvwq96mbcxgk51a739rz"))))
+         "05j00b9nqmwh9zaq9y9x50k81v2pd3j7a71kd91zlnbl8xk4m2jf"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-doctest" ,ghc-doctest)
@@ -136,7 +137,6 @@ requests, and the library is intended for implementing Ajax APIs.")
        ("hspec-discover" ,hspec-discover)))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-text" ,ghc-text)))
     (home-page "https://github.com/aristidb/http-types")
     (synopsis "Generic HTTP types for Haskell")
@@ -550,7 +550,7 @@ transfers.")
 (define-public ghc-warp
   (package
     (name "ghc-warp")
-    (version "3.2.23")
+    (version "3.2.27")
     (source
      (origin
        (method url-fetch)
@@ -558,8 +558,7 @@ transfers.")
                            "warp-" version "/" "warp-" version
                            ".tar.gz"))
        (sha256
-        (base32
-         "12v9qhi4hyp0sb90yddsax16jj7x47nmqwn53sv7b5nszcxgzam0"))))
+        (base32 "0p2w88q0zd55ms20qylipbi0qzbf324i9r8b9qqxyds5yc1anq76"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)

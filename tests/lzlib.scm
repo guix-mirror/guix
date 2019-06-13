@@ -108,4 +108,14 @@
 (test-assert* "Bytevector of size relative to Lzip internal buffers (1MiB+1)"
   (compress-and-decompress (random-bytevector (1+ (* 1024 1024)))))
 
+(test-assert "make-lzip-input-port/compressed"
+  (let* ((len        (pk 'len (+ 10 (random 4000 %seed))))
+         (data       (random-bytevector len))
+         (compressed (make-lzip-input-port/compressed
+                      (open-bytevector-input-port data)))
+         (result     (call-with-lzip-input-port compressed
+                                                get-bytevector-all)))
+    (pk (bytevector-length result) (bytevector-length data))
+    (bytevector=? result data)))
+
 (test-end)

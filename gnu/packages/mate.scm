@@ -79,8 +79,7 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -136,14 +135,14 @@ actions.")
   (package
     (name "mate-icon-theme")
     (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "090vfxpn1b1wwvkilv1j3cx4swdm4z0s7xyvhvqhdzj58zsf2000"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "090vfxpn1b1wwvkilv1j3cx4swdm4z0s7xyvhvqhdzj58zsf2000"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -159,14 +158,14 @@ actions.")
   (package
     (name "mate-icon-theme-faenza")
     (version "1.20.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "000vr9cnbl2qlysf2gyg1lsjirqdzmwrnh6d3hyrsfc0r2vh4wna"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "000vr9cnbl2qlysf2gyg1lsjirqdzmwrnh6d3hyrsfc0r2vh4wna"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -197,11 +196,11 @@ from Mint-X-F and Faenza-Fresh icon packs.")
   (package
     (name "mate-themes")
     (version "3.22.19")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/themes/"
-                                  (version-major+minor version) "/mate-themes-"
-                                  version ".tar.xz"))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/themes/" (version-major+minor version)
+                           "/mate-themes-" version ".tar.xz"))
               (sha256
                (base32
                 "1ycb8b8r0s8d1h1477135mynr53s5781gdb2ap8xlvj2g58492wq"))))
@@ -225,14 +224,14 @@ themes for both gtk+-2 and gtk+-3.")
   (package
     (name "mate-desktop")
     (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "09gn840p6qds21kxab4pidjd53g76s76i7178fdibrz462mda217"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "09gn840p6qds21kxab4pidjd53g76s76i7178fdibrz462mda217"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -259,14 +258,14 @@ desktop and the mate-about program.")
   (package
     (name "libmateweather")
     (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1ribgcwl4ncfbcf9bkcbxrgc7yzajdnxg12837psngymkqswlp6a"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ribgcwl4ncfbcf9bkcbxrgc7yzajdnxg12837psngymkqswlp6a"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -308,8 +307,7 @@ the MATE desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -349,8 +347,7 @@ configurations (profiles).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -417,8 +414,7 @@ configuration program to choose applications starting on login.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -460,8 +456,7 @@ configuration program to choose applications starting on login.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -490,8 +485,7 @@ sound systems.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -519,14 +513,14 @@ MATE desktop environment.")
   (package
     (name "mate-menus")
     (version "1.22.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://pub.mate-desktop.org/releases/"
-                                  (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1lkakbf2f1815c146z4xp5f0h4lim6jzr02681wbvzalc6k97v5c"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1lkakbf2f1815c146z4xp5f0h4lim6jzr02681wbvzalc6k97v5c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -563,8 +557,7 @@ assorted menu related utility programs.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -637,8 +630,7 @@ Interactive Weather Information Network (IWIN).
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -674,8 +666,7 @@ mate-volume-control, a MATE volume control application and applet.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -748,8 +739,7 @@ infamous 'Wanda the Fish'.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -852,8 +842,7 @@ infamous 'Wanda the Fish'.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -911,8 +900,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -966,8 +954,7 @@ icons on the MATE desktop.  It works on local and remote file systems.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1026,8 +1013,7 @@ of various aspects of your desktop.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1077,8 +1063,7 @@ for use with MATE or as a standalone window manager.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1117,8 +1102,7 @@ sessions, panels, menus, file management, and preferences.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1149,8 +1133,7 @@ sessions, panels, menus, file management, and preferences.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1172,8 +1155,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1214,8 +1196,7 @@ Re-decorates windows on un-maximise.
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1286,8 +1267,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1339,8 +1319,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1390,8 +1369,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1444,8 +1422,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1495,8 +1472,7 @@ can be used as backgrounds in the MATE Desktop environment.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -1536,8 +1512,7 @@ MATE Desktop to monitor your system resources and usage.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pub.mate-desktop.org/releases/"
-                           (version-major+minor version) "/"
+       (uri (string-append "mirror://mate/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32

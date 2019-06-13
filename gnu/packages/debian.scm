@@ -32,7 +32,7 @@
 (define-public debian-archive-keyring
   (package
     (name "debian-archive-keyring")
-    (version "2018.1")
+    (version "2019.1")
     (source
       (origin
         (method git-fetch)
@@ -42,7 +42,7 @@
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "136vr5dj7w0dz563qdghsndcfcqm2m8d4j1dyiq9dzx5vd0rcpcw"))))
+          "0bphwji3ywk1zi5bq8bhqk7l51fwjy1idwsw7zfqnxca8m5wvw1g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "verify-results"
@@ -117,7 +117,7 @@ contains the archive keys used for that.")
 (define-public debootstrap
   (package
     (name "debootstrap")
-    (version "1.0.111")
+    (version "1.0.114")
     (source
       (origin
         (method git-fetch)
@@ -127,7 +127,7 @@ contains the archive keys used for that.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "1b8s00a2kvaajqhjlms3q2dk3gqv6g4yq9h843jal1pm66zsx19n"))))
+          "147308flz9y8g6f972izi3szmsywf5f8xm64z2smy1cayd340i63"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -154,6 +154,11 @@ contains the archive keys used for that.")
                  (("/usr") ubuntu))
                (substitute* "debootstrap"
                  (("=/usr") (string-append "=" out)))
+               ;; Ensure PATH works both in guix and within the debian chroot
+               ;; workaround for: https://bugs.debian.org/929889
+               (substitute* "functions"
+                 (("PATH=/sbin:/usr/sbin:/bin:/usr/bin")
+                  "PATH=$PATH:/sbin:/usr/sbin:/bin:/usr/bin"))
                (substitute* (find-files "scripts" ".")
                  (("/usr/share/zoneinfo") (string-append tzdata "/share/zoneinfo")))
                #t)))
@@ -184,9 +189,5 @@ contains the archive keys used for that.")
     (description "Debootstrap is used to create a Debian base system from
 scratch, without requiring the availability of @code{dpkg} or @code{apt}.
 It does this by downloading .deb files from a mirror site, and carefully
-unpacking them into a directory which can eventually be chrooted into.
-
-It is recommended to run @code{debootstrap --foreign --arch=...} and then
-@code{chroot} into the directory, set the PATH and run @code{debootstrap
---second-stage} after.")
+unpacking them into a directory which can eventually be chrooted into.")
     (license license:gpl2)))

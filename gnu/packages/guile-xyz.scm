@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -53,8 +53,10 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
@@ -66,6 +68,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages noweb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -73,14 +76,17 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
   #:use-module (guix utils)
@@ -2232,3 +2238,150 @@ slashes are present and accounted for, resolving @code{.} and @code{..}, etc).
 Inevitably, you have to break the string up into chunks and operate on that
 list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
+
+(define-public guile-gi
+  (let ((commit "26e885219ae6b31a83766564a2ecfe8c4532346f")
+        (revision "1"))
+    (package
+      (name "guile-gi")
+      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/spk121/guile-gi.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "1prbzhr4sqqihb34l6yfrz6sd8nghwd3q9wvbm36jnl2n3z2nxj8"))))
+      (build-system gnu-build-system)
+      (native-inputs `(("autoconf" ,autoconf)
+                       ("automake" ,automake)
+                       ("gettext" ,gnu-gettext)
+                       ("libtool" ,libtool)
+                       ("pkg-config" ,pkg-config)
+                       ("texinfo" ,texinfo)))
+      (propagated-inputs `(("glib" ,glib)
+                           ("gobject-introspection" ,gobject-introspection)
+                           ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+                           ("gtk+" ,gtk+)
+                           ("guile-lib" ,guile-lib)
+                           ("webkitgtk" ,webkitgtk)))
+      (inputs `(("guile" ,guile-2.2)))
+      (arguments
+       `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
+      (home-page "https://github.com/spk121/guile-gi")
+      (synopsis "GObject bindings for Guile")
+      (description
+       "Guile-GI is a library for Guile that allows using GObject-based
+libraries, such as GTK+3.  Its README comes with the disclaimer: This is
+pre-alpha code.")
+      (license license:gpl3+))))
+
+(define-public guile-srfi-159
+  (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
+        (revision "0"))
+    (package
+      (name "guile-srfi-159")
+      (version (git-version "0" revision commit))
+      (home-page "https://bitbucket.org/bjoli/guile-srfi-159")
+      (source (origin
+                (method hg-fetch)
+                (uri (hg-reference (changeset commit)
+                                   (url home-page)))
+                (sha256
+                 (base32
+                  "1zw6cmcy7xdbfiz3nz9arqnn7l2daidaps6ixkcrc9b6k51fdv3p"))
+                (file-name (git-file-name name version))))
+      (build-system guile-build-system)
+      (arguments
+       ;; The *-impl.scm files are actually included from module files; they
+       ;; should not be compiled separately, but they must be installed.
+       '(#:not-compiled-file-regexp "-impl\\.scm$"))
+      (inputs
+       `(("guile" ,guile-2.2)))
+      (synopsis "Formatting combinators for Guile")
+      (description
+       "The @code{(srfi-159)} module and its sub-modules implement the
+formatting combinators specified by
+@uref{https://srfi.schemers.org/srfi-159/srfi-159.html, SRFI-159}.  These are
+more expressive and flexible than the traditional @code{format} procedure.")
+      (license license:bsd-3))))
+
+(define-public emacsy
+  (let ((commit "7d49cc1425d5d209bdb82cac0d8ea0694b8b3784")
+        (revision "4"))
+    (package
+      (name "emacsy")
+      (version (string-append "0.1.2-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/janneke/emacsy.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0k9yns1v8zn135w60sx96nqs2bm2p2dvcvlm987hkw4lbff9ii6i"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("emacsy-webkit-gtk"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/janneke/emacsy-webkit-gtk.git")
+                   (commit "35ded1b3e997fd779a17e0c4a2c73741718562d9")))
+             (file-name (string-append "emacsy-webkit-gtk" "-" version))
+             (sha256
+              (base32
+               "1gp0li2rbp6in926r3hrww6cnh864pp46v1din2pgmd7vzzl7kg0"))))
+         ("hello-emacsy"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/janneke/hello-emacsy.git")
+                   (commit "2c117e5286a261be4ff24938f3ae1d348396c538")))
+             (file-name (string-append "hello-emacsy" "-" version))
+             (sha256
+              (base32
+               "15ykd7s8axcy8ym4v71fgal4x28fxnim0pv0jmpi3dnhizr63zqn"))))
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bzip2" ,bzip2)
+         ("guile" ,guile-2.2)
+         ("gettext" ,gnu-gettext)
+         ("libtool" ,libtool)
+         ("noweb" ,noweb)
+         ("perl" ,perl)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)
+         ("texlive" ,texlive)))
+      (propagated-inputs
+       `(("guile-lib" ,guile-lib)
+         ("guile-readline" ,guile-readline)
+         ("freeglut" ,freeglut)
+         ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+         ("webkitgtk" ,webkitgtk)))
+      (inputs `(("guile" ,guile-2.2)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-examples
+             (lambda _
+               (copy-recursively (assoc-ref %build-inputs "emacsy-webkit-gtk")
+                                 "example/emacsy-webkit-gtk")
+               (copy-recursively (assoc-ref %build-inputs "hello-emacsy")
+                                 "example/hello-emacsy")))
+           (add-before 'configure 'setenv
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0"))))))
+      (home-page "https://github.com/shanecelis/emacsy/")
+      (synopsis "Embeddable GNU Emacs-like library using Guile")
+      (description
+       "Emacsy is an embeddable GNU Emacs-like library that uses GNU Guile
+as extension language.  Emacsy can give a C program an Emacsy feel with
+keymaps, minibuffer, recordable macros, history, tab completion, major
+and minor modes, etc., and can also be used as a pure Guile library.  It
+comes with a simple counter example using GLUT and browser examples in C
+using gtk+-3 and webkitgtk.")
+      (license license:gpl3+))))

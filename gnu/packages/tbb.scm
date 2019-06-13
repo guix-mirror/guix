@@ -28,7 +28,7 @@
 (define-public tbb
   (package
     (name "tbb")
-    (version "2019_U6")
+    (version "2019_U8")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -37,7 +37,7 @@
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1zbf06l659vq6s5wp3ln96ycwcd42caffan5vilqvqyxqvjljyic"))
+                "0z0kh1a5g28gckcxlv3x7qqskh5fsl8knf2ypbbvk7z9ln9k3wfq"))
               (modules '((guix build utils)))
               (snippet
                '(begin

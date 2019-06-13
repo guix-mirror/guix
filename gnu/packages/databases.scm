@@ -33,6 +33,7 @@
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,6 +109,7 @@
   #:use-module (guix download)
   #:use-module (guix bzr-download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system emacs)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
@@ -928,8 +930,7 @@ organized in a hash table or B+ tree.")
                                       (assoc-ref %build-inputs "bash:include")
                                       "/include/bash"))))
 
-    (native-inputs `(("emacs" ,emacs-minimal)
-                     ("bc" ,bc)
+    (native-inputs `(("bc" ,bc)
                      ("bash:include" ,bash "include")
                      ("check" ,check)
                      ("libuuid" ,util-linux)
@@ -947,6 +948,26 @@ unique fields, primary keys, time stamps and more.  Many different field
 types are supported, as is encryption.")
     (license license:gpl3+)
     (home-page "https://www.gnu.org/software/recutils/")))
+
+(define-public emacs-recutils
+  (package
+    (inherit recutils)
+    (name "emacs-recutils")
+    (build-system emacs-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "etc")
+             #t)))))
+    (native-inputs '())
+    (inputs '())
+    (synopsis "Emacs mode for working with recutils database files")
+    (description "This package provides an Emacs major mode @code{rec-mode}
+for working with GNU Recutils text-based, human-editable databases.  It
+supports editing, navigation, and querying of recutils database files
+including field and record folding.")))
 
 (define-public rocksdb
   (package
@@ -2398,14 +2419,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.2")
+    (version "1.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "0asqz9mwc4w8bsar1icv3ik9jslxrj3gv3yxgmhc6nc6r9qbkg04"))))
+         "1dwl0264r6ri2jyrjr68am04x538ab26xwy4crqjnnhm4alwm3c2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)

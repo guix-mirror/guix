@@ -1,0 +1,59 @@
+Use the current shell instead of trying to find another one and
+failing to do so.
+
+diff --git a/configure b/configure
+index f1adb919..7891b4dc 100755
+--- a/configure
++++ b/configure
+@@ -26,28 +26,6 @@
+ # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+-#
+-# The #!/bin/sh might be some legacy piece of crap,
+-# not even up to 1990 POSIX.2 spec. So the first step
+-# is to look for a better shell in some known places
+-# and re-execute ourselves with that interpreter.
+-#
+-
+-if test x$txr_shell = x ; then
+-  for shell in /bin/bash /usr/bin/bash /usr/xpg4/bin/sh ; do
+-    if test -x $shell ; then
+-       txr_shell=$shell
+-       break
+-    fi
+-  done
+-  if test x$txr_shell = x ; then
+-    echo "No known POSIX shell found: falling back on /bin/sh, which may not work"
+-    txr_shell=/bin/sh
+-  fi
+-  export txr_shell
+-  exec $txr_shell $0 ${@+"$@"}
+-fi
+-
+ set -u
+ 
+ #
+@@ -190,13 +168,6 @@ while [ $# -gt 0 ] ; do
+     exit 1
+   fi
+ 
+-  eval "var_exists=\${$var+y}"
+-
+-  if [ "$var_exists" != y ] ; then
+-    printf "$0: nonexistent option: '%s'\n" "$1"
+-    exit 1
+-  fi
+-
+   eval "$var='$val'"
+ 
+   eval "var_given_exists=\${${var}_given+y}"
+@@ -208,6 +179,8 @@ while [ $# -gt 0 ] ; do
+   shift
+ done
+ 
++txr_shell=$CONFIG_SHELL
++
+ #
+ # If --help was given (or --help=<nonempty> or help=<nonempty>) then
+ # print help and exit. The termination status is failed, to indicate

@@ -196,7 +196,7 @@ string Settings::pack()
         if (i->first.find('\n') != string::npos ||
             i->first.find('=') != string::npos ||
             i->second.find('\n') != string::npos)
-            throw Error("illegal option name/value");
+            throw Error("invalid option name/value");
         s += i->first; s += '='; s += i->second; s += '\n';
     }
     return s;

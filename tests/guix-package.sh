@@ -280,6 +280,20 @@ export GUIX_PACKAGE_PATH
 guix package -A emacs-foo-bar | grep 42
 guix package -i emacs-foo-bar@42 -n
 
+# Make sure GUIX_PACKAGE_PATH/'-L' takes precedence in case of duplicate packages.
+cat > "$module_dir/bar.scm"<<EOF
+(define-module (bar)
+  #:use-module (guix packages))
+
+(define-public hello
+  (package (inherit (@@ (gnu packages base) hello))
+    (synopsis "an overridden version of GNU hello")))
+EOF
+
+guix package -i hello -n 2>&1 | grep choosing.*bar.scm
+( unset GUIX_PACKAGE_PATH; \
+  guix package -i hello -n -L "$module_dir" 2>&1 | grep choosing.*bar.scm )
+
 # Make sure patches that live under $GUIX_PACKAGE_PATH are found.
 cat > "$module_dir/emacs.patch"<<EOF
 This is a fake patch.

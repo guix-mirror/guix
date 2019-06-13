@@ -174,14 +174,14 @@ Filter) modules follow the convention of 1V / Octave.")
         "--enable-jack"
         "--enable-sndfile"
         "--enable-samplerate"
-        ;; TODO: enable compilation with avcodec once available.
-        "--disable-avcodec")
+        "--enable-avcodec")
        #:python ,python-2))
     (inputs
      `(("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
        ("libsamplerate" ,libsamplerate)
-       ("fftwf" ,fftwf)))
+       ("fftwf" ,fftwf)
+       ("ffmpeg" ,ffmpeg))) ; for libavcodec
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://aubio.org/")
@@ -2120,14 +2120,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.7")
+    (version "0.5.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1g6a5j74p45yisl28bw4fcc9nr6b710ikk459p4mp6djh9gs8v95"))))
+                "1r5hf3hcr20n93jrrm7xk2zf6yx264pcr4d10cpybhrancxh602n"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -3701,7 +3701,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.05")
+    (version "19.06.07")
     (source
      (origin
        (method git-fetch)
@@ -3710,7 +3710,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1dja2ykixk1ycqda116cg9fy4qg364dqj88amfln0r9pnsj2kbxk"))))
+        (base32 "1w37qp279lgpyvslwz3wlb4fp0i68ncd411rqdlk5s71b1zz466n"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

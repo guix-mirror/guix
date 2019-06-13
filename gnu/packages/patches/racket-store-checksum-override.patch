@@ -7,12 +7,8 @@ because the store is immutable.  This patch makes Racket ignore
 checksums for files in the store.
 
 See <https://debbugs.gnu.org/30680> for details.
----
- collects/compiler/private/cm-minimal.rkt | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/collects/compiler/private/cm-minimal.rkt b/collects/compiler/private/cm-minimal.rkt
-index a5a5407..15af6b8 100644
+---
 --- a/collects/compiler/private/cm-minimal.rkt
 +++ b/collects/compiler/private/cm-minimal.rkt
 @@ -7,6 +7,7 @@
@@ -20,10 +16,10 @@ index a5a5407..15af6b8 100644
           racket/path
           racket/promise
 +         racket/string
-          openssl/sha1
+          file/sha1
           setup/collects
-          compiler/compilation-path
-@@ -543,6 +544,10 @@
+          setup/cross-system
+@@ -940,6 +941,10 @@
        #f
        (list src-hash recorded-hash)))
  
@@ -34,16 +30,13 @@ index a5a5407..15af6b8 100644
  (define (rkt->ss p)
    (if (path-has-extension? p #".rkt")
        (path-replace-extension p #".ss")
-@@ -595,7 +600,8 @@
-               (trace-printf "newer src... ~a > ~a" path-time path-zo-time)
-               ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:
-               (maybe-compile-zo sha1-only? deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen)]
--             [(different-source-sha1-and-dep-recorded path deps)
-+             [(and (not (store-reference? path))
-+                   (different-source-sha1-and-dep-recorded path deps))
-               => (lambda (difference)
-                    (trace-printf "different src hash... ~a" difference)
-                    ;; If `sha1-only?', then `maybe-compile-zo' returns a #f or thunk:
--- 
-2.18.0
-
+@@ -1015,6 +1020,7 @@
+                (trace-printf "newer src... ~a > ~a" path-time path-zo-time)
+                (maybe-compile-zo deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen
+                                  #:trying-sha1? sha1-only?)]
+-              [(different-source-sha1-and-dep-recorded path deps)
++              [(and (not (store-reference? path))
++                    (different-source-sha1-and-dep-recorded path deps))
+                => (lambda (difference)
+                     (trace-printf "different src hash ~a for ~a..." difference path)
+                     (maybe-compile-zo deps path->mode roots path orig-path read-src-syntax up-to-date collection-cache new-seen

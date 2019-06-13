@@ -2348,7 +2348,7 @@ PathSet parseReferenceSpecifiers(const Derivation & drv, string attr)
         else if (drv.outputs.find(*i) != drv.outputs.end())
             result.insert(drv.outputs.find(*i)->second.path);
         else throw BuildError(
-            format("derivation contains an illegal reference specifier `%1%'")
+            format("derivation contains an invalid reference specifier `%1%'")
             % *i);
     }
     return result;

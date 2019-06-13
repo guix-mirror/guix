@@ -65,29 +65,53 @@
              (path (string-append "/" version "/dependencies"))
              (deps-json (json-fetch-alist (string-append crate-url name path)))
              (deps (assoc-ref deps-json "dependencies"))
-             (input-crates (filter (crate-kind-predicate "normal") deps))
-             (native-input-crates
+             (dep-crates (filter (crate-kind-predicate "normal") deps))
+             (dev-dep-crates
               (filter (lambda (dep)
                         (not ((crate-kind-predicate "normal") dep))) deps))
-             (inputs (crates->inputs input-crates))
-             (native-inputs (crates->inputs native-input-crates))
+             (cargo-inputs (crates->inputs dep-crates))
+             (cargo-development-inputs (crates->inputs dev-dep-crates))
              (home-page (match homepage
                           (() repository)
                           (_ homepage))))
     (callback #:name name #:version version
-              #:inputs inputs #:native-inputs native-inputs
+              #:cargo-inputs cargo-inputs
+              #:cargo-development-inputs cargo-development-inputs
               #:home-page home-page #:synopsis synopsis
               #:description description #:license license)))
 
-(define* (make-crate-sexp #:key name version inputs native-inputs
+(define (maybe-cargo-inputs package-names)
+  (match (package-names->package-inputs package-names)
+    (()
+     '())
+    ((package-inputs ...)
+     `((#:cargo-inputs ,package-inputs)))))
+
+(define (maybe-cargo-development-inputs package-names)
+  (match (package-names->package-inputs package-names)
+    (()
+     '())
+    ((package-inputs ...)
+     `((#:cargo-development-inputs ,package-inputs)))))
+
+(define (maybe-arguments arguments)
+  (match arguments
+    (()
+     '())
+    ((args ...)
+     `((arguments (,'quasiquote ,args))))))
+
+(define* (make-crate-sexp #:key name version cargo-inputs cargo-development-inputs
                           home-page synopsis description license
                           #:allow-other-keys)
   "Return the `package' s-expression for a rust package with the given NAME,
-VERSION, INPUTS, NATIVE-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
+VERSION, CARGO-INPUTS, CARGO-DEVELOPMENT-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION,
+and LICENSE."
   (let* ((port (http-fetch (crate-uri name version)))
          (guix-name (crate-name->package-name name))
-         (inputs (map crate-name->package-name inputs))
-         (native-inputs (map crate-name->package-name native-inputs))
+         (cargo-inputs (map crate-name->package-name cargo-inputs))
+         (cargo-development-inputs (map crate-name->package-name
+                                        cargo-development-inputs))
          (pkg `(package
                    (name ,guix-name)
                    (version ,version)
@@ -99,8 +123,9 @@ VERSION, INPUTS, NATIVE-INPUTS, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                               (base32
                                ,(bytevector->nix-base32-string (port-sha256 port))))))
                    (build-system cargo-build-system)
-                   ,@(maybe-native-inputs native-inputs "src")
-                   ,@(maybe-inputs inputs "src")
+                   ,@(maybe-arguments (append (maybe-cargo-inputs cargo-inputs)
+                                              (maybe-cargo-development-inputs
+                                                cargo-development-inputs)))
                    (home-page ,(match home-page
                                  (() "")
                                  (_ home-page)))

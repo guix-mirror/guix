@@ -351,14 +351,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.11.4")
+    (version "1.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0098pr4anmq2a0id8wfi2vci3cgcfwf9k4q411w22xn8lrz3aldn"))
+               "13zr2fpql33sdbsjsiaa952js5bvphc1x4lqsj36qyzdhj3l84na"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -581,7 +581,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "7.2.3")
+    (version "7.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -590,7 +590,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18sdnhjldn8zs03bgqy1qa3ikmlfvyxcvwp3nbnv1a74biccqbpa"))))
+                "0h5q5nk2p2vx86w6rrbs7v70h81dpqqr68x6l3klzl3m0yj9agb1"))))
     (build-system python-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)))
@@ -847,14 +847,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.28.4")
+    (version "0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "1jjnhs4xs4gksvg0a9qn68rxrj41im5bh58snka2pkj20nxwmcds"))))
+                "0rg4jp0wlsham76rx9fmlpmcbv3n9vsd81vrzqvh6jrwlnmjds88"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)

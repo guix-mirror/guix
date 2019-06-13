@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -76,7 +76,7 @@ return the socket."
       (catch 'system-error
         (lambda ()
           (connect sock address)
-          (setvbuf sock _IOFBF 1024)
+          (setvbuf sock 'block 1024)
           sock)
         (lambda args
           (close-port sock)

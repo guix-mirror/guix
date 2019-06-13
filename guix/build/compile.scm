@@ -40,8 +40,12 @@
 
 (define %default-optimizations
   ;; Default optimization options (equivalent to -O2 on Guile 2.2).
-  (append (tree-il-default-optimization-options)
-          (cps-default-optimization-options)))
+  (append (if (defined? 'tree-il-default-optimization-options)
+              (tree-il-default-optimization-options) ;Guile 2.2
+              (tree-il-optimizations))               ;Guile 3
+          (if (defined? 'cps-default-optimization-options)
+              (cps-default-optimization-options)  ;Guile 2.2
+              (cps-optimizations))))              ;Guile 3
 
 (define %lightweight-optimizations
   ;; Lightweight optimizations (like -O0, but with partial evaluation).

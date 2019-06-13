@@ -401,7 +401,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.1")
+    (version "0.7.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -410,7 +410,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0q0yg2zna7gjbvpaswyykbg3lr9k3c8l8fydqa407xrgq77lahq4"))
+                "0g0xa1mzvan0sl1p5c784j2g5mcw9kd2b7wiahy06gy0c1nmbcnp"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -1185,7 +1185,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.209")
+    (version "0.210")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1195,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08qvwmx8wbfkqxiccmcff86dsrlq6wjxf6blnhhrsbzic1ji99bh"))
+         "08c62mc8aajzh44q36qvmrcq404hdzh3i8wwdfnvn0c4w8dbf486"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.
@@ -1344,6 +1344,7 @@ play them on systems for which they were never designed!")
        ("fontconfig" ,fontconfig)
        ("glm" ,glm)
        ("libjpeg" ,libjpeg-8)    ;jpeg_read_header argument error in libjpeg-9
+       ("libxi" ,libxi)
        ("libxinerama" ,libxinerama)
        ("lua" ,lua)
        ("portaudio" ,portaudio)

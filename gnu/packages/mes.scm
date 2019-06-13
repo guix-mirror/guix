@@ -28,6 +28,7 @@
   #:use-module (gnu packages man)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -35,7 +36,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages))
 
-(define-public nyacc
+(define-public nyacc-0.86
   (package
     (name "nyacc")
     (version "0.86.0")
@@ -58,6 +59,37 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (home-page "https://savannah.nongnu.org/projects/nyacc")
     (license (list gpl3+ lgpl3+))))
 
+(define-public nyacc
+  (package
+    (inherit nyacc-0.86)
+    (version "0.94.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/nyacc/nyacc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12qnzwm1n3j8z7hbr9hy2wka9a1aasm2rvnpnvdxkjcsbdzj8fn4"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* (find-files "." "^Makefile\\.in$")
+                    (("^SITE_SCM_DIR =.*")
+                     "SITE_SCM_DIR = \
+@prefix@/share/guile/site/@GUILE_EFFECTIVE_VERSION@\n")
+                    (("^SITE_SCM_GO_DIR =.*")
+                     "SITE_SCM_GO_DIR = \
+@prefix@/lib/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n")
+                    (("^INFODIR =.*")
+                     "INFODIR = @prefix@/share/info\n")
+                    (("^DOCDIR =.*")
+                     "DOCDIR = @prefix@/share/doc/$(PACKAGE_TARNAME)\n"))
+                  #t))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)))))
+
 (define-public mes
   (package
     (name "mes")
@@ -73,7 +105,10 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)))
+
+       ;; XXX: MesCC appears to enter an infinite loop (?) while building
+       ;; crt1.o when we switch to nyacc 0.94.
+       ("nyacc" ,nyacc-0.86)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)

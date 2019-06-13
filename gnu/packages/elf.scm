@@ -160,13 +160,19 @@ static analysis of the ELF binaries at hand.")
   (package
     (name "libelf")
     (version "0.8.13")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.mr511.de/software/libelf-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (list
+             ;; As of May 2019, the original URL at mr511.de redirects to a
+             ;; domain that doesn't resolve.  Use these two mirrors instead.
+             (string-append "https://fossies.org/linux/misc/old/"
+                            "libelf-" version ".tar.gz")
+             (string-append "https://ftp.osuosl.org/pub/blfs/conglomeration/"
+                            "libelf/libelf-" version ".tar.gz")))
+       (sha256
+        (base32
+         "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -183,7 +189,8 @@ static analysis of the ELF binaries at hand.")
                                        (%current-system))
                              '("--host=aarch64-unknown-linux-gnu")
                              '()))))))))
-    (home-page "http://www.mr511.de/software/english.html")
+    (home-page (string-append "https://web.archive.org/web/20181111033959/"
+                              "http://www.mr511.de/software/english.html"))
     (synopsis "ELF object file access library")
     (description "Libelf is a C library to access ELF object files.")
     (license lgpl2.0+)))

@@ -51,34 +51,35 @@
             hackage-package?))
 
 (define ghc-standard-libraries
-  ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
-  ;; some packages list it.
-  '("array"
-    "base"
-    "bin-package-db"
-    "binary"
-    "bytestring"
+  ;; List of libraries distributed with ghc (8.4.3).
+  ;; https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/8.4.3-notes.html
+  '("ghc"
     "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
             ;; hackage-name->package-name takes this into account.
+    "win32" ;; similarly uppercased
+    "array"
+    "base"
+    "binary"
+    "bytestring"
     "containers"
     "deepseq"
     "directory"
     "filepath"
-    "ghc"
+    "ghc-boot"
+    "ghc-compact"
     "ghc-prim"
+    "ghci"
     "haskeline"
-    "hoopl"
     "hpc"
     "integer-gmp"
-    "pretty"
+    "mtl"
+    "parsec"
     "process"
-    "rts"
     "template-haskell"
-    "terminfo"
+    "text"
     "time"
     "transformers"
     "unix"
-    "win32"
     "xhtml"))
 
 (define package-name-prefix "ghc-")
@@ -145,10 +146,12 @@ version."
    ("LGPL" "'lgpl??")
    ("BSD2" 'bsd-2)
    ("BSD3" 'bsd-3)
+   ("BSD-3-Clause" 'bsd-3)
    ("MIT" 'expat)
    ("ISC" 'isc)
    ("MPL" 'mpl2.0)
    ("Apache-2.0" 'asl2.0)
+   ("PublicDomain" 'public-domain)
    ((x) (string->license x))
    ((lst ...) `(list ,@(map string->license lst)))
    (_ #f)))
@@ -277,13 +280,11 @@ representation of a Cabal file as produced by 'read-cabal'."
         (license ,(string->license (cabal-package-license cabal))))
      (append hackage-dependencies hackage-native-dependencies))))
 
-(define hackage->guix-package
-  (memoize
-   (lambda* (package-name #:key
-                          (include-test-dependencies? #t)
-                          (port #f)
-                          (cabal-environment '()))
-     "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
+(define* (hackage->guix-package package-name #:key
+                                (include-test-dependencies? #t)
+                                (port #f)
+                                (cabal-environment '()))
+  "Fetch the Cabal file for PACKAGE-NAME from hackage.haskell.org, or, if the
 called with keyword parameter PORT, from PORT.  Return the `package'
 S-expression corresponding to that package, or #f on failure.
 CABAL-ENVIRONMENT is an alist defining the environment in which the Cabal
@@ -293,18 +294,22 @@ symbol 'true' or 'false'.  The value associated with other keys has to conform
 to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
-     (let ((cabal-meta (if port
-                           (read-cabal (canonical-newline-port port))
-                           (hackage-fetch package-name))))
-       (and=> cabal-meta (compose (cut hackage-module->sexp <>
-                                       #:include-test-dependencies?
-                                       include-test-dependencies?)
-                                  (cut eval-cabal <> cabal-environment)))))))
+  (let ((cabal-meta (if port
+                        (read-cabal (canonical-newline-port port))
+                        (hackage-fetch package-name))))
+    (and=> cabal-meta (compose (cut hackage-module->sexp <>
+                                    #:include-test-dependencies?
+                                    include-test-dependencies?)
+                               (cut eval-cabal <> cabal-environment)))))
+
+(define hackage->guix-package/m                   ;memoized variant
+  (memoize hackage->guix-package))
 
 (define* (hackage-recursive-import package-name . args)
   (recursive-import package-name #f
                     #:repo->guix-package (lambda (name repo)
-                                           (apply hackage->guix-package (cons name args)))
+                                           (apply hackage->guix-package/m
+                                                  (cons name args)))
                     #:guix-name hackage-name->package-name))
 
 (define (hackage-package? package)

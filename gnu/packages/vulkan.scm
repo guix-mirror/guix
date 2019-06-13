@@ -271,7 +271,7 @@ API.")
 (define-public shaderc
   (package
     (name "shaderc")
-    (version "2018.0")
+    (version "2019.0")
     (source
      (origin
        (method git-fetch)
@@ -281,7 +281,7 @@ API.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qigmj0riw43pgjn5f6kpvk72fajssz1lc2aiqib5qvmj9rqq3hl"))))
+         "1l5mmyxhzsbp0a6y2d86i8jmf46c6bjgjkdgkr5l8hmhflmm7gi2"))))
     (build-system meson-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests fail.

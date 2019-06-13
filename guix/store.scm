@@ -980,7 +980,7 @@ store directory (/gnu/store)."
                     store-path)))
    (lambda (server hash-part)
      "Return the store path whose hash part is HASH-PART (a nix-base32
-string).  Raise an error if no such path exists."
+string).  Return the empty string if no such path exists."
      ;; This RPC is primarily used by Hydra to reply to HTTP GETs of
      ;; /HASH.narinfo.
      (query-path-from-hash-part server hash-part))))
@@ -1211,16 +1211,22 @@ an arbitrary directory layout in the store without creating a derivation."
       "Build THINGS, a list of store items which may be either '.drv' files or
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
-Return #t on success."
-      (parameterize ((current-store-protocol-version
-                      (store-connection-version store)))
-        (if (>= (store-connection-minor-version store) 15)
-            (build store things mode)
-            (if (= mode (build-mode normal))
-                (build/old store things)
-                (raise (condition (&store-protocol-error
-                                   (message "unsupported build mode")
-                                   (status  1))))))))))
+Alternately, an element of THING can be a derivation/output name pair, in
+which case the daemon will attempt to substitute just the requested output of
+the derivation.  Return #t on success."
+      (let ((things (map (match-lambda
+                           ((drv . output) (string-append drv "!" output))
+                           (thing thing))
+                         things)))
+        (parameterize ((current-store-protocol-version
+                        (store-connection-version store)))
+          (if (>= (store-connection-minor-version store) 15)
+              (build store things mode)
+              (if (= mode (build-mode normal))
+                  (build/old store things)
+                  (raise (condition (&store-protocol-error
+                                     (message "unsupported build mode")
+                                     (status  1)))))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.

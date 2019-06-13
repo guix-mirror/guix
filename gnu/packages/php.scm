@@ -58,7 +58,7 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.5")
+    (version "7.3.6")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
@@ -66,7 +66,7 @@
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0wi4vd1c3ylsv7cs5b74pkspybb22qwk6fs5r2as3m3glhw1h0g1"))
+                "0r51aiff2abbr3d2swhvja0wm56sjxzqbciabcvvq3m3v9kqkz7y"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -255,6 +255,10 @@
                          ;; but the bug report suggests the issue was in
                          ;; the bundled gd, not upstream.
                          "ext/gd/tests/bug77272.phpt"
+                         ;; Expected invalid XBM but got EOF before image was
+                         ;; complete.  It's a warning in both cases and test
+                         ;; result is the same.
+                         "ext/gd/tests/bug77973.phpt"
 
                          ;; XXX: These iconv tests have the expected outcome,
                          ;; but with different error messages.

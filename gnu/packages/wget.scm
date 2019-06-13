@@ -31,12 +31,13 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages libidn)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages web)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -102,7 +103,7 @@ in downloaded documents to relative links.")
            (lambda _
              (substitute* "wgetpaste"
                ((" poundpython\"") "\"")
-               (("-poundpython") "-dpaste"))
+               (("-poundpython") "-bpaste")) ; dpaste blocks tor users
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
@@ -123,11 +124,12 @@ in downloaded documents to relative links.")
                    ,(delete-duplicates
                      (map (lambda (command) (dirname (which command)))
                           (list "bash" "mktemp" "sed" "sort" "tee" "tr"
-                                "wget")))))
+                                "wget" "xclip")))))
                #t))))
        #:tests? #f))                    ; no test target
     (inputs
-     `(("wget" ,wget)))
+     `(("wget" ,wget)
+       ("xclip" ,xclip)))
     (home-page "http://wgetpaste.zlin.dk/")
     (synopsis "Script that automates pasting to a number of pastebin services")
     (description

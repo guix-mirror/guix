@@ -371,15 +371,14 @@ authentication.")
 (define-public pidgin
   (package
     (name "pidgin")
-    (version "2.12.0")
+    (version "2.13.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/pidgin/Pidgin/"
-                           version "/" name "-" version ".tar.bz2"))
+                           version "/pidgin-" version ".tar.bz2"))
        (sha256
-        (base32
-         "1y5p2mq3bfw35b66jsafmbva0w5gg1k99y9z8fyp3jfksqv3agcc"))
+        (base32 "13vdqj70315p9rzgnbxjp9c51mdzf1l4jg1kvnylc4bidw61air7"))
        (patches (search-patches "pidgin-add-search-path.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
@@ -403,13 +402,13 @@ authentication.")
        ;; TODO: gstreamer: patches needed to support gstreamer-1.0 or later
        ;; TODO: farstream
        ;; TODO: meanwhile
-       ;; TODO: network-manager
        ;; TODO: gtkspell
        ;; TODO: libxephyr
        ;; TODO: libgadu
        ("libxslt" ,libxslt)
        ("avahi" ,avahi)
        ("ncurses" ,ncurses)
+       ("network-manager" ,network-manager)
        ("sqlite" ,sqlite)
        ("libice" ,libice)
        ("libsm" ,libsm)
@@ -420,7 +419,6 @@ authentication.")
        (list "--disable-gtkspell"
              "--disable-tcl"
              "--disable-meanwhile"
-             "--disable-nm"  ; XXX remove when we have network-manager
              "--disable-vv"  ; XXX remove when we have farstream and gstreamer
              "--disable-gstreamer" ; XXX patches needed to support gstreamer-1.0
              "--enable-cyrus-sasl"
@@ -433,7 +431,7 @@ authentication.")
             (files (list (string-append "lib/purple-"
                                         (version-major version))
                          "lib/pidgin")))))
-    (home-page "http://www.pidgin.im/")
+    (home-page "https://www.pidgin.im/")
     (synopsis "Graphical multi-protocol instant messaging client")
     (description
      "Pidgin is a modular instant messaging client that supports many popular

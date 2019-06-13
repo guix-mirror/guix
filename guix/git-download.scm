@@ -185,9 +185,7 @@ are relative to DIRECTORY, which is not necessarily the root of the checkout."
          (directory  (string-append (canonicalize-path directory) "/"))
          (dot-git    (repository-discover directory))
          (repository (repository-open dot-git))
-         ;; XXX: This procedure is mistakenly private in Guile-Git 0.1.0.
-         (workdir    ((@@ (git repository) repository-working-directory)
-                      repository))
+         (workdir    (repository-working-directory repository))
          (head       (repository-head repository))
          (oid        (reference-target head))
          (commit     (commit-lookup repository oid))

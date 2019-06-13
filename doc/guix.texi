@@ -64,6 +64,7 @@ Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019 Ivan Petkov@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -569,7 +570,7 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
@@ -756,6 +757,11 @@ Support for build offloading (@pxref{Daemon Offload Setup}) and
 @command{guix copy} (@pxref{Invoking guix copy}) depends on
 @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH},
 version 0.10.2 or later.
+
+@item
+When @url{https://www.nongnu.org/lzip/lzlib.html, lzlib} is available, lzlib
+substitutes can be used and @command{guix publish} can compress substitutes
+with lzlib.
 
 @item
 When @url{http://www.bzip.org, libbz2} is available,
@@ -4214,7 +4220,7 @@ to another like this:
 
 @example
 guix archive --export -r $(readlink -f ~/.guix-profile) | \
-  ssh the-machine guix-archive --import
+  ssh the-machine guix archive --import
 @end example
 
 @noindent
@@ -4860,6 +4866,29 @@ support for file system virtualization.  It achieves that by using the
 advantage to work without requiring special kernel support, but it incurs
 run-time overhead every time a system call is made.
 @end quotation
+
+@cindex entry point, for Docker images
+@item --entry-point=@var{command}
+Use @var{command} as the @dfn{entry point} of the resulting pack, if the pack
+format supports it---currently @code{docker} and @code{squashfs} (Singularity)
+support it.  @var{command} must be relative to the profile contained in the
+pack.
+
+The entry point specifies the command that tools like @code{docker run} or
+@code{singularity run} automatically start by default.  For example, you can
+do:
+
+@example
+guix pack -f docker --entry-point=bin/guile guile
+@end example
+
+The resulting pack can easily be loaded and @code{docker run} with no extra
+arguments will spawn @code{bin/guile}:
+
+@example
+docker load -i pack.tar.gz
+docker run @var{image-id}
+@end example
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -5786,10 +5815,21 @@ This variable is exported by @code{(guix build-system cargo)}.  It
 supports builds of packages using Cargo, the build tool of the
 @uref{https://www.rust-lang.org, Rust programming language}.
 
-In its @code{configure} phase, this build system replaces dependencies
-specified in the @file{Cargo.toml} file with inputs to the Guix package.
-The @code{install} phase installs the binaries, and it also installs the
-source code and @file{Cargo.toml} file.
+It adds @code{rustc} and @code{cargo} to the set of inputs.
+A different Rust package can be specified with the @code{#:rust} parameter.
+
+Regular cargo dependencies should be added to the package definition via the
+@code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
+spec can be a package or a source definition.  Note that the spec must
+evaluate to a path to a gzipped tarball which includes a @code{Cargo.toml}
+file at its root, or it will be ignored.  Similarly, cargo dev-dependencies
+should be added to the package definition via the
+@code{#:cargo-development-inputs} parameter.
+
+In its @code{configure} phase, this build system will make any source inputs
+specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
+parameters available to cargo.  The @code{install} phase installs any crate
+the binaries if they are defined by the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -6438,10 +6478,11 @@ path.  @var{references} is the list of store paths referred to by the
 resulting store path.
 @end deffn
 
-@deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
-Build @var{derivations} (a list of @code{<derivation>} objects or
-derivation paths), and return when the worker is done building them.
-Return @code{#t} on success.
+@deffn {Scheme Procedure} build-derivations @var{store} @var{derivations} @
+  [@var{mode}]
+Build @var{derivations}, a list of @code{<derivation>} objects, @file{.drv}
+file names, or derivation/output pairs, using the specified
+@var{mode}---@code{(build-mode normal)} by default.
 @end deffn
 
 Note that the @code{(guix monads)} module provides a monad as well as
@@ -9656,12 +9697,20 @@ accept connections from any interface.
 Change privileges to @var{user} as soon as possible---i.e., once the
 server socket is open and the signing key has been read.
 
-@item --compression[=@var{level}]
-@itemx -C [@var{level}]
-Compress data using the given @var{level}.  When @var{level} is zero,
-disable compression.  The range 1 to 9 corresponds to different gzip
-compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
-The default is 3.
+@item --compression[=@var{method}[:@var{level}]]
+@itemx -C [@var{method}[:@var{level}]]
+Compress data using the given @var{method} and @var{level}.  @var{method} is
+one of @code{lzip} and @code{gzip}; when @var{method} is omitted, @code{gzip}
+is used.
+
+When @var{level} is zero, disable compression.  The range 1 to 9 corresponds
+to different compression levels: 1 is the fastest, and 9 is the best
+(CPU-intensive).  The default is 3.
+
+Usually, @code{lzip} compresses noticeably better than @code{gzip} for a small
+increase in CPU usage; see
+@uref{https://nongnu.org/lzip/lzip_benchmark.html,benchmarks on the lzip Web
+page}.
 
 Unless @option{--cache} is used, compression occurs on the fly and
 the compressed streams are not
@@ -9671,6 +9720,11 @@ run @command{guix publish} behind a caching proxy, or to use
 @option{--cache}.  Using @option{--cache} has the advantage that it
 allows @command{guix publish} to add @code{Content-Length} HTTP header
 to its responses.
+
+This option can be repeated, in which case every substitute gets compressed
+using all the selected methods, and all of them are advertised.  This is
+useful when users may not support all the compression methods: they can select
+the one they support.
 
 @item --cache=@var{directory}
 @itemx -c @var{directory}
@@ -12214,10 +12268,19 @@ The TCP port to listen for connections.
 The host (and thus, network interface) to listen to.  Use
 @code{"0.0.0.0"} to listen on all the network interfaces.
 
-@item @code{compression-level} (default: @code{3})
-The gzip compression level at which substitutes are compressed.  Use
-@code{0} to disable compression altogether, and @code{9} to get the best
-compression ratio at the expense of increased CPU usage.
+@item @code{compression} (default: @code{'(("gzip" 3))})
+This is a list of compression method/level tuple used when compressing
+substitutes.  For example, to compress all substitutes with @emph{both} lzip
+at level 7 and gzip at level 9, write:
+
+@example
+'(("lzip" 7) ("gzip" 9))
+@end example
+
+Level 9 achieves the best compression ratio at the expense of increased CPU
+usage, whereas level 1 achieves fast compression.
+
+An empty list disables compression altogether.
 
 @item @code{nar-path} (default: @code{"nar"})
 The URL path at which ``nars'' can be fetched.  @xref{Invoking guix
@@ -13623,11 +13686,11 @@ Directory to look for faces.
 @item @code{default-path} (default "/run/current-system/profile/bin")
 Default PATH to use.
 
-@item @code{minimum-uid} (default 1000)
-Minimum UID to display in SDDM.
+@item @code{minimum-uid} (default: 1000)
+Minimum UID displayed in SDDM and allowed for log-in.
 
-@item @code{maximum-uid} (default 2000)
-Maximum UID to display in SDDM
+@item @code{maximum-uid} (default: 2000)
+Maximum UID to display in SDDM.
 
 @item @code{remember-last-user?} (default #t)
 Remember last user.
@@ -16703,6 +16766,297 @@ variables.
 @end table
 @end deftp
 
+@subsubheading Getmail service
+
+@cindex IMAP
+@cindex POP
+
+@deffn {Scheme Variable} getmail-service-type
+This is the type of the @uref{http://pyropus.ca/software/getmail/, Getmail}
+mail retriever, whose value should be an @code{getmail-configuration}.
+@end deffn
+
+Available @code{getmail-configuration} fields are:
+
+@deftypevr {@code{getmail-configuration} parameter} symbol name
+A symbol to identify the getmail service.
+
+Defaults to @samp{"unset"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} package package
+The getmail package to use.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string user
+The user to run getmail as.
+
+Defaults to @samp{"getmail"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string group
+The group to run getmail as.
+
+Defaults to @samp{"getmail"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} string directory
+The getmail directory to use.
+
+Defaults to @samp{"/var/lib/getmail/default"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} getmail-configuration-file rcfile
+The getmail configuration file to use.
+
+Available @code{getmail-configuration-file} fields are:
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-retriever-configuration retriever
+What mail account to retrieve mail from, and how to access that account.
+
+Available @code{getmail-retriever-configuration} fields are:
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string type
+The type of mail retriever to use.  Valid values include @samp{passwd}
+and @samp{static}.
+
+Defaults to @samp{"SimpleIMAPSSLRetriever"}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string server
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string username
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} non-negative-integer port
+Space separated list of arguments to the userdb driver.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string password
+Override fields from passwd.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} list password-command
+Override fields from passwd.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string keyfile
+PEM-formatted key file to use for the TLS negotiation
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string certfile
+PEM-formatted certificate file to use for the TLS negotiation
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} string ca-certs
+CA certificates to use
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-retriever-configuration} parameter} parameter-alist extra-parameters
+Extra retriever parameters
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-destination-configuration destination
+What to do with retrieved messages.
+
+Available @code{getmail-destination-configuration} fields are:
+
+@deftypevr {@code{getmail-destination-configuration} parameter} string type
+The type of mail destination.  Valid values include @samp{Maildir},
+@samp{Mboxrd} and @samp{MDA_external}.
+
+Defaults to @samp{unset}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-destination-configuration} parameter} string-or-filelike path
+The path option for the mail destination.  The behaviour depends on the
+chosen type.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-destination-configuration} parameter} parameter-alist extra-parameters
+Extra destination parameters
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration-file} parameter} getmail-options-configuration options
+Configure getmail.
+
+Available @code{getmail-options-configuration} fields are:
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer verbose
+If set to @samp{0}, getmail will only print warnings and errors.  A
+value of @samp{1} means that messages will be printed about retrieving
+and deleting messages.  If set to @samp{2}, getmail will print messages
+about each of it's actions.
+
+Defaults to @samp{1}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean read-all
+If true, getmail will retrieve all available messages.  Otherwise it
+will only retrieve messages it hasn't seen previously.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean delete
+If set to true, messages will be deleted from the server after
+retrieving and successfully delivering them.  Otherwise, messages will
+be left on the server.
+
+Defaults to @samp{#f}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer delete-after
+Getmail will delete messages this number of days after seeing them, if
+they have not been delivered.  This means messages will be left on the
+server this number of days after delivering them.  A value of @samp{0}
+disabled this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer delete-bigger-than
+Delete messages larger than this of bytes after retrieving them, even if
+the delete and delete-after options are disabled.  A value of @samp{0}
+disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer max-bytes-per-session
+Retrieve messages totalling up to this number of bytes before closing
+the session with the server.  A value of @samp{0} disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} non-negative-integer max-message-size
+Don't retrieve messages larger than this number of bytes.  A value of
+@samp{0} disables this feature.
+
+Defaults to @samp{0}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean delivered-to
+If true, getmail will add a Delivered-To header to messages.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean received
+If set, getmail adds a Received header to the messages.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} string message-log
+Getmail will record a log of its actions to the named file.  A value of
+@samp{""} disables this feature.
+
+Defaults to @samp{""}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean message-log-syslog
+If true, getmail will record a log of its actions using the system
+logger.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} boolean message-log-verbose
+If true, getmail will log information about messages not retrieved and
+the reason for not retrieving them, as well as starting and ending
+information lines.
+
+Defaults to @samp{#t}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-options-configuration} parameter} parameter-alist extra-parameters
+Extra options to include.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@end deftypevr
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} list idle
+A list of mailboxes that getmail should wait on the server for new mail
+notifications.  This depends on the server supporting the IDLE
+extension.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
+@deftypevr {@code{getmail-configuration} parameter} list environment-variables
+Environment variables to set for getmail.
+
+Defaults to @samp{()}.
+
+@end deftypevr
+
 @subsubheading Mail Aliases Service
 
 @cindex email aliases
@@ -19081,6 +19435,180 @@ List of run-time parameters in the form @code{'(("parameter" . "value"))}.
 
 @item @code{extra-options} (default: @code{'()})
 Additional arguments to pass to the @command{varnishd} process.
+
+@end table
+@end deftp
+
+@subsubheading Patchwork
+@cindex Patchwork
+Patchwork is a patch tracking system.  It can collect patches sent to a
+mailing list, and display them in a web interface.
+
+@defvr {Scheme Variable} patchwork-service-type
+Service type for Patchwork.
+@end defvr
+
+The following example is an example of a minimal service for Patchwork, for
+the @code{patchwork.example.com} domain.
+
+@example
+(service patchwork-service-type
+         (patchwork-configuration
+          (domain "patchwork.example.com")
+          (settings-module
+           (patchwork-settings-module
+            (allowed-hosts (list domain))
+            (default-from-email "patchwork@@patchwork.example.com")))
+          (getmail-retriever-config
+           (getmail-retriever-configuration
+            (type "SimpleIMAPSSLRetriever")
+            (server "imap.example.com")
+            (port 993)
+            (username "patchwork")
+            (password-command
+             (list (file-append coreutils "/bin/cat")
+                   "/etc/getmail-patchwork-imap-password"))
+            (extra-parameters
+            '((mailboxes . ("Patches"))))))))
+
+@end example
+
+There are three records for configuring the Patchwork service.  The
+@code{<patchwork-configuration>} relates to the configuration for Patchwork
+within the HTTPD service.
+
+The @code{settings-module} field within the @code{<patchwork-configuration>}
+record can be populated with the @code{<patchwork-settings-module>} record,
+which describes a settings module that is generated within the Guix store.
+
+For the @code{database-configuration} field within the
+@code{<patchwork-settings-module>}, the
+@code{<patchwork-database-configuration>} must be used.
+
+@deftp {Data Type} patchwork-configuration
+Data type representing the Patchwork service configuration.  This type has the
+following parameters:
+
+@table @asis
+@item @code{patchwork} (default: @code{patchwork})
+The Patchwork package to use.
+
+@item @code{domain}
+The domain to use for Patchwork, this is used in the HTTPD service virtual
+host.
+
+@item @code{settings-module}
+The settings module to use for Patchwork. As a Django application, Patchwork
+is configured with a Python module containing the settings. This can either be
+an instance of the @code{<patchwork-settings-module>} record, any other record
+that represents the settings in the store, or a directory outside of the
+store.
+
+@item @code{static-path}  (default: @code{"/static/"})
+The path under which the HTTPD service should serve the static files.
+
+@item @code{getmail-retriever-config}
+The getmail-retriever-configuration record value to use with
+Patchwork. Getmail will be configured with this value, the messages will be
+delivered to Patchwork.
+
+@end table
+@end deftp
+
+@deftp {Data Type} patchwork-settings-module
+Data type representing a settings module for Patchwork.  Some of these
+settings relate directly to Patchwork, but others relate to Django, the web
+framework used by Patchwork, or the Django Rest Framework library.  This type
+has the following parameters:
+
+@table @asis
+@item @code{database-configuration} (default: @code{(patchwork-database-configuration)})
+The database connection settings used for Patchwork.  See the
+@code{<patchwork-database-configuration>} record type for more information.
+
+@item @code{secret-key-file} (default: @code{"/etc/patchwork/django-secret-key"})
+Patchwork, as a Django web application uses a secret key for cryptographically
+signing values.  This file should contain a unique unpredictable value.
+
+If this file does not exist, it will be created and populated with a random
+value by the patchwork-setup shepherd service.
+
+This setting relates to Django.
+
+@item @code{allowed-hosts}
+A list of valid hosts for this Patchwork service. This should at least include
+the domain specified in the @code{<patchwork-configuration>} record.
+
+This is a Django setting.
+
+@item @code{default-from-email}
+The email address from which Patchwork should send email by default.
+
+This is a Patchwork setting.
+
+@item @code{static-url} (default: @code{#f})
+The URL to use when serving static assets. It can be part of a URL, or a full
+URL, but must end in a @code{/}.
+
+If the default value is used, the @code{static-path} value from the
+@code{<patchwork-configuration>} record will be used.
+
+This is a Django setting.
+
+@item @code{admins} (default: @code{'()})
+Email addresses to send the details of errors that occur.  Each value should
+be a list containing two elements, the name and then the email address.
+
+This is a Django setting.
+
+@item @code{debug?} (default: @code{#f})
+Whether to run Patchwork in debug mode.  If set to @code{#t}, detailed error
+messages will be shown.
+
+This is a Django setting.
+
+@item @code{enable-rest-api?} (default: @code{#t})
+Whether to enable the Patchwork REST API.
+
+This is a Patchwork setting.
+
+@item @code{enable-xmlrpc?} (default: @code{#t})
+Whether to enable the XML RPC API.
+
+This is a Patchwork setting.
+
+@item @code{force-https-links?} (default: @code{#t})
+Whether to use HTTPS links on Patchwork pages.
+
+This is a Patchwork setting.
+
+@item @code{extra-settings} (default: @code{""})
+Extra code to place at the end of the Patchwork settings module.
+
+@end table
+@end deftp
+
+@deftp {Data Type} patchwork-database-configuration
+Data type representing the database configuration for Patchwork.
+
+@table @asis
+@item @code{engine} (default: @code{"django.db.backends.postgresql_psycopg2"})
+The database engine to use.
+
+@item @code{name} (default: @code{"patchwork"})
+The name of the database to use.
+
+@item @code{user} (default: @code{"httpd"})
+The user to connect to the database as.
+
+@item @code{password} (default: @code{""})
+The password to use when connecting to the database.
+
+@item @code{host} (default: @code{""})
+The host to make the database connection to.
+
+@item @code{port} (default: @code{""})
+The port on which to connect to the database.
 
 @end table
 @end deftp
@@ -22208,10 +22736,10 @@ Extra options will be passed to @code{git daemon}, please run
 @end deftp
 
 The @code{git://} protocol lacks authentication.  When you pull from a
-repository fetched via @code{git://}, you don't know that the data you
-receive was modified is really coming from the specified host, and you
-have your connection is subject to eavesdropping.  It's better to use an
-authenticated and encrypted transport, such as @code{https}.  Although Git allows you
+repository fetched via @code{git://}, you don't know whether the data you
+receive was modified or is even coming from the specified host, and your
+connection is subject to eavesdropping.  It's better to use an authenticated
+and encrypted transport, such as @code{https}.  Although Git allows you
 to serve repositories using unsophisticated file-based web servers,
 there is a faster protocol implemented by the @code{git-http-backend}
 program.  This program is the back-end of a proper Git web service.  It
@@ -23598,7 +24126,7 @@ The following is an example @code{dicod-service} configuration.
 @cindex Docker
 @subsubheading Docker Service
 
-The @code{(gnu services docker)} module provides the following service.
+The @code{(gnu services docker)} module provides the following services.
 
 @defvr {Scheme Variable} docker-service-type
 
@@ -23621,6 +24149,107 @@ The Containerd package to use.
 
 @end table
 @end deftp
+
+@cindex Audit
+@subsubheading Auditd Service
+
+The @code{(gnu services auditd)} module provides the following service.
+
+@defvr {Scheme Variable} auditd-service-type
+
+This is the type of the service that runs
+@url{https://people.redhat.com/sgrubb/audit/,auditd},
+a daemon that tracks security-relevant information on your system.
+
+Examples of things that can be tracked:
+
+@enumerate
+@item
+File accesses
+@item
+System calls
+@item
+Invoked commands
+@item
+Failed login attempts
+@item
+Firewall filtering
+@item
+Network access
+@end enumerate
+
+@command{auditctl} from the @code{audit} package can be used in order
+to add or remove events to be tracked (until the next reboot).
+In order to permanently track events, put the command line arguments
+of auditctl into @file{/etc/audit/audit.rules}.
+@command{aureport} from the @code{audit} package can be used in order
+to view a report of all recorded events.
+The audit daemon usually logs into the directory @file{/var/log/audit}.
+
+@end defvr
+
+@deftp {Data Type} auditd-configuration
+This is the data type representing the configuration of auditd.
+
+@table @asis
+
+@item @code{audit} (default: @code{audit})
+The audit package to use.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} singularity-service-type
+This is the type of the service that allows you to run
+@url{https://www.sylabs.io/singularity/, Singularity}, a Docker-style tool to
+create and run application bundles (aka. ``containers'').  The value for this
+service is the Singularity package to use.
+
+The service does not install a daemon; instead, it installs helper programs as
+setuid-root (@pxref{Setuid Programs}) such that unprivileged users can invoke
+@command{singularity run} and similar commands.
+@end defvr
+
+@cindex Nix
+@subsubheading Nix service
+
+The @code{(gnu services nix)} module provides the following service.
+
+@defvr {Scheme Variable} nix-service-type
+
+This is the type of the service that runs build daemon of the
+@url{https://nixos.org/nix/, Nix} package manager.  Here is an example showing
+how to use it:
+
+@example
+(use-modules (gnu))
+(use-service-modules nix)
+(use-package-modules package-management)
+
+(operating-system
+  ;; @dots{}
+  (packages (append (list nix)
+                    %base-packages))
+
+  (services (append (list (service nix-service-type))
+                    %base-services)))
+@end example
+
+After @command{guix system reconfigure} configure Nix for your user:
+
+@itemize
+@item Add a Nix channel and update it.  See
+@url{https://nixos.org/nix/manual/, Nix Package Manager Guide}.
+
+@item Create a symlink to your profile and activate Nix profile:
+@end itemize
+
+@example
+$ ln -s "/nix/var/nix/profiles/per-user/$USER/profile" ~/.nix-profile
+$ source /run/current-system/profile/etc/profile.d/nix.sh
+@end example
+
+@end defvr
 
 @node Setuid Programs
 @section Setuid Programs
@@ -24132,7 +24761,7 @@ The bootloader theme object describing the theme to use.  If no theme
 is provided, some bootloaders might use a default theme, that's true
 for GRUB.
 
-@item @code{terminal-outputs} (default: @code{'gfxterm})
+@item @code{terminal-outputs} (default: @code{'(gfxterm)})
 The output terminals used for the bootloader boot menu, as a list of
 symbols.  GRUB accepts the values: @code{console}, @code{serial},
 @code{serial_@{0-3@}}, @code{gfxterm}, @code{vga_text},

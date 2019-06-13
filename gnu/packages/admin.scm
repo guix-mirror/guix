@@ -115,14 +115,14 @@
 (define-public aide
   (package
     (name "aide")
-    (version "0.16.1")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/aide/aide/releases/download/v"
                            version "/aide-" version ".tar.gz"))
        (sha256
-        (base32 "1dqhc0c24wa4zid06pfy61k357yvzh28ij86bk9jf6hcqzn7qaqg"))))
+        (base32 "15xp47sz7kk1ciffw3f5xw2jg2mb2lqrbr3q6p4bkbz5dap9iy8p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1734,13 +1734,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.7.10")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "15721d0bxymghxnlnknq43lszlxg3ybbcp2p5v424hhw6wg2v944"))))
+        (base32 "1bpk5r5x6vdgn839n74yv2chd2ja10yfrhav0fzwa38mi5yxsd3j"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2124,25 +2124,36 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
 (define-public dstat
   (package
     (name "dstat")
-    (version "0.7.3")
+    (version "0.7.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/dagwieers/dstat.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
-        (base32 "0sbpna531034gr40w4g9cwz35s2fpf9h654paznsxw9fih91rfa5"))))
+        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
-       ;; No configure script.
-       #:phases (modify-phases %standard-phases (delete 'configure))))
-    (inputs `(("python-2" ,python-2)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/dstat")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (inputs
+     ;; Python 3 is supposedly supported but prints a DeprecationWarning.
+     ;; Upstream is dead.  See <https://github.com/dagwieers/dstat/releases>.
+     `(("python" ,python-wrapper)
+       ("python-six" ,python-six)))
     (synopsis "Versatile resource statistics tool")
     (description "Dstat is a versatile replacement for @command{vmstat},
 @command{iostat}, @command{netstat}, and @command{ifstat}.  Dstat overcomes
@@ -2160,7 +2171,7 @@ throughput (in the same interval).")
 (define-public thefuck
   (package
     (name "thefuck")
-    (version "3.28")
+    (version "3.29")
     (source
      (origin
        (method git-fetch)
@@ -2169,7 +2180,7 @@ throughput (in the same interval).")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "070b2sx8r0b4hry6xg97psxlikxghmz91zicg2cm6kc1yhgz4agc"))
+        (base32 "1qhxwjjgrzpqrqjv7l2847ywpln76lyd6j8bl9gz2r6kl0fx2fqs"))
        (patches (search-patches "thefuck-test-environ.patch"))))
     (build-system python-build-system)
     (arguments
@@ -2849,7 +2860,7 @@ Python loading in HPC environments.")
   (let ((real-name "inxi"))
     (package
       (name "inxi-minimal")
-      (version "3.0.33-1")
+      (version "3.0.34-1")
       (source
        (origin
          (method git-fetch)
@@ -2858,7 +2869,7 @@ Python loading in HPC environments.")
                (commit version)))
          (file-name (git-file-name real-name version))
          (sha256
-          (base32 "19bfdid4zp39irsdq3m6yyqf2336c30da35qgslrzcr2vh815g8c"))))
+          (base32 "0x2s40lwsan2pk292nspjgyw00f9f5fdfmwfvl50924pxhyxn2fh"))))
       (build-system trivial-build-system)
       (inputs
        `(("bash" ,bash-minimal)

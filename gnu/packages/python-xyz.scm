@@ -157,14 +157,14 @@
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.4.3")
+    (version "5.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "063v69x7spyclyaxrd3gmzj3p16q5ayg97xqhwb1kyn22a9pwip2"))))
+         "1v95vb5385qscfdvphv8l2w22bmir3d7yhpi02n58v3mlqy1r3l2"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -193,14 +193,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-shapely
   (package
     (name "python-shapely")
-    (version "1.6.3")
+    (version "1.6.4.post2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Shapely" version))
        (sha256
         (base32
-         "0svc58dzcw9gj92b4sgq35sdxkf85z0qwlzxarkzq4bp3h8jy58l"))))
+         "03r42fmd9alp6r3q95ad6rldq2f7n1wimrw53zy5kpn33yv7pf64"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)
@@ -3170,7 +3170,7 @@ provides additional functionality on the produced Mallard documents.")
          (replace 'check
            (lambda _
              (invoke "python" "runtests.py" "-vv"))))))
-    (home-page "http://cython.org/")
+    (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
 programming language and the extended Cython programming language.  It makes
@@ -5388,14 +5388,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.6.3")
+    (version "4.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "041dhalzjciw6qyzzq7a2k4h1yvyk76xigp35hv5ibnn448ydy4h"))))
+         "0j2kycz2dxgx68xzjm7rxg5xn6v61gq5ifvxyg99slmqkybnal4l"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5407,6 +5407,8 @@ libxml2 and libxslt.")
          ;; distribution.
          (replace 'check
            (lambda _ (invoke "./convert-py3k"))))))
+    (propagated-inputs
+     `(("python-soupsieve" ,python-soupsieve)))
     (home-page
      "https://www.crummy.com/software/BeautifulSoup/bs4/")
     (synopsis
@@ -5450,14 +5452,17 @@ Soup 4.  It aims to provide selecting, matching, and filtering using modern
 CSS selectors.  Soup Sieve currently provides selectors from the CSS level 1
 specifications up through the latest CSS level 4 drafts and beyond (though
 some are not yet implemented).")
+    (properties `((python2-variant . ,(delay python2-soupsieve))))
     (license license:expat)))
 
 (define-public python2-soupsieve
-  (let ((base (package-with-python2 python-soupsieve)))
+  (let ((base (package-with-python2 (strip-python2-variant python-soupsieve))))
     (package
       (inherit base)
       (propagated-inputs
-       `(("python2-backports-functools-lru-cache" ,python2-backports-functools-lru-cache))))))
+       `(("python2-backports-functools-lru-cache"
+          ,python2-backports-functools-lru-cache)
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-netifaces
   (package
@@ -12139,7 +12144,7 @@ current test, while only declaring the test-specific fields")
      ;; 'parse_funcs'
      ;; during test setup.
      `(#:tests? #f))
-    (home-page "http://toolkit.translatehouse.org")
+    (home-page "https://toolkit.translatehouse.org")
     (synopsis "Tools and API for translation and localization engineering")
     (description
      "Tools and API for translation and localization engineering.  It contains

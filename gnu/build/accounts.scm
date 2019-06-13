@@ -19,6 +19,7 @@
 (define-module (gnu build accounts)
   #:use-module (guix records)
   #:use-module (guix combinators)
+  #:use-module ((guix build syscalls) #:select (fdatasync))
   #:use-module (gnu system accounts)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -51,6 +52,7 @@
             group-entry-gid
             group-entry-members
 
+            %password-lock-file
             write-group
             write-passwd
             write-shadow
@@ -224,6 +226,19 @@ each field."
                    (serialization list->comma-separated comma-separated->list)
                    (default '())))
 
+(define %password-lock-file
+  ;; The password database lock file used by libc's 'lckpwdf'.  Users should
+  ;; grab this lock with 'with-file-lock' when they access the databases.
+  "/etc/.pwd.lock")
+
+(define-syntax-rule (catch-ENOSYS exp)
+  (catch 'system-error
+    (lambda () exp)
+    (lambda args
+      (if (= ENOSYS (system-error-errno args))
+          #f
+          (apply throw args)))))
+
 (define (database-writer file mode entry->string)
   (lambda* (entries #:optional (file-or-port file))
     "Write ENTRIES to FILE-OR-PORT.  When FILE-OR-PORT is a file name, write
@@ -243,9 +258,16 @@ to it atomically and set the appropriate permissions."
             (lambda ()
               (chmod port mode)
               (write-entries port)
+
+              ;; XXX: When booting with the statically-linked Guile,
+              ;; 'fdatasync' is unavailable.
+              (catch-ENOSYS (fdatasync port))
+
+              (close-port port)
               (rename-file template file-or-port))
             (lambda ()
-              (close-port port)
+              (unless (port-closed? port)
+                (close-port port))
               (when (file-exists? template)
                 (delete-file template))))))))
 

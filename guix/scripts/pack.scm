@@ -152,6 +152,7 @@ dependencies are registered."
                                  #:key target
                                  (profile-name "guix-profile")
                                  deduplicate?
+                                 entry-point
                                  (compressor (first %compressors))
                                  localstatedir?
                                  (symlinks '())
@@ -275,6 +276,10 @@ added to the pack."
                                           (_ #f))
                                         directives)))))))))
 
+  (when entry-point
+    (warning (G_ "entry point not supported in the '~a' format~%")
+             'tarball))
+
   (gexp->derivation (string-append name ".tar"
                                    (compressor-extension compressor))
                     build
@@ -284,6 +289,7 @@ added to the pack."
                          #:key target
                          (profile-name "guix-profile")
                          (compressor (first %compressors))
+                         entry-point
                          localstatedir?
                          (symlinks '())
                          (archiver squashfs-tools-next))
@@ -315,6 +321,7 @@ added to the pack."
                        (ice-9 match))
 
           (define database #+database)
+          (define entry-point #$entry-point)
 
           (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -371,6 +378,28 @@ added to the pack."
                                                             target)))))))
                       '#$symlinks)
 
+                   ;; Create /.singularity.d/actions, and optionally the 'run'
+                   ;; script, used by 'singularity run'.
+                   "-p" "/.singularity.d d 555 0 0"
+                   "-p" "/.singularity.d/actions d 555 0 0"
+                   ,@(if entry-point
+                         `(;; This one if for Singularity 2.x.
+                           "-p"
+                           ,(string-append
+                             "/.singularity.d/actions/run s 777 0 0 "
+                             (relative-file-name "/.singularity.d/actions"
+                                                 (string-append #$profile "/"
+                                                                entry-point)))
+
+                           ;; This one is for Singularity 3.x.
+                           "-p"
+                           ,(string-append
+                             "/.singularity.d/runscript s 777 0 0 "
+                             (relative-file-name "/.singularity.d"
+                                                 (string-append #$profile "/"
+                                                                entry-point))))
+                         '())
+
                    ;; Create empty mount points.
                    "-p" "/proc d 555 0 0"
                    "-p" "/sys d 555 0 0"
@@ -392,6 +421,7 @@ added to the pack."
                        #:key target
                        (profile-name "guix-profile")
                        (compressor (first %compressors))
+                       entry-point
                        localstatedir?
                        (symlinks '())
                        (archiver tar))
@@ -425,6 +455,9 @@ the image."
                                 #$profile
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
+                                #:entry-point #$(and entry-point
+                                                     #~(string-append #$profile "/"
+                                                                      #$entry-point))
                                 #:symlinks '#$symlinks
                                 #:compressor '#$(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
@@ -689,6 +722,9 @@ please email '~a'~%")
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '("entry-point") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'entry-point arg result)))
          (option '("target") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'target arg
@@ -765,6 +801,9 @@ Create a bundle of PACKAGE.\n"))
   -S, --symlink=SPEC     create symlinks to the profile according to SPEC"))
   (display (G_ "
   -m, --manifest=FILE    create a pack with the manifest from FILE"))
+  (display (G_ "
+      --entry-point=PROGRAM
+                         use PROGRAM as the entry point of the pack"))
   (display (G_ "
       --save-provenance  save provenance information"))
   (display (G_ "
@@ -889,6 +928,7 @@ Create a bundle of PACKAGE.\n"))
                                  (leave (G_ "~a: unknown pack format~%")
                                         pack-format))))
                  (localstatedir? (assoc-ref opts 'localstatedir?))
+                 (entry-point    (assoc-ref opts 'entry-point))
                  (profile-name   (assoc-ref opts 'profile-name))
                  (gc-root        (assoc-ref opts 'gc-root)))
             (when (null? (manifest-entries manifest))
@@ -919,6 +959,8 @@ Create a bundle of PACKAGE.\n"))
                                                      symlinks
                                                      #:localstatedir?
                                                      localstatedir?
+                                                     #:entry-point
+                                                     entry-point
                                                      #:profile-name
                                                      profile-name
                                                      #:archiver

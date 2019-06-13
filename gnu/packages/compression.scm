@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -128,7 +128,16 @@ in compression.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
-           (lambda _ (chdir "contrib/minizip") #t)))))
+           (lambda _ (chdir "contrib/minizip") #t))
+         (add-after 'install 'remove-crypt-h
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove <minizip/crypt.h> because it interferes with libc's
+             ;; <crypt.h> given that 'minizip.pc' says "-I…/include/minizip".
+             ;; Fedora does the same:
+             ;; <https://src.fedoraproject.org/rpms/zlib/c/4d2785ec3116947872f6f32dc4104e6d36d8a7a4?branch=master>.
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/include/minizip/crypt.h"))
+               #t))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)

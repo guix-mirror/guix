@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin) ; For GNU hostname
@@ -52,6 +54,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages shells)
@@ -730,7 +733,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.5")
+    (version "0.3.7")
     (source
      (origin
        (method git-fetch)
@@ -740,7 +743,7 @@ are detected, the user is notified.")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "113lrr9gwimvvzlkwlishm4cjqcf30xq9jfxn7vh41ckgnbiwf3w"))))
+         "1j6w5jvq5v7kf7diad91qs1acr427nidnk9s24yyrz0hwdd1c2lh"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -888,3 +891,29 @@ from the @command{vi}-editor:
 @end enumerate
 With the package comes a plugin to use vifm as a vim file selector.")
     (license license:gpl2+)))
+
+(define-public python-pynvim
+  (package
+    (name "python-pynvim")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pynvim" version))
+              (sha256
+               (base32
+                "01dybk4vs452pljn1q3il5z2sd313ki0lgiglc0xmjc6wp290r6g"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-greenlet" ,python-greenlet)
+       ("python-msgpack" ,python-msgpack)))
+    (arguments
+     `(#:tests? #f))
+    (home-page "https://github.com/neovim/pynvim")
+    (synopsis "Python client and plugin host for neovim")
+    (description "Pynvim implements support for python plugins in neovim.  It
+also works as a library for connecting to and scripting neovim processes
+through its msgpack-rpc API.")
+    (license license:asl2.0)))
+
+(define-public python2-pynvim
+  (package-with-python2 python-pynvim))

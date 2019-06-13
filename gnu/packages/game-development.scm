@@ -435,7 +435,7 @@ support.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -444,7 +444,7 @@ support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nfyigfkl10n9r82p1qxhpr09jn2kwalh9n5r209bcaj8dxspph8"))))
+                "04v738h298pvcwb70mwd1r2yj7578f6gkfzs0165j9fqy7avwm18"))))
     (build-system gnu-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -465,7 +465,7 @@ support.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "qmake"
                        (string-append "PREFIX=" out))))))))
-    (home-page "http://www.mapeditor.org/")
+    (home-page "https://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
      "Tiled is a general purpose tile map editor.  It is meant to be used for
@@ -684,19 +684,17 @@ etc.")
 (define-public allegro
   (package
     (name "allegro")
-    (version "5.2.4.0")
+    (version "5.2.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/liballeg/allegro5/releases"
                                   "/download/" version "/allegro-"
                                   version ".tar.gz"))
-              (patches (search-patches
-                        "allegro-mesa-18.2.5-and-later.patch"))
               (sha256
                (base32
-                "1w9a5yqi5q03b2qvmx5ff90paz0xbr9cy7i7f0xiqa65ava66q9l"))))
+                "06dpkfnac8w3pq36834nn2iij3ajz6prladqd0w92lq39aiqv5jr"))))
     (build-system cmake-build-system)
-    (arguments `(#:tests? #f)) ; there are no tests
+    (arguments `(#:tests? #f))          ; there are no tests
     (inputs
      ;; FIXME: Add the following optional inputs: xinput2, opensl, dumb
      `(("flac" ,flac)
@@ -1321,24 +1319,15 @@ a 2D editor view.")
 (define-public guile-chickadee
   (package
     (name "guile-chickadee")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/chickadee/"
                                   "chickadee-" version ".tar.gz"))
               (sha256
                (base32
-                "0jl223dybsj5gvs7z4q60gnafj1b7kgi5mx0kj58m5knrp8qwg5h"))))
+                "1fdicsgls5cp0yffcm5vjmav67gv9bxhz1s3jvdvinspxb485x7l"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-godir
-           (lambda _
-             ;; Install compiled '.go' files into the site directory.
-             (substitute* "Makefile.in"
-               (("/ccache") "/site-ccache")))))))
     (propagated-inputs
      `(("guile-opengl" ,guile-opengl)
        ("guile-sdl2" ,guile-sdl2)))
@@ -1521,5 +1510,4 @@ the original, ioquake3 has been cleaned up, bugs have been fixed and features
 added.  The permanent goal is to create the open source Quake 3 distribution
 upon which people base their games, ports to new platforms, and other
 projects.")
-      (supported-systems '("x86_64-linux" "i686-linux"))
       (license license:gpl2))))

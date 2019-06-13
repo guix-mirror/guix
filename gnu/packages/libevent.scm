@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -41,7 +41,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.1.8")
+    (version "2.1.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -49,11 +49,7 @@
                    version "-stable/libevent-" version "-stable.tar.gz"))
              (sha256
               (base32
-               "1hhxnxlr0fsdv7bdmzsnhdz16fxf3jg2r6vyljcl3kj6pflcap4n"))
-             (patches (search-patches "libevent-2.1-dns-tests.patch"
-                                      ;; XXX: Try removing this for > 2.1.8.
-                                      ;; https://github.com/libevent/libevent/issues/452
-                                      "libevent-2.1-skip-failing-test.patch"))))
+               "1c25928gdv495clxk2v1d4gkr5py7ack4gx2n7d13frnld0syr78"))))
     (build-system gnu-build-system)
     (arguments
       ;; This skips some of the tests which fail on armhf and aarch64.
@@ -62,7 +58,7 @@
      `(("python" ,python-2)))           ; for 'event_rpcgen.py'
     (native-inputs
      `(("which" ,which)))
-    (home-page "http://libevent.org/")
+    (home-page "https://libevent.org/")
     (synopsis "Event notification library")
     (description
      "The libevent API provides a mechanism to execute a callback
@@ -75,27 +71,6 @@ network servers.  An application just needs to call event_dispatch() and
 then add or remove events dynamically without having to change the event
 loop.")
     (license bsd-3)))
-
-(define-public libevent-2.0
-  (package
-    (inherit libevent)
-    (version "2.0.22")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/libevent/libevent/releases/download/release-"
-                    version "-stable/libevent-" version "-stable.tar.gz"))
-              (sha256
-               (base32
-                "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
-              (patches
-               (search-patches
-                "libevent-dns-tests.patch"
-                "libevent-2.0-CVE-2016-10195.patch"
-                "libevent-2.0-CVE-2016-10196.patch"
-                "libevent-2.0-CVE-2016-10197.patch"
-                "libevent-2.0-evbuffer-add-use-last-with-datap.patch"))))
-    (arguments '())))
 
 (define-public libev
   (package
@@ -153,19 +128,6 @@ resolution, asynchronous file system operations, and threading primitives.")
     ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
     ;; details.  Documentation is CC-BY 4.0 as of 1.12.0; see 'LICENSE-docs'.
     (license (list expat cc-by4.0))))
-
-;; This version is required for Node versions < 10.
-(define-public libuv-1.19
-  (package
-    (inherit libuv)
-    (version "1.19.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dist.libuv.org/dist/v" version
-                                  "/libuv-v" version ".tar.gz"))
-              (sha256
-               (base32
-                "1msk9ac1z69whww88ibrwjqkd1apdla6l77cm2fwy5kigq0z5g3w"))))))
 
 (define-public perl-anyevent
   (package

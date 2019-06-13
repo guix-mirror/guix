@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -523,15 +523,14 @@ sound and device input (keyboards, joysticks, mice, etc.).")
 (define-public guile-sdl2
   (package
     (name "guile-sdl2")
-    (version "0.3.1")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://files.dthompson.us/guile-sdl2/guile-sdl2-"
-                    version ".tar.gz"))
+              (uri (string-append "https://files.dthompson.us/guile-sdl2/"
+                                  "guile-sdl2-" version ".tar.gz"))
               (sha256
                (base32
-                "0bw7x2lx90k4banc5k7yfkn3as93y25gr1xdr225ll7lmij21k64"))))
+                "0zcxwgyadwpbhq6h5mv2569c3kalgra26zc186y9fqiyyzmh1v9s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags '("GUILE_AUTO_COMPILE=0")

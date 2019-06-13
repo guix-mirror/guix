@@ -94,12 +94,13 @@ when evaluated."
           (map (match-lambda
                  ((label pkg . out)
                   (let ((mod (package-module-name pkg)))
-                    (list label
-                          ;; FIXME: using '@ certainly isn't pretty, but it
-                          ;; avoids having to import the individual package
-                          ;; modules.
-                          (list 'unquote
-                                (list '@ mod (variable-name pkg mod)))))))
+                    (cons* label
+                           ;; FIXME: using '@ certainly isn't pretty, but it
+                           ;; avoids having to import the individual package
+                           ;; modules.
+                           (list 'unquote
+                                 (list '@ mod (variable-name pkg mod)))
+                           out))))
                lsts)))
 
   (let ((name                (package-name package))

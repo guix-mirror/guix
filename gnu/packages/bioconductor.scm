@@ -590,6 +590,35 @@ data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
 track.  The database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-hsapiens-ucsc-hg38-knowngene
+  (package
+    (name "r-txdb-hsapiens-ucsc-hg38-knowngene")
+    (version "3.4.6")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Hsapiens.UCSC.hg38.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12j7rri9r129v9w1yiqadg952dx462dh092sxif3r5kk8l7bxkn9"))))
+    (properties
+     `((upstream-name . "TxDb.Hsapiens.UCSC.hg38.knownGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg38.knownGene/")
+    (synopsis "Annotation package for human genome in TxDb format")
+    (description
+     "This package provides an annotation database of Homo sapiens genome
+data.  It is derived from the UCSC hg38 genome and based on the \"knownGene\"
+track.  The database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
+
 (define-public r-txdb-mmusculus-ucsc-mm9-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm9-knowngene")
@@ -1153,14 +1182,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.18.0")
+    (version "3.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "089v16mm5m0rlyyyd0d6rz8gwb852zf3bcdrrw70wanlfjn258q7"))))
+         "1mwi5s600c3jxy8f1azfrndc3g06qvhbmrp9wqac9nwjbfx1kfji"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2086,14 +2115,14 @@ independent of the p-value under the null hypothesis.")
 (define-public r-icobra
   (package
     (name "r-icobra")
-    (version "1.12.0")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "iCOBRA" version))
        (sha256
         (base32
-         "1w9frnczgypzc2czbwrvlizqcqhbp6cdpyws7vkmnn9k0ggzxvfc"))))
+         "1wj0vqyb6h4rddmn4va3182yap9bv4m1r1jlzyjfyrqxhl2sqb1q"))))
     (properties `((upstream-name . "iCOBRA")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2886,14 +2915,14 @@ to multiple hypothesis correction.")
 (define-public r-dose
   (package
     (name "r-dose")
-    (version "3.10.0")
+    (version "3.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DOSE" version))
        (sha256
         (base32
-         "0dvhnfhzhhzcxm8zhdwrkif7sak4p888sjqfd3a0p77h0hs6g8pv"))))
+         "0ab7mgj42fg6608qkciyqivr1n8s8r5ibvp0z3jfclrnyx6cl0w1"))))
     (properties `((upstream-name . "DOSE")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3408,14 +3437,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "03f130vcd6hd3fv2pg60id0ddd6qkwsyx73gm907xaayf42ar2pj"))))
+         "0h5j3724hnd86w22vy3whqx6gkf0nf2dxd2clgzdvjzblbcd5s69"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3621,14 +3650,14 @@ investigation using RNA-seq data.")
 (define-public r-aucell
   (package
     (name "r-aucell")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AUCell" version))
        (sha256
         (base32
-         "025q1as9pifbxa7hidlz634q6d7l73zx8mqy4rjbfrk7d5615xvm"))))
+         "1vd8w6dygn1b5bwlha09mm6fbwyj07pmawpv53agcg1y7jlxs31b"))))
     (properties `((upstream-name . "AUCell")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4438,14 +4467,14 @@ interpretation.")
 (define-public r-rhisat2
   (package
     (name "r-rhisat2")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhisat2" version))
        (sha256
         (base32
-         "01jhj5vvfl4n2d0nl3nd1iw9nii85mgw2adnrmxb8wwlxgy240vr"))))
+         "1y3zqvk1vbcb10r1myh6f5yzjvf7bhwhpiq78bs1k6spli4bzj0q"))))
     (properties `((upstream-name . "Rhisat2")))
     (build-system r-build-system)
     (native-inputs
@@ -4548,3 +4577,171 @@ high-throughput sequencing data.  It performs parallel processing of entire
 files and produces a report which contains a set of high-resolution
 graphics.")
     (license license:gpl2+)))
+
+(define-public r-birewire
+  (package
+    (name "r-birewire")
+    (version "3.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "BiRewire" version))
+       (sha256
+        (base32
+         "1gjb18l3gq3w8zl6r5d49hw0r1kfh9f7ghv9hz6y86aniprvb518"))))
+    (properties `((upstream-name . "BiRewire")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-slam" ,r-slam)
+       ("r-tsne" ,r-tsne)))
+    (home-page "https://bioconductor.org/packages/release/bioc/html/BiRewire.html")
+    (synopsis "Tools for randomization of bipartite graphs")
+    (description
+     "This package provides functions for bipartite network rewiring through N
+consecutive switching steps and for the computation of the minimal number of
+switching steps to be performed in order to maximise the dissimilarity with
+respect to the original network.  It includes functions for the analysis of
+the introduced randomness across the switching steps and several other
+routines to analyse the resulting networks and their natural projections.")
+    (license license:gpl3)))
+
+(define-public r-birta
+  (package
+    (name "r-birta")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "birta" version))
+       (sha256
+        (base32
+         "12xjyvgmh4h0b7hi4qg50kcpb9003gnh2xyfgncb8l9mzvsbkxc2"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-limma" ,r-limma)
+       ("r-mass" ,r-mass)))
+    (home-page "https://bioconductor.org/packages/birta")
+    (synopsis "Bayesian inference of regulation of transcriptional activity")
+    (description
+     "Expression levels of mRNA molecules are regulated by different
+processes, comprising inhibition or activation by transcription factors and
+post-transcriptional degradation by microRNAs.  @dfn{birta} (Bayesian
+Inference of Regulation of Transcriptional Activity) uses the regulatory
+networks of transcription factors and miRNAs together with mRNA and miRNA
+expression data to predict switches in regulatory activity between two
+conditions.  A Bayesian network is used to model the regulatory structure and
+Markov-Chain-Monte-Carlo is applied to sample the activity states.")
+    (license license:gpl2+)))
+
+(define-public r-ropls
+  (package
+    (name "r-ropls")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ropls" version))
+       (sha256
+        (base32
+         "099nv9dgmw3avkxv7cd27r16yj56svjlp5q4i389yp1n0r5zhyl2"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://dx.doi.org/10.1021/acs.jproteome.5b00354")
+    (synopsis "Multivariate analysis and feature selection of omics data")
+    (description
+     "Latent variable modeling with @dfn{Principal Component Analysis} (PCA)
+and @dfn{Partial Least Squares} (PLS) are powerful methods for visualization,
+regression, classification, and feature selection of omics data where the
+number of variables exceeds the number of samples and with multicollinearity
+among variables.  @dfn{Orthogonal Partial Least Squares} (OPLS) enables to
+separately model the variation correlated (predictive) to the factor of
+interest and the uncorrelated (orthogonal) variation.  While performing
+similarly to PLS, OPLS facilitates interpretation.
+
+This package provides imlementations of PCA, PLS, and OPLS for multivariate
+analysis and feature selection of omics data.  In addition to scores, loadings
+and weights plots, the package provides metrics and graphics to determine the
+optimal number of components (e.g. with the R2 and Q2 coefficients), check the
+validity of the model by permutation testing, detect outliers, and perform
+feature selection (e.g. with Variable Importance in Projection or regression
+coefficients).")
+    (license license:cecill)))
+
+(define-public r-biosigner
+  (package
+    (name "r-biosigner")
+    (version "1.12.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "biosigner" version))
+       (sha256
+        (base32
+         "1643iya40v6whb7lw7y34w5sanbasvj4yhvcygbip667yhphyv5b"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-e1071" ,r-e1071)
+       ("r-randomforest" ,r-randomforest)
+       ("r-ropls" ,r-ropls)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("pandoc" ,ghc-pandoc)
+       ("pandoc-citeproc" ,ghc-pandoc-citeproc))) ; all for vignettes
+    (home-page "https://bioconductor.org/packages/biosigner/")
+    (synopsis "Signature discovery from omics data")
+    (description
+     "Feature selection is critical in omics data analysis to extract
+restricted and meaningful molecular signatures from complex and high-dimension
+data, and to build robust classifiers.  This package implements a method to
+assess the relevance of the variables for the prediction performances of the
+classifier.  The approach can be run in parallel with the PLS-DA, Random
+Forest, and SVM binary classifiers.  The signatures and the corresponding
+'restricted' models are returned, enabling future predictions on new
+datasets.")
+    (license license:cecill)))
+
+(define-public r-annotatr
+  (package
+    (name "r-annotatr")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotatr" version))
+       (sha256
+        (base32
+         "1zlhy6swfgqjhhcqn8c6akxd4c4z8p85swfh095imji7hxnlhh1f"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-readr" ,r-readr)
+       ("r-regioner" ,r-regioner)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/annotatr/")
+    (synopsis "Annotation of genomic regions to genomic annotations")
+    (description
+     "Given a set of genomic sites/regions (e.g. ChIP-seq peaks, CpGs,
+differentially methylated CpGs or regions, SNPs, etc.) it is often of interest
+to investigate the intersecting genomic annotations.  Such annotations include
+those relating to gene models (promoters, 5'UTRs, exons, introns, and 3'UTRs),
+CpGs (CpG islands, CpG shores, CpG shelves), or regulatory sequences such as
+enhancers.  The annotatr package provides an easy way to summarize and
+visualize the intersection of genomic sites/regions with genomic
+annotations.")
+    (license license:gpl3)))

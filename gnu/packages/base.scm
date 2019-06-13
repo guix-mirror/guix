@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
@@ -992,12 +992,47 @@ to the @code{share/locale} sub-directory of this package.")
      (let ((args `(#:tests? #f #:strip-binaries? #f
                    ,@(package-arguments glibc))))
        (substitute-keyword-arguments args
+         ((#:modules modules '((guix build utils)
+                               (guix build gnu-build-system)))
+          `((srfi srfi-11)
+            (gnu build locale)
+            ,@modules))
+         ((#:imported-modules modules '())
+          `((gnu build locale)
+            ,@%gnu-build-system-modules))
          ((#:phases phases)
           `(modify-phases ,phases
              (replace 'build
                (lambda _
                  (invoke "make" "localedata/install-locales"
                          "-j" (number->string (parallel-job-count)))))
+             (add-after 'build 'symlink-normalized-codesets
+               (lambda* (#:key outputs #:allow-other-keys)
+                 ;; The above phase does not install locales with names using
+                 ;; the "normalized codeset."  Thus, create symlinks like:
+                 ;;   en_US.utf8 -> en_US.UTF-8
+                 (define (locale-directory? file stat)
+                   (and (file-is-directory? file)
+                        (string-index (basename file) #\_)
+                        (string-rindex (basename file) #\.)))
+
+                 (let* ((out (assoc-ref outputs "out"))
+                        (locales (find-files out locale-directory?
+                                             #:directories? #t)))
+                   (for-each (lambda (directory)
+                               (let*-values (((base)
+                                              (basename directory))
+                                             ((name codeset)
+                                              (locale->name+codeset base))
+                                             ((normalized)
+                                              (normalize-codeset codeset)))
+                                 (unless (string=? codeset normalized)
+                                   (symlink base
+                                            (string-append (dirname directory)
+                                                           "/" name "."
+                                                           normalized)))))
+                             locales)
+                   #t)))
              (delete 'install)
              (delete 'move-static-libs)))
          ((#:configure-flags flags)

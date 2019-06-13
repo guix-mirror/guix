@@ -517,6 +517,8 @@ upon error."
          (unless (pre-mount)
            (error "pre-mount actions failed")))
 
+       (setenv "EXT2FS_NO_MTAB_OK" "1")
+
        (if root
            ;; The "--root=SPEC" kernel command-line option always provides a
            ;; string, but the string can represent a device, a UUID, or a
@@ -532,6 +534,8 @@ upon error."
        ;; Mount the specified file systems.
        (for-each mount-file-system
                  (remove root-mount-point? mounts))
+
+       (setenv "EXT2FS_NO_MTAB_OK" #f)
 
        (if to-load
            (begin

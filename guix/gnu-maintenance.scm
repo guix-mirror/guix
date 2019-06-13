@@ -621,9 +621,9 @@ releases are on gnu.org."
     (false-if-ftp-error
      (latest-ftp-release
       (package-upstream-name package)
-      #:server "mirrors.mit.edu"
-      #:directory
-      (string-append "/kde" (dirname (dirname (uri-path uri))))))))
+      #:server "ftp.mirrorservice.org"
+      #:directory (string-append "/sites/ftp.kde.org/pub/kde/"
+                                 (dirname (dirname (uri-path uri))))))))
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."

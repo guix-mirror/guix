@@ -36,6 +36,7 @@
   #:use-module (gcrypt pk-crypto)
   #:use-module ((guix pki) #:select (%public-key-file %private-key-file))
   #:use-module (guix zlib)
+  #:use-module (guix lzlib)
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
@@ -137,17 +138,17 @@
                   "StorePath: ~a
 URL: nar/~a
 Compression: none
+FileSize: ~a
 NarHash: sha256:~a
 NarSize: ~d
-References: ~a
-FileSize: ~a~%"
+References: ~a~%"
                   %item
                   (basename %item)
+                  (path-info-nar-size info)
                   (bytevector->nix-base32-string
                    (path-info-hash info))
                   (path-info-nar-size info)
-                  (basename (first (path-info-references info)))
-                  (path-info-nar-size info)))
+                  (basename (first (path-info-references info)))))
          (signature (base64-encode
                      (string->utf8
                       (canonical-sexp->string
@@ -169,15 +170,15 @@ FileSize: ~a~%"
                   "StorePath: ~a
 URL: nar/~a
 Compression: none
+FileSize: ~a
 NarHash: sha256:~a
 NarSize: ~d
-References: ~%\
-FileSize: ~a~%"
+References: ~%"
                   item
                   (uri-encode (basename item))
+                  (path-info-nar-size info)
                   (bytevector->nix-base32-string
                    (path-info-hash info))
-                  (path-info-nar-size info)
                   (path-info-nar-size info)))
          (signature (base64-encode
                      (string->utf8
@@ -229,6 +230,19 @@ FileSize: ~a~%"
                (string-append "/nar/gzip/" (basename %item))))))
     (get-bytevector-n nar (bytevector-length %gzip-magic-bytes))))
 
+(unless (lzlib-available?)
+  (test-skip 1))
+(test-equal "/nar/lzip/*"
+  "bar"
+  (call-with-temporary-output-file
+   (lambda (temp port)
+     (let ((nar (http-get-port
+                 (publish-uri
+                  (string-append "/nar/lzip/" (basename %item))))))
+       (call-with-lzip-input-port nar
+         (cut restore-file <> temp)))
+     (call-with-input-file temp read-string))))
+
 (unless (zlib-available?)
   (test-skip 1))
 (test-equal "/*.narinfo with compression"
@@ -241,6 +255,28 @@ FileSize: ~a~%"
                     (guix-publish "--port=6799" "-C5"))))))
     (wait-until-ready 6799)
     (let* ((url  (string-append "http://localhost:6799/"
+                                (store-path-hash-part %item) ".narinfo"))
+           (body (http-get-port url)))
+      (filter (lambda (item)
+                (match item
+                  (("Compression" . _) #t)
+                  (("StorePath" . _)  #t)
+                  (("URL" . _) #t)
+                  (_ #f)))
+              (recutils->alist body)))))
+
+(unless (lzlib-available?)
+  (test-skip 1))
+(test-equal "/*.narinfo with lzip compression"
+  `(("StorePath" . ,%item)
+    ("URL" . ,(string-append "nar/lzip/" (basename %item)))
+    ("Compression" . "lzip"))
+  (let ((thread (with-separate-output-ports
+                 (call-with-new-thread
+                  (lambda ()
+                    (guix-publish "--port=6790" "-Clzip"))))))
+    (wait-until-ready 6790)
+    (let* ((url  (string-append "http://localhost:6790/"
                                 (store-path-hash-part %item) ".narinfo"))
            (body (http-get-port url)))
       (filter (lambda (item)
@@ -264,6 +300,35 @@ FileSize: ~a~%"
          (info (recutils->alist body)))
     (list (assoc-ref info "Compression")
           (dirname (assoc-ref info "URL")))))
+
+(unless (and (zlib-available?) (lzlib-available?))
+  (test-skip 1))
+(test-equal "/*.narinfo with lzip + gzip"
+  `((("StorePath" . ,%item)
+     ("URL" . ,(string-append "nar/gzip/" (basename %item)))
+     ("Compression" . "gzip")
+     ("URL" . ,(string-append "nar/lzip/" (basename %item)))
+     ("Compression" . "lzip"))
+    200
+    200)
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6793" "-Cgzip:2" "-Clzip:2"))))))
+       (wait-until-ready 6793)
+       (let* ((base "http://localhost:6793/")
+              (part (store-path-hash-part %item))
+              (url  (string-append base part ".narinfo"))
+              (body (http-get-port url)))
+         (list (take (recutils->alist body) 5)
+               (response-code
+                (http-get (string-append base "nar/gzip/"
+                                         (basename %item))))
+               (response-code
+                (http-get (string-append base "nar/lzip/"
+                                         (basename %item))))))))))
 
 (test-equal "custom nar path"
   ;; Serve nars at /foo/bar/chbouib instead of /nar.
@@ -405,6 +470,52 @@ FileSize: ~a~%"
                          (stat:size (stat nar)))
                       (response-code uncompressed)))))))))
 
+(unless (and (zlib-available?) (lzlib-available?))
+  (test-skip 1))
+(test-equal "with cache, lzip + gzip"
+  '(200 200 404)
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6794" "-Cgzip:2" "-Clzip:2"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6794)
+       (let* ((base     "http://localhost:6794/")
+              (part     (store-path-hash-part %item))
+              (url      (string-append base part ".narinfo"))
+              (nar-url  (cute string-append "nar/" <> "/"
+                              (basename %item)))
+              (cached   (cute string-append cache "/" <> "/"
+                              (basename %item) ".narinfo"))
+              (nar      (cute string-append cache "/" <> "/"
+                              (basename %item) ".nar"))
+              (response (http-get url)))
+         (wait-for-file (cached "gzip"))
+         (let* ((body         (http-get-port url))
+                (narinfo      (recutils->alist body))
+                (uncompressed (string-append base "nar/"
+                                             (basename %item))))
+           (and (file-exists? (nar "gzip"))
+                (file-exists? (nar "lzip"))
+                (equal? (take (pk 'narinfo/gzip+lzip narinfo) 7)
+                        `(("StorePath" . ,%item)
+                          ("URL" . ,(nar-url "gzip"))
+                          ("Compression" . "gzip")
+                          ("FileSize" . ,(number->string
+                                          (stat:size (stat (nar "gzip")))))
+                          ("URL" . ,(nar-url "lzip"))
+                          ("Compression" . "lzip")
+                          ("FileSize" . ,(number->string
+                                          (stat:size (stat (nar "lzip")))))))
+                (list (response-code
+                       (http-get (string-append base (nar-url "gzip"))))
+                      (response-code
+                       (http-get (string-append base (nar-url "lzip"))))
+                      (response-code
+                       (http-get uncompressed))))))))))
+
 (unless (zlib-available?)
   (test-skip 1))
 (let ((item (add-text-to-store %store "fake-compressed-thing.tar.gz"
@@ -468,6 +579,35 @@ FileSize: ~a~%"
                         (string->number
                          (assoc-ref narinfo "FileSize"))
                         (response-code compressed))))))))))
+
+(test-equal "with cache, vanishing item"         ;<https://bugs.gnu.org/33897>
+  200
+  (call-with-temporary-directory
+   (lambda (cache)
+     (let ((thread (with-separate-output-ports
+                    (call-with-new-thread
+                     (lambda ()
+                       (guix-publish "--port=6795"
+                                     (string-append "--cache=" cache)))))))
+       (wait-until-ready 6795)
+
+       ;; Make sure that, even if ITEM disappears, we're still able to fetch
+       ;; it.
+       (let* ((base     "http://localhost:6795/")
+              (item     (add-text-to-store %store "random" (random-text)))
+              (part     (store-path-hash-part item))
+              (url      (string-append base part ".narinfo"))
+              (cached   (string-append cache
+                                       (if (zlib-available?)
+                                           "/gzip/" "/none/")
+                                       (basename item)
+                                       ".narinfo"))
+              (response (http-get url)))
+         (and (= 404 (response-code response))
+              (wait-for-file cached)
+              (begin
+                (delete-paths %store (list item))
+                (response-code (pk 'response (http-get url))))))))))
 
 (test-equal "/log/NAME"
   `(200 #t application/x-bzip2)

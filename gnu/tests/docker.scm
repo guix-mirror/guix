@@ -101,7 +101,7 @@ inside %DOCKER-OS."
              marionette))
 
           (test-equal "Load docker image and run it"
-            "hello world"
+            '("hello world" "hi!")
             (marionette-eval
              `(begin
                 (define slurp
@@ -117,12 +117,16 @@ inside %DOCKER-OS."
                        (repository&tag (string-drop raw-line
                                                     (string-length
                                                      "Loaded image: ")))
-                       (response (slurp
-                                  ,(string-append #$docker-cli "/bin/docker")
-                                  "run" "--entrypoint" "bin/Guile"
-                                  repository&tag
-                                  "/aa.scm")))
-                  response))
+                       (response1 (slurp
+                                   ,(string-append #$docker-cli "/bin/docker")
+                                   "run" "--entrypoint" "bin/Guile"
+                                   repository&tag
+                                   "/aa.scm"))
+                       (response2 (slurp          ;default entry point
+                                   ,(string-append #$docker-cli "/bin/docker")
+                                   "run" repository&tag
+                                   "-c" "(display \"hi!\")")))
+                  (list response1 response2)))
              marionette))
 
           (test-end)
@@ -161,6 +165,7 @@ standard output device and then enters a new line.")
        (tarball (docker-image "docker-pack" profile
                               #:symlinks '(("/bin/Guile" -> "bin/guile")
                                            ("aa.scm" -> "a.scm"))
+                              #:entry-point "bin/guile"
                               #:localstatedir? #t)))
     (run-docker-test tarball)))
 

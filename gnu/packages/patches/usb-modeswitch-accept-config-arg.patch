@@ -1,0 +1,42 @@
+--- old/usb_modeswitch.tcl	1970-01-01 01:00:00.000000000 +0100
++++ usb_modeswitch.tcl	2019-06-12 08:39:42.140000000 +0200
+@@ -41,7 +41,7 @@
+ global scsi usb config match device flags setup devdir loginit
+ 
+ set flags(config) ""
+-Log "[ParseGlobalConfig]"
++Log "[ParseGlobalConfig $argv]"
+ 
+ if {$flags(stordelay) > 0} {
+ 	SetStorageDelay $flags(stordelay)
+@@ -496,9 +496,21 @@
+ # end of proc {MatchDevice}
+ 
+ 
+-proc {ParseGlobalConfig} {} {
++proc {ParseGlobalConfig} {argv} {
+ 
+ global flags
++
++set configFileParam ""
++for {set i 0} {$i < [llength $argv]} {incr i} {
++	switch -glob -- [set v [lindex $argv $i]] {
++		--config-file=* {
++			set configFileParam $v
++		}
++	}
++}
++if {$configFileParam != ""} {
++	set configFile [string range $configFileParam [string length "--config-file="] end]
++} else {
+ set configFile ""
+ set places [list /etc/usb_modeswitch.conf /etc/sysconfig/usb_modeswitch /etc/default/usb_modeswitch]
+ foreach cfg $places {
+@@ -507,6 +519,7 @@
+ 		break
+ 	}
+ }
++}
+ if {$configFile == ""} {return}
+ 
+ set rc [open $configFile r]

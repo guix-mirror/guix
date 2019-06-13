@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,9 +24,11 @@
   #:use-module (ice-9 match)
   #:use-module (system foreign)
   #:use-module (guix config)
+  #:use-module (srfi srfi-11)
   #:export (lzlib-available?
             make-lzip-input-port
             make-lzip-output-port
+            make-lzip-input-port/compressed
             call-with-lzip-input-port
             call-with-lzip-output-port
             %default-member-length-limit
@@ -168,7 +171,7 @@ so use it only when needed. "
   (let ((proc (lzlib-procedure int "LZ_compress_read" (list '* '* int))))
     (lambda* (encoder lzfile-bv #:optional (start 0) (count (bytevector-length lzfile-bv)))
       "Read up to COUNT bytes from the encoder stream, storing the results in LZFILE-BV.
-Return the number of uncompressed bytes written, a strictly positive integer."
+Return the number of uncompressed bytes written, a positive integer."
       (let ((ret (proc (lz-encoder->pointer encoder)
                        (bytevector->pointer lzfile-bv start)
                        count)))
@@ -491,29 +494,50 @@ perhaps not yet read."
 
 
 ;; High level functions.
-(define* (lzread! decoder file-port bv
+
+(define* (lzread! decoder port bv
                   #:optional (start 0) (count (bytevector-length bv)))
-  "Read up to COUNT bytes from FILE-PORT into BV at offset START.  Return the
+  "Read up to COUNT bytes from PORT into BV at offset START.  Return the
 number of uncompressed bytes actually read; it is zero if COUNT is zero or if
 the end-of-stream has been reached."
-  ;; WARNING: Because we don't alternate between lz-reads and lz-writes, we can't
-  ;; process more than lz-decompress-write-size from the file-port.
-  (when (> count (lz-decompress-write-size decoder))
-    (set! count (lz-decompress-write-size decoder)))
-  (let ((file-bv (get-bytevector-n file-port count)))
-    (unless (eof-object? file-bv)
-      (lz-decompress-write decoder file-bv 0 (bytevector-length file-bv))))
-  (let ((read 0))
-    (let loop ((rd 0))
-      (if (< start (bytevector-length bv))
-          (begin
-            (set! rd (lz-decompress-read decoder bv start (- (bytevector-length bv) start)))
-            (set! start (+ start rd))
-            (set! read (+ read rd)))
-          (set! rd 0))
-      (unless (= rd 0)
-        (loop rd)))
-    read))
+  (define (feed-decoder! decoder)
+    ;; Feed DECODER with data read from PORT.
+    (match (get-bytevector-n port (lz-decompress-write-size decoder))
+      ((? eof-object? eof) eof)
+      (bv (lz-decompress-write decoder bv))))
+
+  (let loop ((read 0)
+             (start start))
+    (cond ((< read count)
+           (match (lz-decompress-read decoder bv start (- count read))
+             (0 (cond ((lz-decompress-finished? decoder)
+                       read)
+                      ((eof-object? (feed-decoder! decoder))
+                       (lz-decompress-finish decoder)
+                       (loop read start))
+                      (else                       ;read again
+                       (loop read start))))
+             (n (loop (+ read n) (+ start n)))))
+          (else
+           read))))
+
+(define (lzwrite! encoder source source-offset source-count
+                  target target-offset target-count)
+  "Write up to SOURCE-COUNT bytes from SOURCE to ENCODER, and read up to
+TARGET-COUNT bytes into TARGET at TARGET-OFFSET.  Return two values: the
+number of bytes read from SOURCE, and the number of bytes written to TARGET,
+possibly zero."
+  (define read
+    (if (> (lz-compress-write-size encoder) 0)
+        (match (lz-compress-write encoder source source-offset source-count)
+          (0 (lz-compress-finish encoder) 0)
+          (n n))
+        0))
+
+  (define written
+    (lz-compress-read encoder target target-offset target-count))
+
+  (values read written))
 
 (define* (lzwrite encoder bv lz-port
                   #:optional (start 0) (count (bytevector-length bv)))
@@ -596,6 +620,56 @@ port is closed."
                                           (loop rd))))
                                     (lz-compress-close encoder)
                                     (close-port port))))
+
+(define* (make-lzip-input-port/compressed port
+                                          #:key
+                                          (level %default-compression-level))
+  "Return an input port that compresses data read from PORT, with the given LEVEL.
+PORT is automatically closed when the resulting port is closed."
+  (define encoder (apply lz-compress-open
+                         (car (assoc-ref %compression-levels level))))
+
+  (define input-buffer (make-bytevector 8192))
+  (define input-len 0)
+  (define input-offset 0)
+
+  (define input-eof? #f)
+
+  (define (read! bv start count)
+    (cond
+     (input-eof?
+      (match (lz-compress-read encoder bv start count)
+        (0 (if (lz-compress-finished? encoder)
+               0
+               (read! bv start count)))
+        (n n)))
+     ((= input-offset input-len)
+      (match (get-bytevector-n! port input-buffer 0
+                                (bytevector-length input-buffer))
+        ((? eof-object?)
+         (set! input-eof? #t)
+         (lz-compress-finish encoder))
+        (count
+         (set! input-offset 0)
+         (set! input-len count)))
+      (read! bv start count))
+     (else
+      (let-values (((read written)
+                    (lzwrite! encoder
+                              input-buffer input-offset
+                              (- input-len input-offset)
+                              bv start count)))
+        (set! input-offset (+ input-offset read))
+
+        ;; Make sure we don't return zero except on EOF.
+        (if (= 0 written)
+            (read! bv start count)
+            written)))))
+
+  (make-custom-binary-input-port "lzip-input/compressed"
+                                 read! #f #f
+                                 (lambda ()
+                                   (close-port port))))
 
 (define* (call-with-lzip-input-port port proc)
   "Call PROC with a port that wraps PORT and decompresses data read from it.

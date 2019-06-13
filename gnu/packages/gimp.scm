@@ -49,7 +49,7 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.62")
+    (version "0.1.66")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
@@ -63,7 +63,7 @@
                                         "/babl-" version ".tar.bz2")))
               (sha256
                (base32
-                "047msfzj8v4sfl61a2xhd69r9rh2pjq4lzpk3j10ijyv9qbry9yw"))))
+                "0qx1dwbinxihwl2lmxi60qiqi402jlrdcnixx14kk6j88n9xi79n"))))
     (build-system gnu-build-system)
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
@@ -118,7 +118,7 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.10.10")
+    (version "2.10.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.gimp.org/pub/gimp/v"
@@ -126,7 +126,7 @@ buffers.")
                                   "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0xwck5nbpb945s1cyij3kfqw1pchbhx8i5vf5hgywyjw4r1z5l8j"))))
+                "0wdcr8d2ink4swn5r4v13bsiya6s3xm4ya97sdbhs4l40y7bb03x"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ; 9 MiB of gtk-doc HTML

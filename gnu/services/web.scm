@@ -7,7 +7,7 @@
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
-;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -29,14 +29,23 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services admin)
+  #:use-module (gnu services getmail)
+  #:use-module (gnu services mail)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages patchutils)
   #:use-module (gnu packages php)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages logging)
+  #:use-module (guix packages)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix utils)
   #:use-module (guix gexp)
   #:use-module ((guix store) #:select (text-file))
   #:use-module ((guix utils) #:select (version-major))
@@ -210,7 +219,42 @@
             varnish-configuration-parameters
             varnish-configuration-extra-options
 
-            varnish-service-type))
+            varnish-service-type
+
+            <patchwork-database-configuration>
+            patchwork-database-configuration
+            patchwork-database-configuration?
+            patchwork-database-configuration-engine
+            patchwork-database-configuration-name
+            patchwork-database-configuration-user
+            patchwork-database-configuration-password
+            patchwork-database-configuration-host
+            patchwork-database-configuration-port
+
+            <patchwork-settings-module>
+            patchwork-settings-module
+            patchwork-settings-module?
+            patchwork-settings-module-database-configuration
+            patchwork-settings-module-secret-key
+            patchwork-settings-module-allowed-hosts
+            patchwork-settings-module-default-from-email
+            patchwork-settings-module-static-url
+            patchwork-settings-module-admins
+            patchwork-settings-module-debug?
+            patchwork-settings-module-enable-rest-api?
+            patchwork-settings-module-enable-xmlrpc?
+            patchwork-settings-module-force-https-links?
+            patchwork-settings-module-extra-settings
+
+            <patchwork-configuration>
+            patchwork-configuration
+            patchwork-configuration?
+            patchwork-configuration-patchwork
+            patchwork-configuration-settings-module
+            patchwork-configuration-domain
+
+            patchwork-virtualhost
+            patchwork-service-type))
 
 ;;; Commentary:
 ;;;
@@ -1268,3 +1312,323 @@ files.")
                              varnish-shepherd-service)))
    (default-value
      (varnish-configuration))))
+
+
+;;;
+;;; Patchwork
+;;;
+
+(define-record-type* <patchwork-database-configuration>
+  patchwork-database-configuration make-patchwork-database-configuration
+  patchwork-database-configuration?
+  (engine          patchwork-database-configuration-engine
+                   (default "django.db.backends.postgresql_psycopg2"))
+  (name            patchwork-database-configuration-name
+                   (default "patchwork"))
+  (user            patchwork-database-configuration-user
+                   (default "httpd"))
+  (password        patchwork-database-configuration-password
+                   (default ""))
+  (host            patchwork-database-configuration-host
+                   (default ""))
+  (port            patchwork-database-configuration-port
+                   (default "")))
+
+(define-record-type* <patchwork-settings-module>
+  patchwork-settings-module make-patchwork-settings-module
+  patchwork-settings-module?
+  (database-configuration    patchwork-settings-module-database-configuration
+                             (default (patchwork-database-configuration)))
+  (secret-key-file           patchwork-settings-module-secret-key-file
+                             (default "/etc/patchwork/django-secret-key"))
+  (allowed-hosts             patchwork-settings-module-allowed-hosts)
+  (default-from-email        patchwork-settings-module-default-from-email)
+  (static-url                patchwork-settings-module-static-url
+                             (default "/static/"))
+  (admins                    patchwork-settings-module-admins
+                             (default '()))
+  (debug?                    patchwork-settings-module-debug?
+                             (default #f))
+  (enable-rest-api?          patchwork-settings-module-enable-rest-api?
+                             (default #t))
+  (enable-xmlrpc?            patchwork-settings-module-enable-xmlrpc?
+                             (default #t))
+  (force-https-links?        patchwork-settings-module-force-https-links?
+                             (default #t))
+  (extra-settings            patchwork-settings-module-extra-settings
+                             (default "")))
+
+(define-record-type* <patchwork-configuration>
+  patchwork-configuration make-patchwork-configuration
+  patchwork-configuration?
+  (patchwork                patchwork-configuration-patchwork
+                            (default patchwork))
+  (domain                   patchwork-configuration-domain)
+  (settings-module          patchwork-configuration-settings-module)
+  (static-path              patchwork-configuration-static-url
+                            (default "/static/"))
+  (getmail-retriever-config getmail-retriever-config))
+
+;; Django uses a Python module for configuration, so this compiler generates a
+;; Python module from the configuration record.
+(define-gexp-compiler (patchwork-settings-module-compiler
+                       (file <patchwork-settings-module>) system target)
+  (match file
+    (($ <patchwork-settings-module> database-configuration secret-key-file
+                                    allowed-hosts default-from-email
+                                    static-url admins debug? enable-rest-api?
+                                    enable-xmlrpc? force-https-links?
+                                    extra-configuration)
+     (gexp->derivation
+      "patchwork-settings"
+      (with-imported-modules '((guix build utils))
+        #~(let ((output #$output))
+            (define (create-__init__.py filename)
+              (call-with-output-file filename
+                (lambda (port) (display "" port))))
+
+            (use-modules (guix build utils)
+                         (srfi srfi-1))
+
+            (mkdir-p (string-append output "/guix/patchwork"))
+            (create-__init__.py
+             (string-append output "/guix/__init__.py"))
+            (create-__init__.py
+             (string-append output "/guix/patchwork/__init__.py"))
+
+            (call-with-output-file
+                (string-append output "/guix/patchwork/settings.py")
+              (lambda (port)
+                (display
+                 (string-append "from patchwork.settings.base import *
+
+# Configuration from Guix
+with open('" #$secret-key-file "') as f:
+    SECRET_KEY = f.read().strip()
+
+ALLOWED_HOSTS = [
+" #$(string-concatenate
+     (map (lambda (allowed-host)
+            (string-append "  '" allowed-host "'\n"))
+          allowed-hosts))
+"]
+
+ADMINS = [
+" #$(string-concatenate
+     (map (match-lambda
+            ((name email-address)
+             (string-append
+              "('" name "','" email-address "'),")))
+          admins))
+"]
+
+DEBUG = " #$(if debug? "True" "False") "
+
+ENABLE_REST_API = " #$(if enable-xmlrpc? "True" "False") "
+ENABLE_XMLRPC = " #$(if enable-xmlrpc? "True" "False") "
+
+FORCE_HTTPS_LINKS = " #$(if force-https-links? "True" "False") "
+
+DATABASES = {
+    'default': {
+" #$(match database-configuration
+      (($ <patchwork-database-configuration>
+          engine name user password host port)
+       (string-append
+        "        'ENGINE': '" engine "',\n"
+        "        'NAME': '" name "',\n"
+        "        'USER': '" user "',\n"
+        "        'PASSWORD': '" password "',\n"
+        "        'HOST': '" host "',\n"
+        "        'PORT': '" port "',\n"))) "
+    },
+}
+
+" #$(if debug?
+        #~(string-append "STATIC_ROOT = '"
+                         #$(file-append patchwork "/share/patchwork/htdocs")
+                         "'")
+        #~(string-append "STATIC_URL = '" #$static-url "'")) "
+
+STATICFILES_STORAGE = (
+  'django.contrib.staticfiles.storage.StaticFilesStorage'
+)
+
+# Guix Extra Configuration
+" #$extra-configuration "
+") port)))
+            #t))
+      #:local-build? #t))))
+
+(define patchwork-virtualhost
+  (match-lambda
+    (($ <patchwork-configuration> patchwork domain
+                                  settings-module static-path
+                                  getmail-retriever-config)
+     (define wsgi.py
+       (file-append patchwork
+                    (string-append
+                     "/lib/python"
+                     (version-major+minor
+                      (package-version python))
+                     "/site-packages/patchwork/wsgi.py")))
+
+     (httpd-virtualhost
+      "*:8080"
+      `("ServerAdmin admin@example.com`
+ServerName " ,domain "
+
+LogFormat \"%v %h %l %u %t \\\"%r\\\" %>s %b \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"\" customformat
+LogLevel info
+CustomLog \"/var/log/httpd/" ,domain "-access_log\" customformat
+
+ErrorLog /var/log/httpd/error.log
+
+WSGIScriptAlias / " ,wsgi.py "
+WSGIDaemonProcess " ,(package-name patchwork) " user=httpd group=httpd processes=1 threads=2 display-name=%{GROUP} lang='en_US.UTF-8' locale='en_US.UTF-8' python-path=" ,settings-module "
+WSGIProcessGroup " ,(package-name patchwork) "
+WSGIPassAuthorization On
+
+<Files " ,wsgi.py ">
+  Require all granted
+</Files>
+
+" ,@(if static-path
+        `("Alias " ,static-path " " ,patchwork "/share/patchwork/htdocs/")
+        '())
+"
+<Directory \"/srv/http/" ,domain "/\">
+    AllowOverride None
+    Options MultiViews Indexes SymlinksIfOwnerMatch IncludesNoExec
+    Require method GET POST OPTIONS
+</Directory>")))))
+
+(define (patchwork-httpd-configuration patchwork-configuration)
+  (list "WSGISocketPrefix /var/run/mod_wsgi"
+        (list "LoadModule wsgi_module "
+              (file-append mod-wsgi "/modules/mod_wsgi.so"))
+        (patchwork-virtualhost patchwork-configuration)))
+
+(define (patchwork-django-admin-gexp patchwork settings-module)
+  #~(lambda command
+      (let ((pid (primitive-fork))
+            (user (getpwnam "httpd")))
+        (if (eq? pid 0)
+            (dynamic-wind
+              (const #t)
+              (lambda ()
+                (setgid (passwd:gid user))
+                (setuid (passwd:uid user))
+
+                (setenv "DJANGO_SETTINGS_MODULE" "guix.patchwork.settings")
+                (setenv "PYTHONPATH" #$settings-module)
+                (primitive-exit
+                 (if (zero?
+                      (apply system*
+                             #$(file-append patchwork "/bin/patchwork-admin")
+                             command))
+                     0
+                     1)))
+              (lambda ()
+                (primitive-exit 1)))
+            (zero? (cdr (waitpid pid)))))))
+
+(define (patchwork-django-admin-action patchwork settings-module)
+  (shepherd-action
+   (name 'django-admin)
+   (documentation
+    "Run a django admin command for patchwork")
+   (procedure (patchwork-django-admin-gexp patchwork settings-module))))
+
+(define patchwork-shepherd-services
+  (match-lambda
+    (($ <patchwork-configuration> patchwork domain
+                                  settings-module static-path
+                                  getmail-retriever-config)
+     (define secret-key-file-creation-gexp
+       (if (patchwork-settings-module? settings-module)
+           (with-extensions (list guile-gcrypt)
+             #~(let ((secret-key-file
+                      #$(patchwork-settings-module-secret-key-file
+                         settings-module)))
+                 (use-modules (guix build utils)
+                              (gcrypt random))
+
+                 (unless (file-exists? secret-key-file)
+                   (mkdir-p (dirname secret-key-file))
+                   (call-with-output-file secret-key-file
+                     (lambda (port)
+                       (display (random-token 30 'very-strong) port)))
+                   (let* ((pw  (getpwnam "httpd"))
+                          (uid (passwd:uid pw))
+                          (gid (passwd:gid pw)))
+                     (chown secret-key-file uid gid)
+                     (chmod secret-key-file #o400)))))
+           #~()))
+
+     (list (shepherd-service
+            (requirement '(postgres))
+            (provision (list (string->symbol
+                              (string-append (package-name patchwork)
+                                             "-setup"))))
+            (start
+               #~(lambda ()
+                   (define run-django-admin-command
+                     #$(patchwork-django-admin-gexp patchwork
+                                                    settings-module))
+
+                   #$secret-key-file-creation-gexp
+
+                   (run-django-admin-command "migrate")))
+            (stop #~(const #f))
+            (actions
+             (list (patchwork-django-admin-action patchwork
+                                                  settings-module)))
+            (respawn? #f)
+            (documentation "Setup Patchwork."))))))
+
+(define patchwork-getmail-configs
+  (match-lambda
+    (($ <patchwork-configuration> patchwork domain
+                                  settings-module static-path
+                                  getmail-retriever-config)
+     (list
+      (getmail-configuration
+       (name (string->symbol (package-name patchwork)))
+       (user "httpd")
+       (directory (string-append
+                   "/var/lib/getmail/" (package-name patchwork)))
+       (rcfile
+        (getmail-configuration-file
+         (retriever getmail-retriever-config)
+         (destination
+          (getmail-destination-configuration
+           (type "MDA_external")
+           (path (file-append patchwork "/bin/patchwork-admin"))
+           (extra-parameters
+            '((arguments . ("parsemail"))))))
+         (options
+          (getmail-options-configuration
+           (read-all #f)
+           (delivered-to #f)
+           (received #f)))))
+       (idle (assq-ref
+              (getmail-retriever-configuration-extra-parameters
+               getmail-retriever-config)
+              'mailboxes))
+       (environment-variables
+        (list "DJANGO_SETTINGS_MODULE=guix.patchwork.settings"
+              #~(string-append "PYTHONPATH=" #$settings-module))))))))
+
+(define patchwork-service-type
+  (service-type
+   (name 'patchwork-setup)
+   (extensions
+    (list (service-extension httpd-service-type
+                             patchwork-httpd-configuration)
+          (service-extension shepherd-root-service-type
+                             patchwork-shepherd-services)
+          (service-extension getmail-service-type
+                             patchwork-getmail-configs)))
+   (description
+    "Patchwork patch tracking system.")))

@@ -33,6 +33,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 binary-ports)
   #:export (open-ssh-session
             remote-inferior

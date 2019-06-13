@@ -57,6 +57,7 @@
       ("guile-gcrypt"  (ref '(gnu packages gnupg) 'guile-gcrypt))
       ("gnutls"     (ref '(gnu packages tls) 'gnutls))
       ("zlib"       (ref '(gnu packages compression) 'zlib))
+      ("lzlib"      (ref '(gnu packages compression) 'lzlib))
       ("gzip"       (ref '(gnu packages compression) 'gzip))
       ("bzip2"      (ref '(gnu packages compression) 'bzip2))
       ("xz"         (ref '(gnu packages compression) 'xz))
@@ -603,7 +604,21 @@ Info manual."
   (define (wrap daemon)
     (program-file "guix-daemon"
                   #~(begin
+                      ;; Refer to the right 'guix' command for 'guix
+                      ;; substitute' & co.
                       (setenv "GUIX" #$command)
+
+                      ;; Honor the user's settings rather than those hardcoded
+                      ;; in the 'guix-daemon' package.
+                      (unless (getenv "GUIX_STATE_DIRECTORY")
+                        (setenv "GUIX_STATE_DIRECTORY"
+                                #$(string-append %localstatedir "/guix")))
+                      (unless (getenv "GUIX_CONFIGURATION_DIRECTORY")
+                        (setenv "GUIX_CONFIGURATION_DIRECTORY"
+                                #$(string-append %sysconfdir "/guix")))
+                      (unless (getenv "NIX_STORE_DIR")
+                        (setenv "NIX_STORE_DIR" #$%storedir))
+
                       (apply execl #$(file-append daemon "/bin/guix-daemon")
                              "guix-daemon" (cdr (command-line))))))
 
@@ -646,6 +661,7 @@ Info manual."
                         (guile-version (effective-version))
                         (guile-for-build (default-guile))
                         (zlib (specification->package "zlib"))
+                        (lzlib (specification->package "lzlib"))
                         (gzip (specification->package "gzip"))
                         (bzip2 (specification->package "bzip2"))
                         (xz (specification->package "xz"))
@@ -800,6 +816,7 @@ Info manual."
                  #:extra-modules
                  `(((guix config)
                     => ,(make-config.scm #:zlib zlib
+                                         #:lzlib lzlib
                                          #:gzip gzip
                                          #:bzip2 bzip2
                                          #:xz xz
@@ -897,7 +914,7 @@ Info manual."
                                       (variables rest ...))))))
     (variables %localstatedir %storedir %sysconfdir)))
 
-(define* (make-config.scm #:key zlib gzip xz bzip2
+(define* (make-config.scm #:key zlib lzlib gzip xz bzip2
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
@@ -919,7 +936,7 @@ Info manual."
                                %store-database-directory
                                %config-directory
                                %libz
-                               ;; TODO: %liblz
+                               %liblz
                                %gzip
                                %bzip2
                                %xz))
@@ -966,7 +983,11 @@ Info manual."
 
                    (define %libz
                      #+(and zlib
-                            (file-append zlib "/lib/libz"))))
+                            (file-append zlib "/lib/libz")))
+
+                   (define %liblz
+                     #+(and lzlib
+                            (file-append lzlib "/lib/liblz"))))
 
                ;; Guile 2.0 *requires* the 'define-module' to be at the
                ;; top-level or the 'toplevel-ref' in the resulting .go file are

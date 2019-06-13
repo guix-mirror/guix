@@ -17,7 +17,7 @@
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 # Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-# Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
+# Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 #
@@ -121,6 +121,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cpp.scm 				\
   %D%/packages/cppi.scm				\
   %D%/packages/cran.scm				\
+  %D%/packages/crates-io.scm			\
   %D%/packages/cross-base.scm			\
   %D%/packages/crypto.scm			\
   %D%/packages/cryptsetup.scm			\
@@ -261,6 +262,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/jrnl.scm				\
   %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
+  %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
   %D%/packages/kde-plasma.scm			\
@@ -468,6 +470,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/uml.scm				\
   %D%/packages/unrtf.scm			\
   %D%/packages/upnp.scm				\
+  %D%/packages/usb-modeswitch.scm		\
   %D%/packages/uucp.scm				\
   %D%/packages/valgrind.scm			\
   %D%/packages/version-control.scm		\
@@ -501,6 +504,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services.scm				\
   %D%/services/admin.scm			\
   %D%/services/audio.scm                        \
+  %D%/services/auditd.scm			\
   %D%/services/avahi.scm			\
   %D%/services/base.scm				\
   %D%/services/certbot.scm			\
@@ -516,6 +520,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/docker.scm			\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
+  %D%/services/getmail.scm				\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
@@ -524,6 +529,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/messaging.scm			\
   %D%/services/monitoring.scm			\
   %D%/services/networking.scm			\
+  %D%/services/nix.scm				\
   %D%/services/nfs.scm			\
   %D%/services/security-token.scm		\
   %D%/services/shepherd.scm			\
@@ -585,6 +591,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/networking.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/security-token.scm			\
+  %D%/tests/singularity.scm			\
   %D%/tests/ssh.scm				\
   %D%/tests/version-control.scm			\
   %D%/tests/virtualization.scm			\
@@ -636,6 +643,7 @@ dist_installer_DATA =				\
 
 # Modules that do not need to be compiled.
 MODULES_NOT_COMPILED +=				\
+  %D%/build/locale.scm				\
   %D%/build/shepherd.scm			\
   %D%/build/svg.scm
 
@@ -688,7 +696,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
   %D%/packages/patches/blender-2.79-python-3.7-fix.patch	\
   %D%/packages/patches/boost-fix-icu-build.patch		\
-  %D%/packages/patches/borg-fix-hard-link-preloading.patch	\
   %D%/packages/patches/byobu-writable-status.patch		\
   %D%/packages/patches/calibre-no-updates-dialog.patch		\
   %D%/packages/patches/calibre-remove-test-bs4.patch		\
@@ -754,7 +761,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
-  %D%/packages/patches/emacs-realgud-fix-configure-ac.patch	\
   %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/emacs-zones-called-interactively.patch	\
@@ -869,7 +875,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-shell-theme.patch			\
   %D%/packages/patches/gnome-tweaks-search-paths.patch		\
-  %D%/packages/patches/gnucash-fix-test-transaction-failure.patch \
   %D%/packages/patches/gnutls-skip-trust-store-test.patch	\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
@@ -899,6 +904,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  %D%/packages/patches/gtksourceview-2-add-default-directory.patch \
   %D%/packages/patches/gzdoom-search-in-installed-share.patch	\
   %D%/packages/patches/handbrake-opt-in-nvenc.patch		\
   %D%/packages/patches/haskell-mode-unused-variables.patch	\
@@ -985,13 +991,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libcroco-CVE-2017-7960.patch		\
   %D%/packages/patches/libcroco-CVE-2017-7961.patch		\
   %D%/packages/patches/libdrm-symbol-check.patch		\
-  %D%/packages/patches/libevent-dns-tests.patch			\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10195.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10196.patch	\
-  %D%/packages/patches/libevent-2.0-CVE-2016-10197.patch	\
-  %D%/packages/patches/libevent-2.0-evbuffer-add-use-last-with-datap.patch	\
-  %D%/packages/patches/libevent-2.1-dns-tests.patch		\
-  %D%/packages/patches/libevent-2.1-skip-failing-test.patch	\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libgpg-error-gawk-compat.patch		\
@@ -1172,7 +1171,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/plink-endian-detection.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
-  %D%/packages/patches/polkit-CVE-2018-19788.patch		\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
   %D%/packages/patches/portmidi-modular-build.patch		\
   %D%/packages/patches/postgresql-disable-resolve_symlinks.patch	\
@@ -1283,6 +1281,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
+  %D%/packages/patches/supertux-fix-build-with-gcc5.patch	\
+  %D%/packages/patches/supertux-unbundle-squirrel.patch		\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
@@ -1317,6 +1317,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
+  %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
@@ -1335,6 +1336,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/upx-fix-CVE-2017-15056.patch		\
+  %D%/packages/patches/usb-modeswitch-accept-config-arg.patch	\
   %D%/packages/patches/valgrind-enable-arm.patch		\
   %D%/packages/patches/vboot-utils-fix-format-load-address.patch	\
   %D%/packages/patches/vboot-utils-fix-tests-show-contents.patch	\

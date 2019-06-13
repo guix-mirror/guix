@@ -54,6 +54,22 @@
          (bin-dep? (lambda (dep) (find bin? (get-kinds dep)))))
     (find bin-dep? (manifest-targets))))
 
+(define (crate-src? path)
+  "Check if PATH refers to a crate source, namely a gzipped tarball with a
+Cargo.toml file present at its root."
+    (and (gzip-file? path)
+         ;; First we print out all file names within the tarball to see if it
+         ;; looks like the source of a crate. However, the tarball will include
+         ;; an extra path component which we would like to ignore (since we're
+         ;; interested in checking if a Cargo.toml exists at the root of the
+         ;; archive, but not nested anywhere else). We do this by cutting up
+         ;; each output line and only looking at the second component. We then
+         ;; check if it matches Cargo.toml exactly and short circuit if it does.
+         (zero? (apply system* (list "sh" "-c"
+                                     (string-append "tar -tf " path
+                                                    " | cut -d/ -f2"
+                                                    " | grep -q '^Cargo.toml$'"))))))
+
 (define* (configure #:key inputs
                     (vendor-dir "guix-vendor")
                     #:allow-other-keys)
@@ -67,14 +83,21 @@
   (for-each
     (match-lambda
       ((name . path)
-       (let* ((rust-share (string-append path "/share/rust-source"))
-              (basepath (basename path))
-              (link-dir (string-append vendor-dir "/" basepath)))
-         (and (file-exists? rust-share)
+       (let* ((basepath (basename path))
+              (crate-dir (string-append vendor-dir "/" basepath)))
+         (and (crate-src? path)
               ;; Gracefully handle duplicate inputs
-              (not (file-exists? link-dir))
-              (symlink rust-share link-dir)))))
+              (not (file-exists? crate-dir))
+              (mkdir-p crate-dir)
+              ;; Cargo crates are simply gzipped tarballs but with a .crate
+              ;; extension. We expand the source to a directory name we control
+              ;; so that we can generate any cargo checksums.
+              ;; The --strip-components argument is needed to prevent creating
+              ;; an extra directory within `crate-dir`.
+              (invoke "tar" "xvf" path "-C" crate-dir "--strip-components" "1")
+              (generate-checksums crate-dir)))))
     inputs)
+
   ;; Configure cargo to actually use this new directory.
   (mkdir-p ".cargo")
   (let ((port (open-file ".cargo/config" "w" #:encoding "utf-8")))
@@ -117,24 +140,6 @@ directory = '" port)
 (define (touch file-name)
   (call-with-output-file file-name (const #t)))
 
-(define* (install-source #:key inputs outputs #:allow-other-keys)
-  "Install the source for a given Cargo package."
-  (let* ((out (assoc-ref outputs "out"))
-         (src (assoc-ref inputs "source"))
-         (rsrc (string-append (assoc-ref outputs "src")
-                              "/share/rust-source")))
-    (mkdir-p rsrc)
-    ;; Rust doesn't have a stable ABI yet. Because of this
-    ;; Cargo doesn't have a search path for binaries yet.
-    ;; Until this changes we are working around this by
-    ;; vendoring the crates' sources by symlinking them
-    ;; to store paths.
-    (copy-recursively "." rsrc)
-    (touch (string-append rsrc "/.cargo-ok"))
-    (generate-checksums rsrc)
-    (install-file "Cargo.toml" rsrc)
-    #t))
-
 (define* (install #:key inputs outputs skip-build? #:allow-other-keys)
   "Install a given Cargo package."
   (let* ((out (assoc-ref outputs "out")))
@@ -156,7 +161,6 @@ directory = '" port)
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'bootstrap)
-    (add-before 'configure 'install-source install-source)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
