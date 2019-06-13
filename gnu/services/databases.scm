@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,9 +92,9 @@
 (define %default-postgres-hba
   (plain-file "pg_hba.conf"
               "
-local	all	all			trust
-host	all	all	127.0.0.1/32 	trust
-host	all	all	::1/128 	trust"))
+local	all	all			peer
+host	all	all	127.0.0.1/32 	md5
+host	all	all	::1/128 	md5"))
 
 (define %default-postgres-ident
   (plain-file "pg_ident.conf"
