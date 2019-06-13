@@ -274,6 +274,51 @@ executable cabal
 (test-assert "hackage->guix-package test multiline desc (braced)"
   (eval-test-with-cabal test-cabal-multiline-braced match-ghc-foo))
 
+;; Check Hackage Cabal revisions.
+(define test-cabal-revision
+  "name: foo
+version: 1.0.0
+x-revision: 2
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+executable cabal
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+(define-package-matcher match-ghc-foo-revision
+  ('package
+    ('name "ghc-foo")
+    ('version "1.0.0")
+    ('source
+     ('origin
+       ('method 'url-fetch)
+       ('uri ('string-append
+              "https://hackage.haskell.org/package/foo/foo-"
+              'version
+              ".tar.gz"))
+       ('sha256
+        ('base32
+         (? string? hash)))))
+    ('build-system 'haskell-build-system)
+    ('inputs
+     ('quasiquote
+      (("ghc-http" ('unquote 'ghc-http)))))
+    ('arguments
+     ('quasiquote
+      ('#:cabal-revision
+       ("2" "0xxd88fb659f0krljidbvvmkh9ppjnx83j0nqzx8whcg4n5qbyng"))))
+    ('home-page "http://test.org")
+    ('synopsis (? string?))
+    ('description (? string?))
+    ('license 'bsd-3)))
+
+(test-assert "hackage->guix-package test cabal revision"
+  (eval-test-with-cabal test-cabal-revision match-ghc-foo-revision))
+
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
     ((("name" ("test-me"))

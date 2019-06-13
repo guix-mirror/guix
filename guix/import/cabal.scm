@@ -40,6 +40,7 @@
             cabal-package?
             cabal-package-name
             cabal-package-version
+            cabal-package-revision
             cabal-package-license
             cabal-package-home-page
             cabal-package-source-repository
@@ -638,13 +639,14 @@ If #f use the function 'port-filename' to obtain it."
 ;; information of the Cabal file, but only the ones we currently are
 ;; interested in.
 (define-record-type <cabal-package>
-  (make-cabal-package name version license home-page source-repository
+  (make-cabal-package name version revision license home-page source-repository
                       synopsis description
                       executables lib test-suites
                       flags eval-environment custom-setup)
   cabal-package?
   (name   cabal-package-name)
   (version cabal-package-version)
+  (revision cabal-package-revision)
   (license cabal-package-license)
   (home-page cabal-package-home-page)
   (source-repository cabal-package-source-repository)
@@ -838,6 +840,7 @@ See the manual for limitations.")))))))
   (define (cabal-evaluated-sexp->package evaluated-sexp)
     (let* ((name (lookup-join evaluated-sexp "name"))
            (version (lookup-join evaluated-sexp "version"))
+           (revision (lookup-join evaluated-sexp "x-revision"))
            (license (lookup-join evaluated-sexp "license"))
            (home-page (lookup-join evaluated-sexp "homepage"))
            (home-page-or-hackage
@@ -856,7 +859,7 @@ See the manual for limitations.")))))))
            (custom-setup (match (make-cabal-section evaluated-sexp 'custom-setup)
                            ((x) x)
                            (_ #f))))
-      (make-cabal-package name version license home-page-or-hackage
+      (make-cabal-package name version revision license home-page-or-hackage
                           source-repository synopsis description executables lib
                           test-suites flags eval-environment custom-setup)))
 

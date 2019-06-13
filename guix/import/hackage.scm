@@ -117,19 +117,34 @@ version is returned."
           (#f name)
           (m (match:substring m 1)))))))
 
+(define (read-cabal-and-hash port)
+  "Read a Cabal file from PORT and return it and its hash in nix-base32
+format as two values."
+  (let-values (((port get-hash) (open-sha256-input-port port)))
+    (values (read-cabal (canonical-newline-port port))
+            (bytevector->nix-base32-string (get-hash)))))
+
+(define (hackage-fetch-and-hash name-version)
+  "Fetch the latest Cabal revision for the package NAME-VERSION, and return
+two values: the parsed Cabal file and its hash in nix-base32 format.  If the
+version part is omitted from the package name, then fetch the latest
+version.  On failure, both return values will be #f."
+  (guard (c ((and (http-get-error? c)
+                  (= 404 (http-get-error-code c)))
+             (values #f #f)))           ;"expected" if package is unknown
+    (let*-values (((name version) (package-name->name+version name-version))
+                  ((url)          (hackage-cabal-url name version))
+                  ((port _)       (http-fetch url))
+                  ((cabal hash)   (read-cabal-and-hash port)))
+      (close-port port)
+      (values cabal hash))))
+
 (define (hackage-fetch name-version)
   "Return the Cabal file for the package NAME-VERSION, or #f on failure.  If
 the version part is omitted from the package name, then return the latest
 version."
-  (guard (c ((and (http-get-error? c)
-                  (= 404 (http-get-error-code c)))
-             #f))                       ;"expected" if package is unknown
-    (let-values (((name version) (package-name->name+version name-version)))
-      (let* ((url (hackage-cabal-url name version))
-             (port (http-fetch url))
-             (result (read-cabal (canonical-newline-port port))))
-        (close-port port)
-        result))))
+  (let-values (((cabal hash) (hackage-fetch-and-hash name-version)))
+    cabal))
 
 (define string->license
   ;; List of valid values from
@@ -198,15 +213,20 @@ package being processed and is used to filter references to itself."
                                    (cons own-name ghc-standard-libraries))))
           dependencies))
 
-(define* (hackage-module->sexp cabal #:key (include-test-dependencies? #t))
+(define* (hackage-module->sexp cabal cabal-hash
+                               #:key (include-test-dependencies? #t))
   "Return the `package' S-expression for a Cabal package.  CABAL is the
-representation of a Cabal file as produced by 'read-cabal'."
+representation of a Cabal file as produced by 'read-cabal'.  CABAL-HASH is
+the hash of the Cabal file."
 
   (define name
     (cabal-package-name cabal))
 
   (define version
     (cabal-package-version cabal))
+
+  (define revision
+    (cabal-package-revision cabal))
   
   (define source-url
     (hackage-source-url name version))
@@ -252,9 +272,14 @@ representation of a Cabal file as produced by 'read-cabal'."
                    (list 'quasiquote inputs))))))
   
   (define (maybe-arguments)
-    (if (not include-test-dependencies?)
-        '((arguments `(#:tests? #f)))
-        '()))
+    (match (append (if (not include-test-dependencies?)
+                       '(#:tests? #f)
+                       '())
+                   (if (not (string-null? revision))
+                       `(#:cabal-revision (,revision ,cabal-hash))
+                       '()))
+      (() '())
+      (args `((arguments (,'quasiquote ,args))))))
 
   (let ((tarball (with-store store
                    (download-to-store store source-url))))
@@ -294,10 +319,11 @@ symbol 'true' or 'false'.  The value associated with other keys has to conform
 to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
-  (let ((cabal-meta (if port
-                        (read-cabal (canonical-newline-port port))
-                        (hackage-fetch package-name))))
-    (and=> cabal-meta (compose (cut hackage-module->sexp <>
+  (let-values (((cabal-meta cabal-hash)
+                (if port
+                    (read-cabal-and-hash port)
+                    (hackage-fetch-and-hash package-name))))
+    (and=> cabal-meta (compose (cut hackage-module->sexp <> cabal-hash
                                     #:include-test-dependencies?
                                     include-test-dependencies?)
                                (cut eval-cabal <> cabal-environment)))))
