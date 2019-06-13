@@ -15830,6 +15830,42 @@ by Igor Pavlov.")
 (define-public python2-pylzma
   (package-with-python2 python-pylzma))
 
+(define-public python2-zeroconf
+  (package
+    (name "python2-zeroconf")
+
+    ;; This is the last version that supports Python 2.x.
+    (version "0.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zeroconf" version))
+       (sha256
+        (base32
+         "0ykzg730n915qbrq9bn5pn06bv6rb5zawal4sqjyfnjjm66snkj3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-requires
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("enum-compat")
+                "enum34"))
+             #t)))))
+    (native-inputs
+     `(("python2-six" ,python2-six)
+       ("python2-enum32" ,python2-enum34)
+       ("python2-netifaces" ,python2-netifaces)
+       ("python2-typing" ,python2-typing)))
+    (home-page "https://github.com/jstasiak/python-zeroconf")
+    (synopsis "Pure Python mDNS service discovery")
+    (description
+     "Pure Python multicast DNS (mDNS) service discovery library (Bonjour/Avahi
+compatible).")
+    (license license:lgpl2.1+)))
+
 (define-public python-bsddb3
   (package
     (name "python-bsddb3")
