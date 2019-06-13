@@ -7984,6 +7984,27 @@ running tests easier.")
 (define-public ert-runner
   (deprecated-package "ert-runner" emacs-ert-runner))
 
+(define-public emacs-xtest
+  (package
+    (name "emacs-xtest")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/promethial/xtest.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wqx6hlqcmqiljydih5fx89dw06g8w728pyn4iqsap8jwgjngb09"))))
+    (arguments
+     `(#:exclude '()))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/promethial/xtest/")
+    (synopsis "Simple testing with Emacs")
+    (description "This package provides a simple testing library for Emacs.")
+    (license license:gpl3+)))
+
 (define-public emacs-disable-mouse
   (package
     (name "emacs-disable-mouse")
