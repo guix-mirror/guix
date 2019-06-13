@@ -16005,14 +16005,12 @@ text-property translator.")
             "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-org" ,emacs-org)))
-    (home-page
-      "https://github.com/weirdNox/org-noter")
-    (synopsis
-      "Synchronized, Org-mode, document annotator")
+    (home-page "https://github.com/weirdNox/org-noter")
+    (synopsis "Synchronized, Org-mode, document annotator")
     (description
-      "The idea is to let you create notes that are kept in sync when you
-scroll through the document, but that are external to it - the notes
+     "This package lets you create notes that are kept in sync when you
+scroll through the document, but that are external to it---the notes
 themselves live in an Org-mode file.  As such, this leverages the power of
 Org-mode (the notes may have outlines, latex fragments, babel, etc...) while
-acting like notes that are made /in/ the document.")
+acting like notes that are made @emph{in} the document.")
     (license license:gpl3+)))
