@@ -38,9 +38,12 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages maths)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (srfi srfi-1))
 
 (define-public cfitsio
   (package
@@ -234,3 +237,15 @@ object in the expandable database and view it from any point in space and
 time.  The position and movement of solar system objects is calculated
 accurately in real time at any rate desired.")
       (license license:gpl2+))))
+
+(define-public celestia-gtk
+  (package
+    (inherit celestia)
+    (name "celestia-gtk")
+    (inputs
+     (append (alist-delete "freeglut" (package-inputs celestia))
+             `(("gtk2" ,gtk+-2)
+               ("gtkglext" ,gtkglext))))
+    (arguments
+     `(#:configure-flags '("-DENABLE_GTK=ON" "-DENABLE_QT=OFF")
+       #:tests? #f))))
