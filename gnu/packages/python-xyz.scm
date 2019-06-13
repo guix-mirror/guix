@@ -61,6 +61,7 @@
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5600,6 +5601,33 @@ implementation of D-Bus.")
     ;; FIXME: on Python 2, the test_utf8 fails with:
     ;; "ValueError: unichr() arg not in range(0x10000) (narrow Python build)"
     (arguments `(#:tests? #f))))
+
+(define-public python-notify2
+  (package
+    (name "python-notify2")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "notify2" version))
+       (sha256
+        (base32
+         "0z8rrv9rsg1r2qgh2dxj3dfj5xnki98kgi3w839kqby4a26i1yik"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))                    ; tests depend on system state
+    (native-inputs
+     `(("python-dbus" ,python-dbus)))
+    (home-page "https://bitbucket.org/takluyver/pynotify2")
+    (synopsis "Python interface to D-Bus notifications")
+    (description
+     "Pynotify2 provides a Python interface for sending D-Bus notifications.
+It is a reimplementation of pynotify in pure Python, and an alternative to
+the GObject Introspection bindings to libnotify for non-GTK applications.")
+    (license (list license:bsd-2
+                   license:lgpl2.1+))))
+
+(define-public python2-notify2
+  (package-with-python2 python-notify2))
 
 (define-public python-lxml
   (package
