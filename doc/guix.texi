@@ -12668,6 +12668,41 @@ The ModemManager package to use.
 @end table
 @end deftp
 
+@cindex USB_ModeSwitch
+@cindex Modeswitching
+
+@defvr {Scheme Variable} usb-modeswitch-service-type
+This is the service type for the
+@uref{http://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch} service. The
+value for this service type is a @code{usb-modeswitch-configuration} record.
+
+When plugged in, some USB modems (and other USB devices) initially present
+themselves as a read-only storage medium and not as a modem.  They need to be
+@dfn{modeswitched} before they are usable.  The USB_ModeSwitch service type
+installs udev rules to automatically modeswitch these devices when they are
+plugged in.
+@end defvr
+
+@deftp {Data Type} usb-modeswitch-configuration
+Data type representing the configuration of USB_ModeSwitch.
+
+@table @asis
+@item @code{usb-modeswitch} (default: @code{usb-modeswitch})
+The USB_ModeSwitch package providing the binaries for modeswitching.
+
+@item @code{usb-modeswitch-data} (default: @code{usb-modeswitch-data})
+The package providing the device data and udev rules file used by
+USB_ModeSwitch.
+
+@item @code{config-file} (default: @code{#~(string-append #$usb-modeswitch:dispatcher "/etc/usb_modeswitch.conf")})
+Which config file to use for the USB_ModeSwitch dispatcher.  By default the
+config file shipped with USB_ModeSwitch is used which disables logging to
+@file{/var/log} among other default settings.  If set to @code{#f}, no config
+file is used.
+
+@end table
+@end deftp
+
 @cindex NetworkManager
 
 @defvr {Scheme Variable} network-manager-service-type
