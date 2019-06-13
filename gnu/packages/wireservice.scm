@@ -168,3 +168,26 @@ support to all @code{agate.Table} instances.")))
     (synopsis "Add read support for dbf files to agate")
     (description "@code{agatedbf} uses a monkey patching pattern to add read
 for dbf files support to all @code{agate.Table} instances.")))
+
+(define-public python-agate-excel
+  (package
+    (inherit base-package)
+    (name "python-agate-excel")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wireservice/agate-excel.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1k5lv21k19s7kgbj5srd1xgrkqvxqqs49qwj33zncs9l7851afy7"))))
+    (propagated-inputs
+     `(("python-agate" ,python-agate)
+       ("python-openpyxl" ,python-openpyxl)
+       ("python-xlrd" ,python-xlrd)))
+    (home-page "https://agate-excel.rtfd.org")
+    (synopsis "Add read support for Excel files (xls and xlsx) to agate")
+    (description "@code{agateexcel} uses a monkey patching pattern to add read
+for xls and xlsx files support to all @code{agate.Table} instances.")))
