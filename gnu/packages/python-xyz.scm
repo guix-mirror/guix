@@ -6901,6 +6901,41 @@ and MAC network addresses.")
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
 
+(define-public python2-pyroute2
+  (package
+    (name "python2-pyroute2")
+    (version "0.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyroute2" version))
+       (sha256
+        (base32
+         "1gmz4r1w0yzj6fjjypnalmfyy0lnfznydyn62gi3wk50j5hhxbny"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))                       ;Python 3.x is not supported
+    (home-page "https://github.com/svinota/pyroute2")
+    (synopsis "Python netlink library")
+    (description
+     "Pyroute2 is a pure Python netlink library with minimal dependencies.
+Supported netlink families and protocols include:
+@itemize
+@item rtnl, network settings - addresses, routes, traffic controls
+@item nfnetlink - netfilter API: ipset, nftables, ...
+@item ipq - simplest userspace packet filtering, iptables QUEUE target
+@item devlink - manage and monitor devlink-enabled hardware
+@item generic - generic netlink families
+  @itemize
+  @item nl80211 - wireless functions API (basic support)
+  @item taskstats - extended process statistics
+  @item acpi_events - ACPI events monitoring
+  @item thermal_events - thermal events monitoring
+  @item VFS_DQUOT - disk quota events monitoring
+  @end itemize
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public python-wrapt
   (package
     (name "python-wrapt")
