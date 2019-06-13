@@ -2320,14 +2320,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.10")
+    (version "2.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "190l36hfw3wb2n3n68yacjabxyb1pnxwn7vjx96cmjj002xy2jzq"))))
+         "04shqrs56aj04ipyqykj512rw2l0zfammvj9krawzxz7xc14yp06"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
@@ -2484,14 +2484,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.2.0")
+    (version "2.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1k78qdvir1yb1c634nkv6rbga8wv4289xarghmsbbvzhvr311bnv"))))
+         "1xb5n3hvhk63kxypc03k7kfry20pny6gygi4bsl9kw1rnzzsdjri"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3123,14 +3123,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.6")
+    (version "0.29.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1bp7cn0pp5qy63k9hbp4ka34fm01kvysh478phpkhr68npqk6pbc"))))
+         "1s61hq2ikawxp6qvmkbfvvaxy9rqj67cddzwgcfc3dwi44b83l2m"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -8345,14 +8345,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.7")
+    (version "1.0.10")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "1bi5gnr8r8dva06qpyx4kgjc6spm2k1y908183nbbaylggjzs0jf"))))
+         "0r9rysn19fmrxnzfcn7sg20kjhcrx9qri0my9n5vdzp1g2g92rbi"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
@@ -12198,14 +12198,14 @@ several utilities, as well as an API for building localization tools.")
 (define-public python-packaging
   (package
     (name "python-packaging")
-    (version "18.0")
+    (version "19.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
         (sha256
          (base32
-          "01wq9c53ix5rz6qg2c98gy8n4ff768rmanifm8m5jpjiaizj51h8"))))
+          "1brjhygq9dz6x1kdljivkjfldi3qf5rbkqgck1bpgv9qpv8ab60c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -12961,14 +12961,14 @@ requirements is not met.")
 (define-public python-pysocks
   (package
     (name "python-pysocks")
-    (version "1.6.8")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PySocks" version))
        (sha256
         (base32
-         "0wn6xafwy9c1gamwljw3fyvih5w19qy9xp39zmv8c90ai5ajrr9z"))))
+         "0z4p31bpqm893cf87qqgb30k7nwd8kqfjwwjm5cvxb6zbyj1w0yr"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (home-page "https://github.com/Anorov/PySocks")

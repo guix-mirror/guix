@@ -1179,7 +1179,7 @@ intercept and print the system calls executed by the program.")
 (define-public alsa-lib
   (package
     (name "alsa-lib")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1187,7 +1187,7 @@ intercept and print the system calls executed by the program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1pxf0zkmps03l3zzd0fr828xhkg6a8hxljmbxzc2cyj2ls9kmp1w"))))
+               "0jwr9g4yxg9gj6xx0sb2r6wrdl8amrjd19hilkrq4rirynp770s8"))))
     (build-system gnu-build-system)
     (home-page "https://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -1199,14 +1199,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1kx45yhrxai3k595yyqs4wj0p2n5b0c9mf0k36ljjf1bj8lgb6zx"))))
+               "0fi11b7r8hg1bdjw74s8sqx8rc4qb310jaj9lsia9labvfyjrpsx"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -1253,14 +1253,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-plugins
   (package
     (name "alsa-plugins")
-    (version "1.1.8")
+    (version "1.1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.alsa-project.org/pub/plugins/"
                                  name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "152r82i6f97gfilfgiax5prxkd4xlcipciv8ha8yrk452qbxyxvz"))))
+               "01zrg0h2jw9dlj9233vjsn916yf4f2s667yry6xsn8d57lq745qn"))))
     (build-system gnu-build-system)
     ;; TODO: Split libavcodec and speex if possible. It looks like they can not
     ;; be split, there are references to both in files.
@@ -2267,7 +2267,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "3.2.7")
+    (version "3.2.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url "https://github.com/gentoo/eudev")
@@ -2275,7 +2275,7 @@ from the module-init-tools project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1la7x7v7yqb84wnc7w0kj53sa0an0m9xp6wn01ypi8drh02wjjy2"))
+                "1g95yzzx4qxm5qhhylbi930lrq4gsbz207n72018nkvswj6gmpjw"))
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -3358,14 +3358,14 @@ applications.")
 (define-public sbc
   (package
     (name "sbc")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/bluetooth/sbc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
+                "1jal98pnrjkzxlkiqy0ykh4qmgnydz9bmsp1jn581p5kddpg92si"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))

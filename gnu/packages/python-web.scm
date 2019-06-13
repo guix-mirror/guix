@@ -1328,13 +1328,13 @@ WebSocket usage in Python programs.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.21.0")
+    (version "2.22.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "13jr0wkj9c2j8c0c8iaal9iivi0bpxghnsdn6lxcpnmc657q4ajh"))))
+               "1d5ybh11jr5sm7xp6mz8fyc7vrp4syifds91m7sj60xalal0gq0i"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-certifi" ,python-certifi)
@@ -1501,14 +1501,14 @@ authenticated session objects providing things like keep-alive.")
 (define-public python-urllib3
   (package
     (name "python-urllib3")
-    (version "1.24.1")
+    (version "1.25.3")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urllib3" version))
         (sha256
          (base32
-          "08lwd9f3hqznyf32vnzwvp87pchx062nkbgyrf67rwlkgj0jk5fy"))))
+          "0cij8qcvvpj62g1q8n785qjkdymfh4b7vf45si4sw64l41rr3rfv"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     (propagated-inputs

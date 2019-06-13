@@ -855,7 +855,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.20.2")
+    (version "0.21.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
@@ -863,7 +863,7 @@ for efficient socket-like bidirectional reliable communication channels.")
                                   "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "03sn3fbcrmgl9x2f1gc6rbrdlbrnwbhrnkgi733gqb95cvmhmzgq"))))
+                "04pfagb7ppq3yibx4lhazd1v9nwkxdfkyy2rgcrmrf3mldsirga1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -3083,14 +3083,14 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
 (define-public perl-io-socket-ssl
   (package
     (name "perl-io-socket-ssl")
-    (version "2.038")
+    (version "2.066")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
                                   "IO-Socket-SSL-" version ".tar.gz"))
               (sha256
                (base32
-                "11fiifxyvn7njc9p52wgygyw24jz7rh7gnz2ikjphr4l4x9f03rx"))
+                "1kgbws7dwp2hh16qid7169dfkhmcwg7dz9ffbm6k0id5h53hciqd"))
               (patches (search-patches
                         "perl-io-socket-ssl-openssl-1.0.2f-fix.patch"))))
     (build-system perl-build-system)

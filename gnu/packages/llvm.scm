@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "7.0.1")
+    (version "8.0.0")
     (source
      (origin
       (method url-fetch)
@@ -57,7 +58,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))
+        "0k124sxkfhfi1rca6kzkdraf4axhx99x3cw2rk55056628dvwwl8"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -324,11 +325,11 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
+   "1c919wsm17xnv7lr8bhpq2wkq8113lzlw6hzhfr737j59x3wfddl"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
-                   "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
+                   "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
 (define-public llvm-6

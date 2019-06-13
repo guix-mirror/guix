@@ -32,7 +32,7 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.14.0")
+    (version "3.15.0")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "http://www.valgrind.org/downloads"
@@ -41,7 +41,7 @@
                                         "/valgrind-" version ".tar.bz2")))
               (sha256
                (base32
-                "19ds42jwd89zrsjb94g7gizkkzipn8xik3xykrpcqxylxyzi2z03"))
+                "1ccawxrni8brcvwhygy12iprkvz409hbr9xkk1bd03gnm2fplz21"))
               (patches (search-patches "valgrind-enable-arm.patch"))))
     (build-system gnu-build-system)
     (outputs '("doc"                              ;16 MB
@@ -79,18 +79,3 @@ tools.  There are Valgrind tools that can automatically detect many memory
 management and threading bugs, and profile your programs in detail.  You can
 also use Valgrind to build new tools.")
     (license gpl2+)))
-
-(define-public valgrind-3.15
-  (package
-    (inherit valgrind)
-    (version "3.15.0")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "http://www.valgrind.org/downloads"
-                                        "/valgrind-" version ".tar.bz2")
-                         (string-append "ftp://sourceware.org/pub/valgrind"
-                                        "/valgrind-" version ".tar.bz2")))
-              (sha256
-               (base32
-                "1ccawxrni8brcvwhygy12iprkvz409hbr9xkk1bd03gnm2fplz21"))
-              (patches (search-patches "valgrind-enable-arm.patch"))))))

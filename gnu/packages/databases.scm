@@ -612,7 +612,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.38")
+    (version "10.1.40")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -620,7 +620,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0zq77w3ff9q781fn8cv46vy1v4ggb8vjarjvk51k653x4gyg9wfa"))
+                "19375bnq0yg52kqh6cy00s5rglcxdrs5bb2hy7dqv2xqa9z7lxci"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -802,15 +802,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.7")
-    (replacement postgresql-10.8)
+    (version "10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1piyfcrcqscjhnnwn91kdvr764s7d0qz4lgygf9bl6qc71ji1vdz"))
+                "0pfdmy4w95b49w9rkn8dwvzmi2brpqfvbxd04y0k0s0xvymc565i"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -845,22 +844,6 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
-
-;; This release fixes CVE-2019-10129 and CVE-2019-10130.  See
-;; <https://www.postgresql.org/about/news/1939/> for details.
-;; TODO: Remove this in the next rebuild cycle.
-(define-public postgresql-10.8
-  (package
-    (inherit postgresql)
-    (version "10.8")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
-                                  version "/postgresql-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0pfdmy4w95b49w9rkn8dwvzmi2brpqfvbxd04y0k0s0xvymc565i"))
-              (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))))
 
 (define-public postgresql-9.6
   (package
