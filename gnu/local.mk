@@ -490,6 +490,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/wget.scm				\
   %D%/packages/wicd.scm				\
   %D%/packages/wine.scm				\
+  %D%/packages/wireservice.scm				\
   %D%/packages/wm.scm				\
   %D%/packages/wordnet.scm			\
   %D%/packages/wv.scm				\
