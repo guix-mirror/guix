@@ -146,3 +146,25 @@ code.  Agate was previously known as journalism.")))
     (synopsis "SQL read/write support to agate")
     (description "@code{agatesql} uses a monkey patching pattern to add SQL
 support to all @code{agate.Table} instances.")))
+
+(define-public python-agate-dbf
+  (package
+    (inherit base-package)
+    (name "python-agate-dbf")
+    (version "0.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/wireservice/agate-dbf.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1y49fi6pmm7gzhajvqmfpcca2sqnwj24fqnsvzwk7r1hg2iaa2gi"))))
+    (propagated-inputs
+     `(("python-agate" ,python-agate)
+       ("python-dbfread" ,python-dbfread)))
+    (home-page "https://agate-dbf.rtfd.org")
+    (synopsis "Add read support for dbf files to agate")
+    (description "@code{agatedbf} uses a monkey patching pattern to add read
+for dbf files support to all @code{agate.Table} instances.")))
