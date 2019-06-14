@@ -19833,7 +19833,7 @@ A simple setup for cat-avatar-generator can look like this:
 @subsubheading Hpcguix-web
 
 @cindex hpcguix-web
-The @uref{hpcguix-web, https://github.com/UMCUGenetics/hpcguix-web/}
+The @uref{https://github.com/UMCUGenetics/hpcguix-web/, hpcguix-web}
 program is a customizable web interface to browse Guix packages,
 initially designed for users of high-performance computing (HPC)
 clusters.
