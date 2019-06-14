@@ -153,9 +153,6 @@
     `(#:out-of-source? #t
       #:configure-flags
        `("--disable-native-texlive-build"
-         ;; XXX: This is needed because recent Poppler requires C++11 or later.
-         ;; Remove after switch to GCC >= 6.
-         "CXXFLAGS=-std=gnu++11"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
