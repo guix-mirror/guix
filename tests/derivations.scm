@@ -29,7 +29,6 @@
   #:use-module (guix tests http)
   #:use-module ((guix packages) #:select (package-derivation base32))
   #:use-module ((guix build utils) #:select (executable-file?))
-  #:use-module ((gnu packages) #:select (search-bootstrap-binary))
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages guile) #:select (guile-1.8))
   #:use-module (srfi srfi-1)

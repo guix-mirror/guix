@@ -46,10 +46,8 @@
   #:export (search-patch
             search-patches
             search-auxiliary-file
-            search-bootstrap-binary
             %patch-path
             %auxiliary-files-path
-            %bootstrap-binaries-path
             %package-module-path
             %default-package-module-path
 
@@ -75,17 +73,12 @@
 ;;;
 ;;; Code:
 
-;; By default, we store patches, auxiliary files and bootstrap binaries
+;; By default, we store patches and auxiliary files
 ;; alongside Guile modules.  This is so that these extra files can be
 ;; found without requiring a special setup, such as a specific
 ;; installation directory and an extra environment variable.  One
 ;; advantage of this setup is that everything just works in an
 ;; auto-compilation setting.
-
-(define %bootstrap-binaries-path
-  (make-parameter
-   (map (cut string-append <> "/gnu/packages/bootstrap")
-        %load-path)))
 
 (define %auxiliary-files-path
   (make-parameter
@@ -107,22 +100,6 @@
   "Return the list of absolute file names corresponding to each
 FILE-NAME found in %PATCH-PATH."
   (list (search-patch file-name) ...))
-
-(define (search-bootstrap-binary file-name system)
-  "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
-found."
-  ;; On x86_64 always use the i686 binaries.
-  (let ((system (match system
-                  ("x86_64-linux" "i686-linux")
-                  (_ system))))
-    (or (search-path (%bootstrap-binaries-path)
-                     (string-append system "/" file-name))
-        (raise (condition
-                (&message
-                 (message
-                  (format #f (G_ "could not find bootstrap binary '~a' \
-for system '~a'")
-                          file-name system))))))))
 
 (define %distro-root-directory
   ;; Absolute file name of the module hierarchy.  Since (gnu packages …) might

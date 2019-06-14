@@ -23,14 +23,18 @@
   #:use-module (guix packages)
   #:use-module (guix base32)
   #:use-module (guix serialization)
+  #:use-module (guix monads)
   #:use-module ((guix utils) #:select (substitute-keyword-arguments))
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (gcrypt hash)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
   #:use-module (web uri)
   #:export (open-connection-for-tests
@@ -43,6 +47,8 @@
             network-reachable?
             shebang-too-long?
             with-environment-variable
+
+            search-bootstrap-binary
 
             mock
             %test-substitute-urls
@@ -86,6 +92,35 @@
       (%guile-for-build (package-derivation store %bootstrap-guile))
 
       store)))
+
+(define (bootstrap-binary-file program system)
+  "Return the absolute file name where bootstrap binary PROGRAM for SYSTEM is
+stored."
+  (string-append (dirname (search-path %load-path
+                                       "gnu/packages/bootstrap.scm"))
+                 "/bootstrap/" system "/" program))
+
+(define (search-bootstrap-binary file-name system)
+  "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
+found."
+  ;; Note: Keep bootstrap binaries on the local file system so that the 'guix'
+  ;; package can provide them as inputs and copy them to the right place.
+  (let* ((system (match system
+                   ("x86_64-linux" "i686-linux")
+                   (_ system)))
+         (file   (bootstrap-binary-file file-name system)))
+    (if (file-exists? file)
+        file
+        (with-store store
+          (run-with-store store
+            (mlet %store-monad ((drv (origin->derivation
+                                      (bootstrap-executable file-name system))))
+              (mbegin %store-monad
+                (built-derivations (list drv))
+                (begin
+                  (mkdir-p (dirname file))
+                  (copy-file (derivation->output-path drv) file)
+                  (return file)))))))))
 
 (define (call-with-external-store proc)
   "Call PROC with an open connection to the external store or #f it there is

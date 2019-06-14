@@ -43,6 +43,7 @@
             package-with-bootstrap-guile
             glibc-dynamic-linker
 
+            bootstrap-executable
             bootstrap-guile-origin
 
             %bootstrap-guile
