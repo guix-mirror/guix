@@ -160,14 +160,14 @@ stereo encoding, and voice activity detection.")
 (define speexdsp
   (package
     (name "speexdsp")
-    (version "1.2rc3")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.xiph.org/releases/speex/"
                                   "speexdsp-" version ".tar.gz"))
               (sha256
                (base32
-                "1wcjyrnwlkayb20zdhp48y260rfyzg925qpjpljd5x9r01h8irja"))))
+                "0wa7sqpk3x61zz99m7lwkgr6yv62ml6lfgs5xja65vlvdzy44838"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '(,@(if (string=? "aarch64-linux"
