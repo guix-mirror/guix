@@ -226,9 +226,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "75.0.3770.80")
+(define %chromium-version "75.0.3770.90")
 (define %ungoogled-revision "5d8abc38b43a62f379615a0dc972b29d9aebb4b4")
-(define %debian-revision "debian/75.0.3770.80-1")
+(define %debian-revision "debian/75.0.3770.90-1")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -242,7 +242,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "1mk6gb3iif8i6zq41wjn3lhqqlqp1syzpav1nj0170l7v348p0ns"))))
+      "0f9qjhxvk8sajj7qa061crfmln65q7sniylrgp0qijwyw6xrmddi"))))
 
 (define %ungoogled-origin
   (origin
@@ -267,7 +267,7 @@ from forcing GEXP-PROMISE."
                                   (string-take %debian-revision 7))))
     (sha256
      (base32
-      "16z4bncc2q1d5bymywq8291bzkcvba447ql3vsq20rwcdjckyimx"))))
+      "0sh6z2lx44zb31qrpa29vm0sw09dxi7i9h6fsq3ivfxjs7v98bbx"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
