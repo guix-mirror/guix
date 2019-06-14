@@ -51,7 +51,7 @@
 (define-public cmake-minimal
   (package
     (name "cmake-minimal")
-    (version "3.14.4")
+    (version "3.14.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -59,7 +59,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "1n9nzxq1dzbpa0pisdv7g57a8qr9b7n35vbfy489s1v602dxrd00"))
+                "01lcl6ynxfgqn09ncfz1gr24ha5pv1slk0azzaawaqrwpsgf8njh"))
               (modules '((guix build utils)))
               (snippet
                '(begin
