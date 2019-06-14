@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-34)
@@ -58,19 +59,14 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
   (setenv "SOURCE_DATE_EPOCH" "1")
   #t)
 
-(define (first-subdirectory dir)
-  "Return the path of the first sub-directory of DIR."
-  (file-system-fold (lambda (path stat result)
-                      (string=? path dir))
-                    (lambda (path stat result) result) ; leaf
-                    (lambda (path stat result) result) ; down
-                    (lambda (path stat result) result) ; up
-                    (lambda (path stat result)         ; skip
-                      (or result path))
-                    (lambda (path stat errno result)   ; error
-                      (error "first-subdirectory" (strerror errno)))
-                    #f
-                    dir))
+(define (first-subdirectory directory)
+  "Return the file name of the first sub-directory of DIRECTORY."
+  (match (scandir directory
+                  (lambda (file)
+                    (and (not (member file '("." "..")))
+                         (file-is-directory? (string-append directory "/"
+                                                            file)))))
+    ((first . _) first)))
 
 (define* (set-paths #:key target inputs native-inputs
                     (search-paths '()) (native-search-paths '())
