@@ -29,7 +29,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix build utils)
   #:use-module (guix monads)
-  #:use-module ((guix gexp) #:select (lower-inputs))
+  #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu build linux-container)
@@ -40,7 +40,8 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
+  #:use-module ((gnu packages bootstrap)
+                #:select (bootstrap-executable %bootstrap-guile))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -600,8 +601,7 @@ Otherwise, return the derivation for the Bash package."
       (package->derivation bash))
      ;; Use the bootstrap Bash instead.
      ((and container? bootstrap?)
-      (interned-file
-       (search-bootstrap-binary "bash" system)))
+      (lower-object (bootstrap-executable "bash" system)))
      (else
       (return #f)))))
 
@@ -730,7 +730,7 @@ message if any test fails."
                    (container?
                     (let ((bash-binary
                            (if bootstrap?
-                               bash
+                               (derivation->output-path bash)
                                (string-append (derivation->output-path bash)
                                               "/bin/sh"))))
                       (launch-environment/container #:command command

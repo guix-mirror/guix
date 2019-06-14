@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
@@ -33,8 +33,11 @@
                 #:select (derivation derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
   #:use-module (guix memoization)
+  #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (bootstrap-origin
             package-with-bootstrap-guile
@@ -59,6 +62,82 @@
 ;;;
 ;;; Code:
 
+
+
+;;;
+;;; The bootstrap executables: 'bash', 'mkdir', 'tar', 'xz'.  They allow us to
+;;; extract the very first tarball.
+;;;
+
+(define %bootstrap-executables
+  ;; List of bootstrap executables and their recursive hashes (as per 'guix
+  ;; hash -r'), taking their executable bit into account.
+  `(("aarch64-linux"
+     ("bash"
+      ,(base32 "13aqhqb8nydlwq1ah9974q0iadx1pb95v13wzzyf7vgv6nasrwzr"))
+     ("mkdir"
+      ,(base32 "1pxhdp7ldwavmm71xbh9wc197cb2nr66acjn26yjx3732cixh9ws"))
+     ("tar"
+      ,(base32 "1j51gv08sfg277yxj73xd564wjq3f8xwd6s9rbcg8v9gms47m4cx"))
+     ("xz"
+      ,(base32 "1d779rwsrasphg5g3r37qppcqy3p7ay1jb1y83w7x4i3qsc7zjy2")))
+    ("armhf-linux"
+     ("bash"
+      ,(base32 "0s6f1s26g4dsrrkl39zblvwpxmbzi6n9mgqf6vxsqz42gik6bgyn"))
+     ("mkdir"
+      ,(base32 "1r5rcp35niyxfkrdf00y2ba8ifrq9bi76cr63lwjf2l655j1i5p7"))
+     ("tar"
+      ,(base32 "0dksx5im3fv8ximz7368bsax9f26nn47ds74298flm5lnvpv9xly"))
+     ("xz"
+      ,(base32 "1cqqavghjfr0iwxqf61lrssv27wfigysgq2rs4rm1gkmn04yn1k3")))
+    ("i686-linux"
+     ("bash"
+      ,(base32 "0rjaxyzjdllfkf1abczvgaf3cdcc7mmahyvdbkjmjzhgz92pv23g"))
+     ("mkdir"
+      ,(base32 "133ybmfpkmsnysrzbngwvbysqnsmfi8is8zifs7i7n6n600h4s1w"))
+     ("tar"
+      ,(base32 "07830bx29ad5i0l1ykj0g0b1jayjdblf01sr3ww9wbnwdbzinqms"))
+     ("xz"
+      ,(base32 "0i9kxdi17bm5gxfi2xzm0y73p3ii0cqxli1sbljm6rh2fjgyn90k")))
+    ("mips64el-linux"
+     ("bash"
+      ,(base32 "1aw046dhda240k9pb9iaj5aqkm23gkvxa9j82n4k7fk87nbrixw6"))
+     ("mkdir"
+      ,(base32 "0c9j6qgyw84zxbry3ypifzll13gy8ax71w40kdk1h11jbgla3f5k"))
+     ("tar"
+      ,(base32 "06gmqdjq3rl8lr47b9fyx4ifnm5x56ymc8lyryp1ax1j2s4y5jb4"))
+     ("xz"
+      ,(base32 "09j1d69qr0hhhx4k4ih8wp00dfc9y4rp01hfg3vc15yxd0jxabh5")))))
+
+(define (bootstrap-executable-url program system)
+  "Return the URL where PROGRAM can be found for SYSTEM."
+  (string-append
+   "https://git.savannah.gnu.org/cgit/guix.git/plain/gnu/packages/bootstrap/"
+   system "/" program
+   "?id=44f07d1dc6806e97c4e9ee3e6be883cc59dc666e"))
+
+(define bootstrap-executable
+  (mlambda (program system)
+    "Return an origin for PROGRAM, a statically-linked bootstrap executable
+built for SYSTEM."
+    (let ((system (if (string=? system "x86_64-linux")
+                      "i686-linux"
+                      system)))
+      (match (assoc-ref (assoc-ref %bootstrap-executables system)
+                        program)
+        (#f
+         (raise (condition
+                 (&message
+                  (message
+                   (format #f (G_ "could not find bootstrap binary '~a' \
+for system '~a'")
+                           program system))))))
+        ((sha256)
+         (origin
+           (method url-fetch/executable)
+           (uri (bootstrap-executable-url program system))
+           (file-name program)
+           (sha256 sha256)))))))
 
 
 ;;;
@@ -133,8 +212,8 @@ or false to signal an error."
                   (invoke (string-append "bin/" ,program-to-test)
                           "--version"))))))))
     (inputs
-     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
-       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+     `(("tar" ,(bootstrap-executable "tar" (%current-system)))
+       ("xz"  ,(bootstrap-executable "xz" (%current-system)))
        ("tarball" ,(bootstrap-origin (source (%current-system))))))
     (source #f)
     (synopsis description)
@@ -258,11 +337,9 @@ or false to signal an error."
                     #:key outputs system search-paths
                     #:allow-other-keys)
   (define (->store file)
-    (add-to-store store file #t "sha256"
-                  (or (search-bootstrap-binary file
-                                               system)
-                      (error "bootstrap binary not found"
-                             file system))))
+    (run-with-store store
+      (origin->derivation (bootstrap-executable file system)
+                          system)))
 
   (let* ((tar   (->store "tar"))
          (xz    (->store "xz"))
@@ -312,14 +389,16 @@ $out/bin/guile -c ~s $out ~a
 
 # Sanity check.
 $out/bin/guile --version~%"
-                                     mkdir xz tar
+                                     (derivation->output-path mkdir)
+                                     (derivation->output-path xz)
+                                     (derivation->output-path tar)
                                      (format #f "~s" make-guile-wrapper)
-                                     bash)
-                             (list mkdir xz tar bash))))
+                                     (derivation->output-path bash)))))
     (derivation store name
-                bash `(,builder)
+                (derivation->output-path bash) `(,builder)
                 #:system system
-                #:inputs `((,bash) (,builder) (,guile))
+                #:inputs `((,bash) (,mkdir) (,tar) (,xz)
+                           (,builder) (,guile))
                 #:env-vars `(("GUILE_TARBALL"
                               . ,(derivation->output-path guile))))))
 
@@ -486,8 +565,8 @@ $out/bin/guile --version~%"
 
               #t))))))
     (inputs
-     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
-       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+     `(("tar" ,(bootstrap-executable "tar" (%current-system)))
+       ("xz"  ,(bootstrap-executable "xz" (%current-system)))
        ("tarball" ,(bootstrap-origin
                     (origin
                      (method url-fetch)
@@ -570,9 +649,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                (chmod "gcc" #o555)
                #t))))))
     (inputs
-     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
-       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
-       ("bash" ,(search-bootstrap-binary "bash" (%current-system)))
+     `(("tar" ,(bootstrap-executable "tar" (%current-system)))
+       ("xz"  ,(bootstrap-executable "xz" (%current-system)))
+       ("bash" ,(bootstrap-executable "bash" (%current-system)))
        ("libc" ,%bootstrap-glibc)
        ("tarball" ,(bootstrap-origin
                     (origin
@@ -644,8 +723,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                (invoke tar "xvf"
                        (string-append builddir "/binaries.tar"))))))))
     (inputs
-     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
-       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+     `(("tar" ,(bootstrap-executable "tar" (%current-system)))
+       ("xz"  ,(bootstrap-executable "xz" (%current-system)))
        ("tarball"
         ,(bootstrap-origin
           (origin
@@ -693,8 +772,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                (invoke tar "xvf"
                        (string-append builddir "/binaries.tar"))))))))
     (inputs
-     `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
-       ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
+     `(("tar" ,(bootstrap-executable "tar" (%current-system)))
+       ("xz"  ,(bootstrap-executable "xz" (%current-system)))
        ("tarball"
         ,(bootstrap-origin
           (origin
