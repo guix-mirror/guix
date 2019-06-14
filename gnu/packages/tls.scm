@@ -161,7 +161,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.6.6")
+    (version "3.6.8")
     (source (origin
              (method url-fetch)
              (uri
@@ -173,7 +173,7 @@ living in the same process.")
              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
              (sha256
               (base32
-               "19rcfgsfxb01cyz8jxmmgkjqc7y5s97amajzyknk1i1amywcm6mv"))))
+               "10ry71sy8zbksa905bjryphafcg25gkmfa3pf48ripimar7990da"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
@@ -190,6 +190,15 @@ living in the same process.")
              ;; fallback, and users have to configure each program
              ;; independently.  This seems suboptimal.
              "--with-default-trust-store-dir=/etc/ssl/certs"
+
+             ;; Tell the build system that we want Guile bindings installed to
+             ;; the output instead of Guiles own module directory.
+             (string-append "--with-guile-site-dir="
+                            "$(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)")
+             (string-append "--with-guile-site-ccache-dir="
+                            "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache")
+             (string-append "--with-guile-extension-dir="
+                            "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions")
 
              ;; FIXME: Temporarily disable p11-kit support since it is not
              ;; working on mips64el.
