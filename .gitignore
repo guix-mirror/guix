@@ -149,3 +149,4 @@ tmp
 /etc/indent-code.el
 /.version
 /doc/stamp-[0-9]
+/gnu/packages/bootstrap

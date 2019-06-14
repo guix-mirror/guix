@@ -1385,38 +1385,3 @@ dist_patch_DATA =						\
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in
-
-bootstrapdir = $(guilemoduledir)/%D%/packages/bootstrap
-bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
-bootstrap_armhf_linuxdir = $(bootstrapdir)/armhf-linux
-bootstrap_aarch64_linuxdir = $(bootstrapdir)/aarch64-linux
-bootstrap_mips64el_linuxdir = $(bootstrapdir)/mips64el-linux
-
-dist_bootstrap_i686_linux_DATA =		\
-  %D%/packages/bootstrap/i686-linux/bash	\
-  %D%/packages/bootstrap/i686-linux/mkdir	\
-  %D%/packages/bootstrap/i686-linux/tar		\
-  %D%/packages/bootstrap/i686-linux/xz
-
-dist_bootstrap_armhf_linux_DATA =		\
-  %D%/packages/bootstrap/armhf-linux/bash	\
-  %D%/packages/bootstrap/armhf-linux/mkdir	\
-  %D%/packages/bootstrap/armhf-linux/tar	\
-  %D%/packages/bootstrap/armhf-linux/xz
-
-dist_bootstrap_aarch64_linux_DATA =		\
-  %D%/packages/bootstrap/aarch64-linux/bash	\
-  %D%/packages/bootstrap/aarch64-linux/mkdir	\
-  %D%/packages/bootstrap/aarch64-linux/tar	\
-  %D%/packages/bootstrap/aarch64-linux/xz
-
-dist_bootstrap_mips64el_linux_DATA =		\
-  %D%/packages/bootstrap/mips64el-linux/bash	\
-  %D%/packages/bootstrap/mips64el-linux/mkdir	\
-  %D%/packages/bootstrap/mips64el-linux/tar	\
-  %D%/packages/bootstrap/mips64el-linux/xz
-
-# Those files must remain executable, so they remain executable once
-# imported into the store.
-set-bootstrap-executable-permissions:
-	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}

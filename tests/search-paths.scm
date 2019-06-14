@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,17 +29,17 @@
 
 (test-equal "evaluate-search-paths, separator is #f"
   (string-append %top-srcdir
-                 "/gnu/packages/bootstrap/aarch64-linux")
+                 "/gnu/packages/aux-files/linux-libre")
 
   ;; The following search path spec should evaluate to a single item: the
   ;; first directory that matches the "-linux$" pattern in
   ;; gnu/packages/bootstrap.
   (let ((spec (search-path-specification
                (variable "CHBOUIB")
-               (files '("gnu/packages/bootstrap"))
+               (files '("gnu/packages/aux-files"))
                (file-type 'directory)
                (separator #f)
-               (file-pattern "-linux$"))))
+               (file-pattern "^linux"))))
     (match (evaluate-search-paths (list spec)
                                   (list %top-srcdir))
       (((spec* . value))
