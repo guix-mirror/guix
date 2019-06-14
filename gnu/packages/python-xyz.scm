@@ -60,6 +60,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -15622,3 +15624,40 @@ by Igor Pavlov.")
 
 (define-public python2-pylzma
   (package-with-python2 python-pylzma))
+
+(define-public python-bsddb3
+  (package
+    (name "python-bsddb3")
+    (version "6.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bsddb3" version))
+       (sha256
+        (base32
+         "019db2y6bfmiqbrgg9x9f6h72qjmqh05czdn2v5sy9bl0gs23mj2"))))
+    (build-system python-build-system)
+    (inputs
+     `(("bdb" ,bdb)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "BERKELEYDB_DIR" (assoc-ref inputs "bdb"))
+             (setenv "YES_I_HAVE_THE_RIGHT_TO_USE_THIS_BERKELEY_DB_VERSION" "1")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python3" "test3.py" "-v"))))))
+    (home-page "https://www.jcea.es/programacion/pybsddb.htm")
+    (synopsis "Python bindings for Oracle Berkeley DB")
+    (description
+     "This module provides a nearly complete wrapping of the Oracle/Sleepycat
+C API for the Database Environment, Database, Cursor, Log Cursor, Sequence and
+Transaction objects, and each of these is exposed as a Python type in the
+bsddb3.db module.  The database objects can use various access methods: btree,
+hash, recno, and queue.  Complete support of Berkeley DB distributed
+transactions.  Complete support for Berkeley DB Replication Manager.
+Complete support for Berkeley DB Base Replication.  Support for RPC.")
+    (license license:bsd-3)))
