@@ -935,9 +935,9 @@
 (when (or (not (network-reachable?)) (shebang-too-long?))
   (test-skip 1))
 (test-assert "GNU Make, bootstrap"
-  ;; GNU Make is the first program built during bootstrap; we choose it
-  ;; here so that the test doesn't last for too long.
-  (let ((gnu-make (@@ (gnu packages commencement) gnu-make-boot0)))
+  ;; GNU-MAKE-FOR-TESTS can be built cheaply; we choose it here so that the
+  ;; test doesn't last for too long.
+  (let ((gnu-make gnu-make-for-tests))
     (and (package? gnu-make)
          (or (location? (package-location gnu-make))
              (not (package-location gnu-make)))

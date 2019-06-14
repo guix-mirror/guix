@@ -23,8 +23,10 @@
   #:use-module (guix packages)
   #:use-module (guix base32)
   #:use-module (guix serialization)
+  #:use-module ((guix utils) #:select (substitute-keyword-arguments))
   #:use-module (gcrypt hash)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
@@ -50,7 +52,9 @@
             with-derivation-narinfo
             with-derivation-substitute
             dummy-package
-            dummy-origin))
+            dummy-origin
+
+            gnu-make-for-tests))
 
 ;;; Commentary:
 ;;;
@@ -363,6 +367,33 @@ default values, and with EXTRA-FIELDS set as specified."
   (let ((o (origin (method #f) (uri "http://www.example.com")
                    (sha256 (base32 (make-string 52 #\x))))))
     (origin (inherit o) extra-fields ...)))
+
+(define gnu-make-for-tests
+  ;; This is a variant of 'gnu-make-boot0' that can be built with minimal
+  ;; resources.
+  (package-with-bootstrap-guile
+   (package
+     (inherit gnu-make)
+     (name "make-test-boot0")
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:tests? #f                               ;cannot run "make check"
+        ,@(substitute-keyword-arguments (package-arguments gnu-make)
+            ((#:phases phases)
+             `(modify-phases ,phases
+                (replace 'build
+                  (lambda _
+                    (invoke "./build.sh")
+                    #t))
+                (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (install-file "make" bin)
+                      #t))))))))
+     (native-inputs '())                          ;no need for 'pkg-config'
+     (inputs %bootstrap-inputs-for-tests))))
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)

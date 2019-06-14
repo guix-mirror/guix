@@ -239,11 +239,10 @@
 (unless (network-reachable?) (test-skip 1))
 (test-assertm "profile-derivation relative symlinks, two entries"
   (mlet* %store-monad
-      ((gnu-make-boot0 -> (@@ (gnu packages commencement) gnu-make-boot0))
-       (manifest -> (packages->manifest
-                     (list %bootstrap-guile gnu-make-boot0)))
+      ((manifest -> (packages->manifest
+                     (list %bootstrap-guile gnu-make-for-tests)))
        (guile       (package->derivation %bootstrap-guile))
-       (make        (package->derivation gnu-make-boot0))
+       (make        (package->derivation gnu-make-for-tests))
        (drv         (profile-derivation manifest
                                         #:relative-symlinks? #t
                                         #:hooks '()
