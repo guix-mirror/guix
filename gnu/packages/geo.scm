@@ -869,3 +869,36 @@ dropping features at lower levels.")
 OpenStreetMap project.  They can be used to convert, filter and update
 OpenStreetMap data files.")
     (license license:agpl3)))
+
+(define-public osm-gps-map
+  (package
+    (name "osm-gps-map")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/nzjrs/osm-gps-map/releases/download/"
+             version "/osm-gps-map-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11imsf4cz1dpxdjh178k2s29axmq86rkfg1pqmn7incyxmjzhbwg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gnome-common" ,gnome-common)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("libsoup" ,libsoup)))
+    (home-page "https://nzjrs.github.io/osm-gps-map/")
+    (synopsis "GTK+ widget for displaying OpenStreetMap tiles")
+    (description
+     "This package provides a GTK+ widget (and Python bindings) that when
+given GPS coordinates,draws a GPS track, and points of interest on a moving
+map display.  Downloads map data from a number of websites, including
+@url{https://www.openstreetmap.org}.")
+    (license license:gpl2+)))
