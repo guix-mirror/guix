@@ -15,7 +15,7 @@
 # Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-# Copyright © 2017, 2018 Gábor Boskovits <boskovits@gmail.com>
+# Copyright © 2017, 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 # Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 # Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
@@ -691,6 +691,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
+  %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
   %D%/packages/patches/blender-2.79-newer-ffmpeg.patch		\
