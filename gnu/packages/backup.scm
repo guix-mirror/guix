@@ -197,18 +197,18 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.3.3")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://libarchive.org/downloads/libarchive-"
-                           version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2018-1000877.patch"
-                                "libarchive-CVE-2018-1000878.patch"
-                                "libarchive-CVE-2018-1000880.patch"))
+       (uri (list (string-append "https://libarchive.org/downloads/libarchive-"
+                                 version ".tar.gz")
+                  (string-append "https://github.com/libarchive/libarchive"
+                                 "/releases/download/v" version "/libarchive-"
+                                 version ".tar.gz")))
        (sha256
         (base32
-         "0bhfncid058p7n1n8v29l6wxm3mhdqfassscihbsxfwz3iwb2zms"))))
+         "0pl25mmz1b1cnwf35kxmygyy9g7z7hslxbx329a9yx8csh7dahw6"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)

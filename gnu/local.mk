@@ -982,9 +982,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
-  %D%/packages/patches/libarchive-CVE-2018-1000877.patch	\
-  %D%/packages/patches/libarchive-CVE-2018-1000878.patch	\
-  %D%/packages/patches/libarchive-CVE-2018-1000880.patch	\
   %D%/packages/patches/libbase-fix-includes.patch		\
   %D%/packages/patches/libbase-use-own-logging.patch		\
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
