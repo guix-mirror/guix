@@ -2298,15 +2298,33 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
-         "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
+         "0sqipg4fk7xbixqd8kq6rlkxj664d157bdwbh93farcphf92x1r9"))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let ((cwd (getcwd))
+                            (libdir (find (cut string-prefix? "lib." <>)
+                                          (scandir "build"))))
+                      (setenv "PYTHONPATH"
+                              (string-append cwd "/build/" libdir ":"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
