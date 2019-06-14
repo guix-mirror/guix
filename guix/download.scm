@@ -36,6 +36,7 @@
   #:use-module (srfi srfi-26)
   #:export (%mirrors
             url-fetch
+            url-fetch/executable
             url-fetch/tarbomb
             url-fetch/zipbomb
             download-to-store))
@@ -420,8 +421,10 @@
 (define* (built-in-download file-name url
                             #:key system hash-algo hash
                             mirrors content-addressed-mirrors
+                            executable?
                             (guile 'unused))
-  "Download FILE-NAME from URL using the built-in 'download' builder.
+  "Download FILE-NAME from URL using the built-in 'download' builder.  When
+EXECUTABLE? is true, make the downloaded file executable.
 
 This is an \"out-of-band\" download in that the returned derivation does not
 explicitly depend on Guile, GnuTLS, etc.  Instead, the daemon performs the
@@ -433,6 +436,7 @@ download by itself using its own dependencies."
                     #:system system
                     #:hash-algo hash-algo
                     #:hash hash
+                    #:recursive? executable?
                     #:inputs `((,mirrors)
                                (,content-addressed-mirrors))
 
@@ -444,7 +448,10 @@ download by itself using its own dependencies."
                     #:env-vars `(("url" . ,(object->string url))
                                  ("mirrors" . ,mirrors)
                                  ("content-addressed-mirrors"
-                                  . ,content-addressed-mirrors))
+                                  . ,content-addressed-mirrors)
+                                 ,@(if executable?
+                                       '(("executable" . "1"))
+                                       '()))
 
                     ;; Do not offload this derivation because we cannot be
                     ;; sure that the remote daemon supports the 'download'
@@ -455,11 +462,13 @@ download by itself using its own dependencies."
 (define* (url-fetch url hash-algo hash
                     #:optional name
                     #:key (system (%current-system))
-                    (guile (default-guile)))
+                    (guile (default-guile))
+                    executable?)
   "Return a fixed-output derivation that fetches URL (a string, or a list of
 strings denoting alternate URLs), which is expected to have hash HASH of type
 HASH-ALGO (a symbol).  By default, the file name is the base name of URL;
-optionally, NAME can specify a different file name.
+optionally, NAME can specify a different file name.  When EXECUTABLE? is true,
+make the downloaded file executable.
 
 When one of the URL starts with mirror://, then its host part is
 interpreted as the name of a mirror scheme, taken from %MIRROR-FILE.
@@ -490,9 +499,20 @@ in the store."
                              #:system system
                              #:hash-algo hash-algo
                              #:hash hash
+                             #:executable? executable?
                              #:mirrors %mirror-file
                              #:content-addressed-mirrors
                              %content-addressed-mirror-file)))))
+
+(define* (url-fetch/executable url hash-algo hash
+                               #:optional name
+                               #:key (system (%current-system))
+                               (guile (default-guile)))
+  "Like 'url-fetch', but make the downloaded file executable."
+  (url-fetch url hash-algo hash name
+             #:system system
+             #:guile guile
+             #:executable? #t))
 
 (define* (url-fetch/tarbomb url hash-algo hash
                             #:optional name
