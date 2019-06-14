@@ -7455,3 +7455,73 @@ steam locomotive across many levels and collect all the coaches to
 win.")
     ;; The project is dual-licensed GPL2+ and GPL3+.
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public freeorion
+  (package
+    (name "freeorion")
+    (version "0.4.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freeorion/freeorion.git")
+             ;; Most recent stable release uses boost_signals (v1) which was
+             ;; later replaced with boost-signals2 and no longer exists.  This
+             ;; commit builds and runs.
+             ;;
+             ;; TODO: Update this when the next stable release when it is
+             ;; available.
+             (commit "470d0711537804df3c2ca25532f674ab4bec58af")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1wsw632l1cj17px6i88nqjzs0dngp5rsr67n6qkkjlfjfxi69j0f"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; There are some bundled fonts.
+           (for-each delete-file-recursively '("default/data/fonts"))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-fonts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((roboto-dir (string-append (assoc-ref inputs "font-roboto")
+                                              "/share/fonts/truetype/")))
+               (substitute* "UI/ClientUI.cpp"
+                 (("\\(GetRootDataDir.*?\"Roboto-(Bold|Regular)\\.ttf\"\\)\\.string\\(\\)\\);"
+                   all type)
+                  (string-append "\"" roboto-dir "Roboto-" type "\");")))
+               #t))))))
+    (inputs
+     `(("boost" ,boost)
+       ("boost_signals" ,boost-signals2)
+       ("font-dejavu" ,font-dejavu)
+       ("font-roboto" ,font-google-roboto)
+       ("freetype2" ,freetype)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("openal" ,openal)
+       ("python2" ,python-2.7)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.freeorion.org/index.php/Main_Page")
+    (synopsis "Turn-based space empire and galactic conquest computer game")
+    (description
+     "FreeOrion is a turn-based space empire and galactic conquest (4X)
+computer game being designed and built by the FreeOrion project.  Control an
+empire with the goal of exploring the galaxy, expanding your territory,
+exploiting the resources, and exterminating rival alien empires.  FreeOrion is
+inspired by the tradition of the Master of Orion games, but is not a clone or
+remake of that series or any other game.")
+    ;; Source code is released under gpl2.  Artwork, music and sounds, and
+    ;; in-game text are released under cc-by-sa3.0.  Game content scripts are
+    ;; released under both gpl2 and cc-by-sa3.0.  Bundled Gigi library is
+    ;; released under lgpl2.1+.
+    (license (list license:gpl2 license:cc-by-sa3.0 license:lgpl2.1+))))
