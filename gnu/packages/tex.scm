@@ -111,12 +111,12 @@
                                       "&id=" revision))
                   (file-name (string-append "texlive-bin-" name))
                   (sha256 (base32 hash)))))
-             (arch-revision "418dd6f008c3d41a461353fdb60f2d73d87c58ed"))
+             (arch-revision "c4b99aba97213ea554b6592a4916d3c7394a6d7b"))
          (append (search-patches  "texlive-bin-CVE-2018-17407.patch"
                                   "texlive-bin-luatex-poppler-compat.patch")
                  (list
-                  (arch-patch "pdftex-poppler0.75.patch" arch-revision
-                              "1cqpcp7h1qyxyp3wjbpcmx2wgvj9ywpz60hvy280mp9w633yzyg3")
+                  (arch-patch "pdftex-poppler0.76.patch" arch-revision
+                              "15ypbh21amfsdxy7ca825x28lkmmkklxk1w660gpgvzdi7s70h0b")
                   (arch-patch "xetex-poppler-fixes.patch" arch-revision
                               "1jj1p5zkjljb7id9pjv29cw0cf8mwrgrh4ackgzz9c200vaqpsvx")))))))
    (build-system gnu-build-system)
@@ -194,9 +194,9 @@
             #t))
         (add-after 'unpack 'use-code-for-new-poppler
           (lambda _
-            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.75.0.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftoepdf.cc")
-            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.75.0.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
             #t))
         (add-after 'use-code-for-new-poppler 'use-code-for-even-newer-poppler

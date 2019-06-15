@@ -938,6 +938,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/idris-test-no-node.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-poppler-compat3.patch		\
+  %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\

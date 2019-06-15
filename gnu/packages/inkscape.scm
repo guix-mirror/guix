@@ -52,6 +52,7 @@
               (uri (string-append "https://media.inkscape.org/dl/"
                                   "resources/file/"
                                   "inkscape-" version ".tar.bz2"))
+              (patches (search-patches "inkscape-poppler-0.76.patch"))
               (sha256
                (base32
                 "0pjinhjibfsz1aywdpgpj3k23xrsszpj4a1ya5562dkv2yl2vv2p"))))

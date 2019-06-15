@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,9 +98,33 @@
                          (file-name "scribus-poppler-0.70.patch")
                          (sha256
                           (base32
-                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr"))))
-
+                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr")))
+                       ;; This and the preceding patch are taken from Arch Linux
+                       ;; because they are adjusted for the Scribus release tarball
+                       ;; rather than the upstream master branch.
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append "https://git.archlinux.org/svntogit/"
+                                             "community.git/plain/trunk/scribus-"
+                                             "poppler-0.75.patch?h=packages/scribus&id="
+                                             "4d35c4ad4869c1dcce9243c4786ff303bdd5c601"))
+                         (file-name "scribus-poppler-0.75.patch")
+                         (sha256
+                          (base32
+                           "1lhf2srp7iv44zzdbr3kqa0lfjmm77nalxnx80jqaixhr5yq2s8f")))
+                       (origin
+                         (method url-fetch)
+                         (uri (string-append
+                               "https://github.com/scribusproject/scribus/commit/"
+                               "9449265592a5195153d72c2a511d2010b0cf5b0b.patch"))
+                         (file-name "scribus-poppler-0.76.patch")
+                         (sha256
+                          (base32
+                           "0zghiqra9s6f6v06fdr97gdhiw41zr8r6vqh4ar4yw7rqn2771jd"))))
                  (search-patches "scribus-poppler-0.73.patch")))
+       ;; The --binary flag is required for 'scribus-poppler-0.75.patch', because
+       ;; we need to retain the CRLF line endings.
+       (patch-flags '("-p1" "--binary"))
        (modules '((guix build utils)))
        (snippet
         '(begin
