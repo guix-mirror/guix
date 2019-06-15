@@ -11387,7 +11387,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method git-fetch)
@@ -11396,10 +11396,14 @@ downloading manager for Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rqnx7672175288yqaslw0d9vw04j6psw7mys8j9zcp2i72hlvkn"))))
+        (base32 "1pzlx3galyryd3hd84hnd7r5s6yl9sdrfhy1s6dgz40glw41wmpr"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-elisp-refs" ,emacs-elisp-refs)))
+     `(("emacs-elisp-refs" ,emacs-elisp-refs)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-f" ,emacs-f)
+       ("emacs-shut-up" ,emacs-shut-up)))
     (home-page "https://github.com/Wilfred/helpful")
     (synopsis "More contextual information in Emacs help")
     (description "@code{helpful} is an alternative to the built-in Emacs help
