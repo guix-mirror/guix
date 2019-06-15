@@ -5105,15 +5105,16 @@ strings, and code folding.")
 (define-public emacs-nodejs-repl
   (package
     (name "emacs-nodejs-repl")
-    (version "0.2.0")
+    (version "0.2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/abicky/nodejs-repl.el"
-                                  "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/abicky/nodejs-repl.el")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hq2cqdq2668yf48g7qnkci90nhih1gnhacsgz355jnib56lhmkz"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "05ccv87rnw7fss3lib8m9sywjrj6n92fnd7mmhmjh27g2klqc83z"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abicky/nodejs-repl.el")
     (synopsis "Node.js REPL inside Emacs")
