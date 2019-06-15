@@ -10185,6 +10185,31 @@ a heuristic based on frequency and recency.")
 as well as functions for navigating between these headings.")
     (license license:gpl3+)))
 
+(define-public emacs-org-super-agenda
+  (package
+   (name "emacs-org-super-agenda")
+   (version "1.1")
+   (source (origin
+            (method git-fetch)
+            (uri (git-reference
+                  (url "https://github.com/alphapapa/org-super-agenda")
+                  (commit version)))
+            (file-name (git-file-name name version))
+            (sha256
+             (base32
+              "0vzf91lsxnhwf52kvm8ycpf0wb9c8l91689vyhwgv4wz8q6cvjwp"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    `(("emacs-org" ,emacs-org)
+      ("emacs-dash" ,emacs-dash)
+      ("emacs-ht" ,emacs-ht)
+      ("emacs-s" ,emacs-s)))
+   (home-page "https://github.com/alphapapa/org-super-agenda")
+   (synopsis "Supercharged Org agenda")
+   (description "This package allows items in the Org agenda to be grouped
+into sections while preserving the structure imposed by any timestamps.")
+   (license license:gpl3+)))
+
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
