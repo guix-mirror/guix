@@ -33,7 +33,7 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.0.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
@@ -41,7 +41,7 @@
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ppxl3k3nsz0qdakq844i2kj4fvh9h937lhx26bgmpmxq67sghw6"))))
+                "07anqypf7c719x9y683qz65cxllmzlgmlab2hlahrqcj4bq2k99c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
