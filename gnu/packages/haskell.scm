@@ -9703,16 +9703,6 @@ packages.")
         (base32
          "1q43y8wfj0wf9gdq2kzphwjwq6m5pvryy1lqgk954aq5z3ks1lsf"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'add-setup-script
-           (lambda _
-             ;; The usual "Setup.hs" script is missing from the source.
-             (with-output-to-file "Setup.hs"
-               (lambda ()
-                 (format #t "import Distribution.Simple~%")
-                 (format #t "main = defaultMain~%"))))))))
     (inputs `(("ghc-basement" ,ghc-basement)))
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Alternative prelude with batteries and no dependencies")
@@ -10590,16 +10580,6 @@ widths to the Char type.")
         (base32
          "064h8a4hp53a479d3ak0vmqbx8hi0cpg7zn4wp23rjy26dka8p7g"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'add-setup-script
-           (lambda _
-             ;; The usual "Setup.hs" script is missing from the source.
-             (with-output-to-file "Setup.hs"
-               (lambda ()
-                 (format #t "import Distribution.Simple~%")
-                 (format #t "main = defaultMain~%"))))))))
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
        ("ghc-hashable" ,ghc-hashable)
@@ -11122,17 +11102,6 @@ DOS/Windows paths and markup languages (such as XML).")
         (base32
          "0vbfrsqsi7mdziqsnj68bsqlwbqxxhvrmy9rv6w8z18d1m8w3n6h"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'create-Setup.hs
-           (lambda _
-             (with-output-to-file "Setup.hs"
-               (lambda _
-                 (display "\
-import Distribution.Simple
-main = defaultMain")))
-             #t)))))
     (inputs
      `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-cryptohash" ,ghc-cryptohash)
@@ -11266,17 +11235,6 @@ handling wrong.")
         (base32
          "1rk7fmpkmxw9hhwr8df29kadnf0ybnwj64ggdbnsdrpfyhnkisci"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'create-Setup.hs
-           (lambda _
-             (with-output-to-file "Setup.hs"
-               (lambda _
-                 (display "\
-import Distribution.Simple
-main = defaultMain")))
-             #t)))))
     (inputs
      `(("ghc-inline-c" ,ghc-inline-c)
        ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
