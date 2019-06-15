@@ -534,37 +534,48 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.12.2.0")
+    (version "0.14.1.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/monero-project/monero-gui")
+             (url "https://github.com/monero-project/monero-gui.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1cnrkwh7kp64lnzz1xfmkf1mhsgm5gls292gpqai3jr8jydpkahl"))))
+         "0ilx47771faygf97wilm64xnqxgxa3b43q0g9v014npk0qj8pc31"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("doxygen" ,doxygen)
-       ("graphviz" ,graphviz)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
+       ("hidapi" ,hidapi)
        ("libunwind" ,libunwind)
+       ("libsodium" ,libsodium)
        ("openssl" ,openssl)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtlocation" ,qtlocation)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
-       ("readline" ,readline)
+       ("qtquickcontrols2",qtquickcontrols2)
+       ("qtsvg" ,qtsvg)
+       ("qtwebchannel" ,qtwebchannel)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)
        ("unbound" ,unbound)))
     (propagated-inputs
      `(("monero" ,monero)))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build qt-utils))
+       #:phases
        (modify-phases %standard-phases
          (delete 'configure)
          (delete 'check)
@@ -576,32 +587,45 @@ the Monero command line client and daemon.")
          (add-after 'fix-makefile-vars 'fix-library-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "monero-wallet-gui.pro"
-               (("-L/usr/local/lib") "")
+               (("-L/usr/local/lib")
+                "")
                (("-L/usr/local/opt/openssl/lib")
-                (string-append "-L"
-                               (assoc-ref inputs "openssl")
-                               "/lib"))
+                (string-append "-L" (assoc-ref inputs "openssl") "/lib"))
                (("-L/usr/local/opt/boost/lib")
-                (string-append "-L"
-                               (assoc-ref inputs "boost")
-                               "/lib")))
+                (string-append "-L" (assoc-ref inputs "boost") "/lib")))
              #t))
          (add-after 'fix-library-paths 'fix-monerod-path
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "src/daemon/DaemonManager.cpp"
                (("QApplication::applicationDirPath\\(\\) \\+ \"/monerod")
-                (string-append "\""(assoc-ref inputs "monero")
+                (string-append "\"" (assoc-ref inputs "monero")
                                "/bin/monerod")))
              #t))
          (add-after 'fix-monerod-path 'fix-qt-paths
            (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((qttools  (assoc-ref inputs "qttools"))
-                    (lrelease (string-append qttools "/bin/lrelease"))
-                    (lupdate (string-append qttools "/bin/lupdate")))
-               (substitute* "monero-wallet-gui.pro"
-                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease") lrelease)
-                 (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate") lupdate))
-               #t)))
+             (substitute* "monero-wallet-gui.pro"
+               (("\\$\\$\\[QT_INSTALL_BINS\\]/lrelease")
+                (string-append (assoc-ref inputs "qttools") "/bin/lrelease"))
+               (("\\$\\$\\[QT_INSTALL_BINS\\]/lupdate")
+                (string-append (assoc-ref inputs "qttools") "/bin/lupdate")))
+             #t))
+         (add-after 'fix-qt-paths 'make-qt-deterministic
+           (lambda _
+             (setenv "QT_RCC_SOURCE_DATE_OVERRIDE" "1")
+             #t))
+         (add-after 'make-qt-deterministic 'fix-version
+           (lambda _
+             (substitute* "build.sh"
+               (("echo .*> version.js")
+                ""))
+             (with-output-to-file "version.js"
+               (lambda _
+                 (format #t
+                         "var GUI_VERSION = \"~a\"~@
+                          var GUI_MONERO_VERSION = \"~a\"~%"
+                         ,version
+                         ,(package-version monero))))
+             #t))
          (replace 'build
            (lambda _
              (invoke "./build.sh")))
@@ -613,28 +637,18 @@ the Monero command line client and daemon.")
              #t))
          (add-before 'install 'change-dir
            (lambda _
-             (chdir "build")))
-         (add-after 'install 'wrap-executable
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (chdir "build")
+             #t))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/monero-wallet-gui")
-                 `("QT_PLUGIN_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/plugins"))
-                         '("qtbase" "qtdeclarative")))
-                 `("QML2_IMPORT_PATH" ":" prefix
-                   ,(map (lambda (label)
-                           (string-append (assoc-ref inputs label)
-                                          "/lib/qt5/qml"))
-                         '("qtdeclarative" "qtgraphicaleffects"
-                           "qtquickcontrols"))))
-               #t))))))
+               (wrap-qt-program out "monero-wallet-gui"))
+             #t)))))
     (home-page "https://getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description
-     "Monero is a secure, private, untraceable currency.  This package provides the
-Monero GUI client.")
+     "Monero is a secure, private, untraceable currency.  This package provides
+the Monero GUI client.")
     (license license:bsd-3)))
 
 (define-public monero-core
