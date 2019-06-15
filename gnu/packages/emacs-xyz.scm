@@ -5763,14 +5763,14 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (name "emacs-wgrep")
     (version "2.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/mhayashi1120/Emacs-wgrep/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/mhayashi1120/Emacs-wgrep")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cssqbg03fjb6xwf7idv1l3jjsh9r5r232ryi11czqlxfiv658bj"))))
+                "0pgyf9vfcahb495q01hi1mvkmv846w4rj6zyf52is8x7sjj7x44s"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
     (synopsis "Edit a grep buffer and apply those changes to the files")
