@@ -10161,6 +10161,30 @@ outline-mode), so there is no such thing like an outshine mode, only
 a heuristic based on frequency and recency.")
       (license license:gpl3+))))
 
+(define-public emacs-org-recent-headings
+  (package
+    (name "emacs-org-recent-headings")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-recent-headings.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gsrzmg3mssh9s28yjm9m866fnhm1pcligssz1q6brga6dm6f2yy"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-frecency" ,emacs-frecency)))
+    (home-page "https://github.com/alphapapa/org-recent-headings")
+    (synopsis "Navigate to recently used Org headings and lists")
+    (description "This package maintains a list of recently used Org headings,
+as well as functions for navigating between these headings.")
+    (license license:gpl3+)))
+
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
