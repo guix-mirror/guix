@@ -15645,6 +15645,32 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
+(define-public emacs-org-download
+  (let ((commit "ac72bf8fce3e855da60687027b6b8601cf1de480")
+        (version "0.1.0")
+        (revision "1"))
+    (package
+      (name "emacs-org-download")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/abo-abo/org-download")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0ax5wd44765wnwabkam1g2r62gq8crx2qq733s2mg1z72cfvwxqb"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)
+         ("emacs-async" ,emacs-async)))
+      (home-page "https://github.com/abo-abo/org-download")
+      (synopsis "Facilitate moving images")
+      (description "This package provides utilities for managing image files
+copied into @code{org-mode} buffers.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-dash
   (let ((commit "192b862185df661439a06de644791171e899348a")
         (version "1.3.0")
