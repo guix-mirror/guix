@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -885,7 +886,7 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.3")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -893,7 +894,7 @@ live network and disk I/O bandwidth monitor.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jl30d0kibc82447fr3lgw75arik0l9729k94z76l7vl51y8mq4a"))))
+         "0hc2x17bxk2n00z8jj5jfwq3z41681fd19n018724il0cpkjyncy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
