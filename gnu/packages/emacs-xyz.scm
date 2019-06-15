@@ -8640,13 +8640,13 @@ created by @code{git format-patch}, from @code{magit}, @code{dired} and
     (version "1.3.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/leathekd/erc-hl-nicks"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/leathekd/erc-hl-nicks")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1a1r2kc3688g8c2ybkpwh88kgmnqhg3h3032g2yn4zr9m0n3vpkr"))))
+        (base32 "0c82rxpl5v7bbxirf1ksg06xv5xcddh8nkrpj7i6nvfarwdfnk4f"))))
     (build-system emacs-build-system)
     (synopsis "Nickname highlighting for Emacs ERC")
     (description "@code{erc-hl-nicks} highlights nicknames in ERC, an IRC
