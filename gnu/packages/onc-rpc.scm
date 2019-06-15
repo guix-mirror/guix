@@ -23,6 +23,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
@@ -105,13 +106,14 @@ universal addresses.")
     (name "libnsl")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thkukuk/libnsl/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/thkukuk/libnsl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y6kmxmv1difzvdhx7grqzw0j2v2b74mg4kjb803m8jcgkqqx8m5"))))
+                "1chzqhcgh0yia9js8mh92cmhyka7rh32ql6b3mgdk26n94dqzs8b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
