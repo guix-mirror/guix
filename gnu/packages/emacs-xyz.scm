@@ -5161,13 +5161,14 @@ indentation and filling of comments and C preprocessor fontification.")
     (name "emacs-tide")
     (version "3.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ananthakumaran/tide"
-                                  "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ananthakumaran/tide")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c600myr2yqbkmy9lify38lz0zzjdqk1733db5n7vsay16vn6fzi"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "19kjq4kr2j853p5qp1s79zxmrfprli82lsnphbrlp9vbnib28xyd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
