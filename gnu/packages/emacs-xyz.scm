@@ -9762,12 +9762,13 @@ and can be consulted and modified.")
     (version "0.03")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/syohex/emacs-evil-anzu"
-                           "/archive/" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/syohex/emacs-evil-anzu")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "032hh2946z529cizqsg8pm6cpn5qdj8lfk3qskmx6xv3g2ra56ns"))))
+        (base32 "0lw7fg4gqwj30r0l6k2ni36sxqkf65zf0d0z3rxnpwbxlf8dlkrr"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
