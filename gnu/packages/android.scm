@@ -362,7 +362,7 @@ various Android core host applications.")
      `(("android-libbase" ,android-libbase)
        ("android-libcutils" ,android-libcutils)
        ("android-liblog" ,android-liblog)
-       ("openssl" ,openssl)))
+       ("openssl" ,openssl-1.0)))
     (home-page "https://developer.android.com/studio/command-line/adb.html")
     (synopsis "Android Debug Bridge")
     (description
