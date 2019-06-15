@@ -7591,15 +7591,17 @@ and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/posframe-" version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tumashu/posframe")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1h8vvxvsg41vc1nnglqjs2q0k1yzfsn72skga9s76qa3zxmx6kds"))))
+         "0i5xd7x33zmshhkzpsbpcpc8lgvv5vinnl1a07bnp8r1sp4yahm0"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info
     (arguments `(#:emacs ,emacs))
