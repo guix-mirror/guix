@@ -5134,14 +5134,14 @@ features:
     (name "emacs-typescript-mode")
     (version "0.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/ananthakumaran/typescript.el"
-                    "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ananthakumaran/typescript.el")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gqjirm8scf0wysm7x97zdfbs4qa5nqdl64jfbkd18iskv5mg3rj"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "002f1xfhq43fjaqliwrgxspryfahpa82va5dw3p8kwil2xwvc6mh"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/ananthakumaran/typescript.el")
     (synopsis "Emacs major mode for editing Typescript code")
