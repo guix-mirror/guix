@@ -48,6 +48,7 @@
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
+;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4080,6 +4081,33 @@ If you load it from a terminal, you will be able to make use of the
 transparent background.  If you load it from a GUI, it will default to a
 dark background.")
     (license license:gpl3+)))
+
+(define-public emacs-gruvbox-theme
+  (package
+    (name "emacs-gruvbox-theme")
+    (version "1.28.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/greduan/emacs-theme-gruvbox.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00qq92gp1g55pzm97rh7k0dgxy44pxziridl8kqm4rbpi31r7k9p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-autothemer" ,emacs-autothemer)))
+    (home-page "https://github.com/greduan/emacs-theme-gruvbox")
+    (synopsis "Gruvbox is a retro groove color scheme ported from Vim")
+    (description
+     "Gruvbox is heavily inspired by badwolf, jellybeans and solarized.
+
+Designed as a bright theme with pastel 'retro groove' colors and light/dark
+mode switching in the way of solarized.  The main focus when developing gruvbox
+is to keep colors easily distinguishable, contrast enough and still pleasant
+for the eyes.")
+    (license license:expat))) ; MIT license
 
 (define-public emacs-2048-game
   (package
