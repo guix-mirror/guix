@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +19,6 @@
 
 (define-module (gnu services admin)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages base)
   #:use-module (gnu services)
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
