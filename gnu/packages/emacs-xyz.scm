@@ -7966,20 +7966,20 @@ pressed simultaneously or a single key quickly pressed twice.")
 (define-public emacs-evil-surround
   (package
     (name "emacs-evil-surround")
-    (version "1.0.0")
+    (version "1.0.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/timcharper/evil-surround.git")
-             (commit (string-append "v" version))))
+             (url "https://github.com/emacs-evil/evil-surround")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1smv7sqhm1l2bi9fmispnlmjssidblwkmiiycj1n3ag54q27z031"))))
+        (base32 "1ajsi6xn8mliwzl24h6pp9rd91z7f20yvkphr9q7k6zpjrd7fb9q"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)))
-    (home-page "https://github.com/timcharper/evil-surround")
+    (home-page "https://github.com/emacs-evil/evil-surround")
     (synopsis "Easily modify surrounding parentheses and quotes")
     (description "@code{emacs-evil-surround} allows easy deletion, change and
 addition of surrounding pairs, such as parentheses and quotes, in evil mode.")
