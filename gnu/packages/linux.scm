@@ -1537,7 +1537,7 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.26")
+    (version "2.27")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1545,7 +1545,7 @@ configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "12s5b8fp61jcn4qld8a7fakcz1han4a6l3b8cyl3n6r7hk2bfc5n"))))
+               "0sj8kidl7qgf2qwxcbw1vadnlb30y4zvjzxswsmfdghq04npkhfs"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
