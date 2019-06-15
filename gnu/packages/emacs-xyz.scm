@@ -10210,6 +10210,30 @@ as well as functions for navigating between these headings.")
 into sections while preserving the structure imposed by any timestamps.")
    (license license:gpl3+)))
 
+(define-public emacs-org-make-toc
+  (package
+    (name "emacs-org-make-toc")
+    (version "0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-make-toc")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0syhj8q4pv33xgl5qa6x27yhwqvfhffw5xqp819hj4qs1ddlc7j5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-org" ,emacs-org)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/alphapapa/org-make-toc")
+    (synopsis "Maintain a table of contents for an Org file")
+    (description "This package facilitates the creation and maintenance of
+tables of contents.")
+    (license license:gpl3+)))
+
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
