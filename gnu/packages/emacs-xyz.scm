@@ -10234,6 +10234,32 @@ into sections while preserving the structure imposed by any timestamps.")
 tables of contents.")
     (license license:gpl3+)))
 
+(define-public emacs-org-ql
+  (let ((commit "0aec8ec60395197b2ef2b885c216cf84286efed9")
+        (version "0.1-pre")
+        (revision "1"))
+    (package
+      (name "emacs-org-ql")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/org-ql")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0bj85hxhym7rvkaddcxybxdm7g7w439wij9f2w5ljz1hmvp55991"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/alphapapa/org-ql")
+      (synopsis "Query language for Org buffers")
+      (description "This package provides a Lispy query language for Org
+files, allowing for actions to be performed based on search criteria.")
+      (license license:gpl3+))))
+
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
