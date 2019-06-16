@@ -3,6 +3,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,6 +102,26 @@ IPv4 and IPv6.  ONC RPC is notably used by the network file system (NFS).")
 universal addresses.")
     (license bsd-3)))
 
+(define-public rpcsvc-proto
+  (package
+    (name "rpcsvc-proto")
+    (version "1.4")
+    (home-page "https://github.com/thkukuk/rpcsvc-proto")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "/releases/download/v" version
+                                  "/rpcsvc-proto-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i93wbpw5dk2gf5v4a5hq6frh814wzgjydh7saj28wlgbpqdaja1"))))
+    (build-system gnu-build-system)
+    (synopsis "RPCSVC protocol definitions")
+    (description
+     "This package provides @code{rpcsvc} @file{protocol.x} files and headers
+that are not included with the @code{libtirpc} package.  Additionally it
+contains @command{rpcgen}, which is used to produce header files and sources
+from the protocol files.")
+    (license bsd-3)))
 
 (define-public libnsl
   (package
