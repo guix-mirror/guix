@@ -1251,7 +1251,7 @@ bindings for Python, Java, OCaml and more.")
     (version "2.5.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://radare.mikelloc.com/get/" version "/"
+              (uri (string-append "https://radare.mikelloc.com/get/" version "/"
                                   "radare2-" version ".tar.gz"))
               (sha256
                (base32
