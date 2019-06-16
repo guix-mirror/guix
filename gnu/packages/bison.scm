@@ -41,6 +41,11 @@
        (base32
         "03c2pmq3bs0drdislnz6gm1rwz3n4pb2rz9navyxydppxg2rl597"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; Building in parallel on many-core systems may cause an error such as
+       ;; "mv: cannot stat 'examples/c/reccalc/scan.stamp.tmp': No such file or
+       ;; directory".  See <https://bugs.gnu.org/36238>.
+       #:parallel-build? #f))
     (native-inputs `(("perl" ,perl)
                      ;; m4 is not present in PATH when cross-building.
                      ("m4" ,m4)))
