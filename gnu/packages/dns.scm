@@ -302,14 +302,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.1.27")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1sjfbwr4vq25304hr9vmd9j821g2vzv8lpy95hpsravc80q5zaqv"))))
+        (base32 "0k57xl3ybdnqjqw9a3dmi7l6qmhkiic6wsghkz08ir809aj1rpsi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
