@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -505,11 +506,17 @@ specifies modules in scope when evaluating SNIPPET."
     (and=> (file-extension file-name)
            (cut string-every char-set:hex-digit <>)))
 
+  (define (checkout? directory)
+    ;; Return true if DIRECTORY is a checkout (git, svn, etc).
+    (string-suffix? "-checkout" directory))
+
   (define (tarxz-name file-name)
     ;; Return a '.tar.xz' file name based on FILE-NAME.
-    (let ((base (if (numeric-extension? file-name)
-                    original-file-name
-                    (file-sans-extension file-name))))
+    (let ((base (cond ((numeric-extension? file-name)
+                       original-file-name)
+                      ((checkout? file-name)
+                       (string-drop-right file-name 9))
+                      (else (file-sans-extension file-name)))))
       (string-append base
                      (if (equal? (file-extension base) "tar")
                          ".xz"
