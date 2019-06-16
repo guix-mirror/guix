@@ -2133,7 +2133,9 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
-        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))))
+        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))
+       (patches (search-patches "dstat-fix-crash-when-specifying-delay.patch"
+                                "dstat-skip-devices-without-io.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
