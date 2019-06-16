@@ -21,9 +21,12 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
 
 (define-public open-zwave
@@ -39,6 +42,7 @@
               (sha256
                (base32
                 "0xgs4mmr0480c269wx9xkk67ikjzxkh8xcssrdx0f5xcl1lyd333"))
+              (patches (search-patches "open-zwave-hidapi.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -52,6 +56,9 @@
                   (substitute* "cpp/build/Makefile"
                     (("LIBS \\+= -ludev")
                      "LIBS += -ludev -ltinyxml "))
+
+                  ;; Delete the bundled HIDAPI.
+                  (delete-file-recursively "cpp/hidapi")
                   #t))))
     (build-system gnu-build-system)
     (arguments
@@ -70,9 +77,11 @@
        ;; them.
        #:tests? #f))
     (native-inputs `(("which" ,which)
+                     ("pkg-config" ,pkg-config)
                      ("perl" ,perl)               ;for tests
                      ("perl-xml-simple" ,perl-xml-simple)))
     (inputs `(("tinyxml" ,tinyxml)
+              ("hidapi" ,hidapi)
               ("eudev" ,eudev)))
     (home-page "http://www.openzwave.net/")
     (synopsis "Access Z-Wave devices from C++ programs")
