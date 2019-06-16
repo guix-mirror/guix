@@ -88,6 +88,8 @@
             lint-warning?
             lint-warning-package
             lint-warning-message
+            lint-warning-message-text
+            lint-warning-message-data
             lint-warning-location
 
             %checkers
@@ -105,23 +107,37 @@
 (define-record-type* <lint-warning>
   lint-warning make-lint-warning
   lint-warning?
-  (package  lint-warning-package)
-  (message  lint-warning-message)
-  (location lint-warning-location
-            (default #f)))
+  (package       lint-warning-package)
+  (message-text  lint-warning-message-text)
+  (message-data  lint-warning-message-data
+                 (default '()))
+  (location      lint-warning-location
+                 (default #f)))
+
+(define (lint-warning-message warning)
+  (apply format #f
+         (G_ (lint-warning-message-text warning))
+         (lint-warning-message-data warning)))
 
 (define (package-file package)
   (location-file
    (package-location package)))
 
-(define* (make-warning package message
-                       #:key field location)
+(define* (%make-warning package message-text
+                        #:optional (message-data '())
+                        #:key field location)
   (make-lint-warning
    package
-   message
+   message-text
+   message-data
    (or location
        (package-field-location package field)
        (package-location package))))
+
+(define-syntax make-warning
+  (syntax-rules (G_)
+    ((_ package (G_ message) rest ...)
+     (%make-warning package message rest ...))))
 
 (define (emit-warnings warnings)
   ;; Emit a warning about PACKAGE, printing the location of FIELD if it is
@@ -129,11 +145,11 @@
   ;; provided MESSAGE.
   (for-each
    (match-lambda
-     (($ <lint-warning> package message loc)
+     (($ <lint-warning> package message-text message-data loc)
       (format (guix-warning-port) "~a: ~a@~a: ~a~%"
               (location->string loc)
               (package-name package) (package-version package)
-              message)))
+              (apply format #f (G_ message-text) message-data))))
    warnings))
 
 
@@ -199,9 +215,9 @@ http://www.gnu.org/prep/standards/html_node/Trademarks.html."
       ((and (? number?) index)
        (list
         (make-warning package
-                      (format #f (G_ "description should not contain ~
+                      (G_ "description should not contain ~
 trademark sign '~a' at ~d")
-                              (string-ref description index) index)
+                      (list (string-ref description index) index)
                       #:field 'description)))
       (else '())))
 
@@ -242,10 +258,10 @@ trademark sign '~a' at ~d")
           '()
           (list
            (make-warning package
-                         (format #f (G_ "sentences in description should be followed ~
+                         (G_ "sentences in description should be followed ~
 by two spaces; possible infraction~p at ~{~a~^, ~}")
-                                 (length infractions)
-                                 infractions)
+                         (list (length infractions)
+                               infractions)
                          #:field 'description)))))
 
   (let ((description (package-description package)))
@@ -263,7 +279,8 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
             (check-proper-start plain-description))))
         (list
          (make-warning package
-                       (format #f (G_ "invalid description: ~s") description)
+                       (G_ "invalid description: ~s")
+                       (list description)
                        #:field 'description)))))
 
 (define (package-input-intersection inputs-to-check input-names)
@@ -308,8 +325,8 @@ of a package, and INPUT-NAMES, a list of package specifications such as
     (map (lambda (input)
            (make-warning
             package
-            (format #f (G_ "'~a' should probably be a native input")
-                    input)
+            (G_ "'~a' should probably be a native input")
+            (list input)
             #:field 'inputs))
          (package-input-intersection inputs input-names))))
 
@@ -323,9 +340,8 @@ of a package, and INPUT-NAMES, a list of package specifications such as
     (map (lambda (input)
            (make-warning
             package
-            (format #f
-                    (G_ "'~a' should probably not be an input at all")
-                    input)
+            (G_ "'~a' should probably not be an input at all")
+            (list input)
             #:field 'inputs))
          (package-input-intersection (package-direct-inputs package)
                                      input-names))))
@@ -423,7 +439,9 @@ markup is valid return a plain-text version of SYNOPSIS, otherwise #f."
       checks))
     (invalid
      (list
-      (make-warning package (format #f (G_ "invalid synopsis: ~s") invalid)
+      (make-warning package
+                    (G_ "invalid synopsis: ~s")
+                    (list invalid)
                     #:field 'synopsis)))))
 
 (define* (probe-uri uri #:key timeout)
@@ -540,64 +558,59 @@ PACKAGE mentionning the FIELD."
                  ;; such malicious behavior.
                  (or (> length 1000)
                      (make-warning package
-                                   (format #f
-                                           (G_ "URI ~a returned \
+                                   (G_ "URI ~a returned \
 suspiciously small file (~a bytes)")
-                                           (uri->string uri)
-                                           length)
+                                   (list (uri->string uri)
+                                         length)
                                    #:field field)))
                 (_ #t)))
              ((= 301 (response-code argument))
               (if (response-location argument)
                   (make-warning package
-                                (format #f (G_ "permanent redirect from ~a to ~a")
-                                        (uri->string uri)
-                                        (uri->string
-                                         (response-location argument)))
+                                (G_ "permanent redirect from ~a to ~a")
+                                (list (uri->string uri)
+                                      (uri->string
+                                       (response-location argument)))
                                 #:field field)
                   (make-warning package
-                                (format #f (G_ "invalid permanent redirect \
+                                (G_ "invalid permanent redirect \
 from ~a")
-                                        (uri->string uri))
+                                (list (uri->string uri))
                                 #:field field)))
              (else
               (make-warning package
-                            (format #f
-                                    (G_ "URI ~a not reachable: ~a (~s)")
-                                    (uri->string uri)
-                                    (response-code argument)
-                                    (response-reason-phrase argument))
+                            (G_ "URI ~a not reachable: ~a (~s)")
+                            (list (uri->string uri)
+                                  (response-code argument)
+                                  (response-reason-phrase argument))
                             #:field field))))
       ((ftp-response)
        (match argument
          (('ok) #t)
          (('error port command code message)
           (make-warning package
-                        (format #f
-                                (G_ "URI ~a not reachable: ~a (~s)")
-                                (uri->string uri)
-                                code (string-trim-both message))
+                        (G_ "URI ~a not reachable: ~a (~s)")
+                        (list (uri->string uri)
+                              code (string-trim-both message))
                         #:field field))))
       ((getaddrinfo-error)
        (make-warning package
-                     (format #f
-                             (G_ "URI ~a domain not found: ~a")
-                             (uri->string uri)
-                             (gai-strerror (car argument)))
+                     (G_ "URI ~a domain not found: ~a")
+                     (list (uri->string uri)
+                           (gai-strerror (car argument)))
                      #:field field))
       ((system-error)
        (make-warning package
-                     (format #f
-                             (G_ "URI ~a unreachable: ~a")
-                             (uri->string uri)
-                             (strerror
-                              (system-error-errno
-                               (cons status argument))))
+                     (G_ "URI ~a unreachable: ~a")
+                     (list (uri->string uri)
+                           (strerror
+                            (system-error-errno
+                             (cons status argument))))
                      #:field field))
       ((tls-certificate-error)
        (make-warning package
-                     (format #f (G_ "TLS certificate error: ~a")
-                             (tls-certificate-error-string argument))
+                     (G_ "TLS certificate error: ~a")
+                     (list (tls-certificate-error-string argument))
                      #:field field))
       ((invalid-http-response gnutls-error)
        ;; Probably a misbehaving server; ignore.
@@ -627,8 +640,9 @@ from ~a")
                          #:field 'home-page))))
      (else
       (list
-       (make-warning package (format #f (G_ "invalid home page URL: ~s")
-                                     (package-home-page package))
+       (make-warning package
+                     (G_ "invalid home page URL: ~s")
+                     (list (package-home-page package))
                      #:field 'home-page))))))
 
 (define %distro-directory
@@ -640,8 +654,10 @@ from ~a")
 patch could not be found."
   (guard (c ((message-condition? c)     ;raised by 'search-patch'
              (list
-              (make-warning package (condition-message c)
-                            #:field 'patch-file-names))))
+              ;; Use %make-warning, as condition-mesasge is already
+              ;; translated.
+              (%make-warning package (condition-message c)
+                             #:field 'patch-file-names))))
     (define patches
       (or (and=> (package-source package) origin-patches)
           '()))
@@ -674,8 +690,8 @@ patch could not be found."
                              max)
                           (make-warning
                            package
-                           (format #f (G_ "~a: file name is too long")
-                                   (basename patch))
+                           (G_ "~a: file name is too long")
+                           (list (basename patch))
                            #:field 'patch-file-names)
                           #f))
                      (_ #f))
@@ -716,8 +732,8 @@ descriptions maintained upstream."
                      (not (string=? upstream downstream))))
             (list
              (make-warning package
-                           (format #f (G_ "proposed synopsis: ~s~%")
-                                   upstream)
+                           (G_ "proposed synopsis: ~s~%")
+                           (list upstream)
                            #:field 'synopsis))
             '()))
 
@@ -730,9 +746,8 @@ descriptions maintained upstream."
             (list
              (make-warning
               package
-              (format #f
-                      (G_ "proposed description:~%     \"~a\"~%")
-                      (fill-paragraph (escape-quotes upstream) 77 7))
+              (G_ "proposed description:~%     \"~a\"~%")
+              (list (fill-paragraph (escape-quotes upstream) 77 7))
               #:field 'description))
             '()))))))
 
@@ -831,10 +846,10 @@ descriptions maintained upstream."
             (loop rest))
            (prefix
             (make-warning package
-                          (format #f (G_ "URL should be \
+                          (G_ "URL should be \
 'mirror://~a/~a'")
-                                  mirror-id
-                                  (string-drop uri (string-length prefix)))
+                          (list mirror-id
+                                (string-drop uri (string-length prefix)))
                           #:field 'source)))))))
 
   (let ((origin (package-source package)))
@@ -876,7 +891,8 @@ descriptions maintained upstream."
                         #f
                         (make-warning
                          package
-                         (format #f (G_ "URL should be '~a'") github-uri)
+                         (G_ "URL should be '~a'")
+                         (list github-uri)
                          #:field 'source)))))
          (origin-uris origin))
         '())))
@@ -888,14 +904,14 @@ descriptions maintained upstream."
       (lambda ()
         (guard (c ((store-protocol-error? c)
                    (make-warning package
-                                 (format #f (G_ "failed to create ~a derivation: ~a")
-                                         system
-                                         (store-protocol-error-message c))))
+                                 (G_ "failed to create ~a derivation: ~a")
+                                 (list system
+                                       (store-protocol-error-message c))))
                   ((message-condition? c)
                    (make-warning package
-                                 (format #f (G_ "failed to create ~a derivation: ~a")
-                                         system
-                                         (condition-message c)))))
+                                 (G_ "failed to create ~a derivation: ~a")
+                                 (list system
+                                       (condition-message c)))))
           (with-store store
             ;; Disable grafts since it can entail rebuilds.
             (parameterize ((%graft? #f))
@@ -910,8 +926,8 @@ descriptions maintained upstream."
                                      #:graft? #f)))))))
       (lambda args
         (make-warning package
-                      (format #f (G_ "failed to create ~a derivation: ~s")
-                              system args)))))
+                      (G_ "failed to create ~a derivation: ~s")
+                      (list system args)))))
 
   (filter lint-warning?
           (map try (package-supported-systems package))))
@@ -1001,15 +1017,15 @@ the NIST server non-fatal."
              (list
               (make-warning
                package
-               (format #f (G_ "probably vulnerable to ~a")
-                       (string-join (map vulnerability-id unpatched)
-                                    ", "))))))))))
+               (G_ "probably vulnerable to ~a")
+               (list (string-join (map vulnerability-id unpatched)
+                                  ", "))))))))))
 
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
   (match (with-networking-fail-safe
-          (format #f (G_ "while retrieving upstream info for '~a'")
-                  (package-name package))
+          (G_ "while retrieving upstream info for '~a'")
+          (list (package-name package))
           #f
           (package-latest-release* package (force %updaters)))
     ((? upstream-source? source)
@@ -1017,8 +1033,8 @@ the NIST server non-fatal."
                     (package-version package))
          (list
           (make-warning package
-                        (format #f (G_ "can be upgraded to ~a")
-                                (upstream-source-version source))
+                        (G_ "can be upgraded to ~a")
+                        (list (upstream-source-version source))
                         #:field 'version))
          '()))
     (#f '()))) ; cannot find newer upstream release
@@ -1034,8 +1050,8 @@ the NIST server non-fatal."
     (#f #t)
     (index
      (make-warning package
-                   (format #f (G_ "tabulation on line ~a, column ~a")
-                           line-number index)
+                   (G_ "tabulation on line ~a, column ~a")
+                   (list line-number index)
                    #:location
                    (location (package-file package)
                              line-number
@@ -1046,9 +1062,8 @@ the NIST server non-fatal."
   (unless (or (string=? line (string-trim-right line))
               (string=? line (string #\page)))
     (make-warning package
-                  (format #f
-                          (G_ "trailing white space on line ~a")
-                          line-number)
+                  (G_ "trailing white space on line ~a")
+                  (list line-number)
                   #:location
                   (location (package-file package)
                             line-number
@@ -1061,8 +1076,8 @@ the NIST server non-fatal."
   ;; much noise.
   (when (> (string-length line) 90)
     (make-warning package
-                  (format #f (G_ "line ~a is way too long (~a characters)")
-                          line-number (string-length line))
+                  (G_ "line ~a is way too long (~a characters)")
+                  (list line-number (string-length line))
                   #:location
                   (location (package-file package)
                             line-number
@@ -1075,10 +1090,9 @@ the NIST server non-fatal."
   "Emit a warning if LINE contains hanging parentheses."
   (when (regexp-exec %hanging-paren-rx line)
     (make-warning package
-                  (format #f
-                          (G_ "parentheses feel lonely, \
+                  (G_ "parentheses feel lonely, \
 move to the previous or next line")
-                          line-number)
+                  (list line-number)
                   #:location
                   (location (package-file package)
                             line-number
