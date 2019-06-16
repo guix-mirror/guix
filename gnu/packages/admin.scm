@@ -2142,6 +2142,11 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
                             "prefix=/"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python3-DeprecationWarning
+           (lambda _
+             (substitute* "dstat"
+               (("collections") "collections.abc"))
+             #t))
          (delete 'configure)            ; no configure script
          (add-after 'install 'wrap
            (lambda* (#:key outputs #:allow-other-keys)
@@ -2150,8 +2155,6 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
                  `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
                #t))))))
     (inputs
-     ;; Python 3 is supposedly supported but prints a DeprecationWarning.
-     ;; Upstream is dead.  See <https://github.com/dagwieers/dstat/releases>.
      `(("python" ,python-wrapper)
        ("python-six" ,python-six)))
     (synopsis "Versatile resource statistics tool")
