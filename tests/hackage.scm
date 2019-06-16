@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,7 +237,7 @@ library
 (test-assert "hackage->guix-package test 6"
   (eval-test-with-cabal test-cabal-6 match-ghc-foo-6))
 
-;; Check multi-line layouted description
+;; Check multi-line layouted description.
 (define test-cabal-multiline-layout
   "name: foo
 version: 1.0.0
@@ -254,7 +255,7 @@ executable cabal
 (test-assert "hackage->guix-package test multiline desc (layout)"
   (eval-test-with-cabal test-cabal-multiline-layout match-ghc-foo))
 
-;; Check multi-line braced description
+;; Check multi-line braced description.
 (define test-cabal-multiline-braced
   "name: foo
 version: 1.0.0
@@ -273,6 +274,53 @@ executable cabal
 
 (test-assert "hackage->guix-package test multiline desc (braced)"
   (eval-test-with-cabal test-cabal-multiline-braced match-ghc-foo))
+
+;; Check mixed layout. Compare e.g. warp.
+(define test-cabal-mixed-layout
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+executable cabal
+    build-depends:
+      HTTP       >= 4000.2.5 && < 4000.3,
+      mtl        >= 2.0      && < 3
+  ghc-options: -Wall
+")
+
+;; Fails: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=35743
+(test-expect-fail 1)
+(test-assert "hackage->guix-package test mixed layout"
+  (eval-test-with-cabal test-cabal-mixed-layout match-ghc-foo))
+
+;; Check flag executable. Compare e.g. darcs.
+(define test-cabal-flag-executable
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+flag executable
+  description: Build executable
+  default:     True
+executable cabal
+  if !flag(executable)
+    buildable: False
+  else
+    buildable: True
+
+  build-depends:
+    HTTP       >= 4000.2.5 && < 4000.3,
+    mtl        >= 2.0      && < 3
+")
+
+;; Fails: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=25138
+(test-expect-fail 1)
+(test-assert "hackage->guix-package test flag executable"
+  (eval-test-with-cabal test-cabal-flag-executable match-ghc-foo))
 
 ;; Check Hackage Cabal revisions.
 (define test-cabal-revision
