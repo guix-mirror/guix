@@ -2428,17 +2428,17 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.2")
+    (version "0.10.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.drobilla.net/suil-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "00d43m0nai63ajb7rkm9v084jcih206y17ib3160zcvzc885ji4z"))))
+              (method url-fetch)
+              (uri (string-append "https://download.drobilla.net/suil-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ay7hl6nr6ip1nn9k2m8ri3b52b6sx9mhixmcy4fy3kr2a88ksd1"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f        ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags
        '("CXXFLAGS=-std=gnu++11")))
     (inputs
