@@ -3568,7 +3568,7 @@ representations.")
     (arguments
      `(#:configure-flags
        (list (string-append "PREFIX=" %output)
-             (string-append "FONT_DIR=" %output "/usr/share/consolefonts"))
+             (string-append "FONT_DIR=" %output "/share/consolefonts"))
        #:make-flags
        (let ((lib (string-append %output "/lib")))
          (list (string-append "cava_LDFLAGS = -L" lib " -Wl,-rpath " lib)))
