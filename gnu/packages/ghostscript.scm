@@ -137,7 +137,7 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.26")
+    (version "9.27")
     (source
       (origin
         (method url-fetch)
@@ -147,7 +147,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1645f47all5w27bfhiq15vycdm954lmr6agqkrp68ksq6xglgvch"))
+          "06dnj0mxyaryfbwlsjwaqf847w91w2h8f108kxxcc41nrnx1y3zw"))
         (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
@@ -165,6 +165,13 @@ printing, and psresize, for adjusting page sizes.")
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
      `(#:disallowed-references ("doc")
+       ;; XXX: Starting with version 9.27, building the tests in parallel
+       ;; occasionally fails like this:
+       ;;  In file included from ./base/memory_.h:23:0,
+       ;;                   from ./obj/gsmd5.h:1,
+       ;;                   from ./obj/gsmd5.c:56:
+       ;;  ./base/std.h:25:10: fatal error: arch.h: No such file or directory
+       #:parallel-tests? #f
        #:configure-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
