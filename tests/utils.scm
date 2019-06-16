@@ -230,6 +230,12 @@ skip these tests."
                "This is a journey\r\nInto the sound\r\nA journey ...\n")))
     (get-string-all (canonical-newline-port port))))
 
+(test-equal "canonical-newline-port-1024"
+  (string-concatenate (make-list 100 "0123456789abcde\n"))
+  (let ((port (open-string-input-port
+               (string-concatenate
+                (make-list 100 "0123456789abcde\r\n")))))
+    (get-string-all (canonical-newline-port port))))
 
 (test-equal "edit-expression"
   "(display \"GNU Guix\")\n(newline)\n"
