@@ -91,6 +91,8 @@ pseudo-terminal (PTY) allocated to a Docker container using the Python
 client.")
     (license license:asl2.0)))
 
+;; When updating, check whether python-jsonschema-2.6 can be removed from Guix
+;; entirely.
 (define-public docker-compose
   (package
     (name "docker-compose")
@@ -107,9 +109,10 @@ client.")
     (arguments '(#:tests? #f))
     (inputs
      `(("python-docker-py" ,python-docker-py)
+       ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
-       ("python-jsonschema" ,python-jsonschema)
+       ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
        ("python-requests" ,python-requests-2.7)
        ("python-six" ,python-six)
