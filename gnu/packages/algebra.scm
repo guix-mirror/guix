@@ -928,7 +928,7 @@ xtensor provides:
 (define-public gap
   (package
     (name "gap")
-    (version "4.10.0")
+    (version "4.10.1")
     (source
      (origin
        (method url-fetch)
@@ -939,7 +939,7 @@ xtensor provides:
                            ".tar.bz2"))
        (sha256
         (base32
-         "1dmb8v4p7j1nnf7sx8sg54b49yln36bi9acwp7w1d3a1nxj17ird"))
+         "136s0zvhcw41fshj5zgsrjcy2kd58cdh2m3ddp5rdizi4rx54f10"))
        (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
        (snippet
         '(begin
@@ -967,20 +967,20 @@ xtensor provides:
                    ;; Optional packages, searched for at start,
                    ;; and their depedencies.
                    "alnuth-3.1.0"
-                   "AutoDoc-2018.09.20"
                    "autpgrp-1.10"
                    "crisp-1.4.4"     ; bsd-2
-                   ; "ctbllib"       ; no explicit license, drop
+                   "ctbllib"       ; gpl3+ according to doc/chap0.txt
                    "FactInt-1.6.2"
                    "fga"
                    "irredsol-1.4"    ; bsd-2
-                   "laguna-3.9.0"
+                   "laguna-3.9.2"
                    "polenta-1.3.8"
                    "polycyclic-2.14"
                    "radiroot-2.8"
                    "resclasses-4.7.1"
                    "sophus-1.24"
-                   ; "tomlib-1.2.7"  ; no explicit license, drop
+                   "tomlib-1.2.7"  ; gpl2+, clarified in the git repository
+                                   ; and the next release
                    "utils-0.59"))))
            #t))))
     (build-system gnu-build-system)
@@ -988,7 +988,11 @@ xtensor provides:
      `(("gmp" ,gmp)
        ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-packages
            ;; Compile all packages that have not been deleted by the
@@ -1004,19 +1008,16 @@ xtensor provides:
              (with-directory-excursion "doc"
                (invoke "./make_doc"))
              #t))
-         (replace 'check
-           (lambda _
-             ;; "make check" is expected to appear in gap-4.10.1
-             (invoke "./gap" "tst/testinstall.g")
-             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
                     (prog (string-append bin "/gap"))
                     (prog-real (string-append bin "/.gap-real"))
                     (share (string-append out "/share/gap"))
-                    (include (string-append out "/include/gap")))
+                    (include (string-append out "/include/gap"))
+                    (include-hpc (string-append include "/hpc")))
                ;; Install only the gap binary; the gac compiler is left
                ;; for maybe later. "Wrap" it in a shell script that calls
                ;; the binary with the correct parameter.
@@ -1030,12 +1031,37 @@ xtensor provides:
                            prog-real
                            share)))
                (chmod prog #o755)
-               ;; Install the headers and the library, which are needed by
-               ;; Sage. The Makefile targets are available in gap-4.10.0,
-               ;; but planned to be removed in gap-4.10.1.
-               (invoke "make" "install-headers")
-               (invoke "make" "install-libgap")
+               ;; Install the headers, which are needed by Sage. The
+               ;; Makefile target "install-headers" was available in
+               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
+               (mkdir-p include-hpc)
                (install-file "gen/config.h" include)
+               (let ((file-name-predicate-without-stat
+                       (lambda (regex)
+                         (cut (file-name-predicate regex) <> #f))))
+                 (with-directory-excursion "src"
+                   (for-each
+                     (cut install-file <> include)
+                     (scandir "."
+                              (file-name-predicate-without-stat ".*\\.h$"))))
+                 (with-directory-excursion "src/hpc"
+                   (for-each
+                     (cut install-file <> include-hpc)
+                     (scandir "."
+                              (file-name-predicate-without-stat ".*\\.h$")))))
+               ;; Install the library, which is needed by Sage. The
+               ;; Makefile target "install-libgap" was available in
+               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
+               ;; Compared to the Makefile, which used libtool, the
+               ;; following approach of copying files and making symlinks
+               ;; is rather pedestrian. There is hope that some later
+               ;; version of gap reinstates and completes the install
+               ;; targets.
+               (invoke "make" "libgap.la")
+               (install-file "libgap.la" lib)
+               (install-file ".libs/libgap.so.0.0.0" lib)
+               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so")) 
+               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so.0"))
                ;; Install a certain number of files and directories to
                ;; SHARE, where the wrapped shell script expects them.
                ;; Remove information on the build directory from sysinfo.gap.
