@@ -4812,14 +4812,14 @@ tools like SSH (Secure Shell) to reach the outside world.")
 (define-public stunnel
   (package
   (name "stunnel")
-  (version "5.54")
+  (version "5.55")
   (source
     (origin
       (method url-fetch)
       (uri (string-append "https://www.stunnel.org/downloads/stunnel-"
                           version ".tar.gz"))
       (sha256
-       (base32 "00krr0h3vsyi93mqhrbgfgn8v47l4l3hzdg1ccfnpd3lqak8i1ay"))))
+       (base32 "0qjc0wkjf6bqz29fvwwsn9hnjhm6alsm10jcwx4jad2q3ks6kplh"))))
   (build-system gnu-build-system)
   (native-inputs
    ;; For tests.
