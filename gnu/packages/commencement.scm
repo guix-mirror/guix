@@ -106,11 +106,10 @@
               (let ((nyacc-source (assoc-ref %build-inputs "nyacc-source"))
                     (bootstrap-mes (assoc-ref %build-inputs "bootstrap-mes")))
                 (with-directory-excursion ".."
-                  (and
-                   (mkdir-p "nyacc-source")
-                   (invoke "tar" "--strip=1" "-C" "nyacc-source" "-xvf" nyacc-source)
-                   (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed")
-                   #t)))))
+                  (mkdir-p "nyacc-source")
+                  (invoke "tar" "--strip=1" "-C" "nyacc-source" "-xvf" nyacc-source)
+                  (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed"))
+                #t)))
           (replace 'configure
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((out (assoc-ref %outputs "out")))
@@ -130,12 +129,11 @@
                 (invoke "sh" "bootstrap.sh"))))
           (replace 'check
             (lambda _
-              (and
-               (setenv "DIFF" "sh scripts/diff.scm")
-               ;; fail fast tests
-               ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/t")
-               ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/63-struct-cell")
-               (invoke "sh" "check.sh"))))
+              (setenv "DIFF" "sh scripts/diff.scm")
+              ;; fail fast tests
+              ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/t")
+              ;; (invoke "sh" "-x" "build-aux/test.sh" "scaffold/tests/63-struct-cell")
+              (invoke "sh" "check.sh")))
           (replace 'install
             (lambda _
               (invoke "sh" "install.sh"))))))
@@ -201,12 +199,11 @@
                                   coreutils "/bin"))
                   (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
                   (with-directory-excursion ".."
-                    (and
-                     (mkdir-p "nyacc-source")
-                     (invoke "tar" "--strip=1" "-C" "nyacc-source"
-                             "-xvf" nyacc-source)
-                     (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed")
-                     #t)))))
+                    (mkdir-p "nyacc-source")
+                    (invoke "tar" "--strip=1" "-C" "nyacc-source"
+                            "-xvf" nyacc-source)
+                    (symlink (string-append bootstrap-mes "/share/mes/lib") "mes-seed"))
+                  #t)))
             (replace 'configure
               (lambda* (#:key outputs #:allow-other-keys)
                 (let* ((out (assoc-ref %outputs "out"))
@@ -353,20 +350,19 @@
             (lambda* (#:key outputs #:allow-other-keys)
               (let ((out (assoc-ref %outputs "out"))
                     (tcc (assoc-ref %build-inputs "tcc")))
-                (and
-                 (mkdir-p (string-append out "/bin"))
-                 (copy-file "tcc" (string-append out "/bin/tcc"))
-                 (mkdir-p (string-append out "/lib/tcc"))
-                 (copy-recursively (string-append tcc "/include")
-                                   (string-append out "/include"))
-                 (copy-recursively (string-append tcc "/lib")
-                                   (string-append out "/lib"))
-                 (invoke "tcc" "-D" "TCC_TARGET_I386=1" "-c" "-o" "libtcc1.o" "lib/libtcc1.c")
-                 (invoke "tcc" "-ar" "rc" "libtcc1.a" "libtcc1.o")
-                 (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
-                 (delete-file (string-append out "/lib/tcc/libtcc1.a"))
-                 (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
-                 #t))))))))))
+                (mkdir-p (string-append out "/bin"))
+                (copy-file "tcc" (string-append out "/bin/tcc"))
+                (mkdir-p (string-append out "/lib/tcc"))
+                (copy-recursively (string-append tcc "/include")
+                                  (string-append out "/include"))
+                (copy-recursively (string-append tcc "/lib")
+                                  (string-append out "/lib"))
+                (invoke "tcc" "-D" "TCC_TARGET_I386=1" "-c" "-o" "libtcc1.o" "lib/libtcc1.c")
+                (invoke "tcc" "-ar" "rc" "libtcc1.a" "libtcc1.o")
+                (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
+                (delete-file (string-append out "/lib/tcc/libtcc1.a"))
+                (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
+                #t)))))))))
 
 (define make-mesboot0
   (package-with-bootstrap-guile
@@ -413,7 +409,8 @@
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (bin (string-append out "/bin")))
-                (install-file "make" bin))))))))))
+                (install-file "make" bin)
+                #t)))))))))
 
 (define diffutils-mesboot
   (package-with-bootstrap-guile
@@ -457,8 +454,8 @@
           (add-before 'configure 'remove-diff3-sdiff
             (lambda* (#:key outputs #:allow-other-keys)
               (substitute* "Makefile.in"
-                (("PROGRAMS = .*" all) "PROGRAMS = cmp diff"))))))))))
-
+                (("PROGRAMS = .*" all) "PROGRAMS = cmp diff"))
+              #t))))))))
 
 (define binutils-mesboot0
   (package-with-bootstrap-guile
@@ -585,7 +582,8 @@
                   (lambda _
                     (display "
 ac_cv_c_float_format='IEEE (little-endian)'
-"))))))
+")))
+                #t)))
           (replace 'configure
             (lambda* (#:key configure-flags  #:allow-other-keys)
               (format (current-error-port)
@@ -603,23 +601,22 @@ ac_cv_c_float_format='IEEE (little-endian)'
                      (out (assoc-ref outputs "out"))
                      (gcc-dir (string-append
                                out "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3")))
-                (and
-                 (mkdir-p "tmp")
-                 (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
-                 (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
-                 (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))
-                 (copy-file (string-append tcc "/lib/libtcc1.a")
-                            (string-append out "/lib/libtcc1.a"))
-                 (invoke "ar" "r" (string-append gcc-dir "/libc.a")
-                         (string-append tcc-lib "/libc+gnu.o")
-                         (string-append tcc-lib "/libtcc1.o"))
-                 (invoke "ar" "r" (string-append out "/lib/libc.a")
-                         (string-append tcc-lib "/libc+gnu.o")
-                         (string-append tcc-lib "/libtcc1.o"))
-                 (invoke "ls" "-ltrF" gcc-dir)
-                 (copy-recursively (string-append tcc "/include")
-                                   (string-append out "/include"))
-                 #t)))))))
+                (mkdir-p "tmp")
+                (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
+                (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
+                (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))
+                (copy-file (string-append tcc "/lib/libtcc1.a")
+                           (string-append out "/lib/libtcc1.a"))
+                (invoke "ar" "r" (string-append gcc-dir "/libc.a")
+                        (string-append tcc-lib "/libc+gnu.o")
+                        (string-append tcc-lib "/libtcc1.o"))
+                (invoke "ar" "r" (string-append out "/lib/libc.a")
+                        (string-append tcc-lib "/libc+gnu.o")
+                        (string-append tcc-lib "/libtcc1.o"))
+                (invoke "ls" "-ltrF" gcc-dir)
+                (copy-recursively (string-append tcc "/include")
+                                  (string-append out "/include"))
+                #t))))))
      (native-search-paths
       ;; Use the language-specific variables rather than 'CPATH' because they
       ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
@@ -818,11 +815,11 @@ ac_cv_c_float_format='IEEE (little-endian)'
                 (let* ((out (assoc-ref outputs "out"))
                        (gcc-dir (string-append
                                  out "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3")))
-                  (and
-                   (mkdir-p "tmp")
-                   (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
-                   (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
-                   (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))))))))
+                  (mkdir-p "tmp")
+                  (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
+                  (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
+                  (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))
+                  #t)))))
         ((#:configure-flags configure-flags)
          `(let ((out (assoc-ref %outputs "out")))
             `("--disable-shared"
@@ -1179,14 +1176,15 @@ exec " gcc "/bin/" program
                     (("/bin/pwd") (string-append coreutils "/bin/pwd")))
                   (setenv "C_INCLUDE_PATH" (string-append libc "/include"
                                                           headers "/include"))
-                  (setenv "LIBRARY_PATH" (string-append libc "/lib")))))
+                  (setenv "LIBRARY_PATH" (string-append libc "/lib"))
+                  #t)))
             (replace 'install
               (lambda* (#:key outputs make-flags #:allow-other-keys)
                 (let ((kernel-headers (assoc-ref %build-inputs "kernel-headers"))
                       (out (assoc-ref outputs "out")))
-                  (and (apply invoke "make" make-flags)
-                       (copy-recursively kernel-headers out)
-                       #t))))
+                  (apply invoke "make" make-flags)
+                  (copy-recursively kernel-headers out)
+                  #t)))
             (replace 'configure
               (lambda* (#:key configure-flags #:allow-other-keys)
                 (format (current-error-port) "running ../configure ~a\n" (string-join configure-flags))
@@ -1237,9 +1235,9 @@ exec " gcc "/bin/" program
                     (let* ((kernel-headers (assoc-ref %build-inputs "kernel-headers"))
                            (out (assoc-ref outputs "out"))
                            (install-flags (cons "install" make-flags)))
-                      (and (apply invoke "make" install-flags)
-                           (copy-recursively kernel-headers out)
-                           #t)))))))))
+                      (apply invoke "make" install-flags)
+                      (copy-recursively kernel-headers out)
+                      #t))))))))
      (native-search-paths ;; FIXME: move to glibc-mesboot0
       ;; Use the language-specific variables rather than 'CPATH' because they
       ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
@@ -1413,8 +1411,7 @@ exec " gcc "/bin/" program
              `(modify-phases ,phases
                 (replace 'build
                   (lambda _
-                    (invoke "./build.sh")
-                    #t))
+                    (invoke "./build.sh")))
                 (replace 'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let* ((out (assoc-ref outputs "out"))
