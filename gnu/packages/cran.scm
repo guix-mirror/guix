@@ -12647,14 +12647,14 @@ either PDF/EPS files.")
 (define-public r-polspline
   (package
     (name "r-polspline")
-    (version "1.1.14")
+    (version "1.1.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "polspline" version))
        (sha256
         (base32
-         "0g4s5nwi13yfs6b169yw8vrs48nvjyc014k2v7ybcxarl8z81va0"))))
+         "19zs4kpagsrzhng1byjbz1c4jxnfk58h4rgr096ml1bjwrgamnwc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/polspline/")
