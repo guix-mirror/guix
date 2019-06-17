@@ -1388,15 +1388,16 @@ exec " gcc "/bin/" program
 (define (%bootstrap-inputs+toolchain)
   ;; The traditional bootstrap-inputs.  For the i686-linux Reduced Binary Seed
   ;; the actual reduced set with bootstrapped toolchain.
-  (append (match (%current-system)
-            ((or "i686-linux" "x86_64-linux")
-             `(("libc" ,glibc-mesboot)
-               ("binutils" ,binutils-mesboot)
-               ("gcc-wrapper" ,gcc-mesboot-wrapper)
-               ("gcc" ,gcc-mesboot)))
-            (_
-             '()))
-          (%bootstrap-inputs)))
+  (match (%current-system)
+    ((or "i686-linux" "x86_64-linux")
+     `(("libc" ,glibc-mesboot)
+       ("binutils" ,binutils-mesboot)
+       ("gcc-wrapper" ,gcc-mesboot-wrapper)
+       ("gcc" ,gcc-mesboot)
+       ,@(fold alist-delete (%bootstrap-inputs)
+               '("bootstrap-mescc-tools" "mes"))))
+    (_
+     (%bootstrap-inputs))))
 
 (define gnu-make-boot0
   (package-with-bootstrap-guile
