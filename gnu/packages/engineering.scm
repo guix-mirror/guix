@@ -1248,17 +1248,17 @@ bindings for Python, Java, OCaml and more.")
 (define-public radare2
   (package
     (name "radare2")
-    (version "2.5.0")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://radare.mikelloc.com/get/" version "/"
                                   "radare2-" version ".tar.gz"))
               (sha256
                (base32
-                "17h4ba5qqahfi8mi4x2dcvq87cqpir5v2dlaqbvmay6vby4zh4v7"))
+                "174x5545fw2nyf000gd46hi7rx2bn3bw5bsnvizn9yi99pn7m4mw"))
               (modules '((guix build utils)))
               (snippet
-                '(begin
+               '(begin
                   (substitute* "libr/asm/p/Makefile"
                     (("LDFLAGS\\+=") "LDFLAGS+=-Wl,-rpath=$(LIBDIR) "))
                   (substitute* "libr/parse/p/Makefile"
@@ -1268,7 +1268,7 @@ bindings for Python, Java, OCaml and more.")
                   #t))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f; tests require git and network access
+     '(#:tests? #f                      ; tests require git and network access
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'mklibdir
