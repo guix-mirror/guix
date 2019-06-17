@@ -2247,43 +2247,40 @@ list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
 
 (define-public guile-gi
-  (let ((commit "26e885219ae6b31a83766564a2ecfe8c4532346f")
-        (revision "1"))
-    (package
-      (name "guile-gi")
-      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/spk121/guile-gi.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "1prbzhr4sqqihb34l6yfrz6sd8nghwd3q9wvbm36jnl2n3z2nxj8"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ("gettext" ,gnu-gettext)
-                       ("libtool" ,libtool)
-                       ("pkg-config" ,pkg-config)
-                       ("texinfo" ,texinfo)))
-      (propagated-inputs `(("glib" ,glib)
-                           ("gobject-introspection" ,gobject-introspection)
-                           ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
-                           ("gtk+" ,gtk+)
-                           ("guile-lib" ,guile-lib)
-                           ("webkitgtk" ,webkitgtk)))
-      (inputs `(("guile" ,guile-2.2)))
-      (arguments
-       `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
-      (home-page "https://github.com/spk121/guile-gi")
-      (synopsis "GObject bindings for Guile")
-      (description
-       "Guile-GI is a library for Guile that allows using GObject-based
+  (package
+    (name "guile-gi")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hs0viqzff7nzgcmyw721ima1jyymrlzrcycpgwrs6iprscxvqwn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       ;; The atomic_int_set test does not actually fail.
+       #:make-flags '("XFAIL_TESTS=strjoinv.scm")))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("guile-lib" ,guile-lib)
+       ("webkitgtk" ,webkitgtk)))
+    (inputs `(("guile" ,guile-2.2)))
+    (home-page "https://github.com/spk121/guile-gi")
+    (synopsis "GObject bindings for Guile")
+    (description
+     "Guile-GI is a library for Guile that allows using GObject-based
 libraries, such as GTK+3.  Its README comes with the disclaimer: This is
 pre-alpha code.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
