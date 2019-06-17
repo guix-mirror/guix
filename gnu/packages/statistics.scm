@@ -3162,13 +3162,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "05kr88yshq6siarp5q7aapvsr63vx3p0aqablwgifn8m2sfqxmif"))))
+                "0b6ywgzk9b35y5f69zwfz3vv7qwqqj3xsmy0xymf7nfcvrqg3qqx"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
