@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -7330,6 +7330,41 @@ sending un-encrypted messages.  It can also be configured to automatically
 sign messages that you send.  For details and instructions on how to use
 DefaultEncrypt, please refer to the home page or read the comments in the
 source file, @file{jl-encrypt.el}.")
+    (license license:gpl3+)))
+
+(define-public emacs-extend-smime
+  (package
+    (name "emacs-extend-smime")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://informationelle-selbstbestimmung-im-internet.de"
+             "/emacs/jl-smime" version "/jl-smime.el"))
+       (file-name (string-append "jl-smime-" version ".el"))
+       (sha256
+        (base32
+         "1iv8s2wjmv3v5qfwlcy9hvvrmxxvp3f8m1krlr789q7bbh35jynh"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (synopsis "Improved S/MIME support for Gnus in Emacs")
+    (propagated-inputs
+     `(("emacs-default-encrypt" ,emacs-default-encrypt)))
+    (description
+     ;; TRANSLATORS: ExtendSMIME, DefaultEncrypt, and emacs-default-encrypt
+     ;; should not be translated.  The name "emacs-default-encrypt" refers to
+     ;; the Guix package that provides DefaultEncrypt.
+     "ExtendSMIME is designed to be used with Gnus in Emacs.  It enhances
+DefaultEncrypt (emacs-default-encrypt) to support S/MIME (Secure/Multipurpose
+Internet Mail Extensions) via LDAP (Lightweight Directory Access Protocol).
+Before a message (e.g., email) is sent, ExtendSMIME searches for missing
+certificates via LDAP and imports them into @code{gpgsm}.  When certificates
+for all recipients are available, DefaultEncrypt automatically encrypts the
+message.  For details and instructions on how to use ExtendSMIME, please refer
+to the home page or read the comments in the source file,
+@file{jl-smime.el}.")
     (license license:gpl3+)))
 
 (define-public emacs-htmlize
