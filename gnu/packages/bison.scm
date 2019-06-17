@@ -45,7 +45,11 @@
      '(;; Building in parallel on many-core systems may cause an error such as
        ;; "mv: cannot stat 'examples/c/reccalc/scan.stamp.tmp': No such file or
        ;; directory".  See <https://bugs.gnu.org/36238>.
-       #:parallel-build? #f))
+       #:parallel-build? #f
+       ;; Similarly, when building tests in parallel, Make may produce this error:
+       ;; "./examples/c/reccalc/scan.l:13:10: fatal error: parse.h: No such file
+       ;; or directory".  Full log in <https://bugs.gnu.org/36238>.
+       #:parallel-tests? #f))
     (native-inputs `(("perl" ,perl)
                      ;; m4 is not present in PATH when cross-building.
                      ("m4" ,m4)))
