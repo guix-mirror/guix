@@ -1137,18 +1137,17 @@ legends.")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.1.1")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0y8cks9r9hvjlx0isnvbgs3p0al167hlr3q7c3syfcj77dzjkpmz"))))
+        (base32 "1cvk9pw59kxx19kamqwa15h26rbznp0vvqpn7y8kgjssnrzqkdii"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-gtable" ,r-gtable)
-       ("r-plyr" ,r-plyr)
        ("r-lazyeval" ,r-lazyeval)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
