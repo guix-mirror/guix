@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages python)
@@ -144,3 +145,31 @@ function for every found clique.")
 in particular it computes normal forms of group elements.")
     (license license:gpl2+)
     (home-page "https://github.com/miguelmarco/libbraiding")))
+
+(define-public libhomfly
+  (package
+    (name "libhomfly")
+    (version "1.02r6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://github.com/miguelmarco/"
+                                  name))
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0sv3cwrf9v9sb5a8wbhjmarxvya13ma3j8y8592f9ymxlk5y0ldk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("libgc" ,libgc)))
+    (synopsis "Computation of homfly polynomials of links")
+    (description "libhomfly computes homfly polynomials of links,
+represented as strings.")
+    (license license:public-domain)
+    (home-page "https://github.com/miguelmarco/libhomfly")))
