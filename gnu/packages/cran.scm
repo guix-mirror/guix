@@ -6584,16 +6584,18 @@ second male (P2) based on the best fit distribution.")
 (define-public r-abcrf
   (package
     (name "r-abcrf")
-    (version "1.7.1")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abcrf" version))
        (sha256
-        (base32 "06vy3inikrr9hv36q4djhrgzi9zizdfnhz17wpra8kadmr7qj441"))))
+        (base32 "0r31ki89z8zzcffm0yvd2zw3q96rk6g6fnwwkql902mgajbrha1f"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-mass" ,r-mass)
        ("r-matrixstats" ,r-matrixstats)
        ("r-ranger" ,r-ranger)
        ("r-rcpp" ,r-rcpp)
