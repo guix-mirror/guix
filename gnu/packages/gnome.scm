@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6878,6 +6879,38 @@ GNOME Shell appearance and extension, etc.")
     (description "GNOME Shell extensions modify and extend GNOME Shell
 functionality and behavior.")
     (home-page "https://extensions.gnome.org/")
+    (license license:gpl3+)))
+
+(define-public numix-theme
+  (package
+    (name "numix-theme")
+    (version "2.6.7")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/numixproject/numix-gtk-theme.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "12mw0kr0kkvg395qlbsvkvaqccr90cmxw5rrsl236zh43kj8grb7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")             ; for glib-compile-schemas
+       ("gnome-shell" ,gnome-shell)
+       ("gtk+" ,gtk+)
+       ("xmllint" ,libxml2)
+       ("ruby-sass" ,ruby-sass)))
+    (synopsis "Flat theme with light and dark elements")
+    (description "Numix is a modern flat theme with a combination of light and
+dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
+    (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
 
 (define-public arc-theme
