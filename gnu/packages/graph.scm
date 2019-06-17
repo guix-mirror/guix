@@ -3,6 +3,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bioconductor)
   #:use-module (gnu packages bioinformatics)
   #:use-module (gnu packages check)
@@ -446,3 +448,31 @@ they can fit in memory).  The core function is @code{find_partition} which
 finds the optimal partition using the Leiden algorithm, which is an extension
 of the Louvain algorithm, for a number of different methods.")
     (license license:gpl3+)))
+
+(define-public edge-addition-planarity-suite
+  (package
+    (name "edge-addition-planarity-suite")
+    (version "3.0.0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://github.com/graph-algorithms/"
+                                  name))
+              (commit (string-append "Version_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "01cm7ay1njkfsdnmnvh5zwc7wg7x189hq1vbfhh9p3ihrbnmqzh8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Embedding of planar graphs")
+    (description "The package provides a reference implementation of the
+linear time edge addition algorithm for embedding planar graphs and
+isolating planarity obstructions.")
+    (license license:bsd-3)
+    (home-page
+      "https://github.com/graph-algorithms/edge-addition-planarity-suite")))

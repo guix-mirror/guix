@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
@@ -5003,31 +5003,3 @@ command-line tools, and an Application Programming Interface (API).
 This package provides the static libraries required to run programs
 compiled against the nauty library.")
     (license license:asl2.0)))
-
-(define-public edge-addition-planarity-suite
-  (package
-    (name "edge-addition-planarity-suite")
-    (version "3.0.0.5")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url (string-append "https://github.com/graph-algorithms/"
-                                  name))
-              (commit (string-append "Version_" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "01cm7ay1njkfsdnmnvh5zwc7wg7x189hq1vbfhh9p3ihrbnmqzh8"))))
-    (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
-    (synopsis "Embedding of planar graphs")
-    (description "The package provides a reference implementation of the
-linear time edge addition algorithm for embedding planar graphs and
-isolating planarity obstructions.")
-    (license license:bsd-3)
-    (home-page
-      "https://github.com/graph-algorithms/edge-addition-planarity-suite")))
