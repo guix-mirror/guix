@@ -18,11 +18,13 @@
 
 (define-module (gnu packages sagemath)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages python)
@@ -116,3 +118,29 @@ search to maximal cliques, store cliques in memory and call a user-defined
 function for every found clique.")
     (license license:gpl2+)
     (home-page "https://users.aalto.fi/~pat/cliquer.html")))
+
+(define-public libbraiding
+  (package
+    (name "libbraiding")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://github.com/miguelmarco/"
+                                  name))
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l68rikfr7k2l547gb3pp3g8cj5zzxwipm79xrb5r8ffj466ydxg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Computations with braid groups")
+    (description "libbraiding performs computations with braid groups,
+in particular it computes normal forms of group elements.")
+    (license license:gpl2+)
+    (home-page "https://github.com/miguelmarco/libbraiding")))
