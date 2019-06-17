@@ -32,14 +32,14 @@
 (define-public python-cypari2
   (package
     (name "python-cypari2")
-    (version "2.0.3")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cypari2" version))
        (sha256
         (base32
-         "0mghbmilmy34xp1d50xdx76sijqxmpkm2bcgx2v1mdji2ff7n0yc"))))
+         "1nwkzgqvbw6361x0rpggy1q5nx663fswhpvg8md6xhqyfwpgc7nz"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))
