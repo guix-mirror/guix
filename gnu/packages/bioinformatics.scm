@@ -6946,14 +6946,14 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "1063vdf4g2i5xyabwvzkqfxd2j8s4zs6z4zxf8lx2ccjddhkn37a"))))
+         "1k57zyzagd7g7wl38l3cn9csylykxcllbfvyq7dz8pvihgkn0ssi"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
