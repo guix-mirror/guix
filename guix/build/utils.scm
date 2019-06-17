@@ -106,6 +106,8 @@
             invoke-error-stop-signal
             report-invoke-error
 
+            invoke/quiet
+
             locale-category->string))
 
 
@@ -665,6 +667,57 @@ way."
           (or (invoke-error-exit-status c)
               (invoke-error-term-signal c)
               (invoke-error-stop-signal c))))
+
+(define (open-pipe-with-stderr program . args)
+  "Run PROGRAM with ARGS in an input pipe, but, unlike 'open-pipe*', redirect
+both its standard output and standard error to the pipe.  Return two value:
+the pipe to read PROGRAM's data from, and the PID of the child process running
+PROGRAM."
+  ;; 'open-pipe*' doesn't attempt to capture stderr in any way, which is why
+  ;; we need to roll our own.
+  (match (pipe)
+    ((input .  output)
+     (match (primitive-fork)
+       (0
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (close-port input)
+            (dup2 (fileno output) 1)
+            (dup2 (fileno output) 2)
+            (apply execlp program program args))
+          (lambda ()
+            (primitive-exit 127))))
+       (pid
+        (close-port output)
+        (values input pid))))))
+
+(define (invoke/quiet program . args)
+  "Invoke PROGRAM with ARGS and capture PROGRAM's standard output and standard
+error.  If PROGRAM succeeds, print nothing and return the unspecified value;
+otherwise, raise a '&message' error condition that includes the status code
+and the output of PROGRAM."
+  (let-values (((pipe pid)
+                (apply open-pipe-with-stderr program args)))
+    (let loop ((lines '()))
+      (match (read-line pipe)
+        ((? eof-object?)
+         (close-port pipe)
+         (match (waitpid pid)
+           ((_ . status)
+            (unless (zero? status)
+              (let-syntax ((G_ (syntax-rules ()   ;for xgettext
+                                 ((_ str) str))))
+                (raise (condition
+                        (&message
+                         (message (format #f (G_ "'~a~{ ~a~}' exited \
+with status ~a; output follows:~%~%~{  ~a~%~}")
+                                          program args
+                                          (or (status:exit-val status)
+                                              status)
+                                          (reverse lines)))))))))))
+        (line
+         (loop (cons line lines)))))))
 
 
 ;;;

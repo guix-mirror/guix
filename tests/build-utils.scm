@@ -21,8 +21,6 @@
 (define-module (test-build-utils)
   #:use-module (guix tests)
   #:use-module (guix build utils)
-  #:use-module ((gnu build bootloader)
-                #:select (invoke/quiet))
   #:use-module ((guix utils)
                 #:select (%current-system call-with-temporary-directory))
   #:use-module (gnu packages)

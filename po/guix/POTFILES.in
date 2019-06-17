@@ -37,6 +37,7 @@ gnu/installer/timezone.scm
 gnu/installer/user.scm
 gnu/installer/utils.scm
 gnu/packages/bootstrap.scm
+guix/build/utils.scm
 guix/scripts.scm
 guix/scripts/build.scm
 guix/discovery.scm
@@ -79,6 +80,4 @@ guix/channels.scm
 guix/profiles.scm
 guix/git.scm
 guix/deprecation.scm
-gnu/build/bootloader.scm
 nix/nix-daemon/guix-daemon.cc
-
