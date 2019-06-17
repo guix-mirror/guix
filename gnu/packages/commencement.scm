@@ -1350,6 +1350,7 @@ exec " gcc "/bin/" program
    (package
      (inherit gcc-mesboot1-wrapper)
      (name "gcc-mesboot-wrapper")
+     (version (package-version gcc-mesboot))
      (source #f)
      (inputs '())
      (native-inputs `(("bash" ,%bootstrap-coreutils&co)
