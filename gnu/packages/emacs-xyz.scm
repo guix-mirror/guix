@@ -7307,19 +7307,20 @@ performance-oriented and tidy.")
 (define-public emacs-default-encrypt
   (package
     (name "emacs-default-encrypt")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://www.informationelle-selbstbestimmung-im-internet.de"
+             "https://informationelle-selbstbestimmung-im-internet.de"
              "/emacs/jl-encrypt" version "/jl-encrypt.el"))
        (file-name (string-append "jl-encrypt-" version ".el"))
        (sha256
         (base32
-         "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0"))))
+         "0w9ggz075j1zwg7d0rv9k8238g600p7czfnnsnawswi7yps2xk78"))))
     (build-system emacs-build-system)
-    (home-page "https://www.informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (home-page
+     "https://informationelle-selbstbestimmung-im-internet.de/Emacs.html")
     (synopsis "Automatically encrypt or sign Gnus messages in Emacs")
     (description
      "DefaultEncrypt is designed to be used with Gnus in Emacs.  It
