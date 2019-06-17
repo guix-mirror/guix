@@ -2298,7 +2298,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.1.4")
+    (version "5.1.5")
     (source
      (origin
        (method git-fetch)
@@ -2306,7 +2306,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0h2cc2dfpc83325hwqkxwn0p8qfq5gh1dg0yb1nr8bnffy0b4r4v"))
+        (base32 "0xkzdvwpi6dq9wsrn882f2ljb7d5v2bvarq8gs6jm8znfx3y8hi2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
