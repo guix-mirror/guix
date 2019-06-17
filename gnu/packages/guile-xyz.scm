@@ -60,6 +60,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
@@ -1978,11 +1979,11 @@ format is also supported.")
   (deprecated-package "mcron2" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "1ea8b78a8bceb4f7e5eaeb3e76987072267f99bb")
-        (revision "2"))
+  (let ((commit "91d10c96708d732145006dd2802acc4de08b632e")
+        (revision "1"))
     (package
       (name "guile-picture-language")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1990,10 +1991,16 @@ format is also supported.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1rvq6q2zq21x7dx0qq1hn568wglsl4bkd8gacbarcx1fs0rrxcqw"))))
-      (build-system guile-build-system)
+                  "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
+      (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("imagemagick" ,imagemagick)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
       (home-page "https://git.elephly.net/software/guile-picture-language.git")
       (synopsis "Picture language for Guile")
       (description
