@@ -2499,6 +2499,14 @@ this it tries to be opinion-free and very extendable.")
         (base32
           "0r8w2v89nj6b9p91p495cga5m72a673l2wc0hp0zqk05j4yrc9b4"))))
   (build-system python-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-tests
+         (lambda _
+           (substitute* "tests.py"
+            (("flask\\.ext\\.script") "flask_script"))
+           #t)))))
   (propagated-inputs
    `(("python-flask" ,python-flask)
      ("python-argcomplete" ,python-argcomplete)
