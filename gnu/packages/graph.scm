@@ -476,3 +476,27 @@ isolating planarity obstructions.")
     (license license:bsd-3)
     (home-page
       "https://github.com/graph-algorithms/edge-addition-planarity-suite")))
+
+(define-public rw
+  (package
+    (name "rw")
+    ;; There is a version 0.8, but the tarball is broken with symlinks
+    ;; to /usr/share.
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/rankwidth/"
+                                  "rw-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1rv2v42x2506x7f10349m1wpmmfxrv9l032bkminni2gbip9cjg0"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("igraph" ,igraph)))
+    (home-page "https://sourceforge.net/projects/rankwidth/")
+    (synopsis "Rank-width and rank-decomposition of graphs")
+    (description "rw computes rank-width and rank-decompositions
+of graphs.")
+    (license license:gpl2+)))
