@@ -54,6 +54,12 @@
              #t))
          (replace 'configure
            (lambda _ (invoke "make" "defconfig")))
+         (add-after 'configure 'dont-install-to-usr
+           (lambda _
+             (substitute* ".config"
+               (("# CONFIG_INSTALL_NO_USR is not set")
+                "CONFIG_INSTALL_NO_USR=y"))
+             #t))
          (replace 'check
            (lambda _
              (substitute* '("testsuite/du/du-s-works"
