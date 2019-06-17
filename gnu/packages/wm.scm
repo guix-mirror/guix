@@ -1365,3 +1365,31 @@ modules for building a Wayland compositor.")
     (description "Waybar is a highly customisable Wayland bar for Sway and
 Wlroots based compositors.")
     (license license:expat))) ; MIT license
+
+(define-public mako
+  (package
+    (name "mako")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/mako.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17azdc37xsbmx13fkfp23vg9lznrv9fh6nhagn64wdq3nhsxm3b6"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("elogind" ,elogind)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("pango" ,pango)
+              ("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://wayland.emersion.fr/mako")
+    (synopsis "Lightweight Wayland notification daemon")
+    (description "Mako is a lightweight notification daemon for Wayland
+compositors that support the layer-shell protocol.")
+    (license license:expat))) ; MIT license
