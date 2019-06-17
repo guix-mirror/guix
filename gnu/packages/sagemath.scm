@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
@@ -89,3 +90,29 @@ libraries GMO, MPFR and MPC.")
 
 (define-public python2-gmpy2
   (package-with-python2 python-gmpy2))
+
+(define-public cliquer
+  (package
+    (name "cliquer")
+    (version "1.21")
+    ;; The original source package is available from the home page and
+    ;; has not seen any release since 2010; it comes with only a Makefile
+    ;; without an "install" target. Instead, there is an autotoolized
+    ;; tarball available from the Sage project.
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://users.ox.ac.uk/~coml0531/sage/cliquer-1.21.tar.gz")
+       (sha256
+        (base32
+         "1hdzrmrx0nvvj8kbwxrs8swqgkd284khzl623jizixcv28xb77aq"))))
+    (build-system gnu-build-system)
+    (synopsis "C routines for finding cliques in weighted graphs")
+    (description "Cliquer is a set of reentrant C routines for finding
+cliques in a weighted or unweighted graph.  It uses an exact
+branch-and-bound algorithm.  It can search for maximum or maximum-weight
+cliques or cliques with size or weight within a given range, restrict the
+search to maximal cliques, store cliques in memory and call a user-defined
+function for every found clique.")
+    (license license:gpl2+)
+    (home-page "https://users.aalto.fi/~pat/cliquer.html")))
