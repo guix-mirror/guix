@@ -14756,3 +14756,40 @@ spliced-in} (PSI) values of alternatively-spliced exons that were computed by
 vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
 are generated using @code{ggplot2}.")
     (license license:expat)))
+
+(define-public tbsp
+  (let ((commit "ec8fff4410cfb13a677dbbb95cbbc60217e64907")
+        (revision "1"))
+    (package
+      (name "tbsp")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/phoenixding/tbsp.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "025ym14x8gbd6hb55lsinqj6f5qzw36i10klgs7ldzxxd7s39ki1"))))
+      (build-system python-build-system)
+      (arguments '(#:tests? #f))        ; no tests included
+      (inputs
+       `(("python-matplotlib" ,python-matplotlib)
+         ("python-networkx" ,python-networkx)
+         ("python-numpy" ,python-numpy)
+         ("python-pybigwig" ,python-pybigwig)
+         ("python-biopython" ,python-biopython)
+         ("python-scikit-learn" ,python-scikit-learn)
+         ("python-scipy" ,python-scipy)))
+      (home-page "https://github.com/phoenixding/tbsp/")
+      (synopsis "SNP-based trajectory inference")
+      (description
+       "Several studies focus on the inference of developmental and response
+trajectories from single cell RNA-Seq (scRNA-Seq) data.  A number of
+computational methods, often referred to as pseudo-time ordering, have been
+developed for this task.  CRISPR has also been used to reconstruct lineage
+trees by inserting random mutations.  The tbsp package implements an
+alternative method to detect significant, cell type specific sequence
+mutations from scRNA-Seq data.")
+      (license license:expat))))
