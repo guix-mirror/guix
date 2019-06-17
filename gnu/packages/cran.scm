@@ -11748,14 +11748,14 @@ numbers from ZIP and ZINB distributions.")
 (define-public r-nor1mix
   (package
     (name "r-nor1mix")
-    (version "1.2-3")
+    (version "1.3-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nor1mix" version))
        (sha256
         (base32
-         "1bvk888qml9qr7q703s7qzgm0sqfchcjdjqwqllm5vrjx0cnapj3"))))
+         "1817wcvlmxs70vs4db0jkxd7i037744zz8ay3c2a9949z29fxr4w"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/nor1mix/")
     (synopsis "Normal (1-d) mixture models")
