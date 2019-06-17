@@ -387,7 +387,7 @@ test = { path = \"../libtest\" }
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
        ("gdb" ,gdb)   ; For the tests
        ("procps" ,procps) ; For the tests

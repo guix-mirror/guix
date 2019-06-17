@@ -4779,7 +4779,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("boost" ,boost)
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("mesa" ,mesa)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
@@ -5272,7 +5272,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("gettext-minimal" ,gettext-minimal)
        ("qttools" ,qttools)))
     (synopsis "Realistic physics puzzle game")

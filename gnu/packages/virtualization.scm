@@ -1291,7 +1291,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
     (native-inputs
      `(("dev86" ,dev86)
        ("bison" ,bison)
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("figlet" ,figlet)
        ("flex" ,flex)
        ("gettext" ,gettext-minimal)

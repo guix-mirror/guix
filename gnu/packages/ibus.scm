@@ -677,7 +677,7 @@ Method Engine.")
        ("librime" ,librime)
        ("rime-data" ,rime-data)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "https://rime.im/")
     (synopsis "Rime Input Method Engine for IBus")

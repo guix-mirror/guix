@@ -2604,7 +2604,7 @@ supported players in addition to this package.")
     (native-inputs
      `(("automake" ,automake)           ;gui subpackage must be bootstrapped
        ("autoconf" ,autoconf)
-       ("cmake" ,cmake) ;TODO: could probably strip check from make/configure.py
+       ("cmake" ,cmake-minimal) ;TODO: could probably strip check from make/configure.py
        ("curl" ,curl)                   ;not actually used, but tested for
        ("intltool" ,intltool)
        ("libtool" ,libtool)

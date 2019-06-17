@@ -3052,7 +3052,7 @@ algorithm implementations.")
        ("python-pandas" ,python-pandas)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)

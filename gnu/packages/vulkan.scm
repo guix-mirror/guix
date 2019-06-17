@@ -326,7 +326,7 @@ API.")
      `(("googletest" ,googletest)
        ("python" ,python)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("glslang-source" ,(package-source glslang))
        ("pkg-config" ,pkg-config)
        ("spirv-headers-source" ,(package-source spirv-headers))
