@@ -5962,18 +5962,18 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.7.9")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "11iiap0w5v0dszgwx4pi3j1zf9vnlw1ml1wjvq1hg9iz1plgbfnc"))))
+         "0pgavkygsj8fa591pmasx78b4gd32sf2pa067yqvi82xha7dj5k4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-haven" ,r-haven)
+       ("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
