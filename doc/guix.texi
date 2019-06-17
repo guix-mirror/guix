@@ -58,7 +58,7 @@ Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
-Copyright @copyright{} 2018 Gábor Boskovits@*
+Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
 Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
@@ -12245,7 +12245,7 @@ The GPM package to use.
 @anchor{guix-publish-service-type}
 @deffn {Scheme Variable} guix-publish-service-type
 This is the service type for @command{guix publish} (@pxref{Invoking
-guix publish}).  Its value must be a @code{guix-configuration}
+guix publish}).  Its value must be a @code{guix-publish-configuration}
 object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
