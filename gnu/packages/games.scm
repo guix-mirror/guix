@@ -7492,9 +7492,9 @@ win.")
              (let ((roboto-dir (string-append (assoc-ref inputs "font-roboto")
                                               "/share/fonts/truetype/")))
                (substitute* "UI/ClientUI.cpp"
-                 (("\\(GetRootDataDir.*?\"Roboto-(Bold|Regular)\\.ttf\"\\)\\.string\\(\\)\\);"
+                 (("\\(GetRootDataDir.*?Roboto-(Bold|Regular)\\.ttf\"\\)\\.string\\(\\)\\);"
                    all type)
-                  (string-append "\"" roboto-dir "Roboto-" type "\");")))
+                  (string-append "\"" roboto-dir "Roboto-" type ".ttf\");")))
                #t))))))
     (inputs
      `(("boost" ,boost)
