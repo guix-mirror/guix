@@ -132,7 +132,7 @@ sources.")
                            ("python2-imagesize" ,python2-imagesize)
                            ("python2-sphinx-alabaster-theme"
                             ,python2-sphinx-alabaster-theme)
-                           ("python2-babel" ,python2-babel)
+                           ("python2-babel" ,python2-babel-2.6)
                            ("python2-snowballstemmer" ,python2-snowballstemmer)
                            ("python2-docutils" ,python2-docutils)
                            ("python2-jinja2" ,python2-jinja2)

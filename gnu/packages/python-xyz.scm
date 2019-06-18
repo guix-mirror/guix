@@ -311,14 +311,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))
+        "0a7wawx8vsg7igvz6p3x909fskhg4b2y1910xk4f4c8y22p3aqg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -342,6 +342,18 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+;; Sphinx < 2.0 requires this version.  Remove once no longer needed.
+(define-public python2-babel-2.6
+  (package
+    (inherit python2-babel)
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Babel" version))
+              (sha256
+               (base32
+                "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))))
 
 (define-public python2-backport-ssl-match-hostname
   (package
