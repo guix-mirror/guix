@@ -2163,20 +2163,20 @@ serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
 
 (define-public python-on-guile
-  (let ((commit "0cb7c2b2fff4338ca6153473f3f5c409a818f293")
-        (revision "1"))
+  (let ((commit "058c596cd3886447da31171e1026d4d19f5f5313")
+        (revision "2"))
     (package
       (name "python-on-guile")
       (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/python-on-guile/python-on-guile.git")
+                      (url "https://git.elephly.net/software/python-on-guile.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kpz08rrp5mwcf5ksc4flgrw992syham9x49dn9wq9w31bpcpnby"))))
+                  "0ppyh5kkhsph5kc091p2b5a3alnj3wnlx8jr5xpyhrsj0vx9cqph"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
@@ -2185,12 +2185,7 @@ serializing continuations or delimited continuations.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'chdir 'use-canonical-directory-for-go-files
-             (lambda _
-               (substitute* "Makefile.am"
-                 (("/ccache") "/site-ccache"))
-               #t)))))
+             (lambda _ (chdir "modules") #t)))))
       (inputs
        `(("guile" ,guile-2.2)))
       (propagated-inputs
