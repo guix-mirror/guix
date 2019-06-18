@@ -668,7 +668,7 @@ geometric models.")
        `(#:configure-flags
          (list ,@(match (%current-system)
                    ((or "x86_64-linux" "i686-linux")
-                    '("-DCMAKE_CXX_FLAGS=-msse4.1"))
+                    '("-DCMAKE_CXX_FLAGS=-msse2"))
                    (_ '())))
          #:phases
          (modify-phases %standard-phases
