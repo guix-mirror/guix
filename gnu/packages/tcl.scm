@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,8 +26,10 @@
 (define-module (gnu packages tcl)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
   #:use-module (gnu packages image)
@@ -35,7 +38,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
-  #:use-module (guix licenses))
+  #:use-module ((guix licenses) #:prefix license:))
 
 (define-public tcl
   (package
@@ -81,7 +84,7 @@
     (home-page "http://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
-    (license tcl/tk)))
+    (license license:tcl/tk)))
 
 
 (define-public expect
@@ -130,7 +133,7 @@ telnet, ftp, passwd, fsck, rlogin, tip, etc.  Expect really makes this
 stuff trivial.  Expect is also useful for testing these same
 applications.  And by adding Tk, you can wrap interactive applications in
 X11 GUIs.")
-    (license public-domain)))            ; as written in `license.terms'
+    (license license:public-domain))) ; as written in `license.terms'
 
 (define-public tk
   (package
@@ -229,7 +232,7 @@ interfaces (GUIs) in the Tcl language.")
     ;; those of the orignal Tix4.1.3 or Tk8.4.* sources. See the files
     ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
     ;; details of this license."
-    (license perl-license)))
+    (license license:perl-license)))
 
 (define-public tcllib
   (package
@@ -343,7 +346,7 @@ modules for Tk, all written in high-level Tcl.  Examples of provided widgets:
 application may register callback scripts for certain document features, and
 when the parser encounters those features while parsing the document the
 callback is evaluated.")
-    (license (non-copyleft
+    (license (license:non-copyleft
               "file://LICENCE"
               "See LICENCE in the distribution."))))
 
@@ -377,4 +380,4 @@ callback is evaluated.")
 application development.  TclX provides additional interfaces to the operating
 system, and adds many new programming constructs, text manipulation tools, and
 debugging tools.")
-    (license tcl/tk)))
+    (license license:tcl/tk)))
