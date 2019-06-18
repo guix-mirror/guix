@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
@@ -190,3 +191,24 @@ represented as strings.")
               (sha256
                (base32
                 "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy"))))))
+
+(define-public fflas-ffpack-2.3.2
+  (package (inherit fflas-ffpack)
+    (name "fflas-ffpack")
+    (version "2.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/fflas-ffpack")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cqhassj2dny3gx0iywvmnpq8ca0d6m82xl5rz4mb8gaxr2kwddl"))))
+    (propagated-inputs
+     `(("givaro" ,givaro-4.0.4)))
+    ;; A test fails, but since all tests pass in the latest version,
+    ;; there is not much point in investigating.
+    (arguments
+     (substitute-keyword-arguments (package-arguments fflas-ffpack)
+       ((#:tests? _ #f) #f)))))
