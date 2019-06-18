@@ -872,10 +872,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (delete-file-recursively "src/tools/clang")
                       (delete-file-recursively "src/tools/lldb")
                       #t))))
-      (inputs
-       ;; Use LLVM 7.0
-       (alist-replace "llvm" (list llvm)
-                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
