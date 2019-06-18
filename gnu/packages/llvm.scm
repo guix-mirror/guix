@@ -48,7 +48,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
 
-(define-public llvm
+(define-public llvm-8
   (package
     (name "llvm")
     (version "8.0.0")
@@ -98,6 +98,8 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
+
+(define-public llvm llvm-8)
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))

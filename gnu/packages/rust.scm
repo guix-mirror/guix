@@ -1056,6 +1056,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
            "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
     (package
       (inherit base-rust)
+      (inputs
+       (alist-replace "llvm" (list llvm-8)
+                      (package-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
