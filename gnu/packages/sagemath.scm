@@ -212,3 +212,19 @@ represented as strings.")
     (arguments
      (substitute-keyword-arguments (package-arguments fflas-ffpack)
        ((#:tests? _ #f) #f)))))
+
+(define-public linbox-1.5.2
+  (package (inherit linbox)
+    (version "1.5.2")
+    (name "linbox")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/linbox")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wfivlwp30mzdy1697w7rzb8caajim50mc8h27k82yipn2qc5n4i"))))
+    (inputs
+     `(("fflas-ffpack" ,fflas-ffpack-2.3.2)))))
