@@ -5005,13 +5005,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "ipykernel" version))
       (sha256
-       (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
+       (base32 "173nm29g85w8cac3fg40b27qaq26g41wgg6qn79ql1hq4w2n5sgh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
