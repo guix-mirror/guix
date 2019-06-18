@@ -2502,14 +2502,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1xb5n3hvhk63kxypc03k7kfry20pny6gygi4bsl9kw1rnzzsdjri"))))
+         "15v2sqm5g12bqa0c7wikfh9ck2nl97ayizy1hpqhmws5gqalq748"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
