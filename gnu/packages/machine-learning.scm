@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1753,3 +1754,30 @@ API for beginners that allows users to build models quickly by plugging
 together building blocks and a subclassing API with an imperative style for
 advanced research.")
     (license license:asl2.0)))
+
+(define-public python-iml
+  (package
+    (name "python-iml")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iml" version))
+       (sha256
+        (base32
+         "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("ipython" ,python-ipython)
+       ("nose" ,python-nose)
+       ("numpy" ,python-numpy)
+       ("pandas" ,python-pandas)
+       ("scipy" ,python-scipy)))
+    (home-page "http://github.com/interpretable-ml/iml")
+    (synopsis "Interpretable Machine Learning (iML) package")
+    (description "Interpretable ML (iML) is a set of data type objects,
+visualizations, and interfaces that can be used by any method designed to
+explain the predictions of machine learning models (or really the output of
+any function).  It currently contains the interface and IO code from the Shap
+project, and it will potentially also do the same for the Lime project.")
+    (license license:expat)))
