@@ -3941,6 +3941,32 @@ toolkits.")
 (define-public python2-matplotlib-documentation
   (package-with-python2 python-matplotlib-documentation))
 
+(define-public python-matplotlib-venn
+  (package
+    (name "python-matplotlib-venn")
+    (version "0.11.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matplotlib-venn" version ".zip"))
+       (sha256
+        (base32
+         "13w3i1wih0mij08hrgppzg0g9z50y54rc28l6gdi1r5w45l7l0dy"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; tests are not included
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/konstantint/matplotlib-venn")
+    (synopsis "Plot area-proportional Venn diagrams")
+    (description
+     "This package provides tools for plotting area-proportional two- and
+three-way Venn diagrams in @code{matplotlib}.")
+    (license license:expat)))
+
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
