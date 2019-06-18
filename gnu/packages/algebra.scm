@@ -1094,3 +1094,43 @@ objects.")
     ;; means that the gpl2+ licence of GAP itself applies, but to be on the
     ;; safe side, we drop them for now.
     (license license:gpl2+)))
+
+(define-public givaro
+  (package
+    (name "givaro")
+    (version "4.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/givaro")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11wz57q6ijsvfs5r82masxgr319as92syi78lnl9lgdblpc6xigk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (propagated-inputs
+     `(("gmp" ,gmp))) ; gmp++.h includes gmpxx.h
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "Algebraic computations with exact rings and fields")
+    (description
+     "Givaro is a C++ library implementing the basic arithmetic of various
+algebraic objects: prime fields, extension fields, finite fields, finite
+rings, polynomials, algebraic numbers, arbitrary precision integers and
+rationals (C++ wrappers over gmp), fixed precision integers.  It also
+provides data-structures and templated classes for the manipulation of
+compound objects, such as vectors, matrices and univariate polynomials.")
+    (license license:cecill-b)
+    (home-page "https://github.com/linbox-team/givaro")))
