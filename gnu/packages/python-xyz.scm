@@ -5034,8 +5034,39 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
      "This package provides the IPython kernel for Jupyter.")
     (license license:bsd-3)))
 
+;; Version 5.1.1 and above no longer support Python 2.
 (define-public python2-ipykernel
-  (package-with-python2 python-ipykernel))
+  (package
+    (name "python2-ipykernel")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipykernel" version))
+       (sha256
+        (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "pytest" "-v")
+             #t)))))
+    (propagated-inputs
+     `(("python2-ipython" ,python2-ipython)
+       ;; imported at runtime during connect
+       ("python2-jupyter-client" ,python2-jupyter-client)))
+    (native-inputs
+     `(("python2-pytest" ,python2-pytest)
+       ("python2-nose" ,python2-nose)))
+    (home-page "https://ipython.org")
+    (synopsis "IPython Kernel for Jupyter")
+    (description
+     "This package provides the IPython kernel for Jupyter.")
+    (license license:bsd-3)))
 
 (define-public python-pari-jupyter
   (package
