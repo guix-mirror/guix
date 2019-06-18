@@ -1185,3 +1185,41 @@ of a BLAS.  Additionally, it provides routines specific to exact linear
 algebra, such as the row echelon form.")
     (license license:lgpl2.1+)
     (home-page "https://linbox-team.github.io/fflas-ffpack/")))
+
+(define-public linbox
+  (package
+    (name "linbox")
+    (version "1.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/linbox")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fflas-ffpack" ,fflas-ffpack)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "C++ library for linear algebra over exact rings")
+    (description
+     "LinBox is a C++ template library for exact linear algebra computation
+with dense, sparse, and structured matrices over the integers and over
+finite fields.")
+    (license license:lgpl2.1+)
+    (home-page "https://linbox-team.github.io/linbox/")))
