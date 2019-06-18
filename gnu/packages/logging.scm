@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -205,5 +206,8 @@ windows in a terminal, colorize, filter and merge.")
        (list "-DSPDLOG_BUILD_BENCH=OFF")))
     (home-page "https://github.com/gabime/spdlog")
     (synopsis "Fast C++ logging library")
-    (description "Spdlog is a very fast header-only/compiled C++ logging library.")
-    (license license:expat))) ; MIT license
+    (description "Spdlog is a very fast header-only/compiled C++ logging
+library.")
+    ;; spdlog is under Expat license, but the bundled fmt library in
+    ;; "include/spdlog/fmt/bundled" is under BSD 2 clause license.
+    (license (list license:expat license:bsd-2))))
