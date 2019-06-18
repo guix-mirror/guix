@@ -7254,6 +7254,26 @@ the game avoids complex inventory management and character building, relying
 on items and player adaptability for character progression.")
     (license license:isc)))
 
+(define-public harmonist-tk
+  (package
+    (inherit harmonist)
+    (name "harmonist-tk")
+    (arguments
+      (append
+        (package-arguments harmonist)
+        `(#:phases
+          (modify-phases %standard-phases
+            (replace 'build
+              (lambda _
+                (invoke "go" "install" "-v" "-x" "--tags" "tk"
+                        "git.tuxfamily.org/harmonist/harmonist")))
+            (replace 'check
+              (lambda _
+                (invoke "go" "test" "--tags" "tk"
+                        "git.tuxfamily.org/harmonist/harmonist")))))))
+    (inputs
+     `(("go-github.com-nsf-gothic" ,go-github.com-nsf-gothic)))))
+
 (define-public drascula
   (package
     (name "drascula")
