@@ -173,3 +173,20 @@ in particular it computes normal forms of group elements.")
 represented as strings.")
     (license license:public-domain)
     (home-page "https://github.com/miguelmarco/libhomfly")))
+
+;; The following three packages from the Linbox group are needed in
+;; an outdated version for Sage.
+
+(define-public givaro-4.0.4
+  (package (inherit givaro)
+    (name "givaro")
+    (version "4.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/givaro")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy"))))))
