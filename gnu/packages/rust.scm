@@ -871,10 +871,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (delete-file-recursively "src/llvm-emscripten")
                       (delete-file-recursively "src/tools/clang")
                       (delete-file-recursively "src/tools/lldb")
-                      #t))
-          (patches (map search-patch '("rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                       "rust-1.30-gdb-llvm.patch"
-                                       "rust-reproducible-builds.patch")))))
+                      #t))))
       (inputs
        ;; Use LLVM 7.0
        (alist-replace "llvm" (list llvm)
@@ -918,12 +915,6 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
           "0sk84ff0cklybcp0jbbxcw7lk7mrm6kb6km5nzd6m64dy0igrlli")))
     (package
       (inherit base-rust)
-      (source
-        (origin
-          (inherit (package-source base-rust))
-          (patches (map search-patch '("rust-1.25-accept-more-detailed-gdb-lines.patch"
-                                       "rust-1.30-gdb-llvm.patch"
-                                       "rust-reproducible-builds.patch")))))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
