@@ -5062,6 +5062,28 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (description "The package provides a PARI/GP kernel for Jupyter.")
     (license license:gpl3+)))
 
+(define-public python-backcall
+  (package
+    (name "python-backcall")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "backcall" version))
+       (sha256
+        (base32
+         "1r01dqch3f8fdj3n6fviw8hxqrs6w5v0qw4izmvqzry1w9dxiv1q"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/takluyver/backcall/")
+    (synopsis "Specifications for callback functions passed in to an API")
+    (description
+     "If your code lets other people supply callback functions, it's important
+to specify the function signature you expect, and check that functions support
+that.  Adding extra parameters later would break other peoples code unless
+you're careful.  The @code{backcall} package provides a way of specifying the
+callback signature using a prototype function.")
+    (license license:bsd-3)))
+
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
 ;; dropped support for Python 2.7.  We may want to rename this package.
