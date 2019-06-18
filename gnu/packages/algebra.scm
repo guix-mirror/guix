@@ -43,6 +43,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -1134,3 +1135,53 @@ provides data-structures and templated classes for the manipulation of
 compound objects, such as vectors, matrices and univariate polynomials.")
     (license license:cecill-b)
     (home-page "https://github.com/linbox-team/givaro")))
+
+(define-public fflas-ffpack
+  (package
+    (name "fflas-ffpack")
+    (version "2.4.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/fflas-ffpack")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ynbjd72qrwp0b4kpn0p5d7gddpvj8dlb5fwdxajr5pvkvi3if74"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (propagated-inputs
+     `(("givaro" ,givaro))) ; required according to the .pc file
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-blas-libs="
+                            (assoc-ref %build-inputs "openblas")
+                            "/lib/libopenblas.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "C++ library for linear algebra over finite fields")
+    (description
+     "FFLAS-FFPACK is a C++ template library for basic linear algebra
+operations over a finite field.
+FFLAS (Finite Field Linear Algebra Subprograms) provides the implementation
+of a subset of routines of the numerical BLAS; it also supports sparse
+matrix-vector products.
+FFPACK (Finite Field Linear Algebra Package) is inspired by the LAPACK
+library to provide functionalities of higher level, using the kernel
+of a BLAS.  Additionally, it provides routines specific to exact linear
+algebra, such as the row echelon form.")
+    (license license:lgpl2.1+)
+    (home-page "https://linbox-team.github.io/fflas-ffpack/")))
