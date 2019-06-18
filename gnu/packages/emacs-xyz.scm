@@ -591,12 +591,15 @@ from within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1yf3zrgqfhnr0az8gn1kqqwnhfi3nc0vbjkcagwcqwk3sp1jda86"))))
+           "1yf3zrgqfhnr0az8gn1kqqwnhfi3nc0vbjkcagwcqwk3sp1jda86"))
+         (patches
+          (search-patches "emacs-unpackaged-req.patch"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
          ("emacs-org" ,emacs-org)
          ("emacs-s" ,emacs-s)
+         ("emacs-hydra" ,emacs-hydra)
          ("emacs-use-package" ,emacs-use-package)))
       (home-page "https://github.com/alphapapa/unpackaged.el")
       (synopsis "Useful snippets of Emacs Lisp code")
