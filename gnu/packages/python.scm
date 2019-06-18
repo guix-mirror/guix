@@ -261,6 +261,7 @@ introspection capabilities; intuitive object orientation; natural
 expression of procedural code; full modularity, supporting hierarchical
 packages; exception-based error handling; and very high level dynamic
 data types.")
+    (properties '((cpe-name . "python")))
     (license license:psfl)))
 
 ;; Current 2.x version.
