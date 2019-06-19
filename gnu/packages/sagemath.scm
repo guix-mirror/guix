@@ -27,7 +27,9 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -312,4 +314,42 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
     (description "zn_poly implements the arithmetic of polynomials the
 coefficients of which are modular integers.")
     (license (list license:gpl2 license:gpl3)) ; dual licensed
+    (home-page "https://gitlab.com/sagemath/zn_poly")))
+
+(define-public brial
+  (package
+    (name "brial")
+    (version "1.2.5")
+    (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/BRiAl/BRiAl/")
+             (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1nv56fp3brpzanxj7vwvxqdafqfsfhdgq5imr3m94psw5gdfqwja"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("m4ri" ,m4ri)))
+    (arguments
+    ;; We are missing the boost unit test framework.
+     `(#:tests? #f
+       #:configure-flags (list "--without-boost-unit-test-framework")))
+    (synopsis "Arithmetic of polynomials over boolean rings")
+    (description "BRiAl is the successor to  PolyBoRi maintained by the
+Sage community.  Its core is a C++ library, which provides high-level data
+types for Boolean polynomials and monomials, exponent vectors, as well as
+for the underlying polynomial rings and subsets of the powerset of the
+Boolean variables.  As a unique approach, binary decision diagrams are
+used as internal storage type for polynomial structures.")
+    (license license:gpl2+)
     (home-page "https://gitlab.com/sagemath/zn_poly")))
