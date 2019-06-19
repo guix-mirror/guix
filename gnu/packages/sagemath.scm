@@ -29,6 +29,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz))
 
@@ -231,3 +232,37 @@ represented as strings.")
                 "1wfivlwp30mzdy1697w7rzb8caajim50mc8h27k82yipn2qc5n4i"))))
     (inputs
      `(("fflas-ffpack" ,fflas-ffpack-2.3.2)))))
+
+(define-public pynac
+  (package
+    (name "pynac")
+    (version "0.7.25")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/pynac/pynac/")
+              (commit (string-append "pynac-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nnifvg6kzx0lq6gz7znind8g30v3d2pjfwgsdiks3vv9kv9nbj3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("flint" ,flint)
+       ("gmp" ,gmp)
+       ("python" ,python)
+       ("singular" ,singular)))
+    (synopsis "Sage fork of GiNaC")
+    (description "Pynac is a derivative of the C++ library GiNaC, which
+allows manipulation of symbolic expressions.  It currently provides the
+backend for symbolic expressions in Sage.  The main difference between
+Pynac and GiNaC is that Pynac relies on Sage to provide the operations
+on numerical types, while GiNaC depends on CLN for this purpose.")
+    (license license:gpl2+)
+    (home-page "http://pynac.org/")))
