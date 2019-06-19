@@ -5003,3 +5003,44 @@ command-line tools, and an Application Programming Interface (API).
 This package provides the static libraries required to run programs
 compiled against the nauty library.")
     (license license:asl2.0)))
+
+(define-public ratpoints
+  (package
+    (name "ratpoints")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.mathe2.uni-bayreuth.de/stoll/programs/"
+                    "ratpoints-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zhad84sfds7izyksbqjmwpfw4rvyqk63yzdjd3ysd32zss5bgf4"))
+              (patches
+               ;; Taken from
+               ;; <https://git.sagemath.org/sage.git/plain/build/pkgs/ratpoints/patches/>
+               (search-patches "ratpoints-sturm_and_rp_private.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'install 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (with-directory-excursion out
+                 (for-each (lambda (d) (mkdir-p d))
+                           '("bin" "include" "lib"))))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "http://www.mathe2.uni-bayreuth.de/stoll/programs/")
+    (synopsis "Find rational points on hyperelliptic curves")
+    (description "Ratpoints tries to find all rational points within
+a given height bound on a hyperelliptic curve in a very efficient way,
+by using an optimized quadratic sieve algorithm.")
+    (license license:gpl2+)))
