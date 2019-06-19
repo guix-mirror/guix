@@ -93,6 +93,27 @@ multiplication routines such as Toom–Cook and the FFT.")
    (license license:lgpl3+)
    (home-page "http://mpfrcx.multiprecision.org/")))
 
+(define-public gf2x
+  (package
+   (name "gf2x")
+   (version "1.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gforge.inria.fr/frs/download.php/file/36934/gf2x-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "0d6vh1mxskvv3bxl6byp7gxxw3zzpkldrxnyajhnl05m0gx7yhk1"))))
+   (build-system gnu-build-system)
+   (synopsis "Arithmetic of polynomials over binary finite fields")
+   (description
+    "The gf2x library provides arithmetic of polynomials over finite fields
+of characteristic 2.  It implements the multiplication, squaring and
+greatest common divisor operations.")
+   (license license:gpl3+)
+   (home-page "https://gforge.inria.fr/projects/gf2x/")))
+
 (define-public cm
   (package
    (name "cm")
