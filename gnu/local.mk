@@ -1282,6 +1282,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
+  %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
@@ -1290,7 +1291,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/swig-guile-gc.patch			\
   %D%/packages/patches/swish-e-search.patch			\
   %D%/packages/patches/swish-e-format-security.patch		\
-  %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
+  %D%/packages/patches/symmetrica-bruch.patch			\
+  %D%/packages/patches/symmetrica-int32.patch			\
+  %D%/packages/patches/symmetrica-return_values.patch 		\
+  %D%/packages/patches/symmetrica-sort_sum_rename.patch 	\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+.patch		\

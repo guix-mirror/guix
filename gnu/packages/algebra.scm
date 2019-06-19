@@ -1315,3 +1315,63 @@ multiplication algorithm.")
 a given height bound on a hyperelliptic curve in a very efficient way,
 by using an optimized quadratic sieve algorithm.")
     (license license:gpl2+)))
+
+(define-public symmetrica
+  (package
+    (name "symmetrica")
+    (version "2.0")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (let ((v (string-join (string-split version #\.) "_")))
+                     (string-append "http://www.algorithm.uni-bayreuth.de/"
+                                    "en/research/SYMMETRICA/"
+                                    "SYM" v "_tar.gz")))
+              (sha256
+               (base32
+                "1qhfrbd5ybb0sinl9pad64rscr08qvlfzrzmi4p4hk61xn6phlmz"))
+              ;; Taken from <https://git.sagemath.org/sage.git/plain/build/pkgs/symmetrica/patches/>
+              (patches (search-patches "symmetrica-bruch.patch"
+                                       "symmetrica-int32.patch"
+                                       "symmetrica-return_values.patch"
+                                       "symmetrica-sort_sum_rename.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile
+           (lambda _
+             (substitute* "makefile"
+               (("cc -c") "gcc -c"))
+             #t))
+         (add-after 'fix-makefile 'turn-off-banner
+           (lambda _
+             (substitute* "de.c"
+               (("(INT no_banner = )FALSE" _ pre) (string-append pre "TRUE")))
+             #t))
+         (delete 'configure)            ;no configure script
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include/symmetrica"))
+                    (doc (string-append out "/share/doc/symmetrica-" ,version))
+                    (static "libsymmetrica.a"))
+               ;; Build static library.
+               (apply invoke "ar" "crs" static (find-files "." "\\.o$"))
+               (invoke "ranlib" static)
+               ;; Install static library and headers.
+               (for-each (lambda (f) (install-file f inc))
+                         (find-files "." "\\.h$"))
+               (install-file "libsymmetrica.a" lib)
+               ;; Install documentation.
+               (for-each (lambda (f) (install-file f doc))
+                         (find-files "." "\\.doc$"))
+               #t))))))
+    (home-page "http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/")
+    (synopsis "Combinatoric C Library")
+    (description "Symmetrica is a library for combinatorics.  It has support
+for the representation theory of the symmetric group and related groups,
+combinatorics of tableaux, symmetric functions and polynomials, Schubert
+polynomials, and the representation theory of Hecke algebras of type A_n.")
+    (license license:public-domain)))
