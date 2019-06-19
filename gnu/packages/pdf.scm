@@ -14,6 +14,7 @@
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -513,6 +514,9 @@ by using the poppler rendering engine.")
 
                      ;; For building documentation.
                      ("python-sphinx" ,python-sphinx)
+
+                     ;; For building icons.
+                     ("librsvg" ,librsvg)
 
                      ;; For tests.
                      ("check" ,check)
