@@ -1244,3 +1244,33 @@ with dense, sparse, and structured matrices over the integers and over
 finite fields.")
     (license license:lgpl2.1+)
     (home-page "https://linbox-team.github.io/linbox/")))
+
+(define-public m4ri
+  (package
+    (name "m4ri")
+    (version "20140914")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/malb/m4ri")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xfg6pffbn8r1s0y7bn9b8i55l00d41dkmhrpf7pwk53qa3achd3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)))
+    (synopsis "Arithmetic of dense matrices over F_2")
+    (description "M4RI is a library for fast arithmetic with dense matrices
+over F2.  The name M4RI comes from the first implemented algorithm: The
+Method of the Four Russians inversion algorithm published by Gregory Bard.
+This algorithm in turn is named after the Method of the Four Russians
+multiplication algorithm.")
+    (license license:gpl2+)
+    (home-page "https://bitbucket.org/malb/m4ri/")))
