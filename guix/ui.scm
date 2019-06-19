@@ -41,7 +41,6 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
-  #:use-module (guix combinators)
   #:use-module (guix build-system)
   #:use-module (guix serialization)
   #:use-module ((guix licenses) #:select (license? license-name))
@@ -824,29 +823,12 @@ report what is prerequisites are available for download."
         (substitution-oracle store drv #:mode mode)
         (const #f)))
 
-  (define (built-or-substitutable? drv)
-    (or (null? (derivation-outputs drv))
-        (let ((out (derivation->output-path drv))) ;XXX: assume "out" exists
-          (or (valid-path? store out)
-              (substitutable-info out)))))
-
   (let*-values (((build download)
-                 (fold2 (lambda (drv build download)
-                          (let-values (((b d)
-                                        (derivation-prerequisites-to-build
-                                         store drv
-                                         #:mode mode
-                                         #:substitutable-info
-                                         substitutable-info)))
-                            (values (append b build)
-                                    (append d download))))
-                        '() '()
-                        drv))
-                ((build)                          ; add the DRV themselves
-                 (delete-duplicates
-                  (append (map derivation-file-name
-                               (remove built-or-substitutable? drv))
-                          (map derivation-input-path build))))
+                 (derivation-build-plan store
+                                        (map derivation-input drv)
+                                        #:mode mode
+                                        #:substitutable-info
+                                        substitutable-info))
                 ((download)                   ; add the references of DOWNLOAD
                  (if use-substitutes?
                      (delete-duplicates
@@ -860,8 +842,8 @@ report what is prerequisites are available for download."
                                            download))))
                      download))
                 ((graft hook build)
-                 (match (fold (lambda (file acc)
-                                (let ((drv (read-derivation-from-file file)))
+                 (match (fold (lambda (drv acc)
+                                (let ((file (derivation-file-name drv)))
                                   (match acc
                                     ((#:graft graft #:hook hook #:build build)
                                      (cond
