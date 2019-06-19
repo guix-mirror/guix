@@ -12962,6 +12962,26 @@ datastructures as needed, both for method parameters and return values, making
 using XML-RPC methods fairly transparent to the Lisp code.")
       (license license:gpl3+))))
 
+(define-public emacs-xpm
+  (package
+    (name "emacs-xpm")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/xpm-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "075miyashh9cm3b0gk6ngld3rm8bfgnh4qxnhxmmvjgzf6a64grh"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/xpm.html")
+    (synopsis "XPM image editing mode for Emacs")
+    (description "This Emacs package makes editing XPM images easy (and maybe
+fun).  Editing is done directly on the (textual) image format, for maximal
+cohesion with the Emacs Way.")
+    (license license:gpl3+)))
+
 (define-public emacs-fish-completion
   (package
     (name "emacs-fish-completion")
