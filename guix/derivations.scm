@@ -62,6 +62,7 @@
             <derivation-input>
             derivation-input?
             derivation-input-path
+            derivation-input-derivation
             derivation-input-sub-derivations
             derivation-input-output-paths
             valid-derivation-input?
@@ -151,6 +152,10 @@
   derivation-input?
   (path            derivation-input-path)             ; store path
   (sub-derivations derivation-input-sub-derivations)) ; list of strings
+
+(define (derivation-input-derivation input)
+  "Return the <derivation> object INPUT refers to."
+  (read-derivation-from-file (derivation-input-path input)))
 
 (set-record-type-printer! <derivation>
                           (lambda (drv port)
@@ -243,9 +248,7 @@ result is the set of prerequisites of DRV not already in valid."
       (fold2 loop
              (append inputs result)
              (fold set-insert input-set inputs)
-             (map (lambda (i)
-                    (read-derivation-from-file (derivation-input-path i)))
-                  inputs)))))
+             (map derivation-input-derivation inputs)))))
 
 (define (offloadable-derivation? drv)
   "Return true if DRV can be offloaded, false otherwise."
