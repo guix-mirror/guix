@@ -65,18 +65,21 @@ but it can be used independently.")
   (package-with-python2 python-cypari2))
 
 ;; The stable version of the following package is not young enough to be
-;; used with Sage, since it does not support cython. One would need to
-;; use an alpha release. On the other hand, Sage can be built without it.
+;; used with Sage, since it does not support cython; so we use a beta
+;; release.
 (define-public python-gmpy2
   (package
     (name "python-gmpy2")
-    (version "2.0.8")
+    (version "2.1.0b1")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "gmpy2" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aleaxit/gmpy")
+                    (commit (string-append "gmpy2-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0grx6zmi99iaslm07w6c2aqpnmbkgrxcqjrqpfq223xri0r3w8yx"))))
+                "0ljvnmhxqdfsp0yy4c2hynhk5sggm63kkqsq4iwq4k9vsnx2xm97"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
