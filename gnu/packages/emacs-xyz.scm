@@ -7887,6 +7887,37 @@ other operations.")
 on mouse-control.")
     (license license:gpl3+)))
 
+(define-public emacs-gnugo
+  (package
+    (name "emacs-gnugo")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/gnugo-"
+                           version ".tar"))
+       (sha256
+        (base32
+         "0xpjvs250gg71qwapdsb1hlc61gs0gpkjds01srf784fvyxx2gf1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'configure-default-gnugo-xpms-variable
+                    (lambda _
+                      (substitute* "gnugo.el"
+                        (("defvar gnugo-xpms nil")
+                         "defvar gnugo-xpms #'gnugo-imgen-create-xpms"))
+                      #t)))))
+    (propagated-inputs
+     `(("emacs-ascii-art-to-unicode" ,emacs-ascii-art-to-unicode)
+       ("emacs-xpm" ,emacs-xpm)))
+    (home-page "https://elpa.gnu.org/packages/gnugo.html")
+    (synopsis "Emacs major mode for playing GNU Go")
+    (description "This package provides an Emacs based interface for GNU Go.
+It has a graphical mode where the board and stones are drawn using XPM images
+and supports the use of a mouse.")
+    (license license:gpl3+)))
+
 (define-public emacs-gnuplot
   (package
     (name "emacs-gnuplot")
