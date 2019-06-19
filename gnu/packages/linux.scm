@@ -448,8 +448,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.51")
-(define %linux-libre-4.19-hash "0xzgwv70inddbml8nvfknp2zaz5dvs00nzqa1r9iqmsxlmssipz7")
+(define %linux-libre-4.19-version "4.19.52")
+(define %linux-libre-4.19-hash "1wsrgrskmvipm7j4kzir93p9dp3iy49522163ghfxx71b1b2v4dg")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
