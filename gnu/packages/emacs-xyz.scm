@@ -9678,6 +9678,27 @@ matches\" in the mode line in various search modes.  This is an Emacs port of
 Anzu.zim.")
     (license license:gpl3+)))
 
+(define-public emacs-ascii-art-to-unicode
+  (package
+    (name "emacs-ascii-art-to-unicode")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://elpa.gnu.org/packages/ascii-art-to-unicode-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1w9h2lyriafxj71r79774gh822cz8mry3gdfzyj6ym6v9mvqypna"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/ascii-art-to-unicode.html")
+    (synopsis "ASCII to Unicode art converter for Emacs")
+    (description "This Emacs package provides the commands @command{aa2u} and
+@command{aa2u-rectangle}.  Both of these commands can be used to convert
+simple ASCII art line drawings to Unicode; the former works on the active
+region of the buffer, while the latter works on rectangular selections.")
+    (license license:gpl3+)))
+
 (define-public emacs-emmet-mode
   (package
     (name "emacs-emmet-mode")
