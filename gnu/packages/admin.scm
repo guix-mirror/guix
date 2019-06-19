@@ -482,7 +482,7 @@ hostname.")
                                   "-linux")
                  `(("linux-pam" ,linux-pam))
                  '()))
-    (home-page "http://pkg-shadow.alioth.debian.org/")
+    (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
      "Shadow provides a number of authentication-related tools, including:
