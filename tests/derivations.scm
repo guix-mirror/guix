@@ -809,13 +809,13 @@
              (equal? (pk 'x content) (pk 'y (call-with-input-file out get-string-all)))
              )))))
 
-(test-assert "build-expression->derivation and derivation-prerequisites-to-build"
+(test-assert "build-expression->derivation and derivation-build-plan"
   (let ((drv (build-expression->derivation %store "fail" #f)))
     ;; The only direct dependency is (%guile-for-build) and it's already
     ;; built.
-    (null? (derivation-prerequisites-to-build %store drv))))
+    (null? (derivation-build-plan %store (derivation-inputs drv)))))
 
-(test-assert "derivation-prerequisites-to-build when outputs already present"
+(test-assert "derivation-build-plan when outputs already present"
   (let* ((builder    `(begin ,(random-text) (mkdir %output) #t))
          (input-drv  (build-expression->derivation %store "input" builder))
          (input-path (derivation->output-path input-drv))
@@ -828,9 +828,12 @@
               (valid-path? %store output))
       (error "things already built" input-drv))
 
-    (and (equal? (map derivation-input-path
-                      (derivation-prerequisites-to-build %store drv))
-                 (list (derivation-file-name input-drv)))
+    (and (lset= equal?
+                (map derivation-file-name
+                     (derivation-build-plan %store
+                                            (list (derivation-input drv))))
+                (list (derivation-file-name input-drv)
+                      (derivation-file-name drv)))
 
          ;; Build DRV and delete its input.
          (build-derivations %store (list drv))
@@ -839,9 +842,10 @@
 
          ;; Now INPUT-PATH is missing, yet it shouldn't be listed as a
          ;; prerequisite to build because DRV itself is already built.
-         (null? (derivation-prerequisites-to-build %store drv)))))
+         (null? (derivation-build-plan %store
+                                       (list (derivation-input drv)))))))
 
-(test-assert "derivation-prerequisites-to-build and substitutes"
+(test-assert "derivation-build-plan and substitutes"
   (let* ((store  (open-connection))
          (drv    (build-expression->derivation store "prereq-subst"
                                                (random 1000)))
@@ -853,17 +857,19 @@
 
     (with-derivation-narinfo drv
       (let-values (((build download)
-                    (derivation-prerequisites-to-build store drv))
+                    (derivation-build-plan store
+                                           (list (derivation-input drv))))
                    ((build* download*)
-                    (derivation-prerequisites-to-build store drv
-                                                       #:substitutable-info
-                                                       (const #f))))
+                    (derivation-build-plan store
+                                           (list (derivation-input drv))
+                                           #:substitutable-info
+                                           (const #f))))
         (and (null? build)
              (equal? (map substitutable-path download) (list output))
              (null? download*)
-             (null? build*))))))
+             (equal? (list drv) build*))))))
 
-(test-assert "derivation-prerequisites-to-build and substitutes, non-substitutable build"
+(test-assert "derivation-build-plan and substitutes, non-substitutable build"
   (let* ((store  (open-connection))
          (drv    (build-expression->derivation store "prereq-no-subst"
                                                (random 1000)
@@ -876,16 +882,16 @@
 
     (with-derivation-narinfo drv
       (let-values (((build download)
-                    (derivation-prerequisites-to-build store drv)))
+                    (derivation-build-plan store
+                                           (list (derivation-input drv)))))
         ;; Despite being available as a substitute, DRV will be built locally
         ;; due to #:substitutable? #f.
         (and (null? download)
              (match build
-               (((? derivation-input? input))
-                (string=? (derivation-input-path input)
-                          (derivation-file-name drv)))))))))
+               (((= derivation-file-name build))
+                (string=? build (derivation-file-name drv)))))))))
 
-(test-assert "derivation-prerequisites-to-build and substitutes, local build"
+(test-assert "derivation-build-plan and substitutes, local build"
   (with-store store
     (let* ((drv    (build-expression->derivation store "prereq-subst-local"
                                                  (random 1000)
@@ -898,7 +904,8 @@
 
       (with-derivation-narinfo drv
         (let-values (((build download)
-                      (derivation-prerequisites-to-build store drv)))
+                      (derivation-build-plan store
+                                             (list (derivation-input drv)))))
           ;; #:local-build? is *not* synonymous with #:substitutable?, so we
           ;; must be able to substitute DRV's output.
           ;; See <http://bugs.gnu.org/18747>.
@@ -907,7 +914,7 @@
                  (((= substitutable-path item))
                   (string=? item (derivation->output-path drv))))))))))
 
-(test-assert "derivation-prerequisites-to-build in 'check' mode"
+(test-assert "derivation-build-plan in 'check' mode"
   (with-store store
     (let* ((dep (build-expression->derivation store "dep"
                                               `(begin ,(random-text)
@@ -919,13 +926,13 @@
       (delete-paths store (list (derivation->output-path dep)))
 
       ;; In 'check' mode, DEP must be rebuilt.
-      (and (null? (derivation-prerequisites-to-build store drv))
-           (match (derivation-prerequisites-to-build store drv
-                                                     #:mode (build-mode
-                                                             check))
-             ((input)
-              (string=? (derivation-input-path input)
-                        (derivation-file-name dep))))))))
+      (and (null? (derivation-build-plan store
+                                         (list (derivation-input drv))))
+           (lset= equal?
+                  (derivation-build-plan store
+                                         (list (derivation-input drv))
+                                         #:mode (build-mode check))
+                  (list drv dep))))))
 
 (test-assert "substitution-oracle and #:substitute? #f"
   (with-store store

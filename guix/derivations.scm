@@ -21,6 +21,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -34,6 +35,7 @@
   #:use-module (guix base16)
   #:use-module (guix memoization)
   #:use-module (guix combinators)
+  #:use-module (guix deprecation)
   #:use-module (guix monads)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -50,7 +52,8 @@
             derivation-builder-environment-vars
             derivation-file-name
             derivation-prerequisites
-            derivation-prerequisites-to-build
+            derivation-build-plan
+            derivation-prerequisites-to-build     ;deprecated
 
             <derivation-output>
             derivation-output?
@@ -61,6 +64,7 @@
 
             <derivation-input>
             derivation-input?
+            derivation-input
             derivation-input-path
             derivation-input-derivation
             derivation-input-sub-derivations
@@ -341,82 +345,70 @@ substituter many times."
         (#f #f)
         ((key . value) value)))))
 
-(define* (derivation-prerequisites-to-build store drv
-                                            #:key
-                                            (mode (build-mode normal))
-                                            (outputs
-                                             (derivation-output-names drv))
-                                            (substitutable-info
-                                             (substitution-oracle store
-                                                                  (list drv)
-                                                                  #:mode mode)))
-  "Return two values: the list of derivation-inputs required to build the
-OUTPUTS of DRV and not already available in STORE, recursively, and the list
-of required store paths that can be substituted.  SUBSTITUTABLE-INFO must be a
-one-argument procedure similar to that returned by 'substitution-oracle'."
-  (define built?
-    (mlambda (item)
-      (valid-path? store item)))
+(define* (derivation-build-plan store inputs
+                                #:key
+                                (mode (build-mode normal))
+                                (substitutable-info
+                                 (substitution-oracle
+                                  store
+                                  (map derivation-input-derivation
+                                       inputs)
+                                  #:mode mode)))
+  "Given INPUTS, a list of derivation-inputs, return two values: the list of
+derivation to build, and the list of substitutable items that, together,
+allows INPUTS to be realized.
 
-  (define input-built?
-    (compose (cut any built? <>) derivation-input-output-paths))
+SUBSTITUTABLE-INFO must be a one-argument procedure similar to that returned
+by 'substitution-oracle'."
+  (define (built? item)
+    (valid-path? store item))
 
-  (define input-substitutable?
-    ;; Return true if and only if all of SUB-DRVS are subsitutable.  If at
-    ;; least one is missing, then everything must be rebuilt.
-    (compose (cut every substitutable-info <>) derivation-input-output-paths))
-
-  (define (derivation-built? drv* sub-drvs)
+  (define (input-built? input)
     ;; In 'check' mode, assume that DRV is not built.
     (and (not (and (eqv? mode (build-mode check))
-                   (eq? drv* drv)))
-         (every built? (derivation-output-paths drv* sub-drvs))))
+                   (member input inputs)))
+         (every built? (derivation-input-output-paths input))))
 
-  (define (derivation-substitutable-info drv sub-drvs)
-    (and (substitutable-derivation? drv)
-         (let ((info (filter-map substitutable-info
-                                 (derivation-output-paths drv sub-drvs))))
-           (and (= (length info) (length sub-drvs))
+  (define (input-substitutable-info input)
+    (and (substitutable-derivation? (derivation-input-derivation input))
+         (let* ((items (derivation-input-output-paths input))
+                (info  (filter-map substitutable-info items)))
+           (and (= (length info) (length items))
                 info))))
 
-  (let loop ((drv        drv)
-             (sub-drvs   outputs)
-             (build      '())                     ;list of <derivation-input>
-             (substitute '()))                    ;list of <substitutable>
-    (cond ((derivation-built? drv sub-drvs)
-           (values build substitute))
-          ((derivation-substitutable-info drv sub-drvs)
-           =>
-           (lambda (substitutables)
-             (values build
-                     (append substitutables substitute))))
-          (else
-           (let ((build  (if (substitutable-derivation? drv)
-                             build
-                             (cons (make-derivation-input
-                                    (derivation-file-name drv) sub-drvs)
-                                   build)))
-                 (inputs (remove (lambda (i)
-                                   (or (member i build) ; XXX: quadratic
-                                       (input-built? i)
-                                       (input-substitutable? i)))
-                                 (derivation-inputs drv))))
-             (fold2 loop
-                    (append inputs build)
-                    (append (append-map (lambda (input)
-                                          (if (and (not (input-built? input))
-                                                   (input-substitutable? input))
-                                              (map substitutable-info
-                                                   (derivation-input-output-paths
-                                                    input))
-                                              '()))
-                                        (derivation-inputs drv))
-                            substitute)
-                    (map (lambda (i)
-                           (read-derivation-from-file
-                            (derivation-input-path i)))
-                         inputs)
-                    (map derivation-input-sub-derivations inputs)))))))
+  (let loop ((inputs     inputs)                  ;list of <derivation-input>
+             (build      '())                     ;list of <derivation>
+             (substitute '())                     ;list of <substitutable>
+             (visited    (set)))                  ;set of <derivation-input>
+    (match inputs
+      (()
+       (values build substitute))
+      ((input rest ...)
+       (cond ((set-contains? visited input)
+              (loop rest build substitute visited))
+             ((input-built? input)
+              (loop rest build substitute
+                    (set-insert input visited)))
+             ((input-substitutable-info input)
+              =>
+              (lambda (substitutables)
+                (loop rest build
+                      (append substitutables substitute)
+                      (set-insert input visited))))
+             (else
+              (let ((deps (derivation-inputs
+                           (derivation-input-derivation input))))
+                (loop (append deps rest)
+                      (cons (derivation-input-derivation input) build)
+                      substitute
+                      (set-insert input visited)))))))))
+
+(define-deprecated (derivation-prerequisites-to-build store drv #:rest rest)
+  derivation-build-plan
+  (let-values (((build download)
+                (apply derivation-build-plan store
+                       (list (derivation-input drv)) rest)))
+    (values (map derivation-input build) download)))
 
 (define (read-derivation drv-port)
   "Read the derivation from DRV-PORT and return the corresponding <derivation>
