@@ -480,8 +480,8 @@ It has been modified to remove all non-free binary blobs.")
                             %linux-libre-4.14-hash))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.181"
-                    "0fdqfd6z73q00nracrixliw0i0b60f4z352jmzabcwy431wszar5"
+  (make-linux-libre "4.9.182"
+                    "1615v8ywwdm204bimq2cf6qv0zas14yagpr8lk9a5zqxas4p4rns"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
