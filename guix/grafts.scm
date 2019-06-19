@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +22,9 @@
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module ((guix utils) #:select (%current-system))
+  #:use-module (guix sets)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 match)
@@ -151,21 +151,6 @@ are not recursively applied to dependencies of DRV."
                                      #:substitutable? #f
 
                                      #:properties properties)))))
-(define (item->deriver store item)
-  "Return two values: the derivation that led to ITEM (a store item), and the
-name of the output of that derivation ITEM corresponds to (for example
-\"out\").  When ITEM has no deriver, for instance because it is a plain file,
-#f and #f are returned."
-  (match (valid-derivers store item)
-    (()                                           ;ITEM is a plain file
-     (values #f #f))
-    ((drv-file _ ...)
-     (let ((drv (read-derivation-from-file drv-file)))
-       (values drv
-               (any (match-lambda
-                      ((name . path)
-                       (and (string=? item path) name)))
-                    (derivation->output-paths drv)))))))
 
 (define (non-self-references references drv outputs)
   "Return the list of references of the OUTPUTS of DRV, excluding self
@@ -230,6 +215,33 @@ available."
            (set-current-state (vhash-cons key result cache))
            (return result)))))))
 
+(define (reference-origin drv item)
+  "Return the derivation/output pair among the inputs of DRV, recursively,
+that produces ITEM.  Return #f if ITEM is not produced by a derivation (i.e.,
+it's a content-addressed \"source\"), or if it's not produced by a dependency
+of DRV."
+  ;; Perform a breadth-first traversal of the dependency graph of DRV in
+  ;; search of the derivation that produces ITEM.
+  (let loop ((drv (list drv))
+             (visited (setq)))
+    (match drv
+      (()
+       #f)
+      ((drv . rest)
+       (if (set-contains? visited drv)
+           (loop rest visited)
+           (let ((inputs (derivation-inputs drv)))
+             (or (any (lambda (input)
+                        (let ((drv (derivation-input-derivation input)))
+                          (any (match-lambda
+                                 ((output . file)
+                                  (and (string=? file item)
+                                       (cons drv output))))
+                               (derivation->output-paths drv))))
+                      inputs)
+                 (loop (append rest (map derivation-input-derivation inputs))
+                       (set-insert drv visited)))))))))
+
 (define* (cumulative-grafts store drv grafts
                             references
                             #:key
@@ -257,16 +269,17 @@ derivations to the corresponding set of grafts."
        #f)))
 
   (define (dependency-grafts item)
-    (let-values (((drv output) (item->deriver store item)))
-      (if drv
-          ;; If GRAFTS already contains a graft from DRV, do not override it.
-          (if (find (cut graft-origin? drv <>) grafts)
-              (state-return grafts)
-              (cumulative-grafts store drv grafts references
-                                 #:outputs (list output)
-                                 #:guile guile
-                                 #:system system))
-          (state-return grafts))))
+    (match (reference-origin drv item)
+      ((drv . output)
+       ;; If GRAFTS already contains a graft from DRV, do not override it.
+       (if (find (cut graft-origin? drv <>) grafts)
+           (state-return grafts)
+           (cumulative-grafts store drv grafts references
+                              #:outputs (list output)
+                              #:guile guile
+                              #:system system)))
+      (#f
+       (state-return grafts))))
 
   (with-cache (cons (derivation-file-name drv) outputs)
     (match (non-self-references references drv outputs)
