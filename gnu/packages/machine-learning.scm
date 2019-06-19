@@ -54,6 +54,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -68,6 +69,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
@@ -1839,4 +1841,77 @@ models for use with the Keras deep learning framework.")
      "Keras Preprocessing is the data preprocessing and data augmentation
 module of the Keras deep learning library.  It provides utilities for working
 with image data, text data, and sequence data.")
+    (license license:expat)))
+
+(define-public python-keras
+  (package
+    (name "python-keras")
+    (version "2.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras" version))
+       (sha256
+        (base32
+         "1j8bsqzh49vjdxy6l1k4iwax5vpjzniynyd041xjavdzvfii1dlh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-tests-for-unavailable-features
+           (lambda _
+             (delete-file "keras/backend/theano_backend.py")
+             (delete-file "keras/backend/cntk_backend.py")
+             (delete-file "tests/keras/backend/backend_test.py")
+
+             ;; FIXME: This doesn't work because Tensorflow is missing the
+             ;; coder ops library.
+             (delete-file "tests/keras/test_callbacks.py")
+             #t))
+         (replace 'check
+           (lambda _
+             ;; These tests attempt to download data files from the internet.
+             (delete-file "tests/integration_tests/test_datasets.py")
+             (delete-file "tests/integration_tests/imagenet_utils_test.py")
+
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (invoke "py.test" "-v"
+                     "-p" "no:cacheprovider"
+                     "--ignore" "keras/utils"))))))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-keras-applications" ,python-keras-applications)
+       ("python-keras-preprocessing" ,python-keras-preprocessing)
+       ("python-numpy" ,python-numpy)
+       ("python-pydot" ,python-pydot)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("tensorflow" ,tensorflow)
+       ("graphviz" ,graphviz)))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-sphinx" ,python-sphinx)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/keras-team/keras")
+    (synopsis "High-level deep learning framework")
+    (description "Keras is a high-level neural networks API, written in Python
+and capable of running on top of TensorFlow.  It was developed with a focus on
+enabling fast experimentation.  Use Keras if you need a deep learning library
+that:
+
+@itemize
+@item Allows for easy and fast prototyping (through user friendliness,
+  modularity, and extensibility).
+@item Supports both convolutional networks and recurrent networks, as well as
+  combinations of the two.
+@item Runs seamlessly on CPU and GPU.
+@end itemize\n")
     (license license:expat)))
