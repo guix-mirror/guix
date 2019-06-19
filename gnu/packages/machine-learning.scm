@@ -1781,3 +1781,32 @@ explain the predictions of machine learning models (or really the output of
 any function).  It currently contains the interface and IO code from the Shap
 project, and it will potentially also do the same for the Lime project.")
     (license license:expat)))
+
+(define-public python-keras-applications
+  (package
+    (name "python-keras-applications")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras_Applications" version))
+       (sha256
+        (base32
+         "1rcz31ca4axa6kzhjx4lwqxbg4wvlljkj8qj9a7p9sfd5fhzjyam"))))
+    (build-system python-build-system)
+    ;; The tests require Keras, but this package is needed to build Keras.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (home-page "https://github.com/keras-team/keras-applications")
+    (synopsis "Reference implementations of popular deep learning models")
+    (description
+     "This package provides reference implementations of popular deep learning
+models for use with the Keras deep learning framework.")
+    (license license:expat)))
