@@ -270,18 +270,18 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
     (home-page "http://pynac.org/")))
 
 ;; Sage has become upstream of the following package.
-(define-public zn_poly
+(define-public zn-poly
   (package
-    (name "zn_poly")
+    (name "zn-poly")
     (version "0.9.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url (string-append "https://gitlab.com/sagemath/"
-                                  name ".git/"))
+                                  "zn_poly.git/"))
               (commit version)))
-       (file-name (git-file-name name version))
+       (file-name (git-file-name "zn_poly" version))
        (sha256
         (base32
          "0ra5vy585bqq7g3317iw6fp44iqgqvds3j0l1va6mswimypq4vxb"))))
