@@ -1810,3 +1810,33 @@ project, and it will potentially also do the same for the Lime project.")
      "This package provides reference implementations of popular deep learning
 models for use with the Keras deep learning framework.")
     (license license:expat)))
+
+(define-public python-keras-preprocessing
+  (package
+    (name "python-keras-preprocessing")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras_Preprocessing" version))
+       (sha256
+        (base32
+         "1r98nm4k1svsqjyaqkfk23i31bl1kcfcyp7094yyj3c43phfp3as"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("tensorflow" ,tensorflow)))
+    (home-page "https://github.com/keras-team/keras-preprocessing/")
+    (synopsis "Data preprocessing and augmentation for deep learning models")
+    (description
+     "Keras Preprocessing is the data preprocessing and data augmentation
+module of the Keras deep learning library.  It provides utilities for working
+with image data, text data, and sequence data.")
+    (license license:expat)))
