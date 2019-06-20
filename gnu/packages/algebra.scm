@@ -1503,7 +1503,8 @@ John Cremona to compute his elliptic curve database.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))))
+                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))
+              (patches (search-patches "lrcalc-includes.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

@@ -1044,6 +1044,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
+  %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
