@@ -404,6 +404,9 @@ from forcing GEXP-PROMISE."
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       ;; Chromiums build processes may consume up to 8GiB of memory per core.
+       ;; Disable parallel builds to avoid thrashing end user systems.
+       #:parallel-build? #f
        ;; FIXME: Chromiums RUNPATH lacks entries for some libraries, so
        ;; we have to disable validation and add a wrapper below.
        #:validate-runpath? #f
@@ -605,9 +608,11 @@ from forcing GEXP-PROMISE."
                (format #t "Dumping configure flags...\n")
                (invoke "gn" "args" "out/Release" "--list"))))
          (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
              (invoke "ninja" "-C" "out/Release"
-                     "-j" (number->string (parallel-job-count))
+                     "-j" (if parallel-build?
+                              (number->string (parallel-job-count))
+                              "1")
                      "chrome"
                      "chromedriver")))
          (replace 'install
