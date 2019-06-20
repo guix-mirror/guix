@@ -11563,6 +11563,37 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
 ∀ instead of @code{forall} and many others.")
     (license license:bsd-3)))
 
+(define-public ghc-genvalidity
+  (package
+    (name "ghc-genvalidity")
+    (version "0.5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/genvalidity/genvalidity-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17ykq38j9a2lzir6dqz5jgy6ndaafrpkhqhcg96c5ppg7wcxaaj0"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-validity" ,ghc-validity)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-hspec-core" ,ghc-hspec-core)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis
+     "Testing utilities for the @code{validity} library")
+    (description
+     "This package provides testing utilities that are useful in conjunction
+with the @code{Validity} typeclass.")
+    (license license:expat)))
+
 (define-public ghc-validity
   (package
     (name "ghc-validity")
