@@ -189,6 +189,38 @@ that computes a lattice vector closest to a given vector belonging to
 the real span of the lattice.")
     (license license:lgpl2.1+)))
 
+(define-public python-fpylll
+  (package
+    (name "python-fpylll")
+    (version "0.4.1")
+    (source
+     (origin
+       ;; Pypi contains and older release, so we use a tagged release from
+       ;; Github instead.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fplll/fpylll.git")
+             (commit (string-append version "dev"))))
+       (sha256
+        (base32
+         "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("fplll" ,fplll)
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("pari-gp" ,pari-gp)))
+    (propagated-inputs
+     `(("cysignals" ,python-cysignals)
+       ("cython" ,python-cython)
+       ("flake8" ,python-flake8)
+       ("numpy" ,python-numpy)
+       ("pytest" ,python-pytest)))
+    (home-page "https://github.com/fplll/fpylll")
+    (synopsis "Python interface for fplll")
+    (description "fpylll is a Python wrapper for fplll.")
+    (license license:gpl2+)))
+
 (define-public pari-gp
   (package
     (name "pari-gp")
