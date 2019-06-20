@@ -5516,7 +5516,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "2.9.3")
+    (version "2.9.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5525,7 +5525,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17c0v1nah3g3d2ib5bbi0vhma1ghd6vb9xycavqsh64lhp840rk3"))))
+                "0d5k5kabgl15as37kj9x65xc92j4gcqms86hvihw3yb6wag0r0q3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -5582,7 +5582,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.9.3")
+    (version "2.9.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5591,11 +5591,12 @@ simultaneously.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l4ny67nxwv1lagk9wwjbrgm7ln7adci6dnpc7k1yaln6shj0qpm"))))
+                "0knkj1sq34hlivgv5qd6jlczqrs3ldmfgn6vbbw7p4mqxvb9mirk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
+       #:make-flags '("HAVE_HDF5=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
@@ -5606,6 +5607,13 @@ simultaneously.")
              (setenv "PERL5LIB"
                      (string-append (getcwd) "/setup:"
                                     (getenv "PERL5LIB")))
+             #t))
+         ;; See https://github.com/ncbi/ncbi-vdb/issues/14
+         (add-after 'unpack 'patch-krypto-flags
+           (lambda _
+             (substitute* "libs/krypto/Makefile"
+               (("-Wa,-march=generic64\\+aes") "")
+               (("-Wa,-march=generic64\\+sse4") ""))
              #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -5933,7 +5941,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.9.3")
+    (version "2.9.6")
     (source
      (origin
        (method git-fetch)
@@ -5943,7 +5951,7 @@ sequence itself can be retrieved from these databases.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0663gcdxkziwsmlznjxysb00621rllpbz6jwsfifq7z3dj3lwm8b"))))
+         "0vqzap68v81k0zif2mnqfy8pnw2nrhsg87p6mgq8qk3nk2jv2rgy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -6946,14 +6954,14 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "1063vdf4g2i5xyabwvzkqfxd2j8s4zs6z4zxf8lx2ccjddhkn37a"))))
+         "1k57zyzagd7g7wl38l3cn9csylykxcllbfvyq7dz8pvihgkn0ssi"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8548,13 +8556,13 @@ factors bound at the specific regions.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.12.0")
+    (version "1.12.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "0nl4imr5klwcd0xnp5y0g61d6mcgd50q60zkl86ymfmc0id368jr"))))
+                "1nq8v1sgkm2ssmvr2z3qw0zsk7zy0dzb95g1mfs8fkpjqh3nqq5s"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
@@ -9452,13 +9460,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.0.1")
+    (version "3.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0mx2fvhdswbcsgqxhfc6d0gr92bkibwpz2bavqdzbbxrzpdpnilc"))))
+                "016fgcmjz3sjfxdvam5hd7mdxpmpnc7f6p5zqlh97m21dgn5vpqn"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -12536,15 +12544,15 @@ once.  This package provides tools to perform Drop-seq analyses.")
 (define-public pigx-rnaseq
   (package
     (name "pigx-rnaseq")
-    (version "0.0.6")
+    (version "0.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_rnaseq/"
-                                  "releases/download/v." version
+                                  "releases/download/v" version
                                   "/pigx_rnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "1w7cwbbz1sbvbyqh5c60iqcjfs3qsppmdgxqa1i0w5wwb9mkh27m"))))
+                "013inbh22bjvwg2w0kx5i42k66w1zl4310ldip2ax6msgprs2ydj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f             ; not supported
@@ -12559,7 +12567,9 @@ once.  This package provides tools to perform Drop-seq analyses.")
                (("^  test.sh") ""))
              #t)))))
     (inputs
-     `(("gzip" ,gzip)
+     `(("coreutils" ,coreutils)
+       ("sed" ,sed)
+       ("gzip" ,gzip)
        ("snakemake" ,snakemake)
        ("fastqc" ,fastqc)
        ("multiqc" ,multiqc)
@@ -13085,35 +13095,6 @@ with host genes, gene featrues they are spliced from, and discriminate between
 known and yet unknown splice junctions.  Circular-to-linear ratios of circRNAs
 can be calculated, and a number of descriptive plots easily generated.")
     (license license:artistic2.0)))
-
-(define-public r-loomr
-  (let ((commit "df0144bd2bbceca6fadef9edc1bbc5ca672d4739")
-        (revision "1"))
-    (package
-      (name "r-loomr")
-      (version (git-version "0.2.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/mojaveazure/loomR.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1b1g4dlmfdyhn56bz1mkh9ymirri43wiz7rjhs7py3y7bdw1s3yr"))))
-      (build-system r-build-system)
-      (propagated-inputs
-       `(("r-r6" ,r-r6)
-         ("r-hdf5r" ,r-hdf5r)
-         ("r-iterators" ,r-iterators)
-         ("r-itertools" ,r-itertools)
-         ("r-matrix" ,r-matrix)))
-      (home-page "https://github.com/mojaveazure/loomR")
-      (synopsis "R interface for loom files")
-      (description "This package provides an R interface to access, create,
-and modify loom files.  loomR aims to be completely compatible with loompy.")
-      (license license:gpl3))))
 
 (define-public gffread
   ;; We cannot use the tagged release because it is not in sync with gclib.
@@ -14785,3 +14766,40 @@ spliced-in} (PSI) values of alternatively-spliced exons that were computed by
 vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
 are generated using @code{ggplot2}.")
     (license license:expat)))
+
+(define-public tbsp
+  (let ((commit "ec8fff4410cfb13a677dbbb95cbbc60217e64907")
+        (revision "1"))
+    (package
+      (name "tbsp")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/phoenixding/tbsp.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "025ym14x8gbd6hb55lsinqj6f5qzw36i10klgs7ldzxxd7s39ki1"))))
+      (build-system python-build-system)
+      (arguments '(#:tests? #f))        ; no tests included
+      (inputs
+       `(("python-matplotlib" ,python-matplotlib)
+         ("python-networkx" ,python-networkx)
+         ("python-numpy" ,python-numpy)
+         ("python-pybigwig" ,python-pybigwig)
+         ("python-biopython" ,python-biopython)
+         ("python-scikit-learn" ,python-scikit-learn)
+         ("python-scipy" ,python-scipy)))
+      (home-page "https://github.com/phoenixding/tbsp/")
+      (synopsis "SNP-based trajectory inference")
+      (description
+       "Several studies focus on the inference of developmental and response
+trajectories from single cell RNA-Seq (scRNA-Seq) data.  A number of
+computational methods, often referred to as pseudo-time ordering, have been
+developed for this task.  CRISPR has also been used to reconstruct lineage
+trees by inserting random mutations.  The tbsp package implements an
+alternative method to detect significant, cell type specific sequence
+mutations from scRNA-Seq data.")
+      (license license:expat))))

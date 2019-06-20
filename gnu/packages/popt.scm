@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -24,7 +24,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (gnu packages texinfo))
 
 (define-public argtable
   (package
@@ -126,19 +127,21 @@ appropriately.")
 (define-public gengetopt
   (package
     (name "gengetopt")
-    (version "2.22.6")
+    (version "2.23")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://gnu/gengetopt/gengetopt-"
-                           version ".tar.gz"))
+                           version ".tar.xz"))
        (sha256
         (base32
-         "1xq1kcfs6hri101ss4dhym0jn96z4v6jdvx288mfywadc245mc1h"))))
+         "1b44fn0apsgawyqa4alx2qj5hls334mhbszxsy6rfr0q074swhdr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f             ; not supported
        #:parallel-tests? #f))           ; likewise
+    (native-inputs
+     `(("texinfo" ,texinfo)))
     (synopsis "Create parsers for command line options")
     (description
      "GNU Gengetopt is a program to generate a C/C++ function for parsing

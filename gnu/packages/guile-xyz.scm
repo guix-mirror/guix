@@ -60,6 +60,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
@@ -1978,11 +1979,11 @@ format is also supported.")
   (deprecated-package "mcron2" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "1ea8b78a8bceb4f7e5eaeb3e76987072267f99bb")
-        (revision "2"))
+  (let ((commit "91d10c96708d732145006dd2802acc4de08b632e")
+        (revision "1"))
     (package
       (name "guile-picture-language")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1990,10 +1991,16 @@ format is also supported.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1rvq6q2zq21x7dx0qq1hn568wglsl4bkd8gacbarcx1fs0rrxcqw"))))
-      (build-system guile-build-system)
+                  "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
+      (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("imagemagick" ,imagemagick)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
       (home-page "https://git.elephly.net/software/guile-picture-language.git")
       (synopsis "Picture language for Guile")
       (description
@@ -2156,20 +2163,20 @@ serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
 
 (define-public python-on-guile
-  (let ((commit "0cb7c2b2fff4338ca6153473f3f5c409a818f293")
-        (revision "1"))
+  (let ((commit "058c596cd3886447da31171e1026d4d19f5f5313")
+        (revision "2"))
     (package
       (name "python-on-guile")
       (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/python-on-guile/python-on-guile.git")
+                      (url "https://git.elephly.net/software/python-on-guile.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kpz08rrp5mwcf5ksc4flgrw992syham9x49dn9wq9w31bpcpnby"))))
+                  "0ppyh5kkhsph5kc091p2b5a3alnj3wnlx8jr5xpyhrsj0vx9cqph"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
@@ -2178,12 +2185,7 @@ serializing continuations or delimited continuations.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'chdir 'use-canonical-directory-for-go-files
-             (lambda _
-               (substitute* "Makefile.am"
-                 (("/ccache") "/site-ccache"))
-               #t)))))
+             (lambda _ (chdir "modules") #t)))))
       (inputs
        `(("guile" ,guile-2.2)))
       (propagated-inputs
@@ -2240,43 +2242,40 @@ list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
 
 (define-public guile-gi
-  (let ((commit "26e885219ae6b31a83766564a2ecfe8c4532346f")
-        (revision "1"))
-    (package
-      (name "guile-gi")
-      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/spk121/guile-gi.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "1prbzhr4sqqihb34l6yfrz6sd8nghwd3q9wvbm36jnl2n3z2nxj8"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ("gettext" ,gnu-gettext)
-                       ("libtool" ,libtool)
-                       ("pkg-config" ,pkg-config)
-                       ("texinfo" ,texinfo)))
-      (propagated-inputs `(("glib" ,glib)
-                           ("gobject-introspection" ,gobject-introspection)
-                           ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
-                           ("gtk+" ,gtk+)
-                           ("guile-lib" ,guile-lib)
-                           ("webkitgtk" ,webkitgtk)))
-      (inputs `(("guile" ,guile-2.2)))
-      (arguments
-       `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
-      (home-page "https://github.com/spk121/guile-gi")
-      (synopsis "GObject bindings for Guile")
-      (description
-       "Guile-GI is a library for Guile that allows using GObject-based
+  (package
+    (name "guile-gi")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hs0viqzff7nzgcmyw721ima1jyymrlzrcycpgwrs6iprscxvqwn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       ;; The atomic_int_set test does not actually fail.
+       #:make-flags '("XFAIL_TESTS=strjoinv.scm")))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("guile-lib" ,guile-lib)
+       ("webkitgtk" ,webkitgtk)))
+    (inputs `(("guile" ,guile-2.2)))
+    (home-page "https://github.com/spk121/guile-gi")
+    (synopsis "GObject bindings for Guile")
+    (description
+     "Guile-GI is a library for Guile that allows using GObject-based
 libraries, such as GTK+3.  Its README comes with the disclaimer: This is
 pre-alpha code.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")

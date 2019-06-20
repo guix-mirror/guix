@@ -1627,7 +1627,10 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        ("perl-libwww" ,perl-libwww)
        ("perl-lwp-protocol-https" ,perl-lwp-protocol-https)
        ("perl-mozilla-ca" ,perl-mozilla-ca)
-       ("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+       ("perl-unicode-linebreak" ,perl-unicode-linebreak)
+
+       ;; Some videos play without youtube-dl, but others silently fail to.
+       ("youtube-dl" ,youtube-dl)))
     (arguments
      `(#:modules ((guix build perl-build-system)
                   (guix build utils)
@@ -1635,6 +1638,13 @@ audio, images) from the Web.  It can use either mpv or vlc for playback.")
        #:module-build-flags '("--gtk")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "lib/WWW/YoutubeViewer.pm"
+               (("'youtube-dl'")
+                (format #f "'~a/bin/youtube-dl'"
+                        (assoc-ref inputs "youtube-dl"))))
+             #t))
          (add-after 'install 'install-desktop
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2672,16 +2682,16 @@ of modern, widely supported codecs.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "1.8.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cisco/"
                                   name "/releases/download/v"
-                                  version "/Source.Code.tar.gz.gz"))
+                                  version "/Source.Code.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0niha3wnn1jsndvz9vfwy2wyql8mp9j6v75vjsipy0idwan5yzgf"))))
+                "0iq802xfsfkskg6q1j0kg90xh04vv1sxf61mrmahgynz5d7hx2ii"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
@@ -3482,7 +3492,7 @@ video from a Wayland session.")
 (define-public gaupol
   (package
     (name "gaupol")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3491,7 +3501,7 @@ video from a Wayland session.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dk44fmcs86ymfxfbpdbrr4x5nn5hnv57wkqjyw61g779xjhlrd2"))))
+                "164wlxxjiqvkzbqjzvqvz2zkn0kgqmhn52294xx4vc9b9ngdnn0m"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)

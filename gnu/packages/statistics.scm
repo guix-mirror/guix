@@ -1137,18 +1137,17 @@ legends.")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "3.1.1")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0y8cks9r9hvjlx0isnvbgs3p0al167hlr3q7c3syfcj77dzjkpmz"))))
+        (base32 "1cvk9pw59kxx19kamqwa15h26rbznp0vvqpn7y8kgjssnrzqkdii"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
        ("r-gtable" ,r-gtable)
-       ("r-plyr" ,r-plyr)
        ("r-lazyeval" ,r-lazyeval)
        ("r-mass" ,r-mass)
        ("r-mgcv" ,r-mgcv)
@@ -1347,13 +1346,13 @@ adapted for other output formats, such as HTML or LaTeX.")
 (define-public r-formatr
   (package
     (name "r-formatr")
-    (version "1.6")
+    (version "1.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "formatR" version))
               (sha256
                (base32
-                "0a9229rg3s9qga5v2fwfdqr0z3bk2yycv8kijrcm3jh66l68zjgm"))))
+                "1nsxbrx31k3y6yql30qkrvdfyznlia2qfvwv95mfiy7m7wdn4rm3"))))
     (build-system r-build-system)
     (home-page "http://yihui.name/formatR")
     (synopsis "Format R code automatically")
@@ -1386,13 +1385,13 @@ supported via Andre Simon's highlight package.")
 (define-public r-mime
   (package
     (name "r-mime")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mime" version))
               (sha256
                (base32
-                "00f4gw4sg1kn03s67gficxgb7a7fb6pwhlvrxrml05q1mc2vcxa7"))))
+                "12vpip67ajb90b8p96w43ir7mavrw2i61bwvpfnrlmlj9kj3w20i"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/mime")
     (synopsis "R package to map filenames to MIME types")
@@ -2597,13 +2596,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.400.3.0")
+    (version "0.9.500.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1c0kmp54xgg67hxpqm8bibcxmmwljbdvm9p1d9wzirp83x86v4sn"))))
+                "1lyvpb7n54ijlqns29qiixqr39334knf67cnixvlic58945glrhv"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -3163,13 +3162,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "05kr88yshq6siarp5q7aapvsr63vx3p0aqablwgifn8m2sfqxmif"))))
+                "0b6ywgzk9b35y5f69zwfz3vv7qwqqj3xsmy0xymf7nfcvrqg3qqx"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)
@@ -3543,13 +3542,13 @@ maintenance for package developers.")
 (define-public r-r-utils
   (package
     (name "r-r-utils")
-    (version "2.8.0")
+    (version "2.9.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.utils" version))
               (sha256
                (base32
-                "1jaarld1jgpzh18kh9g3rlzcrk51vdgn2n1d1y28szzxlz94vifg"))))
+                "1w4zn2db15bggfnh64fbyi2z2sj47rcd4xn53b28dsnkamdcramj"))))
     (properties `((upstream-name . "R.utils")))
     (build-system r-build-system)
     (propagated-inputs

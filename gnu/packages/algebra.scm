@@ -43,6 +43,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
@@ -92,6 +93,27 @@ multiplication routines such as Toom–Cook and the FFT.")
    (license license:lgpl3+)
    (home-page "http://mpfrcx.multiprecision.org/")))
 
+(define-public gf2x
+  (package
+   (name "gf2x")
+   (version "1.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://gforge.inria.fr/frs/download.php/file/36934/gf2x-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "0d6vh1mxskvv3bxl6byp7gxxw3zzpkldrxnyajhnl05m0gx7yhk1"))))
+   (build-system gnu-build-system)
+   (synopsis "Arithmetic of polynomials over binary finite fields")
+   (description
+    "The gf2x library provides arithmetic of polynomials over finite fields
+of characteristic 2.  It implements the multiplication, squaring and
+greatest common divisor operations.")
+   (license license:gpl3+)
+   (home-page "https://gforge.inria.fr/projects/gf2x/")))
+
 (define-public cm
   (package
    (name "cm")
@@ -122,24 +144,82 @@ line applications.")
 
 (define-public fplll
   (package
-   (name "fplll")
-   (version "4.0.4")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://perso.ens-lyon.fr/damien.stehle/fplll/libfplll-"
-                  version ".tar.gz"))
-            (sha256 (base32
-                     "1cbiby7ykis4z84swclpysrljmqhfcllpkcbll1m08rzskgb1a6b"))))
-   (build-system gnu-build-system)
-   (inputs `(("gmp" ,gmp)
-             ("mpfr" ,mpfr)))
-   (synopsis "Library for LLL-reduction of euclidean lattices")
-   (description
-    "fplll LLL-reduces euclidean lattices.  Since version 3, it can also
-solve the shortest vector problem.")
-   (license license:lgpl2.1+)
-   (home-page "http://perso.ens-lyon.fr/damien.stehle/fplll/")))
+    (name "fplll")
+    (version "5.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fplll/fplll.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "015qmrd7nfaysbv1hbwiprz9g6hnww1y1z1xw8f43ysb7k1b5nbg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)))
+    (home-page "https://github.com/fplll/fplll")
+    (synopsis "Library for LLL-reduction of euclidean lattices")
+    (description
+     "fplll contains implementations of several lattice algorithms.
+The implementation relies on floating-point orthogonalization, and LLL
+is central to the code, hence the name.
+
+It includes implementations of floating-point LLL reduction
+algorithms, offering different speed/guarantees ratios.  It contains
+a @emph{wrapper} choosing the estimated best sequence of variants in
+order to provide a guaranteed output as fast as possible.  In the case
+of the wrapper, the succession of variants is oblivious to the user.
+
+It includes an implementation of the BKZ reduction algorithm,
+including the BKZ-2.0 improvements (extreme enumeration
+pruning, pre-processing of blocks, early termination).  Additionally,
+Slide reduction and self dual BKZ are supported.
+
+It also includes a floating-point implementation of the
+Kannan-Fincke-Pohst algorithm that finds a shortest non-zero lattice
+vector.  For the same task, the GaussSieve algorithm is also available
+in fplll.  Finally, it contains a variant of the enumeration algorithm
+that computes a lattice vector closest to a given vector belonging to
+the real span of the lattice.")
+    (license license:lgpl2.1+)))
+
+(define-public python-fpylll
+  (package
+    (name "python-fpylll")
+    (version "0.4.1")
+    (source
+     (origin
+       ;; Pypi contains and older release, so we use a tagged release from
+       ;; Github instead.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fplll/fpylll.git")
+             (commit (string-append version "dev"))))
+       (sha256
+        (base32
+         "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("fplll" ,fplll)
+       ("gmp" ,gmp)
+       ("mpfr" ,mpfr)
+       ("pari-gp" ,pari-gp)))
+    (propagated-inputs
+     `(("cysignals" ,python-cysignals)
+       ("cython" ,python-cython)
+       ("flake8" ,python-flake8)
+       ("numpy" ,python-numpy)
+       ("pytest" ,python-pytest)))
+    (home-page "https://github.com/fplll/fpylll")
+    (synopsis "Python interface for fplll")
+    (description "fpylll is a Python wrapper for fplll.")
+    (license license:gpl2+)))
 
 (define-public pari-gp
   (package
@@ -928,7 +1008,7 @@ xtensor provides:
 (define-public gap
   (package
     (name "gap")
-    (version "4.10.0")
+    (version "4.10.1")
     (source
      (origin
        (method url-fetch)
@@ -939,7 +1019,7 @@ xtensor provides:
                            ".tar.bz2"))
        (sha256
         (base32
-         "1dmb8v4p7j1nnf7sx8sg54b49yln36bi9acwp7w1d3a1nxj17ird"))
+         "136s0zvhcw41fshj5zgsrjcy2kd58cdh2m3ddp5rdizi4rx54f10"))
        (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
        (snippet
         '(begin
@@ -967,20 +1047,20 @@ xtensor provides:
                    ;; Optional packages, searched for at start,
                    ;; and their depedencies.
                    "alnuth-3.1.0"
-                   "AutoDoc-2018.09.20"
                    "autpgrp-1.10"
                    "crisp-1.4.4"     ; bsd-2
-                   ; "ctbllib"       ; no explicit license, drop
+                   "ctbllib"       ; gpl3+ according to doc/chap0.txt
                    "FactInt-1.6.2"
                    "fga"
                    "irredsol-1.4"    ; bsd-2
-                   "laguna-3.9.0"
+                   "laguna-3.9.2"
                    "polenta-1.3.8"
                    "polycyclic-2.14"
                    "radiroot-2.8"
                    "resclasses-4.7.1"
                    "sophus-1.24"
-                   ; "tomlib-1.2.7"  ; no explicit license, drop
+                   "tomlib-1.2.7"  ; gpl2+, clarified in the git repository
+                                   ; and the next release
                    "utils-0.59"))))
            #t))))
     (build-system gnu-build-system)
@@ -988,7 +1068,11 @@ xtensor provides:
      `(("gmp" ,gmp)
        ("zlib" ,zlib)))
     (arguments
-     `(#:phases
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-26)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'build 'build-packages
            ;; Compile all packages that have not been deleted by the
@@ -1004,19 +1088,16 @@ xtensor provides:
              (with-directory-excursion "doc"
                (invoke "./make_doc"))
              #t))
-         (replace 'check
-           (lambda _
-             ;; "make check" is expected to appear in gap-4.10.1
-             (invoke "./gap" "tst/testinstall.g")
-             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
                     (prog (string-append bin "/gap"))
                     (prog-real (string-append bin "/.gap-real"))
                     (share (string-append out "/share/gap"))
-                    (include (string-append out "/include/gap")))
+                    (include (string-append out "/include/gap"))
+                    (include-hpc (string-append include "/hpc")))
                ;; Install only the gap binary; the gac compiler is left
                ;; for maybe later. "Wrap" it in a shell script that calls
                ;; the binary with the correct parameter.
@@ -1030,12 +1111,37 @@ xtensor provides:
                            prog-real
                            share)))
                (chmod prog #o755)
-               ;; Install the headers and the library, which are needed by
-               ;; Sage. The Makefile targets are available in gap-4.10.0,
-               ;; but planned to be removed in gap-4.10.1.
-               (invoke "make" "install-headers")
-               (invoke "make" "install-libgap")
+               ;; Install the headers, which are needed by Sage. The
+               ;; Makefile target "install-headers" was available in
+               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
+               (mkdir-p include-hpc)
                (install-file "gen/config.h" include)
+               (let ((file-name-predicate-without-stat
+                       (lambda (regex)
+                         (cut (file-name-predicate regex) <> #f))))
+                 (with-directory-excursion "src"
+                   (for-each
+                     (cut install-file <> include)
+                     (scandir "."
+                              (file-name-predicate-without-stat ".*\\.h$"))))
+                 (with-directory-excursion "src/hpc"
+                   (for-each
+                     (cut install-file <> include-hpc)
+                     (scandir "."
+                              (file-name-predicate-without-stat ".*\\.h$")))))
+               ;; Install the library, which is needed by Sage. The
+               ;; Makefile target "install-libgap" was available in
+               ;; gap-4.10.0, but has been commented out in gap-4.10.1.
+               ;; Compared to the Makefile, which used libtool, the
+               ;; following approach of copying files and making symlinks
+               ;; is rather pedestrian. There is hope that some later
+               ;; version of gap reinstates and completes the install
+               ;; targets.
+               (invoke "make" "libgap.la")
+               (install-file "libgap.la" lib)
+               (install-file ".libs/libgap.so.0.0.0" lib)
+               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so")) 
+               (symlink "libgap.so.0.0.0" (string-append lib "/libgap.so.0"))
                ;; Install a certain number of files and directories to
                ;; SHARE, where the wrapped shell script expects them.
                ;; Remove information on the build directory from sysinfo.gap.
@@ -1068,3 +1174,411 @@ objects.")
     ;; means that the gpl2+ licence of GAP itself applies, but to be on the
     ;; safe side, we drop them for now.
     (license license:gpl2+)))
+
+(define-public givaro
+  (package
+    (name "givaro")
+    (version "4.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/givaro")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11wz57q6ijsvfs5r82masxgr319as92syi78lnl9lgdblpc6xigk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (propagated-inputs
+     `(("gmp" ,gmp))) ; gmp++.h includes gmpxx.h
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "Algebraic computations with exact rings and fields")
+    (description
+     "Givaro is a C++ library implementing the basic arithmetic of various
+algebraic objects: prime fields, extension fields, finite fields, finite
+rings, polynomials, algebraic numbers, arbitrary precision integers and
+rationals (C++ wrappers over gmp), fixed precision integers.  It also
+provides data-structures and templated classes for the manipulation of
+compound objects, such as vectors, matrices and univariate polynomials.")
+    (license license:cecill-b)
+    (home-page "https://github.com/linbox-team/givaro")))
+
+(define-public fflas-ffpack
+  (package
+    (name "fflas-ffpack")
+    (version "2.4.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/fflas-ffpack")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ynbjd72qrwp0b4kpn0p5d7gddpvj8dlb5fwdxajr5pvkvi3if74"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openblas" ,openblas)))
+    (propagated-inputs
+     `(("givaro" ,givaro))) ; required according to the .pc file
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-blas-libs="
+                            (assoc-ref %build-inputs "openblas")
+                            "/lib/libopenblas.so"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "C++ library for linear algebra over finite fields")
+    (description
+     "FFLAS-FFPACK is a C++ template library for basic linear algebra
+operations over a finite field.
+FFLAS (Finite Field Linear Algebra Subprograms) provides the implementation
+of a subset of routines of the numerical BLAS; it also supports sparse
+matrix-vector products.
+FFPACK (Finite Field Linear Algebra Package) is inspired by the LAPACK
+library to provide functionalities of higher level, using the kernel
+of a BLAS.  Additionally, it provides routines specific to exact linear
+algebra, such as the row echelon form.")
+    (license license:lgpl2.1+)
+    (home-page "https://linbox-team.github.io/fflas-ffpack/")))
+
+(define-public linbox
+  (package
+    (name "linbox")
+    (version "1.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/linbox")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10j6dspbsq7d2l4q3y0c1l1xwmaqqba2fxg59q5bhgk9h5d7q571"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fflas-ffpack" ,fflas-ffpack)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'setenv
+           ;; Prevent the autogen.sh script to carry out the configure
+           ;; script, which has not yet been patched to replace /bin/sh.
+           (lambda _
+             (setenv "NOCONFIGURE" "yes")
+             #t)))))
+    (synopsis "C++ library for linear algebra over exact rings")
+    (description
+     "LinBox is a C++ template library for exact linear algebra computation
+with dense, sparse, and structured matrices over the integers and over
+finite fields.")
+    (license license:lgpl2.1+)
+    (home-page "https://linbox-team.github.io/linbox/")))
+
+(define-public m4ri
+  (package
+    (name "m4ri")
+    (version "20140914")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/malb/m4ri")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0xfg6pffbn8r1s0y7bn9b8i55l00d41dkmhrpf7pwk53qa3achd3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)))
+    (synopsis "Arithmetic of dense matrices over F_2")
+    (description "M4RI is a library for fast arithmetic with dense matrices
+over F2.  The name M4RI comes from the first implemented algorithm: The
+Method of the Four Russians inversion algorithm published by Gregory Bard.
+This algorithm in turn is named after the Method of the Four Russians
+multiplication algorithm.")
+    (license license:gpl2+)
+    (home-page "https://bitbucket.org/malb/m4ri/")))
+
+(define-public ratpoints
+  (package
+    (name "ratpoints")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.mathe2.uni-bayreuth.de/stoll/programs/"
+                    "ratpoints-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zhad84sfds7izyksbqjmwpfw4rvyqk63yzdjd3ysd32zss5bgf4"))
+              (patches
+               ;; Taken from
+               ;; <https://git.sagemath.org/sage.git/plain/build/pkgs/ratpoints/patches/>
+               (search-patches "ratpoints-sturm_and_rp_private.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'install 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (with-directory-excursion out
+                 (for-each (lambda (d) (mkdir-p d))
+                           '("bin" "include" "lib"))))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "http://www.mathe2.uni-bayreuth.de/stoll/programs/")
+    (synopsis "Find rational points on hyperelliptic curves")
+    (description "Ratpoints tries to find all rational points within
+a given height bound on a hyperelliptic curve in a very efficient way,
+by using an optimized quadratic sieve algorithm.")
+    (license license:gpl2+)))
+
+(define-public symmetrica
+  (package
+    (name "symmetrica")
+    (version "2.0")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (uri (let ((v (string-join (string-split version #\.) "_")))
+                     (string-append "http://www.algorithm.uni-bayreuth.de/"
+                                    "en/research/SYMMETRICA/"
+                                    "SYM" v "_tar.gz")))
+              (sha256
+               (base32
+                "1qhfrbd5ybb0sinl9pad64rscr08qvlfzrzmi4p4hk61xn6phlmz"))
+              ;; Taken from <https://git.sagemath.org/sage.git/plain/build/pkgs/symmetrica/patches/>
+              (patches (search-patches "symmetrica-bruch.patch"
+                                       "symmetrica-int32.patch"
+                                       "symmetrica-return_values.patch"
+                                       "symmetrica-sort_sum_rename.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile
+           (lambda _
+             (substitute* "makefile"
+               (("cc -c") "gcc -c"))
+             #t))
+         (add-after 'fix-makefile 'turn-off-banner
+           (lambda _
+             (substitute* "de.c"
+               (("(INT no_banner = )FALSE" _ pre) (string-append pre "TRUE")))
+             #t))
+         (delete 'configure)            ;no configure script
+         (replace 'install              ;no install target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (inc (string-append out "/include/symmetrica"))
+                    (doc (string-append out "/share/doc/symmetrica-" ,version))
+                    (static "libsymmetrica.a"))
+               ;; Build static library.
+               (apply invoke "ar" "crs" static (find-files "." "\\.o$"))
+               (invoke "ranlib" static)
+               ;; Install static library and headers.
+               (for-each (lambda (f) (install-file f inc))
+                         (find-files "." "\\.h$"))
+               (install-file "libsymmetrica.a" lib)
+               ;; Install documentation.
+               (for-each (lambda (f) (install-file f doc))
+                         (find-files "." "\\.doc$"))
+               #t))))))
+    (home-page "http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA/")
+    (synopsis "Combinatoric C Library")
+    (description "Symmetrica is a library for combinatorics.  It has support
+for the representation theory of the symmetric group and related groups,
+combinatorics of tableaux, symmetric functions and polynomials, Schubert
+polynomials, and the representation theory of Hecke algebras of type A_n.")
+    (license license:public-domain)))
+
+(define-public m4rie
+  (package
+    (name "m4rie")
+    (version "20150908")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/malb/m4rie")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r8lv46qx5mkz5kp3ay2jnsp0mbhlqr5z2z220wdk73wdshcznss"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("m4ri" ,m4ri)))
+    (synopsis "Arithmetic of dense matrices over F_{2^e}")
+    (description "M4RI is a library for fast arithmetic with dense matrices
+over finite fields of characteristic 2.  So it extends the functionality
+of M4RI from F_2 to F_{2^e}.")
+    (license license:gpl2+)
+    (home-page "https://bitbucket.org/malb/m4rie/")))
+
+(define-public eclib
+  (package
+    (name "eclib")
+    (version "20190226")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/JohnCremona/eclib/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1910np1xzyjzszay24xn4b81qhpsvhp5aix9vdpknplni2mq8kwb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("ntl" ,ntl)
+       ("pari-gp" ,pari-gp)))
+    (synopsis "Ranks of elliptic curves and modular symbols")
+    (description "The eclib package includes mwrank (for 2-descent on
+elliptic curves over Q) and modular symbol code; it has been written by
+John Cremona to compute his elliptic curve database.")
+    (license license:gpl2+)
+    (home-page (string-append "http://homepages.warwick.ac.uk/staff/"
+                              "J.E.Cremona/mwrank/index.html"))))
+
+(define-public lrcalc
+  (package
+    (name "lrcalc")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/asbuch/lrcalc")
+                    (commit (string-append "lrcalc-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-permission
+           (lambda _
+             (chmod "lrcalc.maple.src" #o644)
+             #t)))))
+    (synopsis "Littlewood-Richardson calculator in algebraic combinatorics")
+    (description "The Littlewood-Richardson Calculator (lrcalc) is a
+program designed to compute Littlewood-Richardson coefficients.  It computes
+single Littlewood-Richardson coefficients, products of Schur functions, or
+skew Schur functions.  In addition it computes products in the small quantum
+cohomology ring of a Grassmann variety.  The software package also includes
+a program that performs fast computation of the more general multiplicative
+structure constants of Schubert polynomials.")
+    (license license:gpl2+)
+    (home-page "http://sites.math.rutgers.edu/~asbuch/lrcalc/")))
+
+(define-public iml
+  (package
+    (name "iml")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.cs.uwaterloo.ca/~astorjoh/iml-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0akwhhz9b40bz6lrfxpamp7r7wkk48p455qbn04mfnl9a1l6db8x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp", gmp)
+       ("cblas" ,openblas))) ; or any other BLAS library; the documentation
+                             ; mentions ATLAS in particular
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-gmp-include="
+                       (assoc-ref %build-inputs "gmp") "/include")
+        (string-append "--with-gmp-lib="
+                       (assoc-ref %build-inputs "gmp") "/lib")
+        "--with-cblas=-lopenblas"
+        (string-append "--with-cblas-include="
+                       (assoc-ref %build-inputs "cblas") "/include")
+        (string-append "--with-cblas-lib="
+                       (assoc-ref %build-inputs "cblas") "/lib"))))
+    (home-page "https://cs.uwaterloo.ca/~astorjoh/iml.html")
+    (synopsis
+     "Solver for systems of linear equations over the integers")
+    (description
+     "IML is a C library implementing algorithms for computing exact
+solutions to dense systems of linear equations over the integers.
+Currently, IML provides the following functionality:
+
+@itemize
+@item Nonsingular rational system solving:
+compute the unique rational solution X to the system AX=B, where A and B
+are integer matrices, A nonsingular.
+@item Compute the right nullspace or kernel of an integer matrix.
+@item Certified linear system solving:
+compute a minimal denominator solution x to a system Ax=b, where b is an
+integer vector and A is an integer matrix with arbitrary shape and
+rank profile.
+@end itemize
+
+In addition, IML provides some low level routines for a variety of mod p
+matrix operations: computing the row-echelon form, determinant, rank
+profile, and inverse of a mod p matrix. These mod p routines are not
+general purpose; they require that p satisfy some preconditions based on
+the dimension of the input matrix (usually p should be prime and should be
+no more than about 20 bits long).")
+    (license license:bsd-3)))

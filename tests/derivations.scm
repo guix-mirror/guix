@@ -815,20 +815,17 @@
     (null? (derivation-prerequisites-to-build %store drv))))
 
 (test-assert "derivation-prerequisites-to-build when outputs already present"
-  (let* ((builder    '(begin (mkdir %output) #t))
+  (let* ((builder    `(begin ,(random-text) (mkdir %output) #t))
          (input-drv  (build-expression->derivation %store "input" builder))
-         (input-path (derivation-output-path
-                      (assoc-ref (derivation-outputs input-drv)
-                                 "out")))
+         (input-path (derivation->output-path input-drv))
          (drv        (build-expression->derivation %store "something" builder
                                                    #:inputs
                                                    `(("i" ,input-drv))))
          (output     (derivation->output-path drv)))
-    ;; Make sure these things are not already built.
-    (when (valid-path? %store input-path)
-      (delete-paths %store (list input-path)))
-    (when (valid-path? %store output)
-      (delete-paths %store (list output)))
+    ;; Assume these things are not already built.
+    (when (or (valid-path? %store input-path)
+              (valid-path? %store output))
+      (error "things already built" input-drv))
 
     (and (equal? (map derivation-input-path
                       (derivation-prerequisites-to-build %store drv))

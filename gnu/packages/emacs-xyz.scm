@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016, 2018 Christopher Lemmer Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -13,7 +13,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
@@ -48,6 +48,7 @@
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
+;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -590,12 +591,15 @@ from within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1yf3zrgqfhnr0az8gn1kqqwnhfi3nc0vbjkcagwcqwk3sp1jda86"))))
+           "1yf3zrgqfhnr0az8gn1kqqwnhfi3nc0vbjkcagwcqwk3sp1jda86"))
+         (patches
+          (search-patches "emacs-unpackaged-req.patch"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
          ("emacs-org" ,emacs-org)
          ("emacs-s" ,emacs-s)
+         ("emacs-hydra" ,emacs-hydra)
          ("emacs-use-package" ,emacs-use-package)))
       (home-page "https://github.com/alphapapa/unpackaged.el")
       (synopsis "Useful snippets of Emacs Lisp code")
@@ -4081,6 +4085,33 @@ transparent background.  If you load it from a GUI, it will default to a
 dark background.")
     (license license:gpl3+)))
 
+(define-public emacs-gruvbox-theme
+  (package
+    (name "emacs-gruvbox-theme")
+    (version "1.28.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/greduan/emacs-theme-gruvbox.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00qq92gp1g55pzm97rh7k0dgxy44pxziridl8kqm4rbpi31r7k9p"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-autothemer" ,emacs-autothemer)))
+    (home-page "https://github.com/greduan/emacs-theme-gruvbox")
+    (synopsis "Gruvbox is a retro groove color scheme ported from Vim")
+    (description
+     "Gruvbox is heavily inspired by badwolf, jellybeans and solarized.
+
+Designed as a bright theme with pastel 'retro groove' colors and light/dark
+mode switching in the way of solarized.  The main focus when developing gruvbox
+is to keep colors easily distinguishable, contrast enough and still pleasant
+for the eyes.")
+    (license license:expat))) ; MIT license
+
 (define-public emacs-2048-game
   (package
     (name "emacs-2048-game")
@@ -4121,6 +4152,29 @@ board and goal value can be customized.")
      "Base16 provides carefully chosen syntax highlighting and a default set
 of sixteen colors suitable for a wide range of applications.  Base16 is not a
 single theme but a set of guidelines with numerous implementations.")
+    (license license:expat)))
+
+(define-public emacs-solaire-mode
+  (package
+    (name "emacs-solaire-mode")
+    (version "1.0.9")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hlissner/emacs-solaire-mode.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "011m4r7s6i9lgjymh7jgq5jwwrpz4vmpvp3c8d4ix96v5hi04kzg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/hlissner/emacs-solaire-mode")
+    (synopsis "Change background of file-visiting buffers in Emacs")
+    (description
+     "@code{solaire-mode} is inspired by editors which visually distinguish
+code-editing windows from sidebars, popups, terminals, ecetera.  It changes the
+background of file-visiting buffers (and certain aspects of the UI) to make
+them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-prescient
@@ -5232,6 +5286,48 @@ If you want to mark a folder manually as a project just create an empty
      "Elfeed is an extensible web feed reader for Emacs, supporting both Atom
 and RSS, with a user interface inspired by notmuch.")
     (license license:gpl3+)))
+
+(define-public emacs-elfeed-org
+  (let ((commit "77b6bbf222487809813de260447d31c4c59902c9"))
+    (package
+      (name "emacs-elfeed-org")
+      (version (git-version "0.1" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/remyhonig/elfeed-org.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a2ibka82xq1dhy2z7rd2y9zhcj8rna8357881yz49wf55ccgm53"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-elfeed" ,emacs-elfeed)
+         ("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)))
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)
+         ("emacs-xtest" ,emacs-xtest)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner" "-L" "org-mode/lisp")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'chmod
+             (lambda _
+               (chmod "test/fixture-mark-feed-ignore.org" #o644)
+               #t)))))
+      (home-page "https://github.com/remyhonig/elfeed-org")
+      (synopsis "Configure Elfeed with an Org-mode file")
+      (description
+       "@code{elfeed-org} lets you manage your Elfeed subscriptions
+in Org-mode.  Maintaining tags for all RSS feeds is cumbersome using
+the regular flat list, where there is no hierarchy and tag names are
+duplicated a lot.  Org-mode makes the book keeping of tags and feeds
+much easier.")
+      (license license:gpl3+))))
 
 (define-public emacs-el-x
   (package
@@ -7242,19 +7338,20 @@ performance-oriented and tidy.")
 (define-public emacs-default-encrypt
   (package
     (name "emacs-default-encrypt")
-    (version "4.3")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://www.informationelle-selbstbestimmung-im-internet.de"
+             "https://informationelle-selbstbestimmung-im-internet.de"
              "/emacs/jl-encrypt" version "/jl-encrypt.el"))
        (file-name (string-append "jl-encrypt-" version ".el"))
        (sha256
         (base32
-         "16i3rlfp3jxlqvndn8idylhmczync3gwmy8a019v29vyr48rnnr0"))))
+         "0w9ggz075j1zwg7d0rv9k8238g600p7czfnnsnawswi7yps2xk78"))))
     (build-system emacs-build-system)
-    (home-page "https://www.informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (home-page
+     "https://informationelle-selbstbestimmung-im-internet.de/Emacs.html")
     (synopsis "Automatically encrypt or sign Gnus messages in Emacs")
     (description
      "DefaultEncrypt is designed to be used with Gnus in Emacs.  It
@@ -7264,6 +7361,41 @@ sending un-encrypted messages.  It can also be configured to automatically
 sign messages that you send.  For details and instructions on how to use
 DefaultEncrypt, please refer to the home page or read the comments in the
 source file, @file{jl-encrypt.el}.")
+    (license license:gpl3+)))
+
+(define-public emacs-extend-smime
+  (package
+    (name "emacs-extend-smime")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://informationelle-selbstbestimmung-im-internet.de"
+             "/emacs/jl-smime" version "/jl-smime.el"))
+       (file-name (string-append "jl-smime-" version ".el"))
+       (sha256
+        (base32
+         "1iv8s2wjmv3v5qfwlcy9hvvrmxxvp3f8m1krlr789q7bbh35jynh"))))
+    (build-system emacs-build-system)
+    (home-page
+     "https://informationelle-selbstbestimmung-im-internet.de/Emacs.html")
+    (synopsis "Improved S/MIME support for Gnus in Emacs")
+    (propagated-inputs
+     `(("emacs-default-encrypt" ,emacs-default-encrypt)))
+    (description
+     ;; TRANSLATORS: ExtendSMIME, DefaultEncrypt, and emacs-default-encrypt
+     ;; should not be translated.  The name "emacs-default-encrypt" refers to
+     ;; the Guix package that provides DefaultEncrypt.
+     "ExtendSMIME is designed to be used with Gnus in Emacs.  It enhances
+DefaultEncrypt (emacs-default-encrypt) to support S/MIME (Secure/Multipurpose
+Internet Mail Extensions) via LDAP (Lightweight Directory Access Protocol).
+Before a message (e.g., email) is sent, ExtendSMIME searches for missing
+certificates via LDAP and imports them into @code{gpgsm}.  When certificates
+for all recipients are available, DefaultEncrypt automatically encrypts the
+message.  For details and instructions on how to use ExtendSMIME, please refer
+to the home page or read the comments in the source file,
+@file{jl-smime.el}.")
     (license license:gpl3+)))
 
 (define-public emacs-htmlize
@@ -7983,6 +8115,27 @@ running tests easier.")
 
 (define-public ert-runner
   (deprecated-package "ert-runner" emacs-ert-runner))
+
+(define-public emacs-xtest
+  (package
+    (name "emacs-xtest")
+    (version "1.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/promethial/xtest.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wqx6hlqcmqiljydih5fx89dw06g8w728pyn4iqsap8jwgjngb09"))))
+    (arguments
+     `(#:exclude '()))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/promethial/xtest/")
+    (synopsis "Simple testing with Emacs")
+    (description "This package provides a simple testing library for Emacs.")
+    (license license:gpl3+)))
 
 (define-public emacs-disable-mouse
   (package
@@ -10626,6 +10779,28 @@ macro takes a first argument (whose value must be an alist) and a body.")
 your Emacs.")
       (license license:gpl2+))))
 
+(define-public emacs-restart-emacs
+  (let ((commit "9aa90d3df9e08bc420e1c9845ee3ff568e911bd9")
+        (revision "1"))
+    (package
+      (name "emacs-restart-emacs")
+      (version (git-version "0.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/iqbalansari/restart-emacs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "02x1a85k7r95z8091zgjiaj9nf0zvx1jy4xvl3hr12qbnrx1wfav"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/iqbalansari/restart-emacs")
+      (synopsis "Restart Emacs from within Emacs")
+      (description "This package provides a simple command to restart Emacs from
+within Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-sourcemap
   (package
     (name "emacs-sourcemap")
@@ -11583,6 +11758,29 @@ interactive behavior should be different.")
 decreasing the default font size in all GUI Emacs frames.")
       (license license:gpl3+))))
 
+(define-public emacs-mixed-pitch
+  (package
+    (name "emacs-mixed-pitch")
+    (version "1.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/jabranham/mixed-pitch.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1458sy5b6bis1i0k23jdqk6hfqg0ghk637r3ajql2g19ym48rf58"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/jabranham/mixed-pitch")
+    (synopsis "Mix variable- and fixed-pitch fonts in the same Emacs buffer")
+    (description
+     "@code{mixed-pitch-mode} is a minor mode that enables mixing
+variable-pitch and fixed-pitch fonts in the same buffer.  The list
+@code{mixed-pitch-fixed-pitch-faces} defines the faces that are kept
+fixed-pitch,everything else becomes variable-pitch.")
+    (license license:gpl3+)))
+
 (define-public emacs-visual-regexp
   (package
     (name "emacs-visual-regexp")
@@ -12363,7 +12561,7 @@ autosuggestions with:
 (define-public emacs-desktop-environment
   (package
     (name "emacs-desktop-environment")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method git-fetch)
@@ -12373,7 +12571,7 @@ autosuggestions with:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0n5sa94dwhnkfp3x42pggsbr5db38m85hl8ddb3qs7yfdi9bjm52"))))
+         "14ija2rrz3zjhjbzxg84j5fq6xph4ah7w9bkqnq37by040cydvhw"))))
     (build-system emacs-build-system)
     (home-page "https://gitlab.petton.fr/DamienCassou/desktop-environment")
     (synopsis "Control your GNU/Linux desktop environment from Emacs")
@@ -15857,3 +16055,29 @@ corresponding Evil keys.")
       (description "@code{xterm-color.el} is an ANSI control sequence to
 text-property translator.")
       (license license:bsd-2))))
+
+(define-public emacs-org-noter
+  (package
+    (name "emacs-org-noter")
+    (version "1.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://stable.melpa.org/packages/org-noter-"
+               version
+               ".el"))
+        (sha256
+          (base32
+            "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/weirdNox/org-noter")
+    (synopsis "Synchronized, Org-mode, document annotator")
+    (description
+     "This package lets you create notes that are kept in sync when you
+scroll through the document, but that are external to it---the notes
+themselves live in an Org-mode file.  As such, this leverages the power of
+Org-mode (the notes may have outlines, latex fragments, babel, etc...) while
+acting like notes that are made @emph{in} the document.")
+    (license license:gpl3+)))

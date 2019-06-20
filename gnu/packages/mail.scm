@@ -847,14 +847,14 @@ invoking @command{notifymuch} from the post-new hook.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.29")
+    (version "0.29.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0rg4jp0wlsham76rx9fmlpmcbv3n9vsd81vrzqvh6jrwlnmjds88"))))
+                "0rg3rwghd3wivf3bmqcqpkkd5c779ld5hi363zjcw5fl6a7gqilq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -863,7 +863,7 @@ invoking @command{notifymuch} from the post-new hook.")
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-build-system)
                            (guix build emacs-utils))
-       #:make-flags (list "V=1") ; Verbose test output.
+       #:make-flags (list "V=1")        ; verbose test output
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-notmuch-lib.el
                     (lambda _
@@ -894,7 +894,7 @@ invoking @command{notifymuch} from the post-new hook.")
                     (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (native-inputs
      `(("bash-completion" ,bash-completion)
-       ("emacs" ,emacs-no-x) ; Minimal lacks libxml, needed for some tests.
+       ("emacs" ,emacs-no-x)    ; -minimal lacks libxml, needed for some tests
        ("pkg-config" ,pkg-config)
        ("python" ,python)
        ("python-docutils" ,python-docutils)
@@ -2592,15 +2592,14 @@ tools and applications:
 (define-public balsa
   (package
     (name "balsa")
-    (version "2.5.6")
+    (version "2.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://pawsa.fedorapeople.org/balsa/"
                            name "-" version ".tar.bz2"))
        (sha256
-        (base32
-         "17k6wcsl8gki7cskr3hhmfj6n54rha8ca3b6fzd8blsl5shsankx"))))
+        (base32 "0yfqhfpwm1qnwmbpr6dfn2f5w8a8xxq51pn8ypgg0fw973l1c1nx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2622,7 +2621,7 @@ tools and applications:
        ("gnutls" ,gnutls)
        ("gpgme" ,gpgme)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-3)
        ("gtkspell3" ,gtkspell3)
        ("libcanberra" ,libcanberra)
        ("libesmtp" ,libesmtp)

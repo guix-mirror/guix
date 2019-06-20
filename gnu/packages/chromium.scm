@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,9 +227,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "75.0.3770.80")
+(define %chromium-version "75.0.3770.100")
 (define %ungoogled-revision "5d8abc38b43a62f379615a0dc972b29d9aebb4b4")
-(define %debian-revision "debian/75.0.3770.80-1")
+(define %debian-revision "debian/75.0.3770.90-1")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -242,7 +243,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "1mk6gb3iif8i6zq41wjn3lhqqlqp1syzpav1nj0170l7v348p0ns"))))
+      "187wfdxw6ji4302pbn0kyi9b859ydri7gns0wlsrd7vd3c8604wy"))))
 
 (define %ungoogled-origin
   (origin
@@ -267,7 +268,7 @@ from forcing GEXP-PROMISE."
                                   (string-take %debian-revision 7))))
     (sha256
      (base32
-      "16z4bncc2q1d5bymywq8291bzkcvba447ql3vsq20rwcdjckyimx"))))
+      "0sh6z2lx44zb31qrpa29vm0sw09dxi7i9h6fsq3ivfxjs7v98bbx"))))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -403,6 +404,9 @@ from forcing GEXP-PROMISE."
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
+       ;; Chromiums build processes may consume up to 8GiB of memory per core.
+       ;; Disable parallel builds to avoid thrashing end user systems.
+       #:parallel-build? #f
        ;; FIXME: Chromiums RUNPATH lacks entries for some libraries, so
        ;; we have to disable validation and add a wrapper below.
        #:validate-runpath? #f
@@ -604,9 +608,11 @@ from forcing GEXP-PROMISE."
                (format #t "Dumping configure flags...\n")
                (invoke "gn" "args" "out/Release" "--list"))))
          (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
              (invoke "ninja" "-C" "out/Release"
-                     "-j" (number->string (parallel-job-count))
+                     "-j" (if parallel-build?
+                              (number->string (parallel-job-count))
+                              "1")
                      "chrome"
                      "chromedriver")))
          (replace 'install
@@ -650,12 +656,6 @@ from forcing GEXP-PROMISE."
                            (scandir "." (cut regexp-exec install-regexp <>)))
                  (copy-file "chrome" (string-append lib "/chromium"))
 
-                 ;; TODO: Install icons from "../../chrome/app/themes" into
-                 ;; "out/share/icons/hicolor/$size".
-                 (install-file
-                  "product_logo_48.png"
-                  (string-append out "/share/icons/48x48/chromium.png"))
-
                  (copy-recursively "locales" locales)
                  (copy-recursively "resources" resources)
 
@@ -669,8 +669,18 @@ from forcing GEXP-PROMISE."
                      (,(string-append lib ":" nss "/lib/nss:" mesa "/lib:"
                                       udev "/lib")))
                    ;; Avoid file manager crash.  See <https://bugs.gnu.org/26593>.
-                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share"))))
-                 #t)))))))
+                   `("XDG_DATA_DIRS" ":" prefix (,(string-append gtk+ "/share")))))
+
+               (with-directory-excursion "chrome/app/theme/chromium"
+                 (for-each
+                  (lambda (size)
+                    (let ((icons (string-append out "/share/icons/hicolor/"
+                                                size "x" size "/apps")))
+                      (mkdir-p icons)
+                      (copy-file (string-append "product_logo_" size ".png")
+                                 (string-append icons "/chromium.png"))))
+                  '("22" "24" "48" "64" "128" "256")))
+               #t))))))
     (native-inputs
      `(("bison" ,bison)
        ("gcc" ,gcc-8)

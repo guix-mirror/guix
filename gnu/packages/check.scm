@@ -905,6 +905,27 @@ result back.")
 (define-public python2-pytest-xdist
   (package-with-python2 python-pytest-xdist))
 
+(define-public python-pytest-timeout
+  (package
+    (name "python-pytest-timeout")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-timeout" version))
+       (sha256
+        (base32
+         "1cczcjhw4xx5sjkhxlhc5c1bkr7x6fcyx12wrnvwfckshdvblc2a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://bitbucket.org/pytest-dev/pytest-timeout/")
+    (synopsis "Plugin for py.test to abort hanging tests")
+    (description
+     "This package provides a py.test plugin that aborts hanging tests after a
+timeout has been exceeded.")
+    (license license:expat)))
+
 (define-public python-scripttest
   (package
     (name "python-scripttest")
@@ -2022,18 +2043,17 @@ create data based on random numbers and yet remain repeatable.")
 (define-public python-freezegun
   (package
     (name "python-freezegun")
-    (version "0.3.11")
+    (version "0.3.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "freezegun" version))
        (sha256
-        (base32 "1nh0fzqjwg88n57k3qa8mxnmiwrr7lqyd5xvc96qn5g8zcxv8fg8"))))
+        (base32 "1rx57v8ryjncjimg8hys9kx1r3rknvwcl4y340g20jn0sf69qk9a"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("python-coverage" ,python-coverage)))
+       ("python-pytest" ,python-pytest)))
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-dateutil" ,python-dateutil)))
@@ -2044,7 +2064,7 @@ create data based on random numbers and yet remain repeatable.")
          ;; package does not include the Makefile.
          (replace 'check
            (lambda _
-             (invoke "nosetests" "./tests/"))))))
+             (invoke "pytest" "-vv"))))))
     (home-page "https://github.com/spulec/freezegun")
     (synopsis "Test utility for mocking the datetime module")
     (description

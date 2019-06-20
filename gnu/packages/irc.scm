@@ -166,14 +166,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.1")
+    (version "2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0f7d2vdbxc5kgjl7lkamnbxvidgxwa8f9j3nr9fd4gr4z0gzi86d"))
+                "09sc5lf7z70x3iw87q4zh8rbyngsw89pwnzs5jk195zzqdspgj2j"))
               (patches (search-patches "weechat-python.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -212,7 +212,7 @@ SILC and ICB protocols via plugins.")
                ((".*\\$\\{plugin.name\\} == (javascript|php|ruby)" all)
                 (string-append "// SKIP" all)))
              (substitute* "tests/scripts/test-scripts.cpp"
-               ((".*\\{ \"(jvascript|php|ruby)\", " all) ; sic
+               ((".*\\{ \"(javascript|php|ruby)\", " all)
                 (string-append "// SKIP" all)))
              #t))
          (add-after 'install 'wrap

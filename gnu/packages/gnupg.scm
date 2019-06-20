@@ -948,8 +948,8 @@ files, to verify signatures, and to manage the private and public keys.")
     (version "0.10.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://gaffer.ptitcanardnoir.org/"
-                                  "intrigeri/files/parcimonie/App-Parcimonie-"
+              (uri (string-append "https://gaffer.boum.org/intrigeri/files/"
+                                  "parcimonie/App-Parcimonie-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -1019,7 +1019,7 @@ files, to verify signatures, and to manage the private and public keys.")
                  `("PERL5LIB" ":"
                    prefix (,(string-append perllib ":" (getenv "PERL5LIB")))))
                #t))))))
-    (home-page "https://gaffer.ptitcanardnoir.org/intrigeri/code/parcimonie/")
+    (home-page "https://gaffer.boum.org/intrigeri/code/parcimonie/")
     (synopsis "Incrementally refreshes a GnuPG keyring")
     (description "Parcimonie incrementaly refreshes a GnuPG keyring in a way
 that makes it hard to correlate the keyring content to an individual, and

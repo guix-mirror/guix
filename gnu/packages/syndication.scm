@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,14 +97,13 @@ It started life as a fork of the currently unmaintained Newsbeuter.")
 (define-public rtv
   (package
     (name "rtv")
-    (version "1.26.0")
+    (version "1.27.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "rtv" version))
         (sha256
-         (base32
-          "1aamkli1mlq2vxixlva790y0l0cbvbkz07lknajin0841sdq0411"))))
+         (base32 "0hvw426y09l3yzwv2zkb9hifpfbg9wd1gg0y3z3pxcli6n3ii2wl"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

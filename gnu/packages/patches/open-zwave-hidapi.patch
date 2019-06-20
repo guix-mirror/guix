@@ -1,0 +1,15 @@
+Build against the system's HIDAPI instead of the bundled one.
+
+--- open-zwave-1.6-checkout/cpp/build/support.mk	2019-06-16 15:15:34.258331628 +0200
++++ open-zwave-1.6-checkout/cpp/build/support.mk	2019-06-16 15:15:54.698249462 +0200
+@@ -86,6 +86,10 @@ endif
+ endif
+ SED    := sed
+ 
++# Build against the system's HIDAPI.
++CPPFLAGS += $(shell pkg-config hidapi-libusb --cflags)
++LDFLAGS  += $(shell pkg-config hidapi-libusb --libs)
++
+ #determine if we are release or debug Build and set appropriate flags
+ ifeq ($(BUILD), release)
+ CFLAGS	+= -c $(RELEASE_CFLAGS)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016, 2017 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
@@ -290,13 +290,13 @@ programming language.")
 (define-public units
   (package
    (name "units")
-   (version "2.18")
+   (version "2.19")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "0y26kj349i048y4z3xrk90bvciw2j6ds3rka7r7yn3183hirr5b4"))))
+                     "0mk562g7dnidjgfgvkxxpvlba66fh1ykmfd9ylzvcln1vxmi6qj2"))))
    (build-system gnu-build-system)
    (inputs
     `(("readline" ,readline)
@@ -5003,3 +5003,42 @@ command-line tools, and an Application Programming Interface (API).
 This package provides the static libraries required to run programs
 compiled against the nauty library.")
     (license license:asl2.0)))
+
+(define-public ppl
+  (package
+    (name "ppl")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.bugseng.com/products/ppl/download/"
+                           "ftp/releases/" version
+                           "/ppl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1j5aji1g2vmdvc0gqz45n2ll2l2f6czca04wiyfl5g3sm3a6vhvb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("m4", m4)))
+    (inputs
+     `(("glpk" ,glpk)
+       ("gmp", gmp)))
+    (home-page "https://www.bugseng.com/parma-polyhedra-library")
+    (synopsis
+     "Parma Polyhedra Library for computations with polyhedra")
+    (description
+     "The Parma Polyhedra Library (PPL) provides numerical abstractions
+especially targeted at applications in the field of analysis and
+verification of complex systems.  These abstractions include convex
+polyhedra, defined as the intersection of a finite number of (open or
+closed) halfspaces, each described by a linear inequality (strict or
+non-strict) with rational coefficients; some special classes of polyhedra
+shapes that offer interesting complexity/precision tradeoffs; and grids
+which represent regularly spaced points that satisfy a set of linear
+congruence relations.  The library also supports finite powersets and
+products of (any kind of) polyhedra and grids, a mixed integer linear
+programming problem solver using an exact-arithmetic version of the simplex
+algorithm, a parametric integer programming solver, and primitives for
+termination analysis via the automatic synthesis of linear ranking
+functions.")
+    (license license:gpl3+)))

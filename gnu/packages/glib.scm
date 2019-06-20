@@ -83,6 +83,7 @@
   (package
     (name "dbus")
     (version "1.12.14")
+    (replacement dbus/fixed)
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -155,6 +156,14 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
+
+(define dbus/fixed
+  (package
+    (inherit dbus)
+    (source (origin
+              (inherit (package-source dbus))
+              (patches (append (search-patches "dbus-CVE-2019-12749.patch")
+                               (origin-patches (package-source dbus))))))))
 
 (define glib
   (package
@@ -492,7 +501,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.10.1")
+    (version "2.10.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -500,7 +509,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "00v08km4wwzbh6vjxb21388wb9dm6g2xh14rgwabnv4c2wk5z8n9"))))
+               "163s14d1rqp82gc1vsm3q0wzsbdicb9q6307kz0zk5lm6x9h5jmi"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))

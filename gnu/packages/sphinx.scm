@@ -45,14 +45,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "2.0.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "0js0rnbzm0nsb4gm2v4z79wlbmr05awqzic57kfl8ydkdxj80cj2"))))
+         "09y4mjmbxz94pmfr2lzf1hkx2xk0khcpb8xsqfmir4l7dds9x9zr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -90,7 +90,7 @@
        ("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://sphinx-doc.org/")
+    (home-page "https://sphinx-doc.org/")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
@@ -132,7 +132,7 @@ sources.")
                            ("python2-imagesize" ,python2-imagesize)
                            ("python2-sphinx-alabaster-theme"
                             ,python2-sphinx-alabaster-theme)
-                           ("python2-babel" ,python2-babel)
+                           ("python2-babel" ,python2-babel-2.6)
                            ("python2-snowballstemmer" ,python2-snowballstemmer)
                            ("python2-docutils" ,python2-docutils)
                            ("python2-jinja2" ,python2-jinja2)
@@ -341,7 +341,7 @@ SVG images natively (e.g. LaTeX).")
     (arguments
      ;; FIXME: Tests depend on Sphinx, which depends on this.
      `(#:tests? #f))
-    (home-page "http://sphinx-doc.org/")
+    (home-page "https://sphinx-doc.org/")
     (synopsis "Sphinx API for web applications")
     (description "This package provides a Python API to easily integrate
 Sphinx documentation into your web application.  It provides tools to

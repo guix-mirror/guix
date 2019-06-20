@@ -260,7 +260,7 @@ given Haskell package."
   #t)
 
 (define* (haddock #:key outputs haddock? haddock-flags #:allow-other-keys)
-  "Run the test suite of a given Haskell package."
+  "Generate the Haddock documentation of a given Haskell package."
   (when haddock?
     (run-setuphs "haddock" haddock-flags))
   #t)
@@ -275,9 +275,21 @@ given Haskell package."
       (_ (error "Could not find a Cabal file to patch."))))
   #t)
 
+(define* (generate-setuphs #:rest empty)
+  "Generate a default Setup.hs if needed."
+  (when (not (or (file-exists? "Setup.hs")
+                 (file-exists? "Setup.lhs")))
+    (format #t "generating missing Setup.hs~%")
+    (with-output-to-file "Setup.hs"
+      (lambda ()
+        (format #t "import Distribution.Simple~%")
+        (format #t "main = defaultMain~%"))))
+  #t)
+
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'patch-cabal-file patch-cabal-file)
+    (add-after 'unpack 'generate-setuphs generate-setuphs)
     (delete 'bootstrap)
     (add-before 'configure 'setup-compiler setup-compiler)
     (add-before 'install 'haddock haddock)

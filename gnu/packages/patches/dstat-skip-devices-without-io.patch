@@ -1,0 +1,32 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Sun, 16 Jun 2019 02:36:23 +0200
+Subject: [PATCH] gnu: dstat: Skip devices without I/O.
+
+Taken verbatim from a pull request[0] that will never be merged.
+
+[0]: https://github.com/dagwieers/dstat/pull/164
+
+From 0988589ea4ee092b285bd4049d56add5f61e3f69 Mon Sep 17 00:00:00 2001
+From: Tobias Gruetzmacher <tobias-git@23.gs>
+Date: Fri, 15 Feb 2019 18:46:57 +0100
+Subject: [PATCH] Skip devices without I/O
+
+Linux 4.18+ has added more fields to the diskstats proc file, so the
+original skip condition for devices without I/O didn't apply anymore.
+---
+ dstat | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dstat b/dstat
+index 9359965..5c2fb53 100755
+--- a/dstat
++++ b/dstat
+@@ -763,7 +763,7 @@ class dstat_disk(dstat):
+         ret = []
+         for l in self.splitlines():
+             if len(l) < 13: continue
+-            if l[3:] == ['0',] * 11: continue
++            if l[3:] == ['0',] * (len(l) - 3): continue
+             name = l[2]
+             ret.append(name)
+         for item in objlist: ret.append(item)

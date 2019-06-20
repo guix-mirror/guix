@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
@@ -160,13 +160,22 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
              (invoke "qmake"
                      (string-append "PREFIX="
                                     (assoc-ref outputs "out")))))
-         (add-before 'install 'fix-Makefiles
+         (add-before 'build 'fix-Makefiles
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* (find-files "." "Makefile")
                  (("INSTALL_ROOT)")
                   (string-append "INSTALL_ROOT)" out))
-                 (("/usr/bin") "/bin"))))))))
+                 (("/usr") ""))
+               (substitute* '("apps/cmstapp/cmstapp.pro"
+                              "apps/cmstapp/code/control_box/controlbox.cpp"
+                              "apps/rootapp/rootapp.pro"
+                              "apps/rootapp/system/org.cmst.roothelper.service"
+                              "cmst.pri"
+                              "cmst.pro")
+                 (("/usr") out)
+                 (("/etc") (string-append out "/etc")))
+               #t))))))
     (home-page "https://github.com/andrew-bibb/cmst")
     (synopsis "Qt frontend for Connman")
     (description

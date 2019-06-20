@@ -140,8 +140,7 @@ based command language.")
        ("pkg-config" ,pkg-config)
        ("ruby" ,ruby)))
     (inputs
-     `(("ncurses" ,ncurses)
-       ("boost" ,boost)))
+     `(("ncurses" ,ncurses)))
     (synopsis "Vim-inspired code editor")
     (description
      "Kakoune is a code editor heavily inspired by Vim, as such most of its

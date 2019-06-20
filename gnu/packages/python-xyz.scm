@@ -311,14 +311,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))
+        "0a7wawx8vsg7igvz6p3x909fskhg4b2y1910xk4f4c8y22p3aqg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -349,6 +349,18 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+;; Sphinx < 2.0 requires this version.  Remove once no longer needed.
+(define-public python2-babel-2.6
+  (package
+    (inherit python2-babel)
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Babel" version))
+              (sha256
+               (base32
+                "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))))
 
 (define-public python2-backport-ssl-match-hostname
   (package
@@ -1973,6 +1985,32 @@ between Julian dates and Gregorian dates.")
               `(("python2-functools32" ,python2-functools32)
                 ,@(package-propagated-inputs jsonschema))))))
 
+;; This old version is still required by docker-compose as of 1.24.0.
+(define-public python-jsonschema-2.6
+  (package
+    (name "python-jsonschema")
+    (version "2.6.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "jsonschema" version))
+             (sha256
+              (base32
+               "00kf3zmpp9ya4sydffpifn0j0mzm342a2vzh82p6r0vh10cg7xbg"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (invoke "nosetests"))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-vcversioner" ,python-vcversioner)))
+    (home-page "https://github.com/Julian/jsonschema")
+    (synopsis "Implementation of JSON Schema for Python")
+    (description
+     "Jsonschema is an implementation of JSON Schema for Python.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-jsonschema))))))
+
 (define-public python-schema
   (package
     (name "python-schema")
@@ -2044,13 +2082,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "1.0.23")
+    (version "1.1.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "1ysjbr3nqfqj97h8zyj3v9pya413vkv7a1mzml80w37xx15kb1cb"))))
+               "00pi0czzwvbf7djhkkjyvimj60wqdx0llbddzfnax650g9b8yscc"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
@@ -2305,15 +2343,33 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
-         "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
+         "0sqipg4fk7xbixqd8kq6rlkxj664d157bdwbh93farcphf92x1r9"))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let ((cwd (getcwd))
+                            (libdir (find (cut string-prefix? "lib." <>)
+                                          (scandir "build"))))
+                      (setenv "PYTHONPATH"
+                              (string-append cwd "/build/" libdir ":"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
@@ -2491,14 +2547,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1xb5n3hvhk63kxypc03k7kfry20pny6gygi4bsl9kw1rnzzsdjri"))))
+         "15v2sqm5g12bqa0c7wikfh9ck2nl97ayizy1hpqhmws5gqalq748"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3922,6 +3978,32 @@ toolkits.")
 (define-public python2-matplotlib-documentation
   (package-with-python2 python-matplotlib-documentation))
 
+(define-public python-matplotlib-venn
+  (package
+    (name "python-matplotlib-venn")
+    (version "0.11.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "matplotlib-venn" version ".zip"))
+       (sha256
+        (base32
+         "13w3i1wih0mij08hrgppzg0g9z50y54rc28l6gdi1r5w45l7l0dy"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; tests are not included
+    (propagated-inputs
+     `(("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://github.com/konstantint/matplotlib-venn")
+    (synopsis "Plot area-proportional Venn diagrams")
+    (description
+     "This package provides tools for plotting area-proportional two- and
+three-way Venn diagrams in @code{matplotlib}.")
+    (license license:expat)))
+
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
@@ -3955,14 +4037,14 @@ operators such as union, intersection, and difference.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.1.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "1lfg686w6vv2m2dfs8v9d0bf2i18z7wz5vgzjnkgmpr4hi0550w7"))))
+         "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -4986,13 +5068,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
-    (version "5.1.0")
+    (version "5.1.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "ipykernel" version))
       (sha256
-       (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
+       (base32 "173nm29g85w8cac3fg40b27qaq26g41wgg6qn79ql1hq4w2n5sgh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5015,8 +5097,39 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
      "This package provides the IPython kernel for Jupyter.")
     (license license:bsd-3)))
 
+;; Version 5.1.1 and above no longer support Python 2.
 (define-public python2-ipykernel
-  (package-with-python2 python-ipykernel))
+  (package
+    (name "python2-ipykernel")
+    (version "5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipykernel" version))
+       (sha256
+        (base32 "0br95qhrd5k65g10djngiy27hs0642301hlf2q142i8djabvzh0g"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "pytest" "-v")
+             #t)))))
+    (propagated-inputs
+     `(("python2-ipython" ,python2-ipython)
+       ;; imported at runtime during connect
+       ("python2-jupyter-client" ,python2-jupyter-client)))
+    (native-inputs
+     `(("python2-pytest" ,python2-pytest)
+       ("python2-nose" ,python2-nose)))
+    (home-page "https://ipython.org")
+    (synopsis "IPython Kernel for Jupyter")
+    (description
+     "This package provides the IPython kernel for Jupyter.")
+    (license license:bsd-3)))
 
 (define-public python-pari-jupyter
   (package
@@ -5043,12 +5156,34 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
     (description "The package provides a PARI/GP kernel for Jupyter.")
     (license license:gpl3+)))
 
+(define-public python-backcall
+  (package
+    (name "python-backcall")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "backcall" version))
+       (sha256
+        (base32
+         "1r01dqch3f8fdj3n6fviw8hxqrs6w5v0qw4izmvqzry1w9dxiv1q"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/takluyver/backcall/")
+    (synopsis "Specifications for callback functions passed in to an API")
+    (description
+     "If your code lets other people supply callback functions, it's important
+to specify the function signature you expect, and check that functions support
+that.  Adding extra parameters later would break other peoples code unless
+you're careful.  The @code{backcall} package provides a way of specifying the
+callback signature using a prototype function.")
+    (license license:bsd-3)))
+
 ;; This is the latest release of the LTS version of ipython with support for
 ;; Python 2.7 and Python 3.x.  Later non-LTS versions starting from 6.0 have
-;; dropped support for Python 2.7.  We may want to rename this package.
-(define-public python-ipython
+;; dropped support for Python 2.7.
+(define-public python2-ipython
   (package
-    (name "python-ipython")
+    (name "python2-ipython")
     (version "5.8.0")
     (source
      (origin
@@ -5057,14 +5192,75 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
        (sha256
         (base32 "01l93i4hspf0lvhmycvc8j378bslm9rw30mwfspsl6v1ayc69b2b"))))
     (build-system python-build-system)
-    (outputs '("out" "doc"))
     (propagated-inputs
-     `(("python-pyzmq" ,python-pyzmq)
-       ("python-prompt-toolkit" ,python-prompt-toolkit-1)
+     `(("python2-backports-shutil-get-terminal-size"
+        ,python2-backports-shutil-get-terminal-size)
+       ("python2-pathlib2" ,python2-pathlib2)
+       ("python2-pyzmq" ,python2-pyzmq)
+       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
+       ("python2-terminado" ,python2-terminado)
+       ("python2-matplotlib" ,python2-matplotlib)
+       ("python2-numpy" ,python2-numpy)
+       ("python2-numpydoc" ,python2-numpydoc)
+       ("python2-jinja2" ,python2-jinja2)
+       ("python2-mistune" ,python2-mistune)
+       ("python2-pexpect" ,python2-pexpect)
+       ("python2-pickleshare" ,python2-pickleshare)
+       ("python2-simplegeneric" ,python2-simplegeneric)
+       ("python2-jsonschema" ,python2-jsonschema)
+       ("python2-traitlets" ,python2-traitlets)
+       ("python2-nbformat" ,python2-nbformat)
+       ("python2-pygments" ,python2-pygments)))
+    (inputs
+     `(("readline" ,readline)
+       ("which" ,which)))
+    (native-inputs
+     `(("graphviz" ,graphviz)
+       ("pkg-config" ,pkg-config)
+       ("python2-requests" ,python2-requests) ;; for tests
+       ("python2-testpath" ,python2-testpath)
+       ("python2-mock" ,python2-mock)
+       ("python2-nose" ,python2-nose)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'delete-broken-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; These tests throw errors for unknown reasons.
+             (delete-file "IPython/core/tests/test_profile.py")
+             (delete-file "IPython/core/tests/test_interactiveshell.py")
+             (delete-file "IPython/core/tests/test_magic.py")
+             #t)))))
+    (home-page "https://ipython.org")
+    (synopsis "IPython is a tool for interactive computing in Python")
+    (description
+     "IPython provides a rich architecture for interactive computing with:
+Powerful interactive shells, a browser-based notebook, support for interactive
+data visualization, embeddable interpreters and tools for parallel
+computing.")
+    (license license:bsd-3)))
+
+(define-public python-ipython
+  (package
+    (name "python-ipython")
+    (version "7.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipython" version ".tar.gz"))
+       (sha256
+        (base32 "09mbxq37mfn88xjnib7qfzaq9krr7gf1jxwy1p6mcjr254082h78"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-backcall" ,python-backcall)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-terminado" ,python-terminado)
        ("python-matplotlib" ,python-matplotlib)
        ("python-numpy" ,python-numpy)
        ("python-numpydoc" ,python-numpydoc)
+       ("python-jedi" ,python-jedi)
        ("python-jinja2" ,python-jinja2)
        ("python-mistune" ,python-mistune)
        ("python-pexpect" ,python-pexpect)
@@ -5082,74 +5278,10 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
        ("pkg-config" ,pkg-config)
        ("python-requests" ,python-requests) ;; for tests
        ("python-testpath" ,python-testpath)
-       ("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx)
-       ("python-shpinx-rtd-theme" ,python-sphinx-rtd-theme)
-       ;; FIXME: It's possible that a smaller union would work just as well.
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-fonts-ec
-                                        texlive-generic-ifxetex
-                                        texlive-generic-pdftex
-                                        texlive-latex-amsfonts
-                                        texlive-latex-capt-of
-                                        texlive-latex-cmap
-                                        texlive-latex-environ
-                                        texlive-latex-eqparbox
-                                        texlive-latex-etoolbox
-                                        texlive-latex-expdlist
-                                        texlive-latex-fancyhdr
-                                        texlive-latex-fancyvrb
-                                        texlive-latex-fncychap
-                                        texlive-latex-float
-                                        texlive-latex-framed
-                                        texlive-latex-geometry
-                                        texlive-latex-graphics
-                                        texlive-latex-hyperref
-                                        texlive-latex-mdwtools
-                                        texlive-latex-multirow
-                                        texlive-latex-oberdiek
-                                        texlive-latex-parskip
-                                        texlive-latex-preview
-                                        texlive-latex-tabulary
-                                        texlive-latex-threeparttable
-                                        texlive-latex-titlesec
-                                        texlive-latex-trimspaces
-                                        texlive-latex-ucs
-                                        texlive-latex-upquote
-                                        texlive-latex-url
-                                        texlive-latex-varwidth
-                                        texlive-latex-wrapfig)))
-       ("texinfo" ,texinfo)))
+       ("python-nose" ,python-nose)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-                    (doc (string-append data "/doc/" ,name "-" ,version))
-                    (html (string-append doc "/html"))
-                    (man1 (string-append data "/man/man1"))
-                    (info (string-append data "/info"))
-                    (examples (string-append doc "/examples"))
-                    (python-arg (string-append "PYTHON=" (which "python"))))
-               (setenv "LANG" "en_US.utf8")
-               ;; Make installed package available for running the tests
-               (add-installed-pythonpath inputs outputs)
-               (with-directory-excursion "docs"
-                 ;; FIXME: pdf fails to build
-                 ;;(system* "make" "pdf" "PAPER=a4")
-                 (system* "make" python-arg "html")
-                 (system* "make" python-arg "info"))
-               (copy-recursively "docs/man" man1)
-               (copy-recursively "examples" examples)
-               (copy-recursively "docs/build/html" html)
-               ;; (copy-file "docs/build/latex/ipython.pdf"
-               ;;            (string-append doc "/ipython.pdf"))
-               (mkdir-p info)
-               (copy-file "docs/build/texinfo/ipython.info"
-                          (string-append info "/ipython.info"))
-               (copy-file "COPYING.rst" (string-append doc "/COPYING.rst")))
-             #t))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.
          (delete 'check)
@@ -5172,19 +5304,11 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
              (substitute* "./IPython/core/tests/test_inputtransformer.py"
                (("#!/usr/bin/env python")
                 (string-append "#!" (which "python"))))
-             ;; Disable 1 failing test
-             (substitute* "./IPython/core/tests/test_magic.py"
-               (("def test_dirops\\(\\):" all)
-                (string-append "@dec.skipif(True)\n" all)))
              ;; This test introduces a circular dependency on ipykernel
              ;; (which depends on ipython).
              (delete-file "IPython/core/tests/test_display.py")
-             ;; These tests throw errors for unknown reasons.
-             (delete-file "IPython/extensions/tests/test_storemagic.py")
-             (delete-file "IPython/core/tests/test_displayhook.py")
+             ;; AttributeError: module 'IPython.core' has no attribute 'formatters'
              (delete-file "IPython/core/tests/test_interactiveshell.py")
-             (delete-file "IPython/core/tests/test_pylabtools.py")
-             (delete-file "IPython/core/tests/test_paths.py")
              #t)))))
     (home-page "https://ipython.org")
     (synopsis "IPython is a tool for interactive computing in Python")
@@ -5193,22 +5317,88 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 Powerful interactive shells, a browser-based notebook, support for interactive
 data visualization, embeddable interpreters and tools for parallel
 computing.")
-    (license license:bsd-3)
-    (properties `((python2-variant . ,(delay python2-ipython))))))
+    (license license:bsd-3)))
 
-(define-public python2-ipython
-  (let ((ipython (package-with-python2 (strip-python2-variant python-ipython))))
-    (package
-      (inherit ipython)
-      ;; FIXME: add pyreadline once available.
-      (propagated-inputs
-       `(("python2-backports-shutil-get-terminal-size"
-          ,python2-backports-shutil-get-terminal-size)
-         ("python2-pathlib2" ,python2-pathlib2)
-         ,@(package-propagated-inputs ipython)))
-      (native-inputs
-       `(("python2-mock" ,python2-mock)
-         ,@(package-native-inputs ipython))))))
+(define-public python-ipython-documentation
+  (package
+    (inherit python-ipython)
+    (name "python-ipython-documentation")
+    (version (package-version python-ipython))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "out") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html"))
+                    (man1 (string-append data "/man/man1"))
+                    (info (string-append data "/info"))
+                    (examples (string-append doc "/examples"))
+                    (python-arg (string-append "PYTHON=" (which "python"))))
+               (setenv "LANG" "en_US.utf8")
+               (with-directory-excursion "docs"
+                 ;; FIXME: pdf fails to build
+                 ;;(system* "make" "pdf" "PAPER=a4")
+                 (system* "make" python-arg "html")
+                 ;; FIXME: the generated texi file contains ^@^@, which trips
+                 ;; up the parser.
+                 ;; (system* "make" python-arg "info")
+                 )
+               (copy-recursively "docs/man" man1)
+               (copy-recursively "examples" examples)
+               (copy-recursively "docs/build/html" html)
+               ;; (copy-file "docs/build/latex/ipython.pdf"
+               ;;            (string-append doc "/ipython.pdf"))
+               (mkdir-p info)
+               ;; (copy-file "docs/build/texinfo/ipython.info"
+               ;;            (string-append info "/ipython.info"))
+               (copy-file "COPYING.rst" (string-append doc "/COPYING.rst")))
+             #t)))))
+    (inputs
+     `(("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel)))
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ;; FIXME: It's possible that a smaller union would work just as well.
+       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+                                        texlive-fonts-ec
+                                        texlive-generic-ifxetex
+                                        texlive-generic-pdftex
+                                        texlive-latex-amsfonts
+                                        texlive-latex-capt-of
+                                        texlive-latex-cmap
+                                        texlive-latex-environ
+                                        texlive-latex-eqparbox
+                                        texlive-latex-etoolbox
+                                        texlive-latex-expdlist
+                                        texlive-latex-fancyhdr
+                                        texlive-latex-fancyvrb
+                                        texlive-latex-fncychap
+                                        texlive-latex-float
+                                        texlive-latex-framed
+                                        texlive-latex-geometry
+                                        texlive-latex-graphics
+                                        texlive-latex-hyperref
+                                        texlive-latex-mdwtools
+                                        texlive-latex-multirow
+                                        texlive-latex-needspace
+                                        texlive-latex-oberdiek
+                                        texlive-latex-parskip
+                                        texlive-latex-preview
+                                        texlive-latex-tabulary
+                                        texlive-latex-threeparttable
+                                        texlive-latex-titlesec
+                                        texlive-latex-trimspaces
+                                        texlive-latex-ucs
+                                        texlive-latex-upquote
+                                        texlive-latex-url
+                                        texlive-latex-varwidth
+                                        texlive-latex-wrapfig)))
+       ("texinfo" ,texinfo)))))
 
 (define-public python-urwid
   (package
@@ -7373,6 +7563,32 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
+    (version "6.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_console" version))
+       (sha256
+        (base32
+         "1xdjw11cppf1fxvwkw2bk13ckkwas3bdah8baingn9296mvfi31h"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-jupyter-client" ,python-jupyter-client)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter terminal console")
+    (description "This package provides a terminal-based console frontend for
+Jupyter kernels.  It also allows for console-based interaction with non-Python
+Jupyter kernels such as IJulia and IRKernel.")
+    (license license:bsd-3)))
+
+(define-public python2-jupyter-console
+  (package
+    (name "python2-jupyter-console")
     (version "5.2.0")
     (source
      (origin
@@ -7385,21 +7601,18 @@ in the data.")
     ;; Tests only run in an TTY.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("python-ipykernel" ,python-ipykernel)
-       ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit-1)
-       ("python-pygments" ,python-pygments)))
+     `(("python2-ipykernel" ,python2-ipykernel)
+       ("python2-jupyter-client" ,python2-jupyter-client)
+       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
+       ("python2-pygments" ,python2-pygments)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python2-nose" ,python2-nose)))
     (home-page "https://jupyter.org")
     (synopsis "Jupyter terminal console")
     (description "This package provides a terminal-based console frontend for
 Jupyter kernels.  It also allows for console-based interaction with non-Python
 Jupyter kernels such as IJulia and IRKernel.")
     (license license:bsd-3)))
-
-(define-public python2-jupyter-console
-  (package-with-python2 python-jupyter-console))
 
 ;; The python-ipython and python-jupyter-console require each other. To get
 ;; the functionality in both packages working, strip down the
@@ -8239,34 +8452,35 @@ document.")
 
 (define-public python-botocore
   (package
-   (name "python-botocore")
-   (version "1.8.43")
-   (source
-    (origin
-     (method url-fetch)
-     (uri (pypi-uri "botocore" version))
-     (sha256
-      (base32
-       "12cqpbnz3vfv41mp9admvciw7bc7hz57sjpqs2bxaw9wnfmbw5lg"))))
-   (build-system python-build-system)
-   (arguments
-    ;; FIXME: Many tests are failing.
-    '(#:tests? #f))
-   (propagated-inputs
-    `(("python-dateutil" ,python-dateutil)
-      ("python-docutils" ,python-docutils)
-      ("python-jmespath" ,python-jmespath)))
-   (native-inputs
-    `(("python-mock" ,python-mock)
-      ("python-nose" ,python-nose)
-      ("behave" ,behave)
-      ("python-tox" ,python-tox)
-      ("python-wheel" ,python-wheel)))
-   (home-page "https://github.com/boto/botocore")
-   (synopsis "Low-level interface to AWS")
-   (description "Botocore is a Python library that provides a low-level
+    (name "python-botocore")
+    (version "1.12.149")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "botocore" version))
+       (sha256
+        (base32
+         "12597f74khp3ngwr282cb949w0gcqj20rkfc3x275dijavyy5cmf"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Many tests are failing.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-docutils" ,python-docutils)
+       ("python-jmespath" ,python-jmespath)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)
+       ("behave" ,behave)
+       ("python-tox" ,python-tox)
+       ("python-urllib3" ,python-urllib3)
+       ("python-wheel" ,python-wheel)))
+    (home-page "https://github.com/boto/botocore")
+    (synopsis "Low-level interface to AWS")
+    (description "Botocore is a Python library that provides a low-level
 interface to the Amazon Web Services (AWS) API.")
-   (license license:asl2.0)))
+    (license license:asl2.0)))
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
@@ -8316,14 +8530,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.10")
+    (version "1.0.12")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0r9rysn19fmrxnzfcn7sg20kjhcrx9qri0my9n5vdzp1g2g92rbi"))))
+         "0qj16ai937wrbpv1a9g395gybb9s06rmdj3arbp8fpl37bg6byhc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))

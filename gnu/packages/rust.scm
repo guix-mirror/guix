@@ -1045,7 +1045,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (setenv "RUST_TEST_THREADS" "2")
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.34
   (let ((base-rust
          (rust-bootstrapped-package rust-1.33 "1.34.1"
            "19s09k7y5j6g3y4d2rk6kg9pvq6ml94c49w6b72dmq8p9lk8bixh")))
@@ -1059,3 +1059,23 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (delete-file-recursively "src/llvm-project")
                       (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
                       #t)))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.34 "1.35.0"
+           "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; The tidy test includes a pass which ensures large binaries
+             ;; don't accidentally get checked into the rust git repo.
+             ;; Unfortunately the test assumes that git is always available,
+             ;; so we'll comment out the invocation of this pass.
+             (add-after 'configure 'disable-tidy-bins-check
+               (lambda* _
+                 (substitute* "src/tools/tidy/src/main.rs"
+                   (("bins::check") "//bins::check"))
+                 #t)))))))))

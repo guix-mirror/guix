@@ -421,8 +421,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.9")
-(define %linux-libre-hash "1l1nhq3giqyv7zir1sl8m32xbbpmqhsw8dgf90kf4qcnh6bvjin1")
+(define %linux-libre-version "5.1.11")
+(define %linux-libre-hash "15hmqycsggqd9bwrf229b7f0pfznzs03kpzcwrd9j867pvgwyl8c")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
@@ -439,8 +439,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.50")
-(define %linux-libre-4.19-hash "0j1p459al3y77cv2xwjx7ppghc8ixs3wm3w9a10sc3ckbq1hw8ly")
+(define %linux-libre-4.19-version "4.19.52")
+(define %linux-libre-4.19-hash "1wsrgrskmvipm7j4kzir93p9dp3iy49522163ghfxx71b1b2v4dg")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -457,8 +457,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.14-version "4.14.125")
-(define %linux-libre-4.14-hash "1ms7ai7c6xspq8r2amgjfsdyl87x10dc4b1c3iacrhrxaqqmab01")
+(define %linux-libre-4.14-version "4.14.127")
+(define %linux-libre-4.14-hash "0dkzgxfzzc6n3k2x8nzzx98c6y3fhsr695rm46ahvg7fdg3vgcmi")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -471,14 +471,14 @@ It has been modified to remove all non-free binary blobs.")
                             %linux-libre-4.14-hash))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.181"
-                    "0fdqfd6z73q00nracrixliw0i0b60f4z352jmzabcwy431wszar5"
+  (make-linux-libre "4.9.182"
+                    "1615v8ywwdm204bimq2cf6qv0zas14yagpr8lk9a5zqxas4p4rns"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.181"
-                    "1ird78a3pg8k6h60258g56ka86jpgiaj0q9r2jws770qgrmy324l"
+  (make-linux-libre "4.4.182"
+                    "0ggs5pyjr7a9mldskfbsybzxlb3lmfbhxg5q2qpzxnh1c8wcn53h"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config
                     #:extra-options
@@ -4791,14 +4791,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "0pffmsv41alsn5ac7mwnb9fh3qpwzqk13jrzn6c5i71wq6kbgix5"))))
+        (base32 "03xszkcpqk3s1rqc6vh7g5j13kh3d3yjnvjhk5scds3an39rgp92"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

@@ -5,6 +5,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2019 Christopher Baines <mail@cbaines.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 
 (define-module (gnu tests mail)
   #:use-module (gnu tests)
+  #:use-module (gnu packages mail)
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
@@ -136,7 +138,9 @@ accept from any for local deliver to mbox
                 (define (queue-empty?)
                   (eof-object?
                    (read-line
-                    (open-input-pipe "smtpctl show queue"))))
+                    (open-input-pipe
+                     (string-append #$(file-append opensmtpd "/sbin/smtpctl")
+                                    " show queue")))))
 
                 (let wait ()
                   (if (queue-empty?)
