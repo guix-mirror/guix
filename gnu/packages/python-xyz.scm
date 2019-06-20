@@ -7593,7 +7593,32 @@ Jupyter kernels such as IJulia and IRKernel.")
     (license license:bsd-3)))
 
 (define-public python2-jupyter-console
-  (package-with-python2 python-jupyter-console))
+  (package
+    (name "python2-jupyter-console")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jupyter_console" version))
+       (sha256
+        (base32
+         "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
+    (build-system python-build-system)
+    ;; Tests only run in an TTY.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("python2-ipykernel" ,python2-ipykernel)
+       ("python2-jupyter-client" ,python2-jupyter-client)
+       ("python2-prompt-toolkit" ,python2-prompt-toolkit-1)
+       ("python2-pygments" ,python2-pygments)))
+    (native-inputs
+     `(("python2-nose" ,python2-nose)))
+    (home-page "https://jupyter.org")
+    (synopsis "Jupyter terminal console")
+    (description "This package provides a terminal-based console frontend for
+Jupyter kernels.  It also allows for console-based interaction with non-Python
+Jupyter kernels such as IJulia and IRKernel.")
+    (license license:bsd-3)))
 
 ;; The python-ipython and python-jupyter-console require each other. To get
 ;; the functionality in both packages working, strip down the
