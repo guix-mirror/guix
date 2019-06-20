@@ -7567,21 +7567,19 @@ in the data.")
 (define-public python-jupyter-console
   (package
     (name "python-jupyter-console")
-    (version "5.2.0")
+    (version "6.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jupyter_console" version))
        (sha256
         (base32
-         "1kam1qzgwr7srhm5r6aj90di5sws4bq0jmiw15452ddamb9yspal"))))
+         "1xdjw11cppf1fxvwkw2bk13ckkwas3bdah8baingn9296mvfi31h"))))
     (build-system python-build-system)
-    ;; Tests only run in an TTY.
-    (arguments `(#:tests? #f))
     (propagated-inputs
      `(("python-ipykernel" ,python-ipykernel)
        ("python-jupyter-client" ,python-jupyter-client)
-       ("python-prompt-toolkit" ,python-prompt-toolkit-1)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
        ("python-pygments" ,python-pygments)))
     (native-inputs
      `(("python-nose" ,python-nose)))
