@@ -5582,7 +5582,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.9.3")
+    (version "2.9.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5591,11 +5591,12 @@ simultaneously.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l4ny67nxwv1lagk9wwjbrgm7ln7adci6dnpc7k1yaln6shj0qpm"))))
+                "0knkj1sq34hlivgv5qd6jlczqrs3ldmfgn6vbbw7p4mqxvb9mirk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
        #:tests? #f ; no "check" target
+       #:make-flags '("HAVE_HDF5=1")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-files-writable
@@ -5606,6 +5607,13 @@ simultaneously.")
              (setenv "PERL5LIB"
                      (string-append (getcwd) "/setup:"
                                     (getenv "PERL5LIB")))
+             #t))
+         ;; See https://github.com/ncbi/ncbi-vdb/issues/14
+         (add-after 'unpack 'patch-krypto-flags
+           (lambda _
+             (substitute* "libs/krypto/Makefile"
+               (("-Wa,-march=generic64\\+aes") "")
+               (("-Wa,-march=generic64\\+sse4") ""))
              #t))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
