@@ -2678,16 +2678,16 @@ of modern, widely supported codecs.")
 (define-public openh264
   (package
     (name "openh264")
-    (version "1.8.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/cisco/"
                                   name "/releases/download/v"
-                                  version "/Source.Code.tar.gz.gz"))
+                                  version "/Source.Code.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0niha3wnn1jsndvz9vfwy2wyql8mp9j6v75vjsipy0idwan5yzgf"))))
+                "0iq802xfsfkskg6q1j0kg90xh04vv1sxf61mrmahgynz5d7hx2ii"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("nasm" ,nasm)
