@@ -69,7 +69,7 @@
             imap4d-configuration
             imap4d-configuration?
             imap4d-service-type
-            %defualt-imap4d-config-file))
+            %default-imap4d-config-file))
 
 ;;; Commentary:
 ;;;
