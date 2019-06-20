@@ -860,7 +860,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.19")
+    (version "0.21")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -871,7 +871,7 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.bz2")))
              (sha256
               (base32
-               "1n4yz9rj24mv226hqbpw210ifvqkn8dgvpnkzf0s0lkq9zrjd5ym"))))
+               "0ng8l3q1px9lkzb44nxnzhh6fhdbclrwng9xs2v9m8yii8gs336i"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
