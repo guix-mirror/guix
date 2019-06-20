@@ -868,7 +868,7 @@ as the 'native-search-paths' field."
                          version
                          ".tar.bz2")
                         (string-append %gcc-infrastructure
-                                       name "-" version ".tar.gz")))
+                                       name "-" version ".tar.bz2")))
              (sha256
               (base32
                "1n4yz9rj24mv226hqbpw210ifvqkn8dgvpnkzf0s0lkq9zrjd5ym"))))
@@ -898,7 +898,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
               (uri (list (string-append "http://isl.gforge.inria.fr/isl-"
                                         version ".tar.bz2")
                          (string-append %gcc-infrastructure
-                                        "isl-" version ".tar.gz")))
+                                        "isl-" version ".tar.bz2")))
               (sha256
                (base32
                 "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))))
@@ -915,7 +915,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
                          version
                          ".tar.bz2")
                         (string-append %gcc-infrastructure
-                                       name "-" version ".tar.gz")))
+                                       name "-" version ".tar.bz2")))
              (sha256
               (base32
                "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
