@@ -11594,6 +11594,38 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
 with the @code{Validity} typeclass.")
     (license license:expat)))
 
+(define-public ghc-genvalidity-property
+  (package
+    (name "ghc-genvalidity-property")
+    (version "0.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "genvalidity-property/genvalidity-property-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cjw5i2pydidda9bnp6x37ylhxdk9g874x5sadr6sscg5kq85a1b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-genvalidity" ,ghc-genvalidity)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-validity" ,ghc-validity)))
+    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis
+     "Standard properties for functions on @code{Validity} types")
+    (description
+     "This package supplements the @code{Validity} typeclass with standard
+properties for functions operating on them.")
+    (license license:expat)))
+
 (define-public ghc-validity
   (package
     (name "ghc-validity")
