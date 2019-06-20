@@ -1526,3 +1526,59 @@ a program that performs fast computation of the more general multiplicative
 structure constants of Schubert polynomials.")
     (license license:gpl2+)
     (home-page "http://sites.math.rutgers.edu/~asbuch/lrcalc/")))
+
+(define-public iml
+  (package
+    (name "iml")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.cs.uwaterloo.ca/~astorjoh/iml-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0akwhhz9b40bz6lrfxpamp7r7wkk48p455qbn04mfnl9a1l6db8x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp", gmp)
+       ("cblas" ,openblas))) ; or any other BLAS library; the documentation
+                             ; mentions ATLAS in particular
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "--with-gmp-include="
+                       (assoc-ref %build-inputs "gmp") "/include")
+        (string-append "--with-gmp-lib="
+                       (assoc-ref %build-inputs "gmp") "/lib")
+        "--with-cblas=-lopenblas"
+        (string-append "--with-cblas-include="
+                       (assoc-ref %build-inputs "cblas") "/include")
+        (string-append "--with-cblas-lib="
+                       (assoc-ref %build-inputs "cblas") "/lib"))))
+    (home-page "https://cs.uwaterloo.ca/~astorjoh/iml.html")
+    (synopsis
+     "Solver for systems of linear equations over the integers")
+    (description
+     "IML is a C library implementing algorithms for computing exact
+solutions to dense systems of linear equations over the integers.
+Currently, IML provides the following functionality:
+
+@itemize
+@item Nonsingular rational system solving:
+compute the unique rational solution X to the system AX=B, where A and B
+are integer matrices, A nonsingular.
+@item Compute the right nullspace or kernel of an integer matrix.
+@item Certified linear system solving:
+compute a minimal denominator solution x to a system Ax=b, where b is an
+integer vector and A is an integer matrix with arbitrary shape and
+rank profile.
+@end itemize
+
+In addition, IML provides some low level routines for a variety of mod p
+matrix operations: computing the row-echelon form, determinant, rank
+profile, and inverse of a mod p matrix. These mod p routines are not
+general purpose; they require that p satisfy some preconditions based on
+the dimension of the input matrix (usually p should be prime and should be
+no more than about 20 bits long).")
+    (license license:bsd-3)))
