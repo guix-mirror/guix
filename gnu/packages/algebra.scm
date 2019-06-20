@@ -144,24 +144,50 @@ line applications.")
 
 (define-public fplll
   (package
-   (name "fplll")
-   (version "4.0.4")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append
-                  "http://perso.ens-lyon.fr/damien.stehle/fplll/libfplll-"
-                  version ".tar.gz"))
-            (sha256 (base32
-                     "1cbiby7ykis4z84swclpysrljmqhfcllpkcbll1m08rzskgb1a6b"))))
-   (build-system gnu-build-system)
-   (inputs `(("gmp" ,gmp)
-             ("mpfr" ,mpfr)))
-   (synopsis "Library for LLL-reduction of euclidean lattices")
-   (description
-    "fplll LLL-reduces euclidean lattices.  Since version 3, it can also
-solve the shortest vector problem.")
-   (license license:lgpl2.1+)
-   (home-page "http://perso.ens-lyon.fr/damien.stehle/fplll/")))
+    (name "fplll")
+    (version "5.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fplll/fplll.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "015qmrd7nfaysbv1hbwiprz9g6hnww1y1z1xw8f43ysb7k1b5nbg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("mpfr" ,mpfr)))
+    (home-page "https://github.com/fplll/fplll")
+    (synopsis "Library for LLL-reduction of euclidean lattices")
+    (description
+     "fplll contains implementations of several lattice algorithms.
+The implementation relies on floating-point orthogonalization, and LLL
+is central to the code, hence the name.
+
+It includes implementations of floating-point LLL reduction
+algorithms, offering different speed/guarantees ratios.  It contains
+a @emph{wrapper} choosing the estimated best sequence of variants in
+order to provide a guaranteed output as fast as possible.  In the case
+of the wrapper, the succession of variants is oblivious to the user.
+
+It includes an implementation of the BKZ reduction algorithm,
+including the BKZ-2.0 improvements (extreme enumeration
+pruning, pre-processing of blocks, early termination).  Additionally,
+Slide reduction and self dual BKZ are supported.
+
+It also includes a floating-point implementation of the
+Kannan-Fincke-Pohst algorithm that finds a shortest non-zero lattice
+vector.  For the same task, the GaussSieve algorithm is also available
+in fplll.  Finally, it contains a variant of the enumeration algorithm
+that computes a lattice vector closest to a given vector belonging to
+the real span of the lattice.")
+    (license license:lgpl2.1+)))
 
 (define-public pari-gp
   (package
