@@ -11563,6 +11563,32 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
 ∀ instead of @code{forall} and many others.")
     (license license:bsd-3)))
 
+(define-public ghc-validity
+  (package
+    (name "ghc-validity")
+    (version "0.7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/validity/validity-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xribw98amafihw87ddajk6vlirp7w9b26lrnjgq7jfm4710j95f"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("hspec-discover" ,hspec-discover)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis "Validity typeclass")
+    (description
+     "Values of custom types usually have invariants imposed upon them.  This
+package provides the @code{Validity} type class, which makes these invariants
+explicit by providing a function to check whether the invariants hold.")
+    (license license:expat)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
