@@ -4919,7 +4919,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.9")
+    (version "1.7.10")
     (source
       (origin
         (method url-fetch)
@@ -4929,7 +4929,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0idg1wc01hndvaa820fvfs7phvd1ymf0lldmq6386i7rhkzvirn2"))))
+            "0q8hz3slga3w3ch8wp0k7ay9ilhz315qnab0w1y2x9w3cf7hv8rn"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)
