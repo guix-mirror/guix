@@ -11691,6 +11691,42 @@ explicit by providing a function to check whether the invariants hold.")
 invariants.")
     (license license:bsd-3)))
 
+(define-public ghc-path-io
+  (package
+    (name "ghc-path-io")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/path-io/path-io-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1g9m3qliqjk1img894wsb89diym5zrq51qkkrwhz4sbm9a8hbv1a"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-dlist" ,ghc-dlist)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-path" ,ghc-path)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (arguments
+    `(#:cabal-revision
+      ("3" "1h9hsibbflkxpjl2fqamqiv3x3gasf51apnmklrs9l9x8r32hzcc")))
+    (home-page
+     "https://github.com/mrkkrp/path-io")
+    (synopsis "Functions for manipulating well-typed paths")
+    (description "This package provides an interface to the @code{directory}
+package for users of @code{path}.  It also implements some missing stuff like
+recursive scanning and copying of directories, working with temporary
+files/directories, and more.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
