@@ -11652,6 +11652,45 @@ package provides the @code{Validity} type class, which makes these invariants
 explicit by providing a function to check whether the invariants hold.")
     (license license:expat)))
 
+(define-public ghc-path
+  (package
+    (name "ghc-path")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/path/path-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nayla4k1gb821k8y5b9miflv1bi8f0czf9rqr044nrr2dddi2sb"))))
+    (build-system haskell-build-system)
+    (arguments
+     ;; TODO: There are some Windows-related tests and modules that need to be
+     ;; danced around.
+     `(#:tests? #f
+       #:cabal-revision
+       ("1" "05b1zwx2a893h4h5wvgpc5g5pyx71hfmx409rqisd8s1bq1hn463")))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-genvalidity" ,ghc-genvalidity)
+       ("ghc-genvalidity-property" ,ghc-genvalidity-property)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-validity" ,ghc-validity)))
+    (home-page
+     "http://hackage.haskell.org/package/path")
+    (synopsis "Support for well-typed paths")
+    (description "This package introduces a type for paths upholding useful
+invariants.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
