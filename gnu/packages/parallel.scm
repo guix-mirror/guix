@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +27,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages parallel)
-  #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
@@ -40,6 +43,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -188,3 +192,50 @@ to SLURM.  Using DRMAA, grid applications builders, portal developers and ISVs
 can use the same high-level API to link their software with different
 cluster/resource management systems.")
     (license license:gpl3+)))
+
+(define-public python-slurm-magic
+  (let ((commit "73dd1a2b85799f7dae4b3f1cd9027536eff0c4d7")
+        (revision "0"))
+    (package
+      (name "python-slurm-magic")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://github.com/NERSC/slurm-magic")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page)
+                                    (commit commit)))
+                (sha256
+                 (base32
+                  "19pp2vs0wm8mx0arz9n6lw9wgyv70w9wyi4y6b91qc5j3bz5igfs"))
+                (file-name (git-file-name name version))))
+      (build-system python-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-before 'build 'set-slurm-path
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        ;; The '_execute' method tries to exec 'salloc'
+                        ;; etc. from $PATH.  Record the absolute file name
+                        ;; instead.
+                        (let ((slurm (assoc-ref inputs "slurm")))
+                          (substitute* "slurm_magic.py"
+                            (("name = (.*)$" _ value)
+                             (string-append "name = \""
+                                            slurm "/bin/\" + "
+                                            value "\n")))
+                          #t))))))
+      (inputs
+       `(("slurm" ,slurm)))
+      (propagated-inputs
+       `(("python-ipython" ,python-ipython)
+         ("python-pandas" ,python-pandas)))
+      (synopsis "Control the SLURM batch scheduler from Jupyter Notebook")
+      (description
+       "This package implements Jupyter/IPython
+@uref{http://ipython.readthedocs.io/en/stable/interactive/magics.html, magic
+commands} for interacting with the SLURM workload manager.  SLURM magic simply
+wraps command-line executables and the commands themselves should look like
+their command-line counterparts.  Commands are spawned via @code{subprocess}
+and output captured in the notebook.  Whatever arguments are accepted by a
+SLURM command line executable are also accepted by the corresponding magic
+command---e.g., @code{%salloc}, @code{%sbatch}, etc.")
+      (license license:bsd-3))))

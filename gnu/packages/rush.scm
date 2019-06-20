@@ -26,14 +26,14 @@
 (define-public rush
   (package
     (name "rush")
-    (version "1.8")
+    (version "1.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rush/rush-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1vxdb81ify4xcyygh86250pi50krb16dkj42i5ii4ns3araiwckz"))))
+               "12x7dyi9vl3lwlv618156nzpi5s0li93wcx2c26h4z7la20yq2yk"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")

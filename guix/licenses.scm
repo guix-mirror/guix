@@ -94,6 +94,7 @@
             fsf-free
             wtfpl2
             wxwindows3.1+
+            hpnd
             fsdg-compatible))
 
 (define-record-type <license>
@@ -627,6 +628,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Zlib"
            "http://www.gzip.org/zlib/zlib_license.html"
            "https://www.gnu.org/licenses/license-list#ZLib"))
+
+(define hpnd
+  (license "HPND"
+           "https://directory.fsf.org/wiki/License:HPND"
+           "https://www.gnu.org/licenses/license-list#HPND"))
 
 (define* (fsf-free uri #:optional (comment ""))
   "Return a license that does not fit any of the ones above or a collection

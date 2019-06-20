@@ -108,7 +108,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public isc-bind
   (package
     (name "bind")
-    (version "9.14.2")
+    (version "9.14.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -116,7 +116,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                     "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "033zqajnj5ys45g899132xkhh9f0hsh76ffv7302wl166xbjfh0f"))))
+                "1ymxr38c62w6961j8g2vllnv0s72z7zk4b2j2k8ixdh1rymqm1yf"))))
     (build-system gnu-build-system)
     (outputs `("out" "utils"))
     (inputs
@@ -302,14 +302,14 @@ asynchronous fashion.")
 (define-public nsd
   (package
     (name "nsd")
-    (version "4.1.27")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.nlnetlabs.nl/downloads/nsd/nsd-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1sjfbwr4vq25304hr9vmd9j821g2vzv8lpy95hpsravc80q5zaqv"))))
+        (base32 "0k57xl3ybdnqjqw9a3dmi7l6qmhkiic6wsghkz08ir809aj1rpsi"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -577,14 +577,14 @@ Extensions} (DNSSEC).")
 (define-public knot
   (package
     (name "knot")
-    (version "2.8.1")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://secure.nic.cz/files/knot-dns/"
                            "knot-" version ".tar.xz"))
        (sha256
-        (base32 "1im2wb8hl394mzni1wavmvfqd7il8s28kcz8w3s4v05nbhzg06xj"))
+        (base32 "0dx1lp4w33rpa54nns41k4vfdfin6naaskwh132r4qs0l9hl7lh0"))
        (modules '((guix build utils)))
        (snippet
         '(begin

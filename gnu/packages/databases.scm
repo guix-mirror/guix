@@ -34,6 +34,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1879,7 +1880,7 @@ database.")
 (define-public perl-db-file
  (package
   (name "perl-db-file")
-  (version "1.843")
+  (version "1.852")
   (source
     (origin
       (method url-fetch)
@@ -1889,7 +1890,7 @@ database.")
              ".tar.gz"))
       (sha256
         (base32
-          "0sildz1i3fmh949w1scpjsyjx0cbmfw0yna3y70mc6vbwp8y696y"))))
+          "14c30xyqx9c1hxw40bqbzls41al8gmklxv5jbk2kknmn4dsrbdrs"))))
   (build-system perl-build-system)
   (inputs `(("bdb" ,bdb)))
   (native-inputs `(("perl-test-pod" ,perl-test-pod)))

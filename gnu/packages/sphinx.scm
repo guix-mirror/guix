@@ -90,7 +90,7 @@
        ("python-mock" ,python-mock)
        ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
-    (home-page "http://sphinx-doc.org/")
+    (home-page "https://sphinx-doc.org/")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
 for Python projects or other documents consisting of multiple reStructuredText
@@ -341,7 +341,7 @@ SVG images natively (e.g. LaTeX).")
     (arguments
      ;; FIXME: Tests depend on Sphinx, which depends on this.
      `(#:tests? #f))
-    (home-page "http://sphinx-doc.org/")
+    (home-page "https://sphinx-doc.org/")
     (synopsis "Sphinx API for web applications")
     (description "This package provides a Python API to easily integrate
 Sphinx documentation into your web application.  It provides tools to

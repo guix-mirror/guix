@@ -535,6 +535,11 @@ system."
               ;; Set the SQL schema location.
               (sql-schema #$schema)
 
+              ;; Allow non-ASCII file names--e.g., 'nss-certs'--to be decoded.
+              (setenv "GUIX_LOCPATH"
+                      #+(file-append glibc-utf8-locales "/lib/locale"))
+              (setlocale LC_ALL "en_US.utf8")
+
               (let* (;; This initializer requires elevated privileges that are
                      ;; not normally available in the build environment (e.g.,
                      ;; it needs to create device nodes).  In order to obtain

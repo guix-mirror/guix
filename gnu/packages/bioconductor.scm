@@ -590,6 +590,35 @@ data.  It is derived from the UCSC hg19 genome and based on the \"knownGene\"
 track.  The database is exposed as a @code{TxDb} object.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-hsapiens-ucsc-hg38-knowngene
+  (package
+    (name "r-txdb-hsapiens-ucsc-hg38-knowngene")
+    (version "3.4.6")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib"
+                                  "/TxDb.Hsapiens.UCSC.hg38.knownGene_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12j7rri9r129v9w1yiqadg952dx462dh092sxif3r5kk8l7bxkn9"))))
+    (properties
+     `((upstream-name . "TxDb.Hsapiens.UCSC.hg38.knownGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page
+     "https://bioconductor.org/packages/TxDb.Hsapiens.UCSC.hg38.knownGene/")
+    (synopsis "Annotation package for human genome in TxDb format")
+    (description
+     "This package provides an annotation database of Homo sapiens genome
+data.  It is derived from the UCSC hg38 genome and based on the \"knownGene\"
+track.  The database is exposed as a @code{TxDb} object.")
+    (license license:artistic2.0)))
+
 (define-public r-txdb-mmusculus-ucsc-mm9-knowngene
   (package
     (name "r-txdb-mmusculus-ucsc-mm9-knowngene")
@@ -4438,14 +4467,14 @@ interpretation.")
 (define-public r-rhisat2
   (package
     (name "r-rhisat2")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhisat2" version))
        (sha256
         (base32
-         "1y3zqvk1vbcb10r1myh6f5yzjvf7bhwhpiq78bs1k6spli4bzj0q"))))
+         "02ig9qci18n93vmya7q6bijrqsbfh69fyg8iqysf89ym2vd3x3c5"))))
     (properties `((upstream-name . "Rhisat2")))
     (build-system r-build-system)
     (native-inputs
@@ -4677,3 +4706,42 @@ Forest, and SVM binary classifiers.  The signatures and the corresponding
 'restricted' models are returned, enabling future predictions on new
 datasets.")
     (license license:cecill)))
+
+(define-public r-annotatr
+  (package
+    (name "r-annotatr")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "annotatr" version))
+       (sha256
+        (base32
+         "1zlhy6swfgqjhhcqn8c6akxd4c4z8p85swfh095imji7hxnlhh1f"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-annotationhub" ,r-annotationhub)
+       ("r-dplyr" ,r-dplyr)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-iranges" ,r-iranges)
+       ("r-readr" ,r-readr)
+       ("r-regioner" ,r-regioner)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/annotatr/")
+    (synopsis "Annotation of genomic regions to genomic annotations")
+    (description
+     "Given a set of genomic sites/regions (e.g. ChIP-seq peaks, CpGs,
+differentially methylated CpGs or regions, SNPs, etc.) it is often of interest
+to investigate the intersecting genomic annotations.  Such annotations include
+those relating to gene models (promoters, 5'UTRs, exons, introns, and 3'UTRs),
+CpGs (CpG islands, CpG shores, CpG shelves), or regulatory sequences such as
+enhancers.  The annotatr package provides an easy way to summarize and
+visualize the intersection of genomic sites/regions with genomic
+annotations.")
+    (license license:gpl3)))

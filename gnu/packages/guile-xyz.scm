@@ -60,6 +60,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
@@ -68,6 +69,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages noweb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -75,6 +77,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -1976,11 +1979,11 @@ format is also supported.")
   (deprecated-package "mcron2" mcron))
 
 (define-public guile-picture-language
-  (let ((commit "1ea8b78a8bceb4f7e5eaeb3e76987072267f99bb")
-        (revision "2"))
+  (let ((commit "91d10c96708d732145006dd2802acc4de08b632e")
+        (revision "1"))
     (package
       (name "guile-picture-language")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1988,10 +1991,16 @@ format is also supported.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1rvq6q2zq21x7dx0qq1hn568wglsl4bkd8gacbarcx1fs0rrxcqw"))))
-      (build-system guile-build-system)
+                  "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
+      (build-system gnu-build-system)
       (inputs
        `(("guile" ,guile-2.2)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("imagemagick" ,imagemagick)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)))
       (home-page "https://git.elephly.net/software/guile-picture-language.git")
       (synopsis "Picture language for Guile")
       (description
@@ -2154,20 +2163,20 @@ serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
 
 (define-public python-on-guile
-  (let ((commit "0cb7c2b2fff4338ca6153473f3f5c409a818f293")
-        (revision "1"))
+  (let ((commit "058c596cd3886447da31171e1026d4d19f5f5313")
+        (revision "2"))
     (package
       (name "python-on-guile")
       (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.com/python-on-guile/python-on-guile.git")
+                      (url "https://git.elephly.net/software/python-on-guile.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0kpz08rrp5mwcf5ksc4flgrw992syham9x49dn9wq9w31bpcpnby"))))
+                  "0ppyh5kkhsph5kc091p2b5a3alnj3wnlx8jr5xpyhrsj0vx9cqph"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
@@ -2176,12 +2185,7 @@ serializing continuations or delimited continuations.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t))
-           (add-after 'chdir 'use-canonical-directory-for-go-files
-             (lambda _
-               (substitute* "Makefile.am"
-                 (("/ccache") "/site-ccache"))
-               #t)))))
+             (lambda _ (chdir "modules") #t)))))
       (inputs
        `(("guile" ,guile-2.2)))
       (propagated-inputs
@@ -2238,43 +2242,40 @@ list of components.  This module takes care of that for you.")
     (license license:lgpl3+)))
 
 (define-public guile-gi
-  (let ((commit "26e885219ae6b31a83766564a2ecfe8c4532346f")
-        (revision "1"))
-    (package
-      (name "guile-gi")
-      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/spk121/guile-gi.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "1prbzhr4sqqihb34l6yfrz6sd8nghwd3q9wvbm36jnl2n3z2nxj8"))))
-      (build-system gnu-build-system)
-      (native-inputs `(("autoconf" ,autoconf)
-                       ("automake" ,automake)
-                       ("gettext" ,gnu-gettext)
-                       ("libtool" ,libtool)
-                       ("pkg-config" ,pkg-config)
-                       ("texinfo" ,texinfo)))
-      (propagated-inputs `(("glib" ,glib)
-                           ("gobject-introspection" ,gobject-introspection)
-                           ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
-                           ("gtk+" ,gtk+)
-                           ("guile-lib" ,guile-lib)
-                           ("webkitgtk" ,webkitgtk)))
-      (inputs `(("guile" ,guile-2.2)))
-      (arguments
-       `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
-      (home-page "https://github.com/spk121/guile-gi")
-      (synopsis "GObject bindings for Guile")
-      (description
-       "Guile-GI is a library for Guile that allows using GObject-based
+  (package
+    (name "guile-gi")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hs0viqzff7nzgcmyw721ima1jyymrlzrcycpgwrs6iprscxvqwn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
+       ;; The atomic_int_set test does not actually fail.
+       #:make-flags '("XFAIL_TESTS=strjoinv.scm")))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("guile-lib" ,guile-lib)
+       ("webkitgtk" ,webkitgtk)))
+    (inputs `(("guile" ,guile-2.2)))
+    (home-page "https://github.com/spk121/guile-gi")
+    (synopsis "GObject bindings for Guile")
+    (description
+     "Guile-GI is a library for Guile that allows using GObject-based
 libraries, such as GTK+3.  Its README comes with the disclaimer: This is
 pre-alpha code.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public guile-srfi-159
   (let ((commit "1bd98abda2ae4ef8f36761a167903e55c6bda7bb")
@@ -2305,3 +2306,81 @@ formatting combinators specified by
 @uref{https://srfi.schemers.org/srfi-159/srfi-159.html, SRFI-159}.  These are
 more expressive and flexible than the traditional @code{format} procedure.")
       (license license:bsd-3))))
+
+(define-public emacsy
+  (let ((commit "7d49cc1425d5d209bdb82cac0d8ea0694b8b3784")
+        (revision "4"))
+    (package
+      (name "emacsy")
+      (version (string-append "0.1.2-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://gitlab.com/janneke/emacsy.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0k9yns1v8zn135w60sx96nqs2bm2p2dvcvlm987hkw4lbff9ii6i"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("emacsy-webkit-gtk"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/janneke/emacsy-webkit-gtk.git")
+                   (commit "35ded1b3e997fd779a17e0c4a2c73741718562d9")))
+             (file-name (string-append "emacsy-webkit-gtk" "-" version))
+             (sha256
+              (base32
+               "1gp0li2rbp6in926r3hrww6cnh864pp46v1din2pgmd7vzzl7kg0"))))
+         ("hello-emacsy"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://gitlab.com/janneke/hello-emacsy.git")
+                   (commit "2c117e5286a261be4ff24938f3ae1d348396c538")))
+             (file-name (string-append "hello-emacsy" "-" version))
+             (sha256
+              (base32
+               "15ykd7s8axcy8ym4v71fgal4x28fxnim0pv0jmpi3dnhizr63zqn"))))
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("bzip2" ,bzip2)
+         ("guile" ,guile-2.2)
+         ("gettext" ,gnu-gettext)
+         ("libtool" ,libtool)
+         ("noweb" ,noweb)
+         ("perl" ,perl)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)
+         ("texlive" ,texlive)))
+      (propagated-inputs
+       `(("guile-lib" ,guile-lib)
+         ("guile-readline" ,guile-readline)
+         ("freeglut" ,freeglut)
+         ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+         ("webkitgtk" ,webkitgtk)))
+      (inputs `(("guile" ,guile-2.2)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-examples
+             (lambda _
+               (copy-recursively (assoc-ref %build-inputs "emacsy-webkit-gtk")
+                                 "example/emacsy-webkit-gtk")
+               (copy-recursively (assoc-ref %build-inputs "hello-emacsy")
+                                 "example/hello-emacsy")))
+           (add-before 'configure 'setenv
+             (lambda _
+               (setenv "GUILE_AUTO_COMPILE" "0"))))))
+      (home-page "https://github.com/shanecelis/emacsy/")
+      (synopsis "Embeddable GNU Emacs-like library using Guile")
+      (description
+       "Emacsy is an embeddable GNU Emacs-like library that uses GNU Guile
+as extension language.  Emacsy can give a C program an Emacsy feel with
+keymaps, minibuffer, recordable macros, history, tab completion, major
+and minor modes, etc., and can also be used as a pure Guile library.  It
+comes with a simple counter example using GLUT and browser examples in C
+using gtk+-3 and webkitgtk.")
+      (license license:gpl3+))))

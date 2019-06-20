@@ -30,6 +30,7 @@
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:export (system-container
@@ -65,6 +66,16 @@ from OS that are needed on the bare metal and not in a container."
                          files)))
             base)))
 
+(define dummy-networking-service-type
+  (shepherd-service-type
+   'dummy-networking
+   (const (shepherd-service
+           (documentation "Provide loopback and networking without actually
+doing anything.")
+           (provision '(loopback networking))
+           (start #~(const #t))))
+   #f))
+
 (define* (containerized-operating-system os mappings
                                          #:key
                                          shared-network?
@@ -96,7 +107,8 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
                   agetty-service-type)
             ;; Remove nscd service if network is shared with the host.
             (if shared-network?
-                (list nscd-service-type)
+                (list nscd-service-type
+                      static-networking-service-type)
                 (list))))
 
   (operating-system
@@ -105,10 +117,17 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
     (essential-services (container-essential-services
                          this-operating-system
                          #:shared-network? shared-network?))
-    (services (remove (lambda (service)
-                        (memq (service-kind service)
-                              useless-services))
-                      (operating-system-user-services os)))
+    (services (append (remove (lambda (service)
+                                (memq (service-kind service)
+                                      useless-services))
+                              (operating-system-user-services os))
+                      ;; Many Guix services depend on a 'networking' shepherd
+                      ;; service, so make sure to provide a dummy 'networking'
+                      ;; service when we are sure that networking is already set up
+                      ;; in the host and can be used.  That prevents double setup.
+                      (if shared-network?
+                          (list (service dummy-networking-service-type))
+                          '())))
     (file-systems (append (map mapping->fs
                                (if shared-network?
                                    (append %network-file-mappings mappings)

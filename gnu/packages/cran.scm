@@ -453,13 +453,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.13")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "1n5haqkshrxcx557f1k7nrisvq3wak8v370s2r6yv691b8hvbscs"))))
+                "0zjjnfgas9d16fihksyk24kgkkqswb4sd0rz51id2ni1ymdyasjk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -4107,14 +4107,14 @@ Cryer and Kung-Sik Chan.")
 (define-public r-extradistr
   (package
     (name "r-extradistr")
-    (version "1.8.10")
+    (version "1.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "extraDistr" version))
        (sha256
         (base32
-         "00lvqp5bb3iak5myiz4rqm887bkq9sdh7aybmz84mmfni6q01m28"))))
+         "1vvqv1d4hxa025gmm8cbiph63qsqy87l3ri5idd524gyz3chbcl3"))))
     (properties `((upstream-name . "extraDistr")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5962,18 +5962,18 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.7.9")
+    (version "2.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "11iiap0w5v0dszgwx4pi3j1zf9vnlw1ml1wjvq1hg9iz1plgbfnc"))))
+         "0pgavkygsj8fa591pmasx78b4gd32sf2pa067yqvi82xha7dj5k4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
-       ("r-haven" ,r-haven)
+       ("r-insight" ,r-insight)
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
@@ -6584,16 +6584,18 @@ second male (P2) based on the best fit distribution.")
 (define-public r-abcrf
   (package
     (name "r-abcrf")
-    (version "1.7.1")
+    (version "1.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abcrf" version))
        (sha256
-        (base32 "06vy3inikrr9hv36q4djhrgzi9zizdfnhz17wpra8kadmr7qj441"))))
+        (base32 "0r31ki89z8zzcffm0yvd2zw3q96rk6g6fnwwkql902mgajbrha1f"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-mass" ,r-mass)
+     `(("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-mass" ,r-mass)
        ("r-matrixstats" ,r-matrixstats)
        ("r-ranger" ,r-ranger)
        ("r-rcpp" ,r-rcpp)
@@ -7692,14 +7694,14 @@ Hothorn, Westfall, 2010, CRC Press).")
 (define-public r-emmeans
   (package
     (name "r-emmeans")
-    (version "1.3.4")
+    (version "1.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "emmeans" version))
        (sha256
         (base32
-         "09gxphan34c615y4lhjdqkg5cz4ih9b1r3bb4chs3mwmiav1rxqn"))))
+         "0zyink60132f2a0491a94bf67hq8a0bwmw5wn19l0ms8iyiml9d2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-estimability" ,r-estimability)
@@ -9404,14 +9406,14 @@ definiteness of a matrix.")
 (define-public r-rspectra
   (package
     (name "r-rspectra")
-    (version "0.14-0")
+    (version "0.15-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RSpectra" version))
        (sha256
         (base32
-         "12w5vnz39gyciza0fl7fw4f9i9kjw763h3mvk1sxd97c5dsn26jg"))))
+         "1ab975scdqaxdna9sayjl6l14hz991y0pc8c8ah48w000616km8s"))))
     (properties `((upstream-name . "RSpectra")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9639,14 +9641,14 @@ conditional reporting based on the current \"output level\".")
 (define-public r-tractor-base
   (package
     (name "r-tractor-base")
-    (version "3.3.0")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tractor.base" version))
        (sha256
         (base32
-         "0i62dwra0yh565ryz75byfgqv22bqwz7138zs48w46yj2h8q9hyj"))))
+         "0y5gm0y4chl30f5qqq8qiiw4j8g32s4i9xrvyp3cwg902kf2p86i"))))
     (properties `((upstream-name . "tractor.base")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11746,14 +11748,14 @@ numbers from ZIP and ZINB distributions.")
 (define-public r-nor1mix
   (package
     (name "r-nor1mix")
-    (version "1.2-3")
+    (version "1.3-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "nor1mix" version))
        (sha256
         (base32
-         "1bvk888qml9qr7q703s7qzgm0sqfchcjdjqwqllm5vrjx0cnapj3"))))
+         "1817wcvlmxs70vs4db0jkxd7i037744zz8ay3c2a9949z29fxr4w"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/nor1mix/")
     (synopsis "Normal (1-d) mixture models")
@@ -12405,14 +12407,14 @@ sampling.")
 (define-public r-deldir
   (package
     (name "r-deldir")
-    (version "0.1-16")
+    (version "0.1-21")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "deldir" version))
        (sha256
         (base32
-         "0549kj0hlkdyvm5axsm3np30wg53fm2pxybijzw0avlgsd2y2n2q"))))
+         "03392pl6j8rm3n32xrfkyfx866k1vm5sj87pva70yyiwh70vrnmr"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/deldir")
@@ -12645,14 +12647,14 @@ either PDF/EPS files.")
 (define-public r-polspline
   (package
     (name "r-polspline")
-    (version "1.1.14")
+    (version "1.1.15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "polspline" version))
        (sha256
         (base32
-         "0g4s5nwi13yfs6b169yw8vrs48nvjyc014k2v7ybcxarl8z81va0"))))
+         "19zs4kpagsrzhng1byjbz1c4jxnfk58h4rgr096ml1bjwrgamnwc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/polspline/")

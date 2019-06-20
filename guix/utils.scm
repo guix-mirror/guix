@@ -718,7 +718,7 @@ environment variable name like \"XDG_CONFIG_HOME\"; SUFFIX is a suffix like
 
 (define (canonical-newline-port port)
   "Return an input port that wraps PORT such that all newlines consist
-  of a single carriage return."
+  of a single linefeed."
   (define (get-position)
     (if (port-has-port-position? port) (port-position port) #f))
   (define (set-position! position)
@@ -730,11 +730,11 @@ environment variable name like \"XDG_CONFIG_HOME\"; SUFFIX is a suffix like
     (let loop ((count 0)
                (byte (get-u8 port)))
       (cond ((eof-object? byte) count)
+            ;; XXX: consume all CRs even if not followed by LF.
+            ((eqv? byte (char->integer #\return)) (loop count (get-u8 port)))
             ((= count (- n 1))
              (bytevector-u8-set! bv (+ start count) byte)
              n)
-            ;; XXX: consume all LFs even if not followed by CR.
-            ((eqv? byte (char->integer #\return)) (loop count (get-u8 port)))
             (else
              (bytevector-u8-set! bv (+ start count) byte)
              (loop (+ count 1) (get-u8 port))))))

@@ -41,6 +41,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
+;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5596,6 +5597,40 @@ affect gameplay).")
     (home-page "https://www.chocolate-doom.org/wiki/index.php/Chocolate_Doom")
     (license license:gpl2)))
 
+(define-public crispy-doom
+  (package
+    (inherit chocolate-doom)
+    (name "crispy-doom")
+    (version "5.5.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fabiangreffrath/crispy-doom.git")
+                    (commit (string-append "crispy-doom-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "1a60ns0blhvml6gzj9qx18c18pbf02rq7vypaajd6nqy5h4fz3cn"))))
+    (native-inputs
+     (append
+      (package-native-inputs chocolate-doom)
+      `(("automake" ,automake)
+        ("autoreconf" ,autoconf))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'bootstrap
+           ;; the autogen.sh script in the source tree doesn't work
+           (lambda _ (invoke "autoreconf" "-vif"))))))
+    (synopsis "Limit-removing enhanced-resolution Doom source port based on
+Chocolate Doom")
+    (description
+     "Crispy Doom is a friendly fork of Chocolate Doom that provides a higher
+display resolution, removes the static limits of the Doom engine and offers
+further optional visual, tactical and physical enhancements while remaining
+entirely config file, savegame, netplay and demo compatible with the
+original.")
+    (home-page "https://www.chocolate-doom.org/wiki/index.php/Crispy_Doom")))
+
 (define-public fortune-mod
   (package
     (name "fortune-mod")
@@ -7385,3 +7420,143 @@ full of enemies that can hurt it, obstacles and food to be eaten.  The goal of
 the game is to stay alive and collect prizes.  The robot program conveniently
 may be written in a plain text file in the Scheme programming language.")
     (license license:gpl3+)))
+
+(define-public ri-li
+  (package
+    (name "ri-li")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ri-li/"
+                                  "Ri-li%20Linux_Unix/Ri-li%20V" version "/"
+                                  "Ri-li-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1gcdsgnnbbn1mb1hkpwniv3fhkaj1nn8gq33v5c16q3wqchcq77p"))
+              ;; Taken from
+              ;; <https://github.com/NixOS/nixpkgs/blob/master/pkgs/games/rili/moderinze_cpp.patch>.
+              ;; It doesn't build otherwise.
+              (patches (search-patches "ri-li-modernize_cpp.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Remove "gentoo" subdirectory from Makefile, as it is
+         ;; missing a make file and generates a build failure.
+         (add-after 'configure 'fix-build
+           (lambda _
+             (substitute* "Makefile"
+               ((" gentoo") ""))
+             #t))
+         (add-after 'install 'install-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications"))
+                    (pixmaps (string-append out "/share/pixmaps")))
+               (for-each (lambda (f) (install-file f pixmaps))
+                         (find-files "data" "\\.(png|ico)$"))
+               (mkdir-p apps)
+               (with-output-to-file (string-append apps "/ri-li.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                     Name=Ri-li~@
+                     Exec=~a/bin/Ri_li~@
+                     Icon=~a/Ri-li-icon-32x32.png~@
+                     Categories=Game;ArcadeGame;~@
+                     Keywords=toy;train;wooden;snake-like;engine;~@
+                     Comment=a toy simulator game~@
+                     Comment[de]=Ein Spiel mit einem kleinen Zug~@
+                     Comment[fr]=un jeu de petit train~@
+                     Comment[ro_RO]=un joc cu un tren de jucărie~@
+                     Terminal=false~@
+                     Type=Application~%"
+                           out pixmaps))))
+             #t))
+         (add-after 'install-desktop-file 'remove-spurious-files
+           ;; Delete redundant files already installed somewhere else.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each delete-file
+                         (find-files (string-append out "/share/Ri-li")
+                                     "\\.(png|ico)|COPYING"))
+               #t))))))
+    (inputs
+     `(("sdl" ,(sdl-union (list sdl sdl-mixer)))))
+    (home-page "http://www.ri-li.org")
+    (synopsis "Toy train simulation game")
+    (description "Ri-li is a game in which you drive a wooden toy
+steam locomotive across many levels and collect all the coaches to
+win.")
+    ;; The project is dual-licensed GPL2+ and GPL3+.
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public freeorion
+  (package
+    (name "freeorion")
+    (version "0.4.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/freeorion/freeorion.git")
+             ;; Most recent stable release uses boost_signals (v1) which was
+             ;; later replaced with boost-signals2 and no longer exists.  This
+             ;; commit builds and runs.
+             ;;
+             ;; TODO: Update this when the next stable release when it is
+             ;; available.
+             (commit "470d0711537804df3c2ca25532f674ab4bec58af")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1wsw632l1cj17px6i88nqjzs0dngp5rsr67n6qkkjlfjfxi69j0f"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; There are some bundled fonts.
+           (for-each delete-file-recursively '("default/data/fonts"))
+           #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ;no test
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-fonts
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((roboto-dir (string-append (assoc-ref inputs "font-roboto")
+                                              "/share/fonts/truetype/")))
+               (substitute* "UI/ClientUI.cpp"
+                 (("\\(GetRootDataDir.*?Roboto-(Bold|Regular)\\.ttf\"\\)\\.string\\(\\)\\);"
+                   all type)
+                  (string-append "\"" roboto-dir "Roboto-" type ".ttf\");")))
+               #t))))))
+    (inputs
+     `(("boost" ,boost)
+       ("boost_signals" ,boost-signals2)
+       ("font-dejavu" ,font-dejavu)
+       ("font-roboto" ,font-google-roboto)
+       ("freetype2" ,freetype)
+       ("glew" ,glew)
+       ("glu" ,glu)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("openal" ,openal)
+       ("python2" ,python-2.7)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (home-page "https://www.freeorion.org/index.php/Main_Page")
+    (synopsis "Turn-based space empire and galactic conquest computer game")
+    (description
+     "FreeOrion is a turn-based space empire and galactic conquest (4X)
+computer game being designed and built by the FreeOrion project.  Control an
+empire with the goal of exploring the galaxy, expanding your territory,
+exploiting the resources, and exterminating rival alien empires.  FreeOrion is
+inspired by the tradition of the Master of Orion games, but is not a clone or
+remake of that series or any other game.")
+    ;; Source code is released under gpl2.  Artwork, music and sounds, and
+    ;; in-game text are released under cc-by-sa3.0.  Game content scripts are
+    ;; released under both gpl2 and cc-by-sa3.0.  Bundled Gigi library is
+    ;; released under lgpl2.1+.
+    (license (list license:gpl2 license:cc-by-sa3.0 license:lgpl2.1+))))

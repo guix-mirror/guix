@@ -2045,21 +2045,21 @@ Betamax.")
 (define-public python-s3transfer
   (package
     (name "python-s3transfer")
-    (version "0.1.13")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "s3transfer" version))
               (sha256
                (base32
-                "1harvyn1s8v54n1w5h7c0lg4bgjh68aylhg28s8n174q53h1ip4h"))))
+                "08fhj73b1ai52hrs2q3nggshq3pswn1gq8ch3m009cb2v2vmqggj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; 7 of the 'integration' tests require network access or login
-             ;; credentials.
+             ;; Some of the 'integration' tests require network access or
+             ;; login credentials.
              (invoke "nosetests" "--exclude=integration")
              #t)))))
     (native-inputs
@@ -2067,7 +2067,8 @@ Betamax.")
        ("python-mock" ,python-mock)
        ("python-nose" ,python-nose)))
     (propagated-inputs
-     `(("python-botocore" ,python-botocore)))
+     `(("python-botocore" ,python-botocore)
+       ("python-urllib3" ,python-urllib3)))
     (synopsis "Amazon S3 Transfer Manager")
     (description "S3transfer is a Python library for managing Amazon S3
 transfers.")
@@ -2499,6 +2500,14 @@ this it tries to be opinion-free and very extendable.")
         (base32
           "0r8w2v89nj6b9p91p495cga5m72a673l2wc0hp0zqk05j4yrc9b4"))))
   (build-system python-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-tests
+         (lambda _
+           (substitute* "tests.py"
+            (("flask\\.ext\\.script") "flask_script"))
+           #t)))))
   (propagated-inputs
    `(("python-flask" ,python-flask)
      ("python-argcomplete" ,python-argcomplete)

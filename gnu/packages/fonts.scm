@@ -613,6 +613,28 @@ character set, with support for most Western and Central European Latin-based
 languages, plus Greek and Cyrillic.")
     (license license:silofl1.1)))
 
+(define-public font-anonymous-pro-minus
+  (package
+    (inherit font-anonymous-pro)
+    (name "font-anonymous-pro-minus")
+    ;; The -Minus variant doesn't necessarily track the regular version above.
+    (version "1.003")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.marksimonson.com/assets/content/fonts/"
+                           "AnonymousProMinus-" version ".zip"))
+       (sha256
+        (base32 "1p2n91jja37d2cshp5pjwld9lq0v7gnpk7ywwn2blq7k46q6vq38"))))
+    (synopsis "Fixed-width fonts designed with coding in mind, without bitmaps")
+    (description "Anonymous Pro is a family of four fixed-width fonts designed
+with coding in mind.  Anonymous Pro features an international, Unicode-based
+character set, with support for most Western and Central European Latin-based
+languages, plus Greek and Cyrillic.
+
+Anonymous Pro Minus is identical to Anonymous Pro, minus its embedded bitmaps
+for use at smaller text sizes")))
+
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")

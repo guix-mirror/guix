@@ -17,9 +17,10 @@
 ;;; Copyright © 2017 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
-;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@riseup.net>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,6 +86,10 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages man)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages pretty-print)
+  #:use-module (gnu packages logging)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages commencement) ; TODO remove when default gcc version >=7
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1201,6 +1206,12 @@ modules for building a Wayland compositor.")
        (modify-phases %standard-phases
          (add-before 'configure 'hardcode-paths
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Hardcode path to swaybg.
+             (substitute* "sway/config.c"
+               (("strdup..swaybg..")
+                (string-append "strdup(\"" (assoc-ref inputs "swaybg")
+                               "/bin/swaybg\")")))
+             ;; Hardcode path to scdoc.
              (substitute* "meson.build"
                (("scdoc.get_pkgconfig_variable..scdoc..")
                 (string-append "'" (assoc-ref inputs "scdoc")
@@ -1214,6 +1225,7 @@ modules for building a Wayland compositor.")
               ("libinput" ,libinput)
               ("libxkbcommon" ,libxkbcommon)
               ("pango" ,pango)
+              ("swaybg" ,swaybg)
               ("wayland" ,wayland)
               ("wlroots" ,wlroots)))
     (native-inputs `(("git" ,git)
@@ -1242,7 +1254,10 @@ modules for building a Wayland compositor.")
        (sha256
         (base32 "04agcbhc473jkk7npb40i94ny8naykxzpjcw2lvl05kxv65y5d9v"))))
     (build-system meson-build-system)
-    (inputs `(("wayland" ,wayland)))
+    (arguments
+     `(#:configure-flags '("-Dlogind-provider=elogind")))
+    (inputs `(("elogind" ,elogind)
+              ("wayland" ,wayland)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scdoc" ,scdoc)
                      ("wayland-protocols" ,wayland-protocols)))
@@ -1304,4 +1319,77 @@ modules for building a Wayland compositor.")
     (home-page "https://github.com/swaywm/sway")
     (synopsis "Screen wallpaper utility for Wayland compositors")
     (description "Swaybg is a wallpaper utility for Wayland compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public waybar
+  (package
+    (name "waybar")
+    (version "0.6.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Alexays/Waybar.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wyp1p9r1k8jnjq8clp2fx8xa3f4lfrgbp67fxrjh9718p4br0ab"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-Dout=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO remove when issue #30756 is resolved
+         (add-before 'configure 'fix-gcc
+           (lambda _
+             (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPLUS_INCLUDE_PATH")
+             #t)))))
+    (inputs `(("fmt" ,fmt)
+              ("gtkmm" ,gtkmm)
+              ("jsoncpp" ,jsoncpp)
+              ("libdbusmenu" ,libdbusmenu)
+              ("libinput" ,libinput)
+              ("libmpdclent" ,libmpdclient)
+              ("libnl" ,libnl)
+              ("pulseaudio" ,pulseaudio)
+              ("spdlog" ,spdlog)
+              ("wayland" ,wayland)))
+    (native-inputs `(("gcc-toolchain" ,gcc-toolchain-7) ; TODO remove when default gcc version >=7
+                     ("glib:bin" ,glib "bin")
+                     ("pkg-config" ,pkg-config)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://github.com/Alexays/Waybar")
+    (synopsis "Wayland bar for Sway and Wlroots based compositors.")
+    (description "Waybar is a highly customisable Wayland bar for Sway and
+Wlroots based compositors.")
+    (license license:expat))) ; MIT license
+
+(define-public mako
+  (package
+    (name "mako")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/emersion/mako.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "17azdc37xsbmx13fkfp23vg9lznrv9fh6nhagn64wdq3nhsxm3b6"))))
+    (build-system meson-build-system)
+    (inputs `(("cairo" ,cairo)
+              ("elogind" ,elogind)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("pango" ,pango)
+              ("wayland" ,wayland)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scdoc" ,scdoc)
+                     ("wayland-protocols" ,wayland-protocols)))
+    (home-page "https://wayland.emersion.fr/mako")
+    (synopsis "Lightweight Wayland notification daemon")
+    (description "Mako is a lightweight notification daemon for Wayland
+compositors that support the layer-shell protocol.")
     (license license:expat))) ; MIT license

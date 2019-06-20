@@ -4,6 +4,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
@@ -193,3 +197,27 @@ extension to @code{time} which runs a command multiple times and prints the
 timing means, standard deviations, mins, medians, and maxes having done so.
 This can give a much better understanding of the command's performance.")
     (license license:expat)))
+
+(define-public benchmark
+  (package
+    (name "benchmark")
+    (version "1.5.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/google/benchmark.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r9dbg4cbk47gwmayys31a83m3y67k0kh1f6pl8i869rbd609ndh"))
+              (patches (search-patches "benchmark-unbundle-googletest.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)))
+    (home-page "https://github.com/google/benchmark")
+    (synopsis "Microbenchmark support library")
+    (description
+     "Benchmark is a library to benchmark code snippets,
+similar to unit tests.")
+    (license license:asl2.0)))

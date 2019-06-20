@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,10 +34,13 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages connman)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
+  #:use-module (gnu packages usb-modeswitch)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ntp)
@@ -103,6 +107,12 @@
             modem-manager-configuration
             modem-manager-configuration?
             modem-manager-service-type
+
+            usb-modeswitch-configuration
+            usb-modeswitch-configuration?
+            usb-modeswitch-configuration-usb-modeswitch
+            usb-modeswitch-configuration-usb-modeswitch-data
+            usb-modeswitch-service-type
 
             <wpa-supplicant-configuration>
             wpa-supplicant-configuration
@@ -1040,6 +1050,100 @@ a network connection manager."))))
                    "Run @uref{https://wiki.gnome.org/Projects/ModemManager,
 ModemManager}, a modem management daemon that aims to simplify dialup
 networking."))))
+
+
+;;;
+;;; USB_ModeSwitch
+;;;
+
+(define-record-type* <usb-modeswitch-configuration>
+  usb-modeswitch-configuration make-usb-modeswitch-configuration
+  usb-modeswitch-configuration?
+  (usb-modeswitch      usb-modeswitch-configuration-usb-modeswitch
+                       (default usb-modeswitch))
+  (usb-modeswitch-data usb-modeswitch-configuration-usb-modeswitch-data
+                       (default usb-modeswitch-data))
+  (config-file         usb-modeswitch-configuration-config-file
+                       (default #~(string-append #$usb-modeswitch:dispatcher
+                                                 "/etc/usb_modeswitch.conf"))))
+
+(define (usb-modeswitch-sh usb-modeswitch config-file)
+  "Build a copy of usb_modeswitch.sh located in package USB-MODESWITCH,
+modified to pass the CONFIG-FILE in its calls to usb_modeswitch_dispatcher,
+and wrap it to actually find the dispatcher in USB-MODESWITCH.  The script
+will be run by USB_ModeSwitch’s udev rules file when a modeswitchable USB
+device is detected."
+  (computed-file
+   "usb_modeswitch-sh"
+   (with-imported-modules '((guix build utils))
+     #~(begin
+         (use-modules (guix build utils))
+         (let ((cfg-param
+                #$(if config-file
+                      #~(string-append " --config-file=" #$config-file)
+                      "")))
+           (mkdir #$output)
+           (install-file (string-append #$usb-modeswitch:dispatcher
+                                        "/lib/udev/usb_modeswitch")
+                         #$output)
+
+           ;; insert CFG-PARAM into usb_modeswitch_dispatcher command-lines
+           (substitute* (string-append #$output "/usb_modeswitch")
+             (("(exec usb_modeswitch_dispatcher .*)( 2>>)" _ left right)
+              (string-append left cfg-param right))
+             (("(exec usb_modeswitch_dispatcher .*)( &)" _ left right)
+              (string-append left cfg-param right)))
+
+           ;; wrap-program needs bash in PATH:
+           (putenv (string-append "PATH=" #$bash "/bin"))
+           (wrap-program (string-append #$output "/usb_modeswitch")
+             `("PATH" ":" = (,(string-append #$coreutils "/bin")
+                             ,(string-append
+                               #$usb-modeswitch:dispatcher
+                               "/bin")))))))))
+
+(define (usb-modeswitch-configuration->udev-rules config)
+  "Build a rules file for extending udev-service-type from the rules in the
+usb-modeswitch package specified in CONFIG.  The rules file will invoke
+usb_modeswitch.sh from the usb-modeswitch package, modified to pass the right
+config file."
+  (match config
+    (($ <usb-modeswitch-configuration> usb-modeswitch data config-file)
+     (computed-file
+      "usb_modeswitch.rules"
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (guix build utils))
+            (let ((in (string-append #$data "/udev/40-usb_modeswitch.rules"))
+                  (out (string-append #$output "/lib/udev/rules.d"))
+                  (script #$(usb-modeswitch-sh usb-modeswitch config-file)))
+              (mkdir-p out)
+              (chdir out)
+              (install-file in out)
+              (substitute* "40-usb_modeswitch.rules"
+                (("PROGRAM=\"usb_modeswitch")
+                 (string-append "PROGRAM=\"" script "/usb_modeswitch"))
+                (("RUN\\+=\"usb_modeswitch")
+                 (string-append "RUN+=\"" script "/usb_modeswitch"))))))))))
+
+(define usb-modeswitch-service-type
+  (service-type
+   (name 'usb-modeswitch)
+   (extensions
+    (list
+     (service-extension
+      udev-service-type
+      (lambda (config)
+        (let ((rules (usb-modeswitch-configuration->udev-rules config)))
+          (list rules))))))
+   (default-value (usb-modeswitch-configuration))
+   (description "Run @uref{http://www.draisberghof.de/usb_modeswitch/,
+USB_ModeSwitch}, a mode switching tool for controlling USB devices with
+multiple @dfn{modes}.  When plugged in for the first time many USB
+devices (primarily high-speed WAN modems) act like a flash storage containing
+installers for Windows drivers.  USB_ModeSwitch replays the sequence the
+Windows drivers would send to switch their mode from storage to modem (or
+whatever the thing is supposed to do).")))
 
 
 ;;;

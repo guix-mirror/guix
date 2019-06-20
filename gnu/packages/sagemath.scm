@@ -18,12 +18,20 @@
 
 (define-module (gnu packages sagemath)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages)
-  #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz))
 
@@ -31,14 +39,14 @@
 (define-public python-cypari2
   (package
     (name "python-cypari2")
-    (version "2.0.3")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cypari2" version))
        (sha256
         (base32
-         "0mghbmilmy34xp1d50xdx76sijqxmpkm2bcgx2v1mdji2ff7n0yc"))))
+         "1nwkzgqvbw6361x0rpggy1q5nx663fswhpvg8md6xhqyfwpgc7nz"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-cython" ,python-cython)))
@@ -60,18 +68,21 @@ but it can be used independently.")
   (package-with-python2 python-cypari2))
 
 ;; The stable version of the following package is not young enough to be
-;; used with Sage, since it does not support cython. One would need to
-;; use an alpha release. On the other hand, Sage can be built without it.
+;; used with Sage, since it does not support cython; so we use a beta
+;; release.
 (define-public python-gmpy2
   (package
     (name "python-gmpy2")
-    (version "2.0.8")
+    (version "2.1.0b1")
     (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "gmpy2" version ".zip"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aleaxit/gmpy")
+                    (commit (string-append "gmpy2-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0grx6zmi99iaslm07w6c2aqpnmbkgrxcqjrqpfq223xri0r3w8yx"))))
+                "0ljvnmhxqdfsp0yy4c2hynhk5sggm63kkqsq4iwq4k9vsnx2xm97"))))
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -89,3 +100,256 @@ libraries GMO, MPFR and MPC.")
 
 (define-public python2-gmpy2
   (package-with-python2 python-gmpy2))
+
+(define-public cliquer
+  (package
+    (name "cliquer")
+    (version "1.21")
+    ;; The original source package is available from the home page and
+    ;; has not seen any release since 2010; it comes with only a Makefile
+    ;; without an "install" target. Instead, there is an autotoolized
+    ;; tarball available from the Sage project.
+    (source
+     (origin
+       (method url-fetch)
+       (uri "http://users.ox.ac.uk/~coml0531/sage/cliquer-1.21.tar.gz")
+       (sha256
+        (base32
+         "1hdzrmrx0nvvj8kbwxrs8swqgkd284khzl623jizixcv28xb77aq"))))
+    (build-system gnu-build-system)
+    (synopsis "C routines for finding cliques in weighted graphs")
+    (description "Cliquer is a set of reentrant C routines for finding
+cliques in a weighted or unweighted graph.  It uses an exact
+branch-and-bound algorithm.  It can search for maximum or maximum-weight
+cliques or cliques with size or weight within a given range, restrict the
+search to maximal cliques, store cliques in memory and call a user-defined
+function for every found clique.")
+    (license license:gpl2+)
+    (home-page "https://users.aalto.fi/~pat/cliquer.html")))
+
+(define-public libbraiding
+  (package
+    (name "libbraiding")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://github.com/miguelmarco/"
+                                  name))
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0l68rikfr7k2l547gb3pp3g8cj5zzxwipm79xrb5r8ffj466ydxg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Computations with braid groups")
+    (description "libbraiding performs computations with braid groups,
+in particular it computes normal forms of group elements.")
+    (license license:gpl2+)
+    (home-page "https://github.com/miguelmarco/libbraiding")))
+
+(define-public libhomfly
+  (package
+    (name "libhomfly")
+    (version "1.02r6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://github.com/miguelmarco/"
+                                  name))
+              (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0sv3cwrf9v9sb5a8wbhjmarxvya13ma3j8y8592f9ymxlk5y0ldk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("libgc" ,libgc)))
+    (synopsis "Computation of homfly polynomials of links")
+    (description "libhomfly computes homfly polynomials of links,
+represented as strings.")
+    (license license:public-domain)
+    (home-page "https://github.com/miguelmarco/libhomfly")))
+
+;; The following three packages from the Linbox group are needed in
+;; an outdated version for Sage.
+
+(define-public givaro-4.0.4
+  (package (inherit givaro)
+    (name "givaro")
+    (version "4.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/givaro")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "199p8wyj5i63jbnk7j8qbdbfp5rm2lpmcxyk3mdjy9bz7ygx3hhy"))))))
+
+(define-public fflas-ffpack-2.3.2
+  (package (inherit fflas-ffpack)
+    (name "fflas-ffpack")
+    (version "2.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/fflas-ffpack")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1cqhassj2dny3gx0iywvmnpq8ca0d6m82xl5rz4mb8gaxr2kwddl"))))
+    (propagated-inputs
+     `(("givaro" ,givaro-4.0.4)))
+    ;; A test fails, but since all tests pass in the latest version,
+    ;; there is not much point in investigating.
+    (arguments
+     (substitute-keyword-arguments (package-arguments fflas-ffpack)
+       ((#:tests? _ #f) #f)))))
+
+(define-public linbox-1.5.2
+  (package (inherit linbox)
+    (version "1.5.2")
+    (name "linbox")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/linbox-team/linbox")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1wfivlwp30mzdy1697w7rzb8caajim50mc8h27k82yipn2qc5n4i"))))
+    (inputs
+     `(("fflas-ffpack" ,fflas-ffpack-2.3.2)))))
+
+(define-public pynac
+  (package
+    (name "pynac")
+    (version "0.7.25")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/pynac/pynac/")
+              (commit (string-append "pynac-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nnifvg6kzx0lq6gz7znind8g30v3d2pjfwgsdiks3vv9kv9nbj3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("flint" ,flint)
+       ("gmp" ,gmp)
+       ("python" ,python)
+       ("singular" ,singular)))
+    (synopsis "Sage fork of GiNaC")
+    (description "Pynac is a derivative of the C++ library GiNaC, which
+allows manipulation of symbolic expressions.  It currently provides the
+backend for symbolic expressions in Sage.  The main difference between
+Pynac and GiNaC is that Pynac relies on Sage to provide the operations
+on numerical types, while GiNaC depends on CLN for this purpose.")
+    (license license:gpl2+)
+    (home-page "http://pynac.org/")))
+
+;; Sage has become upstream of the following package.
+(define-public zn-poly
+  (package
+    (name "zn-poly")
+    (version "0.9.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url (string-append "https://gitlab.com/sagemath/"
+                                  "zn_poly.git/"))
+              (commit version)))
+       (file-name (git-file-name "zn_poly" version))
+       (sha256
+        (base32
+         "0ra5vy585bqq7g3317iw6fp44iqgqvds3j0l1va6mswimypq4vxb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-2)))
+    (inputs
+     `(("gmp" ,gmp)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; The configure script chokes on --enable-fast-install.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (invoke "./configure"
+                     (string-append "--prefix=" (assoc-ref outputs "out"))
+                     "--cflags=-O3 -fPIC")))
+         (add-before 'build 'prepare-build
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         (add-after 'build 'build-so
+           (lambda _
+             (invoke "make" "libzn_poly.so")))
+         (add-after 'install 'install-so
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "libzn_poly.so" lib)))))))
+    (synopsis "Arithmetic for polynomials over Z/NZ")
+    (description "zn_poly implements the arithmetic of polynomials the
+coefficients of which are modular integers.")
+    (license (list license:gpl2 license:gpl3)) ; dual licensed
+    (home-page "https://gitlab.com/sagemath/zn_poly")))
+
+(define-public brial
+  (package
+    (name "brial")
+    (version "1.2.5")
+    (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/BRiAl/BRiAl/")
+             (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "1nv56fp3brpzanxj7vwvxqdafqfsfhdgq5imr3m94psw5gdfqwja"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("m4ri" ,m4ri)))
+    (arguments
+    ;; We are missing the boost unit test framework.
+     `(#:tests? #f
+       #:configure-flags (list "--without-boost-unit-test-framework")))
+    (synopsis "Arithmetic of polynomials over boolean rings")
+    (description "BRiAl is the successor to  PolyBoRi maintained by the
+Sage community.  Its core is a C++ library, which provides high-level data
+types for Boolean polynomials and monomials, exponent vectors, as well as
+for the underlying polynomial rings and subsets of the powerset of the
+Boolean variables.  As a unique approach, binary decision diagrams are
+used as internal storage type for polynomial structures.")
+    (license license:gpl2+)
+    (home-page "https://gitlab.com/sagemath/zn_poly")))

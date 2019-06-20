@@ -18,7 +18,6 @@
 
 (define-module (gnu services mcron)
   #:use-module (gnu services)
-  #:use-module (gnu services base)
   #:use-module (gnu services shepherd)
   #:autoload   (gnu packages guile-xyz) (mcron)
   #:use-module (guix deprecation)

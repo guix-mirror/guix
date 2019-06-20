@@ -438,7 +438,7 @@ hostname.")
 (define-public shadow
   (package
     (name "shadow")
-    (version "4.6")
+    (version "4.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -446,7 +446,7 @@ hostname.")
                     "download/" version "/shadow-" version ".tar.xz"))
               (sha256
                (base32
-                "10smy01km2bqjjvsd2jz17zvrxbzj89qczyb1amk38j28bcci609"))))
+                "0v71474rx38lg9kidrm4xbk35sg3icv3s5pk2b42icp3lyj9dqg5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Assume System V `setpgrp (void)', which is the default on GNU
@@ -482,7 +482,7 @@ hostname.")
                                   "-linux")
                  `(("linux-pam" ,linux-pam))
                  '()))
-    (home-page "http://pkg-shadow.alioth.debian.org/")
+    (home-page "https://github.com/shadow-maint/shadow")
     (synopsis "Authentication-related tools such as passwd, su, and login")
     (description
      "Shadow provides a number of authentication-related tools, including:
@@ -1734,13 +1734,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "1bpk5r5x6vdgn839n74yv2chd2ja10yfrhav0fzwa38mi5yxsd3j"))))
+        (base32 "0ia4x17ywym3r1m96ar4h0wc2xlylhbjp6x4wzwkh4p2i0x1vmg1"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -2133,16 +2133,32 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
              (commit (string-append "v" version))))
        (file-name (git-file-name "dstat" version))
        (sha256
-        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))))
+        (base32 "1qnmkhqmjd1m3if05jj29dvr5hn6kayq9bkkkh881w472c0zhp8v"))
+       (patches (search-patches "dstat-fix-crash-when-specifying-delay.patch"
+                                "dstat-skip-devices-without-io.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no make check
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "DESTDIR=" out)
                             "prefix=/"))
-       ;; No configure script.
-       #:phases (modify-phases %standard-phases (delete 'configure))))
-    (inputs `(("python-2" ,python-2)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python3-DeprecationWarning
+           (lambda _
+             (substitute* "dstat"
+               (("collections") "collections.abc"))
+             #t))
+         (delete 'configure)            ; no configure script
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/dstat")
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
+    (inputs
+     `(("python" ,python-wrapper)
+       ("python-six" ,python-six)))
     (synopsis "Versatile resource statistics tool")
     (description "Dstat is a versatile replacement for @command{vmstat},
 @command{iostat}, @command{netstat}, and @command{ifstat}.  Dstat overcomes

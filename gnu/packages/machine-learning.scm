@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -67,6 +69,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages swig)
@@ -668,7 +671,7 @@ geometric models.")
        `(#:configure-flags
          (list ,@(match (%current-system)
                    ((or "x86_64-linux" "i686-linux")
-                    '("-DCMAKE_CXX_FLAGS=-msse4.1"))
+                    '("-DCMAKE_CXX_FLAGS=-msse2"))
                    (_ '())))
          #:phases
          (modify-phases %standard-phases
@@ -792,7 +795,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.20.1")
+    (version "0.20.3")
     (source
      (origin
        (method git-fetch)
@@ -802,7 +805,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0fkhwg3xn1s7ln9q1szq6kwc4jhwvjh8w4kmv9wcrqy7cq3lbv0d"))))
+         "08aaby5zphfxy83mggg35bwyka7wk91l2qijh8kk0bl08dikq8dl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1753,3 +1756,162 @@ API for beginners that allows users to build models quickly by plugging
 together building blocks and a subclassing API with an imperative style for
 advanced research.")
     (license license:asl2.0)))
+
+(define-public python-iml
+  (package
+    (name "python-iml")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "iml" version))
+       (sha256
+        (base32
+         "1k8szlpm19rcwcxdny9qdm3gmaqq8akb4xlvrzyz8c2d679aak6l"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("ipython" ,python-ipython)
+       ("nose" ,python-nose)
+       ("numpy" ,python-numpy)
+       ("pandas" ,python-pandas)
+       ("scipy" ,python-scipy)))
+    (home-page "http://github.com/interpretable-ml/iml")
+    (synopsis "Interpretable Machine Learning (iML) package")
+    (description "Interpretable ML (iML) is a set of data type objects,
+visualizations, and interfaces that can be used by any method designed to
+explain the predictions of machine learning models (or really the output of
+any function).  It currently contains the interface and IO code from the Shap
+project, and it will potentially also do the same for the Lime project.")
+    (license license:expat)))
+
+(define-public python-keras-applications
+  (package
+    (name "python-keras-applications")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras_Applications" version))
+       (sha256
+        (base32
+         "1rcz31ca4axa6kzhjx4lwqxbg4wvlljkj8qj9a7p9sfd5fhzjyam"))))
+    (build-system python-build-system)
+    ;; The tests require Keras, but this package is needed to build Keras.
+    (arguments '(#:tests? #f))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-xdist" ,python-pytest-xdist)))
+    (home-page "https://github.com/keras-team/keras-applications")
+    (synopsis "Reference implementations of popular deep learning models")
+    (description
+     "This package provides reference implementations of popular deep learning
+models for use with the Keras deep learning framework.")
+    (license license:expat)))
+
+(define-public python-keras-preprocessing
+  (package
+    (name "python-keras-preprocessing")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras_Preprocessing" version))
+       (sha256
+        (base32
+         "1r98nm4k1svsqjyaqkfk23i31bl1kcfcyp7094yyj3c43phfp3as"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pillow" ,python-pillow)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("tensorflow" ,tensorflow)))
+    (home-page "https://github.com/keras-team/keras-preprocessing/")
+    (synopsis "Data preprocessing and augmentation for deep learning models")
+    (description
+     "Keras Preprocessing is the data preprocessing and data augmentation
+module of the Keras deep learning library.  It provides utilities for working
+with image data, text data, and sequence data.")
+    (license license:expat)))
+
+(define-public python-keras
+  (package
+    (name "python-keras")
+    (version "2.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Keras" version))
+       (sha256
+        (base32
+         "1j8bsqzh49vjdxy6l1k4iwax5vpjzniynyd041xjavdzvfii1dlh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-tests-for-unavailable-features
+           (lambda _
+             (delete-file "keras/backend/theano_backend.py")
+             (delete-file "keras/backend/cntk_backend.py")
+             (delete-file "tests/keras/backend/backend_test.py")
+
+             ;; FIXME: This doesn't work because Tensorflow is missing the
+             ;; coder ops library.
+             (delete-file "tests/keras/test_callbacks.py")
+             #t))
+         (replace 'check
+           (lambda _
+             ;; These tests attempt to download data files from the internet.
+             (delete-file "tests/integration_tests/test_datasets.py")
+             (delete-file "tests/integration_tests/imagenet_utils_test.py")
+
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (invoke "py.test" "-v"
+                     "-p" "no:cacheprovider"
+                     "--ignore" "keras/utils"))))))
+    (propagated-inputs
+     `(("python-h5py" ,python-h5py)
+       ("python-keras-applications" ,python-keras-applications)
+       ("python-keras-preprocessing" ,python-keras-preprocessing)
+       ("python-numpy" ,python-numpy)
+       ("python-pydot" ,python-pydot)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)
+       ("tensorflow" ,tensorflow)
+       ("graphviz" ,graphviz)))
+    (native-inputs
+     `(("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-pep8" ,python-pytest-pep8)
+       ("python-pytest-timeout" ,python-pytest-timeout)
+       ("python-pytest-xdist" ,python-pytest-xdist)
+       ("python-sphinx" ,python-sphinx)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/keras-team/keras")
+    (synopsis "High-level deep learning framework")
+    (description "Keras is a high-level neural networks API, written in Python
+and capable of running on top of TensorFlow.  It was developed with a focus on
+enabling fast experimentation.  Use Keras if you need a deep learning library
+that:
+
+@itemize
+@item Allows for easy and fast prototyping (through user friendliness,
+  modularity, and extensibility).
+@item Supports both convolutional networks and recurrent networks, as well as
+  combinations of the two.
+@item Runs seamlessly on CPU and GPU.
+@end itemize\n")
+    (license license:expat)))

@@ -1,8 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +54,12 @@
              #t))
          (replace 'configure
            (lambda _ (invoke "make" "defconfig")))
+         (add-after 'configure 'dont-install-to-usr
+           (lambda _
+             (substitute* ".config"
+               (("# CONFIG_INSTALL_NO_USR is not set")
+                "CONFIG_INSTALL_NO_USR=y"))
+             #t))
          (replace 'check
            (lambda _
              (substitute* '("testsuite/du/du-s-works"
@@ -133,7 +138,12 @@ any small or embedded system.")
              (let ((out (assoc-ref outputs "out")))
                (invoke "make"
                        (string-append "PREFIX=" out)
-                       "install")))))
+                       "install"))))
+         (add-after 'install 'remove-usr-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively (string-append out "/usr"))
+               #t))))
        #:test-target "tests"))
     (native-inputs `(("bc" ,bc)))
     (synopsis "Many common UNIX utilities in a single executable")

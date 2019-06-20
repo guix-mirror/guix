@@ -925,6 +925,27 @@ result back.")
 (define-public python2-pytest-xdist
   (package-with-python2 python-pytest-xdist))
 
+(define-public python-pytest-timeout
+  (package
+    (name "python-pytest-timeout")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-timeout" version))
+       (sha256
+        (base32
+         "1cczcjhw4xx5sjkhxlhc5c1bkr7x6fcyx12wrnvwfckshdvblc2a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://bitbucket.org/pytest-dev/pytest-timeout/")
+    (synopsis "Plugin for py.test to abort hanging tests")
+    (description
+     "This package provides a py.test plugin that aborts hanging tests after a
+timeout has been exceeded.")
+    (license license:expat)))
+
 (define-public python-scripttest
   (package
     (name "python-scripttest")

@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -549,7 +550,7 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.4.2")
+    (version "5.4.3")
     (source
      (origin
        (method url-fetch)
@@ -557,7 +558,7 @@ and up to 1 Mbit/s downstream.")
                            name "_" version ".tar.xz"))
        (sha256
         (base32
-         "0mqzs0g2qxd29ihammisg9qf4503sr7d4zas26zjz4an78xkmqzf"))))
+         "1hqg14k0q4979a1amgms4sa1d2iiid51rra3jyqmv63hkw189ypy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -685,13 +686,13 @@ fashion.")
 (define-public gandi.cli
   (package
     (name "gandi.cli")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri name version))
        (sha256
-        (base32 "1lfvb5npk99nz1lwhr5m67ia1kj35nqd6a2xp9mii28xgzsd5awk"))))
+        (base32 "110wc9zgxsrvw4yzp21p0ian5lcf7vhcpxhnmsc4fg9pzl2bwxd5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -885,7 +886,7 @@ live network and disk I/O bandwidth monitor.")
 (define-public aircrack-ng
   (package
     (name "aircrack-ng")
-    (version "1.3")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -893,7 +894,7 @@ live network and disk I/O bandwidth monitor.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1jl30d0kibc82447fr3lgw75arik0l9729k94z76l7vl51y8mq4a"))))
+         "0hc2x17bxk2n00z8jj5jfwq3z41681fd19n018724il0cpkjyncy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2255,7 +2256,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
 (define-public hcxtools
   (package
     (name "hcxtools")
-    (version "5.1.4")
+    (version "5.1.6")
     (source
      (origin
        (method git-fetch)
@@ -2263,7 +2264,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
              (url "https://github.com/ZerBea/hcxtools.git")
              (commit version)))
        (sha256
-        (base32 "1bkl0j6m5q091fas99s83aclcc5kfwacmkgmyg8565z2npvnj7nf"))
+        (base32 "05sjbmv2wq3nlmammrwxqc62c4sagjjgczzddr1jcqkf6kywzkl8"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -2298,7 +2299,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.1.4")
+    (version "5.1.5")
     (source
      (origin
        (method git-fetch)
@@ -2306,7 +2307,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0h2cc2dfpc83325hwqkxwn0p8qfq5gh1dg0yb1nr8bnffy0b4r4v"))
+        (base32 "0xkzdvwpi6dq9wsrn882f2ljb7d5v2bvarq8gs6jm8znfx3y8hi2"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

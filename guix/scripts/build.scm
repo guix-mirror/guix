@@ -935,9 +935,12 @@ needed."
                                     #:mode mode))
 
               (cond ((assoc-ref opts 'log-file?)
+                     ;; Pass 'show-build-log' the output file names, not the
+                     ;; derivation file names, because there can be several
+                     ;; derivations leading to the same output.
                      (for-each (cut show-build-log store <> urls)
                                (delete-duplicates
-                                (append (map derivation-file-name drv)
+                                (append (map derivation->output-path drv)
                                         items))))
                     ((assoc-ref opts 'derivations-only?)
                      (format #t "~{~a~%~}" (map derivation-file-name drv))

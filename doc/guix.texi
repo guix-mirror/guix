@@ -58,12 +58,13 @@ Copyright @copyright{} 2018 Rutger Helling@*
 Copyright @copyright{} 2018 Oleg Pykhalov@*
 Copyright @copyright{} 2018 Mike Gerwitz@*
 Copyright @copyright{} 2018 Pierre-Antoine Rouby@*
-Copyright @copyright{} 2018 Gábor Boskovits@*
+Copyright @copyright{} 2018, 2019 Gábor Boskovits@*
 Copyright @copyright{} 2018, 2019 Florian Pelz@*
 Copyright @copyright{} 2018 Laura Lazzati@*
 Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
+Copyright @copyright{} 2019 Ivan Petkov@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -569,7 +570,7 @@ you may have to run @code{su -} or @code{sudo -i}.  As @code{root}, run:
 @example
 # cd /tmp
 # tar --warning=no-timestamp -xf \
-     guix-binary-@value{VERSION}.@var{system}.tar.xz
+     /path/to/guix-binary-@value{VERSION}.@var{system}.tar.xz
 # mv var/guix /var/ && mv gnu /
 @end example
 
@@ -5814,10 +5815,21 @@ This variable is exported by @code{(guix build-system cargo)}.  It
 supports builds of packages using Cargo, the build tool of the
 @uref{https://www.rust-lang.org, Rust programming language}.
 
-In its @code{configure} phase, this build system replaces dependencies
-specified in the @file{Cargo.toml} file with inputs to the Guix package.
-The @code{install} phase installs the binaries, and it also installs the
-source code and @file{Cargo.toml} file.
+It adds @code{rustc} and @code{cargo} to the set of inputs.
+A different Rust package can be specified with the @code{#:rust} parameter.
+
+Regular cargo dependencies should be added to the package definition via the
+@code{#:cargo-inputs} parameter as a list of name and spec pairs, where the
+spec can be a package or a source definition.  Note that the spec must
+evaluate to a path to a gzipped tarball which includes a @code{Cargo.toml}
+file at its root, or it will be ignored.  Similarly, cargo dev-dependencies
+should be added to the package definition via the
+@code{#:cargo-development-inputs} parameter.
+
+In its @code{configure} phase, this build system will make any source inputs
+specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
+parameters available to cargo.  The @code{install} phase installs any crate
+the binaries if they are defined by the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -6433,7 +6445,7 @@ Connect to the daemon over the Unix-domain socket at @var{uri} (a string).  When
 extra space on the file system so that the garbage collector can still
 operate should the disk become full.  Return a server object.
 
-@var{file} defaults to @var{%default-socket-path}, which is the normal
+@var{file} defaults to @code{%default-socket-path}, which is the normal
 location given the options that were passed to @command{configure}.
 @end deffn
 
@@ -10345,7 +10357,7 @@ configuration options.
 The @code{packages} field lists packages that will be globally visible
 on the system, for all user accounts---i.e., in every user's @code{PATH}
 environment variable---in addition to the per-user profiles
-(@pxref{Invoking guix package}).  The @var{%base-packages} variable
+(@pxref{Invoking guix package}).  The @code{%base-packages} variable
 provides all the tools one would expect for basic user and administrator
 tasks---including the GNU Core Utilities, the GNU Networking Utilities,
 the GNU Zile lightweight text editor, @command{find}, @command{grep},
@@ -10406,7 +10418,7 @@ customize them.  To do this, use @code{modify-services} (@pxref{Service
 Reference, @code{modify-services}}) to modify the list.
 
 For example, suppose you want to modify @code{guix-daemon} and Mingetty
-(the console log-in) in the @var{%base-services} list (@pxref{Base
+(the console log-in) in the @code{%base-services} list (@pxref{Base
 Services, @code{%base-services}}).  To do that, you can write the
 following in your operating system declaration:
 
@@ -10430,7 +10442,7 @@ following in your operating system declaration:
 
 This changes the configuration---i.e., the service parameters---of the
 @code{guix-service-type} instance, and that of all the
-@code{mingetty-service-type} instances in the @var{%base-services} list.
+@code{mingetty-service-type} instances in the @code{%base-services} list.
 Observe how this is accomplished: first, we arrange for the original
 configuration to be bound to the identifier @code{config} in the
 @var{body}, and then we write the @var{body} so that it evaluates to the
@@ -10461,15 +10473,15 @@ This example refers to the @file{/boot/efi} file system by its UUID,
 as returned by the @command{blkid} command.
 
 @xref{Desktop Services}, for the exact list of services provided by
-@var{%desktop-services}.  @xref{X.509 Certificates}, for background
+@code{%desktop-services}.  @xref{X.509 Certificates}, for background
 information about the @code{nss-certs} package that is used here.
 
-Again, @var{%desktop-services} is just a list of service objects.  If
+Again, @code{%desktop-services} is just a list of service objects.  If
 you want to remove services from there, you can do so using the
 procedures for list filtering (@pxref{SRFI-1 Filtering and
 Partitioning,,, guile, GNU Guile Reference Manual}).  For instance, the
 following expression returns a list that contains all the services in
-@var{%desktop-services} minus the Avahi service:
+@code{%desktop-services} minus the Avahi service:
 
 @example
 (remove (lambda (service)
@@ -10588,7 +10600,7 @@ A procedure that returns an initial RAM disk for the Linux
 kernel.  This field is provided to support low-level customization and
 should rarely be needed for casual use.  @xref{Initial RAM Disk}.
 
-@item @code{firmware} (default: @var{%base-firmware})
+@item @code{firmware} (default: @code{%base-firmware})
 @cindex firmware
 List of firmware packages loadable by the operating system kernel.
 
@@ -10623,7 +10635,7 @@ device, provided that the necessary device mapping and file system are
 also specified.  @xref{Mapped Devices} and @ref{File Systems}.
 
 @item @code{users} (default: @code{%base-user-accounts})
-@itemx @code{groups} (default: @var{%base-groups})
+@itemx @code{groups} (default: @code{%base-groups})
 List of user accounts and groups.  @xref{User Accounts}.
 
 If the @code{users} list lacks a user account with UID@tie{}0, a
@@ -10643,11 +10655,11 @@ For instance, a valid value may look like this:
                           (activate-readline)")))
 @end example
 
-@item @code{issue} (default: @var{%default-issue})
+@item @code{issue} (default: @code{%default-issue})
 A string denoting the contents of the @file{/etc/issue} file, which is
 displayed when users log in on a text console.
 
-@item @code{packages} (default: @var{%base-packages})
+@item @code{packages} (default: @code{%base-packages})
 The set of packages installed in the global profile, which is accessible
 at @file{/run/current-system/profile}.
 
@@ -10666,7 +10678,7 @@ causes @command{guix system} to fail.
 The name of the default locale (@pxref{Locale Names,,, libc, The GNU C
 Library Reference Manual}).  @xref{Locales}, for more information.
 
-@item @code{locale-definitions} (default: @var{%default-locale-definitions})
+@item @code{locale-definitions} (default: @code{%default-locale-definitions})
 The list of locale definitions to be compiled and that may be used at
 run time.  @xref{Locales}.
 
@@ -10675,12 +10687,12 @@ The list of GNU@tie{}libc packages whose locale data and tools are used
 to build the locale definitions.  @xref{Locales}, for compatibility
 considerations that justify this option.
 
-@item @code{name-service-switch} (default: @var{%default-nss})
+@item @code{name-service-switch} (default: @code{%default-nss})
 Configuration of the libc name service switch (NSS)---a
 @code{<name-service-switch>} object.  @xref{Name Service Switch}, for
 details.
 
-@item @code{services} (default: @var{%base-services})
+@item @code{services} (default: @code{%base-services})
 A list of service objects denoting system services.  @xref{Services}.
 
 @cindex essential services
@@ -11545,7 +11557,7 @@ more.
 
 This is the default value of the @code{services} field of
 @code{operating-system} declarations.  Usually, when customizing a
-system, you will want to append services to @var{%base-services}, like
+system, you will want to append services to @code{%base-services}, like
 this:
 
 @example
@@ -12042,7 +12054,7 @@ Whether to authorize the substitute keys listed in
 (@pxref{Substitutes}).
 
 @vindex %default-authorized-guix-keys
-@item @code{authorized-keys} (default: @var{%default-authorized-guix-keys})
+@item @code{authorized-keys} (default: @code{%default-authorized-guix-keys})
 The list of authorized key files for archive imports, as a list of
 string-valued gexps (@pxref{Invoking guix archive}).  By default, it
 contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes}).
@@ -12050,7 +12062,7 @@ contains that of @code{@value{SUBSTITUTE-SERVER}} (@pxref{Substitutes}).
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
 
-@item @code{substitute-urls} (default: @var{%default-substitute-urls})
+@item @code{substitute-urls} (default: @code{%default-substitute-urls})
 The list of URLs where to look for substitutes by default.
 
 @item @code{max-silent-time} (default: @code{0})
@@ -12211,7 +12223,7 @@ allows users to use the mouse in the console, notably to select, copy,
 and paste text.
 
 The value for services of this type must be a @code{gpm-configuration}
-(see below).  This service is not part of @var{%base-services}.
+(see below).  This service is not part of @code{%base-services}.
 @end defvr
 
 @deftp {Data Type} gpm-configuration
@@ -12233,7 +12245,7 @@ The GPM package to use.
 @anchor{guix-publish-service-type}
 @deffn {Scheme Variable} guix-publish-service-type
 This is the service type for @command{guix publish} (@pxref{Invoking
-guix publish}).  Its value must be a @code{guix-configuration}
+guix publish}).  Its value must be a @code{guix-publish-configuration}
 object, as described below.
 
 This assumes that @file{/etc/guix} already contains a signing key pair as
@@ -12652,6 +12664,44 @@ Data type representing the configuration of ModemManager.
 @table @asis
 @item @code{modem-manager} (default: @code{modem-manager})
 The ModemManager package to use.
+
+@end table
+@end deftp
+
+@cindex USB_ModeSwitch
+@cindex Modeswitching
+
+@defvr {Scheme Variable} usb-modeswitch-service-type
+This is the service type for the
+@uref{http://www.draisberghof.de/usb_modeswitch/, USB_ModeSwitch} service. The
+value for this service type is a @code{usb-modeswitch-configuration} record.
+
+When plugged in, some USB modems (and other USB devices) initially present
+themselves as a read-only storage medium and not as a modem.  They need to be
+@dfn{modeswitched} before they are usable.  The USB_ModeSwitch service type
+installs udev rules to automatically modeswitch these devices when they are
+plugged in.
+
+This service is part of @code{%desktop-services} (@pxref{Desktop
+Services}).
+@end defvr
+
+@deftp {Data Type} usb-modeswitch-configuration
+Data type representing the configuration of USB_ModeSwitch.
+
+@table @asis
+@item @code{usb-modeswitch} (default: @code{usb-modeswitch})
+The USB_ModeSwitch package providing the binaries for modeswitching.
+
+@item @code{usb-modeswitch-data} (default: @code{usb-modeswitch-data})
+The package providing the device data and udev rules file used by
+USB_ModeSwitch.
+
+@item @code{config-file} (default: @code{#~(string-append #$usb-modeswitch:dispatcher "/etc/usb_modeswitch.conf")})
+Which config file to use for the USB_ModeSwitch dispatcher.  By default the
+config file shipped with USB_ModeSwitch is used which disables logging to
+@file{/var/log} among other default settings.  If set to @code{#f}, no config
+file is used.
 
 @end table
 @end deftp
@@ -14682,7 +14732,7 @@ services that users typically expect on a machine with a graphical
 environment and networking:
 
 @defvr {Scheme Variable} %desktop-services
-This is a list of services that builds upon @var{%base-services} and
+This is a list of services that builds upon @code{%base-services} and
 adds or adjusts services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
@@ -14697,7 +14747,7 @@ name service switch service configured to be able to use @code{nss-mdns}
 (@pxref{Name Service Switch, mDNS}).
 @end defvr
 
-The @var{%desktop-services} variable can be used as the @code{services}
+The @code{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
@@ -16706,7 +16756,7 @@ Data type representing the configuration of opensmtpd.
 @item @code{package} (default: @var{opensmtpd})
 Package object of the OpenSMTPD SMTP server.
 
-@item @code{config-file} (default: @var{%default-opensmtpd-file})
+@item @code{config-file} (default: @code{%default-opensmtpd-file})
 File-like object of the OpenSMTPD configuration file to use.  By default
 it listens on the loopback network interface, and allows for mail from
 users and daemons on the local machine, as well as permitting email to
@@ -19821,7 +19871,7 @@ A simple setup for cat-avatar-generator can look like this:
 @subsubheading Hpcguix-web
 
 @cindex hpcguix-web
-The @uref{hpcguix-web, https://github.com/UMCUGenetics/hpcguix-web/}
+The @uref{https://github.com/UMCUGenetics/hpcguix-web/, hpcguix-web}
 program is a customizable web interface to browse Guix packages,
 initially designed for users of high-performance computing (HPC)
 clusters.
@@ -24313,7 +24363,7 @@ to the @code{packages} field of the @code{operating-system} declaration
 @code{nss-certs}, which is a set of CA certificates provided as part of
 Mozilla's Network Security Services.
 
-Note that it is @emph{not} part of @var{%base-packages}, so you need to
+Note that it is @emph{not} part of @code{%base-packages}, so you need to
 explicitly add it.  The @file{/etc/ssl/certs} directory, which is where
 most applications and libraries look for certificates by default, points
 to the certificates installed globally.
@@ -24407,7 +24457,7 @@ want is to have @code{.local} host lookup working.
 Note that, in this case, in addition to setting the
 @code{name-service-switch} of the @code{operating-system} declaration,
 you also need to use @code{avahi-service-type} (@pxref{Networking Services,
-@code{avahi-service-type}}), or @var{%desktop-services}, which includes it
+@code{avahi-service-type}}), or @code{%desktop-services}, which includes it
 (@pxref{Desktop Services}).  Doing this makes @code{nss-mdns} accessible
 to the name service cache daemon (@pxref{Base Services,
 @code{nscd-service}}).
