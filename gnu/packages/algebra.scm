@@ -1433,3 +1433,30 @@ for the representation theory of the symmetric group and related groups,
 combinatorics of tableaux, symmetric functions and polynomials, Schubert
 polynomials, and the representation theory of Hecke algebras of type A_n.")
     (license license:public-domain)))
+
+(define-public m4rie
+  (package
+    (name "m4rie")
+    (version "20150908")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/malb/m4rie")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0r8lv46qx5mkz5kp3ay2jnsp0mbhlqr5z2z220wdk73wdshcznss"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("m4ri" ,m4ri)))
+    (synopsis "Arithmetic of dense matrices over F_{2^e}")
+    (description "M4RI is a library for fast arithmetic with dense matrices
+over finite fields of characteristic 2.  So it extends the functionality
+of M4RI from F_2 to F_{2^e}.")
+    (license license:gpl2+)
+    (home-page "https://bitbucket.org/malb/m4rie/")))
