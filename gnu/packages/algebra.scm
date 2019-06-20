@@ -1460,3 +1460,33 @@ over finite fields of characteristic 2.  So it extends the functionality
 of M4RI from F_2 to F_{2^e}.")
     (license license:gpl2+)
     (home-page "https://bitbucket.org/malb/m4rie/")))
+
+(define-public eclib
+  (package
+    (name "eclib")
+    (version "20190226")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/JohnCremona/eclib/")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1910np1xzyjzszay24xn4b81qhpsvhp5aix9vdpknplni2mq8kwb"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("ntl" ,ntl)
+       ("pari-gp" ,pari-gp)))
+    (synopsis "Ranks of elliptic curves and modular symbols")
+    (description "The eclib package includes mwrank (for 2-descent on
+elliptic curves over Q) and modular symbol code; it has been written by
+John Cremona to compute his elliptic curve database.")
+    (license license:gpl2+)
+    (home-page (string-append "http://homepages.warwick.ac.uk/staff/"
+                              "J.E.Cremona/mwrank/index.html"))))
