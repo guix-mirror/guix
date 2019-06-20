@@ -5941,7 +5941,7 @@ sequence itself can be retrieved from these databases.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.9.3")
+    (version "2.9.6")
     (source
      (origin
        (method git-fetch)
@@ -5951,7 +5951,7 @@ sequence itself can be retrieved from these databases.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0663gcdxkziwsmlznjxysb00621rllpbz6jwsfifq7z3dj3lwm8b"))))
+         "0vqzap68v81k0zif2mnqfy8pnw2nrhsg87p6mgq8qk3nk2jv2rgy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
