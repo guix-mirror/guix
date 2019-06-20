@@ -1490,3 +1490,39 @@ John Cremona to compute his elliptic curve database.")
     (license license:gpl2+)
     (home-page (string-append "http://homepages.warwick.ac.uk/staff/"
                               "J.E.Cremona/mwrank/index.html"))))
+
+(define-public lrcalc
+  (package
+    (name "lrcalc")
+    (version "1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://bitbucket.org/asbuch/lrcalc")
+                    (commit (string-append "lrcalc-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-permission
+           (lambda _
+             (chmod "lrcalc.maple.src" #o644)
+             #t)))))
+    (synopsis "Littlewood-Richardson calculator in algebraic combinatorics")
+    (description "The Littlewood-Richardson Calculator (lrcalc) is a
+program designed to compute Littlewood-Richardson coefficients.  It computes
+single Littlewood-Richardson coefficients, products of Schur functions, or
+skew Schur functions.  In addition it computes products in the small quantum
+cohomology ring of a Grassmann variety.  The software package also includes
+a program that performs fast computation of the more general multiplicative
+structure constants of Schubert polynomials.")
+    (license license:gpl2+)
+    (home-page "http://sites.math.rutgers.edu/~asbuch/lrcalc/")))
