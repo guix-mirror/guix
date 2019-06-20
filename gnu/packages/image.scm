@@ -23,7 +23,6 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
-;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1649,55 +1648,3 @@ identical visual appearance.")
 to the standard output.  It works well together with grim.")
    ;; MIT license.
    (license license:expat)))
-
-(define-public libgd
-  (package
-    (name "libgd")
-    (version "2.2.5")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/libgd/libgd.git")
-                    (commit (string-append "gd-" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "17p0dlmn9kigr5b7vgpcsq2323mrgv0rh69x4ysg8nrjl8n5l1nl"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "-DBUILD_TEST=1"
-             "-DENABLE_FONTCONFIG=1"
-             "-DENABLE_FREETYPE=1"
-             "-DENABLE_JPEG=1"
-             "-DENABLE_PNG=1"
-             "-DENABLE_WEBP=1"
-             "-DENABLE_XPM=1"
-             (string-append "-DFREETYPE_INCLUDE_DIRS="
-                            (assoc-ref %build-inputs "freetype")
-                            "/include/freetype2"))))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (inputs
-     `(("fontconfig" ,fontconfig)
-       ("freetype" ,freetype)
-       ("libjpeg" ,libjpeg)
-       ("libpng" ,libpng)
-       ("libwebp" ,libwebp)
-       ("libxmp" ,libxpm)
-       ("zlib" ,zlib)))
-    (home-page "https://libgd.github.io/")
-    (synopsis "GD Graphics Library")
-    (description "gd is a graphics library.  It allows your code to
-quickly draw images complete with lines, arcs, text, multiple colors,
-cut and paste from other images, and flood fills, and write out the
-result as a PNG or JPEG file.  This is particularly useful in World
-Wide Web applications, where PNG and JPEG are two of the formats
-accepted for inline images by most browsers.")
-    ;; The project is released under a free license, which require
-    ;; that its terms are present in "user-accessible supporting
-    ;; documentation".  Some files (mainly related to CMake) use
-    ;; alternatively GPL2+ and BSD-3 licenses.
-    (license (list (license:non-copyleft "file:///COPYING")
-                   license:gpl2+
-                   license:bsd-3))))
