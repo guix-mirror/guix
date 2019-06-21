@@ -12783,7 +12783,7 @@ using XML-RPC methods fairly transparent to the Lisp code.")
 (define-public emacs-fish-completion
   (package
     (name "emacs-fish-completion")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method url-fetch)
@@ -12793,7 +12793,7 @@ using XML-RPC methods fairly transparent to the Lisp code.")
              version))
        (sha256
         (base32
-         "1hpma1c5j50ja03ibr7h1xmyv7k8j3rbvqivad47kwqhlsgw0jk0"))))
+         "0bpvifv6c2a65nks6kvarw0hhm37fnyy74wikwf9qq1i20va0fpv"))))
     (build-system emacs-build-system)
     (inputs `(("fish" ,fish)))
     (arguments
