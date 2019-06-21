@@ -2250,7 +2250,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.42.3")
+    (version "0.44.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2258,7 +2258,7 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zaq9009wqk5aah131m426a2ia0scwpjpl4npf8p7p43wv8kvisz"))))
+                "0zy2kfcvhikczfzhk5l7pkw6mvn3d6vw8cv7g08iah85p22q33xv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2277,8 +2277,6 @@ passwords in the GNOME keyring.")
        ("flex" ,flex)
        ("bison" ,bison)
        ("xsltproc" ,libxslt)
-       ("grep" ,grep)
-       ("sed" ,sed)
        ("dbus" ,dbus)                                     ; for dbus tests
        ("gobject-introspection" ,gobject-introspection))) ; for gir tests
     (inputs
