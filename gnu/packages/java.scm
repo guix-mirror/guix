@@ -2096,6 +2096,50 @@ new Date();"))
      "This package provides the Java development kit OpenJDK.")
     (license license:gpl2+)))
 
+(define-public openjdk12
+  (package
+    (inherit openjdk11)
+    (name "openjdk")
+    (version "12.33")
+    (source (origin
+              (method url-fetch)
+              (uri "http://hg.openjdk.java.net/jdk/jdk/archive/0276cba45aac.tar.bz2")
+              (file-name (string-append name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0mbhdrk12b6878kby0flnbak7444dlpm0ihlmf92vk59y1c02bc2"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  (for-each delete-file (find-files "." ".*.bin$"))
+                  (for-each delete-file (find-files "." ".*.exe$"))
+                  (for-each delete-file (find-files "." ".*.jar$"))
+                  #t))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxt" ,libxt)
+       ("libxtst" ,libxtst)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("openjdk11" ,openjdk11)
+       ("openjdk11:jdk" ,openjdk11 "jdk")
+       ("pkg-config" ,pkg-config)
+       ("unzip" ,unzip)
+       ("which" ,which)
+       ("zip" ,zip)))
+    (home-page "https://openjdk.java.net/projects/jdk/12")))
+
 (define-public icedtea icedtea-8)
 
 
