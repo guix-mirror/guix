@@ -210,8 +210,7 @@ classification.")
              (assoc-ref %standard-phases 'check))
            (add-before 'check 'fix-PYTHONPATH
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((python-version ((@@ (guix build python-build-system)
-                                           get-python-version)
+               (let ((python-version (python-version
                                       (assoc-ref inputs "python"))))
                  (setenv "PYTHONPATH"
                          (string-append (getenv "PYTHONPATH")

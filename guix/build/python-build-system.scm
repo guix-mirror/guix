@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
@@ -32,6 +32,7 @@
   #:export (%standard-phases
             add-installed-pythonpath
             site-packages
+            python-version
             python-build))
 
 ;; Commentary:
@@ -147,7 +148,7 @@
       (format #t "test suite not run~%"))
   #t)
 
-(define (get-python-version python)
+(define (python-version python)
   (let* ((version     (last (string-split python #\-)))
          (components  (string-split version #\.))
          (major+minor (take components 2)))
@@ -158,7 +159,7 @@
   (let* ((out (assoc-ref outputs "out"))
          (python (assoc-ref inputs "python")))
     (string-append out "/lib/python"
-                   (get-python-version python)
+                   (python-version python)
                    "/site-packages/")))
 
 (define (add-installed-pythonpath inputs outputs)
@@ -202,7 +203,7 @@ when running checks after installing the package."
          (python (assoc-ref inputs "python"))
          (var `("PYTHONPATH" prefix
                 ,(cons (string-append out "/lib/python"
-                                      (get-python-version python)
+                                      (python-version python)
                                       "/site-packages")
                        (search-path-as-string->list
                         (or (getenv "PYTHONPATH") ""))))))
@@ -222,7 +223,7 @@ installed with setuptools."
   (let* ((out (assoc-ref outputs "out"))
          (python (assoc-ref inputs "python"))
          (site-packages (string-append out "/lib/python"
-                                       (get-python-version python)
+                                       (python-version python)
                                        "/site-packages"))
          (easy-install-pth (string-append site-packages "/easy-install.pth"))
          (new-pth (string-append site-packages "/" name ".pth")))

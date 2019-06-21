@@ -211,7 +211,11 @@ servers from Python programs.")
     (arguments
      `(#:modules ((srfi srfi-1)
                   (guix build gnu-build-system)
+                  ((guix build python-build-system)
+                   #:select (python-version))
                   (guix build utils))
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
        #:configure-flags
        (list (string-append "--with-db="
                             (assoc-ref %build-inputs "bdb"))
@@ -263,16 +267,9 @@ servers from Python programs.")
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (get-python-version
-                     ;; FIXME: copied from python-build-system
-                     (lambda (python)
-                       (let* ((version     (last (string-split python #\-)))
-                              (components  (string-split version #\.))
-                              (major+minor (take components 2)))
-                         (string-join major+minor "."))))
                     (pythondir (string-append
                                 out "/lib/python"
-                                (get-python-version (assoc-ref inputs "python"))
+                                (python-version (assoc-ref inputs "python"))
                                 "/site-packages/")))
                ;; Install directory must be on PYTHONPATH.
                (setenv "PYTHONPATH"

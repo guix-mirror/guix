@@ -831,8 +831,7 @@ This package provides Conda as a library.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (target (string-append out "/lib/python"
-                                             ((@@ (guix build python-build-system)
-                                                  get-python-version)
+                                             (python-version
                                               (assoc-ref inputs "python"))
                                              "/site-packages/")))
                  ;; The installer aborts if the target directory is not on

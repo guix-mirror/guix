@@ -447,9 +447,7 @@ compression formats through the use of the libav library.")
                            (guix build python-build-system))
        #:configure-flags
        (let* ((python (assoc-ref %build-inputs "python"))
-              (python-version ((@@ (guix build python-build-system)
-                                   get-python-version)
-                               python))
+              (python-version (python-version python))
               (python-sitedir (string-append
                                "lib/python" python-version "/site-packages")))
          (list (string-append
