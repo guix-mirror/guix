@@ -1400,7 +1400,7 @@ by using an optimized quadratic sieve algorithm.")
          (add-after 'unpack 'fix-makefile
            (lambda _
              (substitute* "makefile"
-               (("cc -c") "gcc -c"))
+               (("cc -c") "gcc -c -fPIC"))
              #t))
          (add-after 'fix-makefile 'turn-off-banner
            (lambda _
