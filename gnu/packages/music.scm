@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -314,7 +315,7 @@ playing your music.")
 (define-public cmus
   (package
     (name "cmus")
-    (version "2.7.1")
+    (version "2.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -323,7 +324,7 @@ playing your music.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xd96py21bl869qlv1353zw7xsgq6v5s8szr0ldr63zj5fgc2ps5"))))
+                "1ydnvq13ay8b8mfmmgwi5qsgyf220yi1d01acbnxqn775dghmwar"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
