@@ -1353,7 +1353,8 @@ multiplication algorithm.")
     (arguments
      `(#:test-target "test"
        #:make-flags
-       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out")))
+       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out"))
+             "CCFLAGS=-fPIC")
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)            ;no configure script
