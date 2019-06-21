@@ -161,7 +161,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.58.1")
+   (version "2.60.4")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -169,8 +169,14 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1mnp4vankish8bqxymdl591p9v1ynk7pfc5dmpx3vamn4vcskmlp"))
-            (patches (search-patches "glib-tests-timer.patch"))))
+              "1p9k8z83272mkm4d4fhm5jhwhyw2basrwbz47yl5wbmrvk2ix51b"))
+            (patches (search-patches "glib-tests-timer.patch"))
+            (modules '((guix build utils)))
+            (snippet
+             '(begin
+                (substitute* "tests/spawn-test.c"
+                  (("/bin/sh") "sh"))
+                #t))))
    (build-system meson-build-system)
    (outputs '("out"           ; everything
               "bin"))         ; glib-mkenums, gtester, etc.; depends on Python
@@ -198,9 +204,6 @@ shared NFS home directories.")
         (delete 'bootstrap)
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; For building deterministic pyc files
-            (setenv "DETERMINISTIC_BUILD" "1")
-
             ;; For tests/gdatetime.c.
             (setenv "TZDIR"
                     (string-append (assoc-ref inputs "tzdata")
@@ -281,9 +284,22 @@ shared NFS home directories.")
 
                      ("gio/tests/gdbus-unix-addresses.c"
                       (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch")))))
+                       "/gdbus/x11-autolaunch"))
+
+                     ("gio/tests/gsocketclient-slow.c"
+                      (;; These tests tries to resolve "localhost", and fails.
+                       "/socket-client/happy-eyeballs/slow"
+                       "/socket-client/happy-eyeballs/cancellation/delayed"))
+
+                     )))
               (for-each (lambda (x) (apply disable x)) failing-tests)
               #t)))
+        (replace 'check
+          (lambda _
+            (setenv "MESON_TESTTHREADS"
+                    (number->string (parallel-job-count)))
+            ;; Do not run tests marked as "flaky".
+            (invoke "meson" "test" "--no-suite" "flaky")))
         ;; TODO: meson does not permit the bindir to be outside of prefix.
         ;; See https://github.com/mesonbuild/meson/issues/2561
         ;; We can remove this once meson is patched.
@@ -302,15 +318,11 @@ shared NFS home directories.")
                                  (string-append out "/lib/pkgconfig/glib-2.0.pc"))
                 (("bindir=\\$\\{prefix\\}/bin") "")
                 (("=\\$\\{bindir\\}/") "="))
-              #t))))
+              #t))))))
       ;; TODO: see above for explanation.
       ;; #:configure-flags (list (string-append "--bindir="
       ;;                                        (assoc-ref %outputs "bin")
       ;;                                        "/bin"))
-
-      ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
-      ;; file that gets compiled possibly before it has been fully generated.
-      #:parallel-tests? #f))
 
    (native-search-paths
     ;; This variable is not really "owned" by GLib, but several related
