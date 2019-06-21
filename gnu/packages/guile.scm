@@ -216,7 +216,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.4")
+    (version "2.2.5")
     (source (origin
               (method url-fetch)
 
@@ -226,7 +226,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))
+                "19w5ws1jvs01dpv756qv2cgs37rsnwq1f4f07mj0wra35pqp6c7w"))
               (modules '((guix build utils)))
               (patches (search-patches
                         "guile-2.2-skip-oom-test.patch"))
@@ -247,36 +247,7 @@ without requiring the source code to be rewritten.")
             (files '("share/guile/site/2.2")))
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
-            (files '("lib/guile/2.2/site-ccache")))))
-
-    (arguments
-     (if (%current-target-system)
-         (substitute-keyword-arguments (package-arguments guile-2.0)
-           ((#:phases phases '%standard-phases)
-            `(modify-phases ,phases
-               (add-after 'unpack 'sacrifice-elisp-support
-                 (lambda _
-                   ;; Cross-compiling language/elisp/boot.el fails, so
-                   ;; sacrifice it.  See
-                   ;; <https://git.savannah.gnu.org/cgit/guile.git/commit/?h=stable-2.2&id=988aa29238fca862c7e2cb55f15762a69b4c16ce>
-                   ;; for the upstream fix.
-                   (substitute* "module/Makefile.in"
-                     (("language/elisp/boot\\.el")
-                      "\n"))
-                   #t))
-               ,@(if (hurd-target?)
-                     `((add-after 'unpack 'allow-madvise-ENOSYS
-                         (lambda _
-                           ;; Do not warn about ENOSYS on 'madvise'.  This is
-                           ;; what Guile commit
-                           ;; 45e4ace6603e00b297e6542362273041aebe7305 does.
-                           ;; TODO: Remove for Guile >= 2.2.5.
-                           (substitute* "libguile/vm.c"
-                             (("perror \\(\"madvise failed\"\\)")
-                              "if (errno != ENOSYS) perror (\"madvised failed\");"))
-                           #t)))
-                     '()))))
-         (package-arguments guile-2.0)))))
+            (files '("lib/guile/2.2/site-ccache")))))))
 
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
@@ -287,18 +258,6 @@ without requiring the source code to be rewritten.")
                   (timeout . 72000)             ;20 hours
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
-
-(define-public guile-2.2.5
-  (package
-    (inherit guile-2.2)
-    (version "2.2.5")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "19w5ws1jvs01dpv756qv2cgs37rsnwq1f4f07mj0wra35pqp6c7w"))))))
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
