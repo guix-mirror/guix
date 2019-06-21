@@ -369,15 +369,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.13.0")
+    (version "1.13.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnupg/gpgme/gpgme-" version
-                          ".tar.bz2"))
+      (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32
-        "0c6676g0yhfsmy32i1dgwh5cx0ja8vhcqf4k08zad177m53kxcnl"))))
+       (base32 "0imyjfryvvjdbai454p70zcr95m94j9xnzywrlilqdw2fqi0pqy4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
