@@ -1548,6 +1548,7 @@ structure constants of Schubert polynomials.")
     (arguments
      `(#:configure-flags
        (list
+        "--enable-shared"
         (string-append "--with-gmp-include="
                        (assoc-ref %build-inputs "gmp") "/include")
         (string-append "--with-gmp-lib="
