@@ -159,7 +159,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.107")
+    (version "1.1.108")
     (source
      (origin
        (method git-fetch)
@@ -169,7 +169,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0kyf83n6fghqmjj5jbwhy08yq5sl598qnmw3kbavrnw9avqqm0c4"))))
+         "0slj10rfcrd6xpfhm13x3q1ldz2qhk9p64cw0nw0qlmy40k1iy83"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -193,7 +193,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1p64k9x5r7nsrs0cn6d61687xbajqvsm78xk6j85w9wfin5dxs30"))))
+         "08v3sdkr0aii4a9jqhyz8j3x42zm2qswsiy6qsb47wz4bpi90zgy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -203,6 +203,28 @@ interpretation of the specifications for these languages.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Remove lines trying to build in a git commit id.
              (substitute* "CMakeLists.txt" ((".*spirv_tools_commit_id.h.*") ""))
+             #t))
+         ;; Make sure that the files needed for Mesa's Vulkan overlay are availabe.
+         (add-after 'unpack 'copy-headers1
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "tests/layers/vk_layer_data.h"
+                           (string-append (assoc-ref %outputs "out")
+                                          "/include/vulkan"))
+             (install-file "tests/layers/vk_layer_extension_utils.h"
+                           (string-append (assoc-ref %outputs "out")
+                                          "/include/vulkan"))
+             (install-file "loader/vk_loader_platform.h"
+                           (string-append (assoc-ref %outputs "out")
+                                          "/include/vulkan"))
+             #t))
+         (add-after 'build 'copy-headers2
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "vk_layer_dispatch_table.h"
+                           (string-append (assoc-ref %outputs "out")
+                                          "/include/vulkan"))
+             (install-file "vk_dispatch_table_helper.h"
+                           (string-append (assoc-ref %outputs "out")
+                                          "/include/vulkan"))
              #t)))
        #:configure-flags (list
                           "-DBUILD_TESTS=OFF" ; FIXME: Needs 'googletest' submodule.
@@ -244,7 +266,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1mak96jdg3wv043b4jxyv1fm2cz4nnallg0yb90my3yp5q64grrw"))))
+         "1azch34l9b57wxvh2k5vc0qzmhnapli3348wwhs04z6izszyz4kf"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
