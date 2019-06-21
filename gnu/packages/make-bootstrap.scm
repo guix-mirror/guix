@@ -106,16 +106,33 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
   (define (native-inputs)
     (if (%current-target-system)
-        (let ((target (%current-target-system)))
-          `(("cross-gcc"      ,(cross-gcc target
-                                          #:xbinutils (cross-binutils target)
-                                          #:libc (cross-bootstrap-libc)))
+        (let* ((target (%current-target-system))
+               (xgcc (cross-gcc
+                      target
+                      #:xbinutils (cross-binutils target)
+                      #:libc (cross-bootstrap-libc))))
+          `(("cross-gcc" ,(package
+                            (inherit xgcc)
+                            (search-paths
+                             ;; Ensure the cross libc headers appears on the
+                             ;; C++ system header search path.
+                             (cons (search-path-specification
+                                    (variable "CROSS_CPLUS_INCLUDE_PATH")
+                                    (files '("include")))
+                                   (package-search-paths gcc)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap))
           ("libc:static" ,(glibc-for-bootstrap) "static")
           ("gcc" ,(package (inherit gcc)
                     (outputs '("out"))  ;all in one so libgcc_s is easily found
+                    (native-search-paths
+                     ;; Set CPLUS_INCLUDE_PATH so GCC is able to find the libc
+                     ;; C++ headers.
+                     (cons (search-path-specification
+                            (variable "CPLUS_INCLUDE_PATH")
+                            (files '("include")))
+                           (package-native-search-paths gcc)))
                     (inputs
                      `(;; Distinguish the name so we can refer to it below.
                        ("bootstrap-libc" ,(glibc-for-bootstrap))
