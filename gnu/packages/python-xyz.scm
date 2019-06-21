@@ -15342,16 +15342,15 @@ with the HTTP/2-based RPC framework gRPC.")
 (define-public python-astunparse
   (package
     (name "python-astunparse")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astunparse" version))
        (sha256
-        (base32
-         "1jhidwyrqn17avqh9xnnm3wd7q7aahaq009cba67g86y6gxicyyj"))))
+        (base32 "0rzbc44xcvzjhhiy7wac96mgal5mcjz1mfq8rmvgswskf4kf9cys"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; there are none
+    (arguments '(#:tests? #f))          ; there are none
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-wheel" ,python-wheel)))
