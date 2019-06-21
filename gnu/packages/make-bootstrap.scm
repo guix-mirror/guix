@@ -825,7 +825,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    %build-inputs)
          #t)))
     (inputs `(("guile-tarball" ,%guile-bootstrap-tarball)
-              ,@(match (%current-system)
+              ,@(match (or (%current-target-system) (%current-system))
                   ((or "i686-linux" "x86_64-linux")
                    `(("bootstrap-mescc-tools" ,%mescc-tools-bootstrap-tarball)
                      ("bootstrap-mes" ,%mes-bootstrap-tarball)
