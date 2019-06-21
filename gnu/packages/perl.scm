@@ -116,18 +116,6 @@
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format #t "Perl configure flags: ~s~%" configure-flags)
              (apply invoke "./Configure" configure-flags)))
-         (add-before
-          'strip 'make-shared-objects-writable
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; The 'lib/perl5' directory contains ~50 MiB of .so.  Make them
-            ;; writable so that 'strip' actually strips them.
-            (let* ((out (assoc-ref outputs "out"))
-                   (lib (string-append out "/lib")))
-              (for-each (lambda (dso)
-                          (chmod dso #o755))
-                        (find-files lib "\\.so$"))
-              #t)))
-
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
