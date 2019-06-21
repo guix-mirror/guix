@@ -143,13 +143,13 @@ libenca and several charset conversion libraries and tools.")
     (version "2.1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/JuliaStrings/utf8proc/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaStrings/utf8proc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1cnpigrazhslw65s4j1a56j7p6d7d61wsxxjf1218i9mkwv2yw17"))))
+        (base32 "1brr8nnpam7y8l9j8fppdpdqvfyfxliw20z41qfip6ygz9pvcsiq"))))
     (build-system gnu-build-system)
     (inputs                 ; test data that is otherwise downloaded with curl
      `(("NormalizationTest.txt"
