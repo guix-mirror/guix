@@ -11727,6 +11727,38 @@ recursive scanning and copying of directories, working with temporary
 files/directories, and more.")
     (license license:bsd-3)))
 
+(define-public ghc-descriptive
+  (package
+    (name "ghc-descriptive")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/descriptive/descriptive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0y5693zm2kvqjilybbmrcv1g6n6x2p6zjgi0k0axjw1sdhh1g237"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page
+     "https://github.com/chrisdone/descriptive")
+    (synopsis
+     "Self-describing consumers/parsers: forms, cmd-line args, JSON, etc.")
+    (description
+     "This package provides datatypes and functions for creating consumers
+and parsers with useful semantics.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
