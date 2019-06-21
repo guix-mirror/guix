@@ -145,7 +145,7 @@ libenca and several charset conversion libraries and tools.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/JuliaLang/utf8proc/archive/v"
+             "https://github.com/JuliaStrings/utf8proc/archive/v"
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
@@ -181,7 +181,7 @@ libenca and several charset conversion libraries and tools.")
              (substitute* "data/GraphemeBreakTest.txt"
                (("÷") "/")
                (("×") "+")))))))
-    (home-page "https://julialang.org/utf8proc/")
+    (home-page "https://juliastrings.github.io/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8
