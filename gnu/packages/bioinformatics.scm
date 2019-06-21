@@ -4168,7 +4168,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public khmer
   (package
     (name "khmer")
-    (version "2.1.2")
+    (version "3.0.0a3")
     (source
      (origin
        (method git-fetch)
@@ -4178,8 +4178,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02x38d9jw2r58y8dmnj4hffy9wxv1yc1jwbvdbhby9dxndv94r9m"))
-       (patches (search-patches "khmer-use-libraries.patch"))
+         "01l4jczglkl7yfhgvzx8j0df7k54bk1r8sli9ll16i1mis0d8f37"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4192,6 +4191,12 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
            ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
            (delete-file-recursively "third-party/zlib")
            (delete-file-recursively "third-party/bzip2")
+           (delete-file-recursively "third-party/seqan")
+           (substitute* "setup.cfg"
+             (("# libraries = z,bz2")
+              "libraries = z,bz2")
+             (("include:third-party/zlib:third-party/bzip2")
+              "include:"))
            #t))))
     (build-system python-build-system)
     (arguments
@@ -4208,6 +4213,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
+       ("seqan" ,seqan-1)
        ("python-screed" ,python-screed)
        ("python-bz2file" ,python-bz2file)))
     (home-page "https://khmer.readthedocs.org/")
