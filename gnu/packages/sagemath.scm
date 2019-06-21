@@ -309,8 +309,19 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
              (invoke "make" "libzn_poly.so")))
          (add-after 'install 'install-so
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (install-file "libzn_poly.so" lib)))))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (soname (string-append "libzn_poly-" ,version ".so"))
+                    (target (string-append lib "/" soname)))
+               (install-file "libzn_poly.a" lib)
+               (install-file soname lib)
+               (symlink target
+                        (string-append lib "/libzn_poly.so"))
+               (symlink target
+                        (string-append lib "/libzn_poly-"
+                                       ,(version-major+minor version)
+                                       ".so")))
+             #t)))))
     (synopsis "Arithmetic for polynomials over Z/NZ")
     (description "zn_poly implements the arithmetic of polynomials the
 coefficients of which are modular integers.")
