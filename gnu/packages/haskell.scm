@@ -11759,6 +11759,38 @@ files/directories, and more.")
 and parsers with useful semantics.")
     (license license:bsd-3)))
 
+(define-public ghc-exactprint
+  (package
+    (name "ghc-exactprint")
+    (version "0.5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "ghc-exactprint/ghc-exactprint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "141k6qiys0m0r4br7ikp4i546vs3xcil9cwglzcdfcbnb5nj1z87"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-paths" ,ghc-paths)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-free" ,ghc-free)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-filemanip" ,ghc-filemanip)))
+    (home-page
+     "http://hackage.haskell.org/package/ghc-exactprint")
+    (synopsis "ExactPrint for GHC")
+    (description
+     "Using the API Annotations available from GHC 7.10.2, this library
+provides a means to round-trip any code that can be compiled by GHC, currently
+excluding @file{.lhs} files.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
