@@ -519,6 +519,7 @@ move windows, switch between desktops, etc.).")
         (git-reference
          (url "https://github.com/resurrecting-open-source-projects/scrot.git")
          (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1dg0pnmk09p7zlbyxv7d40vf54amrv73y976ds5p7096x6lmlndy"))))
     (build-system gnu-build-system)
