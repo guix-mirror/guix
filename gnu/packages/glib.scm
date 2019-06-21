@@ -28,7 +28,6 @@
 
 (define-module (gnu packages glib)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
@@ -361,15 +360,9 @@ dynamic loading, and an object system.")
                        "gobject-introspection-cc.patch"
                        "gobject-introspection-girepository.patch"
                        "gobject-introspection-absolute-shlib-path.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(;; The build system has at least one race condition involving Gio-2.0.gir
-       ;; which causes intermittent failures, as of 1.56.0.
-       #:parallel-build? #f
-       ;; The patch 'gobject-introspection-absolute-shlib-path.patch' causes
-       ;; some tests to fail.
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-use-/usr/bin/env
            (lambda _
@@ -384,9 +377,7 @@ dynamic loading, and an object system.")
        ("python" ,python-wrapper)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("glib" ,glib "bin")
+     `(("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(;; In practice, GIR users will need libffi when using
