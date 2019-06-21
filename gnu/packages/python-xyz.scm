@@ -2655,7 +2655,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.1.1")
+    (version "3.1.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -2665,8 +2665,7 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1aaiamc9l35m5sf7xl2qc5q9308v7sz3p1qgzcslsjxzddphyn4v"))
+        (base32 "16gnxy0qinh8fhs0qvhff5z2xh49c3cqgm0d7bfjw120df6x7fym"))
        (patches (search-patches
                  "python-robotframework-honor-source-date-epoch.patch"))))
     (build-system python-build-system)
