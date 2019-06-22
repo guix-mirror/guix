@@ -42,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -11725,6 +11726,65 @@ invariants.")
 package for users of @code{path}.  It also implements some missing stuff like
 recursive scanning and copying of directories, working with temporary
 files/directories, and more.")
+    (license license:bsd-3)))
+
+(define-public ghc-hindent
+  (package
+    (name "ghc-hindent")
+    (version "5.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hindent/hindent-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wkfik7mvqskk23kyh7ybgnlh3j9j1ym7d3ncahsbli9w654b7xg"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%haskell-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'emacs-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (elisp-file "elisp/hindent.el")
+                    (dest  (string-append out "/share/emacs/site-lisp"
+                                          "/guix.d/hindent-" ,version))
+                    (emacs (string-append (assoc-ref inputs "emacs")
+                                          "/bin/emacs")))
+               (make-file-writable elisp-file)
+               (emacs-substitute-variables elisp-file
+                 ("hindent-process-path"
+                  (string-append out "/bin/hindent")))
+               (install-file elisp-file dest)
+               (emacs-generate-autoloads "hindent" dest)))))))
+    (inputs
+     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-path" ,ghc-path)
+       ("ghc-path-io" ,ghc-path-io)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-diff" ,ghc-diff)
+       ("emacs" ,emacs-minimal)))
+    (home-page
+     "https://github.com/commercialhaskell/hindent")
+    (synopsis "Extensible Haskell pretty printer")
+    (description
+     "This package provides automatic formatting for Haskell files.  Both a
+library and an executable.")
     (license license:bsd-3)))
 
 (define-public ghc-descriptive
