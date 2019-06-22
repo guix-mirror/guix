@@ -381,3 +381,30 @@ application development.  TclX provides additional interfaces to the operating
 system, and adds many new programming constructs, text manipulation tools, and
 debugging tools.")
     (license license:tcl/tk)))
+
+(define-public go-github.com-nsf-gothic
+  (let ((commit "97dfcc195b9de36c911a69a6ec2b5b2659c05652")
+        (revision "0"))
+    (package
+      (name "go-github.com-nsf-gothic")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/nsf/gothic")
+                       (commit commit)))
+                (sha256
+                 (base32
+                  "1lrhbml6r4sh22rrn3m9bck70pv0g0c1diprg7cil90x0jidxczr"))
+                (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/nsf/gothic"))
+    (propagated-inputs
+     `(("tk" ,tk)
+       ("tcl" ,tcl)))
+    (home-page "https://github.com/nsf/gothic")
+    (synopsis "Tcl/Tk Go bindings")
+    (description "Gothic contains Go bindings for Tcl/Tk.  The package contains
+only one type and one function that can be used to create a Tk interpreter.")
+    (license license:expat))))
