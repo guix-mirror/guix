@@ -1433,14 +1433,14 @@ hashing schemes plugin for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "173wd7x8y5sp94slzwlnb7zhgs32r57zl9xspl2rf4g3fqwmhpwd"))))
+                "1sphd30jplii58y2zmw365bckm6pszmapcy905zhjll1sm1ldjv8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))
