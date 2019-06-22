@@ -134,14 +134,14 @@ programs for the manipulation and analysis of astronomical data.")
   (package
     (name "stellarium")
     (version "0.19.1")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/Stellarium/" name
-                                 "/releases/download/v" version
-                                 "/" name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0s7v5iyhah258k83kvy2a91a3mdf34r150lcar4mmdsrrcmas98g"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Stellarium/stellarium"
+                           "/releases/download/v" version
+                           "/stellarium-" version ".tar.gz"))
+       (sha256
+        (base32 "0s7v5iyhah258k83kvy2a91a3mdf34r150lcar4mmdsrrcmas98g"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
