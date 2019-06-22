@@ -1511,3 +1511,29 @@ added.  The permanent goal is to create the open source Quake 3 distribution
 upon which people base their games, ports to new platforms, and other
 projects.")
       (license license:gpl2))))
+
+(define-public openvr
+  (package
+    (name "openvr")
+    (version "1.4.18")
+    (home-page "https://github.com/ValveSoftware/openvr/")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0m92634j6g0f2xybbzklm79cnq20vidbk1jc62pnz12aabwixvyh"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; No tests.
+     '(#:tests? #f
+       #:configure-flags (list "-DBUILD_SHARED=1")))
+    (synopsis "Virtual reality software development kit")
+    (description "OpenVR is an API and runtime that allows access to VR
+hardware from multiple vendors without requiring that applications have
+specific knowledge of the hardware they are targeting.")
+    (license license:bsd-3)))
