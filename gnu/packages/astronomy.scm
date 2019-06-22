@@ -133,7 +133,7 @@ programs for the manipulation and analysis of astronomical data.")
 (define-public stellarium
   (package
     (name "stellarium")
-    (version "0.19.0")
+    (version "0.19.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/Stellarium/" name
@@ -141,7 +141,7 @@ programs for the manipulation and analysis of astronomical data.")
                                  "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1mjjqcpgm5a1022x0mpqj3v6qkvpm9wqm1hqyg0mlypc5681va8a"))))
+               "0s7v5iyhah258k83kvy2a91a3mdf34r150lcar4mmdsrrcmas98g"))))
     (build-system cmake-build-system)
     (inputs
      `(("qtbase" ,qtbase)
@@ -151,9 +151,9 @@ programs for the manipulation and analysis of astronomical data.")
        ("qtserialport" ,qtserialport)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gettext" ,gettext-minimal) ; xgettext is used at compile time
-       ("perl" ,perl) ; For pod2man
-       ("qtbase" ,qtbase) ; Qt MOC is needed at compile time
+     `(("gettext" ,gettext-minimal)     ; xgettext is used at compile time
+       ("perl" ,perl)                   ; For pod2man
+       ("qtbase" ,qtbase)               ; Qt MOC is needed at compile time
        ("qttools" ,qttools)))
     (arguments
      `(#:test-target "test"
