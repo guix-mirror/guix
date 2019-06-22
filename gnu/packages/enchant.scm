@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +33,7 @@
 (define-public enchant
   (package
     (name "enchant")
-    (version "2.2.3")
+    (version "2.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/AbiWord/enchant/releases"
@@ -40,7 +41,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0v87p1ls0gym95qirijpclk650sjbkcjjl6ssk059zswcwaykn5b"))))
+                "1p6a3qmrh8bjzds6x7rg9da0ir44gg804jzkf634h39wsa4vdmpm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static"
