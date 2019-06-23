@@ -68,6 +68,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1705,6 +1706,38 @@ input.")
 viewing and manipulating 2 dimensional tabular data in a manner similar to many
 popular spread sheet programs.")
     (license license:gpl3+)))
+
+(define-public volumeicon
+  (package
+    (name "volumeicon")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://nullwise.com/files/volumeicon/volumeicon-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "182xl2w8syv6ky2h2bc9imc6ap8pzh0p7rp63hh8nw0xm38c3f14"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-notify")))       ; optional libnotify support
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)))
+    (home-page "http://nullwise.com/volumeicon.html")
+    (synopsis "System tray volume applet")
+    (description
+     "Volume Icon is a volume indicator and control applet for @acronym{the
+Advanced Linux Sound Architecture, ALSA}.  It sits in the system tray,
+independent of your desktop environment, and supports global key bindings.")
+    (license (list license:expat        ; src/{bind.c,keybinder.h}
+                   license:isc          ; src/alsa_volume_mapping.c
+                   license:gpl3))))     ; the rest & combined work
 
 (define-public yad
   (package
