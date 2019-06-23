@@ -873,8 +873,12 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
                                     (append (map derivation-input-path inputs)
                                             sources)))
            (drv* (set-field drv (derivation-file-name) file)))
-      (hash-set! %derivation-cache file drv*)
-      drv*)))
+      ;; Preserve pointer equality.  This improves the performance of
+      ;; 'eq?'-memoization on derivations.
+      (or (hash-ref %derivation-cache file)
+          (begin
+            (hash-set! %derivation-cache file drv*)
+            drv*)))))
 
 (define (invalidate-derivation-caches!)
   "Invalidate internal derivation caches.  This is mostly useful for
