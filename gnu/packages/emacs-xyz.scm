@@ -433,6 +433,38 @@ these arguments.  The prototypical use is for the command to call an external
 process, passing on the arguments as command line arguments.")
     (license license:gpl3+)))
 
+(define-public emacs-minions
+  (package
+    (name "emacs-minions")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/tarsius/minions.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0q2y37zfxlbfvgdn70ikg3abp8vljna4ir9nyqlz1awmz5i1c43s"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/tarsius/minions")
+    (synopsis "Minor-mode menu for the mode line")
+    (description
+     "This package implements a menu that lists enabled minor-modes, as well
+as commonly but not currently enabled minor-modes.  It can be used to toggle
+local and global minor-modes, to access mode-specific menus, and to get help
+about modes.
+
+This menu is intended as a replacement for the incomplete yet wide list of
+enabled minor-modes that is displayed in the mode line by default.  To use the
+menu like this, enable Minions mode.
+
+Alternatively the menu can be bound globally, for example:
+@code{(global-set-key [S-down-mouse-3] 'minions-minor-modes-menu)}.")
+    (license license:gpl3+)))
+
 (define-public emacs-treepy
   (package
     (name "emacs-treepy")
