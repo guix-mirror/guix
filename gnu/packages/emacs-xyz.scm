@@ -11206,10 +11206,10 @@ You should really read org-ref.org in this package for details.")
 
 ;; This project is unmaintained.  Please use emacs-org-re-reveal instead.
 (define-public emacs-org-reveal
-  (let ((commit "1cdd088ec5fab631c564dca7f9f74fd3e9b7d4d4"))
+  (let ((commit "9210413202a360a559a51e8275faa42be68cf44b"))
     (package
       (name "emacs-org-reveal")
-      (version (git-version "0.1" "2" commit))
+      (version (git-version "0.1" "3" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -11218,7 +11218,7 @@ You should really read org-ref.org in this package for details.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1vjxjadq2i74p96y9jxnqj1yb86fsgxzmn7bjgnb88ay6nvc1l72"))))
+                  "1wlfk823d3vrn480m38j7ncaqm193lvh6y22b92fx4b3yhdbndza"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/yjwen/org-reveal")
       (synopsis "Org and Reveal.js powered HTML presentation tool")
