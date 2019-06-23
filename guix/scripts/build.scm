@@ -836,11 +836,9 @@ build."
            (#t
             (match (package-source p)
               (#f
-               (format (current-error-port)
-                       (G_ "~a: warning: \
-package '~a' has no source~%")
-                       (location->string (package-location p))
-                       (package-name p))
+               (warning (package-location p)
+                        (G_ "package '~a' has no source~%")
+                        (package-name p))
                '())
               (s
                (list (package-source-derivation store s)))))
