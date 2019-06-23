@@ -157,6 +157,14 @@
   "Return the <derivation> object INPUT refers to."
   (read-derivation-from-file (derivation-input-path input)))
 
+(define* (derivation-input drv #:optional
+                           (outputs (derivation-output-names drv)))
+  "Return a <derivation-input> for the OUTPUTS of DRV."
+  ;; This is a public interface meant to be more convenient than
+  ;; 'make-derivation-input' and giving us more control.
+  (make-derivation-input (derivation-file-name drv)
+                         outputs))
+
 (set-record-type-printer! <derivation>
                           (lambda (drv port)
                             (format port "#<derivation ~a => ~a ~a>"

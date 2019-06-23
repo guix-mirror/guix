@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,9 +44,6 @@
   (bootstrap-binary "bash"))
 (define %mkdir
   (bootstrap-binary "mkdir"))
-
-(define make-derivation-input
-  (@@ (guix derivations) make-derivation-input))
 
 
 (test-begin "grafts")
@@ -356,16 +353,11 @@
                 (p1r-inputs  (filter (match-input p1r) inputs))
                 (p2-inputs   (filter (match-input p2) inputs)))
            (and (equal? p1-inputs
-                        (list (make-derivation-input (derivation-file-name p1)
-                                                     '("one"))))
+                        (list (derivation-input p1 '("one"))))
                 (equal? p1r-inputs
-                        (list
-                         (make-derivation-input (derivation-file-name p1r)
-                                                '("ONE"))))
+                        (list (derivation-input p1r '("ONE"))))
                 (equal? p2-inputs
-                        (list
-                         (make-derivation-input (derivation-file-name p2)
-                                                '("aaa"))))
+                        (list (derivation-input p2 '("aaa"))))
                 (derivation-output-names p2g))))))
 
 (test-assert "graft-derivation, renaming"         ;<http://bugs.gnu.org/23132>
