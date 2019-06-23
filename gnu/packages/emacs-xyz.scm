@@ -8820,6 +8820,36 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
 @code{emojify-mode} to enable the display of emojis in a buffer.")
     (license license:gpl3+)))
 
+(define-public emacs-make-it-so
+  (let ((commit "bc3b01d6b9ed6ff66ebbd524234f9d6df60dd4be")
+        (version "0.1.0")
+        (revision "1"))
+    (package
+      (name "emacs-make-it-so")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/make-it-so")
+               (commit commit)))
+         (sha256
+          (base32
+           "0833bzlscpnkvjnrg3g54yr246afbjwri8n5wxk8drnsq6acvd8z"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons "^recipes/" %default-include)))
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/abo-abo/make-it-so")
+      (synopsis "Transform files with Makefile recipes")
+      (description "This package provides an interface for selecting from
+different conversion recipes, often including tools like @code{ffmpeg} or
+@code{convert}.  The conversion command need only be written once, and
+subsequent invocations can be readily customized.  Several recipes are
+included by default, and more can be readily added.")
+      (license license:gpl3+))))
+
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
