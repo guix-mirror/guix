@@ -534,14 +534,18 @@ optionally contain a version number and an output name, as in these examples:
   guile@2.0.9:debug
 
 If SPEC does not specify a version number, return the preferred newest
-version; if SPEC does not specify an output, return OUTPUT."
+version; if SPEC does not specify an output, return OUTPUT.
+
+When OUTPUT is false and SPEC does not specify any output, return #f as the
+output."
   (let-values (((name version sub-drv)
                 (package-specification->name+version+output spec output)))
     (match (%find-package spec name version)
       (#f
        (values #f #f))
       (package
-       (if (member sub-drv (package-outputs package))
+       (if (or (and (not output) (not sub-drv))
+               (member sub-drv (package-outputs package)))
            (values package sub-drv)
            (leave (G_ "package `~a' lacks output `~a'~%")
                   (package-full-name package)
