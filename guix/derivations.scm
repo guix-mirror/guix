@@ -1016,6 +1016,11 @@ derivation/output pairs, using the specified MODE."
   (build-things store (map (match-lambda
                             ((? derivation? drv)
                              (derivation-file-name drv))
+                            ((? derivation-input? input)
+                             (cons (derivation-input-path input)
+                                   (string-join
+                                    (derivation-input-sub-derivations input)
+                                    ",")))
                             ((? string? file) file)
                             (((? derivation? drv) . output)
                              (cons (derivation-file-name drv)

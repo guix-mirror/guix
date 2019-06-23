@@ -807,9 +807,12 @@
              ;; Ask for nothing but the "out" output of DRV.
              (build-derivations store `((,drv . "out")))
 
+             ;; Synonymous:
+             (build-derivations store (list (derivation-input drv '("out"))))
+
              (valid-path? store out)
-             (equal? (pk 'x content) (pk 'y (call-with-input-file out get-string-all)))
-             )))))
+             (equal? (pk 'x content)
+                     (pk 'y (call-with-input-file out get-string-all))))))))
 
 (test-assert "build-expression->derivation and derivation-build-plan"
   (let ((drv (build-expression->derivation %store "fail" #f)))
