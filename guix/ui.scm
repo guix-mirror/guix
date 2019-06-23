@@ -812,20 +812,28 @@ warning."
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
-derivations listed in DRV using MODE, a 'build-mode' value.  Return #t if
-there's something to build, #f otherwise.  When USE-SUBSTITUTES?, check and
-report what is prerequisites are available for download."
+derivations listed in DRV using MODE, a 'build-mode' value.  The elements of
+DRV can be either derivations or derivation inputs.
+
+Return #t if there's something to build, #f otherwise.  When USE-SUBSTITUTES?,
+check and report what is prerequisites are available for download."
+  (define inputs
+    (map (match-lambda
+           ((? derivation? drv) (derivation-input drv))
+           ((? derivation-input? input) input))
+         drv))
+
   (define substitutable-info
     ;; Call 'substitutation-oracle' upfront so we don't end up launching the
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
-        (substitution-oracle store drv #:mode mode)
+        (substitution-oracle store (map derivation-input-derivation inputs)
+                             #:mode mode)
         (const #f)))
 
   (let*-values (((build download)
-                 (derivation-build-plan store
-                                        (map derivation-input drv)
+                 (derivation-build-plan store inputs
                                         #:mode mode
                                         #:substitutable-info
                                         substitutable-info))
