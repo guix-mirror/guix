@@ -442,11 +442,13 @@ a card with a smaller capacity than stated.")
     (version "3.11.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/dcantrell/pyparted/archive/v"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/dcantrell/pyparted.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "18727vdscrdi2sza9la0y2xxfc4cqfl0ivjigx6m1q16jnaz84ml"))))
+        (base32 "0r6916n3w4vldxrq30a3z2iagvxgly4vfmlidjm65vwqnyv17bvn"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
