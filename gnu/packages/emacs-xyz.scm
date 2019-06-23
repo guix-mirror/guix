@@ -14822,31 +14822,30 @@ recursively.  The results are cached for speed.")
     (license license:gpl3+)))
 
 (define-public emacs-orgit
-  (let ((commit "2456436a7e64d26bcf455b3890a586acaa3e7f93"))
-    (package
-      (name "emacs-orgit")
-      (version (git-version "1.5.1" "2" commit))
-      (home-page "https://github.com/magit/orgit")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "1i52dq2ynddb1irgigr5mdwfbfd3bvm1f29jnzd7nlc0nk186nvh"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-magit" ,emacs-magit)))
-      (synopsis "Support for Org links to Magit buffers")
-      (description "This package defines several Org link types, which can be
+  (package
+    (name "emacs-orgit")
+    (version "1.5.3")
+    (home-page "https://github.com/magit/orgit")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ywavzki510rslsgfm0cnn3mlh644p61ha2nfb715xhkg7cd3j9g"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-magit" ,emacs-magit)))
+    (synopsis "Support for Org links to Magit buffers")
+    (description "This package defines several Org link types, which can be
 used to link to certain Magit buffers.  Use the command
 @command{org-store-link} while such a buffer is current to store a link.
 Later you can insert it into an Org buffer using the command
 @code{org-insert-link}.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-amx
   (package
