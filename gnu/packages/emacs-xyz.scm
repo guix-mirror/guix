@@ -8796,27 +8796,20 @@ an elisp expression.")
 (define-public emacs-emojify
   (package
     (name "emacs-emojify")
-    (version "0.4")
+    (version "1.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/iqbalansari/emacs-emojify/"
-                           "releases/download/v" version "/emojify-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/iqbalansari/emacs-emojify")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0k84v2d2bkiwcky9fi1yyprgkj46g7wh6pyl9gzmcd7sqv051d5n"))))
+         "1fqnj5x7ivjkm5y927dqqnm85q5hzczlb0hrfpjalrhasa6ijsrm"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-data
-           (lambda* (#:key  outputs #:allow-other-keys)
-             (copy-recursively "data"
-                               (string-append (assoc-ref outputs "out")
-                                              "/share/emacs/site-lisp/guix.d/"
-                                              "emojify-" ,version "/data"))
-             #t)))))
+     `(#:include (cons "^data/" %default-include)))
     (propagated-inputs
      `(("emacs-ht" ,emacs-ht)))
     (home-page "https://github.com/iqbalansari/emacs-emojify")
