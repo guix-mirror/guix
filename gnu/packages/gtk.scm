@@ -1687,12 +1687,12 @@ input.")
      (origin
        (method url-fetch)
        (uri (string-append "https://alpha.gnu.org/gnu/ssw/"
-                           name "-" version ".tar.gz"))
+                           "spread-sheet-widget-" version ".tar.gz"))
        (sha256
         (base32 "1h93yyh2by6yrmkwqg38nd5knids05k5nqzcihc1hdwgzg3c4b8y"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("glib" ,glib "bin") ; for glib-genmarshal, etc.
+     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     ;; In 'Requires' of spread-sheet-widget.pc.
     (propagated-inputs
