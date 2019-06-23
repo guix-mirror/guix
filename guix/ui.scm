@@ -777,12 +777,19 @@ error."
             str))))
 
 (define (show-derivation-outputs derivation)
-  "Show the output file names of DERIVATION."
-  (format #t "~{~a~%~}"
-          (map (match-lambda
-                 ((out-name . out)
-                  (derivation->output-path derivation out-name)))
-               (derivation-outputs derivation))))
+  "Show the output file names of DERIVATION, which can be a derivation or a
+derivation input."
+  (define (show-outputs derivation outputs)
+    (format #t "~{~a~%~}"
+            (map (cut derivation->output-path derivation <>)
+                 outputs)))
+
+  (match derivation
+    ((? derivation?)
+     (show-outputs derivation (derivation-output-names derivation)))
+    ((? derivation-input? input)
+     (show-outputs (derivation-input-derivation input)
+                   (derivation-input-sub-derivations input)))))
 
 (define* (check-available-space need
                                 #:optional (directory (%store-prefix)))
