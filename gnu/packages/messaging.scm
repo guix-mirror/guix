@@ -517,21 +517,7 @@ compromised.")
                            "--with-gtest=googletest/googletest")
        #:test-target "test"))
     (native-inputs
-     `(("googletest-source"
-        ;; ZNC 1.7 needs a newer, unreleased googletest (a release is planned
-        ;; <https://github.com/google/googletest/issues/1583>, so don't update
-        ;; the public GOOGLETEST to an unstable version).  The commit is taken
-        ;; from ‘third_party/googletest’ in the ZNC git repository.
-        ,(let ((commit "9737e63c69e94ac5777caa0bc77c77d5206467f3"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/google/googletest")
-                   (commit commit)))
-             (file-name (git-file-name "googletest-for-znc" commit))
-             (sha256
-              (base32
-               "0ya36n8d62zbxk6p22yffgx43mqhx2fz41gqqwbpdshjryf3wvxj")))))
+     `(("googletest-source" ,(package-source googletest))
        ("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("python" ,python)))

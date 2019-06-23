@@ -478,8 +478,6 @@ test coverage and has a web user interface that will refresh automatically.")
     (home-page "https://github.com/smartystreets/goconvey")
     (license license:expat)))
 
-;; XXX When updating, check whether ZNC's GOOGLETEST-SOURCES can be
-;; switched back to simply using (PACKAGE-SOURCE ...).
 (define-public googletest
   (package
     (name "googletest")
