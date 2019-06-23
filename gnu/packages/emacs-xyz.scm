@@ -14612,7 +14612,7 @@ to open SQLite databases.")
 (define-public emacs-nix-mode
   (package
     (name "emacs-nix-mode")
-    (version "1.2.2")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -14621,10 +14621,11 @@ to open SQLite databases.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vz3s2jx14nzy53f04d821n4f2s22ys5h9s7af6cnpynkwawyhhq"))))
+        (base32 "04xpgg9nba5m1bl7ci5l456whcb8nfhsbvgxyx89bp0zqgr005q7"))))
     (build-system emacs-build-system)
     (inputs
      `(("emacs-company" ,emacs-company)
+       ("emacs-json-mode" ,emacs-json-mode)
        ("emacs-mmm-mode" ,emacs-mmm-mode)))
     (home-page "https://github.com/NixOS/nix-mode")
     (synopsis "Emacs major mode for editing Nix expressions")
