@@ -439,15 +439,14 @@ a card with a smaller capacity than stated.")
 (define-public python-parted
   (package
     (name "python-parted")
-    (version "3.11.1")
+    (version "3.11.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/dcantrell/pyparted/archive/v"
                            version ".tar.gz"))
        (sha256
-        (base32
-         "0r1nyjj40nacnfnv17x2mnsj6ga1qplyxyza82v2809dfhim2fwq"))))
+        (base32 "18727vdscrdi2sza9la0y2xxfc4cqfl0ivjigx6m1q16jnaz84ml"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
