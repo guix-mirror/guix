@@ -916,7 +916,8 @@ needed."
                                    '())))
                    (items (filter-map (match-lambda
                                         (('argument . (? store-path? file))
-                                         file)
+                                         (and (not (derivation-path? file))
+                                              file))
                                         (_ #f))
                                       opts))
                    (roots (filter-map (match-lambda
