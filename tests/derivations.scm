@@ -87,9 +87,11 @@
 (test-assert "parse & export"
   (let* ((f  (search-path %load-path "tests/test.drv"))
          (b1 (call-with-input-file f get-bytevector-all))
-         (d1 (read-derivation (open-bytevector-input-port b1)))
+         (d1 (read-derivation (open-bytevector-input-port b1)
+                              identity))
          (b2 (call-with-bytevector-output-port (cut write-derivation d1 <>)))
-         (d2 (read-derivation (open-bytevector-input-port b2))))
+         (d2 (read-derivation (open-bytevector-input-port b2)
+                              identity)))
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
@@ -724,7 +726,7 @@
 (test-assert "build-expression->derivation and derivation-prerequisites"
   (let ((drv (build-expression->derivation %store "fail" #f)))
     (any (match-lambda
-          (($ <derivation-input> path)
+          (($ <derivation-input> (= derivation-file-name path))
            (string=? path (derivation-file-name (%guile-for-build)))))
          (derivation-prerequisites drv))))
 
@@ -741,7 +743,7 @@
     (match (derivation-prerequisites c
                                      (cut valid-derivation-input? %store
                                           <>))
-      ((($ <derivation-input> file ("out")))
+      ((($ <derivation-input> (= derivation-file-name file) ("out")))
        (string=? file (derivation-file-name b)))
       (x
        (pk 'fail x #f)))))
