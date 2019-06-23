@@ -79,6 +79,7 @@
     (services (cons (service marionette-service-type
                              (marionette-configuration
                               (imported-modules '((gnu services herd)
+                                                  (guix build utils)
                                                   (guix combinators)))))
                     %base-services))))
 
