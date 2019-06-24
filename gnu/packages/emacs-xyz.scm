@@ -4615,29 +4615,34 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
       (license license:gpl3+))))
 
 (define-public emacs-ivy-rich
-  (package
-    (name "emacs-ivy-rich")
-    (version "0.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/Yevgnen/ivy-rich.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0ayf3dwfhafcbqnckm65zy8nc1rv9ji939qfn53wbhxkrgqdicgz"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-ivy" ,emacs-ivy)))
-    (home-page "https://github.com/Yevgnen/ivy-rich")
-    (synopsis "More friendly interface for @code{ivy}")
-    (description
-     "This package extends @code{ivy} by showing more information in the
+  ;; The latest release version has a small mistake that has since been fixed,
+  ;; so we use a more recent commit.
+  (let ((commit "f6bfa293c6df0b43cc411876b665816ec3f03d08")
+        (version "0.1.4")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-rich")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Yevgnen/ivy-rich.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1s8nwwb1z6lkc58g02pi8w99qms948k8d02lw8k8cq47dw87i219"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/Yevgnen/ivy-rich")
+      (synopsis "More friendly interface for @code{ivy}")
+      (description
+       "This package extends @code{ivy} by showing more information in the
 minibuffer for each candidate.  It adds columns showing buffer modes, file
 sizes, docstrings, etc.  If @code{emacs-all-the-icons} is installed, it can
 show icons as well.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-avy
   (package
