@@ -399,6 +399,21 @@ device drivers allows Mesa to be used in many different environments ranging
 from software emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
+(define-public mesa-opencl
+  (package
+    (inherit mesa)
+    (name "mesa-opencl")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mesa)
+       ((#:configure-flags flags)
+        `(cons "-Dgallium-opencl=standalone" ,flags))))
+    (inputs
+     `(("libclc" ,libclc)
+       ,@(package-inputs mesa)))
+    (native-inputs
+     `(("clang" ,clang)
+       ,@(package-native-inputs mesa)))))
+
 (define-public mesa-headers
   (package
     (inherit mesa)
