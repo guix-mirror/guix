@@ -31,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -284,6 +285,44 @@ code analysis tools.")
      "This package provides an implementation of the C++ standard library for
 use with Clang, targeting C++11, C++14 and above.")
     (license license:expat)))
+
+(define-public libclc
+  (package
+    (name "libclc")
+    (version (package-version llvm))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project.git")
+             (commit (string-append "llvmorg-" version))))
+       (sha256
+        (base32
+         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLLVM_CLANG="
+                            (assoc-ref %build-inputs "clang")
+                            "/bin/clang")
+             (string-append "-DPYTHON="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python3"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libclc") #t)))))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("python" ,python)))
+    (home-page "https://libclc.llvm.org")
+    (synopsis "Libraries for the OpenCL programming language")
+    (description
+     "This package provides an implementation of the OpenCL library
+requirements according to version 1.1 of the OpenCL specification.")
+    ;; Apache license 2.0 with LLVM exception
+    (license license:asl2.0)))
 
 (define-public libomp
   (package
