@@ -25,6 +25,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sqlite))
 
@@ -44,6 +45,7 @@
     (inputs
      `(("gettext" ,gettext-minimal)
        ("lapack" ,lapack)
+       ("pcre" ,pcre2)
        ("sqlite" ,sqlite)
        ("readline" ,readline)))
     (arguments
