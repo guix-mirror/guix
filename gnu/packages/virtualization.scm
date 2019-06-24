@@ -435,10 +435,11 @@ manage system or application containers.")
            ;; Since the sysconfdir and localstatedir should be /etc and /var
            ;; at runtime, we must prevent writing to them at installation
            ;; time.
-           (lambda _
-             (invoke "make" "install"
-                            "sysconfdir=/tmp/etc"
-                            "localstatedir=/tmp/var")))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install"
+                    "sysconfdir=/tmp/etc"
+                    "localstatedir=/tmp/var"
+                    make-flags)))
          (add-after 'install 'wrap-libvirtd
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
