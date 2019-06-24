@@ -2384,3 +2384,37 @@ and minor modes, etc., and can also be used as a pure Guile library.  It
 comes with a simple counter example using GLUT and browser examples in C
 using gtk+-3 and webkitgtk.")
       (license license:gpl3+))))
+
+(define-public guile-jpeg
+  (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
+        (revision "0"))
+    (package
+      (name "guile-jpeg")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://gitlab.com/wingo/guile-jpeg")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page)
+                                    (commit commit)))
+                (sha256
+                 (base32
+                  "05z9m408w3h6aqb5k3r3qa7khir0k10rxwvsrzhkcq1hr5vbmr4m"))
+                (file-name (git-file-name name version))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Install .go files in the right place.
+                    (substitute* "Makefile.am"
+                      (("/ccache") "/site-ccache"))
+                    #t))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("guile" ,guile-2.2)))
+      (synopsis "JPEG file parsing library for Guile")
+      (description
+       "Guile-JPEG is a Scheme library to parse JPEG image files and to
+perform geometrical transforms on JPEG images.")
+      (license license:gpl3+))))
