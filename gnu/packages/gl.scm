@@ -414,6 +414,16 @@ from software emulation to complete hardware acceleration for modern GPUs.")
      `(("clang" ,clang)
        ,@(package-native-inputs mesa)))))
 
+(define-public mesa-opencl-icd
+  (package
+    (inherit mesa-opencl)
+    (name "mesa-opencl-icd")
+    (arguments
+     (substitute-keyword-arguments (package-arguments mesa)
+       ((#:configure-flags flags)
+        `(cons "-Dgallium-opencl=icd"
+               ,(delete "-Dgallium-opencl=standalone" flags)))))))
+
 (define-public mesa-headers
   (package
     (inherit mesa)
