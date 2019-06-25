@@ -498,24 +498,22 @@ compromised.")
               (sha256
                (base32
                 "0wcvqkpin8w4i72alnn0nxnrc9ih543qs34hqpk9xmz6m0hjk8xi"))))
-    ;; TODO: autotools support has been deprecated, and new features like i18n
-    ;; are only supported when building with cmake.
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list "-DWANT_CYRUS=ON"
+             "-DWANT_PERL=ON"
+             "-DWANT_PYTHON=ON")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'unpack-googletest
+           ;; Copy the googletest sources to where the CMake build expects them.
            (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir-p "googletest")
-             (copy-recursively (assoc-ref inputs "googletest-source")
-                               "googletest")
-             #t)))
-       #:configure-flags '("--enable-python"
-                           "--enable-perl"
-                           "--enable-cyrus"
-                           "--with-gmock=googletest/googlemock"
-                           "--with-gtest=googletest/googletest")
-       #:test-target "test"))
+             (let ((source (assoc-ref inputs "googletest-source"))
+                   (target "third_party/googletest"))
+               (mkdir-p target)
+               (copy-recursively source target)
+               #t))))))
     (native-inputs
      `(("googletest-source" ,(package-source googletest))
        ("pkg-config" ,pkg-config)))
