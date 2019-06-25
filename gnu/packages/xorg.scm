@@ -2073,14 +2073,14 @@ legacy X clients.")
 (define-public xcalc
   (package
     (name "xcalc")
-    (version "1.0.7")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://xorg/individual/app/"
                            "xcalc-" version ".tar.gz"))
        (sha256
-        (base32 "1xgih1iq9498m7vk22qrdsck1rb905sn395azjn4a6pmhfai401b"))))
+        (base32 "0c768lh0nh28ram9ldldhaf51024fngc589v4pjmf3lxmzcihr58"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
