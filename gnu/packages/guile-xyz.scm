@@ -2123,7 +2123,14 @@ chunks can be expressions as well as simple tokens.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))))
+                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Install .go files in the right place.
+                    (substitute* "Makefile.am"
+                      (("/ccache") "/site-ccache"))
+                    #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases
