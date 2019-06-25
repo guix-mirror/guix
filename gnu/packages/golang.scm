@@ -1202,32 +1202,17 @@ encodings are provided in subpackages.")
     (license license:bsd-3)))
 
 (define-public go-golang-org-x-text-transform
-  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
-        (revision "1"))
-    (package
-      (name "go-golang-org-x-text-transform")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/text")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-text-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/text/transform"
-         #:unpack-path "golang.org/x/text"))
-      (synopsis "Go text transformation")
-      (description "This package provides @code{transform}, which provides
+  (package
+    (inherit go-golang-org-x-text-encoding)
+    (name "go-golang-org-x-text-transform")
+    (arguments
+     `(#:import-path "golang.org/x/text/transform"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Go text transformation")
+    (description "This package provides @code{transform}, which provides
 reader and writer wrappers that transform the bytes passing through.  Example
 transformations provided by other packages include normalization and conversion
-between character sets.")
-      (home-page "https://go.googlesource.com/text")
-      (license license:bsd-3))))
+between character sets.")))
 
 (define-public go-golang-org-x-text-unicode-norm
   (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
