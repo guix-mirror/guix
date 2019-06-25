@@ -213,3 +213,30 @@ py.test testing framework.")
      "This package provides fixture configuration utilities for the py.test
 testing framework.")
     (license license:expat)))
+
+(define-public python-pytest-virtualenv
+  (package
+    (name "python-pytest-virtualenv")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-virtualenv" version))
+       (sha256
+        (base32
+         "03w2zz3crblj1p6i8nq17946hbn3zqp9z7cfnifw47hi4a4fww12"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; one test fails; can't find virtualenv
+    (propagated-inputs
+     `(("python-virtualenv" ,python-virtualenv)
+       ("python-pytest-shutil" ,python-pytest-shutil)
+       ("python-pytest-fixture-config" ,python-pytest-fixture-config)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Virtualenv fixture for py.test")
+    (description "This package provides a virtualenv fixture for the py.test
+framework.")
+    (license license:expat)))
