@@ -13479,6 +13479,37 @@ belong to tagged versions.")
 (define-public python2-setuptools-scm-git-archive
   (package-with-python2 python-setuptools-scm-git-archive))
 
+(define-public python-setuptools-git
+  (package
+    (name "python-setuptools-git")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools-git" version))
+       (sha256
+        (base32
+         "0i84qjwp5m0l9qagdjww2frdh63r37km1c48mrvbmaqsl1ni6r7z"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for tests.
+         (add-after 'unpack 'configure-git
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "git" "config" "--global" "user.email" "guix")
+             (invoke "git" "config" "--global" "user.name" "guix")
+             #t)))))
+    (native-inputs
+     `(("git" ,git-minimal)))
+    (home-page "https://github.com/msabramo/setuptools-git")
+    (synopsis "Setuptools revision control system plugin for Git")
+    (description
+     "This package provides a plugin for Setuptools for revision control with
+Git.")
+    (license license:bsd-3)))
+
 (define-public python-pyclipper
   (package
     (name "python-pyclipper")
