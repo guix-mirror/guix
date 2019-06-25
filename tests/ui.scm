@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +22,12 @@
   #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module ((gnu packages) #:select (specification->package))
   #:use-module (guix tests)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 regex))
 
@@ -259,5 +261,28 @@ Second line" 24))
                              (set-port-encoding! (current-error-port)
                                                  "ISO-8859-1")
                              (show-manifest-transaction store m t))))))))
+
+(test-assert "package-relevance"
+  (let ((guile  (specification->package "guile"))
+        (gcrypt (specification->package "guile-gcrypt"))
+        (go     (specification->package "go"))
+        (gnugo  (specification->package "gnugo"))
+        (rx     (cut make-regexp <> regexp/icase))
+        (>0     (cut > <> 0))
+        (=0     zero?))
+    (and (>0 (package-relevance guile
+                                (map rx '("scheme"))))
+         (>0 (package-relevance guile
+                                (map rx '("scheme" "implementation"))))
+         (>0 (package-relevance gcrypt
+                                (map rx '("guile" "crypto"))))
+         (=0 (package-relevance guile
+                                (map rx '("guile" "crypto"))))
+         (>0 (package-relevance go
+                                (map rx '("go"))))
+         (=0 (package-relevance go
+                                (map rx '("go" "game"))))
+         (>0 (package-relevance gnugo
+                                (map rx '("go" "game")))))))
 
 (test-end "ui")

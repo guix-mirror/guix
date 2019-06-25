@@ -1256,17 +1256,20 @@ weight of this field in the final score.
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
   (define (score str)
-    (let ((counts (map (lambda (regexp)
-                         (match (fold-matches regexp str '() cons)
-                           (()  0)
-                           ((m) (if (string=? (match:substring m) str)
-                                    5              ;exact match
-                                    1))
-                           (lst (length lst))))
-                       regexps)))
-      ;; Compute a score that's proportional to the number of regexps matched
-      ;; and to the number of matches for each regexp.
-      (* (length counts) (reduce + 0 counts))))
+    (define scores
+      (map (lambda (regexp)
+             (fold-matches regexp str 0
+                           (lambda (m score)
+                             (+ score
+                                (if (string=? (match:substring m) str)
+                                    5             ;exact match
+                                    1)))))
+           regexps))
+
+    ;; Return zero if one of REGEXPS doesn't match.
+    (if (any zero? scores)
+        0
+        (reduce + 0 scores)))
 
   (fold (lambda (metric relevance)
           (match metric
