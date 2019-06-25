@@ -105,3 +105,26 @@ is delete your existing cassette files, and run your tests again.  VCR.py will
 detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
     (license license:expat)))
+
+(define-public python-pytest-checkdocs
+  (package
+    (name "python-pytest-checkdocs")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-checkdocs" version))
+       (sha256
+        (base32
+         "07c27cdjcw6jph5kbgpxchrvwlps4ggwb2j6m7y64imnik0asrq8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-importlib-metadata" ,python-importlib-metadata)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/jaraco/pytest-checkdocs")
+    (synopsis "Check the README when running tests")
+    (description
+     "This package provides a pytest plugin that checks the long description
+of the project to ensure it renders properly.")
+    (license license:expat)))
