@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,6 +91,17 @@ use their packages mostly unmodified in our Android NDK build system.")
 (define-public android-googletest
   (package (inherit googletest)
     (name "android-googletest")
+    (version "1.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/google/googletest.git")
+              (commit (string-append "release-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bjlljmbf8glnd9qjabx73w6pd7ibv43yiyngqvmvgxsabzr8399"))))
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
        #:phases
