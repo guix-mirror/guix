@@ -1040,27 +1040,19 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.26")
-    (source (origin
-             (method url-fetch)
-             (uri (list (string-append "https://www.exiv2.org/builds/exiv2-"
-                                       version "-trunk.tar.gz")
-                        (string-append "https://www.exiv2.org/exiv2-"
-                                       version ".tar.gz")
-                        (string-append "https://fossies.org/linux/misc/exiv2-"
-                                       version ".tar.gz")))
-             (patches (search-patches "exiv2-CVE-2017-14860.patch"
-                                      "exiv2-CVE-2017-14859-14862-14864.patch"))
-             (sha256
-              (base32
-               "1yza317qxd8yshvqnay164imm0ks7cvij8y8j86p1gqi1153qpn7"))))
-    (build-system gnu-build-system)
-    (arguments '(#:tests? #f))                    ; no `check' target
+    (version "0.27.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
+                           "-Source.tar.gz"))
+       (sha256
+        (base32 "109hbfk63dh14fz20ivq20gcclb9jj9jmh48w4lcn6zxh1ljh9gi"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))          ; no test suite
     (propagated-inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)))
-    (native-inputs
-     `(("intltool" ,intltool)))
     (home-page "https://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
