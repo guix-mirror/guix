@@ -120,6 +120,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -4849,6 +4850,39 @@ standard @code{pathlib} module which tracks the standard library module, so
 all the newest features of the standard @code{pathlib} can be used also on
 older Python versions.")
     (license license:expat)))
+
+(define-public python-importlib-metadata
+  (package
+    (name "python-importlib-metadata")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "importlib_metadata" version))
+       (sha256
+        (base32
+         "1nqj6vj2z4byi8flzf2lbldhqgicsz9mkpv4k69kjd8p8qxy4vnb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-configparser" ,python-configparser)
+       ("python-contextlib2" ,python-contextlib2)
+       ("python-docutils" ,python-docutils)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-rst.linker" ,python-rst.linker)
+       ("python-zipp" ,python-zipp)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://importlib-metadata.readthedocs.io/")
+    (synopsis "Read metadata from Python packages")
+    (description
+     "@code{importlib_metadata} is a library which provides an API for
+accessing an installed Python package's metadata, such as its entry points or
+its top-level name.  This functionality intends to replace most uses of
+@code{pkg_resources} entry point API and metadata API.  Along with
+@code{importlib.resources} in Python 3.7 and newer, this can eliminate the
+need to use the older and less efficient @code{pkg_resources} package.")
+    (license license:asl2.0)))
 
 (define-public python-pathpy
   (package
