@@ -4884,6 +4884,34 @@ its top-level name.  This functionality intends to replace most uses of
 need to use the older and less efficient @code{pkg_resources} package.")
     (license license:asl2.0)))
 
+(define-public python-jaraco-packaging
+  (package
+    (name "python-jaraco-packaging")
+    (version "6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jaraco.packaging" version))
+        (sha256
+          (base32
+            "0zimrnkh33b9g8ffw11mjh6kvs54cy5gcjw1h5cl1r7dc833dmkm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-checkdocs" ,python-pytest-checkdocs)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-rst.linker" ,python-rst.linker)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-six" ,python-six)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jaraco/jaraco.packaging")
+    (synopsis "Tools to supplement packaging Python releases")
+    (description
+     "This package provides various tools to supplement packaging Python
+releases.")
+    (license license:expat)))
+
 (define-public python-pathpy
   (package
     (name "python-pathpy")
