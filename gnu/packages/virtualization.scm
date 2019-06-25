@@ -399,14 +399,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.10.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0v17zzyyb25nn9l18v5244myg7590dp6ppwgi8xysipifc0q77bz"))))
+                "0ywf8m9yz2hxnic7fylzlmgy4m353r4vv5zsvp89zq5yh4h81yhw"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FAIL: virshtest
@@ -459,7 +459,7 @@ manage system or application containers.")
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libuuid" ,util-linux)
-       ("lvm2" ,lvm2) ; for libdevmapper
+       ("lvm2" ,lvm2)                   ; for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
