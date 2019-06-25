@@ -383,24 +383,7 @@ error when it would have happened.")
     (license (package-license perl))))
 
 (define-public perl-base
-  (package
-    (name "perl-base")
-    (version "2.23")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
-                           "base-" version ".tar.gz"))
-       (sha256
-        (base32 "1pjxcbbcpwlgzm0fzsbqd58zn8cj9vwril1wn3xfd7ws550mixa0"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/base")
-    (synopsis "Establish an ISA relationship with base classes at compile time")
-    (description "Allows you to both load one or more modules, while setting
-up inheritance from those modules at the same time.  Unless you are using the
-fields pragma, consider this module discouraged in favor of the lighter-weight
-parent.")
-    (license (package-license perl))))  ;See README
+  (deprecated-package "perl-base" perl))
 
 (define-public perl-browser-open
   (package
@@ -873,8 +856,6 @@ the Carp.pm module doesn't help.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-sub-name" ,perl-sub-name)))
-    (propagated-inputs
-     `(("perl-base" ,perl-base)))
     (home-page "https://metacpan.org/release/Class-Accessor")
     (synopsis "Automated accessor generation")
     (description "This module automagically generates accessors/mutators for
@@ -9009,8 +8990,7 @@ simple n-ary tree.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
-     `(("perl-tree-simple" ,perl-tree-simple)
-       ("perl-base" ,perl-base)))
+     `(("perl-tree-simple" ,perl-tree-simple)))
     (home-page "https://metacpan.org/release/Tree-Simple-VisitorFactory")
     (synopsis "Factory object for dispensing Visitor objects")
     (description "This module is a factory for dispensing
