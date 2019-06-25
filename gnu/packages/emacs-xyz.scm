@@ -6767,7 +6767,7 @@ notifications.")
 (define-public emacs-alert
   (package
     (name "emacs-alert")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -6776,7 +6776,7 @@ notifications.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1vpc3q40m6dcrslki4bg725j4kv6c6xfxwjjl1ilg7la49fwwf26"))))
+        (base32 "0lc0p5cl4hfrzw1z2ghb11k1lvljn5m08jw5fmgwgxv667kwh49r"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-gntp" ,emacs-gntp)
