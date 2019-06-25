@@ -2863,7 +2863,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20181223")
+    (version "20190614")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2872,7 +2872,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18k5j10zq39y2q294avdmar87x93k57wqmq8bpz562hdqki2mz1l"))
+                "0cg0q5bkn8a06v03vmj69xyhi4xxpl729k4008q4hiakh9gy2x49"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -2892,7 +2892,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
        ("automake" ,automake)
        ("python" ,python)))
     (inputs
-     `(("alsa-lib" ,alsa-lib) ; for asound dependency
+     `(("alsa-lib" ,alsa-lib)           ; for asound dependency
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("sdl" ,sdl)))
