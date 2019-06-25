@@ -3260,6 +3260,31 @@ without requiring a real database connection.")
       (home-page "https://github.com/DATA-DOG/go-sqlmock")
       (license license:expat))))
 
+(define-public go-golang-org-colorful
+  (package
+    (name "go-golang-org-colorful")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lucasb-eyer/go-colorful")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fig06880bvk1l92j4127v4x9sar4ds7ga8959gxxghb2w70b7l2"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/lucasb-eyer/go-colorful"))
+    (native-inputs
+     `(("go-golang-org-sql-mock" ,go-golang-org-sql-mock)))
+    (synopsis "Convert between colorspaces and generate colors")
+    (description "This package implements Go's @code{color.Color} interface
+and provides a means of converting colors stored as RGB to various
+colorspaces.")
+    (home-page "https://github.com/lucasb-eyer/go-colorful")
+    (license license:expat)))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
