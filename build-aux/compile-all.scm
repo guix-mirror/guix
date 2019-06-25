@@ -91,20 +91,45 @@ to 'make'."
 
 (match (command-line)
   ((_ . files)
-   (compile-files srcdir (getcwd)
-                  (filter file-needs-compilation? files)
-                  #:workers (parallel-job-count)
-                  #:host host
-                  #:report-load (lambda (file total completed)
-                                  (when file
-                                    (format #t "[~3d%] LOAD     ~a~%"
-                                            (% (+ 1 completed) (* 2 total))
-                                            file)
-                                    (force-output)))
-                  #:report-compilation (lambda (file total completed)
-                                         (when file
-                                           (format #t "[~3d%] GUILEC   ~a~%"
-                                                   (% (+ total completed 1)
-                                                      (* 2 total))
-                                                   (scm->go file))
-                                           (force-output))))))
+   (catch #t
+     (lambda ()
+       (compile-files srcdir (getcwd)
+                      (filter file-needs-compilation? files)
+                      #:workers (parallel-job-count)
+                      #:host host
+                      #:report-load (lambda (file total completed)
+                                      (when file
+                                        (format #t "[~3d%] LOAD     ~a~%"
+                                                (% (+ 1 completed) (* 2 total))
+                                                file)
+                                        (force-output)))
+                      #:report-compilation (lambda (file total completed)
+                                             (when file
+                                               (format #t "[~3d%] GUILEC   ~a~%"
+                                                       (% (+ total completed 1)
+                                                          (* 2 total))
+                                                       (scm->go file))
+                                               (force-output)))))
+     (lambda _
+       (primitive-exit 1))
+     (lambda args
+       ;; Try to report the error in an intelligible way.
+       (let* ((stack   (make-stack #t))
+              (frame   (if (> (stack-length stack) 1)
+                           (stack-ref stack 1)    ;skip the 'throw' frame
+                           (stack-ref stack 0)))
+              (ui      (false-if-exception
+                        (resolve-module '(guix ui))))
+              (report  (and ui
+                            (false-if-exception
+                             (module-ref ui 'report-load-error)))))
+         (if report
+             ;; In Guile <= 2.2.5, 'current-load-port' was not exported.
+             (let ((load-port ((module-ref (resolve-module '(ice-9 ports))
+                                           'current-load-port))))
+               (report (or (and=> load-port port-filename) "?.scm")
+                       args frame))
+             (begin
+               (print-exception (current-error-port) frame
+                                (car args) (cdr args))
+               (display-backtrace stack (current-error-port)))))))))
