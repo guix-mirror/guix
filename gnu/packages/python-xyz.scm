@@ -7924,6 +7924,27 @@ be set via config files and/or environment variables.")
 @code{ArgumentParser} object.")
     (license license:asl2.0)))
 
+(define-public python-contextlib2
+  (package
+    (name "python-contextlib2")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "contextlib2" version))
+       (sha256
+        (base32
+         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
+    (build-system python-build-system)
+    (home-page "http://contextlib2.readthedocs.org/")
+    (synopsis "Tools for decorators and context managers")
+    (description "This module is primarily a backport of the Python
+3.2 contextlib to earlier Python versions.  Like contextlib, it
+provides utilities for common tasks involving decorators and context
+managers.  It also contains additional features that are not part of
+the standard library.")
+    (license license:psfl)))
+
 (define-public python2-contextlib2
   (package
     (name "python2-contextlib2")
