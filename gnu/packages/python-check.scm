@@ -151,3 +151,43 @@ of the project to ensure it renders properly.")
      "This package provides a pytest plugin for efficiently checking PEP8
 compliance.")
     (license license:bsd-3)))
+
+(define-public python-pytest-shutil
+  (package
+    (name "python-pytest-shutil")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-shutil" version))
+       (sha256
+        (base32
+         "0q8j0ayzmnvlraml6i977ybdq4xi096djhf30n2m1rvnvrhm45nq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (mkdir "/tmp/bin")
+             (substitute* "tests/integration/test_cmdline_integration.py"
+               (("dirname = '/bin'")
+                "dirname = '/tmp/bin'")
+               (("bindir = os.path.realpath\\('/bin'\\)")
+                "bindir = os.path.realpath('/tmp/bin')"))
+             #t)))))
+    (propagated-inputs
+     `(("python-contextlib2" ,python-contextlib2)
+       ("python-execnet" ,python-execnet)
+       ("python-pathpy" ,python-pathpy)
+       ("python-termcolor" ,python-termcolor)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Assorted shell and environment tools for py.test")
+    (description
+     "This package provides assorted shell and environment tools for the
+py.test testing framework.")
+    (license license:expat)))
