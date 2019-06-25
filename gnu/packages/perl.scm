@@ -3816,8 +3816,6 @@ slurping and spewing.  All functions are optionally exported.")
        (sha256
         (base32 "0pr3wrxrk93wy7dz9gsb1sgl77icrs8rh2mah6wms5cdi2ll5ch1"))))
     (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-parent" ,perl-parent)))
     (home-page "https://metacpan.org/release/File-Temp")
     (synopsis "Return name and handle of a temporary file safely")
     (description "File::Temp can be used to create and open temporary files in
@@ -5615,7 +5613,6 @@ Moose and is optimised for rapid startup.")
        ("perl-package-stash" ,perl-package-stash)
        ("perl-package-stash-xs" ,perl-package-stash-xs)
        ("perl-params-util" ,perl-params-util)
-       ("perl-parent" ,perl-parent)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-sub-name" ,perl-sub-name)
@@ -6945,22 +6942,7 @@ distributions.")
     (license (package-license perl))))
 
 (define-public perl-parent
-  (package
-    (name "perl-parent")
-    (version "0.237")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CO/CORION/"
-                           "parent-" version ".tar.gz"))
-       (sha256
-        (base32 "1bnaadzf51g6zrpq6pvvgds2cc9d4w1vck7sapkd3hb5hmjdk28h"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/parent")
-    (synopsis "Establish an ISA relationship with base classes at compile time")
-    (description "Allows you to both load one or more modules, while setting
-up inheritance from those modules at the same time.")
-    (license (package-license perl))))
+  (deprecated-package "perl-parent" perl))
 
 (define-public perl-path-class
   (package
