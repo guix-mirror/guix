@@ -409,28 +409,27 @@ manage system or application containers.")
                 "0ywf8m9yz2hxnic7fylzlmgy4m353r4vv5zsvp89zq5yh4h81yhw"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; FAIL: virshtest
-       ;; FAIL: virfirewalltest
-       ;; FAIL: virkmodtest
-       ;; FAIL: virnetsockettest
-       ;; FAIL: networkxml2firewalltest
-       ;; FAIL: nwfilterebiptablestest
-       ;; FAIL: nwfilterxml2firewalltest
-       ;; Time-out while running commandtest.
-       #:tests? #f
-       #:configure-flags
+     `(#:configure-flags
        (list "--with-polkit"
              "--sysconfdir=/etc"
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
+         (add-before 'configure 'fix-BOURNE_SHELL-definition
+           ;; BOURNE_SHELL is hard-#defined to ‘/bin/sh’, causing test failures.
            (lambda _
-             (substitute* '("tests/commandtest.c"
-                            "gnulib/tests/test-posix_spawn1.c"
-                            "gnulib/tests/test-posix_spawn2.c")
+             (substitute* "config.h.in"
                (("/bin/sh") (which "sh")))
              #t))
+         (add-before 'configure 'disable-broken-tests
+           (lambda _
+             (let ((tests (list "commandtest"      ; hangs idly
+                                "virnetsockettest" ; tries to network
+                                "virshtest")))     ; fails
+               (substitute* "tests/Makefile.in"
+                 (((format #f "(~a)\\$\\(EXEEXT\\)" (string-join tests "|")))
+                  ""))
+               #t)))
          (replace 'install
            ;; Since the sysconfdir and localstatedir should be /etc and /var
            ;; at runtime, we must prevent writing to them at installation
