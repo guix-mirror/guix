@@ -660,7 +660,7 @@ PGP keysigning parties.")
   (package
     (name "signing-party")
     (version "2.7")
-    (home-page "https://salsa.debian.org/debian/signing-party")
+    (home-page "https://salsa.debian.org/signing-party-team/signing-party")
     (source (origin
               (method git-fetch)
               (uri (git-reference
