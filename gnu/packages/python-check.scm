@@ -191,3 +191,25 @@ compliance.")
      "This package provides assorted shell and environment tools for the
 py.test testing framework.")
     (license license:expat)))
+
+(define-public python-pytest-fixture-config
+  (package
+    (name "python-pytest-fixture-config")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-fixture-config" version))
+       (sha256
+        (base32
+         "13i1qpz22w3x4dmw8vih5jdnbqfqvl7jiqs0dg764s0zf8bp98a1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Fixture configuration utils for py.test")
+    (description
+     "This package provides fixture configuration utilities for the py.test
+testing framework.")
+    (license license:expat)))
