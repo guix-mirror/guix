@@ -153,7 +153,7 @@ is used in some video games and movies.")
 (define-public deutex
   (package
    (name "deutex")
-   (version "5.1.2")
+   (version "5.2.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://github.com/Doom-Utils/" name
@@ -161,7 +161,7 @@ is used in some video games and movies.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1rj3w4xa0n4jixy4j7p6gbclylbgxvhdnji7xnkydrqii9rxnbp4"))))
+              "1d536d3i78k4ch8mjg7lqnamnyfpp2x5x7mzx5smqi9ad8lb6hqz"))))
    (build-system gnu-build-system)
    (native-inputs `(("asciidoc" ,asciidoc)))
    (home-page "https://github.com/Doom-Utils/deutex")
