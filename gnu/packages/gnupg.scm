@@ -659,17 +659,17 @@ PGP keysigning parties.")
 (define-public signing-party
   (package
     (name "signing-party")
-    (version "2.7")
+    (version "2.10")
     (home-page "https://salsa.debian.org/signing-party-team/signing-party")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url home-page)
-                    (commit (string-append "release-" version))))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gx9017wag4bgc0h7kca9n3jwwdm7z77yv3viayhg62flbwkvbgb"))))
+                "0lq8nmwjmysry0n4jg6vb7bh0lagbyb9pa11ii3s41p1mhzchf2r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
@@ -681,7 +681,7 @@ PGP keysigning parties.")
               ("perl-net-idn-encode" ,perl-net-idn-encode)
               ("libmd" ,libmd)))
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f ; no test suite
        #:phases
        (modify-phases %standard-phases
          (replace 'configure
