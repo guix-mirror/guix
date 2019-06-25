@@ -7596,7 +7596,7 @@ and cangjie.")
 (define-public emacs-posframe
   (package
     (name "emacs-posframe")
-    (version "0.4.3")
+    (version "0.5.0")
     (source
      (origin
        (method git-fetch)
@@ -7606,7 +7606,7 @@ and cangjie.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i5xd7x33zmshhkzpsbpcpc8lgvv5vinnl1a07bnp8r1sp4yahm0"))))
+         "1fhjxj7gi2pj5rdnmf0gddiwd8iifgjgjp01c01npz1gwwixyqh3"))))
     (build-system emacs-build-system)
     ;; emacs-minimal does not include the function font-info
     (arguments `(#:emacs ,emacs))
