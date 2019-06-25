@@ -4915,14 +4915,14 @@ releases.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.0.1")
+    (version "11.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "07x15v8c7ry9bvycw294c9yq6ky9v2b0dalvgi6rn38ilh69vsz7"))))
-    ;; (outputs '("out" "doc"))
+        (base32 "1jxkf91syzxlpiwgm83fjfz1m5xh3jrvv4iyl5wjsnkk599pls5n"))))
+    (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
@@ -4931,26 +4931,31 @@ releases.")
        ("python-sphinx" ,python-sphinx)
        ("python-rst.linker" ,python-rst.linker)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-jaraco-packaging" ,python-jaraco-packaging)))
     (arguments
-     ;; FIXME: Documentation and tests require "jaraco.packaging".
-     `(#:tests? #f))
-    ;;    #:phases
-    ;;    (modify-phases %standard-phases
-    ;;      (add-after 'build 'build-doc
-    ;;        (lambda _
-    ;;          (setenv "LANG" "en_US.UTF-8")
-    ;;          (zero? (system* "python" "setup.py" "build_sphinx"))))
-    ;;      (add-after 'install 'install-doc
-    ;;        (lambda* (#:key outputs #:allow-other-keys)
-    ;;          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-    ;;                 (doc (string-append data "/doc/" ,name "-" ,version))
-    ;;                 (html (string-append doc "/html")))
-    ;;            (mkdir-p html)
-    ;;            (for-each (lambda (file)
-    ;;                        (copy-file file (string-append doc "/" file)))
-    ;;                      '("README.rst" "CHANGES.rst"))
-    ;;            (copy-recursively "build/sphinx/html" html)))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (setenv "LANG" "en_US.UTF-8")
+             (invoke "python" "setup.py" "build_sphinx")))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (mkdir-p html)
+               (for-each (lambda (file)
+                           (copy-file file (string-append doc "/" file)))
+                         '("README.rst" "CHANGES.rst"))
+               (copy-recursively "build/sphinx/html" html)
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; The import time test aborts if an import takes longer than
+             ;; 100ms.  It may very well take a little longer than that.
+             (invoke "pytest" "-v" "-k" "not test_import_time"))))))
     (home-page "https://github.com/jaraco/path.py")
     (synopsis "Python module wrapper for built-in os.path")
     (description
