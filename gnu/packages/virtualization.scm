@@ -411,6 +411,8 @@ manage system or application containers.")
     (arguments
      `(#:configure-flags
        (list "--with-polkit"
+             (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+                            ,name "-" ,version)
              "--sysconfdir=/etc"
              "--localstatedir=/var")
        #:phases
