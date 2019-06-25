@@ -3356,6 +3356,50 @@ formatting.  It also favors portability, and includes support for all POSIX
 systems.")
       (license license:expat))))
 
+(define-public go-github-com-mattn-go-shellwords
+  (let ((commit "2444a32a19f450fabaa0bb3e96a703f15d9a97d2")
+        (version "1.0.5")
+        (revision "1"))
+    (package
+      (name "go-github-com-mattn-go-shellwords")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-shellwords")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "08zcgr1az1n8zaxzwdd205j86hczgyc52nxfnw5avpw7rrkf7v0d"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/mattn/go-shellwords"
+         ;; TODO: can't make homeless-shelter:
+         ;; go: disabling cache (/homeless-shelter/.cache/go-build) due to
+         ;; initialization failure: mkdir /homeless-shelter: permission denied
+
+         ;; This doesn't seem to work:
+
+         ;; #:phases
+         ;; (modify-phases %standard-phases
+         ;;   (replace 'check
+         ;;     (lambda* (#:key import-path #:allow-other-keys)
+         ;;       (setenv "HOME" "/tmp")
+         ;;       (invoke "go" "test" import-path))))
+
+         ;; TODO: There are also a couple of tests that have stymied Debian in
+         ;; the past.  They seem to work when run locally.
+
+         #:tests? #f
+         ))
+      (home-page "https://github.com/mattn/go-shellwords")
+      (synopsis "Parse lines into shell words")
+      (description "This package parses text into shell arguments.  Based on
+the @code{cpan} module @code{Parse::CommandLine}.")
+      (license license:expat))))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
