@@ -156,9 +156,9 @@ is used in some video games and movies.")
    (version "5.2.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://github.com/Doom-Utils/" name
+            (uri (string-append "https://github.com/Doom-Utils/deutex"
                                 "/releases/download/v" version "/"
-                                name "-" version ".tar.xz"))
+                                "deutex-" version ".tar.xz"))
             (sha256
              (base32
               "1d536d3i78k4ch8mjg7lqnamnyfpp2x5x7mzx5smqi9ad8lb6hqz"))))
