@@ -3235,6 +3235,31 @@ format in Go.")
     (home-page "https://github.com/kr/text")
     (license license:expat)))
 
+(define-public go-golang-org-sql-mock
+  (let ((commit "e98392b8111b45f8126e00af035a0dd95dc12e8b")
+        (version "1.3.3")
+        (revision "1"))
+    (package
+      (name "go-golang-org-sql-mock")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/DATA-DOG/go-sqlmock")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "033vv29g2wf6fd757ajfmha30bqin3b07377037zkl051mk6mghs"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/DATA-DOG/go-sqlmock"))
+      (synopsis "Mock library implementing @code{sql/driver}")
+      (description "This library simulates SQL-driver behavior in tests
+without requiring a real database connection.")
+      (home-page "https://github.com/DATA-DOG/go-sqlmock")
+      (license license:expat))))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
