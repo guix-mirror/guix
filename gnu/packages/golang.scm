@@ -1215,30 +1215,15 @@ transformations provided by other packages include normalization and conversion
 between character sets.")))
 
 (define-public go-golang-org-x-text-unicode-norm
-  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
-        (revision "1"))
-    (package
-      (name "go-golang-org-x-text-unicode-norm")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/text")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-text-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/text/unicode/norm"
-         #:unpack-path "golang.org/x/text"))
-      (synopsis "Unicode normalization in Go")
-      (description "This package provides @code{norm}, which contains types and
-functions for normalizing Unicode strings.")
-      (home-page "https://go.googlesource.com/text")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-text-encoding)
+    (name "go-golang-org-x-text-unicode-norm")
+    (arguments
+     `(#:import-path "golang.org/x/text/unicode/norm"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Unicode normalization in Go")
+    (description "This package provides @code{norm}, which contains types and
+functions for normalizing Unicode strings.")))
 
 (define-public go-golang-org-x-time-rate
   (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
