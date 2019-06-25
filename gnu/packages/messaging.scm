@@ -42,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
@@ -502,6 +503,7 @@ compromised.")
     (arguments
      `(#:configure-flags
        (list "-DWANT_CYRUS=ON"
+             "-DWANT_I18N=ON"
              "-DWANT_PERL=ON"
              "-DWANT_PYTHON=ON")
        #:phases
@@ -515,7 +517,9 @@ compromised.")
                (copy-recursively source target)
                #t))))))
     (native-inputs
-     `(("googletest-source" ,(package-source googletest))
+     `(("boost" ,boost)
+       ("gettext" ,gettext-minimal)
+       ("googletest-source" ,(package-source googletest))
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
