@@ -3285,6 +3285,33 @@ colorspaces.")
     (home-page "https://github.com/lucasb-eyer/go-colorful")
     (license license:expat)))
 
+(define-public go-github-com-gdamore-encoding
+  (package
+    (name "go-github-com-gdamore-encoding")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gdamore/encoding")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vmm5zll92i2fm4ajqx0gyx0p9j36496x5nabi3y0x7h0inv0pk9"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/gdamore/encoding"))
+    (inputs
+     `(("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
+       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)))
+    (home-page "https://github.com/gdamore/encoding")
+    (synopsis "Provide encodings missing from Go")
+    (description "This package provides useful encodings not included in the
+standard @code{Text} package, including some for dealing with I/O streams from
+non-UTF-friendly sources.")
+    (license license:expat)))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
