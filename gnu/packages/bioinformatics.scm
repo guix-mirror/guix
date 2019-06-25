@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Mădălin Ionel Patrașcu <madalinionel.patrascu@mdc-berlin.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4206,8 +4207,15 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
        (modify-phases %standard-phases
          (add-after 'unpack 'set-cc
            (lambda _ (setenv "CC" "gcc") #t))
-         ;; FIXME: This fails with "permission denied".
-         (delete 'reset-gzip-timestamps))))
+
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
     (native-inputs
      `(("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
