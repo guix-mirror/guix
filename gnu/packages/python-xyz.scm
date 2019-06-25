@@ -4827,6 +4827,29 @@ them as the version argument or in a SCM managed file.")
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
+(define-public python-pathlib2
+  (package
+    (name "python-pathlib2")
+    (version "2.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathlib2" version))
+       (sha256
+        (base32
+         "0hpp92vqqgcd8h92msm9slv161b1q160igjwnkf2ag6cx0c96695"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-scandir" ,python-scandir)
+       ("python-six" ,python-six)))
+    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (synopsis "Object-oriented filesystem paths")
+    (description "The goal of pathlib2 is to provide a backport of the
+standard @code{pathlib} module which tracks the standard library module, so
+all the newest features of the standard @code{pathlib} can be used also on
+older Python versions.")
+    (license license:expat)))
+
 (define-public python-pathpy
   (package
     (name "python-pathpy")
