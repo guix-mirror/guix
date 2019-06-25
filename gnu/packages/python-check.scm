@@ -128,3 +128,26 @@ interactions, which will update them to correspond to the new API.")
      "This package provides a pytest plugin that checks the long description
 of the project to ensure it renders properly.")
     (license license:expat)))
+
+(define-public python-pytest-flake8
+  (package
+    (name "python-pytest-flake8")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-flake8" version))
+       (sha256
+        (base32
+         "1h30gd21fjsafqxwclf25sdh89vrdz7rsh4lzw11aiw7ww9mq8jd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/tholo/pytest-flake8")
+    (synopsis "Pytest plugin to check FLAKE8 requirements")
+    (description
+     "This package provides a pytest plugin for efficiently checking PEP8
+compliance.")
+    (license license:bsd-3)))
