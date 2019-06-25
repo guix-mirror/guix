@@ -48,6 +48,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages textutils)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -1173,6 +1174,32 @@ for low-level interaction with the operating system.")
     (synopsis "CPU feature detection")
     (description "Thi spackage provides @code{cpu}, which offers tools for CPU
 feature detection in Go.")))
+
+(define-public go-golang-org-x-text-encoding
+  (package
+    (name "go-golang-org-x-text-encoding")
+    (version "0.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/text")
+                    (commit (string-append "v" version))))
+              (file-name (string-append "go.googlesource.com-text-"
+                                        version "-checkout"))
+              (sha256
+               (base32
+                "0flv9idw0jm5nm8lx25xqanbkqgfiym6619w575p7nrdh0riqwqh"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "golang.org/x/text/encoding"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Interface for character encodings for conversion to and from
+UTF-8")
+    (description "This package defines an interface for character encodings.
+Specific implementations of encoding for CJK text as well as simple character
+encodings are provided in subpackages.")
+    (home-page "https://go.googlesource.com/text")
+    (license license:bsd-3)))
 
 (define-public go-golang-org-x-text-transform
   (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
