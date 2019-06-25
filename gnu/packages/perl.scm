@@ -7951,14 +7951,14 @@ uplevel() are avoided.")
 (define-public perl-super
   (package
     (name "perl-super")
-    (version "1.20141117")
+    (version "1.20190531")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
                            "SUPER-" version ".tar.gz"))
        (sha256
-        (base32 "1cn05kacg0xfbm1zzksm2yx2pnrzqja4d9163cxv3sdfc1yhwqhs"))))
+        (base32 "16nk2za9fwyg7mcifacr69qi075iz1yvy8r9jh3903kzdvkiwpb8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
