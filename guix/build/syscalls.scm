@@ -146,6 +146,7 @@
             window-size-y-pixels
             terminal-window-size
             terminal-columns
+            terminal-rows
 
             utmpx?
             utmpx-login-type
@@ -1871,23 +1872,17 @@ corresponds to the TIOCGWINSZ ioctl."
                (list (strerror err))
                (list err)))))
 
-(define* (terminal-columns #:optional (port (current-output-port)))
-  "Return the best approximation of the number of columns of the terminal at
-PORT, trying to guess a reasonable value if all else fails.  The result is
-always a positive integer."
-  (define (fall-back)
-    (match (and=> (getenv "COLUMNS") string->number)
-      (#f 80)
-      ((? number? columns)
-       (if (> columns 0) columns 80))))
-
+(define (terminal-dimension window-dimension port fall-back)
+  "Return the terminal dimension defined by WINDOW-DIMENSION, one of
+'window-size-columns' or 'window-size-rows' for PORT.  If PORT does not
+correspond to a terminal, return the value returned by FALL-BACK."
   (catch 'system-error
     (lambda ()
       (if (file-port? port)
-          (match (window-size-columns (terminal-window-size port))
+          (match (window-dimension (terminal-window-size port))
             ;; Things like Emacs shell-mode return 0, which is unreasonable.
             (0 (fall-back))
-            ((? number? columns) columns))
+            ((? number? n) n))
           (fall-back)))
     (lambda args
       (let ((errno (system-error-errno args)))
@@ -1899,6 +1894,24 @@ always a positive integer."
         (if (memv errno (list ENOTTY EINVAL ENOSYS))
             (fall-back)
             (apply throw args))))))
+
+(define* (terminal-columns #:optional (port (current-output-port)))
+  "Return the best approximation of the number of columns of the terminal at
+PORT, trying to guess a reasonable value if all else fails.  The result is
+always a positive integer."
+  (define (fall-back)
+    (match (and=> (getenv "COLUMNS") string->number)
+      (#f 80)
+      ((? number? columns)
+       (if (> columns 0) columns 80))))
+
+  (terminal-dimension window-size-columns port fall-back))
+
+(define* (terminal-rows #:optional (port (current-output-port)))
+  "Return the best approximation of the number of rows of the terminal at
+PORT, trying to guess a reasonable value if all else fails.  The result is
+always a positive integer."
+  (terminal-dimension window-size-rows port (const 25)))
 
 
 ;;;
