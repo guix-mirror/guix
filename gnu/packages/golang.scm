@@ -3312,6 +3312,50 @@ standard @code{Text} package, including some for dealing with I/O streams from
 non-UTF-friendly sources.")
     (license license:expat)))
 
+(define-public go-github-com-gdamore-tcell
+  (let ((commit "aaadc574a6ed8dc3abe56036ca130dcee1ee6b6e")
+        (version "1.1.2")
+        (revision "1"))
+    (package
+      (name "go-github-com-gdamore-tcell")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdamore/tcell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0il2nnxp2cqiy73m49215dnf9in3vd25ji8qxbmq87c5qy7i1q9d"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/gdamore/tcell"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-files-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make sure .gz files are writable so that the
+               ;; 'reset-gzip-timestamps' phase can do its work.
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each make-file-writable
+                           (find-files out "\\.gz$"))
+                 #t))))))
+      (inputs
+       `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+         ("go-golang-org-colorful" ,go-golang-org-colorful)
+         ("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
+         ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+         ("go-github-com-gdamore-encoding" ,go-github-com-gdamore-encoding)))
+      (home-page "https://github.com/gdamore/tcell")
+      (synopsis "Provide a cell-based view for text terminals")
+      (description "This package includes a full parser and expander for
+terminfo capability strings to avoid hard-coding escape strings for
+formatting.  It also favors portability, and includes support for all POSIX
+systems.")
+      (license license:expat))))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
