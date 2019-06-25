@@ -46,7 +46,8 @@
   #:use-module (guix serialization)
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module ((guix build syscalls)
-                #:select (free-disk-space terminal-columns))
+                #:select (free-disk-space terminal-columns
+                                          terminal-rows))
   #:use-module ((guix build utils)
                 ;; XXX: All we need are the bindings related to
                 ;; '&invoke-error'.  However, to work around the bug described
@@ -106,8 +107,11 @@
             string->recutils
             package->recutils
             package-specification->name+version+output
+
             relevance
             package-relevance
+            display-search-results
+
             string->generations
             string->duration
             matching-generations
@@ -1246,6 +1250,11 @@ WIDTH columns.  EXTRA-FIELDS is a list of symbol/value pairs to emit."
             extra-fields)
   (newline port))
 
+
+;;;
+;;; Searching.
+;;;
+
 (define (relevance obj regexps metrics)
   "Compute a \"relevance score\" for OBJ as a function of its number of
 matches of REGEXPS and accordingly to METRICS.  METRICS is list of
@@ -1315,6 +1324,45 @@ score, the more relevant OBJ is to REGEXPS."
 zero means that PACKAGE does not match any of REGEXPS."
   (relevance package regexps %package-metrics))
 
+(define* (display-search-results matches port
+                                 #:key
+                                 (command "guix search")
+                                 (print package->recutils))
+  "Display MATCHES, a list of object/score pairs, by calling PRINT on each of
+them.  If PORT is a terminal, print at most a full screen of results."
+  (define first-line
+    (port-line port))
+
+  (define max-rows
+    (and first-line (isatty? port)
+         (terminal-rows port)))
+
+  (define (line-count str)
+    (string-count str #\newline))
+
+  (let loop ((matches matches))
+    (match matches
+      (((package . score) rest ...)
+       (let ((text (call-with-output-string
+                     (lambda (port)
+                       (print package port
+                              #:extra-fields
+                              `((relevance . ,score)))))))
+         (if (and max-rows
+                  (> (port-line port) first-line) ;print at least one result
+                  (> (+ 4 (line-count text) (port-line port))
+                     max-rows))
+             (unless (null? rest)
+               (display-hint (format #f (G_ "Run @code{~a ... | less} \
+to view all the results.")
+                                     command)))
+             (begin
+               (display text port)
+               (loop rest)))))
+      (()
+       #t))))
+
+
 (define (string->generations str)
   "Return the list of generations matching a pattern in STR.  This function
 accepts the following patterns: \"1\", \"1,2,3\", \"1..9\", \"1..\", \"..9\"."

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -139,9 +139,8 @@ columns."
      . 1)))
 
 (define (find-service-types regexps)
-  "Return two values: the list of service types whose name or description
-matches at least one of REGEXPS sorted by relevance, and the list of relevance
-scores."
+  "Return a list of service type/score pairs: service types whose name or
+description matches REGEXPS sorted by relevance, and their score."
   (let ((matches (fold-service-types
                   (lambda (type result)
                     (match (relevance type regexps
@@ -149,30 +148,25 @@ scores."
                       ((? zero?)
                        result)
                       (score
-                       (cons (list type score) result))))
+                       (cons (cons type score) result))))
                   '())))
-    (unzip2 (sort matches
-                  (lambda (m1 m2)
-                    (match m1
-                      ((type1 score1)
-                       (match m2
-                         ((type2 score2)
-                          (if (= score1 score2)
-                              (string>? (service-type-name* type1)
-                                        (service-type-name* type2))
-                              (> score1 score2)))))))))))
+    (sort matches
+          (lambda (m1 m2)
+            (match m1
+              ((type1 . score1)
+               (match m2
+                 ((type2 . score2)
+                  (if (= score1 score2)
+                      (string>? (service-type-name* type1)
+                                (service-type-name* type2))
+                      (> score1 score2))))))))))
 
 
 (define (guix-system-search . args)
   (with-error-handling
-    (let ((regexps (map (cut make-regexp* <> regexp/icase) args)))
+    (let* ((regexps (map (cut make-regexp* <> regexp/icase) args))
+           (matches (find-service-types regexps)))
       (leave-on-EPIPE
-       (let-values (((services scores)
-                     (find-service-types regexps)))
-         (for-each (lambda (service score)
-                     (service-type->recutils service
-                                             (current-output-port)
-                                             #:extra-fields
-                                             `((relevance . ,score))))
-                   services
-                   scores))))))
+       (display-search-results matches (current-output-port)
+                               #:print service-type->recutils
+                               #:command "guix system search")))))
