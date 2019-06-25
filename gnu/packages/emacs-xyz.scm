@@ -6790,8 +6790,8 @@ customizable by the user.")
     (license license:gpl2+)))
 
 (define-public emacs-zones
-  (let ((commit "353fc38a6544eb59887bee045e373406f1d038a5")
-        (revision "1"))
+  (let ((commit "3169815c323966ff8e252b44e3558d6d045243fe")
+        (revision "2"))
     (package
       (name "emacs-zones")
       (version (git-version "0" revision commit))
@@ -6804,7 +6804,7 @@ customizable by the user.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0gwnw2giii2a14nlh62xp45f47cw6ikqphhzpmcw6c7mn9x5z2ar"))
+           "039msns5596rz0my7fxpanpxwg1lkhpiibm9ppnlzaajx1hszbzl"))
          (patches
           (search-patches
            "emacs-zones-called-interactively.patch"))))
