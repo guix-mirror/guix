@@ -2170,8 +2170,8 @@ serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
 
 (define-public python-on-guile
-  (let ((commit "058c596cd3886447da31171e1026d4d19f5f5313")
-        (revision "2"))
+  (let ((commit "00a51a23247f1edc4ae8eda72b30df5cd7d0015f")
+        (revision "3"))
     (package
       (name "python-on-guile")
       (version (git-version "0.1.0" revision commit))
@@ -2183,7 +2183,7 @@ serializing continuations or delimited continuations.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ppyh5kkhsph5kc091p2b5a3alnj3wnlx8jr5xpyhrsj0vx9cqph"))))
+                  "03rpnqr08rqr3gay128g564rwk8w4jbj28ss6b46z1d4vjs4nk68"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
