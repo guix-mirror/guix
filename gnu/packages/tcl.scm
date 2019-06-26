@@ -186,9 +186,16 @@ X11 GUIs.")
                                          "/lib -lfontconfig")))
                        #t))))
 
-       #:configure-flags (list (string-append "--with-tcl="
-                                              (assoc-ref %build-inputs "tcl")
-                                              "/lib"))
+       #:configure-flags
+       (list (string-append "--with-tcl="
+                            (assoc-ref %build-inputs "tcl")
+                            "/lib")
+             ;; This is needed when cross-compiling, see:
+             ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=719247
+             ,@(if (%current-target-system)
+                   '("tcl_cv_strtod_buggy=1"
+                     "ac_cv_func_strtod=yes")
+                   '()))
 
        ;; The tests require a running X server, so we just skip them.
        #:tests? #f))
