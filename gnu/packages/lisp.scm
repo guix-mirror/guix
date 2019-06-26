@@ -5906,3 +5906,30 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (description "This is a Common Lisp library that allows to convert
 floating point values to IEEE 754 binary representation.")
       (license license:bsd-3))))
+
+(define sbcl-closure-common
+  (let ((commit "e3c5f5f454b72b01b89115e581c3c52a7e201e5c")
+        (revision "1"))
+    (package
+      (name "sbcl-closure-common")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "20101006" revision commit))
+      (home-page "https://github.com/sharplispers/closure-common")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k5r2qxn122pxi301ijir3nayi9sg4d7yiy276l36qmzwhp4mg5n"))))
+      (inputs
+       `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("babel" ,sbcl-babel)))
+      (synopsis "Support Common Lisp library for CXML")
+      (description "Closure-common is an internal helper library.  The name
+Closure is a reference to the web browser it was originally written for.")
+      ;; TODO: License?
+      (license #f))))
