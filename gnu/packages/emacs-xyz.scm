@@ -12554,7 +12554,7 @@ the current upstream.")
 (define-public emacs-company-restclient
   (package
     (name "emacs-company-restclient")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -12563,7 +12563,7 @@ the current upstream.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i1fh5lvqwlgn3g3fzh0xacxyljx6gkryipn133vfkv4jbns51n4"))))
+        (base32 "0yp0hlrgcr6yy1xkjvfckys2k24x9xg7y6336ma61bdwn5lpv0x0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
