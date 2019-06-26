@@ -8323,13 +8323,13 @@ highlighting.")
     (license license:gpl3+)))
 
 (define-public emacs-restclient
-  (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
-        (revision "1"))                 ;Guix package revision,
+  (let ((commit "422ee8d8b077dffe65706a0f027ed700b84746bc")
+        (version "0")
+        (revision "2"))                 ;Guix package revision,
                                         ;upstream doesn't have official releases
     (package
       (name "emacs-restclient")
-      (version (string-append revision "."
-                              (string-take commit 7)))
+      (version (git-version version revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -8337,7 +8337,7 @@ highlighting.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "00lmjhb5im1kgrp54yipf1h9pshxzgjlg71yf2rq5n973gvb0w0q"))
+                  "067nin7vxkdpffxa0q61ybv7szihhvpdinivmci9qkbb86rs9kkz"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
