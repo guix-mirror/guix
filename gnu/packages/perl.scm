@@ -22,6 +22,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,7 +82,7 @@
                        "perl-reproducible-build-date.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f
+     `(#:tests? #f
        #:configure-flags
        (let ((out  (assoc-ref %outputs "out"))
              (libc (assoc-ref %build-inputs "libc")))
@@ -130,7 +131,9 @@
          (add-after 'install 'remove-extra-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
-                    (libc    (assoc-ref inputs "libc"))
+                    (libc    (assoc-ref inputs
+                                        ,(if (%current-target-system)
+                                             "cross-libc" "libc")))
                     (config1 (car (find-files (string-append out "/lib/perl5")
                                               "^Config_heavy\\.pl$")))
                     (config2 (find-files (string-append out "/lib/perl5")
