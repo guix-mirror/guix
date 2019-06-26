@@ -2225,18 +2225,20 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "4.5")
+    (version "4.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://gitlab.com/pidu/git-timemachine"
-                           "/-/archive/" version
-                           "/git-timemachine-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/pidu/git-timemachine.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ii40qcincasg7s1yrvqcxkqcqzb4sfs7gcxscn6m4x4ans165zy"))))
+         "08zsn3lsnnf01wkv5ls38jga02s5dnf0j3gigy4qd6im3j3d04m1"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-transient" ,emacs-transient)))
     (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
     (description "This package enables you to step through historic versions
