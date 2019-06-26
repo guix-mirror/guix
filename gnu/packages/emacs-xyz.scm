@@ -13053,14 +13053,14 @@ cohesion with the Emacs Way.")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
-             "archive.tar.gz?ref="
-             version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-fish-completion.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bpvifv6c2a65nks6kvarw0hhm37fnyy74wikwf9qq1i20va0fpv"))))
+         "1pjqnbyjmj64q5nwq1mrdxcls4fp5y0b6zqs785i0s6wdvrm4021"))))
     (build-system emacs-build-system)
     (inputs `(("fish" ,fish)))
     (arguments
@@ -13071,6 +13071,7 @@ cohesion with the Emacs Way.")
              (let ((fish (assoc-ref inputs "fish")))
                ;; Specify the absolute file names of the various
                ;; programs so that everything works out-of-the-box.
+               (make-file-writable "fish-completion.el")
                (emacs-substitute-variables
                    "fish-completion.el"
                  ("fish-completion-command"
