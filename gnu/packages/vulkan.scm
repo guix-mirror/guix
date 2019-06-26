@@ -159,7 +159,7 @@ interpretation of the specifications for these languages.")
 (define-public vulkan-headers
   (package
     (name "vulkan-headers")
-    (version "1.1.108")
+    (version "1.1.112")
     (source
      (origin
        (method git-fetch)
@@ -169,7 +169,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0slj10rfcrd6xpfhm13x3q1ldz2qhk9p64cw0nw0qlmy40k1iy83"))))
+         "0iia2wlq38hvxwip6r3k5946ylrlk42fw50mhf0pdjxjh02p8zn5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; No tests.
@@ -193,7 +193,7 @@ interpretation of the specifications for these languages.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08v3sdkr0aii4a9jqhyz8j3x42zm2qswsiy6qsb47wz4bpi90zgy"))))
+         "1819bgmpjlikcc25bkmwwb7mp1rlyrq2v74wybg1g40ix70v0m0d"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ;FIXME: 23/39 tests fail.  Try "tests/run_all_tests.sh".
@@ -266,7 +266,7 @@ and the ICD.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1azch34l9b57wxvh2k5vc0qzmhnapli3348wwhs04z6izszyz4kf"))))
+         "0an9hqvvpfmfld2pkszzwi7ccb9g2ijjqqzlj24dqg9kqnmcr3x4"))))
     (build-system cmake-build-system)
     (inputs
      `(("glslang" ,glslang)
