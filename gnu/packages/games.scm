@@ -3549,7 +3549,7 @@ with the \"Stamp\" tool within Tux Paint.")
    (description "SuperTux is a free classic 2D jump'n run sidescroller game
 in a style similar to the original Super Mario games covered under
 the GNU GPL.")
-   (home-page "https://supertuxproject.org/")
+   (home-page "https://supertux.org/")
    (license license:gpl3+)))
 
 (define-public tintin++
