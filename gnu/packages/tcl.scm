@@ -53,7 +53,7 @@
                 "0kjzj7mkzfnb7ksxanbibibfpciyvsh5ffdlhs0bmfc75kgd435d"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
                   (add-before 'configure 'pre-configure
                     (lambda _ (chdir "unix") #t))
                  (add-after 'install 'install-private-headers
@@ -73,9 +73,16 @@
        ;; PREFIX/share/man.  The 'validate-documentation-location' phase is
        ;; not able to fix this up because the default install populates both
        ;; PREFIX/man and PREFIX/share/man.
-       #:configure-flags (list (string-append "--mandir="
-                                              (assoc-ref %outputs "out")
-                                              "/share/man"))
+       #:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "out")
+                            "/share/man")
+             ;; This is needed when cross-compiling, see:
+             ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=719247
+             ,@(if (%current-target-system)
+                   '("tcl_cv_strtod_buggy=1"
+                     "ac_cv_func_strtod=yes")
+                   '()))
 
        ;; XXX: There are a few test failures (related to HTTP, most
        ;; likely related to name resolution), but that doesn't cause
