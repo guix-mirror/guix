@@ -5933,3 +5933,31 @@ floating point values to IEEE 754 binary representation.")
 Closure is a reference to the web browser it was originally written for.")
       ;; TODO: License?
       (license #f))))
+
+(define-public sbcl-cl-reexport
+  (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-reexport")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/takagi/cl-reexport")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cwpn1m3wrl0fl9plznn7p464db646gnfc8zkyk97dyxski2aq0x"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (arguments
+       ;; TODO: Tests fail because cl-test-more is missing, but I can't find it online.
+       `(#:tests? #f))
+      (synopsis "HTTP cookie manager for Common Lisp")
+      (description "cl-cookie is a Common Lisp library featuring parsing of
+cookie headers, cookie creation, cookie jar creation and more.")
+      (license license:llgpl))))
