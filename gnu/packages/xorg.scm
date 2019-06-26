@@ -4552,6 +4552,13 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
     (build-system gnu-build-system)
+    ;; Disable zero malloc check that fails when cross-compiling.
+    (arguments
+     `(#:configure-flags
+       (list
+        ,@(if (%current-target-system)
+              '("--disable-malloc0returnsnull")
+              '()))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
@@ -4637,6 +4644,13 @@ cannot be adequately worked around on the client side of the wire.")
           (base32
             "0j89cnb06g8x79wmmnwzykgkkfdhin9j7hjpvsxwlr3fz1wmjvf0"))))
     (build-system gnu-build-system)
+    ;; Disable zero malloc check that fails when cross-compiling.
+    (arguments
+     `(#:configure-flags
+       (list
+        ,@(if (%current-target-system)
+              '("--disable-malloc0returnsnull")
+              '()))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
     (inputs
@@ -5245,16 +5259,22 @@ draggable titlebars and borders.")
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
     (arguments
-     '(#:configure-flags (list (string-append "--mandir="
-                                              (assoc-ref %outputs "doc")
-                                              "/share/man"))))
+     `(#:configure-flags
+       (list (string-append "--mandir="
+                            (assoc-ref %outputs "doc")
+                            "/share/man")
+             ;; Disable zero malloc check that fails when cross-compiling.
+             ,@(if (%current-target-system)
+                   '("--disable-malloc0returnsnull")
+                   '()))))
     (propagated-inputs
       `(("xorgproto" ,xorgproto)
         ("libxcb" ,libxcb)))
     (inputs
       `(("xtrans" ,xtrans)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("xorgproto" ,xorgproto)))
     (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
