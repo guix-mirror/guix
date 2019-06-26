@@ -2577,7 +2577,7 @@ as horizontal rules.")
 (define-public emacs-simple-httpd
   (package
     (name "emacs-simple-httpd")
-    (version "1.4.6")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -2586,9 +2586,9 @@ as horizontal rules.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qmkc0w28l53zzf5yd2grrk1sq222g5qnsm35ph25s1cfvc1qb2g"))))
+        (base32 "0dpn92rg813c4pq7a1vzj3znyxzp2lmvxqz6pzcqi0l2xn5r3wvb"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/skeeto/emacs-http-server")
+    (home-page "https://github.com/skeeto/emacs-web-server")
     (synopsis "HTTP server in pure Emacs Lisp")
     (description
      "This package provides a simple HTTP server written in Emacs Lisp to
