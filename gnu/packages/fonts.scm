@@ -51,10 +51,13 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -182,7 +185,7 @@ itself."))))
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.0.25")
+    (version "0.111")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -190,8 +193,11 @@ itself."))))
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0zvkd8cm1cg2919v1js9qmzwa02sjl7qajj3gcvgqvai1fm2i8hl"))))
-    (build-system gnu-build-system)
+                "05hpnhihwm9sxlq1qn993g03pwkmpjbn0dvnba71r1gfjv0jp2w5"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("gettext" ,gettext-minimal))) ;for msgfmt
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
