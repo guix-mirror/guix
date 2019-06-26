@@ -5961,3 +5961,38 @@ Closure is a reference to the web browser it was originally written for.")
       (description "cl-cookie is a Common Lisp library featuring parsing of
 cookie headers, cookie creation, cookie jar creation and more.")
       (license license:llgpl))))
+
+(define-public sbcl-cl-cookie
+  (let ((commit "cea55aed8b9ad25fafd13defbcb9fe8f41b29546")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-cookie")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.9.10" revision commit))
+      (home-page "https://github.com/fukamachi/cl-cookie")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "090g7z75h98zvc1ldx0vh4jn4086dhjm2w30jcwkq553qmyxwl8h"))))
+      (inputs
+       `(("proc-parse" ,sbcl-proc-parse)
+         ("alexandria" ,sbcl-alexandria)
+         ("quri" ,sbcl-quri)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)))
+      (native-inputs
+       `(("prove-asdf" ,sbcl-prove-asdf)
+         ("prove" ,sbcl-prove)))
+      (arguments
+       ;; TODO: Tests fail because cl-cookie depends on cl-cookie-test.
+       `(#:tests? #f))
+      (synopsis "HTTP cookie manager for Common Lisp")
+      (description "cl-cookie is a Common Lisp library featuring parsing of
+cookie headers, cookie creation, cookie jar creation and more.")
+      (license license:bsd-2))))
