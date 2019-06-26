@@ -2187,12 +2187,23 @@ serializing continuations or delimited continuations.")
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
-         #:make-flags
-         '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+         #:make-flags '("GUILE_AUTO_COMPILE=0")   ;to prevent guild warnings
+
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t)))))
+             (lambda _ (chdir "modules") #t))
+           (add-after 'install 'wrap
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Wrap the 'python' executable so it can find its
+               ;; dependencies.
+               (let ((out  (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/python")
+                   `("GUILE_LOAD_PATH" ":" prefix
+                     (,(getenv "GUILE_LOAD_PATH")))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                     (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+                 #t))))))
       (inputs
        `(("guile" ,guile-2.2)))
       (propagated-inputs
