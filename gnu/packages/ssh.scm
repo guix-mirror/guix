@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -230,9 +230,6 @@ a server that supports the SSH-2 protocol.")
            (install-file "contrib/ssh-copy-id.1"
                          (string-append (assoc-ref outputs "out")
                                         "/share/man/man1/"))
-           ;; Don't install the PRIVSEP_PATH directory.
-           (delete-file-recursively
-             (string-append (assoc-ref outputs "out") "/var"))
            #t)))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
