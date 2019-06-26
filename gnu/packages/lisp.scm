@@ -5857,3 +5857,11 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-iolib)
        ((#:asd-system-name _) "iolib/multiplex")))))
+
+(define sbcl-iolib+syscalls
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+syscalls")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/syscalls")))))
