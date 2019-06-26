@@ -5873,3 +5873,11 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-iolib)
        ((#:asd-system-name _) "iolib/streams")))))
+
+(define sbcl-iolib+sockets
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+sockets")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/sockets")))))
