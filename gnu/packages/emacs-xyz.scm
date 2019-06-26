@@ -14915,18 +14915,18 @@ opposed to character-based).")
   (package
     (name "emacs-disk-usage")
     (version "1.3.3")
-    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/disk-usage-"
-             version
-             ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-disk-usage.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h1jwznd41gi0vg830ilfgm01q05zknikzahwasm9cizwm2wyizj"))))
+         "0hv2gsd8k5fbjgckgiyisq4rn1i7y4rchbjy8kmixjv6mx563bll"))))
     (build-system emacs-build-system)
+    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
     (synopsis "Sort and browse disk usage listings with Emacs")
     (description "Disk Usage is a file system analyzer: it offers a tabulated
 view of file listings sorted by size.  Directory sizes are computed
