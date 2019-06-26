@@ -220,17 +220,20 @@ a server that supports the SSH-2 protocol.")
            #t))
         (replace 'install
          (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             ;; install without host keys and system configuration files
-             (apply invoke "make" "install-nosysconf" make-flags)
-             (install-file "contrib/ssh-copy-id"
-                           (string-append out "/bin/"))
-             (chmod (string-append out "/bin/ssh-copy-id") #o555)
-             (install-file "contrib/ssh-copy-id.1"
-                           (string-append out "/share/man/man1/"))
-             ;; Don't install the PRIVSEP_PATH directory.
-             (delete-file-recursively (string-append out "/var"))
-             #t))))))
+           ;; install without host keys and system configuration files
+           (apply invoke "make" "install-nosysconf" make-flags)
+           (install-file "contrib/ssh-copy-id"
+                         (string-append (assoc-ref outputs "out")
+                                        "/bin/"))
+           (chmod (string-append (assoc-ref outputs "out")
+                                 "/bin/ssh-copy-id") #o555)
+           (install-file "contrib/ssh-copy-id.1"
+                         (string-append (assoc-ref outputs "out")
+                                        "/share/man/man1/"))
+           ;; Don't install the PRIVSEP_PATH directory.
+           (delete-file-recursively
+             (string-append (assoc-ref outputs "out") "/var"))
+           #t)))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
