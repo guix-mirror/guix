@@ -5881,3 +5881,28 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
     (arguments
      (substitute-keyword-arguments (package-arguments sbcl-iolib)
        ((#:asd-system-name _) "iolib/sockets")))))
+
+(define-public sbcl-ieee-floats
+  (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
+        (revision "1"))
+    (package
+      (name "sbcl-ieee-floats")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "20170924" revision commit))
+      (home-page "https://github.com/marijnh/ieee-floats/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xyj49j9x3lc84cv3dhbf9ja34ywjk1c46dklx425fxw9mkwm83m"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "IEEE 754 binary representation for floats in Common Lisp")
+      (description "This is a Common Lisp library that allows to convert
+floating point values to IEEE 754 binary representation.")
+      (license license:bsd-3))))
