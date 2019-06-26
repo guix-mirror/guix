@@ -226,6 +226,8 @@ project (but it is usable outside of the Gnome platform).")
               ("libxml2" ,libxml2)
               ("python" ,python-minimal-wrapper)
               ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
