@@ -4696,7 +4696,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.28.0")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4704,7 +4704,7 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "15pn2m80x45bzibig4zrqybnbr0n1f9wpqx7f2p6difldns3jwf1"))))
+                "0kiragsqyixyx15747b71qc4nw8y4jx9d55wgg612xb0hp5l9pj1"))))
     (build-system meson-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
