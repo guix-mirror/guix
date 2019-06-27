@@ -239,7 +239,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
 (define-public dosbox
   (package
     (name "dosbox")
-    (version "0.74-2")
+    (version "0.74-3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://sourceforge.net/projects/dosbox"
@@ -248,7 +248,7 @@ turbo speed, networked multiplayer, and graphical enhancements.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ksp1b5szi0vy4x55rm3j1y9wq5mlslpy8llpg87rpdyjlsk0xvh"))))
+                "02i648i50dwicv1vaql15rccv4g8h5blf5g6inv67lrfxpbkvlf0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
