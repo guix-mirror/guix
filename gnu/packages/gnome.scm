@@ -7230,20 +7230,20 @@ basically a text box in which notes can be written.")
 (define-public gucharmap
   (let ((unicode-files
          '(("Blocks.txt"
-            "19zf2kd198mcv1paa194c1zf36hay1irbxssi35yi2pd8ad69qas")
+            "041sk54v6rjzb23b9x7yjdwzdp2wc7gvfz7ybavgg4gbh51wm8x1")
            ("DerivedAge.txt"
-            "1h9p1g0wnh686l6cqar7cmky465vwc6vjzzn1s7v0i9zcjaqkr4h")
+            "04j92xp07v273z3pxkbfmi1svmw9kmnjl9nvz9fv0g5ybk9zk7r6")
            ("NamesList.txt"
-            "0gvpcyq852rnlqmx4y5i1by7bavvcw6rj40i54w48yc7xr3zmgd1")
+            "0vsq8gx7hws8mvxy3nlglpwxw7ky57q0fs09d7w9xgb2ylk7fz61")
            ("Scripts.txt"
-            "0b9prz2hs6w61afqaplcxnv115f8yk4d5hn9dc5hks8nqpj28bnh")
+            "18c63hx4y5yg408a8d0wx72d2hfnlz4l560y1fsf9lpzifxpqcmx")
            ("UnicodeData.txt"
-            "1cfak1j753zcrbgixwgppyxhm4w8vda8vxhqymi7n5ljfi6kwhjj")
+            "07d1kq190kgl92ispfx6zmdkvwvhjga0ishxsngzlw8j3kdkz4ap")
            ("Unihan.zip"
-            "199kz6laypkvc0ykms6d7bkb571jmpds39sv2p7kd5jjm1ij08q1"))))
+            "1kfdhgg2gm52x3s07bijb5cxjy0jxwhd097k5lqhvzpznprm6ibf"))))
     (package
       (name "gucharmap")
-      (version "10.0.4")
+      (version "12.0.1")
       (source
        (origin
          (method url-fetch)
@@ -7252,7 +7252,7 @@ basically a text box in which notes can be written.")
                              name "-" version ".tar.xz"))
          (sha256
           (base32
-           "00gh3lll6wykd2qg1lrj05a4wvscsypmrx7rpb6jsbvb4scnh9mv"))))
+           "0m915hm2b2d6r3vs1l80rqpssvg78pv8j6nv54yg62kzknnqmpir"))))
       (build-system glib-or-gtk-build-system)
       (arguments
        `(#:modules ((ice-9 match)
@@ -7284,7 +7284,7 @@ basically a text box in which notes can be written.")
                      ,(origin
                         (method url-fetch)
                         (uri (string-append
-                              "http://www.unicode.org/Public/10.0.0/ucd/"
+                              "http://www.unicode.org/Public/12.0.0/ucd/"
                               file))
                         (sha256 (base32 hash))))))
                 unicode-files)
