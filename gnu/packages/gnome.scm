@@ -5809,7 +5809,7 @@ devices using the GNOME desktop.")
 (define-public gnome-control-center
   (package
     (name "gnome-control-center")
-    (version "3.28.2")
+    (version "3.30.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5817,7 +5817,10 @@ devices using the GNOME desktop.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d6pjdbsra16nav8201kaadja5yma92bhziki9601ilk2ry3v7pz"))))
+                "0gih1cmqbv803kp30704sllghb0impa0mmv3j8pndfg4zr2mnq9r"))
+              (patches
+               (search-patches
+                "gnome-control-center-use-udisks-to-get-disk-size.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -5834,7 +5837,7 @@ devices using the GNOME desktop.")
                (substitute* "panels/datetime/tz.h"
                  (("/usr/share/zoneinfo/zone.tab")
                   (string-append tzdata "/share/zoneinfo/zone.tab")))
-               (substitute* "panels/datetime/test-endianess.c"
+               (substitute* "tests/datetime/test-endianess.c"
                  (("/usr/share/locale")
                   (string-append libc "/share/locale")))
                (substitute* "panels/region/cc-region-panel.c"
@@ -5877,6 +5880,7 @@ devices using the GNOME desktop.")
        ("libgudev" ,libgudev)
        ("libgtop" ,libgtop)
        ("libpwquality" ,libpwquality)
+       ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libwacom" ,libwacom)
@@ -5888,6 +5892,7 @@ devices using the GNOME desktop.")
        ("pulseaudio" ,pulseaudio)
        ("smbclient" ,samba)
        ("tzdata" ,tzdata)
+       ("udisks" ,udisks)
        ("upower" ,upower)))
     (synopsis "Utilities to configure the GNOME desktop")
     (home-page "https://www.gnome.org/")
