@@ -19,7 +19,6 @@
 (define-module (gnu build accounts)
   #:use-module (guix records)
   #:use-module (guix combinators)
-  #:use-module ((guix build syscalls) #:select (fdatasync))
   #:use-module (gnu system accounts)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -231,14 +230,6 @@ each field."
   ;; grab this lock with 'with-file-lock' when they access the databases.
   "/etc/.pwd.lock")
 
-(define-syntax-rule (catch-ENOSYS exp)
-  (catch 'system-error
-    (lambda () exp)
-    (lambda args
-      (if (= ENOSYS (system-error-errno args))
-          #f
-          (apply throw args)))))
-
 (define (database-writer file mode entry->string)
   (lambda* (entries #:optional (file-or-port file))
     "Write ENTRIES to FILE-OR-PORT.  When FILE-OR-PORT is a file name, write
@@ -259,10 +250,7 @@ to it atomically and set the appropriate permissions."
               (chmod port mode)
               (write-entries port)
 
-              ;; XXX: When booting with the statically-linked Guile,
-              ;; 'fdatasync' is unavailable.
-              (catch-ENOSYS (fdatasync port))
-
+              (fsync port)
               (close-port port)
               (rename-file template file-or-port))
             (lambda ()
