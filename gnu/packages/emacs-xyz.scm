@@ -10678,33 +10678,30 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-md4rd
-  (let ((commit "c55512c2f7680db2a1e73db6bdf93adecaf40fec")
-        (revision "1"))
-    (package
-      (name "emacs-md4rd")
-      (version (string-append "0.0.2" "-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ahungry/md4rd.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mvv1mvsrpkrmikcpfqf2zbawnzgq33j6zjdrlv48mcw57xb2ak9"))))
-      (propagated-inputs
-       `(("emacs-hierarchy" ,emacs-hierarchy)
-         ("emacs-request" ,emacs-request)
-         ("emacs-dash" ,emacs-dash)
-         ("emacs-s" ,emacs-s)
-         ("emacs-tree-mode" ,emacs-tree-mode)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/ahungry/md4rd")
-      (synopsis "Emacs Mode for Reddit")
-      (description
-       "This package allows to read Reddit from within Emacs interactively.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-md4rd")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ahungry/md4rd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n6g6k4adzkkn1g7z4j27s35xy12c1fg2r08gv345ddr3wplq4ri"))))
+    (propagated-inputs
+     `(("emacs-hierarchy" ,emacs-hierarchy)
+       ("emacs-request" ,emacs-request)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-tree-mode" ,emacs-tree-mode)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ahungry/md4rd")
+    (synopsis "Emacs Mode for Reddit")
+    (description
+     "This package allows to read Reddit from within Emacs interactively.")
+    (license license:gpl3+)))
 
 (define-public emacs-pulseaudio-control
   (let ((commit "7e1a87068379075a5e9ce36c64c686c03d20d379")
