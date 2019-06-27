@@ -4158,7 +4158,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.38.1")
+    (version "1.40.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4166,7 +4166,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18311pn5kp9b4kf5prvhcjs0cwf7fm3mqh6s6p42avcr5j26l4zd"))))
+                "1cfnzamr4mvgpf6yhm28lh9cafy9z6842s8jpbqnfizfxybg8ylj"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
