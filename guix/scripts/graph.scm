@@ -254,8 +254,7 @@ GNU-BUILD-SYSTEM have zero dependencies."
   "Return the <derivation> objects and store items corresponding to the
 dependencies of OBJ, a <derivation> or store item."
   (if (derivation? obj)
-      (append (map (compose read-derivation-from-file derivation-input-path)
-                   (derivation-inputs obj))
+      (append (map derivation-input-derivation (derivation-inputs obj))
               (derivation-sources obj))
       '()))
 

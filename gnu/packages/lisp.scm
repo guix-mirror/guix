@@ -47,6 +47,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages flex)
@@ -65,6 +66,8 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages sqlite)
@@ -5369,3 +5372,627 @@ command line, to data scanning and extracting scripts, to full application
 development in a wide-range of areas.")
     (home-page "https://nongnu.org/txr/")
     (license license:bsd-2)))
+
+(define-public sbcl-clunit
+  (let ((commit "6f6d72873f0e1207f037470105969384f8380628")
+        (revision "1"))
+    (package
+      (name "sbcl-clunit")
+      (version (git-version "0.2.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tgutu/clunit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1idf2xnqzlhi8rbrqmzpmb3i1l6pbdzhhajkmhwbp6qjkmxa4h85"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "CLUnit is a Common Lisp unit testing framework")
+      (description
+       "CLUnit is a Common Lisp unit testing framework.  It is designed
+to be easy to use so that you can quickly start testing.  CLUnit
+provides a rich set of features aimed at improving your unit testing
+experience.")
+      (home-page "http://tgutu.github.io/clunit/")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-clunit
+  (sbcl-package->cl-source-package sbcl-clunit))
+
+(define-public ecl-clunit
+  (sbcl-package->ecl-package sbcl-clunit))
+
+(define-public sbcl-py4cl
+  (let ((commit "4c8a2b0814fd311f978964f825ce012290f60136")
+        (revision "1"))
+    (package
+      (name "sbcl-py4cl")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bendudson/py4cl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "15mk7qdqjkj56gdnbyrdyz6r7m1h26ldvn6ch96pmvg5vmr1m45r"))
+         (modules '((guix build utils)))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-clunit" ,sbcl-clunit)))
+      (inputs
+       `(("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
+      (propagated-inputs
+       ;; This package doesn't do anything without python available
+       `(("python" ,python)
+         ;; For multi-dimensional array support
+         ("python-numpy" ,python-numpy)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'replace-*base-directory*-var
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; In the ASD, the author makes an attempt to
+               ;; programatically determine the location of the
+               ;; source-code so lisp can call into "py4cl.py". We can
+               ;; hard-code this since we know where this file will
+               ;; reside.
+               (substitute* "src/callpython.lisp"
+                 (("py4cl/config:\\*base-directory\\*")
+                  (string-append
+                   "\""
+                   (assoc-ref outputs "out")
+                   "/share/common-lisp/sbcl-source/py4cl/"
+                   "\""))))))))
+      (synopsis "Call python from Common Lisp")
+      (description
+       "Py4CL is a bridge between Common Lisp and Python, which enables Common
+Lisp to interact with Python code.  It uses streams to communicate with a
+separate python process, the approach taken by cl4py.  This is different to
+the CFFI approach used by burgled-batteries, but has the same goal.")
+      (home-page "https://github.com/bendudson/py4cl")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-py4cl
+  (sbcl-package->cl-source-package sbcl-py4cl))
+
+(define-public ecl-py4cl
+  (sbcl-package->ecl-package sbcl-py4cl))
+
+(define-public sbcl-parse-declarations
+  (package
+    (name "sbcl-parse-declarations")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://beta.quicklisp.org/archive/parse-declarations/"
+             "2010-10-06/parse-declarations-20101006-darcs.tgz"))
+       (sha256
+        (base32
+         "0r85b0jfacd28kr65kw9c13dx4i6id1dpmby68zjy63mqbnyawrd"))))
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:asd-file "parse-declarations-1.0.asd"
+       #:asd-system-name "parse-declarations-1.0"))
+    (home-page "https://common-lisp.net/project/parse-declarations/")
+    (synopsis "Parse, filter, and build declarations")
+    (description
+     "Parse-Declarations is a Common Lisp library to help writing
+macros which establish bindings.  To be semantically correct, such
+macros must take user declarations into account, as these may affect
+the bindings they establish.  Yet the ANSI standard of Common Lisp does
+not provide any operators to work with declarations in a convenient,
+high-level way.  This library provides such operators.")
+    ;; MIT License
+    (license license:expat)))
+
+(define-public cl-parse-declarations
+  (sbcl-package->cl-source-package sbcl-parse-declarations))
+
+(define-public ecl-parse-declarations
+  (sbcl-package->ecl-package sbcl-parse-declarations))
+
+(define-public sbcl-cl-quickcheck
+  (let ((commit "807b2792a30c883a2fbecea8e7db355b50ba662f")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-quickcheck")
+      (version (git-version "0.0.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mcandre/cl-quickcheck.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "165lhypq5xkcys6hvzb3jq7ywnmqvzaflda29qk2cbs3ggas4767"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis
+       "Common Lisp port of the QuickCheck unit test framework")
+      (description
+       "Common Lisp port of the QuickCheck unit test framework")
+      (home-page "https://github.com/mcandre/cl-quickcheck")
+      ;; MIT
+      (license license:expat))))
+
+(define-public cl-cl-quickcheck
+  (sbcl-package->cl-source-package sbcl-cl-quickcheck))
+
+(define-public ecl-cl-quickcheck
+  (sbcl-package->ecl-package sbcl-cl-quickcheck))
+
+(define-public sbcl-burgled-batteries3
+  (let ((commit "9c0f6667e1a71ddf77e21793a0bea524710fef6e")
+        (revision "1"))
+    (package
+      (name "sbcl-burgled-batteries3")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/snmsts/burgled-batteries3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0b726kz2xxcg5l930gz035rsdvhxrzmp05iwfwympnb4z4ammicb"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-*cpython-include-dir*-var
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "grovel-include-dir.lisp"
+                 (("\\(defparameter \\*cpython-include-dir\\* \\(detect-python\\)\\)")
+                  (string-append
+                   "(defparameter *cpython-include-dir* \""
+                   (assoc-ref inputs "python")
+                   "/include/python3.7m"
+                   "\")")))
+               (substitute* "ffi-interface.lisp"
+                 (("\\*cpython-lib\\*")
+                  (format #f "'(\"~a/lib/libpython3.so\")"
+                          (assoc-ref inputs "python"))))
+               #t)))))
+      (native-inputs
+       `(("python" ,python)
+         ("sbcl-cl-fad" ,sbcl-cl-fad)
+         ("sbcl-lift" ,sbcl-lift)
+         ("sbcl-cl-quickcheck" ,sbcl-cl-quickcheck)))
+      (inputs
+       `(("sbcl-cffi" ,sbcl-cffi)
+         ("sbcl-cffi-grovel" ,sbcl-cffi-grovel)
+         ("sbcl-alexandria" , sbcl-alexandria)
+         ("sbcl-parse-declarations-1.0" ,sbcl-parse-declarations)
+         ("sbcl-trivial-garbage" ,sbcl-trivial-garbage)))
+      (synopsis "Bridge between Python and Lisp (FFI bindings, etc.)")
+      (description
+       "This package provides a shim between Python3 (specifically, the
+CPython implementation of Python) and Common Lisp.")
+      (home-page "https://github.com/snmsts/burgled-batteries3")
+      ;; MIT
+      (license license:expat))))
+
+(define-public cl-burgled-batteries3
+  (sbcl-package->cl-source-package sbcl-burgled-batteries3))
+
+(define-public ecl-burgled-batteries3
+  (sbcl-package->ecl-package sbcl-burgled-batteries3))
+
+(define-public sbcl-metabang-bind
+  (let ((commit "c93b7f7e1c18c954c2283efd6a7fdab36746ab5e")
+        (revision "1"))
+    (package
+      (name "sbcl-metabang-bind")
+      (version (git-version "0.8.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/metabang-bind.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0hd0kr91795v77akpbcyqiss9p0p7ypa9dznrllincnmgvsxlmf0"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("sbcl-lift" ,sbcl-lift)))
+      (synopsis "Macro that generalizes @code{multiple-value-bind} etc.")
+      (description
+       "Bind extends the idea of of let and destructing to provide a uniform
+syntax for all your accessor needs.  It combines @code{let},
+@code{destructuring-bind}, @code{with-slots}, @code{with-accessors}, structure
+editing, property or association-lists, and @code{multiple-value-bind} and a
+whole lot more into a single form.")
+      (home-page "https://common-lisp.net/project/metabang-bind/")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-metabang-bind
+  (sbcl-package->cl-source-package sbcl-metabang-bind))
+
+(define-public ecl-metabang-bind
+  (sbcl-package->ecl-package sbcl-metabang-bind))
+
+(define-public sbcl-fare-utils
+  (let ((commit "66e9c6f1499140bc00ccc22febf2aa528cbb5724")
+        (revision "1"))
+    (package
+      (name "sbcl-fare-utils")
+      (version (git-version "1.0.0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url
+            "https://gitlab.common-lisp.net/frideau/fare-utils.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "01wsr1aap3jdzhn4hrqjbhsjx6qci9dbd3gh4gayv1p49rbg8aqr"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       `(#:test-asd-file "test/fare-utils-test.asd"))
+      (native-inputs
+       `(("sbcl-hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (synopsis "Collection of utilities and data structures")
+      (description
+       "fare-utils is a small collection of utilities.  It contains a lot of
+basic everyday functions and macros.")
+      (home-page "https://gitlab.common-lisp.net/frideau/fare-utils")
+      ;; MIT License
+      (license license:expat))))
+
+(define-public cl-fare-utils
+  (sbcl-package->cl-source-package sbcl-fare-utils))
+
+(define-public ecl-fare-utils
+  (sbcl-package->ecl-package sbcl-fare-utils))
+
+(define-public sbcl-idna
+  (package
+    (name "sbcl-idna")
+    (build-system asdf-build-system/sbcl)
+    (version "0.2.2")
+    (home-page "https://github.com/antifuchs/idna")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "00nbr3mffxhlq14gg9d16pa6691s4qh35inyw76v906s77khm5a2"))))
+    (inputs
+     `(("split-sequence" ,sbcl-split-sequence)))
+    (synopsis "IDNA string encoding and decoding routines for Common Lisp")
+    (description "This Common Lisp library provides string encoding and
+decoding routines for IDNA, the International Domain Names in Applications.")
+    (license license:expat)))
+
+(define-public cl-idna
+  (sbcl-package->cl-source-package sbcl-idna))
+
+(define-public ecl-idna
+  (sbcl-package->ecl-package sbcl-idna))
+
+(define-public sbcl-swap-bytes
+  (package
+    (name "sbcl-swap-bytes")
+    (build-system asdf-build-system/sbcl)
+    (version "1.1")
+    (home-page "https://github.com/sionescu/swap-bytes")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1qysbv0jngdfkv53y874qjhcxc4qi8ixaqq6j8bzxh5z0931wv55"))))
+    (inputs
+     `(("trivial-features" ,sbcl-trivial-features)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (arguments
+     ;; TODO: Tests fail, why?
+     `(#:tests? #f))
+    (synopsis "Efficient endianness conversion for Common Lisp")
+    (description "This Common Lisp library provides optimized byte-swapping
+primitives.  The library can change endianness of unsigned integers of length
+1/2/4/8.  Very useful in implementing various network protocols and file
+formats.")
+    (license license:expat)))
+
+(define-public cl-swap-bytes
+  (sbcl-package->cl-source-package sbcl-swap-bytes))
+
+(define-public ecl-swap-bytes
+  (sbcl-package->ecl-package sbcl-swap-bytes))
+
+(define-public sbcl-iolib.asdf
+  ;; Latest release is from June 2017.
+  (let ((commit "81e20614c0d27f9605bf9766214e236fd31b99b4")
+        (revision "1"))
+    (package
+      (name "sbcl-iolib.asdf")
+      (build-system asdf-build-system/sbcl)
+      (version "0.8.3")
+      (home-page "https://github.com/sionescu/iolib")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1j81r0wm7nfbwl991f26s4npcy7kybzybd3m47rbxy31h0cfcmdm"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (arguments
+       '(#:asd-file "iolib.asdf.asd"))
+      (synopsis "ASDF component classes for IOLib, a Common Lisp I/O library")
+      (description "IOlib is to be a better and more modern I/O library than
+the standard Common Lisp library.  It contains a socket library, a DNS
+resolver, an I/O multiplexer(which supports @code{select(2)}, @code{epoll(4)}
+and @code{kqueue(2)}), a pathname library and file-system utilities.")
+      (license license:expat))))
+
+(define-public sbcl-iolib.conf
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.conf")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)))
+    (arguments
+     '(#:asd-file "iolib.conf.asd"))
+    (synopsis "Compile-time configuration for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib.common-lisp
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.common-lisp")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)))
+    (arguments
+     '(#:asd-file "iolib.common-lisp.asd"))
+    (synopsis "Slightly modified Common Lisp for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib.base
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.base")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.common-lisp" ,sbcl-iolib.common-lisp)
+       ("split-sequence" ,sbcl-split-sequence)))
+    (arguments
+     '(#:asd-file "iolib.base.asd"))
+    (synopsis "Base package for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib.grovel
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib.grovel")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.base", sbcl-iolib.base)
+       ("cffi", sbcl-cffi)))
+    (arguments
+     '(#:asd-file "iolib.grovel.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-header
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; This header is required by sbcl-iolib.
+             (install-file "src/grovel/grovel-common.h"
+                           (string-append (assoc-ref outputs "out")
+                                          "/lib/sbcl"))
+             #t)))))
+    (synopsis "CFFI Groveller for IOLib, a Common Lisp I/O library")))
+
+(define-public sbcl-iolib
+  (package
+    (inherit sbcl-iolib.asdf)
+    (name "sbcl-iolib")
+    (inputs
+     `(("iolib.asdf" ,sbcl-iolib.asdf)
+       ("iolib.conf" ,sbcl-iolib.conf)
+       ("iolib.grovel" ,sbcl-iolib.grovel)
+       ("iolib.base", sbcl-iolib.base)
+       ("bordeaux-threads", sbcl-bordeaux-threads)
+       ("idna", sbcl-idna)
+       ("swap-bytes", sbcl-swap-bytes)
+       ("libfixposix", libfixposix)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (arguments
+     '(#:asd-file "iolib.asd"
+       #:asd-system-name "iolib"
+       #:test-asd-file "iolib.tests.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/syscalls/ffi-functions-unix.lisp"
+               (("\\(:default \"libfixposix\"\\)")
+                (string-append
+                 "(:default \""
+                 (assoc-ref inputs "libfixposix") "/lib/libfixposix\")")))
+             ;; Socket tests need Internet access, disable them.
+             (substitute* "iolib.tests.asd"
+               (("\\(:file \"sockets\" :depends-on \\(\"pkgdcl\" \"defsuites\"\\)\\)")
+                "")))))))
+    (synopsis "Common Lisp I/O library")))
+
+(define sbcl-iolib+multiplex
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+multiplex")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/multiplex")))))
+
+(define sbcl-iolib+syscalls
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+syscalls")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/syscalls")))))
+
+(define sbcl-iolib+streams
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+streams")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/streams")))))
+
+(define sbcl-iolib+sockets
+  (package
+    (inherit sbcl-iolib)
+    (name "sbcl-iolib+sockets")
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-iolib)
+       ((#:asd-system-name _) "iolib/sockets")))))
+
+(define-public sbcl-ieee-floats
+  (let ((commit "566b51a005e81ff618554b9b2f0b795d3b29398d")
+        (revision "1"))
+    (package
+      (name "sbcl-ieee-floats")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "20170924" revision commit))
+      (home-page "https://github.com/marijnh/ieee-floats/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1xyj49j9x3lc84cv3dhbf9ja34ywjk1c46dklx425fxw9mkwm83m"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "IEEE 754 binary representation for floats in Common Lisp")
+      (description "This is a Common Lisp library that allows to convert
+floating point values to IEEE 754 binary representation.")
+      (license license:bsd-3))))
+
+(define sbcl-closure-common
+  (let ((commit "e3c5f5f454b72b01b89115e581c3c52a7e201e5c")
+        (revision "1"))
+    (package
+      (name "sbcl-closure-common")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "20101006" revision commit))
+      (home-page "https://github.com/sharplispers/closure-common")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k5r2qxn122pxi301ijir3nayi9sg4d7yiy276l36qmzwhp4mg5n"))))
+      (inputs
+       `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("babel" ,sbcl-babel)))
+      (synopsis "Support Common Lisp library for CXML")
+      (description "Closure-common is an internal helper library.  The name
+Closure is a reference to the web browser it was originally written for.")
+      ;; TODO: License?
+      (license #f))))
+
+(define-public sbcl-cl-reexport
+  (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-reexport")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/takagi/cl-reexport")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1cwpn1m3wrl0fl9plznn7p464db646gnfc8zkyk97dyxski2aq0x"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (arguments
+       ;; TODO: Tests fail because cl-test-more is missing, but I can't find it online.
+       `(#:tests? #f))
+      (synopsis "HTTP cookie manager for Common Lisp")
+      (description "cl-cookie is a Common Lisp library featuring parsing of
+cookie headers, cookie creation, cookie jar creation and more.")
+      (license license:llgpl))))
+
+(define-public sbcl-cl-cookie
+  (let ((commit "cea55aed8b9ad25fafd13defbcb9fe8f41b29546")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-cookie")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.9.10" revision commit))
+      (home-page "https://github.com/fukamachi/cl-cookie")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "090g7z75h98zvc1ldx0vh4jn4086dhjm2w30jcwkq553qmyxwl8h"))))
+      (inputs
+       `(("proc-parse" ,sbcl-proc-parse)
+         ("alexandria" ,sbcl-alexandria)
+         ("quri" ,sbcl-quri)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)))
+      (native-inputs
+       `(("prove-asdf" ,sbcl-prove-asdf)
+         ("prove" ,sbcl-prove)))
+      (arguments
+       ;; TODO: Tests fail because cl-cookie depends on cl-cookie-test.
+       `(#:tests? #f))
+      (synopsis "HTTP cookie manager for Common Lisp")
+      (description "cl-cookie is a Common Lisp library featuring parsing of
+cookie headers, cookie creation, cookie jar creation and more.")
+      (license license:bsd-2))))

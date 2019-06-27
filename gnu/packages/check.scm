@@ -461,22 +461,19 @@ test coverage and has a web user interface that will refresh automatically.")
     (home-page "https://github.com/smartystreets/goconvey")
     (license license:expat)))
 
-;; XXX When updating, check whether ZNC's GOOGLETEST-SOURCES can be
-;; switched back to simply using (PACKAGE-SOURCE ...).
 (define-public googletest
   (package
     (name "googletest")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/google/googletest.git")
-              (commit (string-append "release-" version))))
+             (url "https://github.com/google/googletest.git")
+             (commit (string-append "release-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0bjlljmbf8glnd9qjabx73w6pd7ibv43yiyngqvmvgxsabzr8399"))))
+        (base32 "0270msj6n7mggh4xqqjp54kswbl7mkcc8px1p5dqdpmw5ngh9fzk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")))

@@ -35,6 +35,7 @@
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,14 +273,14 @@ mapping from string keys to string values.")
 (define-public memcached
   (package
     (name "memcached")
-    (version "1.5.14")
+    (version "1.5.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://memcached.org/files/memcached-" version ".tar.gz"))
        (sha256
-        (base32 "1agj198rm5kc64z8qxck65kdzvw30pdfxalygipnryw0lwlxynww"))))
+        (base32 "0nnccb697jhdn5gqrh3phibzs6xr4nf4ryv7nmyv5vf11n4jr8j5"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
@@ -845,6 +846,19 @@ types, including INTEGER, NUMERIC, BOOLEAN, CHAR, VARCHAR, DATE, INTERVAL, and
 TIMESTAMP.  It also supports storage of binary large objects, including
 pictures, sounds, or video.")
     (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public postgresql-11
+  (package
+    (inherit postgresql)
+    (name "postgresql")
+    (version "11.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ftp.postgresql.org/pub/source/v"
+                                  version "/postgresql-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "12ycjlqncijgmd5z078ybwda8ilas96lc7nxxmdq140mzpgjv002"))))))
 
 (define-public postgresql-9.6
   (package
@@ -2150,13 +2164,13 @@ etc., and an SQL engine for performing simple SQL queries.")
 (define-public python-lmdb
   (package
     (name "python-lmdb")
-    (version "0.94")
+    (version "0.95")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lmdb" version))
               (sha256
                (base32
-                "1zh38gvkqw1jm5105if6rr7ccbgyxr7k2rm5ygb9ab3bq82pyaww"))
+                "0nx9f193gzl33r1lbqhb96h1igya7pz8wmahr8m9x5zgc05hal91"))
               (modules '((guix build utils)))
               (snippet
                ;; Delete bundled lmdb source files.

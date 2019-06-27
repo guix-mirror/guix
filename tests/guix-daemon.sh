@@ -196,7 +196,7 @@ done
 
 # Make sure garbage collection from a TCP connection does not work.
 
-tcp_socket="127.0.0.1:9999"
+tcp_socket="127.0.0.1:9998"
 guix-daemon --listen="$tcp_socket" &
 daemon_pid=$!
 

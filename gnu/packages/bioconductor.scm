@@ -4745,3 +4745,27 @@ enhancers.  The annotatr package provides an easy way to summarize and
 visualize the intersection of genomic sites/regions with genomic
 annotations.")
     (license license:gpl3)))
+
+(define-public r-rsubread
+  (package
+    (name "r-rsubread")
+    (version "1.34.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rsubread" version))
+       (sha256
+        (base32
+         "0bsrw61wcav0q22c5m6gr0vn1f3c3ld8gxj730wcab6dj196z6q3"))))
+    (properties `((upstream-name . "Rsubread")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://bioconductor.org/packages/Rsubread/")
+    (synopsis "Subread sequence alignment and counting for R")
+    (description
+     "This package provides tools for alignment, quantification and analysis
+of second and third generation sequencing data.  It includes functionality for
+read mapping, read counting, SNP calling, structural variant detection and
+gene fusion discovery.  It can be applied to all major sequencing techologies
+and to both short and long sequence reads.")
+    (license license:gpl3)))

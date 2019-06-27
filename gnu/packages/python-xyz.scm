@@ -29,7 +29,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
-;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016, 2017, 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -60,6 +60,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,6 +89,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dbm)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
@@ -118,6 +120,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
@@ -2692,7 +2695,7 @@ ecosystem, but can naturally be used also by other projects.")
 (define-public python-robotframework
   (package
     (name "python-robotframework")
-    (version "3.1.1")
+    (version "3.1.2")
     ;; There are no tests in the PyPI archive.
     (source
      (origin
@@ -2702,8 +2705,7 @@ ecosystem, but can naturally be used also by other projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1aaiamc9l35m5sf7xl2qc5q9308v7sz3p1qgzcslsjxzddphyn4v"))
+        (base32 "16gnxy0qinh8fhs0qvhff5z2xh49c3cqgm0d7bfjw120df6x7fym"))
        (patches (search-patches
                  "python-robotframework-honor-source-date-epoch.patch"))))
     (build-system python-build-system)
@@ -4863,17 +4865,101 @@ them as the version argument or in a SCM managed file.")
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
 
+(define-public python-pathlib2
+  (package
+    (name "python-pathlib2")
+    (version "2.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pathlib2" version))
+       (sha256
+        (base32
+         "0hpp92vqqgcd8h92msm9slv161b1q160igjwnkf2ag6cx0c96695"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-scandir" ,python-scandir)
+       ("python-six" ,python-six)))
+    (home-page "https://pypi.python.org/pypi/pathlib2/")
+    (synopsis "Object-oriented filesystem paths")
+    (description "The goal of pathlib2 is to provide a backport of the
+standard @code{pathlib} module which tracks the standard library module, so
+all the newest features of the standard @code{pathlib} can be used also on
+older Python versions.")
+    (license license:expat)))
+
+(define-public python-importlib-metadata
+  (package
+    (name "python-importlib-metadata")
+    (version "0.18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "importlib_metadata" version))
+       (sha256
+        (base32
+         "1nqj6vj2z4byi8flzf2lbldhqgicsz9mkpv4k69kjd8p8qxy4vnb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-configparser" ,python-configparser)
+       ("python-contextlib2" ,python-contextlib2)
+       ("python-docutils" ,python-docutils)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-rst.linker" ,python-rst.linker)
+       ("python-zipp" ,python-zipp)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://importlib-metadata.readthedocs.io/")
+    (synopsis "Read metadata from Python packages")
+    (description
+     "@code{importlib_metadata} is a library which provides an API for
+accessing an installed Python package's metadata, such as its entry points or
+its top-level name.  This functionality intends to replace most uses of
+@code{pkg_resources} entry point API and metadata API.  Along with
+@code{importlib.resources} in Python 3.7 and newer, this can eliminate the
+need to use the older and less efficient @code{pkg_resources} package.")
+    (license license:asl2.0)))
+
+(define-public python-jaraco-packaging
+  (package
+    (name "python-jaraco-packaging")
+    (version "6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jaraco.packaging" version))
+        (sha256
+          (base32
+            "0zimrnkh33b9g8ffw11mjh6kvs54cy5gcjw1h5cl1r7dc833dmkm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-checkdocs" ,python-pytest-checkdocs)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-rst.linker" ,python-rst.linker)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-six" ,python-six)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/jaraco/jaraco.packaging")
+    (synopsis "Tools to supplement packaging Python releases")
+    (description
+     "This package provides various tools to supplement packaging Python
+releases.")
+    (license license:expat)))
+
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.0.1")
+    (version "11.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "07x15v8c7ry9bvycw294c9yq6ky9v2b0dalvgi6rn38ilh69vsz7"))))
-    ;; (outputs '("out" "doc"))
+        (base32 "1jxkf91syzxlpiwgm83fjfz1m5xh3jrvv4iyl5wjsnkk599pls5n"))))
+    (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
@@ -4882,26 +4968,31 @@ them as the version argument or in a SCM managed file.")
        ("python-sphinx" ,python-sphinx)
        ("python-rst.linker" ,python-rst.linker)
        ("python-pytest" ,python-pytest)
-       ("python-pytest-runner" ,python-pytest-runner)))
+       ("python-pytest-runner" ,python-pytest-runner)
+       ("python-jaraco-packaging" ,python-jaraco-packaging)))
     (arguments
-     ;; FIXME: Documentation and tests require "jaraco.packaging".
-     `(#:tests? #f))
-    ;;    #:phases
-    ;;    (modify-phases %standard-phases
-    ;;      (add-after 'build 'build-doc
-    ;;        (lambda _
-    ;;          (setenv "LANG" "en_US.UTF-8")
-    ;;          (zero? (system* "python" "setup.py" "build_sphinx"))))
-    ;;      (add-after 'install 'install-doc
-    ;;        (lambda* (#:key outputs #:allow-other-keys)
-    ;;          (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
-    ;;                 (doc (string-append data "/doc/" ,name "-" ,version))
-    ;;                 (html (string-append doc "/html")))
-    ;;            (mkdir-p html)
-    ;;            (for-each (lambda (file)
-    ;;                        (copy-file file (string-append doc "/" file)))
-    ;;                      '("README.rst" "CHANGES.rst"))
-    ;;            (copy-recursively "build/sphinx/html" html)))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (setenv "LANG" "en_US.UTF-8")
+             (invoke "python" "setup.py" "build_sphinx")))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((data (string-append (assoc-ref outputs "doc") "/share"))
+                    (doc (string-append data "/doc/" ,name "-" ,version))
+                    (html (string-append doc "/html")))
+               (mkdir-p html)
+               (for-each (lambda (file)
+                           (copy-file file (string-append doc "/" file)))
+                         '("README.rst" "CHANGES.rst"))
+               (copy-recursively "build/sphinx/html" html)
+               #t)))
+         (replace 'check
+           (lambda _
+             ;; The import time test aborts if an import takes longer than
+             ;; 100ms.  It may very well take a little longer than that.
+             (invoke "pytest" "-v" "-k" "not test_import_time"))))))
     (home-page "https://github.com/jaraco/path.py")
     (synopsis "Python module wrapper for built-in os.path")
     (description
@@ -7898,6 +7989,27 @@ be set via config files and/or environment variables.")
 @code{ArgumentParser} object.")
     (license license:asl2.0)))
 
+(define-public python-contextlib2
+  (package
+    (name "python-contextlib2")
+    (version "0.5.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "contextlib2" version))
+       (sha256
+        (base32
+         "0j6ad6lwwyc9kv71skj098v5l7x5biyj2hs4lc5x1kcixqcr97sh"))))
+    (build-system python-build-system)
+    (home-page "http://contextlib2.readthedocs.org/")
+    (synopsis "Tools for decorators and context managers")
+    (description "This module is primarily a backport of the Python
+3.2 contextlib to earlier Python versions.  Like contextlib, it
+provides utilities for common tasks involving decorators and context
+managers.  It also contains additional features that are not part of
+the standard library.")
+    (license license:psfl)))
+
 (define-public python2-contextlib2
   (package
     (name "python2-contextlib2")
@@ -9717,16 +9829,16 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "19.2.0")
+    (version "19.2.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "1gmb8d57s13d8znvqnxi47vqzqz141z443dbxg9wjkp8ia9f220p"))))
+                "0liymyd4pzphizjlpwkncxjpm9akyr3lkfkm77yfg6wasv108b7s"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f)) ; FIXME: Some tests are failing.
+     '(#:tests? #f))                    ; FIXME: some tests fail
     (propagated-inputs
      `(("python-zope-interface" ,python-zope-interface)
        ("python-pyhamcrest" ,python-pyhamcrest)
@@ -10349,14 +10461,14 @@ etc.")
 (define-public python-stem
   (package
     (name "python-stem")
-    (version "1.7.0")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stem" version))
        (sha256
         (base32
-         "1awiglfiajnx2hva9aqpj3fmdvdb4qg7cwnlfyih827m68y3cq8v"))))
+         "18lc95pmc7i089nlsb06dsxyjl5wbhxfqgdxbjcia35ndh8z7sn9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -13423,6 +13535,37 @@ belong to tagged versions.")
 (define-public python2-setuptools-scm-git-archive
   (package-with-python2 python-setuptools-scm-git-archive))
 
+(define-public python-setuptools-git
+  (package
+    (name "python-setuptools-git")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "setuptools-git" version))
+       (sha256
+        (base32
+         "0i84qjwp5m0l9qagdjww2frdh63r37km1c48mrvbmaqsl1ni6r7z"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; This is needed for tests.
+         (add-after 'unpack 'configure-git
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "git" "config" "--global" "user.email" "guix")
+             (invoke "git" "config" "--global" "user.name" "guix")
+             #t)))))
+    (native-inputs
+     `(("git" ,git-minimal)))
+    (home-page "https://github.com/msabramo/setuptools-git")
+    (synopsis "Setuptools revision control system plugin for Git")
+    (description
+     "This package provides a plugin for Setuptools for revision control with
+Git.")
+    (license license:bsd-3)))
+
 (define-public python-pyclipper
   (package
     (name "python-pyclipper")
@@ -14025,6 +14168,51 @@ and @code{tokens_to_src} to roundtrip.")
 source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 @code{f} strings.")
     (license license:expat)))
+
+(define-public python-typed-ast
+  (package
+    (name "python-typed-ast")
+    (version "1.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "typed-ast" version))
+       (sha256
+        (base32
+         "1m7pr6qpana3cvqwiw7mlvrgvmw27ch5mx1592572xhlki8g85ak"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build python-build-system)
+                  (ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (let ((cwd (getcwd)))
+               (setenv "PYTHONPATH"
+                       (string-append cwd "/build/"
+                                      (find (cut string-prefix? "lib" <>)
+                                            (scandir (string-append cwd "/build")))
+                                      ":"
+                                      (getenv "PYTHONPATH"))))
+             (invoke "pytest")
+             #t)))))
+    (native-inputs `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python/typed_ast")
+    (synopsis "Fork of Python @code{ast} modules with type comment support")
+    (description "This package provides a parser similar to the standard
+@code{ast} library.  Unlike @code{ast}, the parsers in @code{typed_ast}
+include PEP 484 type comments and are independent of the version of Python
+under which they are run.  The @code{typed_ast} parsers produce the standard
+Python AST (plus type comments), and are both fast and correct, as they are
+based on the CPython 2.7 and 3.7 parsers.")
+    ;; See the file "LICENSE" for the details.
+    (license (list license:psfl
+                   license:asl2.0
+                   license:expat))))    ;ast27/Parser/spark.py
 
 (define-public python-typing
   (package
@@ -15113,14 +15301,13 @@ append on old values.  Partd excels at shuffling operations.")
 (define-public python-dask
   (package
     (name "python-dask")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dask" version))
        (sha256
-        (base32
-         "1y0dqcp72ixwblgway0jpvfirlxfcmwrjiivdq96firj1hw127sd"))))
+        (base32 "0b29gvf96gmp20wicly3v3mhyc93zbm3mdv935fka6x0wax7cy2y"))))
     (build-system python-build-system)
     ;; A single test out of 5000+ fails.  This test is marked as xfail when
     ;; pytest-xdist is used.
@@ -15331,16 +15518,15 @@ with the HTTP/2-based RPC framework gRPC.")
 (define-public python-astunparse
   (package
     (name "python-astunparse")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astunparse" version))
        (sha256
-        (base32
-         "1jhidwyrqn17avqh9xnnm3wd7q7aahaq009cba67g86y6gxicyyj"))))
+        (base32 "0rzbc44xcvzjhhiy7wac96mgal5mcjz1mfq8rmvgswskf4kf9cys"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; there are none
+    (arguments '(#:tests? #f))          ; there are none
     (propagated-inputs
      `(("python-six" ,python-six)
        ("python-wheel" ,python-wheel)))
@@ -15568,3 +15754,40 @@ by Igor Pavlov.")
 
 (define-public python2-pylzma
   (package-with-python2 python-pylzma))
+
+(define-public python-bsddb3
+  (package
+    (name "python-bsddb3")
+    (version "6.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bsddb3" version))
+       (sha256
+        (base32
+         "019db2y6bfmiqbrgg9x9f6h72qjmqh05czdn2v5sy9bl0gs23mj2"))))
+    (build-system python-build-system)
+    (inputs
+     `(("bdb" ,bdb)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-locations
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "BERKELEYDB_DIR" (assoc-ref inputs "bdb"))
+             (setenv "YES_I_HAVE_THE_RIGHT_TO_USE_THIS_BERKELEY_DB_VERSION" "1")
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "python3" "test3.py" "-v"))))))
+    (home-page "https://www.jcea.es/programacion/pybsddb.htm")
+    (synopsis "Python bindings for Oracle Berkeley DB")
+    (description
+     "This module provides a nearly complete wrapping of the Oracle/Sleepycat
+C API for the Database Environment, Database, Cursor, Log Cursor, Sequence and
+Transaction objects, and each of these is exposed as a Python type in the
+bsddb3.db module.  The database objects can use various access methods: btree,
+hash, recno, and queue.  Complete support of Berkeley DB distributed
+transactions.  Complete support for Berkeley DB Replication Manager.
+Complete support for Berkeley DB Base Replication.  Support for RPC.")
+    (license license:bsd-3)))

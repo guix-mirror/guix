@@ -21,6 +21,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -34,6 +35,7 @@
   #:use-module (guix base16)
   #:use-module (guix memoization)
   #:use-module (guix combinators)
+  #:use-module (guix deprecation)
   #:use-module (guix monads)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -50,7 +52,8 @@
             derivation-builder-environment-vars
             derivation-file-name
             derivation-prerequisites
-            derivation-prerequisites-to-build
+            derivation-build-plan
+            derivation-prerequisites-to-build     ;deprecated
 
             <derivation-output>
             derivation-output?
@@ -61,6 +64,7 @@
 
             <derivation-input>
             derivation-input?
+            derivation-input
             derivation-input-path
             derivation-input-derivation
             derivation-input-sub-derivations
@@ -148,14 +152,28 @@
   (recursive? derivation-output-recursive?))      ; Boolean
 
 (define-immutable-record-type <derivation-input>
-  (make-derivation-input path sub-derivations)
+  (make-derivation-input drv sub-derivations)
   derivation-input?
-  (path            derivation-input-path)             ; store path
+  (drv             derivation-input-derivation)       ; <derivation>
   (sub-derivations derivation-input-sub-derivations)) ; list of strings
 
-(define (derivation-input-derivation input)
-  "Return the <derivation> object INPUT refers to."
-  (read-derivation-from-file (derivation-input-path input)))
+
+(define (derivation-input-path input)
+  "Return the file name of the derivation INPUT refers to."
+  (derivation-file-name (derivation-input-derivation input)))
+
+(define* (derivation-input drv #:optional
+                           (outputs (derivation-output-names drv)))
+  "Return a <derivation-input> for the OUTPUTS of DRV."
+  ;; This is a public interface meant to be more convenient than
+  ;; 'make-derivation-input' and giving us more control.
+  (make-derivation-input drv outputs))
+
+(define (derivation-input-key input)
+  "Return an object for which 'equal?' and 'hash' are constant-time, and which
+can thus be used as a key for INPUT in lookup tables."
+  (cons (derivation-input-path input)
+        (derivation-input-sub-derivations input)))
 
 (set-record-type-printer! <derivation>
                           (lambda (drv port)
@@ -197,8 +215,8 @@ download with a fixed hash (aka. `fetchurl')."
   "Return the list of output paths corresponding to INPUT, a
 <derivation-input>."
   (match input
-    (($ <derivation-input> path sub-drvs)
-     (map (cut derivation-path->output-path path <>)
+    (($ <derivation-input> drv sub-drvs)
+     (map (cut derivation->output-path drv <>)
           sub-drvs))))
 
 (define (valid-derivation-input? store input)
@@ -213,20 +231,20 @@ they are coalesced, with their sub-derivations merged.  This is needed because
 Nix itself keeps only one of them."
   (fold (lambda (input result)
           (match input
-            (($ <derivation-input> path sub-drvs)
+            (($ <derivation-input> (= derivation-file-name path) sub-drvs)
              ;; XXX: quadratic
              (match (find (match-lambda
-                            (($ <derivation-input> p s)
+                            (($ <derivation-input> (= derivation-file-name p)
+                                                   s)
                              (string=? p path)))
                           result)
                (#f
                 (cons input result))
-               ((and dup ($ <derivation-input> _ sub-drvs2))
+               ((and dup ($ <derivation-input> drv sub-drvs2))
                 ;; Merge DUP with INPUT.
                 (let ((sub-drvs (delete-duplicates
                                  (append sub-drvs sub-drvs2))))
-                  (cons (make-derivation-input path
-                                               (sort sub-drvs string<?))
+                  (cons (make-derivation-input drv (sort sub-drvs string<?))
                         (delq dup result))))))))
         '()
         inputs))
@@ -242,12 +260,14 @@ result is the set of prerequisites of DRV not already in valid."
              (result    '())
              (input-set (set)))
     (let ((inputs (remove (lambda (input)
-                            (or (set-contains? input-set input)
+                            (or (set-contains? input-set
+                                               (derivation-input-key input))
                                 (cut? input)))
                           (derivation-inputs drv))))
       (fold2 loop
              (append inputs result)
-             (fold set-insert input-set inputs)
+             (fold set-insert input-set
+                   (map derivation-input-key inputs))
              (map derivation-input-derivation inputs)))))
 
 (define (offloadable-derivation? drv)
@@ -333,87 +353,81 @@ substituter many times."
         (#f #f)
         ((key . value) value)))))
 
-(define* (derivation-prerequisites-to-build store drv
-                                            #:key
-                                            (mode (build-mode normal))
-                                            (outputs
-                                             (derivation-output-names drv))
-                                            (substitutable-info
-                                             (substitution-oracle store
-                                                                  (list drv)
-                                                                  #:mode mode)))
-  "Return two values: the list of derivation-inputs required to build the
-OUTPUTS of DRV and not already available in STORE, recursively, and the list
-of required store paths that can be substituted.  SUBSTITUTABLE-INFO must be a
-one-argument procedure similar to that returned by 'substitution-oracle'."
-  (define built?
-    (mlambda (item)
-      (valid-path? store item)))
+(define* (derivation-build-plan store inputs
+                                #:key
+                                (mode (build-mode normal))
+                                (substitutable-info
+                                 (substitution-oracle
+                                  store
+                                  (map derivation-input-derivation
+                                       inputs)
+                                  #:mode mode)))
+  "Given INPUTS, a list of derivation-inputs, return two values: the list of
+derivation to build, and the list of substitutable items that, together,
+allows INPUTS to be realized.
 
-  (define input-built?
-    (compose (cut any built? <>) derivation-input-output-paths))
+SUBSTITUTABLE-INFO must be a one-argument procedure similar to that returned
+by 'substitution-oracle'."
+  (define (built? item)
+    (valid-path? store item))
 
-  (define input-substitutable?
-    ;; Return true if and only if all of SUB-DRVS are subsitutable.  If at
-    ;; least one is missing, then everything must be rebuilt.
-    (compose (cut every substitutable-info <>) derivation-input-output-paths))
-
-  (define (derivation-built? drv* sub-drvs)
+  (define (input-built? input)
     ;; In 'check' mode, assume that DRV is not built.
     (and (not (and (eqv? mode (build-mode check))
-                   (eq? drv* drv)))
-         (every built? (derivation-output-paths drv* sub-drvs))))
+                   (member input inputs)))
+         (every built? (derivation-input-output-paths input))))
 
-  (define (derivation-substitutable-info drv sub-drvs)
-    (and (substitutable-derivation? drv)
-         (let ((info (filter-map substitutable-info
-                                 (derivation-output-paths drv sub-drvs))))
-           (and (= (length info) (length sub-drvs))
+  (define (input-substitutable-info input)
+    (and (substitutable-derivation? (derivation-input-derivation input))
+         (let* ((items (derivation-input-output-paths input))
+                (info  (filter-map substitutable-info items)))
+           (and (= (length info) (length items))
                 info))))
 
-  (let loop ((drv        drv)
-             (sub-drvs   outputs)
-             (build      '())                     ;list of <derivation-input>
-             (substitute '()))                    ;list of <substitutable>
-    (cond ((derivation-built? drv sub-drvs)
-           (values build substitute))
-          ((derivation-substitutable-info drv sub-drvs)
-           =>
-           (lambda (substitutables)
-             (values build
-                     (append substitutables substitute))))
-          (else
-           (let ((build  (if (substitutable-derivation? drv)
-                             build
-                             (cons (make-derivation-input
-                                    (derivation-file-name drv) sub-drvs)
-                                   build)))
-                 (inputs (remove (lambda (i)
-                                   (or (member i build) ; XXX: quadratic
-                                       (input-built? i)
-                                       (input-substitutable? i)))
-                                 (derivation-inputs drv))))
-             (fold2 loop
-                    (append inputs build)
-                    (append (append-map (lambda (input)
-                                          (if (and (not (input-built? input))
-                                                   (input-substitutable? input))
-                                              (map substitutable-info
-                                                   (derivation-input-output-paths
-                                                    input))
-                                              '()))
-                                        (derivation-inputs drv))
-                            substitute)
-                    (map (lambda (i)
-                           (read-derivation-from-file
-                            (derivation-input-path i)))
-                         inputs)
-                    (map derivation-input-sub-derivations inputs)))))))
+  (let loop ((inputs     inputs)                  ;list of <derivation-input>
+             (build      '())                     ;list of <derivation>
+             (substitute '())                     ;list of <substitutable>
+             (visited    (set)))                  ;set of <derivation-input>
+    (match inputs
+      (()
+       (values build substitute))
+      ((input rest ...)
+       (let ((key (derivation-input-key input)))
+         (cond ((set-contains? visited key)
+                (loop rest build substitute visited))
+               ((input-built? input)
+                (loop rest build substitute
+                      (set-insert key visited)))
+               ((input-substitutable-info input)
+                =>
+                (lambda (substitutables)
+                  (loop rest build
+                        (append substitutables substitute)
+                        (set-insert key visited))))
+               (else
+                (let ((deps (derivation-inputs
+                             (derivation-input-derivation input))))
+                  (loop (append deps rest)
+                        (cons (derivation-input-derivation input) build)
+                        substitute
+                        (set-insert key visited))))))))))
 
-(define (read-derivation drv-port)
+(define-deprecated (derivation-prerequisites-to-build store drv #:rest rest)
+  derivation-build-plan
+  (let-values (((build download)
+                (apply derivation-build-plan store
+                       (list (derivation-input drv)) rest)))
+    (values (map derivation-input build) download)))
+
+(define* (read-derivation drv-port
+                          #:optional (read-derivation-from-file
+                                      read-derivation-from-file))
   "Read the derivation from DRV-PORT and return the corresponding <derivation>
-object.  Most of the time you'll want to use 'read-derivation-from-file',
-which caches things as appropriate and is thus more efficient."
+object.  Call READ-DERIVATION-FROM-FILE to read derivations declared as inputs
+of the derivation being parsed.
+
+Most of the time you'll want to use 'read-derivation-from-file', which caches
+things as appropriate and is thus more efficient."
 
   (define comma (string->symbol ","))
 
@@ -449,8 +463,9 @@ which caches things as appropriate and is thus more efficient."
     (fold-right (lambda (input result)
                   (match input
                     ((path (sub-drvs ...))
-                     (cons (make-derivation-input path sub-drvs)
-                           result))))
+                     (let ((drv (read-derivation-from-file path)))
+                       (cons (make-derivation-input drv sub-drvs)
+                             result)))))
                 '()
                 x))
 
@@ -552,9 +567,15 @@ that form."
 
   (define (write-input input port)
     (match input
-      (($ <derivation-input> path sub-drvs)
+      (($ <derivation-input> obj sub-drvs)
        (display "(\"" port)
-       (display path port)
+
+       ;; 'derivation/masked-inputs' produces objects that contain a string
+       ;; instead of a <derivation>, so we need to account for that.
+       (display (if (derivation? obj)
+                    (derivation-file-name obj)
+                    obj)
+                port)
        (display "\"," port)
        (write-string-list sub-drvs)
        (display ")" port))))
@@ -645,13 +666,16 @@ name of each input with that input's hash."
     (($ <derivation> outputs inputs sources
                      system builder args env-vars)
      (let ((inputs (map (match-lambda
-                          (($ <derivation-input> path sub-drvs)
+                          (($ <derivation-input> (= derivation-file-name path)
+                                                 sub-drvs)
                            (let ((hash (derivation-path->base16-hash path)))
                              (make-derivation-input hash sub-drvs))))
                         inputs)))
        (make-derivation outputs
-                        (sort (coalesce-duplicate-inputs inputs)
-                              derivation-input<?)
+                        (sort inputs
+                              (lambda (drv1 drv2)
+                                (string<? (derivation-input-derivation drv1)
+                                          (derivation-input-derivation drv2))))
                         sources
                         system builder args env-vars
                         #f)))))
@@ -807,17 +831,19 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
   (define input->derivation-input
     (match-lambda
       (((? derivation? drv))
-       (make-derivation-input (derivation-file-name drv) '("out")))
+       (make-derivation-input drv '("out")))
       (((? derivation? drv) sub-drvs ...)
-       (make-derivation-input (derivation-file-name drv) sub-drvs))
-      (((? direct-store-path? input))
-       (make-derivation-input input '("out")))
-      (((? direct-store-path? input) sub-drvs ...)
-       (make-derivation-input input sub-drvs))
-      ((input . _)
-       (let ((path (add-to-store store (basename input)
-                                 #t "sha256" input)))
-         (make-derivation-input path '())))))
+       (make-derivation-input drv sub-drvs))
+      (_ #f)))
+
+  (define input->source
+    (match-lambda
+      (((? string? input) . _)
+       (if (direct-store-path? input)
+           input
+           (add-to-store store (basename input)
+                         #t "sha256" input)))
+      (_ #f)))
 
   ;; Note: lists are sorted alphabetically, to conform with the behavior of
   ;; C++ `std::map' in Nix itself.
@@ -828,32 +854,31 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
                                   (make-derivation-output "" hash-algo
                                                           hash recursive?)))
                           (sort outputs string<?)))
+         (sources    (sort (delete-duplicates
+                            (filter-map input->source inputs))
+                           string<?))
          (inputs     (sort (coalesce-duplicate-inputs
-                            (map input->derivation-input
-                                 (delete-duplicates inputs)))
+                            (filter-map input->derivation-input inputs))
                            derivation-input<?))
          (env-vars   (sort (env-vars-with-empty-outputs
                             (user+system-env-vars))
                            (lambda (e1 e2)
                              (string<? (car e1) (car e2)))))
-         (drv-masked (make-derivation outputs
-                                      (filter (compose derivation-path?
-                                                       derivation-input-path)
-                                              inputs)
-                                      (filter-map (lambda (i)
-                                                    (let ((p (derivation-input-path i)))
-                                                      (and (not (derivation-path? p))
-                                                           p)))
-                                                  inputs)
+         (drv-masked (make-derivation outputs inputs sources
                                       system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
     (let* ((file (add-data-to-store store (string-append name ".drv")
                                     (derivation->bytevector drv)
-                                    (map derivation-input-path inputs)))
+                                    (append (map derivation-input-path inputs)
+                                            sources)))
            (drv* (set-field drv (derivation-file-name) file)))
-      (hash-set! %derivation-cache file drv*)
-      drv*)))
+      ;; Preserve pointer equality.  This improves the performance of
+      ;; 'eq?'-memoization on derivations.
+      (or (hash-ref %derivation-cache file)
+          (begin
+            (hash-set! %derivation-cache file drv*)
+            drv*)))))
 
 (define (invalidate-derivation-caches!)
   "Invalidate internal derivation caches.  This is mostly useful for
@@ -920,7 +945,8 @@ recursively."
       ;; in the format used in 'derivation' calls.
       (mlambda (input loop)
         (match input
-          (($ <derivation-input> path (sub-drvs ...))
+          (($ <derivation-input> (= derivation-file-name path)
+                                 (sub-drvs ...))
            (match (vhash-assoc path mapping)
              ((_ . (? derivation? replacement))
               (cons replacement sub-drvs))
@@ -990,6 +1016,11 @@ derivation/output pairs, using the specified MODE."
   (build-things store (map (match-lambda
                             ((? derivation? drv)
                              (derivation-file-name drv))
+                            ((? derivation-input? input)
+                             (cons (derivation-input-path input)
+                                   (string-join
+                                    (derivation-input-sub-derivations input)
+                                    ",")))
                             ((? string? file) file)
                             (((? derivation? drv) . output)
                              (cons (derivation-file-name drv)

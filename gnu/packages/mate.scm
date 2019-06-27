@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Guy Fleury Iteriteka <hoonandon@gmail.com>
 ;;;
@@ -195,20 +195,19 @@ from Mint-X-F and Faenza-Fresh icon packs.")
 (define-public mate-themes
   (package
     (name "mate-themes")
-    (version "3.22.19")
+    (version "3.22.20")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://mate/themes/" (version-major+minor version)
                            "/mate-themes-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1ycb8b8r0s8d1h1477135mynr53s5781gdb2ap8xlvj2g58492wq"))))
+       (sha256
+        (base32 "0c3dhf8p9nc2maky4g9xr04iil9wwbdkmhpzynlc6lfg4ksqq2bx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("gdk-pixbuf" ,gdk-pixbuf) ; gdk-pixbuf+svg isn't needed
+       ("gdk-pixbuf" ,gdk-pixbuf)       ; gdk-pixbuf+svg isn't needed
        ("gtk" ,gtk+-2)))
     (home-page "https://mate-desktop.org/")
     (synopsis

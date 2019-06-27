@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bdw-gc)
@@ -308,8 +310,19 @@ on numerical types, while GiNaC depends on CLN for this purpose.")
              (invoke "make" "libzn_poly.so")))
          (add-after 'install 'install-so
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-               (install-file "libzn_poly.so" lib)))))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (soname (string-append "libzn_poly-" ,version ".so"))
+                    (target (string-append lib "/" soname)))
+               (install-file "libzn_poly.a" lib)
+               (install-file soname lib)
+               (symlink target
+                        (string-append lib "/libzn_poly.so"))
+               (symlink target
+                        (string-append lib "/libzn_poly-"
+                                       ,(version-major+minor version)
+                                       ".so")))
+             #t)))))
     (synopsis "Arithmetic for polynomials over Z/NZ")
     (description "zn_poly implements the arithmetic of polynomials the
 coefficients of which are modular integers.")
@@ -353,3 +366,109 @@ Boolean variables.  As a unique approach, binary decision diagrams are
 used as internal storage type for polynomial structures.")
     (license license:gpl2+)
     (home-page "https://gitlab.com/sagemath/zn_poly")))
+
+(define-public lcalc
+  (package
+    (name "lcalc")
+    (version "1.23")
+    ;; The original home page of the project has disappeared, as well as
+    ;; code hosted by the original author on Google Code. The latter has
+    ;; been copied to gitlab.com/sagemath and purportedly contains patches
+    ;; for a never released version 1.3, that supposedly follows 1.23.
+    ;; We use the tarball as well as the patches hosted inside the sage
+    ;; package system distributed with the sage tarball.
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.fu-berlin.de/unix/misc/sage/spkg/"
+                           "upstream/lcalc/lcalc-1.23.tar.bz2"))
+       (sha256
+        (base32
+         "1c6dsdshgxhqppjxvxhp8yhpxaqvnz3d1mlh26r571gkq8z2bm43"))
+       (patches (search-patches "lcalc-lcommon-h.patch"
+                                "lcalc-default-parameters-1.patch"
+                                "lcalc-default-parameters-2.patch"
+                                "lcalc-using-namespace-std.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'prepare-build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "src")
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "Makefile"
+                 (("^INSTALL_DIR= /usr/local")
+                  (string-append "INSTALL_DIR=" out))
+                 ;; Sage renames the include directory, so we do it also.
+                 (("include/Lfunction")
+                  "include/libLfunction")
+                 ;; Add --std=c++11 to be compatible with the "auto" keyword
+                 ;; introduced by lcalc-using-namespace-std.patch.
+                 (("^#EXTRA= -pg")
+                  "EXTRA=--std=c++11")))
+             #t))
+         (add-before 'install 'make-output-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (mkdir-p bin)
+               (mkdir-p lib)
+               (mkdir-p include))
+             #t)))))
+    ;; FIXME:
+    ;; We need to add pari-gp and probably pari related patches from the
+    ;; sage project, as well as uncomment the line setting PARI_DEFINE in
+    ;; the Makefile to get the full functionality of this package.
+    ;; For the time being, we hope that sage can be compiled without.
+    (synopsis "C++ library for L-functions")
+    (description "Lcalc computes L-functions, in particular the Riemann
+zeta function and its twists by quadratic characters.")
+    (license license:gpl2+)
+    (home-page "https://gitlab.com/sagemath/sage")))
+
+(define-public ratpoints
+  (package
+    (name "ratpoints")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.mathe2.uni-bayreuth.de/stoll/programs/"
+                    "ratpoints-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0zhad84sfds7izyksbqjmwpfw4rvyqk63yzdjd3ysd32zss5bgf4"))
+              (patches
+               ;; Taken from
+               ;; <https://git.sagemath.org/sage.git/plain/build/pkgs/ratpoints/patches/>
+               (search-patches "ratpoints-sturm_and_rp_private.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out"))
+             "CCFLAGS=-fPIC")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-before 'install 'create-install-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p out)
+               (with-directory-excursion out
+                 (for-each (lambda (d) (mkdir-p d))
+                           '("bin" "include" "lib"))))
+             #t)))))
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "http://www.mathe2.uni-bayreuth.de/stoll/programs/")
+    (synopsis "Find rational points on hyperelliptic curves")
+    (description "Ratpoints tries to find all rational points within
+a given height bound on a hyperelliptic curve in a very efficient way,
+by using an optimized quadratic sieve algorithm.")
+    (license license:gpl2+)))

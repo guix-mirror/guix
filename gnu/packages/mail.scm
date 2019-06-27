@@ -351,14 +351,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.12.0")
+    (version "1.12.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "13zr2fpql33sdbsjsiaa952js5bvphc1x4lqsj36qyzdhj3l84na"))
+               "0311sip2q90aqaxn7h3cck1zl98b4vifqi8bp5fsizy4dr06bi81"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -1433,14 +1433,14 @@ hashing schemes plugin for @code{Dovecot}.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "173wd7x8y5sp94slzwlnb7zhgs32r57zl9xspl2rf4g3fqwmhpwd"))))
+                "1sphd30jplii58y2zmw365bckm6pszmapcy905zhjll1sm1ldjv8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))

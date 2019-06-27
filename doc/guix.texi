@@ -2430,13 +2430,14 @@ The resulting file will be much smaller than 50 GB (typically less than
 Boot the USB installation image in an VM:
 
 @example
-qemu-system-x86_64 -m 1024 -smp 1 \
+qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
   -net user -net nic,model=virtio -boot menu=on \
   -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
   -drive file=guixsd.img
 @end example
 
-The ordering of the drives matters.
+The ordering of the drives matters.  @code{-enable-kvm} is optional, but
+significantly improves performance, @pxref{Running Guix in a VM}.
 
 In the VM console, quickly press the @kbd{F12} key to enter the boot
 menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
@@ -12735,9 +12736,34 @@ NetworkManager will update @code{resolv.conf} to reflect the nameservers
 provided by currently active connections.
 
 @item dnsmasq
-NetworkManager will run @code{dnsmasq} as a local caching nameserver,
-using a "split DNS" configuration if you are connected to a VPN, and
+NetworkManager will run @code{dnsmasq} as a local caching nameserver, using a
+@dfn{conditional forwarding} configuration if you are connected to a VPN, and
 then update @code{resolv.conf} to point to the local nameserver.
+
+With this setting, you can share your network connection.  For example when
+you want to share your network connection to another laptop @i{via} an
+Ethernet cable, you can open @command{nm-connection-editor} and configure the
+Wired connection's method for IPv4 and IPv6 to be ``Shared to other computers''
+and reestablish the connection (or reboot).
+
+You can also set up a @dfn{host-to-guest connection} to QEMU VMs
+(@pxref{Installing Guix in a VM}).  With a host-to-guest connection, you can
+e.g.@: access a Web server running on the VM (@pxref{Web Services}) from a Web
+browser on your host system, or connect to the VM @i{via} SSH
+(@pxref{Networking Services, @code{openssh-service-type}}).  To set up a
+host-to-guest connection, run this command once:
+
+@example
+nmcli connection add type tun \
+ connection.interface-name tap0 \
+ tun.mode tap tun.owner $(id -u) \
+ ipv4.method shared \
+ ipv4.addresses 172.28.112.1/24
+@end example
+
+Then each time you launch your QEMU VM (@pxref{Running Guix in a VM}), pass
+@option{-nic tap,ifname=tap0,script=no,downscript=no} to
+@command{qemu-system-...}.
 
 @item none
 NetworkManager will not modify @code{resolv.conf}.

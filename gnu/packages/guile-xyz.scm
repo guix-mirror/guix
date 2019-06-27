@@ -2123,7 +2123,14 @@ chunks can be expressions as well as simple tokens.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))))
+                  "0z5nf377wh8yj6n3sx2ddn4bdx1qrqnw899dlqjhg0q69qzil522"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Install .go files in the right place.
+                    (substitute* "Makefile.am"
+                      (("/ccache") "/site-ccache"))
+                    #t))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases
@@ -2163,8 +2170,8 @@ serializing continuations or delimited continuations.")
       (license license:lgpl2.0+))))
 
 (define-public python-on-guile
-  (let ((commit "058c596cd3886447da31171e1026d4d19f5f5313")
-        (revision "2"))
+  (let ((commit "00a51a23247f1edc4ae8eda72b30df5cd7d0015f")
+        (revision "3"))
     (package
       (name "python-on-guile")
       (version (git-version "0.1.0" revision commit))
@@ -2176,16 +2183,27 @@ serializing continuations or delimited continuations.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ppyh5kkhsph5kc091p2b5a3alnj3wnlx8jr5xpyhrsj0vx9cqph"))))
+                  "03rpnqr08rqr3gay128g564rwk8w4jbj28ss6b46z1d4vjs4nk68"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f ; not supported
-         #:make-flags
-         '("GUILE_AUTO_COMPILE=0")        ; to prevent guild errors
+         #:make-flags '("GUILE_AUTO_COMPILE=0")   ;to prevent guild warnings
+
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'chdir
-             (lambda _ (chdir "modules") #t)))))
+             (lambda _ (chdir "modules") #t))
+           (add-after 'install 'wrap
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Wrap the 'python' executable so it can find its
+               ;; dependencies.
+               (let ((out  (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/python")
+                   `("GUILE_LOAD_PATH" ":" prefix
+                     (,(getenv "GUILE_LOAD_PATH")))
+                   `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                     (,(getenv "GUILE_LOAD_COMPILED_PATH"))))
+                 #t))))))
       (inputs
        `(("guile" ,guile-2.2)))
       (propagated-inputs
@@ -2383,4 +2401,38 @@ keymaps, minibuffer, recordable macros, history, tab completion, major
 and minor modes, etc., and can also be used as a pure Guile library.  It
 comes with a simple counter example using GLUT and browser examples in C
 using gtk+-3 and webkitgtk.")
+      (license license:gpl3+))))
+
+(define-public guile-jpeg
+  (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
+        (revision "0"))
+    (package
+      (name "guile-jpeg")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://gitlab.com/wingo/guile-jpeg")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page)
+                                    (commit commit)))
+                (sha256
+                 (base32
+                  "05z9m408w3h6aqb5k3r3qa7khir0k10rxwvsrzhkcq1hr5vbmr4m"))
+                (file-name (git-file-name name version))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Install .go files in the right place.
+                    (substitute* "Makefile.am"
+                      (("/ccache") "/site-ccache"))
+                    #t))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("guile" ,guile-2.2)))
+      (synopsis "JPEG file parsing library for Guile")
+      (description
+       "Guile-JPEG is a Scheme library to parse JPEG image files and to
+perform geometrical transforms on JPEG images.")
       (license license:gpl3+))))

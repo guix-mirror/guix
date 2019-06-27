@@ -1333,47 +1333,6 @@ multiplication algorithm.")
     (license license:gpl2+)
     (home-page "https://bitbucket.org/malb/m4ri/")))
 
-(define-public ratpoints
-  (package
-    (name "ratpoints")
-    (version "2.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://www.mathe2.uni-bayreuth.de/stoll/programs/"
-                    "ratpoints-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0zhad84sfds7izyksbqjmwpfw4rvyqk63yzdjd3ysd32zss5bgf4"))
-              (patches
-               ;; Taken from
-               ;; <https://git.sagemath.org/sage.git/plain/build/pkgs/ratpoints/patches/>
-               (search-patches "ratpoints-sturm_and_rp_private.patch"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "test"
-       #:make-flags
-       (list (string-append "INSTALL_DIR=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)            ;no configure script
-         (add-before 'install 'create-install-directories
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (mkdir-p out)
-               (with-directory-excursion out
-                 (for-each (lambda (d) (mkdir-p d))
-                           '("bin" "include" "lib"))))
-             #t)))))
-    (inputs
-     `(("gmp" ,gmp)))
-    (home-page "http://www.mathe2.uni-bayreuth.de/stoll/programs/")
-    (synopsis "Find rational points on hyperelliptic curves")
-    (description "Ratpoints tries to find all rational points within
-a given height bound on a hyperelliptic curve in a very efficient way,
-by using an optimized quadratic sieve algorithm.")
-    (license license:gpl2+)))
-
 (define-public symmetrica
   (package
     (name "symmetrica")
@@ -1400,7 +1359,7 @@ by using an optimized quadratic sieve algorithm.")
          (add-after 'unpack 'fix-makefile
            (lambda _
              (substitute* "makefile"
-               (("cc -c") "gcc -c"))
+               (("cc -c") "gcc -c -fPIC"))
              #t))
          (add-after 'fix-makefile 'turn-off-banner
            (lambda _
@@ -1503,7 +1462,8 @@ John Cremona to compute his elliptic curve database.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))))
+                "1c12d04jdyxkkav4ak8d1aqrv594gzihwhpxvc6p9js0ry1fahss"))
+              (patches (search-patches "lrcalc-includes.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1547,6 +1507,7 @@ structure constants of Schubert polynomials.")
     (arguments
      `(#:configure-flags
        (list
+        "--enable-shared"
         (string-append "--with-gmp-include="
                        (assoc-ref %build-inputs "gmp") "/include")
         (string-append "--with-gmp-lib="

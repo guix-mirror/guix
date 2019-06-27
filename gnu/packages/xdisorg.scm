@@ -519,6 +519,7 @@ move windows, switch between desktops, etc.).")
         (git-reference
          (url "https://github.com/resurrecting-open-source-projects/scrot.git")
          (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "1dg0pnmk09p7zlbyxv7d40vf54amrv73y976ds5p7096x6lmlndy"))))
     (build-system gnu-build-system)
@@ -1178,7 +1179,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1186,7 +1187,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "17faa0rj8vqidrijwx9jrq0c29003n8v3izvc66yssfljgb8kcpj"))))
+                "0y78ya2va2lg3ww17n11y9awn8lhcp1px2d8gxaimxfqlxczs8la"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1206,7 +1207,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:parallel-tests? #f ; May fail in some circumstances.
+     `(#:parallel-tests? #f             ; fails in some circumstances
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-tests

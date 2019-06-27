@@ -197,7 +197,9 @@ object) and TRANSFERRED (a total number of bytes) to determine the
 throughput."
   (define elapsed
     (duration->seconds
-     (time-difference (current-time time-monotonic) start-time)))
+     (time-difference (current-time (time-type start-time))
+                      start-time)))
+
   (if (and (number? size) (not (zero? size)))
       (let* ((%  (* 100.0 (/ transferred size)))
              (throughput (/ transferred elapsed))

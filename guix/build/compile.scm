@@ -63,7 +63,8 @@
   ;; strings" due to the fact that we use 'G_' instead of '_'.  We'll need
   ;; help from Guile to solve this.
   '(unsupported-warning unbound-variable arity-mismatch
-    macro-use-before-definition))                 ;new in 2.2
+    macro-use-before-definition                   ;new in 2.2
+    shadowed-toplevel))                           ;new in 2.2.5
 
 (define (optimization-options file)
   "Return the default set of optimizations options for FILE."

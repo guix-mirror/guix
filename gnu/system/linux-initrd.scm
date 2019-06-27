@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -273,7 +273,10 @@ FILE-SYSTEMS."
   (append-map (compose file-system-type-modules file-system-type)
               file-systems))
 
-(define* (default-initrd-modules #:optional (system (%current-system)))
+(define* (default-initrd-modules
+           #:optional
+           (system (or (%current-target-system)
+                       (%current-system))))
   "Return the list of modules included in the initrd by default."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.

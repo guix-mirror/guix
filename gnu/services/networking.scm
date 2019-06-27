@@ -895,11 +895,17 @@ and @command{wicd-curses} user interfaces."
   (vpn-plugins network-manager-vpn-plugins        ;list of <package>
                (default '())))
 
-(define %network-manager-activation
-  ;; Activation gexp for NetworkManager.
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/etc/NetworkManager/system-connections")))
+(define network-manager-activation
+  ;; Activation gexp for NetworkManager
+  (match-lambda
+    (($ <network-manager-configuration> network-manager dns vpn-plugins)
+     #~(begin
+         (use-modules (guix build utils))
+         (mkdir-p "/etc/NetworkManager/system-connections")
+         #$@(if (equal? dns "dnsmasq")
+                ;; create directory to store dnsmasq lease file
+                '((mkdir-p "/var/lib/misc"))
+                '())))))
 
 (define (vpn-plugin-directory plugins)
   "Return a directory containing PLUGINS, the NM VPN plugins."
@@ -949,7 +955,7 @@ and @command{wicd-curses} user interfaces."
             (service-extension dbus-root-service-type config->package)
             (service-extension polkit-service-type config->package)
             (service-extension activation-service-type
-                               (const %network-manager-activation))
+                               network-manager-activation)
             (service-extension session-environment-service-type
                                network-manager-environment)
             ;; Add network-manager to the system profile.

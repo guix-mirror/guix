@@ -7392,8 +7392,21 @@ kill/reinice processes.")
                     "/pyatspi-" version ".tar.xz"))
               (sha256
                (base32
-                "0xdnix7gxzgf75xy9ris4dd6b05mqwicw190b98xqmypydyf95n6"))))
+                "0xdnix7gxzgf75xy9ris4dd6b05mqwicw190b98xqmypydyf95n6"))
+              ;; Patch from upstream, fixed in newer versions.
+              (patches (search-patches "python-pyatspi-python-37.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-atk-load
+           (lambda _
+             (substitute* "pyatspi/__init__.py"
+               (("from gi.repository import Atspi")
+                "gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+from gi.repository import Atspi"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

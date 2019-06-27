@@ -613,14 +613,14 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.2.6")
+    (version "5.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
                                   version "/gnuplot-"
                                   version ".tar.gz"))
        (sha256
-        (base32 "1vllgap08nhvdmc03idmkdnk9cfl2bp81hps50q1pqrr640qzp9m"))))
+        (base32 "1vglp4la40f5dpj0zdj63zprrkyjgzy068p35bz5dqxjyczm1zlp"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)

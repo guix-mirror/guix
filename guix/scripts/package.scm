@@ -26,6 +26,7 @@
 (define-module (guix scripts package)
   #:use-module (guix ui)
   #:use-module ((guix status) #:select (with-status-verbosity))
+  #:use-module ((guix build syscalls) #:select (terminal-rows))
   #:use-module (guix store)
   #:use-module (guix grafts)
   #:use-module (guix derivations)
@@ -178,9 +179,9 @@ hooks\" run when building the profile."
 ;;;
 
 (define (find-packages-by-description regexps)
-  "Return two values: the list of packages whose name, synopsis, description,
-or output matches at least one of REGEXPS sorted by relevance, and the list of
-relevance scores."
+  "Return a list of pairs: packages whose name, synopsis, description,
+or output matches at least one of REGEXPS sorted by relevance, and its
+non-zero relevance score."
   (let ((matches (fold-packages (lambda (package result)
                                   (if (package-superseded package)
                                       result
@@ -189,19 +190,19 @@ relevance scores."
                                         ((? zero?)
                                          result)
                                         (score
-                                         (cons (list package score)
+                                         (cons (cons package score)
                                                result)))))
                                 '())))
-    (unzip2 (sort matches
-                  (lambda (m1 m2)
-                    (match m1
-                      ((package1 score1)
-                       (match m2
-                         ((package2 score2)
-                          (if (= score1 score2)
-                              (string>? (package-full-name package1)
-                                        (package-full-name package2))
-                              (> score1 score2)))))))))))
+    (sort matches
+          (lambda (m1 m2)
+            (match m1
+              ((package1 . score1)
+               (match m2
+                 ((package2 . score2)
+                  (if (= score1 score2)
+                      (string>? (package-full-name package1)
+                                (package-full-name package2))
+                      (> score1 score2))))))))))
 
 (define (transaction-upgrade-entry entry transaction)
   "Return a variant of TRANSACTION that accounts for the upgrade of ENTRY, a
@@ -755,16 +756,10 @@ processed, #f otherwise."
                                       (('query 'search rx) rx)
                                       (_                   #f))
                                     opts))
-              (regexps  (map (cut make-regexp* <> regexp/icase) patterns)))
+              (regexps  (map (cut make-regexp* <> regexp/icase) patterns))
+              (matches  (find-packages-by-description regexps)))
          (leave-on-EPIPE
-          (let-values (((packages scores)
-                        (find-packages-by-description regexps)))
-            (for-each (lambda (package score)
-                        (package->recutils package (current-output-port)
-                                           #:extra-fields
-                                           `((relevance . ,score))))
-                      packages
-                      scores)))
+          (display-search-results matches (current-output-port)))
          #t))
 
       (('show requested-name)

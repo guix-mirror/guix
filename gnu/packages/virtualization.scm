@@ -399,46 +399,48 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "4.10.0")
+    (version "5.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0v17zzyyb25nn9l18v5244myg7590dp6ppwgi8xysipifc0q77bz"))))
+                "0ywf8m9yz2hxnic7fylzlmgy4m353r4vv5zsvp89zq5yh4h81yhw"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; FAIL: virshtest
-       ;; FAIL: virfirewalltest
-       ;; FAIL: virkmodtest
-       ;; FAIL: virnetsockettest
-       ;; FAIL: networkxml2firewalltest
-       ;; FAIL: nwfilterebiptablestest
-       ;; FAIL: nwfilterxml2firewalltest
-       ;; Time-out while running commandtest.
-       #:tests? #f
-       #:configure-flags
+     `(#:configure-flags
        (list "--with-polkit"
+             (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
+                            ,name "-" ,version)
              "--sysconfdir=/etc"
              "--localstatedir=/var")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
+         (add-before 'configure 'fix-BOURNE_SHELL-definition
+           ;; BOURNE_SHELL is hard-#defined to ‘/bin/sh’, causing test failures.
            (lambda _
-             (substitute* '("tests/commandtest.c"
-                            "gnulib/tests/test-posix_spawn1.c"
-                            "gnulib/tests/test-posix_spawn2.c")
+             (substitute* "config.h.in"
                (("/bin/sh") (which "sh")))
              #t))
+         (add-before 'configure 'disable-broken-tests
+           (lambda _
+             (let ((tests (list "commandtest"      ; hangs idly
+                                "virnetsockettest" ; tries to network
+                                "virshtest")))     ; fails
+               (substitute* "tests/Makefile.in"
+                 (((format #f "(~a)\\$\\(EXEEXT\\)" (string-join tests "|")))
+                  ""))
+               #t)))
          (replace 'install
            ;; Since the sysconfdir and localstatedir should be /etc and /var
            ;; at runtime, we must prevent writing to them at installation
            ;; time.
-           (lambda _
-             (invoke "make" "install"
-                            "sysconfdir=/tmp/etc"
-                            "localstatedir=/tmp/var")))
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (apply invoke "make" "install"
+                    "sysconfdir=/tmp/etc"
+                    "localstatedir=/tmp/var"
+                    make-flags)))
          (add-after 'install 'wrap-libvirtd
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -458,7 +460,7 @@ manage system or application containers.")
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libuuid" ,util-linux)
-       ("lvm2" ,lvm2) ; for libdevmapper
+       ("lvm2" ,lvm2)                   ; for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
@@ -534,13 +536,13 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "4.10.0")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "libvirt-python" version))
               (sha256
                (base32
-                "11fipj9naihgc9afc8bz5hi05xa1shp4qcy170sa18p3sl4zljb9"))))
+                "1zrhkz68ka4f08wwm36y3zzwfn1r65h4nw1nm9qgg8jmrfazj4sj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

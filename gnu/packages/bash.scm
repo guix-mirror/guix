@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -274,13 +275,16 @@ without modification.")
      `(#:phases (modify-phases %standard-phases
                   (add-after
                    'install 'remove-redundant-completions
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (lambda* (#:key
+                             inputs native-inputs
+                             outputs #:allow-other-keys)
                      ;; Util-linux comes with a bunch of completion files for
                      ;; its own commands which are more sophisticated and
                      ;; up-to-date than those of bash-completion.  Remove those
                      ;; from bash-completion.
                      (let* ((out         (assoc-ref outputs "out"))
-                            (util-linux  (assoc-ref inputs "util-linux"))
+                            (util-linux  (assoc-ref (or native-inputs inputs)
+                                                    "util-linux"))
                             (completions (string-append out
                                                         "/share/bash-completion"
                                                         "/completions"))

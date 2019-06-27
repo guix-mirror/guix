@@ -20,6 +20,7 @@
 # Copyright © 2018, 2019 Oleg Pykhalov <go.wigust@gmail.com>
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+# Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 #
 # This file is part of GNU Guix.
 #
@@ -195,6 +196,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gcc.scm				\
   %D%/packages/gd.scm				\
   %D%/packages/gdb.scm				\
+  %D%/packages/genealogy.scm			\
   %D%/packages/genimage.scm			\
   %D%/packages/geo.scm				\
   %D%/packages/gettext.scm			\
@@ -956,7 +958,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
-  %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
@@ -978,9 +979,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/laby-make-install.patch			\
+  %D%/packages/patches/lcalc-default-parameters-1.patch		\
+  %D%/packages/patches/lcalc-default-parameters-2.patch		\
+  %D%/packages/patches/lcalc-lcommon-h.patch    		\
+  %D%/packages/patches/lcalc-using-namespace-std.patch 		\
   %D%/packages/patches/lcms-CVE-2018-16435.patch		\
   %D%/packages/patches/ldc-bootstrap-disable-tests.patch	\
   %D%/packages/patches/ldc-disable-phobos-tests.patch		\
+  %D%/packages/patches/leela-zero-gtest.patch			\
   %D%/packages/patches/liba52-enable-pic.patch			\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
@@ -1040,6 +1046,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/llvm-3.5-fix-clang-build-with-gcc5.patch	\
   %D%/packages/patches/llvm-for-extempore.patch			\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
+  %D%/packages/patches/lrcalc-includes.patch    		\
   %D%/packages/patches/lrzip-CVE-2017-8842.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
@@ -1208,6 +1215,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-mox3-python3.6-compat.patch	\
   %D%/packages/patches/python-testtools.patch			\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
+  %D%/packages/patches/python-pyatspi-python-37.patch	\
   %D%/packages/patches/python-pycrypto-CVE-2013-7459.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
