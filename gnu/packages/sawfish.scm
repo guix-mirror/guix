@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,14 +79,14 @@ implementing both small and large scale systems.")
 (define-public rep-gtk
   (package
     (name "rep-gtk")
-    (version "0.90.8.2")
+    (version "0.90.8.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.tuxfamily.org/librep/"
+              (uri (string-append "https://download.tuxfamily.org/librep/"
                                   name "/" name "_" version ".tar.xz"))
               (sha256
                (base32
-                "0qslm2isyv22hffdpw0nh7xk8jw8cj3h5y7d40c9h5r833w7j6sz"))
+                "0hgkkywm8zczir3lqr727bn7ybgg71x9cwj1av8fykkr8pdpard9"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -95,14 +96,26 @@ implementing both small and large scale systems.")
                      "installdir=$(libdir)/rep"))
                   #t))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'remove-autogen
+           (lambda _
+             ;; Remove autogen.sh so that the bootstrap phase can run
+             ;; autoreconf.
+             (delete-file "autogen.sh")
+             #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; required by rep-gtk.pc.
      `(("gtk+"   ,gtk+-2)
        ("librep" ,librep)))
-    (home-page "http://sawfish.wikia.com/wiki/Rep-GTK")
+    (home-page "https://sawfish.fandom.com/wiki/Rep-GTK")
     (synopsis "GTK+ binding for librep")
     (description
      "Rep-GTK is a GTK+ (and GLib, GDK) binding to the librep, and one of the
