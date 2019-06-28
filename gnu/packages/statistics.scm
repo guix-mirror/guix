@@ -4967,14 +4967,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.2-2")
+    (version "2.2-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "1lzqxi2jzc753j4356b949isx2nccd32mw2ch665q78nxccp145n"))))
+         "1dy3pla4jjgs46izqg2kxajlxr80sbr9896jbzb1qszrdx7af041"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -4984,7 +4984,6 @@ of the points.")
        ("r-kernlab" ,r-kernlab)
        ("r-mass" ,r-mass)
        ("r-mclust" ,r-mclust)
-       ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
        ("r-robustbase" ,r-robustbase)))
     (home-page "https://cran.r-project.org/web/packages/fpc")
