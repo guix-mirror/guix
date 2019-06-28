@@ -25,6 +25,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
@@ -2750,6 +2752,64 @@ logo, or any ASCII file of your choice.  The main purpose of Neofetch is to be
 used in screenshots to show other users what operating system or distribution
 you are running, what theme or icon set you are using, etc.")
     (license license:expat)))
+
+(define-public screenfetch
+  ;; First commit supporting current Guix System.
+  (let ((commit "e3ec82dd464e81e4d10bef218b3016e3044c766c"))
+    (package
+      (name "screenfetch")
+      (version (git-version "3.8.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/KittyKatt/screenFetch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lzs1l5xgj9mn4b59lhkfgqnyiivf8svd1iwjabzrax90rdmxfwj"))))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((source (assoc-ref %build-inputs "source"))
+                 (out    (assoc-ref %outputs "out")))
+             (mkdir-p (string-append out "/bin/"))
+             (copy-file (string-append source "/screenfetch-dev")
+                        (string-append out "/bin/screenfetch"))
+             (install-file (string-append source "/screenfetch.1")
+                           (string-append out "/man/man1/"))
+             (install-file (string-append source "/COPYING")
+                           (string-append out "/share/doc/" ,name "-" ,version))
+             (substitute* (string-append out "/bin/screenfetch")
+               (("/usr/bin/env bash")
+                (string-append (assoc-ref %build-inputs "bash")
+                               "/bin/bash")))
+             (wrap-program
+               (string-append out "/bin/screenfetch")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref %build-inputs "bc") "/bin:"
+                                  (assoc-ref %build-inputs "scrot") "/bin:"
+                                  (assoc-ref %build-inputs "xdpyinfo") "/bin"
+                                  (assoc-ref %build-inputs "xprop") "/bin"))))
+             (substitute* (string-append out "/bin/screenfetch")
+               (("#!#f")
+                (string-append "#!" (assoc-ref %build-inputs "bash")
+                               "/bin/bash")))))))
+      (inputs
+       `(("bash" ,bash)
+         ("bc" ,bc)
+         ("scrot" ,scrot)
+         ("xdpyinfo" ,xdpyinfo)
+         ("xprop" ,xprop)))
+      (home-page "https://github.com/KittyKatt/screenFetch")
+      (synopsis "System information script")
+      (description "Bash screenshot information tool which can be used to
+generate those nifty terminal theme information and ASCII distribution logos in
+everyone's screenshots nowadays.")
+      (license license:gpl3))))
 
 (define-public nnn
   (package
