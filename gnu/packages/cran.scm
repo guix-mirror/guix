@@ -5886,14 +5886,14 @@ parse and convert strings into cases like snake or camel among others.")
 (define-public r-prediction
   (package
     (name "r-prediction")
-    (version "0.3.6.2")
+    (version "0.3.14")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "prediction" version))
        (sha256
         (base32
-         "0kx7xbm2j6c8h6gk1iig4vfpg877psg16j74hl7zc2mv40sc6dy5"))))
+         "0awlq5lxfia6m2b91w73rksp93rbwv5gwqb36wbji4rgq41rzbrx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)))
