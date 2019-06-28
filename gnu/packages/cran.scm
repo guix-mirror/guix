@@ -4009,14 +4009,14 @@ Fisher's method), and Sidak correction.")
 (define-public r-quantmod
   (package
     (name "r-quantmod")
-    (version "0.4-14")
+    (version "0.4-15")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantmod" version))
        (sha256
         (base32
-         "1csljagnpkr1mmc18h70b64zbyj07kx972nip9dng39jfg7ilnyr"))))
+         "0lyzaf5ypk93v6zj9gdghy05cc7cxgn9yasv1apx5r6qsjcfgwky"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
