@@ -10593,14 +10593,14 @@ for association and heterogeneity.")
 (define-public r-bootstrap
   (package
     (name "r-bootstrap")
-    (version "2017.2")
+    (version "2019.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bootstrap" version))
        (sha256
         (base32
-         "08lmsy7k8wsgv89yc904c6fidcymr1ma2ry4fl0p69p21v4iiwa4"))))
+         "1546jqhhw5h177ii8jkdikyd26rv6gwkav816np1zks4p7zgsljj"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/bootstrap")
