@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,11 +56,13 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (ice-9 match)
@@ -1886,3 +1889,40 @@ compressor.  UPX typically reduces the file size of programs and shared
 libraries by around 50%--70%, thus reducing disk space, network load times,
 download times, and other distribution and storage costs.")
     (license license:gpl2+)))
+
+(define-public quazip
+  (package
+    (name "quazip")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/stachenov/quazip.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1g473gnsbkvxpsv8lbsmhspn7jnq86b05zzgqh11r581v8ndvz5s"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no test
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (home-page "https://stachenov.github.io/quazip/index.html")
+    (synopsis "Qt/C++ wrapper for Minizip")
+    (description "QuaZIP is a simple C++ wrapper over Gilles Vollant's
+ZIP/UNZIP package that can be used to access ZIP archives.  It uses
+Trolltech's Qt toolkit.
+
+QuaZIP allows you to access files inside ZIP archives using QIODevice
+API, and that means that you can also use QTextStream, QDataStream or
+whatever you would like to use on your zipped files.
+
+QuaZIP provides complete abstraction of the ZIP/UNZIP API, for both
+reading from and writing to ZIP archives. ")
+    ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
+    ;; distributed under zlib terms.
+    (license (list license:lgpl2.1+ license:zlib))))
