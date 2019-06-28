@@ -8016,7 +8016,7 @@ generic enough to work for everyone.")
 (define-public evolution
   (package
     (name "evolution")
-    (version "3.28.1")
+    (version "3.30.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/evolution/"
@@ -8024,13 +8024,34 @@ generic enough to work for everyone.")
                                   "evolution-" version ".tar.xz"))
               (sha256
                (base32
-                "0sdv5lg2vlz5f4raymz9d8a5jq4j18vbqyigaip6508p3bjnfj8l"))))
+                "1hhxj3rh921pp3l3c5k33bdypcas1p66krzs65k1qn82c5fpgl2h"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:imported-modules (,@%cmake-build-system-modules
+                           (guix build glib-or-gtk-build-system))
+       #:modules ((guix build cmake-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:configure-flags
        (list "-DENABLE_PST_IMPORT=OFF"    ; libpst is not packaged
-             "-DENABLE_LIBCRYPTUI=OFF"))) ; libcryptui hasn't seen a release
+             "-DENABLE_LIBCRYPTUI=OFF")   ; libcryptui hasn't seen a release
                                           ; in four years and cannot be built.
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build system attempts to install user interface modules to the
+         ;; output directory of the "evolution-data-server" package.  This
+         ;; change redirects that change.
+         (add-after 'unpack 'patch-ui-module-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "src/modules/alarm-notify/CMakeLists.txt"
+               (("\\$\\{edsuimoduledir\\}")
+                (string-append (assoc-ref outputs "out")
+                               "/lib/evolution-data-server/ui-modules")))
+             #t))
+         (add-after 'install 'glib-or-gtk-compile-schemas
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-compile-schemas))
+         (add-after 'install 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
      `(("glib" ,glib "bin")               ; glib-mkenums
        ("pkg-config" ,pkg-config)
