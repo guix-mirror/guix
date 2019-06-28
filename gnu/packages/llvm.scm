@@ -371,6 +371,28 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
+(define-public llvm-7
+  (package
+    (inherit llvm)
+    (version "7.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://llvm.org/releases/"
+                                  version "/llvm-" version ".src.tar.xz"))
+              (sha256
+               (base32
+                "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
+
+(define-public clang-runtime-7
+  (clang-runtime-from-llvm
+   llvm-7
+   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
+
+(define-public clang-7
+  (clang-from-llvm llvm-7 clang-runtime
+                   "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
+                   #:patches '("clang-7.0-libc-search-path.patch")))
+
 (define-public llvm-6
   (package
     (inherit llvm)
@@ -542,9 +564,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (inputs
      `(("llvm"
         ,(package
-           (inherit llvm)
+           (inherit llvm-7)
            (source (origin
-                     (inherit (package-source llvm))
+                     (inherit (package-source llvm-7))
                      (patches
                       (list
                        (origin
