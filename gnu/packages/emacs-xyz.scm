@@ -550,7 +550,7 @@ for editing Racket's Scribble documentation syntax in Emacs.")
 (define-public emacs-shroud
   (package
     (name "emacs-shroud")
-    (version "1.15.1")
+    (version "1.83.4")
     (source
      (origin
        (method git-fetch)
@@ -559,7 +559,7 @@ for editing Racket's Scribble documentation syntax in Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wvm4lxqcc1p8v7rpqal3bnqgnpk1gs7v18i83f6cvi5d88jkgdg"))))
+        (base32 "1yvdjx0kp4y8w5yz2cbqq9n6xl5splvmsyyx8ld1xv0q1c9872nf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-bui" ,emacs-bui)
