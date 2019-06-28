@@ -4759,25 +4759,26 @@ a temporary @code{keep-lines} or @code{occur}.")
     (license license:gpl3+)))
 
 (define-public emacs-zoutline
-  (let ((commit "b3ee0f0e0b916838c2d2c249beba74ffdb8d5699")
-        (revision "0"))
-    (package
-      (name "emacs-zoutline")
-      (version (git-version "0.1" revision commit))
-      (home-page "https://github.com/abo-abo/zoutline")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "0sd0017piw0dis6dhpq5dkqd3acisxqgipl7dj8gmc1vnswhdwr8"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (synopsis "Simple outline library")
-      (description
-       "This library provides helpers for outlines.  Outlines allow users to
+  (package
+    (name "emacs-zoutline")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/zoutline")
+             (commit version)))
+       (sha256
+        (base32
+         "1w0zh6vs7klgivq5r030a82mcfg1zwic4x3fimyiqyg5n8p67hyx"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/zoutline")
+    (synopsis "Simple outline library")
+    (description
+     "This library provides helpers for outlines.  Outlines allow users to
 navigate code in a tree-like fashion.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-lispy
   (package
