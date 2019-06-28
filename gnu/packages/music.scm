@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,6 +130,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
@@ -2815,6 +2817,33 @@ once and for all.  It catalogs your collection, automatically improving its
 metadata as it goes using the MusicBrainz database.  Then it provides a variety
 of tools for manipulating and accessing your music.")
     (license license:expat)))
+
+(define-public beets-bandcamp
+  (package
+    (name "beets-bandcamp")
+    (version "0.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "beets-bandcamp" version))
+              (sha256
+               (base32
+                "04awg0zdhhg5h510fc1p3qkvr2l1qm6nf85hlr9z8im8a7xlka0i"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; there are no tests
+    (propagated-inputs
+     `(("beets" ,beets)
+       ("python-isodate" ,python-isodate)))
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/unrblt/beets-bandcamp")
+    (synopsis "Bandcamp plugin for beets")
+    (description
+     "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
+https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+using the beets FetchArt plugin.")
+    (license license:gpl2)))
 
 (define-public milkytracker
   (package
