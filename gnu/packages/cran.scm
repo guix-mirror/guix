@@ -8725,14 +8725,14 @@ Bioconductor packages.")
 (define-public r-rgl
   (package
     (name "r-rgl")
-    (version "0.100.19")
+    (version "0.100.24")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgl" version))
        (sha256
         (base32
-         "09bhvx8aq104yzysfgd7wlnq4vrvmnd4jzgj0c32whjfal10fqsh"))))
+         "0nm3iyvhhmh0zlywkfmrq3vyh8z1l296xxfmcky0ifd2qnysfcqj"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
