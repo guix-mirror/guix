@@ -4418,17 +4418,18 @@ fit into memory.")
 (define-public r-cgdsr
   (package
     (name "r-cgdsr")
-    (version "1.2.10")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cgdsr" version))
        (sha256
         (base32
-         "1xyhw7mhmjichr1l6f9y1qvfj9wm87kfbm87ji7lcwf36gxh5g23"))))
+         "07yc819hkabpzzh0g0cbqza6bcfy67b2marrzz1lj97f9iba78ja"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-r-methodss3" ,r-r-methodss3)
+     `(("r-httr" ,r-httr)
+       ("r-r-methodss3" ,r-r-methodss3)
        ("r-r-oo" ,r-r-oo)))
     (home-page "https://github.com/cBioPortal/cgdsr")
     (synopsis "R-based API for accessing the MSKCC Cancer Genomics Data Server")
