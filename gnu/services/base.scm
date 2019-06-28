@@ -1533,7 +1533,7 @@ GID."
     (('gnu rest ...) #t)
     (rest #f)))
 
-(define (hydra-key-authorization keys guix)
+(define (substitute-key-authorization keys guix)
   "Return a gexp with code to register KEYS, a list of files containing 'guix
 archive' public keys, with GUIX."
   (define default-acl
@@ -1570,8 +1570,7 @@ archive' public keys, with GUIX."
 
 (define %default-authorized-guix-keys
   ;; List of authorized substitute keys.
-  (list (file-append guix "/share/guix/hydra.gnu.org.pub")
-        (file-append guix "/share/guix/berlin.guixsd.org.pub")))
+  (list (file-append guix "/share/guix/berlin.guixsd.org.pub")))
 
 (define-record-type* <guix-configuration>
   guix-configuration make-guix-configuration
@@ -1688,7 +1687,7 @@ archive' public keys, with GUIX."
 
      ;; Optionally authorize substitute server keys.
      (if authorize-key?
-         (hydra-key-authorization keys guix)
+         (substitute-key-authorization keys guix)
          #~#f))))
 
 (define* (references-file item #:optional (name "references"))
