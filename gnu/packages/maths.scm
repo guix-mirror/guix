@@ -3369,13 +3369,15 @@ packages.")
              ;; Use `sh', not `/bin/sh'.
              (substitute* (find-files "." "Makefile|configure|SpewMakeInc\\.c")
                (("/bin/sh")
-                "sh"))))
+                "sh"))
+             #t))
          ;; Fix /bin/sh in generated make files.
          (add-after 'configure 'fix-/bin/sh-in-generated-files
            (lambda _
              (substitute* (find-files "." "^[Mm]ake\\.inc.*")
                (("/bin/sh")
-                "sh"))))
+                "sh"))
+             #t))
          ;; ATLAS configure program does not accepts the default flags
          ;; passed by the 'gnu-build-system'.
          (replace 'configure
