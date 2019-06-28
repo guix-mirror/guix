@@ -8562,13 +8562,13 @@ factors bound at the specific regions.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.12.1")
+    (version "1.12.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "1nq8v1sgkm2ssmvr2z3qw0zsk7zy0dzb95g1mfs8fkpjqh3nqq5s"))))
+                "070nx0blvvfhsnkbb5j899wy7dgalrh4xfcciir9l2xl67lna1zf"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
