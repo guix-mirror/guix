@@ -97,15 +97,17 @@ the system clipboards.")
 (define-public r-ellipsis
   (package
     (name "r-ellipsis")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ellipsis" version))
        (sha256
         (base32
-         "0pw94qpg81xmsdsagpqxddv7m2cmdszmyyq99dk3caqqj01z7wg6"))))
+         "0hdk79q4wn5nq52p8qd65kqz81l0b8gfzsbzyvmfais0p24qclib"))))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rlang" ,r-rlang)))
     (home-page "https://github.com/hadley/ellipsis")
     (synopsis "Tools for working with additional arguments")
     (description
