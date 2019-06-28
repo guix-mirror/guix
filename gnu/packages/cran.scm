@@ -1115,14 +1115,14 @@ and several other tools.")
 (define-public r-abbyyr
   (package
     (name "r-abbyyr")
-    (version "0.5.4")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abbyyR" version))
        (sha256
         (base32
-         "1jh1c1ad6mgw7brdh2isnza1qpjlfxnqr7jl76yd93axyfl76xjx"))))
+         "1vldnd3dg89aj6a73nhirirqddbfdrnzhb5m3679i60sark8nk6r"))))
     (properties `((upstream-name . "abbyyR")))
     (build-system r-build-system)
     (propagated-inputs
