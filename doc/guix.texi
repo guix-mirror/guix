@@ -3134,7 +3134,6 @@ also result from derivation builds, can be available as substitutes.
 @node Official Substitute Server
 @subsection Official Substitute Server
 
-@cindex hydra
 @cindex build farm
 The @code{@value{SUBSTITUTE-SERVER}} server is a front-end to an official build farm
 that builds packages from Guix continuously for some
@@ -3185,12 +3184,6 @@ Then, you can run something like this:
 @example
 # guix archive --authorize < @var{prefix}/share/guix/@value{SUBSTITUTE-SERVER}.pub
 @end example
-
-@quotation Note
-Similarly, the @file{hydra.gnu.org.pub} file contains the public key
-of an independent build farm also run by the project, reachable at
-@indicateurl{https://mirror.hydra.gnu.org}.
-@end quotation
 
 Once this is in place, the output of a command like @code{guix build}
 should change from something like:
