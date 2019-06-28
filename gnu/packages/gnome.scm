@@ -5155,7 +5155,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.30.2")
+    (version "3.30.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5163,7 +5163,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0h4f71kpf2ypdgifg369z35pk4cq99daw540yzjpax52grav2fjv"))))
+                "1s952wyhgcbmq9nfgk75v15zdy1h3wy5p5rmkqibaavmc0pk3mli"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -5177,13 +5177,11 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                "-DENABLE_GOOGLE=OFF"          ;disable Google Contacts support
                "-DENABLE_GOOGLE_AUTH=OFF"     ;disable Google authentication
                "-DENABLE_VALA_BINDINGS=ON"
-               ;; FIXME: Building against ICU 60 requires C++11 or higher.  Remove
-               ;; "-std=gnu++11" when our default compiler is >= GCC6.
                ;; FIXME: Temporarily use "-DU_USING_ICU_NAMESPACE=1" until
                ;; evolution-data-server has been updated to qualify ICU types
                ;; explicitly, as required by ICU 61 and later.  See:
                ;; <https://ssl.icu-project.org/repos/icu/trunk/icu4c/readme.html#RecBuild>
-               "-DCMAKE_CXX_FLAGS=-std=gnu++11 -DU_USING_ICU_NAMESPACE=1"
+               "-DU_USING_ICU_NAMESPACE=1"
                (string-append "-DCMAKE_INSTALL_RPATH=" lib ";"
                               (string-append lib "/evolution-data-server;")
                               (string-join runpaths ";"))
