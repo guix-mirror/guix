@@ -6642,13 +6642,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggstance
   (package
     (name "r-ggstance")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggstance" version))
        (sha256
-        (base32 "0v7f3xdaaridw6d4jvnsfwxmpjrasvx5vl555wsrn50aah17fkvh"))))
+        (base32 "078ih9s5b0xzf582qg0vjnxvg5qad5ms1v2vdd062ckahi8zz1r8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
