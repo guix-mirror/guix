@@ -9604,7 +9604,7 @@ their store with others, who can then use it as a substitute server
 When @command{guix publish} runs, it spawns an HTTP server which allows
 anyone with network access to obtain substitutes from it.  This means
 that any machine running Guix can also act as if it were a build farm,
-since the HTTP interface is compatible with Hydra, the software behind
+since the HTTP interface is compatible with Cuirass, the software behind
 the @code{@value{SUBSTITUTE-SERVER}} build farm.
 
 For security, each substitute is signed, allowing recipients to check
