@@ -5722,14 +5722,14 @@ references and Rd files.")
 (define-public r-officer
   (package
     (name "r-officer")
-    (version "0.3.4")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "officer" version))
        (sha256
         (base32
-         "1m4b3mcn5j5q3nq0jp1nranh4rdb8vxcpabn6ryqk9m6709fvhjz"))))
+         "005kaxjhr40shpav2pg7s7gj8f49579r7rbgwlncbwv16nn0rbbg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
