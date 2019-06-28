@@ -42,10 +42,10 @@
   "Return the fallback nar URL for ITEM--e.g.,
 \"/gnu/store/cabbag3…-foo-1.2-checkout\"."
   ;; Here we hard-code nar URLs without checking narinfos.  That's probably OK
-  ;; though.
+  ;; though.  Use berlin.guixsd.org instead of its ci.guix.gnu.org front end to
+  ;; avoid sending these requests to CDN providers without user consent.
   ;; TODO: Use HTTPS?  The downside is the extra dependency.
-  (let ((bases '("http://mirror.hydra.gnu.org/guix"
-                 "http://berlin.guixsd.org"))
+  (let ((bases '("http://berlin.guixsd.org"))
         (item  (basename item)))
     (append (map (cut string-append <> "/nar/gzip/" item) bases)
             (map (cut string-append <> "/nar/" item) bases))))
