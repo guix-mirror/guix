@@ -4838,6 +4838,36 @@ keybinding style.  The provided commands allow for editing Lisp in normal
 state and will work even without lispy being enabled.")
       (license license:gpl3+))))
 
+(define-public emacs-lpy
+  (let ((commit "553d28f7b6523ae5d44d34852ab770b871b0b0ad")
+        (version "0.1.0")
+        (revision "1"))
+    (package
+      (name "emacs-lpy")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/lpy")
+               (commit commit)))
+         (sha256
+          (base32
+           "0kl9b3gga18cwv5cq4db8i6b7waj6mp3h2l7qjnp7wq6dpvwhn0i"))
+         (file-name (git-file-name name version))))
+      (propagated-inputs
+       `(("emacs-zoutline" ,emacs-zoutline)
+         ("emacs-lispy" ,emacs-lispy)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/abo-abo/lpy")
+      (synopsis "Modal editing for Python")
+      (description
+       "This package provides a minor mode for Python that binds useful
+commands to unprefixed keys, such as @code{j} or @code{e}, under certain
+circumstances, and leaves the keys untouched outside of those situations,
+allowing unprefixed keys to insert their respective characters as expected.")
+      (license license:gpl3+))))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
