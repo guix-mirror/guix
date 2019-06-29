@@ -494,7 +494,7 @@ of data and makes them appear to be merged into the same directory.  It is
 typically used for managing software packages installed from source, by
 letting you install them apart in distinct directories and then create
 symlinks to the files in a common directory such as /usr/local.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public rpm
   (package
