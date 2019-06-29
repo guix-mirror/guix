@@ -30,13 +30,13 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "5.0.0")
+   (version "5.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "01j409gharghgf7h0pjzywkimhz2ldrxf85nvf3sv1dl1vnr3w2h"))))
+             (base32 "15570p7g2x54asvr2fsc56sxzmm08fbk4mzpcs5n92fp9vq8cklf"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases (modify-phases %standard-phases
