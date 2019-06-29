@@ -48,7 +48,7 @@
 (define-public flashrom
   (package
     (name "flashrom")
-    (version "1.0.1")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -56,7 +56,7 @@
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0i6yrrl69hrqmwd7azj7x3j46m0qpvzmk3b5basym7mnlpfzhyfm"))))
+                "06afq680n9p34hi3vrkn12vd1pfyq2062db9qqbi4hi21k3skbdf"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
