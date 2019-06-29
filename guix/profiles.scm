@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Huang Ying <huang.ying.caritas@gmail.com>
 ;;; Copyright © 2017 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -337,7 +338,7 @@ denoting a specific output of a package."
 
   (manifest
    (map (match-lambda
-          ((package output)
+          (((? package? package) output)
            (package->manifest-entry package output))
           ((? package? package)
            (package->manifest-entry package))
