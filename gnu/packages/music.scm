@@ -20,6 +20,8 @@
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -128,6 +130,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
@@ -314,7 +317,7 @@ playing your music.")
 (define-public cmus
   (package
     (name "cmus")
-    (version "2.7.1")
+    (version "2.8.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -323,7 +326,7 @@ playing your music.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0xd96py21bl869qlv1353zw7xsgq6v5s8szr0ldr63zj5fgc2ps5"))))
+                "1ydnvq13ay8b8mfmmgwi5qsgyf220yi1d01acbnxqn775dghmwar"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; cmus does not include tests
@@ -1362,7 +1365,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.7")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -1370,12 +1373,10 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "0i70wm430fvksi3g985farrkhgb7mwhi7j06dl66cdj1n12jzzk7"))))
+                "15kabmxp38wqvavs5hr1dqasjjf1j977kzqggxfmzyi3y5fan3hj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ; there are no tests
     (inputs
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
@@ -1396,7 +1397,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.7")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -1404,12 +1405,10 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1361dqdasrc98q9hcjdwsjx6agfimwnay430887fryi3pslkyd81"))))
+                "010p8nwnmqgj5mw324psig3hxi1g2gylxrigd6sj6sgcpy3kdm23"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ; there are no tests
     (inputs
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
@@ -1431,7 +1430,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.7")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -1439,12 +1438,10 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1vgmcjccpgqqlmmwfg6m91nph81p2xaxydjx82n4l1yrr9lidn9h"))))
+                "138kd9szgn3b97s7crhsyj8pgwb0bn4l9knd4zliqjgj2f1bs9x0"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ; there are no tests
     (inputs
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
@@ -1466,7 +1463,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.7")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -1474,12 +1471,10 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1jd4bf6a1ipvg4yhb3xf3maqg68bx97ic9l57djmkirlrkh2a3wp"))))
+                "1k4p2ir12qjcs62knvw2s6qyvb46203yx22fnwp341cjk171cxji"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; there are no tests
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ; there are no tests
     (inputs
      `(("jack" ,jack-1)
        ("lv2" ,lv2)
@@ -2823,6 +2818,33 @@ metadata as it goes using the MusicBrainz database.  Then it provides a variety
 of tools for manipulating and accessing your music.")
     (license license:expat)))
 
+(define-public beets-bandcamp
+  (package
+    (name "beets-bandcamp")
+    (version "0.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "beets-bandcamp" version))
+              (sha256
+               (base32
+                "04awg0zdhhg5h510fc1p3qkvr2l1qm6nf85hlr9z8im8a7xlka0i"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f))          ; there are no tests
+    (propagated-inputs
+     `(("beets" ,beets)
+       ("python-isodate" ,python-isodate)))
+    (inputs
+     `(("python-beautifulsoup4" ,python-beautifulsoup4)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/unrblt/beets-bandcamp")
+    (synopsis "Bandcamp plugin for beets")
+    (description
+     "This plugin for beets automatically obtains tag data from @uref{Bandcamp,
+https://bandcamp.com/}.  It's also capable of getting song lyrics and album art
+using the beets FetchArt plugin.")
+    (license license:gpl2)))
+
 (define-public milkytracker
   (package
     (name "milkytracker")
@@ -2871,7 +2893,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
 (define-public schismtracker
   (package
     (name "schismtracker")
-    (version "20181223")
+    (version "20190614")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2880,7 +2902,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "18k5j10zq39y2q294avdmar87x93k57wqmq8bpz562hdqki2mz1l"))
+                "0cg0q5bkn8a06v03vmj69xyhi4xxpl729k4008q4hiakh9gy2x49"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove use of __DATE__ and __TIME__ for reproducibility.
@@ -2900,7 +2922,7 @@ for improved Amiga ProTracker 2/3 compatibility.")
        ("automake" ,automake)
        ("python" ,python)))
     (inputs
-     `(("alsa-lib" ,alsa-lib) ; for asound dependency
+     `(("alsa-lib" ,alsa-lib)           ; for asound dependency
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("sdl" ,sdl)))
@@ -3725,7 +3747,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3734,7 +3756,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "07xkn8gnnqzhj9cn1li5qpm2rfm86bmxbbfd76i1jx4v999icn0j"))
+                "0719p4hjlq7skga8q4hvnd5w33vhrd1a1aygvqm9pn4na02zazy6"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.

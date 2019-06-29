@@ -460,14 +460,14 @@ k-nearest neighbour, Learning Vector Quantization and Self-Organizing Maps.")
 (define-public r-cluster
   (package
     (name "r-cluster")
-    (version "2.0.9")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cluster" version))
        (sha256
         (base32
-         "1bg5dvs4bzj0rp75jpxaklz12rvyh5w99h7zkvfgpgn86ljg1rlf"))))
+         "055af3yz2biqbsbwm4arwr1yqnj4gicpzv2i6dbfl5pnz2z5byga"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -1198,14 +1198,14 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.8")
+    (version "0.1.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "1ayy0s699ghaz34lklvcskfwman3x2n2772s5sa5x9k9xgsnxwcl"))))
+         "0w4fihf52q5qxxk0lg36x6yvjjl8vw66y60ncdjs5fvnxqn5z2vb"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1651,13 +1651,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.3.4")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "1pks7d2xavzgaxqrnk3f79qsmv4wqv93f8991jv93pnb1mxpyijf"))))
+                "038mmbmklw17ncgz53vrdx2506c1jj6di3y165bbx2sl2yia8j4p"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -1730,14 +1730,14 @@ database.")
 (define-public r-dbplyr
   (package
     (name "r-dbplyr")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "dbplyr" version))
        (sha256
         (base32
-         "15fs66qq2p20gi3y2jlcsw27ach8rwkkkgr1mz2qbiyddbsjks6g"))))
+         "1q2dflr88s5a1amzfld3087q422vf70052qn84zyd8895kdg10xp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -2537,13 +2537,13 @@ disk (or a connection).")
 (define-public r-plotrix
   (package
     (name "r-plotrix")
-    (version "3.7-5")
+    (version "3.7-6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotrix" version))
               (sha256
                (base32
-                "0k6ivryac1k81z2dijjds376a9jxwk8rf5g48snj67cnjffkybxj"))))
+                "0ijfjlr7ls5hvfyzdmwab6bx0w3nvp0c8fgynj4355cj8mbzgmc3"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/plotrix")
     (synopsis "Various plotting functions")
@@ -3004,14 +3004,14 @@ statements.")
 (define-public r-segmented
   (package
     (name "r-segmented")
-    (version "0.5-4.0")
+    (version "1.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "segmented" version))
        (sha256
         (base32
-         "0wa0xjda2j33284jkp5hj1wdjysc5f4paj1s1lcixgawj4ckmxkz"))))
+         "1igsfkffpa60zn6j45lhw1zgr5pz6rjknv2f3sylnx5l9fdwibgf"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/segmented")
     (synopsis "Regression models with breakpoints estimation")
@@ -3622,13 +3622,13 @@ vignettes.")
 (define-public r-mvtnorm
   (package
     (name "r-mvtnorm")
-    (version "1.0-10")
+    (version "1.0-11")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "mvtnorm" version))
               (sha256
                (base32
-                "04md0wmqgif24g0a4hx19ifn4kk8nx10986vf2d9vascig6ikpri"))))
+                "0lkjph661blc1nwfzg9w48a60wvj6ffh4zjwlisvracsx4nn2883"))))
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
@@ -4748,14 +4748,14 @@ models, generalized linear models and model-based clustering.")
 (define-public r-mclust
   (package
     (name "r-mclust")
-    (version "5.4.3")
+    (version "5.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "mclust" version))
        (sha256
         (base32
-         "18x5ych9zi3y87rxi4pf6f23sl2918dp9xxpw1pqa7p7drw817p6"))))
+         "039ymr57bq5327gypizw0v2qb81j6bkqhjdh8yj23qa5sh51phyc"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
@@ -4967,14 +4967,14 @@ of the points.")
 (define-public r-fpc
   (package
     (name "r-fpc")
-    (version "2.2-2")
+    (version "2.2-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fpc" version))
        (sha256
         (base32
-         "1lzqxi2jzc753j4356b949isx2nccd32mw2ch665q78nxccp145n"))))
+         "1dy3pla4jjgs46izqg2kxajlxr80sbr9896jbzb1qszrdx7af041"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-class" ,r-class)
@@ -4984,7 +4984,6 @@ of the points.")
        ("r-kernlab" ,r-kernlab)
        ("r-mass" ,r-mass)
        ("r-mclust" ,r-mclust)
-       ("r-mvtnorm" ,r-mvtnorm)
        ("r-prabclus" ,r-prabclus)
        ("r-robustbase" ,r-robustbase)))
     (home-page "https://cran.r-project.org/web/packages/fpc")
@@ -5138,14 +5137,14 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.40")
+    (version "5.41")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
         (base32
-         "1srni6lkgvy44ljxndz2j9ca702z2wy81f6z6mbbi6h06ni11qw6"))))
+         "110ax3ngn6i94h7iw7ha67kfsmj94hycp7lk62nmyvkp34vpfykh"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))

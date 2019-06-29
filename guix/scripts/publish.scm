@@ -724,6 +724,32 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
 (define %http-write
   (@@ (web server http) http-write))
 
+(match (list (major-version) (minor-version) (micro-version))
+  (("2" "2" "5")                                  ;Guile 2.2.5
+   (let ()
+     (define %read-line (@ (ice-9 rdelim) %read-line))
+     (define bad-header (@@ (web http) bad-header))
+
+     ;; XXX: Work around <https://bugs.gnu.org/36350> by reverting to the
+     ;; definition of 'read-header-line' as found in 2.2.4 and earlier.
+     (define (read-header-line port)
+       "Read an HTTP header line and return it without its final CRLF or LF.
+Raise a 'bad-header' exception if the line does not end in CRLF or LF,
+or if EOF is reached."
+       (match (%read-line port)
+         (((? string? line) . #\newline)
+          ;; '%read-line' does not consider #\return a delimiter; so if it's
+          ;; there, remove it.  We are more tolerant than the RFC in that we
+          ;; tolerate LF-only endings.
+          (if (string-suffix? "\r" line)
+              (string-drop-right line 1)
+              line))
+         ((line . _)                              ;EOF or missing delimiter
+          (bad-header 'read-header-line line))))
+
+     (set! (@@ (web http) read-header-line) read-header-line)))
+  (_ #t))
+
 (define (strip-headers response)
   "Return RESPONSE's headers minus 'Content-Length' and our internal headers."
   (fold alist-delete

@@ -2220,19 +2220,19 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47")
+    (version "4.47.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0zlapxlzjizwzwa8xwrwibhcbkh0wx7n74gvjpp6wlwq7cgiq0xm"))))
+        (base32 "1bdbl9k3gqf4h6g21difqc0w17pjid6r587y19wi37vx36aava7f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; obscure test failures.
+     `(#:tests? #f                      ; obscure test failures
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
@@ -2251,7 +2251,7 @@ produce uniform output across heterogeneous networks.")
 (define-public cbatticon
   (package
     (name "cbatticon")
-    (version "1.6.8")
+    (version "1.6.9")
     (source
      (origin
        (method git-fetch)
@@ -2259,7 +2259,7 @@ produce uniform output across heterogeneous networks.")
              (url "https://github.com/valr/cbatticon.git")
              (commit version)))
        (sha256
-        (base32 "16g26vin1693dbdr9qsnw36fdchx394lp79gvp7gcbw0w1ny9av6"))
+        (base32 "0kw09d678sd3m18fmi4380sl4a2m5lkfmq0kps16cdmq7z80rvaf"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

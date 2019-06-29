@@ -4168,7 +4168,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public khmer
   (package
     (name "khmer")
-    (version "2.1.2")
+    (version "3.0.0a3")
     (source
      (origin
        (method git-fetch)
@@ -4178,8 +4178,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02x38d9jw2r58y8dmnj4hffy9wxv1yc1jwbvdbhby9dxndv94r9m"))
-       (patches (search-patches "khmer-use-libraries.patch"))
+         "01l4jczglkl7yfhgvzx8j0df7k54bk1r8sli9ll16i1mis0d8f37"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -4192,6 +4191,12 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
            ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
            (delete-file-recursively "third-party/zlib")
            (delete-file-recursively "third-party/bzip2")
+           (delete-file-recursively "third-party/seqan")
+           (substitute* "setup.cfg"
+             (("# libraries = z,bz2")
+              "libraries = z,bz2")
+             (("include:third-party/zlib:third-party/bzip2")
+              "include:"))
            #t))))
     (build-system python-build-system)
     (arguments
@@ -4208,6 +4213,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
     (inputs
      `(("zlib" ,zlib)
        ("bzip2" ,bzip2)
+       ("seqan" ,seqan-1)
        ("python-screed" ,python-screed)
        ("python-bz2file" ,python-bz2file)))
     (home-page "https://khmer.readthedocs.org/")
@@ -6954,14 +6960,14 @@ ungapped alignment formats.")
 (define-public r-systempiper
   (package
     (name "r-systempiper")
-    (version "1.18.1")
+    (version "1.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "systemPipeR" version))
        (sha256
         (base32
-         "1k57zyzagd7g7wl38l3cn9csylykxcllbfvyq7dz8pvihgkn0ssi"))))
+         "18s5vpmw766pm64w7bwwfgpsv9yzhwclf0ya1rpqz8qslw7bbdjf"))))
     (properties `((upstream-name . "systemPipeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7461,13 +7467,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.26.4")
+    (version "3.26.5")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "013glavk6a1wpyq3q35k343bdp6rf27w30q59i4kf47rp3i37g15"))))
+                "0iba4krz30dx5b0s89n5cfkwn64867s7vmvvfqms9lbcr4kj439m"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7661,13 +7667,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.40.0")
+    (version "2.40.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "1i457s91bn7n60bzw3zk4h64xgmawlrr6bq4z4cb7jlm04hdq8qm"))))
+                "1abl0c4qbhfqf9ixdp74183phm7s8rszrr5ldczm59b8vyng8rhx"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7853,13 +7859,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.20.0")
+    (version "1.20.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "13zw7bb1adgph9bf9b9y725nr0320b80y70p2yqf3bjb2klfxf55"))))
+                "0s3q97q4pgj5jwn4g95al44rahrwsncsf45v01v4071msx3xmjxq"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
@@ -7933,13 +7939,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.36.1")
+    (version "1.36.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "02psq3jfgghdydwbydb1j792lvfg44l5npb44mx8d54ckr8658dd"))))
+                "0zkd57i5qjxsravv0gbyckc0wrnqzgxd61ibh3jmhmrccrr9ihn3"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8556,13 +8562,13 @@ factors bound at the specific regions.")
 (define-public r-tximport
   (package
     (name "r-tximport")
-    (version "1.12.1")
+    (version "1.12.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "tximport" version))
               (sha256
                (base32
-                "1nq8v1sgkm2ssmvr2z3qw0zsk7zy0dzb95g1mfs8fkpjqh3nqq5s"))))
+                "070nx0blvvfhsnkbb5j899wy7dgalrh4xfcciir9l2xl67lna1zf"))))
     (build-system r-build-system)
     (home-page "https://bioconductor.org/packages/tximport")
     (synopsis "Import and summarize transcript-level estimates for gene-level analysis")
@@ -10687,14 +10693,14 @@ memory usage and processing time is minimized.")
 (define-public r-phangorn
   (package
     (name "r-phangorn")
-    (version "2.5.3")
+    (version "2.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "phangorn" version))
        (sha256
         (base32
-         "1bv86yfk5r015s7ij6v4zz7bagwrw9m13yfs5853drxb19d5h1m3"))))
+         "0ihkaykqjmf80d8wrk3saphxvnv58zma6pd13633bd3cwanc33f5"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
@@ -12742,7 +12748,7 @@ methylation and segmentation.")
 (define-public pigx-scrnaseq
   (package
     (name "pigx-scrnaseq")
-    (version "0.0.7")
+    (version "0.0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BIMSBbioinfo/pigx_scrnaseq/"
@@ -12750,7 +12756,7 @@ methylation and segmentation.")
                                   "/pigx_scrnaseq-" version ".tar.gz"))
               (sha256
                (base32
-                "131zarirv16w8653m0d66jgjnwqfsxqc0hix0rypssz4d83bl51j"))))
+                "0zv0sc5amivxhb95vx2gfx6l9bh7n80fh7h47dalnwxxnfvnzai4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

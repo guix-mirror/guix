@@ -31,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -47,7 +48,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
 
-(define-public llvm
+(define-public llvm-8
   (package
     (name "llvm")
     (version "8.0.0")
@@ -97,6 +98,8 @@ front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
     (license license:ncsa)))
+
+(define-public llvm llvm-8)
 
 (define* (clang-runtime-from-llvm llvm hash
                                   #:optional (patches '()))
@@ -273,7 +276,7 @@ code analysis tools.")
                            version "/libcxx-" version ".src.tar.xz"))
        (sha256
         (base32
-         "1wdrxg365ig0kngx52pd0n820sncp24blb0zpalc579iidhh4002"))))
+         "1qlx3wlxrnc5cwc1fcfc2vhfsl7j4294hi8y5kxj8hy8wxsjd462"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("clang" ,clang)
@@ -284,6 +287,44 @@ code analysis tools.")
      "This package provides an implementation of the C++ standard library for
 use with Clang, targeting C++11, C++14 and above.")
     (license license:expat)))
+
+(define-public libclc
+  (package
+    (name "libclc")
+    (version (package-version llvm))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/llvm/llvm-project.git")
+             (commit (string-append "llvmorg-" version))))
+       (sha256
+        (base32
+         "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "-DLLVM_CLANG="
+                            (assoc-ref %build-inputs "clang")
+                            "/bin/clang")
+             (string-append "-DPYTHON="
+                            (assoc-ref %build-inputs "python")
+                            "/bin/python3"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "libclc") #t)))))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)
+       ("python" ,python)))
+    (home-page "https://libclc.llvm.org")
+    (synopsis "Libraries for the OpenCL programming language")
+    (description
+     "This package provides an implementation of the OpenCL library
+requirements according to version 1.1 of the OpenCL specification.")
+    ;; Apache license 2.0 with LLVM exception
+    (license license:asl2.0)))
 
 (define-public libomp
   (package
@@ -330,6 +371,28 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
 (define-public clang
   (clang-from-llvm llvm clang-runtime
                    "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
+                   #:patches '("clang-7.0-libc-search-path.patch")))
+
+(define-public llvm-7
+  (package
+    (inherit llvm)
+    (version "7.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://llvm.org/releases/"
+                                  version "/llvm-" version ".src.tar.xz"))
+              (sha256
+               (base32
+                "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3"))))))
+
+(define-public clang-runtime-7
+  (clang-runtime-from-llvm
+   llvm-7
+   "065ybd8fsc4h2hikbdyricj6pyv4r7r7kpcikhb2y5zf370xybkq"))
+
+(define-public clang-7
+  (clang-from-llvm llvm-7 clang-runtime
+                   "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
 (define-public llvm-6
@@ -503,9 +566,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
     (inputs
      `(("llvm"
         ,(package
-           (inherit llvm)
+           (inherit llvm-7)
            (source (origin
-                     (inherit (package-source llvm))
+                     (inherit (package-source llvm-7))
                      (patches
                       (list
                        (origin

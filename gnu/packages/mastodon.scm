@@ -42,6 +42,12 @@
      '(#:phases
        (modify-phases %standard-phases
          (delete 'check)
+         ;; see https://github.com/ihabunek/toot/issues/91
+         (add-after 'unpack 'dont-install-Makefile
+           (lambda _
+             (substitute* "setup.py"
+               (("data_files.*" all) ""))
+             #t))
          (add-after 'install 'check
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)

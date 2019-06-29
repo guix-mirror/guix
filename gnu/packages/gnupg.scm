@@ -369,15 +369,13 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.13.0")
+    (version "1.13.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnupg/gpgme/gpgme-" version
-                          ".tar.bz2"))
+      (uri (string-append "mirror://gnupg/gpgme/gpgme-" version ".tar.bz2"))
       (sha256
-       (base32
-        "0c6676g0yhfsmy32i1dgwh5cx0ja8vhcqf4k08zad177m53kxcnl"))))
+       (base32 "0imyjfryvvjdbai454p70zcr95m94j9xnzywrlilqdw2fqi0pqy4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gnupg" ,gnupg)))
@@ -661,17 +659,17 @@ PGP keysigning parties.")
 (define-public signing-party
   (package
     (name "signing-party")
-    (version "2.7")
-    (home-page "https://salsa.debian.org/debian/signing-party")
+    (version "2.10")
+    (home-page "https://salsa.debian.org/signing-party-team/signing-party")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url home-page)
-                    (commit (string-append "release-" version))))
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gx9017wag4bgc0h7kca9n3jwwdm7z77yv3viayhg62flbwkvbgb"))))
+                "0lq8nmwjmysry0n4jg6vb7bh0lagbyb9pa11ii3s41p1mhzchf2r"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf-wrapper)
@@ -683,7 +681,7 @@ PGP keysigning parties.")
               ("perl-net-idn-encode" ,perl-net-idn-encode)
               ("libmd" ,libmd)))
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f ; no test suite
        #:phases
        (modify-phases %standard-phases
          (replace 'configure

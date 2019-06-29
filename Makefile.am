@@ -489,9 +489,8 @@ check-system: $(GOBJECTS)
 	   -e '(@@ (run-system-tests) run-system-tests)'	\
 	   $(top_srcdir)/build-aux/run-system-tests.scm
 
-# Public key used to sign substitutes from hydra.gnu.org & co.
+# Public keys used to sign substitutes.
 dist_pkgdata_DATA =				\
-  etc/substitutes/hydra.gnu.org.pub		\
   etc/substitutes/berlin.guixsd.org.pub		\
   etc/substitutes/ci.guix.gnu.org.pub		\
   etc/substitutes/ci.guix.info.pub

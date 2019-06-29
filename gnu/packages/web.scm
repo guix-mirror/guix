@@ -202,14 +202,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.0")
+    (version "1.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1aqgmrjzmklmv2iiyirk2h0hy35v1a76gczhjkxnms2krl35s6z2"))))
+                "0gp7cy2bbn8yi1wapjzssf4bhmn4d4vphdb0k1wiaq2fa6s2a63g"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -3112,7 +3112,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.37")
+    (version "6.39")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3120,7 +3120,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "04a24cx9gs070rvlwf5kanz03y7nnq9k2nmpr01plnm059iprvf6"))))
+               "1mblfwz3g7vmyykmb0mcbmmad77rwx55fwaca9ymv9wajd3pg3cs"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -3662,14 +3662,14 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.73")
+    (version "1.76")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+             (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc"))))
+               "0gj1aj18k43kmzc3y1zhj5giinf8rksacf757r475xfna0fqxjdj"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.

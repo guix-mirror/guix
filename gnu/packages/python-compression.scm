@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
@@ -32,7 +32,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-xyz))
+  #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx))
 
 (define-public python-lzo
   (package
@@ -205,3 +206,31 @@ install: libbitshuffle.so
                #t))))))
     (inputs '())
     (native-inputs '())))
+
+(define-public python-zipp
+  (package
+    (name "python-zipp")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zipp" version))
+       (sha256
+        (base32
+         "1hsv4zwy1pwnbrr63wjjkpwrmnk36ngbkkqw01bj5hcwh1z3m56a"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-contextlib2" ,python-contextlib2)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-rst.linker" ,python-rst.linker)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)
+       ("python-unittest2" ,python-unittest2)))
+    (home-page "https://github.com/jaraco/zipp")
+    (synopsis
+     "Backport of pathlib-compatible object wrapper for zip files")
+    (description
+     "This package provides a @code{pathlib}-compatible @code{Zipfile} object
+wrapper.  It provides a backport of the @code{Path} object.")
+    (license license:expat)))

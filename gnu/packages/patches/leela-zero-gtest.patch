@@ -1,0 +1,40 @@
+Use shared gtest instead of submodule
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 617e4b2..2857875 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,7 +18,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+ include(GNUInstallDirs)
+ 
+ project(leelaz)
+-add_subdirectory(gtest EXCLUDE_FROM_ALL) # We don't want to install gtest, exclude it from `all`
+ 
+ # Required Packages
+ set(Boost_MIN_VERSION "1.58.0")
+@@ -27,6 +26,7 @@ find_package(Boost 1.58.0 REQUIRED program_options filesystem)
+ find_package(Threads REQUIRED)
+ find_package(ZLIB REQUIRED)
+ find_package(OpenCL REQUIRED)
++find_package(GTest REQUIRED)
+ # We need OpenBLAS for now, because we make some specific
+ # calls. Ideally we'd use OpenBLAS is possible and fall back to
+ # not doing those calls if it's not present.
+@@ -93,6 +93,7 @@ include_directories(${IncludePath})
+ include_directories(${Boost_INCLUDE_DIRS})
+ include_directories(${OpenCL_INCLUDE_DIRS})
+ include_directories(${ZLIB_INCLUDE_DIRS})
++include_directories(${GTEST_INCLUDE_DIRS})
+ 
+ if((UNIX AND NOT APPLE) OR WIN32)
+     include_directories(${BLAS_INCLUDE_DIRS})
+@@ -141,7 +142,8 @@ target_link_libraries(tests ${Boost_LIBRARIES})
+ target_link_libraries(tests ${BLAS_LIBRARIES})
+ target_link_libraries(tests ${OpenCL_LIBRARIES})
+ target_link_libraries(tests ${ZLIB_LIBRARIES})
+-target_link_libraries(tests gtest_main ${CMAKE_THREAD_LIBS_INIT})
++target_link_libraries(tests ${GTEST_BOTH_LIBRARIES})
++target_link_libraries(tests ${CMAKE_THREAD_LIBS_INIT})
+ 
+ include(GetGitRevisionDescription)
+ git_describe(VERSION --tags)

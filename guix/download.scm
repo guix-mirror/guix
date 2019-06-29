@@ -394,7 +394,6 @@
                        '(guix base16) '(bytevector->base16-string))
 
      (list (guix-publish "ci.guix.gnu.org")
-           (guix-publish "mirror.hydra.gnu.org")
            (lambda (file algo hash)
              ;; 'tarballs.nixos.org' supports several algorithms.
              (string-append "https://tarballs.nixos.org/"

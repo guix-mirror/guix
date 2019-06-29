@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -383,24 +383,7 @@ error when it would have happened.")
     (license (package-license perl))))
 
 (define-public perl-base
-  (package
-    (name "perl-base")
-    (version "2.23")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
-                           "base-" version ".tar.gz"))
-       (sha256
-        (base32 "1pjxcbbcpwlgzm0fzsbqd58zn8cj9vwril1wn3xfd7ws550mixa0"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/base")
-    (synopsis "Establish an ISA relationship with base classes at compile time")
-    (description "Allows you to both load one or more modules, while setting
-up inheritance from those modules at the same time.  Unless you are using the
-fields pragma, consider this module discouraged in favor of the lighter-weight
-parent.")
-    (license (package-license perl))))  ;See README
+  (deprecated-package "perl-base" perl))
 
 (define-public perl-browser-open
   (package
@@ -873,8 +856,6 @@ the Carp.pm module doesn't help.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-sub-name" ,perl-sub-name)))
-    (propagated-inputs
-     `(("perl-base" ,perl-base)))
     (home-page "https://metacpan.org/release/Class-Accessor")
     (synopsis "Automated accessor generation")
     (description "This module automagically generates accessors/mutators for
@@ -1302,6 +1283,32 @@ objects.")
     (home-page "https://metacpan.org/release/Clone")
     (license (package-license perl))))
 
+(define-public perl-clone-choose
+  (package
+    (name "perl-clone-choose")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HE/HERMES/"
+                           "Clone-Choose-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cin2bjn5z8xhm9v4j7pwlkx88jnvz8al0njdjwyvs6fb0glh8sn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-clone" ,perl-clone)
+       ("perl-clone-pp" ,perl-clone-pp)
+       ("perl-test-without-module" ,perl-test-without-module)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)))
+    (home-page "https://metacpan.org/release/Clone-Choose")
+    (synopsis "Choose appropriate Perl @code{clone} utility")
+    (description "This @code{Clone::Choose} module checks several different
+modules which provide a @code{clone()} function and selects an appropriate
+one.")
+    (license perl-license)))
+
 (define-public perl-clone-pp
   (package
     (name "perl-clone-pp")
@@ -1605,14 +1612,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.10")
+    (version "4.12")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1r92b03hkmqr0brp00cj67b1iklfd4yas481d6a5nx2941c03h3p"))))
+        (base32 "0n66da8s88srr591i7gm1d611z9jbcz488fhqxy604diiw8pnha9"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -3764,14 +3771,14 @@ allows you to locate these files after installation.")
 (define-public perl-file-slurp
   (package
     (name "perl-file-slurp")
-    (version "9999.26")
+    (version "9999.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CA/CAPOEIRAB/"
                            "File-Slurp-" version ".tar.gz"))
        (sha256
-        (base32 "0c09ivl50sg9j75si6cahfp1wgvhqawakb6h5j6hlca6vwjqs9qy"))))
+        (base32 "1x233kj1qifvii7j8d4wzarwhj5z11vnpxsqvdm98dsccr7qi79s"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/File-Slurp")
     (synopsis "Reading/Writing/Modifying of complete files")
@@ -3835,8 +3842,6 @@ slurping and spewing.  All functions are optionally exported.")
        (sha256
         (base32 "0pr3wrxrk93wy7dz9gsb1sgl77icrs8rh2mah6wms5cdi2ll5ch1"))))
     (build-system perl-build-system)
-    (propagated-inputs
-     `(("perl-parent" ,perl-parent)))
     (home-page "https://metacpan.org/release/File-Temp")
     (synopsis "Return name and handle of a temporary file safely")
     (description "File::Temp can be used to create and open temporary files in
@@ -4969,7 +4974,7 @@ portions of this module couldn't be compiled on this machine.")
 (define-public perl-mailtools
   (package
     (name "perl-mailtools")
-    (version "2.20")
+    (version "2.21")
     (source
      (origin
        (method url-fetch)
@@ -4979,7 +4984,7 @@ portions of this module couldn't be compiled on this machine.")
              ".tar.gz"))
        (sha256
         (base32
-         "15iizg2x1w7ca0r8rn3wwhp7w160ljvf55prspljwd6cm7vhcmpm"))))
+         "1js43bp2dnd8n2rv8clsv749166jnyqnc91k4wkkmw5n4rlbvnaa"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate)))
@@ -5634,7 +5639,6 @@ Moose and is optimised for rapid startup.")
        ("perl-package-stash" ,perl-package-stash)
        ("perl-package-stash-xs" ,perl-package-stash-xs)
        ("perl-params-util" ,perl-params-util)
-       ("perl-parent" ,perl-parent)
        ("perl-scalar-list-utils" ,perl-scalar-list-utils)
        ("perl-sub-exporter" ,perl-sub-exporter)
        ("perl-sub-name" ,perl-sub-name)
@@ -6964,22 +6968,7 @@ distributions.")
     (license (package-license perl))))
 
 (define-public perl-parent
-  (package
-    (name "perl-parent")
-    (version "0.237")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CO/CORION/"
-                           "parent-" version ".tar.gz"))
-       (sha256
-        (base32 "1bnaadzf51g6zrpq6pvvgds2cc9d4w1vck7sapkd3hb5hmjdk28h"))))
-    (build-system perl-build-system)
-    (home-page "https://metacpan.org/release/parent")
-    (synopsis "Establish an ISA relationship with base classes at compile time")
-    (description "Allows you to both load one or more modules, while setting
-up inheritance from those modules at the same time.")
-    (license (package-license perl))))
+  (deprecated-package "perl-parent" perl))
 
 (define-public perl-path-class
   (package
@@ -7951,14 +7940,14 @@ uplevel() are avoided.")
 (define-public perl-super
   (package
     (name "perl-super")
-    (version "1.20141117")
+    (version "1.20190531")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/C/CH/CHROMATIC/"
                            "SUPER-" version ".tar.gz"))
        (sha256
-        (base32 "1cn05kacg0xfbm1zzksm2yx2pnrzqja4d9163cxv3sdfc1yhwqhs"))))
+        (base32 "16nk2za9fwyg7mcifacr69qi075iz1yvy8r9jh3903kzdvkiwpb8"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
@@ -9009,8 +8998,7 @@ simple n-ary tree.")
      `(("perl-module-build" ,perl-module-build)
        ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
-     `(("perl-tree-simple" ,perl-tree-simple)
-       ("perl-base" ,perl-base)))
+     `(("perl-tree-simple" ,perl-tree-simple)))
     (home-page "https://metacpan.org/release/Tree-Simple-VisitorFactory")
     (synopsis "Factory object for dispensing Visitor objects")
     (description "This module is a factory for dispensing

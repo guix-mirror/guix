@@ -1227,6 +1227,38 @@
     (lambda (key . args)
       key)))
 
+(test-equal "specification->package+output"
+  `((,coreutils "out") (,coreutils "debug"))
+  (list (call-with-values (lambda ()
+                            (specification->package+output "coreutils"))
+          list)
+        (call-with-values (lambda ()
+                            (specification->package+output "coreutils:debug"))
+          list)))
+
+(test-equal "specification->package+output invalid output"
+  'error
+  (catch 'quit
+    (lambda ()
+      (specification->package+output "coreutils:does-not-exist"))
+    (lambda _
+      'error)))
+
+(test-equal "specification->package+output no default output"
+  `(,coreutils #f)
+  (call-with-values
+    (lambda ()
+      (specification->package+output "coreutils" #f))
+    list))
+
+(test-equal "specification->package+output invalid output, no default"
+  'error
+  (catch 'quit
+    (lambda ()
+      (specification->package+output "coreutils:does-not-exist" #f))
+    (lambda _
+      'error)))
+
 (test-equal "find-package-locations"
   (map (lambda (package)
          (cons (package-version package)

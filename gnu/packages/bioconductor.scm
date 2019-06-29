@@ -2915,14 +2915,14 @@ to multiple hypothesis correction.")
 (define-public r-dose
   (package
     (name "r-dose")
-    (version "3.10.1")
+    (version "3.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DOSE" version))
        (sha256
         (base32
-         "0ab7mgj42fg6608qkciyqivr1n8s8r5ibvp0z3jfclrnyx6cl0w1"))))
+         "06jm1mnfd92s84f21562vsmj6jfkravfqf4lcxx2lk7s4ll66znj"))))
     (properties `((upstream-name . "DOSE")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3406,14 +3406,14 @@ type and symbol colors.")
 (define-public r-genomicscores
   (package
     (name "r-genomicscores")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicScores" version))
        (sha256
         (base32
-         "17bd61icfycc61b5dij1968h026w7vfd9miwdcbppak1j6s08idq"))))
+         "0xgv5h6hwr4p2p05z8vzhivy97gfirm4rj1ihb5c8fhgc5vp85dy"))))
     (properties `((upstream-name . "GenomicScores")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4744,4 +4744,28 @@ CpGs (CpG islands, CpG shores, CpG shelves), or regulatory sequences such as
 enhancers.  The annotatr package provides an easy way to summarize and
 visualize the intersection of genomic sites/regions with genomic
 annotations.")
+    (license license:gpl3)))
+
+(define-public r-rsubread
+  (package
+    (name "r-rsubread")
+    (version "1.34.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "Rsubread" version))
+       (sha256
+        (base32
+         "1230p8nsakifmpsqfiaj8rpm7npa8ab903mfjmayfa71n6yzvcbs"))))
+    (properties `((upstream-name . "Rsubread")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (home-page "https://bioconductor.org/packages/Rsubread/")
+    (synopsis "Subread sequence alignment and counting for R")
+    (description
+     "This package provides tools for alignment, quantification and analysis
+of second and third generation sequencing data.  It includes functionality for
+read mapping, read counting, SNP calling, structural variant detection and
+gene fusion discovery.  It can be applied to all major sequencing techologies
+and to both short and long sequence reads.")
     (license license:gpl3)))

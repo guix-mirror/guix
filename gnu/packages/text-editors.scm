@@ -7,6 +7,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,15 +37,19 @@
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
@@ -388,3 +393,47 @@ projects.  The EditorConfig project maintains a file format and plugins for
 various text editors which allow this file format to be read and used by those
 editors.")
     (license license:bsd-2)))
+
+(define-public texmacs
+  (package
+    (name "texmacs")
+    (version "1.99.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
+                           "source/TeXmacs-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "0i95sf9y8qpgxd8f39cprbp3s200nm9lml0xdpyn46n838acvw19"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "3rdparty")
+           #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("guile" ,guile-1.8)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f ;no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'gzip-flags
+           (lambda _
+             (substitute* "Makefile.in"
+               (("^GZIP = gzip -f") "GZIP = gzip -f -n")))))))
+    (synopsis "Editing platform with special features for scientists")
+    (description
+     "GNU TeXmacs is a text editing platform which is specialized for
+scientists.  It is ideal for editing structured documents with different
+types of content.  It has robust support for mathematical formulas and plots.
+ It can also act as an interface to external mathematical programs such as R
+and Octave.  TeXmacs is completely extensible via Guile.")
+    (license license:gpl3+)
+    (home-page "https://www.texmacs.org/tmweb/home/welcome.en.html")))

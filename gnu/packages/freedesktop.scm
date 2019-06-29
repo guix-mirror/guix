@@ -631,7 +631,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public weston
   (package
     (name "weston")
-    (version "6.0.0")
+    (version "6.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -639,7 +639,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                     "weston-" version ".tar.xz"))
               (sha256
                (base32
-                "04p6hal5kalmdp5dxwh2h5qhkkb4dvbsk7l091zvvcq70slj6qsl"))))
+                "1d2m658ll8x7prlsfk71qgw89c7dz6y7d6nndfxwl49fmrd6sbxz"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

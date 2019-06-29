@@ -223,8 +223,8 @@ info --version")
                                   (operating-system-user-accounts os))))
               (marionette-eval
                `(begin
-                  (use-modules (srfi srfi-1) (ice-9 ftw)
-                               (ice-9 match))
+                  (use-modules (guix build utils) (srfi srfi-1)
+                               (ice-9 ftw) (ice-9 match))
 
                   (every (match-lambda
                            ((user home)

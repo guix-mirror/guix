@@ -105,3 +105,138 @@ is delete your existing cassette files, and run your tests again.  VCR.py will
 detect the absence of a cassette file and once again record all HTTP
 interactions, which will update them to correspond to the new API.")
     (license license:expat)))
+
+(define-public python-pytest-checkdocs
+  (package
+    (name "python-pytest-checkdocs")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-checkdocs" version))
+       (sha256
+        (base32
+         "07c27cdjcw6jph5kbgpxchrvwlps4ggwb2j6m7y64imnik0asrq8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-importlib-metadata" ,python-importlib-metadata)))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (home-page "https://github.com/jaraco/pytest-checkdocs")
+    (synopsis "Check the README when running tests")
+    (description
+     "This package provides a pytest plugin that checks the long description
+of the project to ensure it renders properly.")
+    (license license:expat)))
+
+(define-public python-pytest-flake8
+  (package
+    (name "python-pytest-flake8")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-flake8" version))
+       (sha256
+        (base32
+         "1h30gd21fjsafqxwclf25sdh89vrdz7rsh4lzw11aiw7ww9mq8jd"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/tholo/pytest-flake8")
+    (synopsis "Pytest plugin to check FLAKE8 requirements")
+    (description
+     "This package provides a pytest plugin for efficiently checking PEP8
+compliance.")
+    (license license:bsd-3)))
+
+(define-public python-pytest-shutil
+  (package
+    (name "python-pytest-shutil")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-shutil" version))
+       (sha256
+        (base32
+         "0q8j0ayzmnvlraml6i977ybdq4xi096djhf30n2m1rvnvrhm45nq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             (mkdir "/tmp/bin")
+             (substitute* "tests/integration/test_cmdline_integration.py"
+               (("dirname = '/bin'")
+                "dirname = '/tmp/bin'")
+               (("bindir = os.path.realpath\\('/bin'\\)")
+                "bindir = os.path.realpath('/tmp/bin')"))
+             #t)))))
+    (propagated-inputs
+     `(("python-contextlib2" ,python-contextlib2)
+       ("python-execnet" ,python-execnet)
+       ("python-pathpy" ,python-pathpy)
+       ("python-termcolor" ,python-termcolor)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Assorted shell and environment tools for py.test")
+    (description
+     "This package provides assorted shell and environment tools for the
+py.test testing framework.")
+    (license license:expat)))
+
+(define-public python-pytest-fixture-config
+  (package
+    (name "python-pytest-fixture-config")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-fixture-config" version))
+       (sha256
+        (base32
+         "13i1qpz22w3x4dmw8vih5jdnbqfqvl7jiqs0dg764s0zf8bp98a1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Fixture configuration utils for py.test")
+    (description
+     "This package provides fixture configuration utilities for the py.test
+testing framework.")
+    (license license:expat)))
+
+(define-public python-pytest-virtualenv
+  (package
+    (name "python-pytest-virtualenv")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-virtualenv" version))
+       (sha256
+        (base32
+         "03w2zz3crblj1p6i8nq17946hbn3zqp9z7cfnifw47hi4a4fww12"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; one test fails; can't find virtualenv
+    (propagated-inputs
+     `(("python-virtualenv" ,python-virtualenv)
+       ("python-pytest-shutil" ,python-pytest-shutil)
+       ("python-pytest-fixture-config" ,python-pytest-fixture-config)))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-setuptools-git" ,python-setuptools-git)))
+    (home-page "https://github.com/manahl/pytest-plugins")
+    (synopsis "Virtualenv fixture for py.test")
+    (description "This package provides a virtualenv fixture for the py.test
+framework.")
+    (license license:expat)))
