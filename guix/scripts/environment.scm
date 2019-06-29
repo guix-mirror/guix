@@ -479,26 +479,27 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
             (mappings
-             (override-user-mappings
-              user home
-              (append user-mappings
-                      ;; Current working directory.
-                      (list (file-system-mapping
-                             (source cwd)
-                             (target cwd)
-                             (writable? #t)))
-                      ;; When in Rome, do as Nix build.cc does: Automagically
-                      ;; map common network configuration files.
-                      (if network?
-                          %network-file-mappings
-                          '())
-                      ;; Mappings for the union closure of all inputs.
-                      (map (lambda (dir)
-                             (file-system-mapping
-                              (source dir)
-                              (target dir)
-                              (writable? #f)))
-                           reqs))))
+             (append
+              (override-user-mappings
+               user home
+               (append user-mappings
+                       ;; Current working directory.
+                       (list (file-system-mapping
+                              (source cwd)
+                              (target cwd)
+                              (writable? #t)))))
+              ;; When in Rome, do as Nix build.cc does: Automagically
+              ;; map common network configuration files.
+              (if network?
+                  %network-file-mappings
+                  '())
+              ;; Mappings for the union closure of all inputs.
+              (map (lambda (dir)
+                     (file-system-mapping
+                      (source dir)
+                      (target dir)
+                      (writable? #f)))
+                   reqs)))
             (file-systems (append %container-file-systems
                                   (map file-system-mapping->bind-mount
                                        mappings))))
