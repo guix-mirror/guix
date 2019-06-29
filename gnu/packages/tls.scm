@@ -643,14 +643,14 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.85")
+    (version "1.88")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1j5h4ycm8538397l204d2d5fkm9595aj174pj7bkpbhwzfwqi0cx"))))
+                "1pfgh4h3szcpvqlcimc60pjbk9zwls99x5863sva0wc47i4dl010"))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
