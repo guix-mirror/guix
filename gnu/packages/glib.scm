@@ -200,7 +200,6 @@ shared NFS home directories.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (delete 'bootstrap)
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
