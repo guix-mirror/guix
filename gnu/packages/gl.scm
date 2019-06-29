@@ -318,7 +318,7 @@ also known as DXTn or DXTC) for Mesa.")
              ((or "x86_64-linux" "i686-linux")
               '("-Dvulkan-overlay-layer=true"))
              (_
-              '("")))
+              '()))
 
          ;; Also enable the tests.
          "-Dbuild-tests=true"
