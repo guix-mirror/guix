@@ -4657,6 +4657,14 @@ While this will limit the leaking of user identity through home paths
 and each of the user fields, this is only one useful component of a
 broader privacy/anonymity solution---not one in and of itself.
 
+@item --no-cwd
+For containers, the default behavior is to share the current working
+directory with the isolated container and immediately change to that
+directory within the container.  If this is undesirable, @code{--no-cwd}
+will cause the current working directory to @emph{not} be automatically
+shared and will change to the user's home directory within the container
+instead.  See also @code{--user}.
+
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system
 as the read-only file system @var{target} within the container.  If

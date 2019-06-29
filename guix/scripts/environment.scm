@@ -162,6 +162,10 @@ COMMAND or an interactive shell in that environment.\n"))
                          user into an isolated container, use the name USER
                          with home directory /home/USER"))
   (display (G_ "
+      --no-cwd           do not share current working directory with an
+                         isolated container"))
+
+  (display (G_ "
       --share=SPEC       for containers, share writable host file system
                          according to SPEC"))
   (display (G_ "
@@ -269,6 +273,9 @@ use '--preserve' instead~%"))
                  (lambda (opt name arg result)
                    (alist-cons 'user arg
                                (alist-delete 'user result eq?))))
+         (option '("no-cwd") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'no-cwd? #t result)))
          (option '("share") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'file-system-mapping
@@ -444,7 +451,8 @@ regexps in WHITE-LIST."
            ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user user-mappings
-                                       profile manifest link-profile? network?)
+                                       profile manifest link-profile? network?
+                                       map-cwd?)
   "Run COMMAND within a container that features the software in PROFILE.
 Environment variables are set according to the search paths of MANIFEST.
 The global shell is BASH, a file name for a GNU Bash binary in the
@@ -483,11 +491,13 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
               (override-user-mappings
                user home
                (append user-mappings
-                       ;; Current working directory.
-                       (list (file-system-mapping
-                              (source cwd)
-                              (target cwd)
-                              (writable? #t)))))
+                       ;; Share current working directory, unless asked not to.
+                       (if map-cwd?
+                           (list (file-system-mapping
+                                  (source cwd)
+                                  (target cwd)
+                                  (writable? #t)))
+                           '())))
               ;; When in Rome, do as Nix build.cc does: Automagically
               ;; map common network configuration files.
               (if network?
@@ -537,8 +547,10 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             (write-group groups)
 
             ;; For convenience, start in the user's current working
-            ;; directory rather than the root directory.
-            (chdir (override-user-dir user home cwd))
+            ;; directory or, if unmapped, the home directory.
+            (chdir (if map-cwd?
+                       (override-user-dir user home cwd)
+                       home-dir))
 
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
@@ -665,6 +677,7 @@ message if any test fails."
            (container? (assoc-ref opts 'container?))
            (link-prof? (assoc-ref opts 'link-profile?))
            (network?   (assoc-ref opts 'network?))
+           (no-cwd?    (assoc-ref opts 'no-cwd?))
            (user       (assoc-ref opts 'user))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
@@ -685,6 +698,9 @@ message if any test fails."
         (leave (G_ "'--link-profile' cannot be used without '--container'~%")))
       (when (and (not container?) user)
         (leave (G_ "'--user' cannot be used without '--container'~%")))
+      (when (and (not container?) no-cwd?)
+        (leave (G_ "--no-cwd cannot be used without --container~%")))
+
 
       (with-store store
         (with-status-verbosity (assoc-ref opts 'verbosity)
@@ -741,7 +757,9 @@ message if any test fails."
                                                     #:profile profile
                                                     #:manifest manifest
                                                     #:link-profile? link-prof?
-                                                    #:network? network?)))
+                                                    #:network? network?
+                                                    #:map-cwd? (not no-cwd?))))
+
                    (else
                     (return
                      (exit/status
