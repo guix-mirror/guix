@@ -109,7 +109,8 @@
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
-                               "python-2.7-adjust-tests.patch"))
+                               "python-2.7-adjust-tests.patch"
+                               "python-cross-compile.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -177,6 +178,12 @@
           (add-before
            'configure 'patch-lib-shells
            (lambda _
+             ;; This variable is used in setup.py to enable cross compilation
+             ;; specific switches. As it is not set properly by configure
+             ;; script, set it manually.
+             ,@(if (%current-target-system)
+                   '((setenv "_PYTHON_HOST_PLATFORM" ""))
+                   '())
              ;; Filter for existing files, since some may not exist in all
              ;; versions of python that are built with this recipe.
              (substitute* (filter file-exists?
@@ -256,7 +263,9 @@
                            (if (null? opt) "none" (car opt)))
                    (for-each (lambda (file)
                                (apply invoke
-                                      `(,(string-append out "/bin/python")
+                                      `(,,(if (%current-target-system)
+                                              "python2"
+                                              '(string-append out "/bin/python"))
                                         ,@opt
                                         "-m" "compileall"
                                         "-f" ; force rebuild
@@ -302,7 +311,7 @@
      `(("pkg-config" ,pkg-config)
        ;; When cross-compiling, a native version of Python itself is needed.
        ,@(if (%current-target-system)
-             `(("self" ,this-package)
+             `(("python2" ,this-package)
                ("which" ,which))
              '())))
     (native-search-paths
@@ -376,10 +385,11 @@ data types.")
        ((#:phases phases)
        `(modify-phases ,phases
           (add-before 'check 'set-TZDIR
-            (lambda* (#:key inputs #:allow-other-keys)
+            (lambda* (#:key inputs native-inputs #:allow-other-keys)
               ;; test_email requires the Olson time zone database.
               (setenv "TZDIR"
-                      (string-append (assoc-ref inputs "tzdata")
+                      (string-append (assoc-ref
+                                      (or native-inputs inputs) "tzdata")
                                      "/share/zoneinfo"))
               #t))
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
@@ -415,6 +425,9 @@ data types.")
                  #t)))))))
     (native-inputs
      `(("tzdata" ,tzdata-for-tests)
+       ,@(if (%current-target-system)
+             `(("python3" ,this-package))
+             '())
        ,@(package-native-inputs python-2)))
     (native-search-paths
      (list (search-path-specification

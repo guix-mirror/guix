@@ -3,7 +3,7 @@ looking for headers and libraries.
 
 --- a/setup.py	2015-10-07 23:32:58.891329173 +0200
 +++ b/setup.py	2015-10-07 23:46:29.653349924 +0200
-@@ -575,8 +575,8 @@
+@@ -575,15 +575,15 @@
          # if a file is found in one of those directories, it can
          # be assumed that no additional -I,-L directives are needed.
          if not cross_compiling:
@@ -14,3 +14,12 @@ looking for headers and libraries.
          else:
              # Add the sysroot paths. 'sysroot' is a compiler option used to
              # set the logical path of the standard system headers and
+             # libraries.
+-            lib_dirs = (self.compiler.library_dirs +
++            lib_dirs = (os.getenv('CROSS_LIBRARY_PATH', '').split(os.pathsep) +
+                         sysroot_paths(('LDFLAGS', 'CC'), system_lib_dirs))
+-            inc_dirs = (self.compiler.include_dirs +
++            inc_dirs = (os.getenv('CROSS_CPATH', '').split(os.pathsep) +
+                         sysroot_paths(('CPPFLAGS', 'CFLAGS', 'CC'),
+                                       system_include_dirs))
+         exts = []

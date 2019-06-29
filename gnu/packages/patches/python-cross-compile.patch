@@ -1,0 +1,145 @@
+Patch taken from https://bugs.python.org/issue22724 and augmented with
+following Nix patch
+https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/interpreters/python/cpython/2.7/cross-compile.patch
+to fix the whole cross-compilation circus.
+
+---
+ Makefile.pre.in | 14 +++++++-------
+ configure       |  5 ++++-
+ setup.py        |  9 ++++++---
+ 3 files changed, 17 insertions(+), 11 deletions(-)
+
+diff --git a/Makefile.pre.in b/Makefile.pre.in
+index 2a14f3323b..6239fc32fc 100644
+--- a/Makefile.pre.in
++++ b/Makefile.pre.in
+@@ -492,7 +492,7 @@ $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
+ 			$(BLDLIBRARY) $(LIBS) $(MODLIBS) $(SYSLIBS) $(LDLAST)
+ 
+ platform: $(BUILDPYTHON) pybuilddir.txt
+-	$(RUNSHARED) $(PYTHON_FOR_BUILD) -c 'import sys ; from sysconfig import get_platform ; print get_platform()+"-"+sys.version[0:3]' >platform
++	$(RUNSHARED) $(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) -c 'import sys ; from sysconfig import get_platform ; print get_platform()+"-"+sys.version[0:3]' >platform
+ 
+ # Create build directory and generate the sysconfig build-time data there.
+ # pybuilddir.txt contains the name of the build dir and is used for
+@@ -503,7 +503,7 @@ platform: $(BUILDPYTHON) pybuilddir.txt
+ # or removed in case of failure.
+ pybuilddir.txt: $(BUILDPYTHON)
+ 	@echo "none" > ./pybuilddir.txt
+-	$(RUNSHARED) $(PYTHON_FOR_BUILD) -S -m sysconfig --generate-posix-vars ;\
++	$(RUNSHARED) $(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) -S -m sysconfig --generate-posix-vars ;\
+ 	if test $$? -ne 0 ; then \
+ 		echo "generate-posix-vars failed" ; \
+ 		rm -f ./pybuilddir.txt ; \
+@@ -525,7 +525,7 @@ sharedmods: $(BUILDPYTHON) pybuilddir.txt Modules/_math.o
+ 	esac; \
+ 	$(RUNSHARED) CC='$(CC)' LDSHARED='$(BLDSHARED)' OPT='$(OPT)' \
+ 		_TCLTK_INCLUDES='$(TCLTK_INCLUDES)' _TCLTK_LIBS='$(TCLTK_LIBS)' \
+-		$(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
++		$(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py $$quiet build
+ 
+ # Build static library
+ # avoid long command lines, same as LIBRARY_OBJS
+@@ -928,7 +928,7 @@ install:	@FRAMEWORKINSTALLFIRST@ commoninstall bininstall maninstall @FRAMEWORKI
+ 			upgrade) ensurepip="--upgrade" ;; \
+ 			install|*) ensurepip="" ;; \
+ 		esac; \
+-		$(RUNSHARED) $(PYTHON_FOR_BUILD) -m ensurepip \
++		$(RUNSHARED) $(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) -m ensurepip \
+ 			$$ensurepip --root=$(DESTDIR)/ ; \
+ 	fi
+ 
+@@ -939,7 +939,7 @@ altinstall:	commoninstall
+ 			upgrade) ensurepip="--altinstall --upgrade --no-default-pip" ;; \
+ 			install|*) ensurepip="--altinstall --no-default-pip" ;; \
+ 		esac; \
+-		$(RUNSHARED) $(PYTHON_FOR_BUILD) -m ensurepip \
++		$(RUNSHARED) $(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) -m ensurepip \
+ 			$$ensurepip --root=$(DESTDIR)/ ; \
+ 	fi
+ 
+@@ -1270,7 +1270,7 @@ libainstall:	@DEF_MAKE_RULE@ python-config
+ # Install the dynamically loadable modules
+ # This goes into $(exec_prefix)
+ sharedinstall: sharedmods
+-	$(RUNSHARED) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py install \
++	$(RUNSHARED) $(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) $(srcdir)/setup.py install \
+ 	   	--prefix=$(prefix) \
+ 		--install-scripts=$(BINDIR) \
+ 		--install-platlib=$(DESTSHARED) \
+@@ -1344,7 +1344,7 @@ frameworkinstallextras:
+ # This installs a few of the useful scripts in Tools/scripts
+ scriptsinstall:
+ 	SRCDIR=$(srcdir) $(RUNSHARED) \
+-	$(PYTHON_FOR_BUILD) $(srcdir)/Tools/scripts/setup.py install \
++	$(PY_BUILD_ENVIRON) $(PYTHON_FOR_BUILD) $(srcdir)/Tools/scripts/setup.py install \
+ 	--prefix=$(prefix) \
+ 	--install-scripts=$(BINDIR) \
+ 	--root=$(DESTDIR)/
+diff --git a/configure b/configure
+index 67300fe2b6..6050f588c5 100755
+--- a/configure
++++ b/configure
+@@ -741,6 +741,7 @@ CONFIG_ARGS
+ SOVERSION
+ VERSION
+ PYTHON_FOR_BUILD
++PY_BUILD_ENVIRON
+ PYTHON_FOR_REGEN
+ host_os
+ host_vendor
+@@ -2964,7 +2965,8 @@ $as_echo_n "checking for python interpreter for cross build... " >&6; }
+ 	fi
+         { $as_echo "$as_me:${as_lineno-$LINENO}: result: $interp" >&5
+ $as_echo "$interp" >&6; }
+-	PYTHON_FOR_BUILD='_PYTHON_PROJECT_BASE=$(abs_builddir) _PYTHON_HOST_PLATFORM=$(_PYTHON_HOST_PLATFORM) PYTHONPATH=$(shell test -f pybuilddir.txt && echo $(abs_builddir)/`cat pybuilddir.txt`:)$(srcdir)/Lib:$(srcdir)/Lib/$(PLATDIR) '$interp
++	PY_BUILD_ENVIRON='_PYTHON_PROJECT_BASE=$(abs_builddir) _PYTHON_HOST_PLATFORM=$(_PYTHON_HOST_PLATFORM) PYTHONPATH=$(shell test -f pybuilddir.txt && echo $(abs_builddir)/`cat pybuilddir.txt`:)$(srcdir)/Lib:$(srcdir)/Lib/$(PLATDIR)'
++	PYTHON_FOR_BUILD=$interp
+     fi
+ elif test "$cross_compiling" = maybe; then
+     as_fn_error $? "Cross compiling required --host=HOST-TUPLE and --build=ARCH" "$LINENO" 5
+@@ -2974,6 +2976,7 @@ fi
+ 
+ 
+ 
++
+ if test "$prefix" != "/"; then
+     prefix=`echo "$prefix" | sed -e 's/\/$//g'`
+ fi
+diff --git a/setup.py b/setup.py
+index cb47a2339c..472e7e2b26 100644
+--- a/setup.py
++++ b/setup.py
+@@ -497,8 +497,6 @@ class PyBuildExt(build_ext):
+         if not cross_compiling:
+             add_dir_to_list(self.compiler.library_dirs, '/usr/local/lib')
+             add_dir_to_list(self.compiler.include_dirs, '/usr/local/include')
+-        if cross_compiling:
+-            self.add_gcc_paths()
+         self.add_multiarch_paths()
+ 
+         # Add paths specified in the environment variables LDFLAGS and
+@@ -556,7 +554,10 @@ class PyBuildExt(build_ext):
+         # be assumed that no additional -I,-L directives are needed.
+         inc_dirs = self.compiler.include_dirs[:]
+         lib_dirs = self.compiler.library_dirs[:]
+-        if not cross_compiling:
++        if cross_compiling:
++            inc_dirs = []
++            lib_dirs = []
++        else:
+             for d in (
+                 '/usr/include',
+                 ):
+@@ -621,6 +622,8 @@ class PyBuildExt(build_ext):
+         # Some modules that are normally always on:
+         #exts.append( Extension('_weakref', ['_weakref.c']) )
+ 
++        self.compiler.library_dirs = lib_dirs + [ '.' ]
++
+         # array objects
+         exts.append( Extension('array', ['arraymodule.c']) )
+ 
+-- 
+2.17.1
+
