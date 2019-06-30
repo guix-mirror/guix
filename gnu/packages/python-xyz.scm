@@ -3181,14 +3181,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.7")
+    (version "0.29.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1s61hq2ikawxp6qvmkbfvvaxy9rqj67cddzwgcfc3dwi44b83l2m"))))
+         "1866m01ggl2h3rky4hac3m5p048gg4a0jb09ljkknryiqln54fkn"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
