@@ -4,10 +4,11 @@
 ;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Miguel <rosen644835@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,8 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages emacs)
+  #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages xml)
@@ -41,34 +44,42 @@
 (define-public gettext-minimal
   (package
     (name "gettext-minimal")
-    (version "0.19.8.1")
+    (version "0.20.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gettext/gettext-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                ;; The gnulib test-lock test is prone to writer starvation
-                ;; with our glibc@2.25, which prefers readers, so disable it.
-                ;; The gnulib commit b20e8afb0b2 should fix this once
-                ;; incorporated here.
-                 (substitute* "gettext-runtime/tests/Makefile.in"
-                   (("TESTS = test-lock\\$\\(EXEEXT\\)") "TESTS ="))
-                 (substitute* "gettext-tools/gnulib-tests/Makefile.in"
-                  (("test-lock\\$\\(EXEEXT\\) ") ""))
-                 #t))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gettext/gettext-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0p3zwkk27wm2m2ccfqm57nj7vqkmfpn7ja1nf65zmhz8qqs5chb6"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;8 MiB of HTML
+               "doc"))                            ;9 MiB of HTML
     (inputs
-     `(("expat" ,expat)))
+     `(("libunistring" ,libunistring)
+       ("libxml2" ,libxml2)
+
+       ;; TODO: ncurses is only needed for the 'libtextstyle' library.
+       ;; The next version of gettext can use a separate libtextstyle,
+       ;; but for now we include it here in 'gettext-minimal'.
+       ("ncurses" ,ncurses)))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--with-included-libunistring=no"
+                           "--with-included-libxml=no")
+       #:phases
        (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'patch-fixed-paths
+           (lambda _
+             (substitute* '("gettext-tools/config.h.in"
+                            "gettext-tools/gnulib-tests/init.sh"
+                            "gettext-tools/tests/init.sh"
+                            "gettext-tools/system-tests/run-test")
+               (("/bin/sh") "sh"))
+             (substitute* '("gettext-tools/src/project-id"
+                            "gettext-tools/projects/KDE/trigger"
+                            "gettext-tools/projects/GNOME/trigger")
+               (("/bin/pwd") "pwd"))
+             #t))
         (add-before 'check 'patch-tests
          (lambda* (#:key inputs #:allow-other-keys)
            (let* ((bash (which "sh")))
@@ -92,15 +103,7 @@
                  (("/bin/pwd")
                   "pwd"))
 
-               #t))))
-        (add-before 'configure 'link-expat
-         (lambda _
-           ;; Gettext defaults to opening expat via dlopen on
-           ;; "Linux".  Change to link directly.
-           (substitute* "gettext-tools/configure"
-             (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
-             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\""))
-           #t)))
+               #t)))))
 
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))

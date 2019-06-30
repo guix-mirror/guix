@@ -2015,30 +2015,33 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   (let ((gettext-minimal
          (package (inherit gettext-minimal)
            (name "gettext-boot0")
+           ;; Newer versions of GNU gettext depends on libxml2 and ncurses.  To
+           ;; simplify the dependency chain, we stick to this version here.
+           (version "0.19.8.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (string-append "mirror://gnu/gettext/gettext-"
+                                         version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))))
            (inputs '())                           ;zero dependencies
            (arguments
-            (substitute-keyword-arguments
-                `(#:tests? #f
-                  ,@(package-arguments gettext-minimal))
-              ((#:phases phases)
-               `(modify-phases ,phases
-                  ;; Build only the tools.
-                  (add-after 'unpack 'chdir
-                             (lambda _
-                               (chdir "gettext-tools")
-                               #t))
+            `(#:tests? #f
+              #:phases (modify-phases %standard-phases
+                         ;; Build only the tools.
+                         (add-after 'unpack 'chdir
+                           (lambda _
+                             (chdir "gettext-tools")
+                             #t))
 
-                  ;; Some test programs require pthreads, which we don't have.
-                  (add-before 'configure 'no-test-programs
-                              (lambda _
-                                (substitute* "tests/Makefile.in"
-                                  (("^PROGRAMS =.*$")
-                                   "PROGRAMS =\n"))
-                                #t))
-
-                  ;; Don't try to link against libexpat.
-                  (delete 'link-expat)
-                  (delete 'patch-tests))))))))
+                         ;; Some test programs require pthreads, which we don't have.
+                         (add-before 'configure 'no-test-programs
+                           (lambda _
+                             (substitute* "tests/Makefile.in"
+                               (("^PROGRAMS =.*$")
+                                "PROGRAMS =\n"))
+                             #t))))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs gettext-minimal
                                    %boot1-inputs
