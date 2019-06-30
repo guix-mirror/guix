@@ -85,14 +85,14 @@
     (()
      '())
     ((package-inputs ...)
-     `((#:cargo-inputs ,package-inputs)))))
+     `(#:cargo-inputs ,package-inputs))))
 
 (define (maybe-cargo-development-inputs package-names)
   (match (package-names->package-inputs package-names)
     (()
      '())
     ((package-inputs ...)
-     `((#:cargo-development-inputs ,package-inputs)))))
+     `(#:cargo-development-inputs ,package-inputs))))
 
 (define (maybe-arguments arguments)
   (match arguments
