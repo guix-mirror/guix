@@ -646,7 +646,7 @@ certificates for free.")
     (version "1.88")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
+              (uri (string-append "mirror://cpan/authors/id/C/CH/CHRISN/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
