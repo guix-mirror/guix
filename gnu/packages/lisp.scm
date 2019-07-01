@@ -7025,3 +7025,35 @@ providing functions compatible with the series Common Lisp library.")))
 
 (define-public ecl-periods-series
   (sbcl-package->ecl-package sbcl-periods-series))
+
+(define-public sbcl-metatilities-base
+  (let ((commit "6eaa9e3ff0939a93a92109dd0fcd218de85417d5")
+        (revision "1"))
+    (package
+      (name "sbcl-metatilities-base")
+      (version (git-version "0.6.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/metatilities-base.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xpa86pdzlnf4v5g64j3ifaplx71sx2ha8b7vvakswi652679ma0"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Core of the metatilities Common Lisp library")
+      (description
+       "Metatilities-base is the core of the metatilities Common Lisp library
+which implements a set of utilities.")
+      (home-page "https://common-lisp.net/project/metatilities-base/")
+      (license license:expat))))
+
+(define-public cl-metatilities-base
+  (sbcl-package->cl-source-package sbcl-metatilities-base))
+
+(define-public ecl-metatilities-base
+  (sbcl-package->ecl-package sbcl-metatilities-base))
