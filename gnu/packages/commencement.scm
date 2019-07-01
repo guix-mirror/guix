@@ -1710,8 +1710,6 @@ exec " gcc "/bin/" program
 
 (define bison-boot0
   ;; This Bison is needed to build MiG so we need it early in the process.
-  ;; It is also needed to rebuild Bash's parser, which is modified by
-  ;; its CVE patches.  Remove it when it's no longer needed.
   (let* ((bison (package (inherit bison)
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
