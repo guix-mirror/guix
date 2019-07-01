@@ -1219,7 +1219,7 @@ command.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://www.iana.org/time-zones/repository/releases/tzdata"
+                   "https://data.iana.org/time-zones/releases/tzdata"
                    version ".tar.gz"))
              (sha256
               (base32
@@ -1269,7 +1269,7 @@ command.")
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
-                                "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                "https://data.iana.org/time-zones/releases/tzcode"
                                 version ".tar.gz"))
                           (sha256
                            (base32
@@ -1296,7 +1296,7 @@ and daylight-saving rules.")
      (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.iana.org/time-zones/repository/releases/tzdata"
+                    "https://data.iana.org/time-zones/releases/tzdata"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -1305,7 +1305,7 @@ and daylight-saving rules.")
        `(("tzcode" ,(origin
                      (method url-fetch)
                      (uri (string-append
-                           "http://www.iana.org/time-zones/repository/releases/tzcode"
+                           "http://data.iana.org/time-zones/releases/tzcode"
                            version ".tar.gz"))
                      (sha256
                       (base32
