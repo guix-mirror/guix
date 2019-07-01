@@ -286,17 +286,17 @@ without requiring the source code to be rewritten.")
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
 
-(define-public guile-2.2.5
+(define-public guile-2.2.6
   (package
     (inherit guile-2.2)
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "mirror://gnu/guile/guile-" version
                                   ".tar.xz"))
               (sha256
                (base32
-                "19w5ws1jvs01dpv756qv2cgs37rsnwq1f4f07mj0wra35pqp6c7w"))))))
+                "1269ymxm56j1z1lvq1y42rm961f2n7rinm3k6l00p9k52hrpcddk"))))))
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
