@@ -216,7 +216,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.5")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
 
@@ -226,7 +226,7 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "19w5ws1jvs01dpv756qv2cgs37rsnwq1f4f07mj0wra35pqp6c7w"))
+                "1269ymxm56j1z1lvq1y42rm961f2n7rinm3k6l00p9k52hrpcddk"))
               (modules '((guix build utils)))
               (patches (search-patches
                         "guile-2.2-skip-oom-test.patch"))
