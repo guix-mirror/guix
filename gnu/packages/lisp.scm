@@ -7315,3 +7315,48 @@ cl-plumbing libraries.")
 
 (define-public ecl-cl-octet-streams
   (sbcl-package->ecl-package sbcl-cl-octet-streams))
+
+(define-public sbcl-lzlib
+  (let ((commit "0de1db7129fef9a58a059d35a2fa2ecfc5b47b47")
+        (revision "1"))
+    (package
+      (name "sbcl-lzlib")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-lzlib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "12ny7vj52fgnd8hb8fc8mry92vq4c1x72x2350191m4476j95clz"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("lzlib" ,lzlib)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/lzlib.lisp"
+                 (("liblz\\.so")
+                  (string-append (assoc-ref inputs "lzlib") "/lib/liblz.so")))
+               #t)))))
+      (synopsis "Common Lisp library for lzip (de)compression")
+      (description
+       "This Common Lisp library provides functions for lzip (LZMA)
+compression/decompression using bindings to the lzlib C library.")
+      (home-page "https://github.com/glv2/cl-lzlib")
+      (license license:gpl3+))))
+
+(define-public cl-lzlib
+  (sbcl-package->cl-source-package sbcl-lzlib))
+
+(define-public ecl-lzlib
+  (sbcl-package->ecl-package sbcl-lzlib))
