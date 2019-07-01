@@ -1710,6 +1710,7 @@ exec " gcc "/bin/" program
 
 (define bison-boot0
   ;; This Bison is needed to build MiG so we need it early in the process.
+  ;; Recent versions of Linux-Libre headers also depend on this.
   (let* ((bison (package (inherit bison)
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
@@ -1735,7 +1736,7 @@ exec " gcc "/bin/" program
       (native-inputs `(("perl" ,perl-boot0))))))
 
 (define flex-boot0
-  ;; This Flex is needed to build MiG.
+  ;; This Flex is needed to build MiG as well as Linux-Libre headers.
   (let* ((flex (package (inherit flex)
                  (native-inputs `(("bison" ,bison-boot0)))
                  (propagated-inputs `(("m4" ,m4)))
@@ -1760,6 +1761,10 @@ exec " gcc "/bin/" program
                            ,@(package-arguments linux-libre-headers)))
               (native-inputs
                `(("perl" ,perl-boot0)
+
+                 ;; Flex and Bison are required since version 4.16.
+                 ("flex" ,flex-boot0)
+                 ("bison" ,bison-boot0)
                  ,@(%boot0-inputs)))))))
 
 (define gnumach-headers-boot0

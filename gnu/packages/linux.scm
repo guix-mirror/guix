@@ -496,11 +496,11 @@ It has been modified to remove all non-free binary blobs.")
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
 
-(define-public linux-libre-headers-4.14.67
-  (make-linux-libre-headers "4.14.67"
-                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
+(define-public linux-libre-headers-4.19.56
+  (make-linux-libre-headers "4.19.56"
+                            "1zqiic55viy065lhnkmhn33sz3bbbr2ykbm5f92yzd8lpc9zl7yx"))
 
-(define-public linux-libre-headers linux-libre-headers-4.14.67)
+(define-public linux-libre-headers linux-libre-headers-4.19.56)
 (define-public linux-libre linux-libre-5.1)
 
 (define-public linux-libre-arm-generic
