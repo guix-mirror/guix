@@ -545,7 +545,14 @@ everything from small to very large projects with speed and efficiency.")
     (build-system cmake-build-system)
     (outputs '("out" "debug"))
     (arguments
-     `(#:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+     `(#:configure-flags
+       (list "-DUSE_SHA1DC=ON"  ; SHA-1 collision detection
+             ,@(if (%current-target-system)
+                   `((string-append
+                      "-DPKG_CONFIG_EXECUTABLE="
+                      (assoc-ref %build-inputs "pkg-config")
+                      "/bin/" ,(%current-target-system) "-pkg-config"))
+                   '()))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-hardcoded-paths
@@ -560,9 +567,13 @@ everything from small to very large projects with speed and efficiency.")
            (lambda _
              (for-each make-file-writable (find-files "."))
              #t))
-         ;; Run checks more verbosely.
+         ;; Run checks more verbosely, unless we are cross-compiling.
          (replace 'check
-           (lambda _ (invoke "./libgit2_clar" "-v" "-Q"))))))
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+                 (invoke "./libgit2_clar" "-v" "-Q")
+                 ;; Tests may be disabled if cross-compiling.
+                 (format #t "Test suite not run.~%")))))))
     (inputs
      `(("libssh2" ,libssh2)
        ("http-parser" ,http-parser)))
