@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5243,10 +5244,22 @@ into your tests.  It automatically starts up a HTTP server in a separate thread 
        #:make-flags
        (list (string-append "PREFIX="
                             (assoc-ref %outputs "out"))
-             "CC=gcc" "library")
+             "library"
+             ,@(if (%current-target-system)
+                   '()
+                   '("CC=gcc")))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         ,@(if (%current-target-system)
+               '((replace 'configure
+                    (lambda* (#:key target #:allow-other-keys)
+                      (substitute* (find-files "." "Makefile")
+                        (("CC\\?=.*$")
+                         (string-append "CC=" target "-gcc\n"))
+                        (("AR\\?=.*$")
+                         (string-append "AR=" target "-ar\n")))
+                      #t)))
+               '((delete 'configure))))))
     (synopsis "HTTP request/response parser for C")
     (description "This is a parser for HTTP messages written in C.  It parses
 both requests and responses.  The parser is designed to be used in
