@@ -529,7 +529,7 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "20190305")
+    (version "20190701")
     (home-page "https://github.com/fontforge/libuninameslist")
     (source
      (origin
@@ -538,7 +538,7 @@ smooth contours with constant curvature at the spline joins.")
                            "/libuninameslist-dist-" version ".tar.gz"))
        (sha256
         (base32
-         "1rwd2bgcyvign9agyjsr3v2fr9j1cg2wi6g0z2wwg1az32scknwq"))))
+         "18c9pcz81wm26q2m7npmvh9j3ibjs2hycxfh5xic2xgjfw40v2qn"))))
     (build-system gnu-build-system)
     (synopsis "Unicode names and annotation list")
     (description
