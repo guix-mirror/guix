@@ -520,3 +520,37 @@ directories.
     (license (list
                license:bsd-2 ; Ephoto's thumbnailing code
                license:bsd-3))))
+
+(define-public evisum
+  (package
+    (name "evisum")
+    (version "0.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://download.enlightenment.org/rel/apps/"
+                            "evisum/evisum-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1lj62n896kablsl687c66yxrwajrh6ralb3y6nmcqv34pglnigca"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f   ; no tests
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure phase
+         (add-after 'unpack 'set-environmental-variables
+           (lambda _ (setenv "CC" (which "gcc")) #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("efl" ,efl)
+       ("perl" ,perl)))
+    (home-page "https://www.enlightenment.org")
+    (synopsis "EFL process viewer")
+    (description
+     "This is a process monitor and system monitor using the
+@dfn{Enlightenment Foundation Libraries} (EFL).")
+    (license license:bsd-2)))
