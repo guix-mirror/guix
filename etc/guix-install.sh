@@ -104,7 +104,7 @@ chk_require()
 
     gpg --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
-        echo "  gpg --keyserver pool.sks-keyservers.net --recv-keys ${OPENPGP_SIGNING_KEY_ID}"
+        echo "  wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -"
         exit 1
     )
 }
