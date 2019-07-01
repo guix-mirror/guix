@@ -2326,82 +2326,55 @@ more expressive and flexible than the traditional @code{format} procedure.")
       (license license:bsd-3))))
 
 (define-public emacsy
-  (let ((commit "7d49cc1425d5d209bdb82cac0d8ea0694b8b3784")
-        (revision "4"))
-    (package
-      (name "emacsy")
-      (version (string-append "0.1.2-" revision "." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://gitlab.com/janneke/emacsy.git")
-                      (commit commit)))
-                (file-name (string-append name "-" version))
-                (sha256
-                 (base32
-                  "0k9yns1v8zn135w60sx96nqs2bm2p2dvcvlm987hkw4lbff9ii6i"))))
-      (build-system gnu-build-system)
-      (native-inputs
-       `(("emacsy-webkit-gtk"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://gitlab.com/janneke/emacsy-webkit-gtk.git")
-                   (commit "35ded1b3e997fd779a17e0c4a2c73741718562d9")))
-             (file-name (string-append "emacsy-webkit-gtk" "-" version))
-             (sha256
-              (base32
-               "1gp0li2rbp6in926r3hrww6cnh864pp46v1din2pgmd7vzzl7kg0"))))
-         ("hello-emacsy"
-          ,(origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://gitlab.com/janneke/hello-emacsy.git")
-                   (commit "2c117e5286a261be4ff24938f3ae1d348396c538")))
-             (file-name (string-append "hello-emacsy" "-" version))
-             (sha256
-              (base32
-               "15ykd7s8axcy8ym4v71fgal4x28fxnim0pv0jmpi3dnhizr63zqn"))))
-         ("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("bzip2" ,bzip2)
-         ("guile" ,guile-2.2)
-         ("gettext" ,gnu-gettext)
-         ("libtool" ,libtool)
-         ("noweb" ,noweb)
-         ("perl" ,perl)
-         ("pkg-config" ,pkg-config)
-         ("texinfo" ,texinfo)
-         ("texlive" ,texlive)))
-      (propagated-inputs
-       `(("guile-lib" ,guile-lib)
-         ("guile-readline" ,guile-readline)
-         ("freeglut" ,freeglut)
-         ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
-         ("webkitgtk" ,webkitgtk)))
-      (inputs `(("guile" ,guile-2.2)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'unpack-examples
-             (lambda _
-               (copy-recursively (assoc-ref %build-inputs "emacsy-webkit-gtk")
-                                 "example/emacsy-webkit-gtk")
-               (copy-recursively (assoc-ref %build-inputs "hello-emacsy")
-                                 "example/hello-emacsy")))
-           (add-before 'configure 'setenv
-             (lambda _
-               (setenv "GUILE_AUTO_COMPILE" "0"))))))
-      (home-page "https://github.com/shanecelis/emacsy/")
-      (synopsis "Embeddable GNU Emacs-like library using Guile")
-      (description
-       "Emacsy is an embeddable GNU Emacs-like library that uses GNU Guile
+  (package
+    (name "emacsy")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.savannah.nongnu.org/releases/"
+                    name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cpb85dl1nibd34c2x2h7vfmjpkgh353p5b1w20v6cs6gmvgg4np"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bzip2" ,bzip2)
+       ("guile" ,guile-2.2)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)
+       ("texlive" ,texlive)))
+    (propagated-inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("guile" ,guile-2.2)
+       ("guile-lib" ,guile-lib)
+       ("guile-readline" ,guile-readline)
+       ("glib-networking" ,glib-networking)
+       ("freeglut" ,freeglut)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t)))))
+    (home-page "https://savannah.nongnu.org/projects/emacsy")
+    (synopsis "Embeddable GNU Emacs-like library using Guile")
+    (description
+     "Emacsy is an embeddable Emacs-like library that uses GNU Guile
 as extension language.  Emacsy can give a C program an Emacsy feel with
 keymaps, minibuffer, recordable macros, history, tab completion, major
 and minor modes, etc., and can also be used as a pure Guile library.  It
-comes with a simple counter example using GLUT and browser examples in C
-using gtk+-3 and webkitgtk.")
-      (license license:gpl3+))))
+comes with a simple counter example using FreeGLUT and browser examples
+in C using Gtk+-3 and WebKitGtk.")
+    (license license:gpl3+)))
 
 (define-public guile-jpeg
   (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
