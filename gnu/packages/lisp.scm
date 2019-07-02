@@ -5665,6 +5665,45 @@ basic everyday functions and macros.")
 (define-public ecl-fare-utils
   (sbcl-package->ecl-package sbcl-fare-utils))
 
+(define-public sbcl-trivial-utf-8
+  (let ((commit "4d427cfbb1c452436a0efb71c3205c9da67f718f")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-utf-8")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url (string-append "https://gitlab.common-lisp.net/"
+                               "trivial-utf-8/trivial-utf-8.git"))
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1jz27gz8gvqdmvp3k9bxschs6d5b3qgk94qp2bj6nv1d0jc3m1l1"))))
+      (arguments
+       ;; Guix incorrectly assumes the "8" is part of the version
+       ;; number and lobs it off.
+       `(#:asd-file "trivial-utf-8.asd"
+         #:asd-system-name "trivial-utf-8"))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "UTF-8 input/output library")
+      (description
+       "The Babel library solves a similar problem while understanding more
+encodings.  Trivial UTF-8 was written before Babel existed, but for new
+projects you might be better off going with Babel.  The one plus that Trivial
+UTF-8 has is that it doesn't depend on any other libraries.")
+      (home-page "https://common-lisp.net/project/trivial-utf-8/")
+      (license license:bsd-3))))
+
+(define-public cl-trivial-utf-8
+  (sbcl-package->cl-source-package sbcl-trivial-utf-8))
+
+(define-public ecl-trivial-utf-8
+  (sbcl-package->ecl-package sbcl-trivial-utf-8))
+
 (define-public sbcl-idna
   (package
     (name "sbcl-idna")

@@ -140,32 +140,35 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "2.1.1")
+    (version "2.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/JuliaLang/utf8proc/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/JuliaStrings/utf8proc")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1cnpigrazhslw65s4j1a56j7p6d7d61wsxxjf1218i9mkwv2yw17"))))
+        (base32 "1i42hqwc8znqii9brangwkxk5cyc2lk95ip405fg88zr7z2ncr34"))))
     (build-system gnu-build-system)
-    (inputs                 ; test data that is otherwise downloaded with curl
+    (native-inputs           ;test data that is otherwise downloaded with curl
      `(("NormalizationTest.txt"
         ,(origin
            (method url-fetch)
-           (uri (string-append "http://www.unicode.org/Public/9.0.0/ucd/"
+           (uri (string-append "https://www.unicode.org/Public/12.1.0/ucd/"
                                "NormalizationTest.txt"))
            (sha256
-            (base32 "1fxrz0bilsbwl685336aqi88k62i6nqhm62rvy4zhg3bcm4dhj1d"))))
+            (base32 "0hb97k9xv1lr847hwz0719ksqy39s47xw6k01dgs1368jdibvawc"))))
        ("GraphemeBreakTest.txt"
         ,(origin
            (method url-fetch)
-           (uri (string-append "http://www.unicode.org/Public/9.0.0/ucd/"
+           (uri (string-append "https://www.unicode.org/Public/12.1.0/ucd/"
                                "auxiliary/GraphemeBreakTest.txt"))
            (sha256
-            (base32 "0qbhyhmf0778lc2hcwlpizrvmdxwpk959v2q2wb8abv09ba7wvn7"))))))
+            (base32 "0qc90ppmrwfn3y9cdn8jcjrn7qpdf0fhxkwh945yp4rvh37mbgcm"))))
+
+       ;; For tests.
+       ("perl" ,perl)))
     (arguments
      '(#:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
@@ -180,8 +183,9 @@ libenca and several charset conversion libraries and tools.")
                        '("NormalizationTest.txt" "GraphemeBreakTest.txt"))
              (substitute* "data/GraphemeBreakTest.txt"
                (("÷") "/")
-               (("×") "+")))))))
-    (home-page "https://julialang.org/utf8proc/")
+               (("×") "+"))
+             #t)))))
+    (home-page "https://juliastrings.github.io/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
 normalization, case-folding, and other operations for data in the UTF-8

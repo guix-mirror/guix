@@ -457,8 +457,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.14-version "4.14.130")
-(define %linux-libre-4.14-hash "1fk6ds0q2rykr6byvfass8f5a9k6qq9sk261wjcfp1gn8b9wmxws")
+(define %linux-libre-4.14-version "4.14.131")
+(define %linux-libre-4.14-hash "1qcf4cg83zpjirkj8l09y07x4zzskypngampvfw7zyazynwwgs1i")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -471,14 +471,14 @@ It has been modified to remove all non-free binary blobs.")
                             %linux-libre-4.14-hash))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.183"
-                    "1w3syih3fggwkpcl6zkmm9f6577r2jvack4br5ffccgcddkz52ia"
+  (make-linux-libre "4.9.184"
+                    "0q3ggndwf0rwsb3xv33zl9awkd1803h2l9b4g6d6ps3f2sjxwxwa"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.183"
-                    "1v21n5kwnv9n18gfp2dz9hsdkwmfwigalr82xsnwbzhs0x561bxx"
+  (make-linux-libre "4.4.184"
+                    "05v295wk9fid17n5plkx6p9nwz6dvpcn2r7khwsq30sy3pg0vxv5"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config
                     #:extra-options
@@ -3535,7 +3535,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.1")
+    (version "5.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3543,7 +3543,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0dgh56pamav8wb9nmabjwdlpcazvqc9pgzwablxn77mqh0qrhkaq"))))
+                "06xybs7rglxjqkbzl2409acb3rgmnc5zc0xhyaxsc2p1x5yipfcw"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

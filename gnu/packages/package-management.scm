@@ -8,7 +8,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
-;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
@@ -466,17 +466,32 @@ sub-directory.")
 (define-public stow
   (package
     (name "stow")
-    (version "2.2.2")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/stow/stow-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pvky9fayms4r6fhns8jd0vavszd7d979w62vfd5n88v614pdxz2"))))
+                "0h8qr2rxsrkg6d8jxjk68r23jgn1dxdxyp4bnzzinpa8sjhfl905"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-stow
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/stow")
+                 `("PERL5LIB" ":" prefix
+                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                    "/lib/perl5/site_perl"))
+                         '("perl-clone-choose" "perl-clone" "perl-hash-merge"))))
+               #t))))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("perl-clone" ,perl-clone)
+       ("perl-clone-choose" ,perl-clone-choose)
+       ("perl-hash-merge" ,perl-hash-merge)))
     (native-inputs
      `(("perl-test-simple" ,perl-test-simple)
        ("perl-test-output" ,perl-test-output)
@@ -490,7 +505,7 @@ of data and makes them appear to be merged into the same directory.  It is
 typically used for managing software packages installed from source, by
 letting you install them apart in distinct directories and then create
 symlinks to the files in a common directory such as /usr/local.")
-    (license license:gpl2+)))
+    (license license:gpl3+)))
 
 (define-public rpm
   (package

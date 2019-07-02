@@ -2915,14 +2915,14 @@ to multiple hypothesis correction.")
 (define-public r-dose
   (package
     (name "r-dose")
-    (version "3.10.1")
+    (version "3.10.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DOSE" version))
        (sha256
         (base32
-         "0ab7mgj42fg6608qkciyqivr1n8s8r5ibvp0z3jfclrnyx6cl0w1"))))
+         "06jm1mnfd92s84f21562vsmj6jfkravfqf4lcxx2lk7s4ll66znj"))))
     (properties `((upstream-name . "DOSE")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3406,14 +3406,14 @@ type and symbol colors.")
 (define-public r-genomicscores
   (package
     (name "r-genomicscores")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicScores" version))
        (sha256
         (base32
-         "17bd61icfycc61b5dij1968h026w7vfd9miwdcbppak1j6s08idq"))))
+         "0xgv5h6hwr4p2p05z8vzhivy97gfirm4rj1ihb5c8fhgc5vp85dy"))))
     (properties `((upstream-name . "GenomicScores")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4749,14 +4749,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "1.34.2")
+    (version "1.34.4")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "0bsrw61wcav0q22c5m6gr0vn1f3c3ld8gxj730wcab6dj196z6q3"))))
+         "1230p8nsakifmpsqfiaj8rpm7npa8ab903mfjmayfa71n6yzvcbs"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))

@@ -2220,19 +2220,19 @@ a new command using the matched rule, and runs it.")
 (define-public di
   (package
     (name "di")
-    (version "4.47")
+    (version "4.47.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
        (sha256
-        (base32 "0zlapxlzjizwzwa8xwrwibhcbkh0wx7n74gvjpp6wlwq7cgiq0xm"))))
+        (base32 "1bdbl9k3gqf4h6g21difqc0w17pjid6r587y19wi37vx36aava7f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; obscure test failures.
+     `(#:tests? #f                      ; obscure test failures
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
+         (delete 'configure)            ; no configure script
          (add-before 'build 'setup-environment
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")

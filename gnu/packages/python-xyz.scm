@@ -3188,14 +3188,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.7")
+    (version "0.29.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1s61hq2ikawxp6qvmkbfvvaxy9rqj67cddzwgcfc3dwi44b83l2m"))))
+         "1866m01ggl2h3rky4hac3m5p048gg4a0jb09ljkknryiqln54fkn"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -4420,14 +4420,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.18")
+    (version "2.19")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "09mjyw82ibqzl449g7swy8bfxnfpmas0815d2rkdjlcqw81wma4r"))))
+        "1cr5dcj9628lkz1qlwq3fv97c25363qppkmcayqvd05dpy573259"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
@@ -4450,7 +4450,8 @@ a general image processing tool.")
                            (copy-file (string-append "." file)
                                       (string-append doc file)))
                          '("/README.rst" "/CHANGES" "/LICENSE"))
-               (copy-recursively "examples" examples)))))))
+               (copy-recursively "examples" examples)
+               #t))))))
     (home-page "https://github.com/eliben/pycparser")
     (synopsis "C parser in Python")
     (description
@@ -8642,14 +8643,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.12")
+    (version "1.0.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0qj16ai937wrbpv1a9g395gybb9s06rmdj3arbp8fpl37bg6byhc"))))
+         "0h95n0g0k1jwxiqarr09navpfajarvbmpm8mhmw66c25qc675vlm"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))

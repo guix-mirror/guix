@@ -18,6 +18,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2685,7 +2686,7 @@ library, including the ability to split random number generators.")
 (define-public ghc-primitive
   (package
     (name "ghc-primitive")
-    (version "0.6.3.0")
+    (version "0.6.4.0")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -2696,7 +2697,7 @@ library, including the ability to split random number generators.")
              ".tar.gz"))
        (sha256
         (base32
-         "0mcmbnj08wd6zfwn7xk6zf5hy5zwbla5v78pw0dpymqg9s0gzpnd"))))
+         "0r0cda7acvplgwaxy69kviv4jp7kkfi038by68gj4yfx4iwszgjc"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/haskell/primitive")
@@ -4085,7 +4086,7 @@ instances of the @code{Pretty} class.")
          "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
     (description "This is a pretty printing library based on Wadler's paper
@@ -4362,7 +4363,7 @@ interface.")
 (define-public ghc-ansi-terminal
   (package
     (name "ghc-ansi-terminal")
-    (version "0.8.0.4")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -4372,7 +4373,7 @@ interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))
+         "1yr0ld0kqns3w3j9gl62bdwshvyazidx4dv1qkvq19ivnf08w23l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-colour" ,ghc-colour)))
@@ -4382,6 +4383,21 @@ interface.")
 allows cursor movement, screen clearing, color output showing or hiding the
 cursor, and changing the title.")
     (license license:bsd-3)))
+
+(define-public ghc-ansi-terminal-0.8
+  (package (inherit ghc-ansi-terminal)
+           (name "ghc-ansi-terminal")
+           (version "0.8.0.4")
+           (source
+            (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://hackage.haskell.org/package/ansi-terminal/ansi-terminal-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))))
 
 (define-public ghc-vault
   (package
@@ -11590,5 +11606,123 @@ Replace tabs by four spaces (turned off by default)
 Replace some ASCII sequences by their Unicode equivalent (turned off by
 default)
 @end itemize")
+    (license license:bsd-3)))
+
+(define-public ghc-validation
+  (package
+    (name "ghc-validation")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/validation/validation-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1acj7mh3581ks405xswxw6667z7y1y0slisg6jvp6chc191ji9l5"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-setup-script
+           (lambda _
+             ;; The usual "Setup.hs" script is missing from the source.
+             (with-output-to-file "Setup.hs"
+               (lambda ()
+                 (format #t "import Distribution.Simple~%")
+                 (format #t "main = defaultMain~%"))))))))
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-lens" ,ghc-lens)))
+    (native-inputs
+     `(("ghc-hedgehog" ,ghc-hedgehog)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/qfpl/validation")
+    (synopsis
+     "Data-type like Either but with an accumulating Applicative")
+    (description
+     "A data-type like Either but with differing properties and type-class
+instances.
+
+Library support is provided for this different representation, including
+@code{lens}-related functions for converting between each and abstracting over
+their similarities.
+
+The @code{Validation} data type is isomorphic to @code{Either}, but has an
+instance of @code{Applicative} that accumulates on the error side.  That is to
+say, if two (or more) errors are encountered, they are appended using a
+@{Semigroup} operation.
+
+As a consequence of this @code{Applicative} instance, there is no
+corresponding @code{Bind} or @code{Monad} instance.  @code{Validation} is an
+example of, \"An applicative functor that is not a monad.\"")
+    (license license:bsd-3)))
+
+(define-public ghc-concurrent-output
+  (package
+    (name "ghc-concurrent-output")
+    (version "1.10.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/concurrent-output/concurrent-output-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1wnjxnwbc3l853kiiijagzjyb6fmhz3lmkwls24plbximl1qrr22"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-async" ,ghc-async)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-terminal-size" ,ghc-terminal-size)))
+    (home-page
+     "https://hackage.haskell.org/package/concurrent-output")
+    (synopsis
+     "Ungarble output from several threads or commands")
+    (description
+     "Lets multiple threads and external processes concurrently output to the
+console, without it getting all garbled up.
+
+Built on top of that is a way of defining multiple output regions, which are
+automatically laid out on the screen and can be individually updated by
+concurrent threads.  Can be used for progress displays etc.")
+    (license license:bsd-2)))
+
+(define-public ghc-wl-pprint-annotated
+  (package
+    (name "ghc-wl-pprint-annotated")
+    (version "0.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://hackage/package/wl-pprint-annotated/wl-pprint-annotated-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1br7qyf27iza213inwhf9bm2k6in0zbmfw6w4clqlc9f9cj2nrkb"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page
+     "https://github.com/minad/wl-pprint-annotated#readme")
+    (synopsis
+     "Wadler/Leijen pretty printer with annotation support")
+    (description
+     "Annotations are useful for coloring.  This is a limited version of
+@code{wl-pprint-extras} without support for point effects and without the free
+monad.  Like in @code{annotated-wl-pprint}, only annotations are supported.
+Compared to @code{annotated-wl-pprint} this library provides a slightly
+modernized interface.")
     (license license:bsd-3)))
 ;;; haskell.scm ends here

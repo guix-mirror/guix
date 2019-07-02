@@ -163,16 +163,11 @@ references.  Call REFERENCES to get the list of references."
                  items))))
     (remove (cut member <> self) refs)))
 
-(define (references-oracle store drv)
-  "Return a one-argument procedure that, when passed the file name of DRV's
-outputs or their dependencies, returns the list of references of that item.
-Use either local info or substitute info; build DRV if no information is
-available."
-  (define (output-paths drv)
-    (match (derivation->output-paths drv)
-      (((names . items) ...)
-       items)))
-
+(define (references-oracle store input)
+  "Return a one-argument procedure that, when passed the output file names of
+INPUT, a derivation input, or their dependencies, returns the list of
+references of that item.  Use either local info or substitute info; build
+INPUT if no information is available."
   (define (references* items)
     (guard (c ((store-protocol-error? c)
                ;; As a last resort, build DRV and query the references of the
@@ -181,13 +176,14 @@ available."
                ;; Warm up the narinfo cache, otherwise each derivation build
                ;; will result in one HTTP request to get one narinfo, which is
                ;; much less efficient than fetching them all upfront.
-               (substitution-oracle store (list drv))
+               (substitution-oracle store
+                                    (list (derivation-input-derivation input)))
 
-               (and (build-derivations store (list drv))
+               (and (build-derivations store (list input))
                     (map (cut references store <>) items))))
       (references/substitutes store items)))
 
-  (let loop ((items (output-paths drv))
+  (let loop ((items (derivation-input-output-paths input))
              (result vlist-null))
     (match items
       (()
@@ -324,7 +320,7 @@ DRV, and graft DRV itself to refer to those grafted dependencies."
   ;; upfront to have as much parallelism as possible when querying substitute
   ;; info or when building DRV.
   (define references
-    (references-oracle store drv))
+    (references-oracle store (derivation-input drv outputs)))
 
   (match (run-with-state
              (cumulative-grafts store drv grafts references

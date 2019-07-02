@@ -732,7 +732,7 @@ application suites.")
    (name "gtk+")
    ;; NOTE: When updating the version of 'gtk+', the hash of 'mate-themes' in
    ;;       mate.scm will also need to be updated.
-   (version "3.24.8")
+   (version "3.24.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -740,7 +740,7 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "16f71bbkhwhndcsrpyhjia3b77cb5ksf5c45lyfgws4pkgg64sb6"))
+              "0dg6jf2763sp740ls6b5y86b5b9zhz3zj0sbmar2xpws1lkv0zjp"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"
                                      "gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch"))))
    (outputs '("out" "bin" "doc"))
@@ -1182,7 +1182,7 @@ extensive documentation, including API reference and a tutorial.")
      ;; In 'Requires' of gtksourceviewmm-3.0.pc.
      `(("glibmm" ,glibmm)
        ("gtkmm" ,gtkmm)
-       ("gtksourceview" ,gtksourceview)))
+       ("gtksourceview" ,gtksourceview-3)))
     (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
     (description
      "gtksourceviewmm is a portable C++ library that extends the standard GTK+

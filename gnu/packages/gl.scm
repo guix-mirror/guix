@@ -46,6 +46,7 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vulkan)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -223,7 +224,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.0.4")
+    (version "19.1.1")
     (source
       (origin
         (method url-fetch)
@@ -235,7 +236,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "0iyffj3xd7f0vsayirswh6aia37ba26hkihpz273hxwd8hpz7y9r"))
+          "10amy5sdmpjbskr3xazgk0jyli8xpgi0y1nsmjr76hx8nhb4n4bj"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -269,6 +270,13 @@ also known as DXTn or DXTC) for Mesa.")
       `(("bison" ,bison)
         ("flex" ,flex)
         ("gettext" ,gettext-minimal)
+        ,@(match (%current-system)
+            ((or "x86_64-linux" "i686-linux")
+             `(("glslang" ,glslang)
+               ("vulkan-headers" ,vulkan-headers)
+               ("vulkan-loader" ,vulkan-loader)))
+            (_
+             `()))
         ("pkg-config" ,pkg-config)
         ("python" ,python)
         ("python-mako" ,python-mako)
@@ -304,6 +312,13 @@ also known as DXTn or DXTC) for Mesa.")
               '("-Dvulkan-drivers=amd"))
              (_
               '("-Dvulkan-drivers=auto")))
+
+         ;; Enable the Vulkan overlay layer on i686-linux and x86-64-linux.
+         ,@(match (%current-system)
+             ((or "x86_64-linux" "i686-linux")
+              '("-Dvulkan-overlay-layer=true"))
+             (_
+              '()))
 
          ;; Also enable the tests.
          "-Dbuild-tests=true"

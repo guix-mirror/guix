@@ -577,9 +577,6 @@ load path."
                    ,(file-append* source "/etc/completion/zsh/_guix"))
                   ("share/fish/vendor_completions.d/guix.fish"
                    ,(file-append* source "/etc/completion/fish/guix.fish"))
-                  ("share/guix/hydra.gnu.org.pub"
-                   ,(file-append* source
-                                  "/etc/substitutes/hydra.gnu.org.pub"))
                   ("share/guix/berlin.guixsd.org.pub"
                    ,(file-append* source
                                   "/etc/substitutes/berlin.guixsd.org.pub"))

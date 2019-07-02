@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
@@ -1282,6 +1282,32 @@ nested hash, array, scalar and reference types, including tied variables and
 objects.")
     (home-page "https://metacpan.org/release/Clone")
     (license (package-license perl))))
+
+(define-public perl-clone-choose
+  (package
+    (name "perl-clone-choose")
+    (version "0.010")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/H/HE/HERMES/"
+                           "Clone-Choose-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cin2bjn5z8xhm9v4j7pwlkx88jnvz8al0njdjwyvs6fb0glh8sn"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-clone" ,perl-clone)
+       ("perl-clone-pp" ,perl-clone-pp)
+       ("perl-test-without-module" ,perl-test-without-module)))
+    (propagated-inputs
+     `(("perl-module-runtime" ,perl-module-runtime)))
+    (home-page "https://metacpan.org/release/Clone-Choose")
+    (synopsis "Choose appropriate Perl @code{clone} utility")
+    (description "This @code{Clone::Choose} module checks several different
+modules which provide a @code{clone()} function and selects an appropriate
+one.")
+    (license perl-license)))
 
 (define-public perl-clone-pp
   (package
@@ -9562,7 +9588,7 @@ MYMETA.yml.")
 (define-public perl-module-build
   (package
     (name "perl-module-build")
-    (version "0.4220")
+    (version "0.4229")
     (source
      (origin
        (method url-fetch)
@@ -9570,7 +9596,7 @@ MYMETA.yml.")
                            "Module-Build-" version ".tar.gz"))
        (sha256
         (base32
-         "18mm6k7d7cmj9l6na1c50vbc8hc1pwsz38yxi9x6ydlrwz3hf4pv"))))
+         "064c03wxia7jz0i578awj4srykj0nnigm4p5r0dv0559rnk93r0z"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta" ,perl-cpan-meta)))

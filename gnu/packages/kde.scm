@@ -4,6 +4,7 @@
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -319,29 +320,21 @@ plugins, as well as code to create plugins, or complete applications.")
 (define-public krita
   (package
     (name "krita")
-    (version "4.1.7.101")
+    (version "4.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kde/stable/krita/"
                     (version-prefix version 3)
-                    "/" name "-" version ".tar.gz"))
+                    "/krita-" version ".tar.gz"))
               (sha256
                (base32
-                "0pvghb17vj3y19wa1n1zfg3yl5206ir3y45znrgdgdw076m5pjav"))))
+                "1pzk5bqp3kh22djhvsvmsc7ybirs4hsnkpg1y9677m2gxwbqnnps"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
        #:configure-flags
-       (list "-DBUILD_TESTING=OFF" "-DKDE4_BUILD_TESTS=OFF"
-             (string-append "-DWITH_FFTW3="
-                            (assoc-ref %build-inputs "fftw"))
-             (string-append "-DWITH_GSL="
-                            (assoc-ref %build-inputs "gsl"))
-             (string-append "-DWITH_LibRaw="
-                            (assoc-ref %build-inputs "libraw"))
-             (string-append "-DWITH_TIFF="
-                            (assoc-ref %build-inputs "libtiff"))
+       (list "-DBUILD_TESTING=OFF"
              (string-append "-DCMAKE_CXX_FLAGS=-I"
                             (assoc-ref %build-inputs "ilmbase")
                             "/include/OpenEXR"))
@@ -366,14 +359,15 @@ plugins, as well as code to create plugins, or complete applications.")
        ("extra-cmake-modules" ,extra-cmake-modules)
        ("gettext-minimal" ,gettext-minimal)
        ("kitemmodels" ,kitemmodels)
+       ("pkg-config" ,pkg-config)
        ("qwt" ,qwt)
        ("vc" ,vc)))
     (inputs
-     `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtmultimedia" ,qtmultimedia)
-       ("qtx11extras" ,qtx11extras)
-       ("qtsvg" ,qtsvg)
+     `(("boost" ,boost)
+       ("exiv2" ,exiv2)
+       ("fftw" ,fftw)
+       ("gsl" ,gsl)
+       ("ilmbase" ,ilmbase)
        ("karchive" ,karchive)
        ("kcompletion" ,kcompletion)
        ("kconfig" ,kconfig)
@@ -387,23 +381,24 @@ plugins, as well as code to create plugins, or complete applications.")
        ("kwidgetsaddons" ,kwidgetsaddons)
        ("kwindowsystem" ,kwindowsystem)
        ("kxmlgui" ,kxmlgui)
-       ("boost" ,boost)
-       ("exiv2" ,exiv2)
        ("lcms" ,lcms)
-       ("libpng" ,libpng)
        ("libjpeg-turbo" ,libjpeg-turbo)
-       ("zlib" ,zlib)
+       ("libpng" ,libpng)
+       ("libraw" ,libraw-0.18)
+       ("libtiff" ,libtiff)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxi" ,libxi)
-       ("fftw" ,fftw)
-       ("gsl" ,gsl)
-       ("poppler-qt5" ,poppler-qt5)
-       ("libraw" ,libraw-0.18)
-       ("libtiff" ,libtiff)
+       ("openexr" ,openexr)
        ("perl" ,perl)
-       ("ilmbase" ,ilmbase)
-       ("openexr" ,openexr)))
+       ("poppler-qt5" ,poppler-qt5)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("quazip" ,quazip)
+       ("zlib" ,zlib)))
     (home-page "https://krita.org")
     (synopsis "Digital painting application")
     (description

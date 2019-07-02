@@ -550,7 +550,7 @@ for editing Racket's Scribble documentation syntax in Emacs.")
 (define-public emacs-shroud
   (package
     (name "emacs-shroud")
-    (version "1.15.1")
+    (version "1.83.4")
     (source
      (origin
        (method git-fetch)
@@ -559,7 +559,7 @@ for editing Racket's Scribble documentation syntax in Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wvm4lxqcc1p8v7rpqal3bnqgnpk1gs7v18i83f6cvi5d88jkgdg"))))
+        (base32 "1yvdjx0kp4y8w5yz2cbqq9n6xl5splvmsyyx8ld1xv0q1c9872nf"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-bui" ,emacs-bui)
@@ -16340,3 +16340,35 @@ themselves live in an Org-mode file.  As such, this leverages the power of
 Org-mode (the notes may have outlines, latex fragments, babel, etc...) while
 acting like notes that are made @emph{in} the document.")
     (license license:gpl3+)))
+
+(define-public emacs-multi-term
+  (let ((commit "0804b11e52b960c80f5cd0712ee1e53ae70d83a4"))
+    (package
+      (name "emacs-multi-term")
+      (version "1.2")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/manateelazycat/multi-term.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0apvidmvb7rv05qjnjhax42ma8wrimik5vxx620dlbv17svz7iyf"))))
+      (build-system emacs-build-system)
+      (inputs `(("zsh" ,zsh)))
+      (home-page "https://github.com/manateelazycat/multi-term")
+      (synopsis "Manage multiple terminal buffers in Emacs")
+      (description
+       "This package enhances @code{term.el} with the following features:
+
+@enumerate
+@item Functions to switch between multiple terminal buffers
+@item List of keys to be intercepted by @code{emacs-multi-term} instead of by
+the underlying terminal
+@item Kills the unused buffer left after exiting the terminal
+@item Kills the running sub-processes along with the terminal when killing the
+it forcibly
+@item Dedicated window for debugging program.
+@end enumerate")
+      (license license:gpl3+))))

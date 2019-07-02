@@ -110,6 +110,7 @@ arrays of data.")
       (uri (string-append
             "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
             version ".tar.xz"))
+      (patches (search-patches "gstreamer-buffer-reset-offset.patch"))
       (sha256
        (base32
         "003wy1p1in85p9sr5jsyhbnwqaiwz069flwkhyx7qhxy31qjz3hf"))))
@@ -119,19 +120,7 @@ arrays of data.")
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html"))
-
-       ,@(if (not (target-64bit?))
-           ;; Skip test that fails on 32-bit systems:
-           ;; <https://gitlab.freedesktop.org/gstreamer/gstreamer/issues/316>.
-           `(#:phases (modify-phases %standard-phases
-                        (add-before 'check 'disable-gstbufferpool-test
-                          (lambda _
-                            (substitute* "tests/check/Makefile"
-                              (("^[[:blank:]]+gst/gstbufferpool.*$")
-                               ""))
-                              #t))))
-           '())))
+                            "/share/gtk-doc/html"))))
     (propagated-inputs `(("glib" ,glib))) ; required by gstreamer-1.0.pc.
     (native-inputs
      `(("bison" ,bison)

@@ -616,14 +616,14 @@ certificates for free.")
 (define-public perl-net-ssleay
   (package
     (name "perl-net-ssleay")
-    (version "1.85")
+    (version "1.88")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
+              (uri (string-append "mirror://cpan/authors/id/C/CH/CHRISN/"
                                   "Net-SSLeay-" version ".tar.gz"))
               (sha256
                (base32
-                "1j5h4ycm8538397l204d2d5fkm9595aj174pj7bkpbhwzfwqi0cx"))))
+                "1pfgh4h3szcpvqlcimc60pjbk9zwls99x5863sva0wc47i4dl010"))))
     (build-system perl-build-system)
     (inputs `(("openssl" ,openssl)))
     (arguments
@@ -807,7 +807,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.1")
+    (version "2.16.2")
     (source
      (origin
        (method url-fetch)
@@ -817,7 +817,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "08zz88gcb2jmpfsgy5b6qc3li6l39yw1dbimd18aziyd889nvl7b"))))
+         "1906hbwlkq32075hca4vjad03dcc36aycvmaz8yvhr3ygg6lz0x6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags

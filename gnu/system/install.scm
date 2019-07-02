@@ -330,8 +330,8 @@ Access documentation at any time by pressing Alt-F2.\x1b[0m
           ;; The usual services.
           (syslog-service)
 
-          ;; The build daemon.  Register the hydra.gnu.org key as trusted.
-          ;; This allows the installation process to use substitutes by
+          ;; The build daemon.  Register the default substitute server key(s)
+          ;; as trusted to allow the installation process to use substitutes by
           ;; default.
           (service guix-service-type
                    (guix-configuration (authorize-key? #t)))
