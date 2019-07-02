@@ -4413,14 +4413,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.18")
+    (version "2.19")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "09mjyw82ibqzl449g7swy8bfxnfpmas0815d2rkdjlcqw81wma4r"))))
+        "1cr5dcj9628lkz1qlwq3fv97c25363qppkmcayqvd05dpy573259"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
@@ -4443,7 +4443,8 @@ a general image processing tool.")
                            (copy-file (string-append "." file)
                                       (string-append doc file)))
                          '("/README.rst" "/CHANGES" "/LICENSE"))
-               (copy-recursively "examples" examples)))))))
+               (copy-recursively "examples" examples)
+               #t))))))
     (home-page "https://github.com/eliben/pycparser")
     (synopsis "C parser in Python")
     (description
