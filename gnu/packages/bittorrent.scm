@@ -395,8 +395,7 @@ and will take advantage of multiple processor cores where possible.")
                             (assoc-ref %build-inputs "boost")
                             "/lib")
              "--enable-python-binding"
-             "--enable-tests"
-             "CXXFLAGS=-std=c++11")     ; Use std::chrono instead of boost
+             "--enable-tests")
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
                                     (assoc-ref %outputs "out") "/lib"))
