@@ -2526,7 +2526,7 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21.9999")
+    (version "2.21.99999")
     (source
      (origin
        (method url-fetch)
@@ -2535,11 +2535,11 @@ operators and scripters.")
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
        (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
-                           "d3e6f3932f2af9deca8eed09e30a55e9bd524362.tar.gz"))
+                           "abeb2c25935ef8c75f1e5deef0f81276754dc975.tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0w4qyybfdxi29r2z3giq0by6aa6v6nrgibh1xgv4d1vwwq4hw35w"))))
+         "0py26r1fycwr5n7qimisv465x69w5ml3qc3pg1vbmgpiqphh8gwq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
