@@ -1115,10 +1115,7 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     `(;; XXX: Tests require C++14 or later.  Remove this when the default
-       ;; compiler is >= GCC6.
-       #:configure-flags '("CXXFLAGS=-std=gnu++14")
-       #:disallowed-references (,xorg-server-for-tests)
+     `(#:disallowed-references (,xorg-server-for-tests)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1154,8 +1151,7 @@ extensive documentation, including API reference and a tutorial.")
              (sha256
               (base32
                "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
-    (arguments
-     '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
+    (arguments '())
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
