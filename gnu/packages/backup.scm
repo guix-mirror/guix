@@ -257,11 +257,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                   (string-append "-L" zlib "/lib -lz"))
                  (("-lbz2")
                   (string-append "-L" bzip2 "/lib -lbz2")))
-               #t))))
-
-       ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
-       ;; compiled with C99 or C11 or a gnu variant.
-       #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
+               #t))))))
     (home-page "https://libarchive.org/")
     (synopsis "Multi-format archive and compression library")
     (description
