@@ -33,7 +33,6 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -198,19 +197,8 @@ player daemon.")
        ;; Otherwise, they are installed incorrectly, in
        ;; '$out/share/man/man/man1'.
        (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
-                            "/share"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'expand-C++-include-path
-           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path)))
-               #t))))))
-    (inputs `(("gcc" ,gcc-8)            ; for its C++14 support
-              ("boost" ,boost)
+                            "/share"))))
+    (inputs `(("boost" ,boost)
               ("pcre" ,pcre)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
