@@ -250,7 +250,7 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -258,15 +258,15 @@ merging features essential for loading menus modified with menu editors.")
                                   "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "19mnwmcxdhqfqkd9433z8h2y8w49vlc7jw5p5h8j54wz7zhrgx0g"))))
+                "0nfld1lvrdpsjfvm08y5487km45pm1mdr928hgqm8j0shrx6jiv4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin") ; need glib-genmarshal
-       ("dbus-glib" ,dbus-glib))) ; need dbus-binding-tool
+       ("glib:bin" ,glib "bin")         ; need glib-genmarshal
+       ("dbus-glib" ,dbus-glib)))       ; need dbus-binding-tool
     (propagated-inputs
-     `(("glib" ,glib))) ; required by tumbler-1.pc
+     `(("glib" ,glib)))                 ; required by tumbler-1.pc
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
