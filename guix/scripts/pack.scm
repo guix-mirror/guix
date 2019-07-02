@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (guix grafts)
   #:autoload   (guix inferior) (inferior-package?)
   #:use-module (guix monads)
@@ -440,11 +441,24 @@ the image."
   (define build
     ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
     (with-extensions (list guile-json guile-gcrypt)
-      (with-imported-modules (source-module-closure '((guix docker)
-                                                      (guix build store-copy))
-                                                    #:select? not-config?)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix docker)
+                                    (guix build store-copy)
+                                    (guix profiles)
+                                    (guix search-paths))
+                                  #:select? not-config?))
         #~(begin
-            (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
+            (use-modules (guix docker) (guix build store-copy)
+                         (guix profiles) (guix search-paths)
+                         (srfi srfi-19) (ice-9 match))
+
+            (define environment
+              (map (match-lambda
+                     ((spec . value)
+                      (cons (search-path-specification-variable spec)
+                            value)))
+                   (profile-search-paths #$profile)))
 
             (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -455,6 +469,7 @@ the image."
                                 #$profile
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
+                                #:environment environment
                                 #:entry-point #$(and entry-point
                                                      #~(string-append #$profile "/"
                                                                       #$entry-point))
