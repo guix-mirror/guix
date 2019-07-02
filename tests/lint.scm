@@ -33,7 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
-  #:use-module (guix scripts lint)
+  #:use-module (guix lint)
   #:use-module (guix ui)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)

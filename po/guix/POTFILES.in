@@ -40,6 +40,7 @@ gnu/machine/ssh.scm
 guix/scripts.scm
 guix/scripts/build.scm
 guix/discovery.scm
+guix/lint.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
 guix/scripts/install.scm

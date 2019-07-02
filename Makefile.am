@@ -98,6 +98,7 @@ MODULES =					\
   guix/self.scm					\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/lint.scm				\
   guix/glob.scm					\
   guix/git.scm					\
   guix/graph.scm				\
