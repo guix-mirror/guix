@@ -220,7 +220,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -228,7 +228,7 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "0z64g6f2vwfjzqsrsn05nbcbs8l6y4cfdgxk4k2la3giixj0jzx8"))))
+                "00c4g4gmbr8710k0yv1zybnm9s2gkc1rj63zfrg9qgin66jzxcbn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
