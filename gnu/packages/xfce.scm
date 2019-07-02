@@ -628,14 +628,15 @@ fast.")
 (define-public thunar-volman
   (package
     (name "thunar-volman")
-    (version "0.8.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1gf259n1v3y23n1zlkhyr6r0i8j59rnl1cmxvxj6la9cwdfbn22s"))))
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://archive.xfce.org/src/xfce/thunar-volman/"
+                           (version-major+minor version) "/"
+                           "thunar-volman-" version ".tar.bz2"))
+       (sha256
+        (base32 "1sfmz40164rg77hclrkrgnbk8cb7f325qqi7lz2hh3wbvf8r0c19"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
