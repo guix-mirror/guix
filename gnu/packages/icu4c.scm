@@ -85,22 +85,6 @@ C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
 
-(define-public icu4c-64
-  (package
-    (inherit icu4c)
-    (version "64.2")
-    (source (origin
-              (inherit (package-source icu4c))
-              (uri (string-append
-                    "http://download.icu-project.org/files/icu4c/" version "/icu4c-"
-                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                    "-src.tgz"))
-              (sha256
-               (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
-    (native-inputs
-     `(;; For tests.
-       ("python" ,python)))))
-
 (define-public java-icu4j
   (package
     (name "java-icu4j")
