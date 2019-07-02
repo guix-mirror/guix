@@ -85,7 +85,6 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages game-development)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -2339,7 +2338,6 @@ editors, IDEs, etc.")
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
        ("gperf" ,gperf)
-       ("gcc" ,gcc-7)
        ("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)
@@ -2348,9 +2346,6 @@ editors, IDEs, etc.")
      `(#:phases (modify-phases %standard-phases
                   (replace 'bootstrap
                     (lambda _
-                      ;; Work around GCC7 problem: <https://bugs.gnu.org/30756>.
-                      (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-
                       (setenv "NOCONFIGURE" "true")
                       (invoke "sh" "autogen.sh"))))))
   (synopsis "Enhanced VTE terminal widget")
