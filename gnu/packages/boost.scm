@@ -56,8 +56,7 @@
                                           version-with-underscores ".tar.bz2"))))
               (sha256
                (base32
-                "0y47nc7w0arwgj4x1phadxbvl7wyfcgknbz5kv8lzpl98wsyh2j3"))
-              (patches (search-patches "boost-fix-icu-build.patch"))))
+                "0y47nc7w0arwgj4x1phadxbvl7wyfcgknbz5kv8lzpl98wsyh2j3"))))
     (build-system gnu-build-system)
     (inputs `(("icu4c" ,icu4c)
               ("zlib" ,zlib)))
@@ -69,7 +68,6 @@
      `(#:tests? #f
        #:make-flags
        (list "threading=multi" "link=shared"
-             "cxxflags=-std=c++14"
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
