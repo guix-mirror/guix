@@ -221,8 +221,6 @@ sound server.")
               (base32
                "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("CXXFLAGS=-std=c++11"))) ; required by gtkmm
     (inputs
      `(("libcanberra" ,libcanberra)
        ("gtkmm" ,gtkmm)
