@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,8 +92,7 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (patches (search-patches "texinfo-5-perl-compat.patch"))
               (sha256
                (base32
-                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))
-    (native-inputs '())))
+                "1njfwh2z34r2c4r0iqa7v24wmjzvsfyz4vplzry8ln3479lfywal"))))))
 
 (define-public texinfo-4
   (package (inherit texinfo)
