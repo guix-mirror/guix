@@ -1022,14 +1022,6 @@ Guile.")
                                                        (%current-system))))
                      '("--disable-sse")
                      '()))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before
-            'configure 'set-flags
-            (lambda _
-              ;; Compile with C++11, required by libsigc++.
-              (setenv "CXXFLAGS" "-std=c++11")
-              #t)))
          #:python ,python-2))
       (inputs
        `(("jack" ,jack-1)
