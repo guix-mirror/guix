@@ -846,7 +846,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghostscript-no-header-creationdate.patch \
   %D%/packages/patches/giflib-make-reallocarray-private.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
-  %D%/packages/patches/glib-networking-connection.patch	\
   %D%/packages/patches/glibc-CVE-2015-5180.patch		\
   %D%/packages/patches/glibc-CVE-2015-7547.patch		\
   %D%/packages/patches/glibc-CVE-2016-3075.patch		\

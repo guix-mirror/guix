@@ -2595,7 +2595,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.58.0")
+    (version "2.60.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -2603,18 +2603,10 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))
-              (patches (search-patches "glib-networking-connection.patch"))))
+                "1mfw44qpmwvz6yzj8c6spx6z357wrmkk15byrkc5byagd82860fm"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Dlibproxy_support=false")
-       #:phases (modify-phases %standard-phases
-                  (add-before 'check 'disable-TLSv1.3
-                    (lambda _
-                      ;; XXX: One test fails when TLS 1.3 is enabled, fixed in 2.60.0:
-                      ;; <https://gitlab.com/gnutls/gnutls/issues/615>.
-                      (setenv "G_TLS_GNUTLS_PRIORITY" "NORMAL:-VERS-TLS1.3")
-                      #t)))))
+     `(#:configure-flags '("-Dlibproxy_support=false")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
