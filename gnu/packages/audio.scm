@@ -1948,22 +1948,7 @@ software.")
        #:configure-flags
        (list (string-append "--boost-includes="
                             (assoc-ref %build-inputs "boost")
-                            "/include"))
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'set-flags
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     ;; See e.g. https://github.com/lvtk/lvtk/issues/21
-                     (setenv "LDFLAGS"
-                             (string-append
-                              "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system"))
-                     ;; Needed for gtkmm
-                     (substitute* '("src/wscript_build"
-                                    "examples/wscript_build")
-                       (("cxxflags.*= \\[" line)
-                        (string-append line "\"-std=c++11\", ")))
-                     #t)))))
+                            "/include"))))
     (inputs
      `(("boost" ,boost)
        ("gtkmm" ,gtkmm-2)
