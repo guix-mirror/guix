@@ -52,7 +52,7 @@
                (lint-warning-message lint-warning))))
    warnings))
 
-(define* (run-checkers package #:optional (checkers %checkers))
+(define (run-checkers package checkers)
   "Run the given CHECKERS on PACKAGE."
   (let ((tty? (isatty? (current-error-port))))
     (for-each (lambda (checker)
@@ -68,14 +68,14 @@
       (format (current-error-port) "\x1b[K")
       (force-output (current-error-port)))))
 
-(define (list-checkers-and-exit)
+(define (list-checkers-and-exit checkers)
   ;; Print information about all available checkers and exit.
   (format #t (G_ "Available checkers:~%"))
   (for-each (lambda (checker)
               (format #t "- ~a: ~a~%"
                       (lint-checker-name checker)
                       (G_ (lint-checker-description checker))))
-            %checkers)
+            checkers)
   (exit 0))
 
 
@@ -111,26 +111,33 @@ run the checkers on all packages.\n"))
   ;;                                  'certainty'.
   (list (option '(#\c "checkers") #t #f
                 (lambda (opt name arg result)
-                  (let ((names (map string->symbol (string-split arg #\,))))
+                  (let ((names (map string->symbol (string-split arg #\,)))
+                        (checker-names (map lint-checker-name %all-checkers)))
                     (for-each (lambda (c)
-                                (unless (memq c
-                                              (map lint-checker-name
-                                                   %checkers))
+                                (unless (memq c checker-names)
                                   (leave (G_ "~a: invalid checker~%") c)))
                               names)
                     (alist-cons 'checkers
                                 (filter (lambda (checker)
                                           (member (lint-checker-name checker)
                                                   names))
-                                        %checkers)
+                                        %all-checkers)
                                 result))))
+        (option '(#\n "no-network") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'checkers
+                              %local-checkers
+                              (alist-delete 'checkers
+                                            result))))
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
                   (exit 0)))
         (option '(#\l "list-checkers") #f #f
-                (lambda args
-                   (list-checkers-and-exit)))
+                (lambda (opt name arg result)
+                  (alist-cons 'list?
+                              #t
+                              result)))
         (option '(#\V "version") #f #f
                 (lambda args
                   (show-version-and-exit "guix lint")))))
@@ -148,13 +155,17 @@ run the checkers on all packages.\n"))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
-                            (('argument . value)
-                             value)
-                            (_ #f))
+                             (('argument . value)
+                              value)
+                             (_ #f))
                            (reverse opts)))
-         (checkers (or (assoc-ref opts 'checkers) %checkers)))
-     (if (null? args)
-          (fold-packages (lambda (p r) (run-checkers p checkers)) '())
-          (for-each (lambda (spec)
-                      (run-checkers (specification->package spec) checkers))
-                    args))))
+         (checkers (or (assoc-ref opts 'checkers) %all-checkers)))
+    (cond
+     ((assoc-ref opts 'list?)
+      (list-checkers-and-exit checkers))
+     ((null? args)
+      (fold-packages (lambda (p r) (run-checkers p checkers)) '()))
+     (else
+      (for-each (lambda (spec)
+                  (run-checkers (specification->package spec) checkers))
+                args)))))

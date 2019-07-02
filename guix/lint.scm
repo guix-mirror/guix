@@ -91,7 +91,9 @@
             lint-warning-message-data
             lint-warning-location
 
-            %checkers
+            %local-checkers
+            %network-dependent-checkers
+            %all-checkers
 
             lint-checker
             lint-checker?
@@ -1146,16 +1148,12 @@ them for PACKAGE."
 ;;; List of checkers.
 ;;;
 
-(define %checkers
+(define %local-checkers
   (list
    (lint-checker
      (name        'description)
      (description "Validate package descriptions")
      (check       check-description-style))
-   (lint-checker
-     (name        'gnu-description)
-     (description "Validate synopsis & description of GNU packages")
-     (check       check-gnu-synopsis+description))
    (lint-checker
      (name        'inputs-should-be-native)
      (description "Identify inputs that should be native inputs")
@@ -1165,14 +1163,6 @@ them for PACKAGE."
      (description "Identify inputs that shouldn't be inputs at all")
      (check       check-inputs-should-not-be-an-input-at-all))
    (lint-checker
-     (name        'patch-file-names)
-     (description "Validate file names and availability of patches")
-     (check       check-patch-file-names))
-   (lint-checker
-     (name        'home-page)
-     (description "Validate home-page URLs")
-     (check       check-home-page))
-   (lint-checker
      (name        'license)
      ;; TRANSLATORS: <license> is the name of a data type and must not be
      ;; translated.
@@ -1180,17 +1170,9 @@ them for PACKAGE."
 or a list thereof")
      (check       check-license))
    (lint-checker
-     (name        'source)
-     (description "Validate source URLs")
-     (check       check-source))
-   (lint-checker
      (name        'mirror-url)
      (description "Suggest 'mirror://' URLs")
      (check       check-mirror-url))
-   (lint-checker
-     (name        'github-url)
-     (description "Suggest GitHub URLs")
-     (check       check-github-url))
    (lint-checker
      (name        'source-file-name)
      (description "Validate file names of sources")
@@ -1204,9 +1186,36 @@ or a list thereof")
      (description "Report failure to compile a package to a derivation")
      (check       check-derivation))
    (lint-checker
+    (name        'patch-file-names)
+    (description "Validate file names and availability of patches")
+    (check       check-patch-file-names))
+   (lint-checker
+     (name        'formatting)
+     (description "Look for formatting issues in the source")
+     (check       check-formatting))))
+
+(define %network-dependent-checkers
+  (list
+   (lint-checker
      (name        'synopsis)
      (description "Validate package synopses")
      (check       check-synopsis-style))
+   (lint-checker
+     (name        'gnu-description)
+     (description "Validate synopsis & description of GNU packages")
+     (check       check-gnu-synopsis+description))
+   (lint-checker
+     (name        'home-page)
+     (description "Validate home-page URLs")
+     (check       check-home-page))
+   (lint-checker
+     (name        'source)
+     (description "Validate source URLs")
+     (check       check-source))
+   (lint-checker
+     (name        'github-url)
+     (description "Suggest GitHub URLs")
+     (check       check-github-url))
    (lint-checker
      (name        'cve)
      (description "Check the Common Vulnerabilities and Exposures\
@@ -1215,8 +1224,8 @@ or a list thereof")
    (lint-checker
      (name        'refresh)
      (description "Check the package for new upstream releases")
-     (check       check-for-updates))
-   (lint-checker
-     (name        'formatting)
-     (description "Look for formatting issues in the source")
-     (check       check-formatting))))
+     (check       check-for-updates))))
+
+(define %all-checkers
+  (append %local-checkers
+          %network-dependent-checkers))
