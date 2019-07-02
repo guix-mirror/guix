@@ -1182,7 +1182,7 @@ extensive documentation, including API reference and a tutorial.")
      ;; In 'Requires' of gtksourceviewmm-3.0.pc.
      `(("glibmm" ,glibmm)
        ("gtkmm" ,gtkmm)
-       ("gtksourceview" ,gtksourceview)))
+       ("gtksourceview" ,gtksourceview-3)))
     (synopsis "C++ interface to the GTK+ 'GtkTextView' widget")
     (description
      "gtksourceviewmm is a portable C++ library that extends the standard GTK+

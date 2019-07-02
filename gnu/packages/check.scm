@@ -1924,7 +1924,8 @@ backported from Python 2.7 for Python 2.4+.")
        ("python-pyhamcrest" ,python-pyhamcrest)
        ("python-pytest" ,python-pytest)))
     (propagated-inputs
-     `(("python-six" ,python-six)
+     `(("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-six" ,python-six)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
     (arguments

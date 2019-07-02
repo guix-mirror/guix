@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,25 +22,22 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix import pypi)
-  #:use-module (ice-9 binary-ports)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 pretty-print)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 receive)
   #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module (rnrs bytevectors)
-  #:use-module (json)
-  #:use-module (web uri)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-package-name->name+version)
-                          find-files))
+                          find-files
+                          invoke))
   #:use-module (guix import utils)
   #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
@@ -47,7 +45,10 @@
   #:use-module (guix upstream)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system python)
-  #:export (guix-package->pypi-name
+  #:export (parse-requires.txt
+            parse-wheel-metadata
+            specification->requirement-name
+            guix-package->pypi-name
             pypi-recursive-import
             pypi->guix-package
             %pypi-updater))
@@ -108,86 +109,180 @@ package on PyPI."
     ((name version _ ...)
      (string-append name "-" version ".dist-info"))))
 
-(define (maybe-inputs package-inputs)
+(define (maybe-inputs package-inputs input-type)
   "Given a list of PACKAGE-INPUTS, tries to generate the 'inputs' field of a
-package definition."
+package definition.  INPUT-TYPE, a symbol, is used to populate the name of
+the input field."
   (match package-inputs
     (()
      '())
     ((package-inputs ...)
-     `((propagated-inputs (,'quasiquote ,package-inputs))))))
+     `((,input-type (,'quasiquote ,package-inputs))))))
 
-(define (guess-requirements source-url wheel-url tarball)
-  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list
-of the required packages specified in the requirements.txt file.  TARBALL will
-be extracted in a temporary directory."
+(define %requirement-name-regexp
+  ;; Regexp to match the requirement name in a requirement specification.
 
-  (define (tarball-directory url)
-    ;; Given the URL of the package's tarball, return the name of the directory
-    ;; that will be created upon decompressing it. If the filetype is not
-    ;; supported, return #f.
-    ;; TODO: Support more archive formats.
-    (let ((basename (substring url (+ 1 (string-rindex url #\/)))))
-      (cond
-       ((string-suffix? ".tar.gz" basename)
-        (string-drop-right basename 7))
-       ((string-suffix? ".tar.bz2" basename)
-        (string-drop-right basename 8))
-       (else
-        (begin
-          (warning (G_ "Unsupported archive format: \
-cannot determine package dependencies"))
-          #f)))))
+  ;; Some grammar, taken from PEP-0508 (see:
+  ;; https://www.python.org/dev/peps/pep-0508/).
 
-  (define (clean-requirement s)
-    ;; Given a requirement LINE, as can be found in a Python requirements.txt
-    ;; file, remove everything other than the actual name of the required
-    ;; package, and return it.
-    (string-take s
-      (or (string-index s (lambda (chr) (member chr '(#\space #\> #\= #\<))))
-          (string-length s))))
+  ;; Using this grammar makes the PEP-0508 regexp easier to understand for
+  ;; humans.  The use of a regexp is preferred to more primitive string
+  ;; manipulations because we can more directly match what upstream uses
+  ;; (again, per PEP-0508).  The regexp approach is also easier to extend,
+  ;; should we want to implement more completely the grammar of PEP-0508.
+
+  ;; The unified rule can be expressed as:
+  ;; specification = wsp* ( url_req | name_req ) wsp*
+
+  ;; where url_req is:
+  ;; url_req = name wsp* extras? wsp* urlspec wsp+ quoted_marker?
+
+  ;; and where name_req is:
+  ;; name_req = name wsp* extras? wsp* versionspec? wsp* quoted_marker?
+
+  ;; Thus, we need only matching NAME, which is expressed as:
+  ;; identifer_end = letterOrDigit | (('-' | '_' | '.' )* letterOrDigit)
+  ;; identifier    = letterOrDigit identifier_end*
+  ;; name          = identifier
+  (let* ((letter-or-digit "[A-Za-z0-9]")
+         (identifier-end (string-append "(" letter-or-digit "|"
+                                        "[-_.]*" letter-or-digit ")"))
+         (identifier (string-append "^" letter-or-digit identifier-end "*"))
+         (name identifier))
+    (make-regexp name)))
+
+(define (specification->requirement-name spec)
+  "Given a specification SPEC, return the requirement name."
+  (match:substring
+   (or (regexp-exec %requirement-name-regexp spec)
+       (error (G_ "Could not extract requirement name in spec:") spec))))
+
+(define (test-section? name)
+  "Return #t if the section name contains 'test' or 'dev'."
+  (any (cut string-contains-ci name <>)
+       '("test" "dev")))
+
+(define (parse-requires.txt requires.txt)
+  "Given REQUIRES.TXT, a Setuptools requires.txt file, return a list of lists
+of requirements.
+
+The first list contains the required dependencies while the second the
+optional test dependencies.  Note that currently, optional, non-test
+dependencies are omitted since these can be difficult or expensive to
+satisfy."
 
   (define (comment? line)
     ;; Return #t if the given LINE is a comment, #f otherwise.
-    (eq? (string-ref (string-trim line) 0) #\#))
+    (string-prefix? "#" (string-trim line)))
 
-  (define (read-requirements requirements-file)
-    ;; Given REQUIREMENTS-FILE, a Python requirements.txt file, return a list
-    ;; of name/variable pairs describing the requirements.
-    (call-with-input-file requirements-file
-      (lambda (port)
-        (let loop ((result '()))
-          (let ((line (read-line port)))
-            (if (eof-object? line)
-                result
-                (cond
-                 ((or (string-null? line) (comment? line))
-                  (loop result))
-                 (else
-                  (loop (cons (clean-requirement line)
-                              result))))))))))
+  (define (section-header? line)
+    ;; Return #t if the given LINE is a section header, #f otherwise.
+    (string-prefix? "[" (string-trim line)))
+
+  (call-with-input-file requires.txt
+    (lambda (port)
+      (let loop ((required-deps '())
+                 (test-deps '())
+                 (inside-test-section? #f)
+                 (optional? #f))
+        (let ((line (read-line port)))
+          (cond
+           ((eof-object? line)
+            ;; Duplicates can occur, since the same requirement can be
+            ;; listed multiple times with different conditional markers, e.g.
+            ;; pytest >= 3 ; python_version >= "3.3"
+            ;; pytest < 3 ; python_version < "3.3"
+            (map (compose reverse delete-duplicates)
+                 (list required-deps test-deps)))
+           ((or (string-null? line) (comment? line))
+            (loop required-deps test-deps inside-test-section? optional?))
+           ((section-header? line)
+            ;; Encountering a section means that all the requirements
+            ;; listed below are optional. Since we want to pick only the
+            ;; test dependencies from the optional dependencies, we must
+            ;; track those separately.
+            (loop required-deps test-deps (test-section? line) #t))
+           (inside-test-section?
+            (loop required-deps
+                  (cons (specification->requirement-name line)
+                        test-deps)
+                  inside-test-section? optional?))
+           ((not optional?)
+            (loop (cons (specification->requirement-name line)
+                        required-deps)
+                  test-deps inside-test-section? optional?))
+           (optional?
+            ;; Skip optional items.
+            (loop required-deps test-deps inside-test-section? optional?))
+           (else
+            (warning (G_ "parse-requires.txt reached an unexpected \
+condition on line ~a~%") line))))))))
+
+(define (parse-wheel-metadata metadata)
+  "Given METADATA, a Wheel metadata file, return a list of lists of
+requirements.
+
+Refer to the documentation of PARSE-REQUIRES.TXT for a description of the
+returned value."
+  ;; METADATA is a RFC-2822-like, header based file.
+
+  (define (requires-dist-header? line)
+    ;; Return #t if the given LINE is a Requires-Dist header.
+    (string-match "^Requires-Dist: " line))
+
+  (define (requires-dist-value line)
+    (string-drop line (string-length "Requires-Dist: ")))
+
+  (define (extra? line)
+    ;; Return #t if the given LINE is an "extra" requirement.
+    (string-match "extra == '(.*)'" line))
+
+  (define (test-requirement? line)
+    (and=> (match:substring (extra? line) 1) test-section?))
+
+  (call-with-input-file metadata
+    (lambda (port)
+      (let loop ((required-deps '())
+                 (test-deps '()))
+        (let ((line (read-line port)))
+          (cond
+           ((eof-object? line)
+            (map (compose reverse delete-duplicates)
+                 (list required-deps test-deps)))
+           ((and (requires-dist-header? line) (not (extra? line)))
+            (loop (cons (specification->requirement-name
+                         (requires-dist-value line))
+                        required-deps)
+                  test-deps))
+           ((and (requires-dist-header? line) (test-requirement? line))
+            (loop required-deps
+                  (cons (specification->requirement-name (requires-dist-value line))
+                        test-deps)))
+           (else
+            (loop required-deps test-deps)))))))) ;skip line
+
+(define (guess-requirements source-url wheel-url archive)
+  "Given SOURCE-URL, WHEEL-URL and an ARCHIVE of the package, return a list
+of the required packages specified in the requirements.txt file.  ARCHIVE will
+be extracted in a temporary directory."
 
   (define (read-wheel-metadata wheel-archive)
     ;; Given WHEEL-ARCHIVE, a ZIP Python wheel archive, return the package's
-    ;; requirements.
+    ;; requirements, or #f if the metadata file contained therein couldn't be
+    ;; extracted.
     (let* ((dirname (wheel-url->extracted-directory wheel-url))
-           (json-file (string-append dirname "/metadata.json")))
-      (and (zero? (system* "unzip" "-q" wheel-archive json-file))
-           (dynamic-wind
-             (const #t)
-             (lambda ()
-               (call-with-input-file json-file
-                 (lambda (port)
-                   (let* ((metadata (json->scm port))
-                          (run_requires (hash-ref metadata "run_requires"))
-                          (requirements (if run_requires
-                                            (hash-ref (list-ref run_requires 0)
-                                                       "requires")
-                                            '())))
-                     (map clean-requirement requirements)))))
-             (lambda ()
-               (delete-file json-file)
-               (rmdir dirname))))))
+           (metadata (string-append dirname "/METADATA")))
+      (call-with-temporary-directory
+       (lambda (dir)
+         (if (zero?
+              (parameterize ((current-error-port (%make-void-port "rw+"))
+                             (current-output-port (%make-void-port "rw+")))
+                (system* "unzip" wheel-archive "-d" dir metadata)))
+             (parse-wheel-metadata (string-append dir "/" metadata))
+             (begin
+               (warning
+                (G_ "Failed to extract file: ~a from wheel.~%") metadata)
+               #f))))))
 
   (define (guess-requirements-from-wheel)
     ;; Return the package's requirements using the wheel, or #f if an error
@@ -195,63 +290,68 @@ cannot determine package dependencies"))
     (call-with-temporary-output-file
      (lambda (temp port)
        (if wheel-url
-         (and (url-fetch wheel-url temp)
-              (read-wheel-metadata temp))
-         #f))))
+           (and (url-fetch wheel-url temp)
+                (read-wheel-metadata temp))
+           #f))))
 
   (define (guess-requirements-from-source)
     ;; Return the package's requirements by guessing them from the source.
-    (let ((dirname (tarball-directory source-url)))
-      (if (string? dirname)
-          (call-with-temporary-directory
-           (lambda (dir)
-             (let* ((pypi-name (string-take dirname (string-rindex dirname #\-)))
-                    (req-files (list (string-append dirname "/requirements.txt")
-                                     (string-append dirname "/" pypi-name ".egg-info"
-                                                    "/requires.txt")))
-                    (exit-codes (map (lambda (file-name)
-                                       (parameterize ((current-error-port (%make-void-port "rw+"))
-                                                      (current-output-port (%make-void-port "rw+")))
-                                         (system* "tar" "xf" tarball "-C" dir file-name)))
-                                     req-files)))
-               ;; Only one of these files needs to exist.
-               (if (any zero? exit-codes)
-                   (match (find-files dir)
-                     ((file . _)
-                      (read-requirements file))
-                     (()
-                      (warning (G_ "No requirements file found.\n"))))
-                   (begin
-                     (warning (G_ "Failed to extract requirements files\n"))
-                     '())))))
-          '())))
+    (if (compressed-file? source-url)
+        (call-with-temporary-directory
+         (lambda (dir)
+           (parameterize ((current-error-port (%make-void-port "rw+"))
+                          (current-output-port (%make-void-port "rw+")))
+             (if (string=? "zip" (file-extension source-url))
+                 (invoke "unzip" archive "-d" dir)
+                 (invoke "tar" "xf" archive "-C" dir)))
+           (let ((requires.txt-files
+                  (find-files dir (lambda (abs-file-name _)
+		                    (string-match "\\.egg-info/requires.txt$"
+                                                  abs-file-name)))))
+             (match requires.txt-files
+               (()
+                (warning (G_ "Cannot guess requirements from source archive:\
+ no requires.txt file found.~%"))
+                (list '() '()))
+               (else (parse-requires.txt (first requires.txt-files)))))))
+        (begin
+          (warning (G_ "Unsupported archive format; \
+cannot determine package dependencies from source archive: ~a~%")
+                   (basename source-url))
+          (list '() '()))))
 
-  ;; First, try to compute the requirements using the wheel, since that is the
-  ;; most reliable option. If a wheel is not provided for this package, try
-  ;; getting them by reading either the "requirements.txt" file or the
-  ;; "requires.txt" from the egg-info directory from the source tarball. Note
-  ;; that "requirements.txt" is not mandatory, so this is likely to fail.
+  ;; First, try to compute the requirements using the wheel, else, fallback to
+  ;; reading the "requires.txt" from the egg-info directory from the source
+  ;; archive.
   (or (guess-requirements-from-wheel)
       (guess-requirements-from-source)))
 
-
-(define (compute-inputs source-url wheel-url tarball)
-  "Given the SOURCE-URL of an already downloaded TARBALL, return a list of
-name/variable pairs describing the required inputs of this package.  Also
+(define (compute-inputs source-url wheel-url archive)
+  "Given the SOURCE-URL and WHEEL-URL of an already downloaded ARCHIVE, return
+a pair of lists, each consisting of a list of name/variable pairs, for the
+propagated inputs and the native inputs, respectively.  Also
 return the unaltered list of upstream dependency names."
-  (let ((dependencies
-         (remove (cut string=? "argparse" <>)
-                 (guess-requirements source-url wheel-url tarball))))
-    (values (sort
-             (map (lambda (input)
-                    (let ((guix-name (python->package-name input)))
-                      (list guix-name (list 'unquote (string->symbol guix-name)))))
-                  dependencies)
-             (lambda args
-               (match args
-                 (((a _ ...) (b _ ...))
-                  (string-ci<? a b)))))
-            dependencies)))
+
+  (define (strip-argparse deps)
+    (remove (cut string=? "argparse" <>) deps))
+
+  (define (requirement->package-name/sort deps)
+    (sort
+     (map (lambda (input)
+            (let ((guix-name (python->package-name input)))
+              (list guix-name (list 'unquote (string->symbol guix-name)))))
+          deps)
+     (lambda args
+       (match args
+         (((a _ ...) (b _ ...))
+          (string-ci<? a b))))))
+
+  (define process-requirements
+    (compose requirement->package-name/sort strip-argparse))
+
+  (let ((dependencies (guess-requirements source-url wheel-url archive)))
+    (values (map process-requirements dependencies)
+            (concatenate dependencies))))
 
 (define (make-pypi-sexp name version source-url wheel-url home-page synopsis
                         description license)
@@ -260,29 +360,36 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (call-with-temporary-output-file
    (lambda (temp port)
      (and (url-fetch source-url temp)
-          (receive (input-package-names upstream-dependency-names)
+          (receive (guix-dependencies upstream-dependencies)
               (compute-inputs source-url wheel-url temp)
-            (values
-             `(package
-                (name ,(python->package-name name))
-                (version ,version)
-                (source (origin
-                          (method url-fetch)
-
-                          ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
-                          ;; cases in NAME, for instance, as is the case with
-                          ;; "uwsgi".  In that case, fall back to a full URL.
-                          (uri (pypi-uri ,(string-downcase name) version))
-                          (sha256
-                           (base32
-                            ,(guix-hash-url temp)))))
-                (build-system python-build-system)
-                ,@(maybe-inputs input-package-names)
-                (home-page ,home-page)
-                (synopsis ,synopsis)
-                (description ,description)
-                (license ,(license->symbol license)))
-             upstream-dependency-names))))))
+            (match guix-dependencies
+              ((required-inputs test-inputs)
+               (values
+                `(package
+                   (name ,(python->package-name name))
+                   (version ,version)
+                   (source
+                    (origin
+                      (method url-fetch)
+                      ;; PyPI URL are case sensitive, but sometimes a project
+                      ;; named using mixed case has a URL using lower case, so
+                      ;; we must work around this inconsistency.  For actual
+                      ;; examples, compare the URLs of the "Deprecated" and
+                      ;; "uWSGI" PyPI packages.
+                      (uri ,(if (string-contains source-url name)
+                                `(pypi-uri ,name version)
+                                `(pypi-uri ,(string-downcase name) version)))
+                      (sha256
+                       (base32
+                        ,(guix-hash-url temp)))))
+                   (build-system python-build-system)
+                   ,@(maybe-inputs required-inputs 'propagated-inputs)
+                   ,@(maybe-inputs test-inputs 'native-inputs)
+                   (home-page ,home-page)
+                   (synopsis ,synopsis)
+                   (description ,description)
+                   (license ,(license->symbol license)))
+                upstream-dependencies))))))))
 
 (define pypi->guix-package
   (memoize

@@ -714,7 +714,11 @@ from forcing GEXP-PROMISE."
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-       ("icu4c" ,icu4c)
+
+       ;; Build against ICU 64 to prevent a localization problem in version 75
+       ;; and later: <https://github.com/Eloston/ungoogled-chromium/issues/778>.
+       ("icu4c" ,icu4c-64)
+
        ("jsoncpp" ,jsoncpp)
        ("lcms" ,lcms)
        ("libevent" ,libevent)

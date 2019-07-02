@@ -475,17 +475,28 @@ sub-directory.")
                (base32
                 "0h8qr2rxsrkg6d8jxjk68r23jgn1dxdxyp4bnzzinpa8sjhfl905"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-stow
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/stow")
+                 `("PERL5LIB" ":" prefix
+                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
+                                                    "/lib/perl5/site_perl"))
+                         '("perl-clone-choose" "perl-clone" "perl-hash-merge"))))
+               #t))))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("perl-clone" ,perl-clone)
+       ("perl-clone-choose" ,perl-clone-choose)
+       ("perl-hash-merge" ,perl-hash-merge)))
     (native-inputs
      `(("perl-test-simple" ,perl-test-simple)
        ("perl-test-output" ,perl-test-output)
        ("perl-capture-tiny" ,perl-capture-tiny)
        ("perl-io-stringy" ,perl-io-stringy)))
-    (propagated-inputs
-     `(("perl-clone-choose" ,perl-clone-choose)
-       ("perl-clone" ,perl-clone)
-       ("perl-hash-merge" ,perl-hash-merge)))
     (home-page "https://www.gnu.org/software/stow/")
     (synopsis "Managing installed software packages")
     (description

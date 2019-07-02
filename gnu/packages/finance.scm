@@ -935,7 +935,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.54.1")
+    (version "0.54.3")
     (source
      (origin
        (method git-fetch)
@@ -946,7 +946,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15z5wc3ahvv8axyiqmf7hd4y91ahh1x4bfmgsqxwygyhswl1yjq8"))))
+         "1k3rpfc9zxj9z50cr4zjfyzdla9ap5mj1v1rlcriqmflgb5cmiba"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
@@ -993,7 +993,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.7.0")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
@@ -1003,7 +1003,7 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pnd5v15sgxxm114sbs0z24a4dars5hy1nabc9v9ask7kxzrxs9y"))))
+         "059k2kil2l8jcm4wp86w1z7y8p26rww7d3l5fzds0qq2dzvkvzgs"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
