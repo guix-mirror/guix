@@ -89,7 +89,6 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages serialization)
-  #:use-module (gnu packages commencement) ; TODO remove when default gcc version >=7
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -1337,15 +1336,7 @@ modules for building a Wayland compositor.")
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "-Dout=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; TODO remove when issue #30756 is resolved
-         (add-before 'configure 'fix-gcc
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t)))))
+       (list (string-append "-Dout=" (assoc-ref %outputs "out")))))
     (inputs `(("fmt" ,fmt)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
@@ -1356,8 +1347,7 @@ modules for building a Wayland compositor.")
               ("pulseaudio" ,pulseaudio)
               ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
-    (native-inputs `(("gcc-toolchain" ,gcc-toolchain-7) ; TODO remove when default gcc version >=7
-                     ("glib:bin" ,glib "bin")
+    (native-inputs `(("glib:bin" ,glib "bin")
                      ("pkg-config" ,pkg-config)
                      ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
