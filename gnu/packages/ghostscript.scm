@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,6 +85,24 @@ Consortium standard (ICC), approved as ISO 15076-1.")
             (sha256 (base32
                      "0zhcx67afb6b5r936w5jmaydj3ks8zh83n9rm5sv3m3k8q8jib1q"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("automake" ,automake))) ; For up to date 'config.guess' and 'config.sub'.
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'fix-configure
+          (lambda* (#:key inputs native-inputs #:allow-other-keys)
+            ;; Replace outdated config.sub and config.guess:
+            (for-each (lambda (file)
+                        (install-file
+                         (string-append (assoc-ref
+                                         (or native-inputs inputs) "automake")
+                                        "/share/automake-"
+                                        ,(version-major+minor
+                                          (package-version automake))
+                                        "/" file) "."))
+                      '("config.sub" "config.guess"))
+            #t)))))
    (synopsis "Library for handling paper sizes")
    (description
     "The paper library and accompanying files are intended to provide a simple
