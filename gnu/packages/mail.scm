@@ -2558,7 +2558,8 @@ operators and scripters.")
                                               "/lib")
                                (string-append "--with-interactive-spellcheck="
                                               (assoc-ref %build-inputs "aspell")
-                                              "/bin/aspell"))
+                                              "/bin/aspell")
+                               "--with-date-stamp=Thu  1 Jan 01:00:01 CET 1970")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-reproducible
@@ -2566,9 +2567,6 @@ operators and scripters.")
              ;; This removes time-dependent code to make alpine reproducible.
              (substitute* "pico/blddate.c"
                (("%02d-%s-%d") "1970-01-01"))
-             (substitute* (list "alpine/Makefile.in"
-                                "web/src/alpined.d/Makefile.in")
-               (("`date`") "1970-01-01"))
              #t)))))
     (inputs
      `(("ncurses" ,ncurses)
