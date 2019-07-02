@@ -2577,7 +2577,7 @@ operators and scripters.")
        ("aspell" ,aspell)
        ("tcl" ,tcl)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://repo.or.cz/alpine.git")
+    (home-page "https://repo.or.cz/alpine.git")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
     (description
      "Alpine is a text-based mail and news client.  Alpine includes several
