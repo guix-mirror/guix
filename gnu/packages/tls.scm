@@ -13,6 +13,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -297,6 +298,23 @@ required structures.")
       #:disallowed-references ,(list (canonical-package perl))
       #:phases
       (modify-phases %standard-phases
+	,@(if (%current-target-system)
+	      '((add-before
+		    'configure 'set-cross-compile
+		  (lambda* (#:key target outputs #:allow-other-keys)
+		    (setenv "CROSS_COMPILE" (string-append target "-"))
+		    (setenv "CONFIGURE_TARGET_ARCH"
+			    (cond
+			     ((string-prefix? "i686" target)
+			      "linux-x86")
+			     ((string-prefix? "x86_64" target)
+			      "linux-x86_64")
+			     ((string-prefix? "arm" target)
+			      "linux-armv4")
+			     ((string-prefix? "aarch64" target)
+			      "linux-aarch64")))
+		    #t)))
+	      '())
         (replace 'configure
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
@@ -306,7 +324,9 @@ required structures.")
                 (("/usr/bin/env")
                  (string-append (assoc-ref %build-inputs "coreutils")
                                 "/bin/env")))
-              (invoke "./config"
+              (invoke ,@(if (%current-target-system)
+			    '("./Configure")
+			    '("./config"))
                       "shared"       ;build shared libraries
                       "--libdir=lib"
 
@@ -317,7 +337,10 @@ required structures.")
                                      "/share/openssl-" ,version)
 
                       (string-append "--prefix=" out)
-                      (string-append "-Wl,-rpath," lib)))))
+                      (string-append "-Wl,-rpath," lib)
+		      ,@(if (%current-target-system)
+			    '((getenv "CONFIGURE_TARGET_ARCH"))
+			    '())))))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
@@ -432,21 +455,26 @@ required structures.")
                    (("^MANDIR[[:blank:]]*=.*$")
                     (string-append "MANDIR = " out "/share/man\n")))
                  #t)))
-        (replace 'configure
-          ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (invoke "./config"
-                      "shared"                 ;build shared libraries
-                      "--libdir=lib"
+	   (replace 'configure
+	     ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
+	     (lambda* (#:key outputs #:allow-other-keys)
+	       (let ((out (assoc-ref outputs "out")))
+		 (invoke ,@(if (%current-target-system)
+			       '("./Configure")
+			       '("./config"))
+			 "shared"                 ;build shared libraries
+			 "--libdir=lib"
 
-                      ;; The default for this catch-all directory is
-                      ;; PREFIX/ssl.  Change that to something more
-                      ;; conventional.
-                      (string-append "--openssldir=" out
-                                     "/share/openssl-" ,version)
+			 ;; The default for this catch-all directory is
+			 ;; PREFIX/ssl.  Change that to something more
+			 ;; conventional.
+			 (string-append "--openssldir=" out
+					"/share/openssl-" ,version)
 
-                      (string-append "--prefix=" out)))))
+			 (string-append "--prefix=" out)
+			 ,@(if (%current-target-system)
+			       '((getenv "CONFIGURE_TARGET_ARCH"))
+			       '())))))
         (delete 'move-extra-documentation)
         (add-after 'install 'move-man3-pages
           (lambda* (#:key outputs #:allow-other-keys)
