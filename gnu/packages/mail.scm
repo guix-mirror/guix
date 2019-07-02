@@ -2526,20 +2526,23 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
+    ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
+    ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
+    ;; ID below.  Don't forget to update it…
     (version "2.21.99999")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; There are two versions: the plain continuation of Alpine without extra
        ;; patches and the version which adds extra fixes. Every distro uses
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
-       (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
-                           "abeb2c25935ef8c75f1e5deef0f81276754dc975.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "http://repo.or.cz/alpine.git")
+             (commit "abeb2c25935ef8c75f1e5deef0f81276754dc975")))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0py26r1fycwr5n7qimisv465x69w5ml3qc3pg1vbmgpiqphh8gwq"))))
+        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
