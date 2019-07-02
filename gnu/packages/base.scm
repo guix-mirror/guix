@@ -1253,25 +1253,7 @@ and daylight-saving rules.")
 (define-public tzdata-for-tests
   (hidden-package
    (package
-     (inherit tzdata)
-     (version "2018g")
-     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://data.iana.org/time-zones/releases/tzdata"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
-     (inputs
-       `(("tzcode" ,(origin
-                     (method url-fetch)
-                     (uri (string-append
-                           "http://data.iana.org/time-zones/releases/tzcode"
-                           version ".tar.gz"))
-                     (sha256
-                      (base32
-                       "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa")))))))))
+     (inherit tzdata))))
 
 (define-public libiconv
   (package
