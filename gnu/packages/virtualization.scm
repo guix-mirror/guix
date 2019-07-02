@@ -399,14 +399,14 @@ manage system or application containers.")
 (define-public libvirt
   (package
     (name "libvirt")
-    (version "5.4.0")
+    (version "5.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://libvirt.org/sources/libvirt-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0ywf8m9yz2hxnic7fylzlmgy4m353r4vv5zsvp89zq5yh4h81yhw"))))
+                "1s1mzw4cmkcfivs1kphpgy4lpddx0w1qnjysr4ggk5558w4yy1i3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
