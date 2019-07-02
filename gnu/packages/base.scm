@@ -49,6 +49,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -566,15 +567,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   ;; Note: Always use a dot after the minor version since various places rely
-   ;; on "version-major+minor" to determine where locales are found.
-   (version "2.28")
+   (version "2.29")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
+              "0jzh58728flfh939a8k9pi1zdyalfzlxmwra7k0rzji5gvavivpk"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -586,12 +585,13 @@ the store.")
                 #t))
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
-                                     "glibc-2.28-git-fixes.patch"
+                                     "glibc-CVE-2019-7309.patch"
+                                     "glibc-CVE-2019-9169.patch"
+                                     "glibc-2.29-git-updates.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
                                      "glibc-reinstate-prlimit64-fallback.patch"
-                                     "glibc-hurd-magic-pid.patch"
                                      "glibc-supported-locales.patch"))))
    (build-system gnu-build-system)
 
@@ -789,6 +789,7 @@ the store.")
                     ("perl" ,perl)
                     ("bison" ,bison)
                     ("gettext" ,gettext-minimal)
+                    ("python" ,python-minimal)
 
                     ,@(if (hurd-target?)
                           `(("mig" ,mig)
@@ -817,6 +818,25 @@ with the Linux kernel.")
 
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
+
+(define-public glibc-2.28
+  (package
+    (inherit glibc)
+    (version "2.28")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-2.28-git-fixes.patch"
+                                       "glibc-hidden-visibility-ldconfig.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-hurd-magic-pid.patch"
+                                       "glibc-2.28-supported-locales.patch"))))))
 
 (define-public glibc-2.27
   (package

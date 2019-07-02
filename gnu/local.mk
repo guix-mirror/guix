@@ -858,6 +858,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-CVE-2017-1000366-pt3.patch		\
   %D%/packages/patches/glibc-CVE-2018-11236.patch		\
   %D%/packages/patches/glibc-CVE-2018-11237.patch		\
+  %D%/packages/patches/glibc-CVE-2019-7309.patch		\
+  %D%/packages/patches/glibc-CVE-2019-9169.patch		\
   %D%/packages/patches/glibc-allow-kernel-2.6.32.patch		\
   %D%/packages/patches/glibc-boot-2.16.0.patch			\
   %D%/packages/patches/glibc-boot-2.2.5.patch			\
@@ -873,6 +875,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\
   %D%/packages/patches/glibc-2.28-git-fixes.patch		\
+  %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
+  %D%/packages/patches/glibc-2.29-git-updates.patch     	\
   %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
   %D%/packages/patches/glog-gcc-5-demangling.patch		\

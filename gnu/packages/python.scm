@@ -360,7 +360,9 @@ data types.")
                 (format #f "TESTOPTS=-j~d" (parallel-job-count))
                 ;; Exclude the following test, which fails as of 3.7.3 (see:
                 ;; https://bugs.python.org/issue35998).
-                " --exclude test_asyncio")))
+                ;; Exclude test_email, which fails with glibc 2.29 and later
+                ;; (see <https://https://bugs.python.org/issue35317>).
+                " --exclude test_asyncio test_email")))
        ((#:phases phases)
        `(modify-phases ,phases
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it

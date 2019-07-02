@@ -5,26 +5,24 @@ instead uses the hard-coded absolute file name of `bash'.
 
 --- a/sysdeps/posix/system.c
 +++ b/sysdeps/posix/system.c
-@@ -134,7 +134,7 @@ do_system (const char *line)
-       INIT_LOCK ();
+@@ -140,7 +140,7 @@ do_system (const char *line)
+   __posix_spawnattr_setflags (&spawn_attr,
+ 			      POSIX_SPAWN_SETSIGDEF | POSIX_SPAWN_SETSIGMASK);
  
-       /* Exec the shell.  */
--      (void) __execve (SHELL_PATH, (char *const *) new_argv, __environ);
-+      (void) __execvpe (SHELL_NAME, (char *const *) new_argv, __environ);
-       _exit (127);
-     }
-   else if (pid < (pid_t) 0)
-
+-  status = __posix_spawn (&pid, SHELL_PATH, 0, &spawn_attr,
++  status = posix_spawnp (&pid, SHELL_NAME, 0, &spawn_attr,
+ 			  (char *const[]){ (char*) SHELL_NAME,
+ 					   (char*) "-c",
+ 					   (char *) line, NULL },
 --- a/libio/iopopen.c
 +++ b/libio/iopopen.c
-@@ -145,7 +145,7 @@ _IO_new_proc_open (fp, command, mode)
- 	    __close_nocancel (fd);
- 	}
- 
--      execl ("/bin/sh", "sh", "-c", command, (char *) 0);
-+      execlp ("sh", "sh", "-c", command, (char *) 0);
-       _exit (127);
+@@ -85,7 +85,7 @@ spawn_process (posix_spawn_file_actions_t *fa, FILE *fp, const char *command,
+ 	return false;
      }
-   __close_nocancel (child_end);
-
+ 
+-  if (__posix_spawn (&((_IO_proc_file *) fp)->pid, _PATH_BSHELL, fa, 0,
++  if (posix_spawnp (&((_IO_proc_file *) fp)->pid, "sh", fa, 0,
+ 		     (char *const[]){ (char*) "sh", (char*) "-c",
+ 		     (char *) command, NULL }, __environ) != 0)
+     return false;
 

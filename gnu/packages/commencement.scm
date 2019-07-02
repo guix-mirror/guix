@@ -44,10 +44,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages mes)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -1843,6 +1845,41 @@ the bootstrap environment."
                                    (current-source-location)
                                    #:guile %bootstrap-guile))))
 
+(define expat-sans-tests
+  (package
+    (inherit expat)
+    (arguments
+     ;; XXX: Linking 'runtestscpp' fails with things like:
+     ;;
+     ;;   ld: Dwarf Error: found dwarf version '3789', this reader only handles version 2 and 3 information.
+     ;;
+     ;; Skip tests altogether.
+     (substitute-keyword-arguments (package-arguments expat)
+       ((#:configure-flags flags ''())
+        ;; Since we're not passing the right -Wl,-rpath flags, build the
+        ;; static library to avoid RUNPATH validation failure.
+        `(cons "--disable-shared" ,flags))
+       ((#:tests? _ #f) #f)))))
+
+(define python-boot0
+  (let ((python (package
+                  (inherit python-minimal)
+                  (inputs
+                   `(("expat" ,expat-sans-tests))) ;remove OpenSSL, zlib, etc.
+                  (arguments
+                   (substitute-keyword-arguments (package-arguments
+                                                  python-minimal)
+                     ;; Disable features that cannot be built at this stage.
+                     ((#:configure-flags _ ''())
+                      `(list "--without-ensurepip"))
+                     ((#:make-flags _ ''())
+                      `(list "MODDISABLED_NAMES=_ctypes ossaudiodev"))
+                     ((#:tests? _ #f) #f))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs python %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
+
 (define (ld-wrapper-boot0)
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
   ;; in their RUNPATH, otherwise validate-runpath will fail.
@@ -1906,7 +1943,8 @@ the bootstrap environment."
      (native-inputs
       `(("bison" ,bison-boot0)
         ("texinfo" ,texinfo-boot0)
-        ("perl" ,perl-boot0)))
+        ("perl" ,perl-boot0)
+        ("python" ,python-boot0)))
      (inputs
       `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
         ;; it in $CPATH, hence the 'pre-configure' phase above.
