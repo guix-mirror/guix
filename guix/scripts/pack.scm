@@ -286,6 +286,32 @@ added to the pack."
                     build
                     #:references-graphs `(("profile" ,profile))))
 
+(define (singularity-environment-file profile)
+  "Return a shell script that defines the environment variables corresponding
+to the search paths of PROFILE."
+  (define build
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix profiles)
+                                    (guix search-paths))
+                                  #:select? not-config?))
+        #~(begin
+            (use-modules (guix profiles) (guix search-paths)
+                         (ice-9 match))
+
+            (call-with-output-file #$output
+              (lambda (port)
+                (for-each (match-lambda
+                            ((spec . value)
+                             (format port "~a=~a~%export ~a~%"
+                                     (search-path-specification-variable spec)
+                                     value
+                                     (search-path-specification-variable spec))))
+                          (profile-search-paths #$profile))))))))
+
+  (computed-file "singularity-environment.sh" build))
+
 (define* (squashfs-image name profile
                          #:key target
                          (profile-name "guix-profile")
@@ -304,6 +330,9 @@ added to the pack."
     (and localstatedir?
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
+
+  (define environment
+    (singularity-environment-file profile))
 
   (define build
     (with-imported-modules (source-module-closure
@@ -339,6 +368,7 @@ added to the pack."
                  `(,@(map store-info-item
                           (call-with-input-file "profile"
                             read-reference-graph))
+                   #$environment
                    ,#$output
 
                    ;; Do not perform duplicate checking because we
@@ -379,10 +409,19 @@ added to the pack."
                                                             target)))))))
                       '#$symlinks)
 
+                   "-p" "/.singularity.d d 555 0 0"
+
+                   ;; Create the environment file.
+                   "-p" "/.singularity.d/env d 555 0 0"
+                   "-p" ,(string-append
+                          "/.singularity.d/env/90-environment.sh s 777 0 0 "
+                          (relative-file-name "/.singularity.d/env"
+                                              #$environment))
+
                    ;; Create /.singularity.d/actions, and optionally the 'run'
                    ;; script, used by 'singularity run'.
-                   "-p" "/.singularity.d d 555 0 0"
                    "-p" "/.singularity.d/actions d 555 0 0"
+
                    ,@(if entry-point
                          `(;; This one if for Singularity 2.x.
                            "-p"

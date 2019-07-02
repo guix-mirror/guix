@@ -111,6 +111,21 @@
                         "run" #$image "-c" "(exit 42)"))
              marionette))
 
+          ;; FIXME: Singularity 2.x doesn't directly honor
+          ;; /.singularity.d/env/*.sh.  Instead, you have to load those files
+          ;; manually, which we don't do.  Remove 'test-skip' call once we've
+          ;; switch to Singularity 3.x.
+          (test-skip 1)
+          (test-equal "singularity run, with environment"
+            0
+            (marionette-eval
+             ;; Check whether GUILE_LOAD_PATH is properly set, allowing us to
+             ;; find the (json) module.
+             `(status:exit-val
+               (system* #$(file-append singularity "/bin/singularity")
+                        "--debug" "run" #$image "-c" "(use-modules (json))"))
+             marionette))
+
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))
 
@@ -122,7 +137,8 @@
        (guile    (set-guile-for-build (default-guile)))
        ;; 'singularity exec' insists on having /bin/sh in the image.
        (profile  (profile-derivation (packages->manifest
-                                      (list bash-minimal guile-2.2))
+                                      (list bash-minimal
+                                            guile-2.2 guile-json))
                                      #:hooks '()
                                      #:locales? #f))
        (tarball  (squashfs-image "singularity-pack" profile
