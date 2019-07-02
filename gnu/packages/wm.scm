@@ -1075,10 +1075,6 @@ project derived from the original Calm Window Manager.")
        ("glibmm" ,glibmm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags (list
-                          (string-append "--prefix=" %output)
-                          "CXXFLAGS=-std=c++11")))
     (home-page "http://projects.l3ib.org/nitrogen/")
     (synopsis "Background browser and setter for X windows")
     (description
