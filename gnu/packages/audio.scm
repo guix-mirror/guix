@@ -321,7 +321,7 @@ engineers, musicians, soundtrack editors and composers.")
 (define-public audacity
   (package
     (name "audacity")
-    (version "2.2.2")
+    (version "2.3.2")
     (source
      (origin
        (method git-fetch)
@@ -331,7 +331,7 @@ engineers, musicians, soundtrack editors and composers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "10maxmjxbmjybj7n4m7a9bbm7g8xxw8f8vbsf7c9ih5j2gr15ihs"))
+         "08w96124vv8k4myd4vifq73ningq6404x889wvg2sk016kc4dfv1"))
        (patches (search-patches "audacity-build-with-system-portaudio.patch"))
        (modules '((guix build utils)))
        (snippet
