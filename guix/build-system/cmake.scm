@@ -43,16 +43,19 @@
   `((guix build cmake-build-system)
     ,@%gnu-build-system-modules))
 
-(define (default-cmake)
+(define (default-cmake target)
   "Return the default CMake package."
 
   ;; Do not use `@' to avoid introducing circular dependencies.
   (let ((module (resolve-interface '(gnu packages cmake))))
-    (module-ref module 'cmake-minimal)))
+    (module-ref module
+                (if target
+                    'cmake-minimal-cross
+                    'cmake-minimal))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (cmake (default-cmake))
+                (cmake (default-cmake target))
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."

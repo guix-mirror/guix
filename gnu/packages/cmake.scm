@@ -219,6 +219,14 @@ and workspaces that can be used in the compiler environment of your choice.")
                (append (search-patches "cmake-curl-certificates.patch")
                        (origin-patches (package-source cmake))))))))
 
+(define-public cmake-minimal-cross
+  (package
+    (inherit cmake-minimal)
+    (name "cmake-minimal-cross")
+    (native-search-paths '())
+    (search-paths
+     (package-native-search-paths cmake-minimal))))
+
 (define-public emacs-cmake-mode
   (package
     (inherit cmake)
