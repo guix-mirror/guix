@@ -10,6 +10,7 @@
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -942,24 +943,27 @@ and @command{wicd-curses} user interfaces."
 
 (define network-manager-service-type
   (let
-      ((config->package
+      ((config->packages
         (match-lambda
-         (($ <network-manager-configuration> network-manager)
-          (list network-manager)))))
+         (($ <network-manager-configuration> network-manager _ vpn-plugins)
+          `(,network-manager ,@vpn-plugins)))))
 
     (service-type
      (name 'network-manager)
      (extensions
       (list (service-extension shepherd-root-service-type
                                network-manager-shepherd-service)
-            (service-extension dbus-root-service-type config->package)
-            (service-extension polkit-service-type config->package)
+            (service-extension dbus-root-service-type config->packages)
+            (service-extension polkit-service-type
+                               (compose
+                                list
+                                network-manager-configuration-network-manager))
             (service-extension activation-service-type
                                network-manager-activation)
             (service-extension session-environment-service-type
                                network-manager-environment)
             ;; Add network-manager to the system profile.
-            (service-extension profile-service-type config->package)))
+            (service-extension profile-service-type config->packages)))
      (default-value (network-manager-configuration))
      (description
       "Run @uref{https://wiki.gnome.org/Projects/NetworkManager,
