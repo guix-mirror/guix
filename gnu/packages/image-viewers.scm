@@ -110,59 +110,73 @@ actions.")
               "See 'COPYING' in the distribution."))))
 
 (define-public geeqie
-  (package
-    (name "geeqie")
-    (version "1.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/BestImageViewer/geeqie/"
-                                 "releases/download/v" version "/geeqie-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0ciygvcxb78pqg59r6p061mkbpvkgv2rv3r79j3kgv3kalb3ln2w"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(;; Enable support for a "map" pane using GPS data.
-       #:configure-flags '("--enable-map")
+  ;; The latest release, 1.4, fails to build with Exiv2 0.27.1.  The upstream
+  ;; repo has several fixes for that, so take a snapshot.
+  (let ((commit "c220ddefb1b6b11b54f7598f0d44dd0723325ed4")
+        (revision "1"))
+    (package
+      (name "geeqie")
+      (version (git-version "1.4" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/BestImageViewer/geeqie")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "07424nzrnwbksgalgg1a6ig2snd986w79kca1cfnv1q9kc7x2h3x"))
+                (file-name (git-file-name name version))))
+      (build-system gnu-build-system)
+      (arguments
+       `( ;; Enable support for a "map" pane using GPS data.
+         #:configure-flags '("--enable-map")
 
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'bootstrap 'pre-bootstrap
-           (lambda _
-             (define (write-dummy-changelog port)
-               (display "See Git history for a change log.\n" port))
-             ;; Create ChangeLog{,.html} to placate the makefile, which would
-             ;; otherwise require access to the Git repo.
-             (call-with-output-file "ChangeLog"
-               write-dummy-changelog)
-             (call-with-output-file "ChangeLog.html"
-               write-dummy-changelog)
-             (setenv "NOCONFIGURE" "true")
-             #t)))))
-    (inputs
-     `(("clutter" ,clutter)
-       ("libchamplain" ,libchamplain)
-       ("lcms" ,lcms)
-       ("exiv2" ,exiv2)
-       ("libpng" ,libpng)
-       ("gtk+" ,gtk+)))
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("glib" ,glib "bin") ; glib-gettextize
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
-    (home-page "http://www.geeqie.org/")
-    (synopsis "Lightweight GTK+ based image viewer")
-    (description
-     "Geeqie is a lightweight GTK+ based image viewer for Unix like operating
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'bootstrap 'pre-bootstrap
+             (lambda _
+               (define (write-dummy-changelog port)
+                 (display "See Git history for a change log.\n" port))
+               ;; Create ChangeLog{,.html} to placate the makefile, which would
+               ;; otherwise require access to the Git repo.
+               (call-with-output-file "ChangeLog"
+                 write-dummy-changelog)
+               (call-with-output-file "ChangeLog.html"
+                 write-dummy-changelog)
+               (setenv "NOCONFIGURE" "true")
+
+               ;; Don't try to run 'git' for the version number.
+               (substitute* "configure.ac"
+                 (("m4_esyscmd_s\\([^)]+\\)")
+                  (string-append "[" ,version "]")))
+
+               ;; Remove references to non-existent files.
+               (substitute* "po/POTFILES.in"
+                 (("^plugins/import/.*") ""))
+               #t)))))
+      (inputs
+       `(("clutter" ,clutter)
+         ("libchamplain" ,libchamplain)
+         ("lcms" ,lcms)
+         ("exiv2" ,exiv2)
+         ("libpng" ,libpng)
+         ("gtk+" ,gtk+)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("glib" ,glib "bin")                     ; glib-gettextize
+         ("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)))
+      (home-page "http://www.geeqie.org/")
+      (synopsis "Lightweight GTK+ based image viewer")
+      (description
+       "Geeqie is a lightweight GTK+ based image viewer for Unix like operating
 systems.  It features: EXIF, IPTC and XMP metadata browsing and editing
 interoperability; easy integration with other software; geeqie works on files
 and directories, there is no need to import images; fast preview for many raw
 image formats; tools for image comparison, sorting and managing photo
 collection.  Geeqie was initially based on GQview.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public gpicview
   (package
