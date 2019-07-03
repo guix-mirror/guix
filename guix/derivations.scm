@@ -320,8 +320,7 @@ substituter many times."
     ;; info is not already in cache.
     ;; Also, skip derivations marked as non-substitutable.
     (append-map (lambda (input)
-                  (let ((drv (read-derivation-from-file
-                              (derivation-input-path input))))
+                  (let ((drv (derivation-input-derivation input)))
                     (if (substitutable-derivation? drv)
                         (derivation-input-output-paths input)
                         '())))
