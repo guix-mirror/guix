@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -681,15 +682,23 @@ binary.")
              (uri (string-append "mirror://gnu/bc/bc-" version ".tar.gz"))
              (sha256
               (base32
-               "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))))
+               "0amh9ik44jfg66csyvf4zz1l878c4755kjndq9j0270akflgrbb2"))
+             (patches (search-patches "bc-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("ed" ,ed)
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("ed" ,ed)
        ("flex" ,flex)
        ("texinfo" ,texinfo)))
     (arguments
      '(#:configure-flags
-       (list "--with-readline")))
+       (list "--with-readline")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (invoke "autoreconf" "-vif"))))))
     (home-page "https://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
