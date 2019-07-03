@@ -5297,6 +5297,7 @@ users.")
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
                                   (version-major+minor version) "/"
                                   "NetworkManager-" version ".tar.xz"))
+              (patches (search-patches "nm-plugin-path.patch"))
               (sha256
                (base32
                 "1jn3g0f2x1irc88awqp8m3gnpdx1whqqqbdgkbgr4x55s702jki4"))
