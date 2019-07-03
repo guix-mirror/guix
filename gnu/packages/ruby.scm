@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Mikhail Kirillov <w96k.ru@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8724,4 +8725,33 @@ sent to it to display in a web interface.  Run mailcatcher, set your favourite
 app to deliver to smtp://127.0.0.1:1025 instead of your default SMTP server,
 then check out http://127.0.0.1:1080 to see the mail.")
     (home-page "https://mailcatcher.me")
+    (license license:expat)))
+
+(define-public ruby-backport
+  (package
+    (name "ruby-backport")
+    (version "1.1.1")
+    (source
+     (origin
+       ;; The gem does not include test code, so fetch from the Git repository
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/castwide/backport.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ii3y1wx1n48nd2mhlv0v61b2m21h7dg30if9vc2idza7k4afyw8"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (inputs
+     `(("ruby-simplecov" ,ruby-simplecov)))
+    (synopsis "Pure Ruby library for event-driven IO")
+    (description
+     "This package provides a pure Ruby library for event-driven IO.")
+    (home-page "https://github.com/castwide/backport")
     (license license:expat)))
