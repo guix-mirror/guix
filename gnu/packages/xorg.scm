@@ -5304,7 +5304,7 @@ draggable titlebars and borders.")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.5")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -5314,7 +5314,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-           "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))
+           "0cbqlyssr8aia88c8i7z59z9d0kp3p2hp6683xhz9ndyv8qza7dk"))
         (patches (search-patches "libxt-guix-search-paths.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"

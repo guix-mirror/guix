@@ -1,26 +1,27 @@
---- libXt-1.1.5/src/Intrinsic.c	2015-05-01 07:36:20.000000000 +0200
-+++ Intrinsic.c	2016-12-12 00:42:16.567388450 +0100
-@@ -1303,21 +1303,101 @@
+diff --git a/src/Intrinsic.c b/src/Intrinsic.c
+index c9624ec..addcdba 100644
+--- a/src/Intrinsic.c
++++ b/src/Intrinsic.c
+@@ -1312,21 +1312,101 @@ static void FillInLangSubs(
      } else (void) strcpy(*rest, string);
  }
  
--/*
++
++
+ /*
 - * default path used if environment variable XFILESEARCHPATH
 - * is not defined.  Also substitued for %D.
 - * The exact value should be documented in the implementation
 - * notes for any Xt implementation.
-+
-+
-+/* 
 +   Return the default search path for the function
-+   XtResolvePathname to use if XFILESEARCHPATH is 
++   XtResolvePathname to use if XFILESEARCHPATH is
 +   not defined.
 +
 +   It returns the combination the set of values which are the 6 "stems" below,
-+   prepended with "/run/current-system/profile", and $GUIX_PROFILE and 
++   prepended with "/run/current-system/profile", and $GUIX_PROFILE and
 +   "$HOME/.guix-profile"
 +
-+   These values provide the default paths where Guix/GuixSD  can expect
++   These values provide the default paths where Guix/GuixSD can expect
 +   to find resources for installed packages.
   */
 -static const char *implementation_default_path(void)
@@ -28,11 +29,6 @@
  {
 -#if defined(WIN32)
 -    static char xfilesearchpath[] = "";
--
--    return xfilesearchpath;
--#else
--    return XFILESEARCHPATHDEFAULT;
--#endif
 +  static const char *search_path_default_stem[] = {
 +    "/lib/X11/%L/%T/%N%C%S",
 +    "/lib/X11/%l/%T/%N%C%S",
@@ -55,7 +51,7 @@
 +  char *home = getenv ("HOME");
 +  char *guix_profile = getenv ("GUIX_PROFILE");
 +
-+  size_t bytesAllocd = SIZEOF_STEMS + 1; 
++  size_t bytesAllocd = SIZEOF_STEMS + 1;
 +
 +  /* This function is evaluated multiple times and the calling
 +     code assumes that it is idempotent. So we must not allow
@@ -72,7 +68,11 @@
 +      bytesAllocd += SIZEOF_STEMS;
 +      bytesAllocd += 6 * (1 + strlen (guix_profile));
 +    }
-+
+ 
+-    return xfilesearchpath;
+-#else
+-    return XFILESEARCHPATHDEFAULT;
+-#endif
 +  if (home != NULL)
 +    {
 +      bytesAllocd += SIZEOF_STEMS;
@@ -83,7 +83,7 @@
 +  if (path == NULL) _XtAllocError(NULL);
 +
 +  memset (path, 0, bytesAllocd);
-+  
++
 +  for (i = 0 ; i < 6 ; ++i)
 +    {
 +      strcat (path, current_profile);
@@ -110,17 +110,17 @@
 +
 +  /* Remove final : */
 +  path[strlen(path) - 1] = '\0';
-+  
++
 +  return path;
  }
  
  
-@@ -1345,7 +1425,7 @@
+@@ -1354,7 +1434,7 @@ _XtString XtResolvePathname(
  {
      XtPerDisplay pd;
      static const char *defaultPath = NULL;
 -    const char *impl_default = implementation_default_path();
 +    const char *impl_default = guix_default_path();
-     int idef_len = strlen(impl_default);
+     int idef_len = (int) strlen(impl_default);
      char *massagedPath;
      int bytesAllocd, bytesLeft;
