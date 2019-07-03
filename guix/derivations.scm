@@ -887,7 +887,10 @@ long-running processes that know what they're doing.  Use with care!"
   ;; caches when they start evaluating packages for another architecture.
   (invalidate-memoization! derivation->bytevector)
   (invalidate-memoization! derivation-path->base16-hash)
-  (hash-clear! %derivation-cache))
+
+  ;; FIXME: Comment out to work around <https://bugs.gnu.org/36487>.
+  ;; (hash-clear! %derivation-cache)
+  )
 
 (define derivation-properties
   (mlambdaq (drv)
