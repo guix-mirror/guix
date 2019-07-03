@@ -5485,6 +5485,55 @@ to virtual private networks (VPNs) via OpenVPN.")
     (license license:gpl2+)
     (properties `((upstream-name . "NetworkManager-openvpn")))))
 
+(define-public network-manager-vpnc
+  (package
+    (name "network-manager-vpnc")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/NetworkManager-vpnc/"
+                    (version-major+minor version)
+                    "/NetworkManager-vpnc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1js5lwcsqws4klgypfxl4ikmakv7v7xgddij1fj6b0y0qicx0kyy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((vpnc (string-append (assoc-ref inputs "vpnc")
+                                         "/sbin/vpnc"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" vpnc "\"")))
+               (substitute* "src/nm-vpnc-service.c"
+                    (("\"/usr/local/sbin/vpnc\"") pretty-ovpn)
+                    (("\"/usr/sbin/vpnc\"") pretty-ovpn)
+                    (("\"/sbin/vpnc\"") pretty-ovpn)
+                    (("/sbin/modprobe") modprobe)))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("kmod" ,kmod)
+       ("vpnc" ,vpnc)
+       ("network-manager" ,network-manager)
+       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libsecret" ,libsecret)))
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
+    (synopsis "VPNC plug-in for NetworkManager")
+    (description
+     "Support for configuring virtual private networks based on VPNC.
+Compatible with Cisco VPN concentrators configured to use IPsec.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "NetworkManager-vpnc")))))
+
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
