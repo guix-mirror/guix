@@ -948,16 +948,14 @@ recursively."
       ;; in the format used in 'derivation' calls.
       (mlambda (input loop)
         (match input
-          (($ <derivation-input> (= derivation-file-name path)
-                                 (sub-drvs ...))
-           (match (vhash-assoc path mapping)
+          (($ <derivation-input> drv (sub-drvs ...))
+           (match (vhash-assoc (derivation-file-name drv) mapping)
              ((_ . (? derivation? replacement))
               (cons replacement sub-drvs))
              ((_ . replacement)
               (list replacement))
              (#f
-              (let* ((drv (loop (read-derivation-from-file path))))
-                (cons drv sub-drvs))))))))
+              (cons (loop drv) sub-drvs)))))))
 
     (let loop ((drv drv))
       (let* ((inputs       (map (cut rewritten-input <> loop)
