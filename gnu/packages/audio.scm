@@ -75,6 +75,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
@@ -1683,7 +1684,12 @@ to be plugged into a wide range of audio synthesis and recording packages.")
                 "12z1vx3krrzsfccpah9xjs68900xvr7bw92wx8np5871i2yv47iw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(;; Glibc no longer includes Sun RPC support, so tell the build system
+       ;; to use libtirpc instead.
+       #:make-flags (list (string-append "CFLAGS=-I"
+                                         (assoc-ref %build-inputs "libtirpc")
+                                         "/include/tirpc -ltirpc"))
+       #:phases
        (modify-phases %standard-phases
          ;; lashd embeds an ancient version of sigsegv so we just skip it
          (add-after 'unpack 'skip-lashd
@@ -1696,6 +1702,7 @@ to be plugged into a wide range of audio synthesis and recording packages.")
      `(("bdb" ,bdb)
        ("gtk" ,gtk+-2)
        ("jack" ,jack-1)
+       ("libtirpc" ,libtirpc)
        ("readline" ,readline)
        ("python" ,python-2)))
     ;; According to pkg-config, packages depending on lash also need to have
