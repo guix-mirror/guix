@@ -3829,7 +3829,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.26")
+    (version "2.27")
     (source
       (origin
         (method url-fetch)
@@ -3839,7 +3839,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "13h3381pfp4pv32189zkfsj2x0alr91xj6dqii76rl0c8v3ihdrr"))))
+            "07wh443lhwv1j0q6xnxnji7f7ahh7xphxj90fv02cdd6zv4aw3b9"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gettext-minimal)
