@@ -45,7 +45,8 @@
                 "07anqypf7c719x9y683qz65cxllmzlgmlab2hlahrqcj4bq2k99c"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'remote-dangling-symlink
            (lambda _
