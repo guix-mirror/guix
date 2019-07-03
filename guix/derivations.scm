@@ -652,12 +652,10 @@ list of name/path pairs of its outputs."
 ;;; Derivation primitive.
 ;;;
 
-(define derivation-path->base16-hash
-  (mlambda (file)
-    "Return a string containing the base16 representation of the hash of the
-derivation at FILE."
-    (bytevector->base16-string
-     (derivation-hash (read-derivation-from-file file)))))
+(define derivation-base16-hash
+  (mlambdaq (drv)
+    "Return a string containing the base16 representation of the hash of DRV."
+    (bytevector->base16-string (derivation-hash drv))))
 
 (define (derivation/masked-inputs drv)
   "Assuming DRV is a regular derivation (not fixed-output), replace the file
@@ -666,9 +664,8 @@ name of each input with that input's hash."
     (($ <derivation> outputs inputs sources
                      system builder args env-vars)
      (let ((inputs (map (match-lambda
-                          (($ <derivation-input> (= derivation-file-name path)
-                                                 sub-drvs)
-                           (let ((hash (derivation-path->base16-hash path)))
+                          (($ <derivation-input> drv sub-drvs)
+                           (let ((hash (derivation-base16-hash drv)))
                              (make-derivation-input hash sub-drvs))))
                         inputs)))
        (make-derivation outputs
@@ -886,7 +883,7 @@ long-running processes that know what they're doing.  Use with care!"
   ;; Typically this is meant to be used by Cuirass and Hydra, which can clear
   ;; caches when they start evaluating packages for another architecture.
   (invalidate-memoization! derivation->bytevector)
-  (invalidate-memoization! derivation-path->base16-hash)
+  (invalidate-memoization! derivation-base16-hash)
 
   ;; FIXME: Comment out to work around <https://bugs.gnu.org/36487>.
   ;; (hash-clear! %derivation-cache)
