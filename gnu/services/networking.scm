@@ -938,7 +938,10 @@ and @command{wicd-curses} user interfaces."
                               "--no-daemon")
                         #:environment-variables
                         (list (string-append "NM_VPN_PLUGIN_DIR=" #$vpn
-                                             "/lib/NetworkManager/VPN"))))
+                                             "/lib/NetworkManager/VPN")
+                              ;; Override non-existent default users
+                              "NM_OPENVPN_USER="
+                              "NM_OPENVPN_GROUP=")))
               (stop #~(make-kill-destructor))))))))
 
 (define network-manager-service-type
