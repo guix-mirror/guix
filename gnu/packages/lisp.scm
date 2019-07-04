@@ -6125,3 +6125,28 @@ namespace and value namespace (or variable namespace), but there are actually
 more — e.g., class namespace.
 This library offers macros to deal with symbols from any namespace.")
       (license license:llgpl))))
+
+(define-public sbcl-trivial-cltl2
+  (let ((commit "8eec8407df833e8f27df8a388bc10913f16d9e83")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-cltl2")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1.1" revision commit))
+      (home-page "https://github.com/Zulu-Inuoe/trivial-cltl2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1dyyxz17vqv8hlfwq287gl8xxbvcnq798ajb7p5jdjz91wqf4bgk"))))
+      (synopsis "Simple CLtL2 compatibility layer for Common Lisp")
+      (description "This library is a portable compatibility layer around
+\"Common Lisp the Language, 2nd
+Edition\" (@url{https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node102.html})
+and it exports symbols from implementation-specific packages.")
+      (license license:llgpl))))
