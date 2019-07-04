@@ -466,8 +466,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.14-version "4.14.131")
-(define %linux-libre-4.14-hash "1qcf4cg83zpjirkj8l09y07x4zzskypngampvfw7zyazynwwgs1i")
+(define %linux-libre-4.14-version "4.14.132")
+(define %linux-libre-4.14-hash "0mvp4izw21f8w5kkk8qm8m8b7qjxbp8hshgffdlh1aik41zvcnyq")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
