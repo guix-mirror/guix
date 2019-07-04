@@ -6442,3 +6442,16 @@ with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
 This system contains the fare-quasiquote extension.")))
+
+(define-public sbcl-trivia.cffi
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.cffi")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("trivia.trivial" ,sbcl-trivia.trivial)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the CFFI foreign slot access extension.")))
