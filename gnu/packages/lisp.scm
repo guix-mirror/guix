@@ -6305,3 +6305,29 @@ quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.
 
 This packages uses fare-quasiquote with named-readtable.")))
+
+(define-public sbcl-trivia.level0
+  (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
+        (revision "1"))
+    (package
+      (name "sbcl-trivia.level0")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/guicho271828/trivia")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11qbab30qqnfy9mx3x9fvgcw1jbvh1qn2cqv3p8xdn2m8981jvhr"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (synopsis "Pattern matching in Common Lisp")
+      (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.")
+      (license license:llgpl))))
