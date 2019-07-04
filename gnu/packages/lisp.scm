@@ -6092,3 +6092,36 @@ cookie headers, cookie creation, cookie jar creation and more.")
       (description "Dexador is yet another HTTP client for Common Lisp with
 neat APIs and connection-pooling.  It is meant to supersede Drakma.")
       (license license:expat))))
+
+(define-public sbcl-lisp-namespace
+  (let ((commit "28107cafe34e4c1c67490fde60c7f92dc610b2e0")
+        (revision "1"))
+    (package
+      (name "sbcl-lisp-namespace")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/guicho271828/lisp-namespace")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1jw2wykp06z2afb9nm1lgfzll5cjlj36pnknjx614057zkkxq4iy"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:test-asd-file "lisp-namespace.test.asd"
+        ;; XXX: Component LISP-NAMESPACE-ASD::LISP-NAMESPACE.TEST not found
+         #:tests? #f))
+      (synopsis "LISP-N, or extensible namespaces in Common Lisp")
+      (description "Common Lisp already has major 2 namespaces, function
+namespace and value namespace (or variable namespace), but there are actually
+more — e.g., class namespace.
+This library offers macros to deal with symbols from any namespace.")
+      (license license:llgpl))))
