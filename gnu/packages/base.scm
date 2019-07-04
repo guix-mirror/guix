@@ -1143,8 +1143,8 @@ to the @code{share/locale} sub-directory of this package.")
                                ;; tests---e.g., in Guile's i18n tests.
                                '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
                      #t))))
-    (inputs `(("glibc" ,glibc)
-              ("gzip" ,gzip)))
+    (native-inputs `(("glibc" ,glibc)
+                     ("gzip" ,gzip)))
     (synopsis "Small sample of UTF-8 locales")
     (description
      "This package provides a small sample of UTF-8 locales mostly useful in

@@ -882,11 +882,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; function.)
   (package
     (inherit glibc-utf8-locales)
-    (inputs `(("glibc" ,glibc-final)
-              ("gzip"
-               ,(package-with-explicit-inputs gzip %boot4-inputs
-                                              (current-source-location)
-                                              #:guile %bootstrap-guile))))))
+    (native-inputs
+     `(("glibc" ,glibc-final)
+       ("gzip"
+        ,(package-with-explicit-inputs gzip %boot4-inputs
+                                       (current-source-location)
+                                       #:guile %bootstrap-guile))))))
 
 (define-public ld-wrapper
   ;; The final 'ld' wrapper, which uses the final Guile and Binutils.
