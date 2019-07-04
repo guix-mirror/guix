@@ -6331,3 +6331,15 @@ This packages uses fare-quasiquote with named-readtable.")))
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")
       (license license:llgpl))))
+
+(define-public sbcl-trivia.level1
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.level1")
+    (inputs
+     `(("trivia.level0" ,sbcl-trivia.level0)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the core patterns of Trivia.")))
