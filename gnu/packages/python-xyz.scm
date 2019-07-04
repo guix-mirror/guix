@@ -649,14 +649,14 @@ other machines, such as over the network.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "40.0.0")
+    (version "41.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "setuptools" version ".zip"))
       (sha256
        (base32
-        "0pq116lr14gnc62v76nk0npkm6krb2mpp7p9ab369zgv4n7dnah1"))
+        "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
       (modules '((guix build utils)))
       (snippet
        '(begin
