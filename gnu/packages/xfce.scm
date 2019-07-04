@@ -220,7 +220,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -228,7 +228,7 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "0z64g6f2vwfjzqsrsn05nbcbs8l6y4cfdgxk4k2la3giixj0jzx8"))))
+                "00c4g4gmbr8710k0yv1zybnm9s2gkc1rj63zfrg9qgin66jzxcbn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -250,7 +250,7 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.4")
+    (version "0.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -258,15 +258,15 @@ merging features essential for loading menus modified with menu editors.")
                                   "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "19mnwmcxdhqfqkd9433z8h2y8w49vlc7jw5p5h8j54wz7zhrgx0g"))))
+                "0nfld1lvrdpsjfvm08y5487km45pm1mdr928hgqm8j0shrx6jiv4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin") ; need glib-genmarshal
-       ("dbus-glib" ,dbus-glib))) ; need dbus-binding-tool
+       ("glib:bin" ,glib "bin")         ; need glib-genmarshal
+       ("dbus-glib" ,dbus-glib)))       ; need dbus-binding-tool
     (propagated-inputs
-     `(("glib" ,glib))) ; required by tumbler-1.pc
+     `(("glib" ,glib)))                 ; required by tumbler-1.pc
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -596,7 +596,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.6")
+    (version "1.8.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -604,7 +604,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0apg70dwkh8q89ybzhj4q2gp4yxiybwxfzpbvx0nj0rxis1gprf0"))))
+                "0afkp528mwwa2m18m39mvw53qgaijyynrw9wwwiyxgjiczq3l0ry"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -628,14 +628,15 @@ fast.")
 (define-public thunar-volman
   (package
     (name "thunar-volman")
-    (version "0.8.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/xfce/4.12/src/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "1gf259n1v3y23n1zlkhyr6r0i8j59rnl1cmxvxj6la9cwdfbn22s"))))
+    (version "0.9.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://archive.xfce.org/src/xfce/thunar-volman/"
+                           (version-major+minor version) "/"
+                           "thunar-volman-" version ".tar.bz2"))
+       (sha256
+        (base32 "1sfmz40164rg77hclrkrgnbk8cb7f325qqi7lz2hh3wbvf8r0c19"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

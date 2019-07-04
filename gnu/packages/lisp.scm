@@ -6035,3 +6035,60 @@ cookie headers, cookie creation, cookie jar creation and more.")
       (description "cl-cookie is a Common Lisp library featuring parsing of
 cookie headers, cookie creation, cookie jar creation and more.")
       (license license:bsd-2))))
+
+(define-public sbcl-dexador
+  (let ((commit "a2714d126cc94bc7a9a6e1e3c08de455b3a66378")
+        (revision "1"))
+    (package
+      (name "sbcl-dexador")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.9.10" revision commit))
+      (home-page "https://github.com/fukamachi/dexador")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0nbqgn4v3l2z6m1k1bdxfnqpfrk84nxdmz7csz11zzcfs4flkv79"))))
+      (inputs
+       `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+         ("babel" ,sbcl-babel)
+         ("usocket" ,sbcl-usocket)
+         ("fast-http" ,sbcl-fast-http)
+         ("quri" ,sbcl-quri)
+         ("fast-io" ,sbcl-fast-io)
+         ("chunga" ,sbcl-chunga)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-cookie" ,sbcl-cl-cookie)
+         ("trivial-mimes" ,sbcl-trivial-mimes)
+         ("chipz" ,sbcl-chipz)
+         ("cl-base64" ,sbcl-cl-base64)
+         ("cl-reexport" ,sbcl-cl-reexport)
+         ("cl+ssl" ,sbcl-cl+ssl)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)
+         ("lack-request" ,sbcl-lack-request)
+         ("clack" ,sbcl-clack)
+         ("babel" ,sbcl-babel)
+         ("alexandria" ,sbcl-alexandria)
+         ("quri" ,sbcl-quri)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)))
+      (arguments
+       ;; TODO: Circular dependency: tests depend on clack-test which depends on dexador.
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-permissions
+             (lambda _ (make-file-writable "t/data/test.gz") #t)))))
+      (synopsis "Yet another HTTP client for Common Lisp")
+      (description "Dexador is yet another HTTP client for Common Lisp with
+neat APIs and connection-pooling.  It is meant to supersede Drakma.")
+      (license license:expat))))

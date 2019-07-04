@@ -3,7 +3,7 @@
 ;;; Copyright © 2015, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
-;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
@@ -330,14 +330,14 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "12c6qldngaw520gvb02inzkhnxbl4k0dwmddrgnaf7xashy6j0wc"))))
+                "1sr3jcn96mciyn8xd0amd1jzamxxzpybakf8an7laf26gjim1dh2"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
@@ -356,7 +356,7 @@ no man page, refer to the home page for usage details.")
        ;; TODO: Build and install gtk and qt trays
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)   ;no configuration to be done
+         (delete 'configure)            ;no configuration to be done
          (add-after 'install 'i18n
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "make" "-C" "extras/translations"

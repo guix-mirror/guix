@@ -379,7 +379,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.98")
+    (version "2.4.99")
     (source
       (origin
         (method url-fetch)
@@ -389,7 +389,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
          (base32
-          "150qdzsm2nx6dfacc75rx53anzsc6m31nhxidf5xxax3mk6fvq4b"))
+          "0pnsw4bmajzdbz8pk4wswdmw93shhympf2q9alhbnpfjgsf57gsd"))
         (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -716,7 +716,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.56")
+    (version "5.57")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
@@ -727,7 +727,7 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
                                        name "-" version ".tar.xz")))
              (sha256
               (base32
-               "1dg1n79rnswhxqz36mxnl5lp8p37i9fbibnzzyrqknmvf2s8xpd0"))))
+               "18r8rh8fzdn9miicbpc3qbdd4mm2g1jpsbcvj29sr66pxydzkb7r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="

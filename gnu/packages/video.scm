@@ -1549,7 +1549,27 @@ YouTube.com and many more sites.")
                 (string-append "os.path.join('"
                                (assoc-ref %outputs "out")
                                "', 'share'")))
-             #t)))))
+             #t))
+         (add-after 'install 'create-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (applications (string-append out "/share/applications")))
+               (mkdir-p applications)
+               (call-with-output-file
+                   (string-append applications "/youtube-dl-gui.desktop")
+                 (lambda (file)
+                   (format
+                    file
+                    "[Desktop Entry]~@
+                     Name=Youtube-dl GUI~@
+                     Comment=Graphical interface to download video with youtube-dl~@
+                     Exec=youtube-dl-gui~@
+                     TryExec=youtube-dl-gui~@
+                     Terminal=false~@
+                     Icon=youtube-dl-gui~@
+                     Type=Application~@
+                     Categories=AudioVideo;Audio;Video;Network~%")))
+               #t))))))
     (inputs
      `(("python2-wxpython" ,python2-wxpython)
        ("youtube-dl" ,youtube-dl)))
