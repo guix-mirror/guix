@@ -4450,7 +4450,7 @@ discard bad quality ones.
 (define-public lpd8editor
   (package
     (name "lpd8editor")
-    (version "0.0.12")
+    (version "0.0.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4459,7 +4459,7 @@ discard bad quality ones.
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v3fz8h1zs7kkl80faah79pp6yqwz0j7bkv3dbmh2hp42zbfiz1q"))))
+                "0lsz3v493ilq2zr016m7kvymrplxd0n3pqv1pjglpq1h7sjw9764"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
