@@ -69,8 +69,7 @@ format.")
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hourglass" ,ghc-hourglass)
-       ("ghc-asn1-types" ,ghc-asn1-types)
-       ("ghc-text" ,ghc-text)))
+       ("ghc-asn1-types" ,ghc-asn1-types)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
