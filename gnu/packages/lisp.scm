@@ -6150,3 +6150,44 @@ This library offers macros to deal with symbols from any namespace.")
 Edition\" (@url{https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node102.html})
 and it exports symbols from implementation-specific packages.")
       (license license:llgpl))))
+
+(define-public sbcl-introspect-environment
+  (let ((commit "fff42f8f8fd0d99db5ad6c5812e53de7d660020b")
+        (revision "1"))
+    (package
+      (name "sbcl-introspect-environment")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/Bike/introspect-environment")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i305n0wfmpac63ni4i3vixnnkl8daw5ncxy0k3dv92krgx6qzhp"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp environment introspection portability layer")
+      (description "This library is a small interface to portable but
+nonstandard introspection of Common Lisp environments.  It is intended to
+allow a bit more compile-time introspection of environments in Common Lisp.
+
+Quite a bit of information is available at the time a macro or compiler-macro
+runs; inlining info, type declarations, that sort of thing.  This information
+is all standard - any Common Lisp program can @code{(declare (integer x))} and
+such.
+
+This info ought to be accessible through the standard @code{&environment}
+parameters, but it is not.  Several implementations keep the information for
+their own purposes but do not make it available to user programs, because
+there is no standard mechanism to do so.
+
+This library uses implementation-specific hooks to make information available
+to users.  This is currently supported on SBCL, CCL, and CMUCL.  Other
+implementations have implementations of the functions that do as much as they
+can and/or provide reasonable defaults.")
+      (license license:wtfpl2))))
