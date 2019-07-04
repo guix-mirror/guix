@@ -293,60 +293,57 @@ result is the set of prerequisites of DRV not already in valid."
             (derivation-output-path (assoc-ref outputs sub-drv)))
           sub-drvs))))
 
-(define* (substitution-oracle store drv
+(define* (substitution-oracle store inputs-or-drv
                               #:key (mode (build-mode normal)))
   "Return a one-argument procedure that, when passed a store file name,
 returns a 'substitutable?' if it's substitutable and #f otherwise.
-The returned procedure
-knows about all substitutes for all the derivations listed in DRV, *except*
-those that are already valid (that is, it won't bother checking whether an
-item is substitutable if it's already on disk); it also knows about their
-prerequisites, unless they are themselves substitutable.
+
+The returned procedure knows about all substitutes for all the derivation
+inputs or derivations listed in INPUTS-OR-DRV, *except* those that are already
+valid (that is, it won't bother checking whether an item is substitutable if
+it's already on disk); it also knows about their prerequisites, unless they
+are themselves substitutable.
 
 Creating a single oracle (thus making a single 'substitutable-path-info' call) and
 reusing it is much more efficient than calling 'has-substitutes?' or similar
 repeatedly, because it avoids the costs associated with launching the
 substituter many times."
-  (define valid?
-    (cut valid-path? store <>))
-
   (define valid-input?
     (cut valid-derivation-input? store <>))
 
-  (define (dependencies drv)
-    ;; Skip prerequisite sub-trees of DRV whose root is valid.  This allows us
-    ;; to ask the substituter for just as much as needed, instead of asking it
-    ;; for the whole world, which can be significantly faster when substitute
-    ;; info is not already in cache.
-    ;; Also, skip derivations marked as non-substitutable.
-    (append-map (lambda (input)
+  (define (closure inputs)
+    (let loop ((inputs inputs)
+               (closure '())
+               (visited (set)))
+      (match inputs
+        (()
+         (reverse closure))
+        ((input rest ...)
+         (let ((key (derivation-input-key input)))
+           (cond ((set-contains? visited key)
+                  (loop rest closure visited))
+                 ((valid-input? input)
+                  (loop rest closure (set-insert key visited)))
+                 (else
                   (let ((drv (derivation-input-derivation input)))
-                    (if (substitutable-derivation? drv)
-                        (derivation-input-output-paths input)
-                        '())))
-                (derivation-prerequisites drv valid-input?)))
+                    (loop (append (derivation-inputs drv) rest)
+                          (if (substitutable-derivation? drv)
+                              (cons input closure)
+                              closure)
+                          (set-insert key visited))))))))))
 
-  (let* ((paths (delete-duplicates
-                 (concatenate
-                  (fold (lambda (drv result)
-                          (let ((self (match (derivation->output-paths drv)
-                                        (((names . paths) ...)
-                                         paths))))
-                            (cond ((eqv? mode (build-mode check))
-                                   (cons (dependencies drv) result))
-                                  ((not (substitutable-derivation? drv))
-                                   (cons (dependencies drv) result))
-                                  ((every valid? self)
-                                   result)
-                                  (else
-                                   (cons* self (dependencies drv) result)))))
-                        '()
-                        drv))))
-         (subst (fold (lambda (subst vhash)
-                        (vhash-cons (substitutable-path subst) subst
-                                    vhash))
-                      vlist-null
-                      (substitutable-path-info store paths))))
+  (let* ((inputs (closure (map (match-lambda
+                                 ((? derivation-input? input)
+                                  input)
+                                 ((? derivation? drv)
+                                  (derivation-input drv)))
+                               inputs-or-drv)))
+         (items  (append-map derivation-input-output-paths inputs))
+         (subst  (fold (lambda (subst vhash)
+                         (vhash-cons (substitutable-path subst) subst
+                                     vhash))
+                       vlist-null
+                       (substitutable-path-info store items))))
     (lambda (item)
       (match (vhash-assoc item subst)
         (#f #f)
@@ -367,10 +364,7 @@ of SUBSTITUTABLES."
                                 (mode (build-mode normal))
                                 (substitutable-info
                                  (substitution-oracle
-                                  store
-                                  (map derivation-input-derivation
-                                       inputs)
-                                  #:mode mode)))
+                                  store inputs #:mode mode)))
   "Given INPUTS, a list of derivation-inputs, return two values: the list of
 derivation to build, and the list of substitutable items that, together,
 allows INPUTS to be realized.

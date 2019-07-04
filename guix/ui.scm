@@ -835,8 +835,7 @@ check and report what is prerequisites are available for download."
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
-        (substitution-oracle store (map derivation-input-derivation inputs)
-                             #:mode mode)
+        (substitution-oracle store inputs #:mode mode)
         (const #f)))
 
   (let*-values (((build download)
