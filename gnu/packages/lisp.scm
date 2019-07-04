@@ -6223,3 +6223,35 @@ can and/or provide reasonable defaults.")
 type the given predicate is trying to check.  This is different from inferring
 the return type of a function.")
       (license license:llgpl))))
+
+(define-public sbcl-optima
+  (let ((commit "373b245b928c1a5cce91a6cb5bfe5dd77eb36195")
+        (revision "1"))
+    (package
+      (name "sbcl-optima")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/m2ym/optima")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yw4ymq7ms89342kkvb3aqxgv0w38m9kd8ikdqxxzyybnkjhndal"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("eos" ,sbcl-eos)))
+      (arguments
+       ;; XXX: Circular dependencies: tests depend on optima.ppcre which depends on optima.
+       `(#:tests? #f
+         #:test-asd-file "optima.test.asd"))
+      (synopsis "Optimized pattern matching library for Common Lisp")
+      (description "Optima is a fast pattern matching library which uses
+optimizing techniques widely used in the functional programming world.")
+      (license license:expat))))
