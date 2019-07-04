@@ -6292,3 +6292,16 @@ optimizing techniques widely used in the functional programming world.")
 quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.")
     (license license:expat)))
+
+(define-public sbcl-fare-quasiquote-readtable
+  (package
+    (inherit sbcl-fare-quasiquote)
+    (name "sbcl-fare-quasiquote-readtable")
+    (inputs
+     `(("fare-quasiquote" ,sbcl-fare-quasiquote)
+       ("named-readtables" ,sbcl-named-readtables)))
+    (description "The main purpose of this n+2nd reimplementation of
+quasiquote is enable matching of quasiquoted patterns, using Optima or
+Trivia.
+
+This packages uses fare-quasiquote with named-readtable.")))
