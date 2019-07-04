@@ -6191,3 +6191,35 @@ to users.  This is currently supported on SBCL, CCL, and CMUCL.  Other
 implementations have implementations of the functions that do as much as they
 can and/or provide reasonable defaults.")
       (license license:wtfpl2))))
+
+(define-public sbcl-type-i
+  (let ((commit "dea233f45f94064105ec09f0767de338f67dcbe2")
+        (revision "1"))
+    (package
+      (name "sbcl-type-i")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/guicho271828/type-i")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "039g5pbrhh65s0bhr9314gmd2nwc2y5lp2377c5qrc2lxky89qs3"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("introspect-environment" ,sbcl-introspect-environment)
+         ("trivia.trivial" ,sbcl-trivia.trivial)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:test-asd-file "type-i.test.asd"))
+      (synopsis "Type inference utility on unary predicates for Common Lisp")
+      (description "This library tries to provide a way to detect what kind of
+type the given predicate is trying to check.  This is different from inferring
+the return type of a function.")
+      (license license:llgpl))))
