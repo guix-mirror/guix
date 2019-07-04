@@ -6397,3 +6397,21 @@ with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
 This system contains the base level system of Trivia with a trivial optimizer.")))
+
+(define-public sbcl-trivia.balland2006
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.balland2006")
+    (inputs
+     `(("trivia.trivial" ,sbcl-trivia.trivial)
+       ("iterate" ,sbcl-iterate)
+       ("type-i" ,sbcl-type-i)
+       ("alexandria" ,sbcl-alexandria)))
+    (arguments
+     ;; Tests are done in trivia itself.
+     `(#:tests? #f))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the base level system of Trivia with a trivial optimizer.")))
