@@ -6428,3 +6428,17 @@ with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
 This system contains the PPCRE extention.")))
+
+(define-public sbcl-trivia.quasiquote
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.quasiquote")
+    (inputs
+     `(("trivia.trivial" ,sbcl-trivia.trivial)
+       ("fare-quasiquote" ,sbcl-fare-quasiquote)
+       ("fare-quasiquote-readtable" ,sbcl-fare-quasiquote-readtable)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the fare-quasiquote extension.")))
