@@ -1802,11 +1802,12 @@ connection, and return the result."
     (call-with-values (lambda ()
                         (run-with-state mval store))
       (lambda (result new-store)
-        ;; Copy the object cache from NEW-STORE so we don't fully discard the
-        ;; state.
-        (let ((cache (store-connection-object-cache new-store)))
-          (set-store-connection-object-cache! store cache)
-          result)))))
+        (when (and store new-store)
+          ;; Copy the object cache from NEW-STORE so we don't fully discard
+          ;; the state.
+          (let ((cache (store-connection-object-cache new-store)))
+            (set-store-connection-object-cache! store cache)))
+        result))))
 
 
 ;;;
