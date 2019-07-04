@@ -6359,3 +6359,41 @@ be faster and more extensible than Optima.
 
 This system contains a non-optimized pattern matcher compatible with Optima,
 with extensible optimizer interface.")))
+
+(define-public sbcl-trivia.trivial
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.trivial")
+    (inputs
+     `(("trivia.level2" ,sbcl-trivia.level2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'create-asd-file
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib/sbcl"))
+                    (level2 (assoc-ref inputs "trivia.level2")))
+               (mkdir-p lib)
+               (install-file "trivia.trivial.asd" lib)
+               ;; XXX: This .asd does not have any component and the build
+               ;; system fails to work in this case.  We should update the
+               ;; build system to handle component-less .asd.
+               ;; TODO: How do we append to file in Guile?  It seems that
+               ;; (open-file ... "a") gets a "Permission denied".
+               (substitute* (string-append lib "/trivia.trivial.asd")
+                 (("\"\\)")
+                  (string-append "\")
+
+(progn (asdf/source-registry:ensure-source-registry)
+       (setf (gethash
+               \"trivia.level2\"
+               asdf/source-registry:*source-registry*)
+             #p\""
+                                 level2
+                                 "/share/common-lisp/sbcl-bundle-systems/trivia.level2.asd\"))")))))))))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the base level system of Trivia with a trivial optimizer.")))
