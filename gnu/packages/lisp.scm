@@ -6455,3 +6455,21 @@ with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
 This system contains the CFFI foreign slot access extension.")))
+
+(define-public sbcl-trivia
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia")
+    (inputs
+     `(("trivia.balland2006" ,sbcl-trivia.balland2006)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("trivia.ppcre" ,sbcl-trivia.ppcre)
+       ("trivia.quasiquote" ,sbcl-trivia.quasiquote)
+       ("trivia.cffi" ,sbcl-trivia.cffi)
+       ("optima" ,sbcl-optima)))
+    (arguments
+     `(#:test-asd-file "trivia.test.asd"))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.")))
