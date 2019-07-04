@@ -999,7 +999,14 @@ with the Linux kernel.")
     (inherit glibc)
     (name "glibc-locales")
     (source (origin (inherit (package-source glibc))
-                    (patches (cons (search-patch "glibc-locales.patch")
+                    ;; The patch for glibc 2.28 and earlier replaces the same
+                    ;; content, but the context in the patch is different
+                    ;; enough to fail to merge.
+                    (patches (cons (search-patch
+                                    (if (version>=? (package-version glibc)
+                                                    "2.29")
+                                        "glibc-locales.patch"
+                                        "glibc-locales-2.28.patch"))
                                    (origin-patches (package-source glibc))))))
     (synopsis "All the locales supported by the GNU C Library")
     (description
