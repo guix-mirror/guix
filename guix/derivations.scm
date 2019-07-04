@@ -352,6 +352,16 @@ substituter many times."
         (#f #f)
         ((key . value) value)))))
 
+(define (dependencies-of-substitutables substitutables inputs)
+  "Return the subset of INPUTS whose output file names is among the references
+of SUBSTITUTABLES."
+  (let ((items (fold set-insert (set)
+                     (append-map substitutable-references substitutables))))
+    (filter (lambda (input)
+              (any (cut set-contains? items <>)
+                   (derivation-input-output-paths input)))
+            inputs)))
+
 (define* (derivation-build-plan store inputs
                                 #:key
                                 (mode (build-mode normal))
@@ -391,7 +401,9 @@ by 'substitution-oracle'."
       (()
        (values build substitute))
       ((input rest ...)
-       (let ((key (derivation-input-key input)))
+       (let ((key  (derivation-input-key input))
+             (deps (derivation-inputs
+                    (derivation-input-derivation input))))
          (cond ((set-contains? visited key)
                 (loop rest build substitute visited))
                ((input-built? input)
@@ -400,16 +412,17 @@ by 'substitution-oracle'."
                ((input-substitutable-info input)
                 =>
                 (lambda (substitutables)
-                  (loop rest build
+                  (loop (append (dependencies-of-substitutables substitutables
+                                                                deps)
+                                rest)
+                        build
                         (append substitutables substitute)
                         (set-insert key visited))))
                (else
-                (let ((deps (derivation-inputs
-                             (derivation-input-derivation input))))
-                  (loop (append deps rest)
-                        (cons (derivation-input-derivation input) build)
-                        substitute
-                        (set-insert key visited))))))))))
+                (loop (append deps rest)
+                      (cons (derivation-input-derivation input) build)
+                      substitute
+                      (set-insert key visited)))))))))
 
 (define-deprecated (derivation-prerequisites-to-build store drv #:rest rest)
   derivation-build-plan

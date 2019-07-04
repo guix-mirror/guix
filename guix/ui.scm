@@ -844,18 +844,6 @@ check and report what is prerequisites are available for download."
                                         #:mode mode
                                         #:substitutable-info
                                         substitutable-info))
-                ((download)                   ; add the references of DOWNLOAD
-                 (if use-substitutes?
-                     (delete-duplicates
-                      (append download
-                              (filter-map (lambda (item)
-                                            (if (valid-path? store item)
-                                                #f
-                                                (substitutable-info item)))
-                                          (append-map
-                                           substitutable-references
-                                           download))))
-                     download))
                 ((graft hook build)
                  (match (fold (lambda (drv acc)
                                 (let ((file (derivation-file-name drv)))
