@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -354,21 +355,22 @@ Makefile, simplifying the entire process for the developer.")
 
        ;; XXX: There are test failures on mips64el-linux starting from 2.4.4:
        ;; <http://hydra.gnu.org/build/181662>.
-       #:tests? ,(not (string-prefix? "mips64"
-                                      (or (%current-target-system)
+       ;; Also, do not run tests when cross compiling
+       #:tests? ,(not (or (%current-target-system)
+                          (string-prefix? "mips64"
                                           (%current-system))))
 
        #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
              ;; Run the test suite in parallel, if possible.
              (setenv "TESTSUITEFLAGS"
                      (string-append
                       "-j"
                       (number->string (parallel-job-count))))
            ;; Patch references to /bin/sh.
-           (let ((bash (assoc-ref inputs "bash")))
+           (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
              (substitute* "tests/testsuite"
                (("/bin/sh")
                 (string-append bash "/bin/sh")))
