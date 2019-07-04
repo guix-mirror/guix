@@ -22,6 +22,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -560,6 +561,78 @@ through the pass command.")
      "Pass OTP is an extension for password-store that allows adding
 one-time-password (OTP) secrets, generating OTP codes, and displaying secret
 key URIs using the standard otpauth:// scheme.")
+    (license license:gpl3+)))
+
+(define-public qtpass
+  (package
+    (name "qtpass")
+    (version "1.2.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/IJHack/QtPass.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vfhfyccrxq9snyvayqfzm5rqik8ny2gysyv7nipc91kvhq3bhky"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; lupdate/lrelease need to find qmake.
+               (setenv "QMAKE" "qmake")
+               ;; qmake needs to find lrelease/lupdate.
+               (invoke "qmake"
+                       "QMAKE_LRELEASE=lrelease"
+                       "QMAKE_LUPDATE=lupdate"
+                       (string-append "PREFIX=" out)))))
+         (add-after 'configure 'reset-resource-timestamps
+           ;; Reset timestamps on localization files for a reproducible build.
+           (lambda _
+             (with-directory-excursion "localization"
+               (for-each (lambda (file)
+                           (let* ((base (basename file ".qm"))
+                                  (src (string-append base ".ts"))
+                                  (st (stat src)))
+                             (set-file-time file st)))
+                         (find-files "." ".*\\.qm")))
+             #t))
+         (add-after 'install 'install-auxilliary
+           ;; Install man-page, icon and .desktop file.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (applications (string-append out "/share/applications"))
+                    (icons (string-append out "/share/icons/hicolor/scalable/apps"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "qtpass.desktop" applications)
+               (install-file "artwork/icon.svg" icons)
+               (rename-file (string-append icons "/icon.svg")
+                            (string-append icons "/qtpass-icon.svg"))
+               (install-file "qtpass.1" man)
+               #t)))
+         (add-before 'check 'check-setup
+           ;; Make Qt render "offscreen", required for tests.
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (home-page "https://qtpass.org")
+    (synopsis "GUI for password manager password-store")
+    (description
+     "Qt-based graphical user interface for the password manager
+password-store also known as pass.  Can use either pass or gpg to interact
+with password-store files.  Features configurable password generation,
+templates, clipboard handling, and per folder settings for multi-recipient
+encryption.")
     (license license:gpl3+)))
 
 (define-public argon2

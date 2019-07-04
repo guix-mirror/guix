@@ -430,8 +430,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.15")
-(define %linux-libre-hash "1f0hhyjsm4bl7k7w88aifvhmqmjkvkvlpd2b69y7s6csr22fk6v4")
+(define %linux-libre-version "5.1.16")
+(define %linux-libre-hash "055vs2g6z6wx34qvi0aw952x9q3drbj7z27s7g7pks6w730xkga8")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
@@ -448,8 +448,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.56")
-(define %linux-libre-4.19-hash "1zqiic55viy065lhnkmhn33sz3bbbr2ykbm5f92yzd8lpc9zl7yx")
+(define %linux-libre-4.19-version "4.19.57")
+(define %linux-libre-4.19-hash "0p9b27hfbzppxgad9q2g7nvfzv0phzdsk16sqy87q3dglc8wqrqq")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -466,8 +466,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.14-version "4.14.131")
-(define %linux-libre-4.14-hash "1qcf4cg83zpjirkj8l09y07x4zzskypngampvfw7zyazynwwgs1i")
+(define %linux-libre-4.14-version "4.14.132")
+(define %linux-libre-4.14-hash "0mvp4izw21f8w5kkk8qm8m8b7qjxbp8hshgffdlh1aik41zvcnyq")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version

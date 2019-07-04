@@ -2526,20 +2526,23 @@ operators and scripters.")
 (define-public alpine
   (package
     (name "alpine")
-    (version "2.21.9999")
+    ;; Upstream doesn't use git tags, but does ‘tag’ their releases in the
+    ;; commit message.  Hence the lack of GIT-VERSIONing despite using a commit
+    ;; ID below.  Don't forget to update it…
+    (version "2.21.99999")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; There are two versions: the plain continuation of Alpine without extra
        ;; patches and the version which adds extra fixes. Every distro uses
        ;; the patched version, and so do we to not break expectations.
        ;; http://alpine.freeiz.com/alpine/readme/README.patches
-       (uri (string-append "http://repo.or.cz/alpine.git/snapshot/"
-                           "d3e6f3932f2af9deca8eed09e30a55e9bd524362.tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "http://repo.or.cz/alpine.git")
+             (commit "abeb2c25935ef8c75f1e5deef0f81276754dc975")))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0w4qyybfdxi29r2z3giq0by6aa6v6nrgibh1xgv4d1vwwq4hw35w"))))
+        (base32 "0rqgbw08a5lj41dkp82aq480lqkc4bnxagna7wpqffi821n8gkwz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc")
@@ -2555,7 +2558,8 @@ operators and scripters.")
                                               "/lib")
                                (string-append "--with-interactive-spellcheck="
                                               (assoc-ref %build-inputs "aspell")
-                                              "/bin/aspell"))
+                                              "/bin/aspell")
+                               "--with-date-stamp=Thu  1 Jan 01:00:01 CET 1970")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-reproducible
@@ -2563,9 +2567,6 @@ operators and scripters.")
              ;; This removes time-dependent code to make alpine reproducible.
              (substitute* "pico/blddate.c"
                (("%02d-%s-%d") "1970-01-01"))
-             (substitute* (list "alpine/Makefile.in"
-                                "web/src/alpined.d/Makefile.in")
-               (("`date`") "1970-01-01"))
              #t)))))
     (inputs
      `(("ncurses" ,ncurses)
@@ -2577,7 +2578,7 @@ operators and scripters.")
        ("aspell" ,aspell)
        ("tcl" ,tcl)
        ("linux-pam" ,linux-pam)))
-    (home-page "http://repo.or.cz/alpine.git")
+    (home-page "https://repo.or.cz/alpine.git")
     (synopsis "Alternatively Licensed Program for Internet News and Email")
     (description
      "Alpine is a text-based mail and news client.  Alpine includes several

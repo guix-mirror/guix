@@ -1783,6 +1783,9 @@ the store."
   ;; when using 'gexp->derivation' and co.
   (make-parameter #f))
 
+(define set-store-connection-object-cache!
+  (record-modifier <store-connection> 'object-cache))
+
 (define* (run-with-store store mval
                          #:key
                          (guile-for-build (%guile-for-build))
@@ -1798,9 +1801,12 @@ connection, and return the result."
                  (%current-target-system target))
     (call-with-values (lambda ()
                         (run-with-state mval store))
-      (lambda (result store)
-        ;; Discard the state.
-        result))))
+      (lambda (result new-store)
+        ;; Copy the object cache from NEW-STORE so we don't fully discard the
+        ;; state.
+        (let ((cache (store-connection-object-cache new-store)))
+          (set-store-connection-object-cache! store cache)
+          result)))))
 
 
 ;;;
