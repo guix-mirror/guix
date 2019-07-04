@@ -21,9 +21,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages texinfo)
+  #:use-module (gnu packages autotools)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
@@ -106,8 +108,37 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
-    (native-inputs '())
-    (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
+    (inputs `(("ncurses" ,ncurses)
+              ("xz" ,xz)))
+    (native-inputs
+      `(("automake" ,automake)
+        ,@(package-native-inputs texinfo)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments texinfo)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-configure
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               ;; Replace outdated config.sub and config.guess.
+               (with-directory-excursion "build-aux"
+                 (for-each
+                  (lambda (file)
+                    (install-file (string-append
+                                   (assoc-ref
+                                    (or native-inputs inputs) "automake")
+                                   "/share/automake-"
+                                   ,(version-major+minor
+                                     (package-version automake))
+                                   "/" file) "."))
+                  '("config.sub" "config.guess")))
+               #t))
+           ;; Build native version of tools before running 'build phase.
+           ,@(if (%current-target-system)
+                 `((add-before 'build 'make-native-gnu-lib
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (invoke "make" "-C" "tools/gnulib/lib")
+                        #t)))
+                 '())))))))
 
 (define-public info-reader
   ;; The idea of this package is to have the standalone Info reader without
