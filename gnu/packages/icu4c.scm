@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (gnu packages python)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu))
@@ -70,13 +72,23 @@
             (sha256
              (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
    (build-system gnu-build-system)
+   ;; When cross-compiling, this package needs a source directory of a
+   ;; native-build of itself.
    (native-inputs
-    `(("python" ,python-minimal)))
+    `(("python" ,python-minimal)
+      ,@(if (%current-target-system)
+            `(("icu4c-build-root" ,icu4c-build-root))
+            '())))
    (inputs
     `(("perl" ,perl)))
    (arguments
     `(#:configure-flags
-      '("--enable-rpath")
+      (list
+       "--enable-rpath"
+        ,@(if (%current-target-system)
+              '((string-append "--with-cross-build="
+                                (assoc-ref %build-inputs "icu4c-build-root")))
+              '()))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
@@ -104,6 +116,25 @@ globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))
+
+(define-public icu4c-build-root
+  (package
+    (inherit icu4c)
+    (name "icu4c-build-root")
+    (arguments
+     (substitute-keyword-arguments (package-arguments icu4c)
+       ((#:tests? _ '())
+        #f)
+       ((#:out-of-source? _ '())
+        #t)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (copy-recursively "../build" out)
+                 #t)))))))
+    (native-inputs '())))
 
 (define-public java-icu4j
   (package
