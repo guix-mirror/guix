@@ -6579,32 +6579,3 @@ This system contains the CFFI foreign slot access extension.")))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
-
-(define-public sbcl-cl-xmlspam
-  (package
-    (name "sbcl-cl-xmlspam")
-    (build-system asdf-build-system/sbcl)
-    (version "0.0.0")
-    (home-page "https://common-lisp.net/project/cl-xmlspam/")
-    (source
-     (origin
-       (method url-fetch)
-       (uri "http://common-lisp.net/project/cl-xmlspam/cl-xmlspam.tgz")
-       (file-name (string-append name "-" version))
-       (sha256
-        (base32
-         "0r0pjh1yjcj2izxlbd3f3bwfwxllhag56wz8ijdl6442pf3gdazh"))))
-    (inputs
-     `(("cxml" ,sbcl-cxml)
-       ("cl-ppcre" ,sbcl-cl-ppcre)))
-    (synopsis "Concise, regexp-like pattern matching on streaming XML for Common Lisp")
-    (description "CXML does an excellent job at parsing XML elements, but what
-do you do when you have a XML file that's larger than you want to fit in
-memory, and you want to extract some information from it?  Writing code to deal
-with SAX events, or even using Klacks, quickly becomes tedious.
-@code{cl-xmlspam} (for XML Stream PAttern Matcher) is designed to make it easy
-to write code that mirrors the structure of the XML that it's parsing.  It
-also makes it easy to shift paradigms when necessary - the usual Lisp control
-constructs can be used interchangeably with pattern matching, and the full
-power of CXML is available when necessary.")
-    (license #f)))
