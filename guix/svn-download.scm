@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,14 @@
             svn-reference-url
             svn-reference-revision
             svn-fetch
-            download-svn-to-store))
+            download-svn-to-store
+
+            svn-multi-reference
+            svn-multi-reference?
+            svn-multi-reference-url
+            svn-multi-reference-revision
+            svn-multi-reference-locations
+            svn-multi-fetch))
 
 ;;; Commentary:
 ;;;
@@ -73,6 +80,54 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                      #:svn-command (string-append #+svn "/bin/svn")
                      #:user-name #$(svn-reference-user-name ref)
                      #:password #$(svn-reference-password ref)))))
+
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation (or name "svn-checkout") build
+                      #:system system
+                      #:hash-algo hash-algo
+                      #:hash hash
+                      #:recursive? #t
+                      #:guile-for-build guile
+                      #:local-build? #t)))
+
+(define-record-type* <svn-multi-reference>
+  svn-multi-reference make-svn-multi-reference
+  svn-multi-reference?
+  (url        svn-multi-reference-url)                 ; string
+  (revision   svn-multi-reference-revision)            ; number
+  (locations  svn-multi-reference-locations)           ; list of strings
+  (user-name  svn-multi-reference-user-name (default #f))
+  (password   svn-multi-reference-password (default #f)))
+
+(define* (svn-multi-fetch ref hash-algo hash
+                          #:optional name
+                          #:key (system (%current-system)) (guile (default-guile))
+                          (svn (subversion-package)))
+  "Return a fixed-output derivation that fetches REF, a <svn-multi-reference>
+object.  The output is expected to have recursive hash HASH of type
+HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
+  (define build
+    (with-imported-modules '((guix build svn)
+                             (guix build utils))
+      #~(begin
+          (use-modules (guix build svn)
+                       (guix build utils)
+                       (srfi srfi-1))
+          (every (lambda (location)
+                   ;; The directory must exist if we are to fetch only a
+                   ;; single file.
+                   (unless (string-suffix? "/" location)
+                     (mkdir-p (string-append #$output "/" (dirname location))))
+                   (svn-fetch (string-append '#$(svn-multi-reference-url ref)
+                                             "/" location)
+                              '#$(svn-multi-reference-revision ref)
+                              (if (string-suffix? "/" location)
+                                  (string-append #$output "/" location)
+                                  (string-append #$output "/" (dirname location)))
+                              #:svn-command (string-append #+svn "/bin/svn")
+                              #:user-name #$(svn-multi-reference-user-name ref)
+                              #:password #$(svn-multi-reference-password ref)))
+                 '#$(svn-multi-reference-locations ref)))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build
