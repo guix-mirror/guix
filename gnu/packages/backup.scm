@@ -14,6 +14,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -230,24 +231,34 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                (("/bin/pwd") (which "pwd")))
              #t))
          (replace 'check
-           (lambda _
-             ;; XXX: The test_owner_parse, test_read_disk, and
-             ;; test_write_disk_lookup tests expect user 'root' to exist, but
-             ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
-             ;;
-             ;; XXX: Adjust test that fails with zstd 1.4.1 because the default
-             ;; options compresses two bytes better than this test expects.
-             ;; https://github.com/libarchive/libarchive/issues/1226
-             (substitute* "libarchive/test/test_write_filter_zstd.c"
-               (("compression-level\", \"6\"")
-                "compression-level\", \"7\""))
+           (lambda* (#:key (tests? #t) #:allow-other-keys)
+             (if tests?
+		 ;; XXX: The test_owner_parse, test_read_disk, and
+		 ;; test_write_disk_lookup tests expect user 'root' to
+		 ;; exist, but the chroot's /etc/passwd doesn't have
+		 ;; it.  Turn off those tests.
+		 ;;
+		 ;; XXX: Adjust test that fails with zstd 1.4.1
+		 ;; because the default options compresses two bytes
+		 ;; better than this test expects.
+		 ;; https://github.com/libarchive/libarchive/issues/1226
+                 (begin
+                   (substitute* "libarchive/test/test_write_filter_zstd.c"
+		     (("compression-level\", \"6\"")
+		      "compression-level\", \"7\""))
 
-             ;; The tests allow one to disable tests matching a globbing pattern.
-             (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
-             ;; XXX: This glob disables too much.
-             (invoke "./libarchive_test" "^test_*_disk*")
-             (invoke "./bsdcpio_test" "^test_owner_parse")
-             (invoke "./bsdtar_test")))
+		   ;; The tests allow one to disable tests matching a globbing pattern.
+		   (invoke "make"
+			   "libarchive_test"
+			   "bsdcpio_test"
+			   "bsdtar_test")
+
+		   ;; XXX: This glob disables too much.
+		   (invoke "./libarchive_test" "^test_*_disk*")
+		   (invoke "./bsdcpio_test" "^test_owner_parse")
+		   (invoke "./bsdtar_test"))
+                 ;; Tests may be disabled if cross-compiling.
+                 (format #t "Test suite not run.~%"))))
          (add-after 'install 'add--L-in-libarchive-pc
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out     (assoc-ref outputs "out"))
