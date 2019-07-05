@@ -6608,3 +6608,39 @@ also makes it easy to shift paradigms when necessary - the usual Lisp control
 constructs can be used interchangeably with pattern matching, and the full
 power of CXML is available when necessary.")
     (license #f)))
+
+(define-public sbcl-dbus
+  (let ((commit "24b452df3a45ca5dc95015500f34baad175c981a")
+        (revision "1"))
+    (package
+      (name "sbcl-dbus")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "20190408" revision commit))
+      (home-page "https://github.com/death/dbus")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fw2q866yddbf23nk9pxphm9gsasx35vjyss82xzvndnjmzlqfl5"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("babel" ,sbcl-babel)
+         ("iolib" ,sbcl-iolib)
+         ("iolib+multiplex" ,sbcl-iolib+multiplex)
+         ("iolib+syscalls" ,sbcl-iolib+syscalls)
+         ("iolib+streams" ,sbcl-iolib+streams)
+         ("iolib+sockets" ,sbcl-iolib+sockets)
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("cl-xmlspam" ,sbcl-cl-xmlspam)
+         ("ironclad" ,sbcl-ironclad)))
+      (synopsis "D-Bus client library for Common Lisp")
+      (description "This is a Common Lisp library that allows to publish D-Bus
+objects as well as send and notify other objects connected to a bus.")
+      (license license:bsd-2))))
