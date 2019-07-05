@@ -5954,12 +5954,12 @@ floating point values to IEEE 754 binary representation.")
       (name "sbcl-closure-common")
       (build-system asdf-build-system/sbcl)
       (version (git-version "20101006" revision commit))
-      (home-page "https://github.com/sharplispers/closure-common")
+      (home-page "https://common-lisp.net/project/cxml/")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url home-page)
+               (url "https://github.com/sharplispers/closure-common")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
