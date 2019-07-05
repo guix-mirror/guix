@@ -3409,7 +3409,7 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
 (define-public devhelp
   (package
     (name "devhelp")
-    (version "3.28.1")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3417,14 +3417,18 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08a8xizjqz68k30zd37r7g516azhan9bbrjsvv10hjd5dg3f476s"))))
-    (build-system glib-or-gtk-build-system)
+                "036sddvhs0blqpc2ixmjdl9vxynvkn5jpgn0jxr1fxcm4rh3q07a"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin") ; for glib-mkmenus
+       ("gtk+:bin" ,gtk+ "bin")  ; for gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+     `(("amtk" ,amtk)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk)))
     (home-page "https://wiki.gnome.org/Apps/Devhelp")
     (synopsis "API documentation browser for GNOME")
