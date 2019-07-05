@@ -593,7 +593,7 @@ and keep up to date translations of documentation.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.28.0")
+    (version "3.28.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -601,7 +601,7 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02xgky22xgvhgd525khqh64l5i21ca839fj9jzaqdi3yvb8pbq8m"))
+                "12qn7mcmxb45lz1gq3s3b34rimiyrrshkrpvxdw1fc0w26i4l84m"))
               (patches
                (list
                 ;; This patch solves an ordering issue that showed up when
@@ -643,6 +643,7 @@ and keep up to date translations of documentation.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("libxml2" ,libxml2)
+       ("vala" ,vala)
        ("xsltproc" ,libxslt)))
     ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
     (propagated-inputs
