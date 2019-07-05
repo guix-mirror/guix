@@ -4687,7 +4687,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.28.4")
+    (version "0.30.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4695,16 +4695,18 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "03k7n2kmzqn11kf3733w7m6xjh2b5q9xr84za2hli11fjymzaxm9"))))
-    (build-system glib-or-gtk-build-system)
+                "1yiz3j0y2yg6985y3alb3hpkfbv68n8ibys5gpwcjdhmhf3czg5p"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("itstool" ,itstool)
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("gettext" ,gettext-minimal)
        ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
        ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
        ("vala" ,vala)))
     (inputs
      `(("glib:bin" ,glib "bin")
