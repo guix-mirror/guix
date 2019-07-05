@@ -6655,7 +6655,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
 (define-public gnome-clocks
   (package
     (name "gnome-clocks")
-    (version "3.28.0")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6663,7 +6663,7 @@ Microsoft SkyDrive and Hotmail, using their REST protocols.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1dd739vchb592mck1dia2hkywn4213cpramyqzgmlmwv8z80p3nl"))))
+                "009fr6zwv37wryi0c0syi4i7pxpdbn3gliws68l99cjsbn2qd6pc"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))
