@@ -130,8 +130,13 @@ for the process."
               "/dev/random"
               "/dev/urandom"
               "/dev/tty"
-              "/dev/ptmx"
               "/dev/fuse"))
+
+  ;; Mount a new devpts instance on /dev/pts.
+  (when (file-exists? "/dev/ptmx")
+    (mount* "none" (scope "/dev/pts") "devpts" 0
+            "newinstance,mode=0620")
+    (symlink "/dev/pts/ptmx" (scope "/dev/ptmx")))
 
   ;; Setup the container's /dev/console by bind mounting the pseudo-terminal
   ;; associated with standard input when there is one.
