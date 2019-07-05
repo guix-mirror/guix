@@ -1050,7 +1050,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
                       #t)))))))
 
-(define-public rust
+(define-public rust-1.35
   (let ((base-rust
          (rust-bootstrapped-package rust-1.34 "1.35.0"
            "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
@@ -1072,3 +1072,15 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/tools/tidy/src/main.rs"
                    (("bins::check") "//bins::check"))
                  #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.35 "1.36.0"
+           "18r688ih4xi9m8gv55g1amb8inrwkdxp5fbcqb6i4gqxi90l3i0m")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'patch-process-docs-rev-cmd))))))))
