@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -445,7 +445,7 @@ and enhance them.")
     (inputs
      `(("boost" ,boost)
        ("enblend-enfuse" ,enblend-enfuse)
-       ("exiv2" ,exiv2)
+       ("exiv2" ,exiv2-0.26)
        ("fftw" ,fftw)
        ("flann" ,flann)
        ("freeglut" ,freeglut)
