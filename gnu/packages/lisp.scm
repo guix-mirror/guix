@@ -6478,7 +6478,7 @@ with extensible optimizer interface.")))
          (replace 'create-asd-file
            (lambda* (#:key outputs inputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (lib (string-append out "/lib/sbcl"))
+                    (lib (string-append out "/lib/" (%lisp-type)))
                     (level2 (assoc-ref inputs "trivia.level2")))
                (mkdir-p lib)
                (install-file "trivia.trivial.asd" lib)
