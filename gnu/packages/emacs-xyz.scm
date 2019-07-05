@@ -4525,7 +4525,7 @@ fully-functional one.")
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
-    (version "0.14.0")
+    (version "0.15.0")
     (source
      (origin
        (method git-fetch)
@@ -4535,7 +4535,7 @@ fully-functional one.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ln4z2796ycy33g5jcxkqvm7638qxy4sipsab7d2864hh700cikg"))))
+         "0fapvhmhgc9kppf3bvkgry0cd7gyilg7sfvlscfrfjxpx4xvwsfy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
