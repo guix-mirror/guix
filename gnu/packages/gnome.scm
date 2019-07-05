@@ -6882,7 +6882,7 @@ GNOME Shell appearance and extension, etc.")
 (define-public gnome-shell-extensions
   (package
     (name "gnome-shell-extensions")
-    (version "3.28.1")
+    (version "3.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6890,7 +6890,7 @@ GNOME Shell appearance and extension, etc.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0n4h8rdnq3knrvlg6inrl62a73h20dbhfgniwy18572jicrh5ip9"))))
+                "1grxn4f5x754r172wmnf0h0xpy69afmj359zsj1rwgqlzw4i4c5p"))))
     (build-system meson-build-system)
     (arguments
      '(#:configure-flags '("-Dextension_set=all")))
