@@ -6005,6 +6005,18 @@ parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
 offered, one SAX-like, the other similar to StAX.")
       (license license:llgpl))))
 
+(define sbcl-cxml+dom
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml+dom")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("cxml+xml" ,sbcl-cxml+xml)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml/dom"))))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
