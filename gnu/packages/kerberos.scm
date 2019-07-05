@@ -8,6 +8,7 @@
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,9 +69,21 @@
        ("perl" ,perl)))
     (arguments
      `(;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
-       ;; while running the tests in 'src/tests'.
-       #:tests? ,(string=? (%current-system) "x86_64-linux")
+       ;; while running the tests in 'src/tests'. Also disable tests when
+       ;; cross-compiling.
+       #:tests? ,(and (not (%current-target-system))
+                      (string=? (%current-system) "x86_64-linux"))
 
+       ,@(if (%current-target-system)
+             '(#:configure-flags
+               (list "krb5_cv_attr_constructor_destructor=yes"
+                     "ac_cv_func_regcomp=yes"
+                     "ac_cv_printf_positional=yes"
+                     "ac_cv_file__etc_environment=yes"
+                     "ac_cv_file__etc_TIMEZONE=no")
+               #:make-flags
+               (list "CFLAGS+=-DDESTRUCTOR_ATTR_WORKS=1"))
+             '())
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-directory
@@ -78,8 +91,8 @@
              (chdir "src")
              #t))
          (add-before 'check 'pre-check
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((perl (assoc-ref inputs "perl")))
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (let ((perl (assoc-ref (or native-inputs inputs) "perl")))
                (substitute* "plugins/kdb/db2/libdb2/test/run.test"
                  (("/bin/cat") (string-append perl "/bin/perl"))
                  (("D/bin/sh") (string-append "D" (which "sh")))
