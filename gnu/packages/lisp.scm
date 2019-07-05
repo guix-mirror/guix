@@ -6041,6 +6041,44 @@ offered, one SAX-like, the other similar to StAX.")
      `(#:asd-file "cxml.asd"
        #:asd-system-name "cxml/test"))))
 
+(define-public sbcl-cxml
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+       ("cxml+dom" ,sbcl-cxml+dom)
+       ("cxml+klacks" ,sbcl-cxml+klacks)
+       ("cxml+test" ,sbcl-cxml+test)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-dtd
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "catalog.dtd"
+                           (string-append
+                            (assoc-ref outputs "out")
+                            "/lib/" (%lisp-type)))))
+         (add-after 'create-asd 'remove-component
+           ;; XXX: The original .asd has no components, but our build system
+           ;; creates an entry nonetheless.  We need to remove it for the
+           ;; generated .asd to load properly.  See trivia.trivial for a
+           ;; similar problem.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (asd (string-append out "/lib/sbcl/cxml.asd")))
+               (substitute* asd
+                 (("  :components
+")
+                  ""))
+               (substitute* asd
+                 ((" *\\(\\(:compiled-file \"cxml--system\"\\)\\)")
+                  ""))))))))))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
