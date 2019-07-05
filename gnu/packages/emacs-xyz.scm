@@ -6136,28 +6136,33 @@ Emacs that Evil does not cover properly by default, such as @code{help-mode},
       (license license:gpl3+))))
 
 (define-public emacs-goto-chg
-  (package
-    (name "emacs-goto-chg")
-    (version "1.6")
-    (source
-     (origin
-       (method url-fetch)
-       ;; There is no versioned source.
-       (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
-       (file-name (string-append "goto-chg-" version ".el"))
-       (sha256
-        (base32
-         "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
-    (build-system emacs-build-system)
-    ;; There is no other home page.
-    (home-page "https://www.emacswiki.org/emacs/goto-chg.el")
-    (synopsis "Go to the last change in the Emacs buffer")
-    (description
-     "This package provides @code{M-x goto-last-change} command that goes to
+  (let ((commit "1829a13026c597e358f716d2c7793202458120b5")
+        (version "1.7.3")
+        (revision "1"))
+    (package
+      (name "emacs-goto-chg")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/goto-chg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1y603maw9xwdj3qiarmf1bp13461f9f5ackzicsbynl0i9la3qki"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-undo-tree" ,emacs-undo-tree)))
+      (home-page "https://github.com/emacs-evil/goto-chg")
+      (synopsis "Go to the last change in the Emacs buffer")
+      (description
+       "This package provides @code{M-x goto-last-change} command that goes to
 the point of the most recent edit in the current Emacs buffer.  When repeated,
 go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-janpath-evil-numbers
   (let ((commit "d988041c1fe6e941dc8d591390750b237f71f524")
