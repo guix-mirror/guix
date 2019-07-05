@@ -4812,7 +4812,7 @@ configuration program to choose applications starting on login.")
 (define-public gjs
   (package
     (name "gjs")
-    (version "1.52.3")
+    (version "1.56.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4820,7 +4820,7 @@ configuration program to choose applications starting on login.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1z4n15wdz6pbqd2hfzrqc8mmprhv50v4jk43p08v0xv07yldh8ff"))))
+                "1b5321krn89p3f7s2ik6gpfnc61apzljhlnbqky8c88f7n6832ac"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4840,6 +4840,9 @@ configuration program to choose applications starting on login.")
             (substitute* "installed-tests/js/testLocale.js"
               ((".*toBeDefined.*") "")
               ((".*expect\\(datestr\\).*") ""))
+            (substitute* "installed-tests/scripts/testCommandLine.sh"
+              (("Valentín") "")
+              (("☭") ""))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
@@ -4853,7 +4856,7 @@ configuration program to choose applications starting on login.")
      ;; These are all in the Requires.private field of gjs-1.0.pc.
      `(("cairo" ,cairo)
        ("gobject-introspection" ,gobject-introspection)
-       ("mozjs" ,mozjs-52)))
+       ("mozjs" ,mozjs-60)))
     (inputs
      `(("gtk+" ,gtk+)
        ("readline" ,readline)))
