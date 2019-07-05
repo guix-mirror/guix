@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.com>
 ;;; Copyright © 2017 Gábor Boskovits <boskovits@gmail.com>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 nee <nee-git@hidamari.blue>
@@ -1524,12 +1524,13 @@ MIDI functionality to the Linux-based operating system.")
                (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
                 "true\n"))
              #t)))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
     (inputs
      `(("libsamplerate" ,libsamplerate)
        ("ncurses" ,ncurses)
        ("alsa-lib" ,alsa-lib)
-       ("xmlto" ,xmlto)
-       ("gettext" ,gettext-minimal)))
+       ("xmlto" ,xmlto)))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
