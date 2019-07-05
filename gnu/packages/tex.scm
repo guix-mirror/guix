@@ -2387,16 +2387,18 @@ standard LaTeX packages."
            #:builder
            (begin
              (use-modules (ice-9 match)
+                          (ice-9 popen)
                           (srfi srfi-26)
                           (guix build union)
                           (guix build utils)
                           (guix build texlive-build-system))
              (let* ((out       (assoc-ref %outputs "out"))
                     (texmf.cnf (string-append out "/share/texmf-dist/web2c/texmf.cnf")))
-               ;; Build a modifiable union of all inputs (but exclude bash)
+               ;; Build a modifiable union of all inputs (but exclude bash and
+               ;; the updmap.cfg file)
                (match (filter (match-lambda
                                 ((name . _)
-                                 (not (string=? "bash" name))))
+                                 (not (member name '("bash" "updmap.cfg")))))
                               %build-inputs)
                  (((names . directories) ...)
                   (union-build (assoc-ref %outputs "out")
@@ -2413,19 +2415,47 @@ standard LaTeX packages."
                   (string-append "TEXMFROOT = " out "/share\n"))
                  (("^TEXMF = .*")
                   "TEXMF = $TEXMFROOT/share/texmf-dist\n"))
-               (setenv "PATH" (string-append (assoc-ref %build-inputs "bash")
-                                             "/bin"))
+               (setenv "PATH" (string-append
+                               (assoc-ref %build-inputs "bash") "/bin:"
+                               (assoc-ref %build-inputs "coreutils") "/bin:"
+                               (string-append out "/bin")))
                (for-each
                 (cut wrap-program <>
                      `("TEXMFCNF" ":" suffix (,(dirname texmf.cnf)))
                      `("TEXMF"    ":" suffix (,(string-append out "/share/texmf-dist"))))
                 (find-files (string-append out "/bin") ".*"))
+
+               ;; Remove invalid maps from config file.
+               (let ((port (open-pipe* OPEN_WRITE "updmap-sys"
+                                       "--syncwithtrees"
+                                       "--nohash"
+                                       (assoc-ref %build-inputs "updmap.cfg"))))
+                 (display "Y\n" port)
+                 (when (not (zero? (status:exit-val (close-pipe port))))
+                   (error "failed to filter updmap.cfg")))
+               ;; Generate maps.
+               (invoke "updmap-sys" "--force"
+                       (string-append out "/share/texmf-config/web2c/updmap.cfg"))
                #t))))
         (inputs
          `(("bash" ,bash)
            ,@(map (lambda (package)
                     (list (package-name package) package))
                   (append default-packages packages))))
+        (native-inputs
+         `(("coreutils" ,coreutils)
+           ("sed" ,sed)
+           ("updmap.cfg"
+            ,(origin
+               (method url-fetch)
+               (uri (string-append "https://tug.org/svn/texlive/tags/"
+                                   %texlive-tag "/Master/texmf-dist/web2c/updmap.cfg"
+                                   "?revision=" (number->string %texlive-revision)))
+               (file-name (string-append "updmap.cfg-"
+                                         (number->string %texlive-revision)))
+               (sha256
+                (base32
+                 "06mwpy5i218g5k3sf4gba0fmxgas82hkzx9fhwn67z5ik37d8apq"))))))
         (home-page (package-home-page texlive-bin))
         (synopsis "Union of TeX Live packages")
         (description "This package provides a subset of the TeX Live
