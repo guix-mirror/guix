@@ -216,6 +216,8 @@ Linux kernel and C library interfaces employed by user-space programs.")
        ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
        ;; ("gettext" ,gettext-minimal)
        ))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "https://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
