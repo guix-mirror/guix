@@ -36,6 +36,7 @@ gnu/installer/steps.scm
 gnu/installer/timezone.scm
 gnu/installer/user.scm
 gnu/installer/utils.scm
+gnu/machine/ssh.scm
 guix/scripts.scm
 guix/scripts/build.scm
 guix/discovery.scm

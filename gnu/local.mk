@@ -565,6 +565,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/machine.scm				\
+  %D%/machine/ssh.scm				\
+						\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
@@ -630,7 +633,7 @@ INSTALLER_MODULES =                             \
   %D%/installer/newt/user.scm			\
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
-  %D%/installer/newt/wifi.scm	
+  %D%/installer/newt/wifi.scm
 
 # Always ship the installer modules but compile them only when
 # ENABLE_INSTALLER is true.
