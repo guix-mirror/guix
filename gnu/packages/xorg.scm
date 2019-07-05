@@ -20,6 +20,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2019 nee <nee@cock.li>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4742,8 +4743,21 @@ protocol and arbitrary X extension protocol.")
             "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             ;; Replace outdated config.sub and config.guess:
+             (for-each (lambda (file)
+                         (install-file (string-append
+                                        (assoc-ref
+                                         (or native-inputs inputs) "automake")
+                                        "/share/automake-"
+                                        ,(version-major+minor
+                                          (package-version automake))
+                                        "/" file) "."))
+                       '("config.sub" "config.guess"))
+             #t))
          (add-after 'install 'wrap-mkfontdir
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (wrap-program (string-append (assoc-ref outputs "out")
@@ -4755,7 +4769,8 @@ protocol and arbitrary X extension protocol.")
     (inputs
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("automake" ,automake))) ;For up to date 'config.guess' and 'config.sub'.
     (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of X font files in a directory")
     (description
