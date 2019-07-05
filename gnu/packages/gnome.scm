@@ -6385,7 +6385,7 @@ can add your own files to the collection.")
 (define-public gnome-screenshot
   (package
     (name "gnome-screenshot")
-    (version "3.26.0")
+    (version "3.30.0")
     (source
      (origin
        (method url-fetch)
@@ -6394,7 +6394,7 @@ can add your own files to the collection.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1fy8fjl29i3xhj8caik03d3za06x96xgkk8r4fwz88iqbmci3g0v"))))
+         "06dx3svxq6sar4913mrz5lzb7hmc66wck138vmyxj8x8iv1iw0w8"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -6408,7 +6408,7 @@ can add your own files to the collection.")
        ("libcanberra" ,libcanberra)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
-    (home-page "https://git.gnome.org/browse/gnome-screenshot")
+    (home-page "https://gitlab.gnome.org/GNOME/gnome-screenshot")
     (synopsis "Take pictures of your screen")
     (description
      "GNOME Screenshot is a utility used for taking screenshots of the entire
