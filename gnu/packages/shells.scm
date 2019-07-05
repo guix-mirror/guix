@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -356,6 +357,14 @@ written by Paul Haahr and Byron Rakitzis.")
     (arguments
      `(#:phases
         (modify-phases %standard-phases
+          ,@(if (%current-target-system)
+                '((add-before 'configure 'set-cross-cc
+                     (lambda _
+                       (substitute* "configure"
+                         (("CC_FOR_GETHOST=\"cc\"")
+                          "CC_FOR_GETHOST=\"gcc\""))
+                       #t)))
+                '())
           (add-before 'check 'patch-test-scripts
             (lambda _
               ;; Take care of pwd
