@@ -6029,6 +6029,18 @@ offered, one SAX-like, the other similar to StAX.")
      `(#:asd-file "cxml.asd"
        #:asd-system-name "cxml/klacks"))))
 
+(define sbcl-cxml+test
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml+test")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("cxml+xml" ,sbcl-cxml+xml)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml/test"))))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
