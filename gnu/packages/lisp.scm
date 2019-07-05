@@ -5974,6 +5974,37 @@ Closure is a reference to the web browser it was originally written for.")
       ;; TODO: License?
       (license #f))))
 
+(define-public sbcl-cxml+xml
+  (let ((commit "00b22bf4c4cf11c993d5866fae284f95ab18e6bf")
+        (revision "1"))
+    (package
+      (name "sbcl-cxml+xml")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://common-lisp.net/project/cxml/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/cxml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13kif7rf3gqdycsk9zq0d7y0g9y81krkl0z87k0p2fkbjfgrph37"))))
+      (inputs
+       `(("closure-common" ,sbcl-closure-common)
+         ("puri" ,sbcl-puri)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (arguments
+       `(#:asd-file "cxml.asd"
+         #:asd-system-name "cxml/xml"))
+      (synopsis "Common Lisp XML parser")
+      (description "CXML implements a namespace-aware, validating XML 1.0
+parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
+offered, one SAX-like, the other similar to StAX.")
+      (license license:llgpl))))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
