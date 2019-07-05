@@ -9280,6 +9280,33 @@ literate programming tools for exporting, weaving and tangling.")
        "Edit YAML files for Ansible containing embedded Jinja2 templating.")
       (license license:gpl3+))))
 
+(define-public emacs-polymode-org
+  (package
+    (name "emacs-polymode-org")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-org.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04x6apjad4kg30456z1j4ipp64yjgkcaim6hqr6bb0rmrianqhck"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-polymode" ,emacs-polymode)))
+    (properties '((upstream-name . "poly-org")))
+    (home-page "https://github.com/polymode/poly-org")
+    (synopsis "Polymode definitions for Org mode buffers")
+    (description
+     "Provides definitions for @code{emacs-polymode} to support
+@code{emacs-org} buffers.  Edit source blocks in an Org mode buffer using the
+native modes of the blocks' languages while remaining inside the primary Org
+buffer.")
+    (license license:gpl3+)))
+
 (define-public eless
   (package
     (name "eless")
