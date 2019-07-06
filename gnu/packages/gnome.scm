@@ -3375,6 +3375,37 @@ playlists in a variety of formats.")
 which are easy to play with the aid of a mouse.")
     (license license:gpl3+)))
 
+(define-public amtk
+  (package
+    (name "amtk")
+    (version "5.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1zriix7bdwcg0868mfc7jy6zbwjwdmjwbh0ah6dbddrhiabrda8j"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-gtk-doc")))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
+    (home-page "https://wiki.gnome.org/Projects/Amtk")
+    (synopsis "Actions, Menus and Toolbars Kit for GTK+ applications")
+    (description
+     "Amtk is the acronym for @acronym{Amtk, Actions Menus and Toolbars Kit}.
+It is a basic GtkUIManager replacement based on GAction.  It is suitable for
+both a traditional UI or a modern UI with a GtkHeaderBar.")
+    (license license:lgpl2.1+)))
+
 (define-public devhelp
   (package
     (name "devhelp")
