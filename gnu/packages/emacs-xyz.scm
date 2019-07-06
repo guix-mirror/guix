@@ -4077,6 +4077,30 @@ organizer.")
 It is built on top of the custom theme support in Emacs 24 or later.")
     (license license:gpl3+)))
 
+(define-public emacs-moe-theme-el
+  (let ((commit "6e086d855d6bb446bbd1090742815589a81a915f")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-moe-theme-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kuanyui/moe-theme.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xj4wfd7h4jqnr193pizm9frf6lmwjr0dsdv2l9mqh9k691z1dnc"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kuanyui/moe-theme.el")
+      (synopsis "Anime-inspired color themes")
+      (description
+       "This package provides vibrant color schemes with light and dark
+variants.")
+      (license license:gpl3+))))
+
 (define-public emacs-solarized-theme
   (package
     (name "emacs-solarized-theme")
