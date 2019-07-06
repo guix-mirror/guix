@@ -411,6 +411,32 @@ This package contains the binaries.")
    (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
    (home-page "https://www.tug.org/texlive/")))
 
+
+(define-public texlive-unicode-data
+  (package
+    (inherit (simple-texlive-package
+              "texlive-unicode-data"
+              (list "/tex/generic/unicode-data/"
+                    "/doc/generic/unicode-data/")
+              (base32
+               "1j63kz29arfiydb8r1a53q1r4zyk1yjbcq0w9i93zddczgqzgbfb")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/unicode-data")
+    (synopsis "Unicode data and loaders for TeX")
+    (description "This bundle provides generic access to Unicode Consortium
+data for TeX use.  It contains a set of text files provided by the Unicode
+Consortium which are currently all from Unicode 8.0.0, with the exception of
+@code{MathClass.txt} which is not currently part of the Unicode Character
+Database.  Accompanying these source data are generic TeX loader files
+allowing this data to be used as part of TeX runs, in particular in building
+format files.  Currently there are two loader files: one for general character
+set up and one for initializing XeTeX character classes as has been carried
+out to date by @code{unicode-letters.tex}. ")
+    (license license:lppl1.3c+)))
+
+(define-public texlive-generic-unicode-data
+  (deprecated-package "texlive-generic-unicode-data" texlive-unicode-data))
+
 (define-public texlive-dvips
   (package
     (name "texlive-dvips")
@@ -477,45 +503,6 @@ to PostScript.")
     (license (list license:lppl1.3c+
                    license:expat
                    license:lgpl3+))))
-
-(define-public texlive-generic-unicode-data
-  (package
-    (name "texlive-generic-unicode-data")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/unicode-data"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0r1v16jyfpz6dwqsgm6b9jcj4kf2pkzc9hg07s6fx9g8ba8qglih"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/unicode-data")))
-             (mkdir-p target)
-             (copy-recursively (assoc-ref %build-inputs "source") target)
-             #t))))
-    (home-page "https://www.ctan.org/pkg/unicode-data")
-    (synopsis "Unicode data and loaders for TeX")
-    (description "This bundle provides generic access to Unicode Consortium
-data for TeX use.  It contains a set of text files provided by the Unicode
-Consortium which are currently all from Unicode 8.0.0, with the exception of
-@code{MathClass.txt} which is not currently part of the Unicode Character
-Database.  Accompanying these source data are generic TeX loader files
-allowing this data to be used as part of TeX runs, in particular in building
-format files.  Currently there are two loader files: one for general character
-set up and one for initializing XeTeX character classes as has been carried
-out to date by @code{unicode-letters.tex}. ")
-    (license license:lppl1.3c+)))
 
 (define-public texlive-generic-dehyph-exptl
   (package
