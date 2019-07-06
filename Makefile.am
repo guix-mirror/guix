@@ -426,8 +426,7 @@ SCM_TESTS =					\
   tests/import-utils.scm			\
   tests/store-database.scm			\
   tests/store-deduplication.scm			\
-  tests/store-roots.scm				\
-  tests/machine.scm
+  tests/store-roots.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
