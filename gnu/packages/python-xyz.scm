@@ -5702,14 +5702,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-soupsieve
   (package
     (name "python-soupsieve")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "soupsieve" version))
        (sha256
         (base32
-         "1jnzkiwmjl6yvqckc9mf689g87b6yz07sv868hap2aa5arggy3mj"))))
+         "0in9rc9q3h8w5b4qf7kvl3qxcvw6vrz35ckblchgf70hm6pg3dbj"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     ;;XXX: 2 tests fail currently despite claming they were to be
