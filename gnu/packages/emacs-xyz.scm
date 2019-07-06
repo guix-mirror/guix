@@ -9230,33 +9230,25 @@ contexts.
 (define-public emacs-polymode
   (package
     (name "emacs-polymode")
-    (version "0.1.5")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vspinu/polymode.git")
+                    (url "https://github.com/polymode/polymode.git")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wwphs54jx48a3ca6x1qaz56j3j9bg4mv8g2akkffrzbdcb8sbc7"))))
+                "04v0gnzfsjb50bgly6kvpryx8cyzwjaq2llw4qv9ijw1l6ixmq3b"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:include (cons* "^modes/.*\\.el$" %default-include)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
-           (lambda _
-             (setenv "EMACSLOADPATH"
-                     (string-append (getenv "EMACSLOADPATH")
-                                    ":" (getcwd) "/modes" ":")))))))
-    (home-page "https://github.com/vspinu/polymode")
+    (home-page "https://github.com/polymode/polymode")
     (synopsis "Framework for multiple Emacs modes based on indirect buffers")
-    (description "Polymode is an Emacs package that offers generic support
-for multiple major modes inside a single Emacs buffer.  It is lightweight,
-object oriented and highly extensible.  Creating a new polymode typically
-takes only a few lines of code.  Polymode also provides extensible facilities
-for external literate programming tools for exporting, weaving and tangling.")
+    (description
+     "Polymode is an Emacs package that offers generic support for multiple
+major modes inside a single Emacs buffer.  It is lightweight, object oriented
+and highly extensible.  Creating a new polymode typically takes only a few
+lines of code.  Polymode also provides extensible facilities for external
+literate programming tools for exporting, weaving and tangling.")
     (license license:gpl3+)))
 
 (define-public emacs-polymode-ansible
