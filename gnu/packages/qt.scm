@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,9 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages pciutils)
@@ -2283,3 +2287,58 @@ user-friendly than the default @code{QColorDialog} and several other
 color-related widgets.")
       ;; Includes a license exception for combining with GPL2 code.
       (license license:lgpl3+))))
+
+(define-public python-shiboken-2
+  (let ((revision "1")
+        ;; Pinned to branches with support for qt 5.11.3
+        (commit "4018787a3cc01d632fdca7891ac8aa9487110c26"))
+    (package
+      (name "python-shiboken-2")
+      (version (git-version "v5.11.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               ;; The latest versions of Shiboken live in the pyside repo.
+               ;; There is another standalone repo only for Shiboken
+               ;; but it is outdated
+               (url "https://code.qt.io/pyside/pyside-setup")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0g8jacm2iqd7lw2m7f1dp1nnrsk38bl3m8pihm8zz9gxs8d31sf5"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("llvm-6" ,llvm-6)
+         ("clang-6" ,clang-6)
+         ("libxml2" ,libxml2)
+         ("libxslt" ,libxslt)
+         ("python-wrapper" ,python-wrapper)
+         ("qtbase" ,qtbase)
+         ("qtxmlpatterns" ,qtxmlpatterns)))
+      (arguments
+       `(#:tests? #f
+         ;; FIXME: Building tests fails
+         #:configure-flags '("-DBUILD_TESTS=off")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-shiboken-dir-only
+             (lambda _ (chdir "sources/shiboken2") #t))
+           (add-before 'configure 'set-build-env
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((llvm (assoc-ref inputs "llvm-6")))
+                 (setenv "CLANG_INSTALL_DIR" llvm)
+                 #t))))))
+      (home-page "https://wiki.qt.io/Qt_for_Python")
+      (synopsis
+       "Shiboken generates bindings for C++ libraries using CPython source code")
+      (description
+       "Shiboken generates bindings for C++ libraries using CPython source code")
+      (license
+       (list
+        ;; The main code is GPL3 or LGPL3.
+        ;; Examples are BSD-3.
+        license:gpl3
+        license:lgpl3
+        license:bsd-3)))))
