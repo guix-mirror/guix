@@ -4302,19 +4302,18 @@ services for your Python modules and applications.")
 (define-public python-olefile
   (package
     (name "python-olefile")
-    (version "0.45.1")
+    (version "0.46")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/decalage2/olefile/archive/v"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/decalage2/olefile/releases/"
+                           "download/v" version "/olefile-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18ai19zwagm6nli14k8bii31ipbab2rp7plrvsm6gmfql551a8ai"))))
+         "1kjxh4gr651hpqkjfv89cfzr40hyvf3vjlda7mifiail83j7j07m"))))
     (build-system python-build-system)
-    (home-page
-     "https://www.decalage.info/python/olefileio")
+    (home-page "https://www.decalage.info/python/olefileio")
     (synopsis "Read and write Microsoft OLE2 files.")
     (description
      "@code{olefile} can parse, read and write Microsoft OLE2 files (Structured
