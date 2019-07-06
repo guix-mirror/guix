@@ -193,9 +193,11 @@ system.")
 (define channel-build-system
   ;; Build system used to "convert" a channel instance to a package.
   (let* ((build (lambda* (store name inputs
-                                #:key instance #:allow-other-keys)
+                                #:key instance system
+                                #:allow-other-keys)
                   (run-with-store store
-                    (channel-instances->derivation (list instance)))))
+                    (channel-instances->derivation (list instance))
+                    #:system system)))
          (lower (lambda* (name #:key system instance #:allow-other-keys)
                   (bag
                     (name name)
