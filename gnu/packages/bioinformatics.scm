@@ -14069,11 +14069,11 @@ choosing which reads pass the filter.")
   ;; <https://github.com/jts/nanopolish#installing-a-particular-release>.
   ;; Also, the differences between release and current version seem to be
   ;; significant.
-  (let ((commit "50e8b5cc62f9b46f5445f5c5e8c5ab7263ea6d9d")
+  (let ((commit "6331dc4f15b9dfabb954ba3fae9d76b6c3ca6377")
         (revision "1"))
     (package
       (name "nanopolish")
-      (version (git-version "0.10.2" revision commit))
+      (version (git-version "0.11.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14083,7 +14083,7 @@ choosing which reads pass the filter.")
                (recursive? #t)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))
+          (base32 "15ikl3d37y49pwd7vx36xksgsqajhf24q7qqsnpl15dqqyy5qgbc"))
          (modules '((guix build utils)))
          (snippet
           '(begin

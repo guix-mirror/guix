@@ -90,6 +90,7 @@ MODULES =					\
   guix/nar.scm					\
   guix/derivations.scm				\
   guix/grafts.scm				\
+  guix/repl.scm					\
   guix/inferior.scm				\
   guix/describe.scm				\
   guix/channels.scm				\
@@ -266,6 +267,7 @@ MODULES =					\
   guix/scripts/weather.scm			\
   guix/scripts/container.scm			\
   guix/scripts/container/exec.scm		\
+  guix/scripts/deploy.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -273,6 +275,7 @@ if HAVE_GUILE_SSH
 
 MODULES +=					\
   guix/ssh.scm					\
+  guix/remote.scm				\
   guix/scripts/copy.scm				\
   guix/store/ssh.scm
 

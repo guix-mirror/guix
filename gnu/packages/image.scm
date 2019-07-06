@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
@@ -1065,6 +1065,34 @@ and XMP metadata of images in various formats.")
     ;; The core is GPLv2+:
     ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
     (license license:gpl2+)))
+
+(define-public exiv2-0.26
+  (package
+    (inherit exiv2)
+    (version "0.26")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "https://www.exiv2.org/builds/exiv2-"
+                                       version "-trunk.tar.gz")
+                        (string-append "https://www.exiv2.org/exiv2-"
+                                       version ".tar.gz")
+                        (string-append "https://fossies.org/linux/misc/exiv2-"
+                                       version ".tar.gz")))
+             (patches (search-patches "exiv2-CVE-2017-14860.patch"
+                                      "exiv2-CVE-2017-14859-14862-14864.patch"))
+             (sha256
+              (base32
+               "1yza317qxd8yshvqnay164imm0ks7cvij8y8j86p1gqi1153qpn7"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))                    ; no `check' target
+    (propagated-inputs
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+
+    ;; People should rely on the newer version, so don't expose it.
+    (properties `((hidden? . #t)))))
 
 (define-public devil
   (package

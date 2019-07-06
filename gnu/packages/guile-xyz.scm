@@ -2348,7 +2348,7 @@ more expressive and flexible than the traditional @code{format} procedure.")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
-       ("texlive" ,texlive)))
+       ("texlive" ,(texlive-union (list texlive-generic-epsf)))))
     (propagated-inputs
      `(("dbus-glib" ,dbus-glib)
        ("guile" ,guile-2.2)

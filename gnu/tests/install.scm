@@ -661,7 +661,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 ls -l /run/current-system/gc-roots
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.2G \\
+  mkpart primary ext2 3M 1.4G \\
   set 1 boot on \\
   set 1 bios_grub on
 echo -n thepassphrase | \\

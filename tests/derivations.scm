@@ -896,6 +896,35 @@
                (((= derivation-file-name build))
                 (string=? build (derivation-file-name drv)))))))))
 
+(test-assert "derivation-build-plan and substitutes, non-substitutable dep"
+  (with-store store
+    (let* ((drv1 (build-expression->derivation store "prereq-no-subst"
+                                               (random 1000)
+                                               #:substitutable? #f))
+           (drv2 (build-expression->derivation store "substitutable"
+                                               (random 1000)
+                                               #:inputs `(("dep" ,drv1)))))
+
+      ;; Make sure substitutes are usable.
+      (set-build-options store #:use-substitutes? #t
+                         #:substitute-urls (%test-substitute-urls))
+
+      (with-derivation-narinfo drv2
+        (sha256 => (make-bytevector 32 0))
+        (references => (list (derivation->output-path drv1)))
+
+        (let-values (((build download)
+                      (derivation-build-plan store
+                                             (list (derivation-input drv2)))))
+          ;; Although DRV2 is available as a substitute, we must build its
+          ;; dependency, DRV1, due to #:substitutable? #f.
+          (and (match download
+                 (((= substitutable-path item))
+                  (string=? item (derivation->output-path drv2))))
+               (match build
+                 (((= derivation-file-name build))
+                  (string=? build (derivation-file-name drv1))))))))))
+
 (test-assert "derivation-build-plan and substitutes, local build"
   (with-store store
     (let* ((drv    (build-expression->derivation store "prereq-subst-local"

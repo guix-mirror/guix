@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
+  #:use-module ((guix self) #:select (make-config.scm))
   #:use-module (guix grafts)
   #:autoload   (guix inferior) (inferior-package?)
   #:use-module (guix monads)
@@ -285,6 +286,32 @@ added to the pack."
                     build
                     #:references-graphs `(("profile" ,profile))))
 
+(define (singularity-environment-file profile)
+  "Return a shell script that defines the environment variables corresponding
+to the search paths of PROFILE."
+  (define build
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix profiles)
+                                    (guix search-paths))
+                                  #:select? not-config?))
+        #~(begin
+            (use-modules (guix profiles) (guix search-paths)
+                         (ice-9 match))
+
+            (call-with-output-file #$output
+              (lambda (port)
+                (for-each (match-lambda
+                            ((spec . value)
+                             (format port "~a=~a~%export ~a~%"
+                                     (search-path-specification-variable spec)
+                                     value
+                                     (search-path-specification-variable spec))))
+                          (profile-search-paths #$profile))))))))
+
+  (computed-file "singularity-environment.sh" build))
+
 (define* (squashfs-image name profile
                          #:key target
                          (profile-name "guix-profile")
@@ -303,6 +330,9 @@ added to the pack."
     (and localstatedir?
          (file-append (store-database (list profile))
                       "/db/db.sqlite")))
+
+  (define environment
+    (singularity-environment-file profile))
 
   (define build
     (with-imported-modules (source-module-closure
@@ -338,6 +368,7 @@ added to the pack."
                  `(,@(map store-info-item
                           (call-with-input-file "profile"
                             read-reference-graph))
+                   #$environment
                    ,#$output
 
                    ;; Do not perform duplicate checking because we
@@ -378,10 +409,19 @@ added to the pack."
                                                             target)))))))
                       '#$symlinks)
 
+                   "-p" "/.singularity.d d 555 0 0"
+
+                   ;; Create the environment file.
+                   "-p" "/.singularity.d/env d 555 0 0"
+                   "-p" ,(string-append
+                          "/.singularity.d/env/90-environment.sh s 777 0 0 "
+                          (relative-file-name "/.singularity.d/env"
+                                              #$environment))
+
                    ;; Create /.singularity.d/actions, and optionally the 'run'
                    ;; script, used by 'singularity run'.
-                   "-p" "/.singularity.d d 555 0 0"
                    "-p" "/.singularity.d/actions d 555 0 0"
+
                    ,@(if entry-point
                          `(;; This one if for Singularity 2.x.
                            "-p"
@@ -440,11 +480,24 @@ the image."
   (define build
     ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
     (with-extensions (list guile-json guile-gcrypt)
-      (with-imported-modules (source-module-closure '((guix docker)
-                                                      (guix build store-copy))
-                                                    #:select? not-config?)
+      (with-imported-modules `(((guix config) => ,(make-config.scm))
+                               ,@(source-module-closure
+                                  `((guix docker)
+                                    (guix build store-copy)
+                                    (guix profiles)
+                                    (guix search-paths))
+                                  #:select? not-config?))
         #~(begin
-            (use-modules (guix docker) (srfi srfi-19) (guix build store-copy))
+            (use-modules (guix docker) (guix build store-copy)
+                         (guix profiles) (guix search-paths)
+                         (srfi srfi-19) (ice-9 match))
+
+            (define environment
+              (map (match-lambda
+                     ((spec . value)
+                      (cons (search-path-specification-variable spec)
+                            value)))
+                   (profile-search-paths #$profile)))
 
             (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -455,6 +508,7 @@ the image."
                                 #$profile
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
+                                #:environment environment
                                 #:entry-point #$(and entry-point
                                                      #~(string-append #$profile "/"
                                                                       #$entry-point))
