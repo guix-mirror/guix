@@ -7232,7 +7232,7 @@ is suitable as a default application in a Desktop environment.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtksourceview" ,gtksourceview)
+     `(("gtksourceview" ,gtksourceview-3)
        ("libsm" ,libsm)))
     (home-page "https://wiki.gnome.org/Apps/Xpad")
     (synopsis "Virtual sticky note")
