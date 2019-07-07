@@ -143,6 +143,12 @@
              "--with-system-ffi"                  ;build ctypes
              "--with-ensurepip=install"           ;install pip and setuptools
              "--enable-unicode=ucs4"
+
+             ;; Prevent the installed _sysconfigdata.py from retaining a reference
+             ;; to coreutils.
+             "INSTALL=install -c"
+             "MKDIR_P=mkdir -p"
+
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
        ;; With no -j argument tests use all available cpus, so provide one.
