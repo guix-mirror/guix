@@ -40,7 +40,7 @@
                (base32
                 "1ffmzj5s9h98qhl94d9i23zcv057rsqbac9g1hdgvlzq51ccfzjx"))))
     (build-system gnu-build-system)
-    (native-inputs `(("python" ,python-2)))
+    (native-inputs `(("python" ,python-wrapper)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
