@@ -1864,16 +1864,40 @@ the bootstrap environment."
 (define python-boot0
   (let ((python (package
                   (inherit python-minimal)
+                  ;; We cannot use Python 3.7 and later here, because they require
+                  ;; pthreads, which is missing on non-x86 platforms at this stage.
+                  ;; Python 3.6 technically supports being built without threading
+                  ;; support, but requires additional patches.
+                  (version "3.5.7")
+                  (source (origin
+                            (inherit (package-source python))
+                            (uri (string-append "https://www.python.org/ftp/python/"
+                                                version "/Python-" version ".tar.xz"))
+                            (patches '())
+                            (sha256
+                             (base32
+                              "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18"))))
                   (inputs
                    `(("expat" ,expat-sans-tests))) ;remove OpenSSL, zlib, etc.
+                  (native-inputs '())              ;and pkg-config
                   (arguments
                    (substitute-keyword-arguments (package-arguments
                                                   python-minimal)
                      ;; Disable features that cannot be built at this stage.
                      ((#:configure-flags _ ''())
-                      `(list "--without-ensurepip"))
-                     ((#:make-flags _ ''())
-                      `(list "MODDISABLED_NAMES=_ctypes ossaudiodev"))
+                      `(list "--without-ensurepip"
+                             "--without-threads"))
+                     ((#:phases phases)
+                      `(modify-phases ,phases
+                         (add-before 'configure 'disable-modules
+                           (lambda _
+                             (substitute* "setup.py"
+                               ;; Disable ctypes, since it requires libffi.
+                               (("extensions\\.append\\(ctypes\\)") "")
+                               ;; Prevent the 'ossaudiodev' extension from being
+                               ;; built, since it requires Linux headers.
+                               (("'linux', ") ""))
+                             #t))))
                      ((#:tests? _ #f) #f))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs python %boot0-inputs
