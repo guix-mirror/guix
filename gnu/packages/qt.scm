@@ -2425,3 +2425,35 @@ generate Python bindings for your C or C++ code.")
                 ;; Thus, it is currently v2 or v3, but no "+".
                 license:gpl3
                 license:gpl2)))))
+
+(define-public python-pyside-2-tools
+  (let ((revision "1")
+        ;; Pinned to branches with support for qt 5.11.3
+        (commit "f1b775537e7fbd718516749583b2abf1cb6adbce"))
+    (package
+      (name "python-pyside-2-tools")
+      (version (git-version "v5.11.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://code.qt.io/pyside/pyside-tools")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1w2g5afvww9r89wmdm9jx8sz67x4bzy9difkh72n4c73ya1n91ry"))))
+      (build-system cmake-build-system)
+      (inputs
+       `(("python-pyside-2" ,python-pyside-2)
+         ("python-shiboken-2" ,python-shiboken-2)
+         ("qtbase" ,qtbase)))
+      (arguments
+       `(#:tests? #f
+         #:configure-flags '("-DBUILD_TESTS=off")))
+      (home-page "https://wiki.qt.io/Qt_for_Python")
+      (synopsis
+       "Contains command line tools for PySide2")
+      (description
+       "Contains lupdate, rcc and uic tools for PySide2")
+      (license license:gpl2))))
