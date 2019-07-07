@@ -8483,14 +8483,14 @@ library as well as on the command line.")
 (define-public python-pluggy
   (package
    (name "python-pluggy")
-   (version "0.9.0")
+   (version "0.11.0")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "pluggy" version))
      (sha256
       (base32
-       "13yg2q0wgcb4l8lgdvcnzqa8db5lrw3nwn50lxjy1z5jkp7gkv0r"))))
+       "10511a54dvafw1jrk75mrhml53c7b7w4yaw7241696lc2hfvr895"))))
    (build-system python-build-system)
    (native-inputs
     `(("python-setuptools-scm" ,python-setuptools-scm)))
