@@ -43,19 +43,19 @@
     (name "libevent")
     (version "2.1.10")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/libevent/libevent/releases/download/release-"
-                   version "-stable/libevent-" version "-stable.tar.gz"))
-             (sha256
-              (base32
-               "1c25928gdv495clxk2v1d4gkr5py7ack4gx2n7d13frnld0syr78"))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libevent/libevent/releases/download/release-"
+                    version "-stable/libevent-" version "-stable.tar.gz"))
+              (sha256
+               (base32
+                "1c25928gdv495clxk2v1d4gkr5py7ack4gx2n7d13frnld0syr78"))))
     (build-system gnu-build-system)
     (arguments
-      ;; This skips some of the tests which fail on armhf and aarch64.
+     ;; This skips some of the tests which fail on armhf and aarch64.
      '(#:configure-flags '("--disable-libevent-regress")))
     (inputs
-     `(("python" ,python-2)))           ; for 'event_rpcgen.py'
+     `(("python" ,python-wrapper)))     ;for 'event_rpcgen.py'
     (native-inputs
      `(("which" ,which)))
     (home-page "https://libevent.org/")
