@@ -59,12 +59,6 @@
                     (string-prefix? "mips" s)))
               '("--with-data-packaging=archive")
               '()))
-        ,@(if (string-prefix? "i686" (or (%current-target-system)
-                                         (%current-system)))
-              ;; FIXME: Some tests are failing on i686:
-              ;; <https://unicode-org.atlassian.net/browse/ICU-20080>.
-              '(#:tests? #f)
-              '())
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
