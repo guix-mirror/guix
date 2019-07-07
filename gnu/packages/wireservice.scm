@@ -30,21 +30,10 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages time))
 
-;; Base package definition for packages from https://github.com/wireservice.
-;; This is done so we can share how to run tests and build documentation.
-(define base-package
+;; Common package definition for packages from https://github.com/wireservice.
+(define-syntax-rule (wireservice-package extra-fields ...)
   (package
-    (name #f)
-    (version #f)
-    (source #f)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
     (build-system python-build-system)
-    (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-sphinx" ,python-sphinx)
-       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -66,131 +55,143 @@
                                       (string-append doc "/" target)))
                   '("html" "dirhtml" "singlehtml" "text")))
                #t))))))
-    (license license:expat)))
+    (license license:expat)
+    extra-fields ...))
 
 (define-public python-leather
-  (package
-    (inherit base-package)
-    (name "python-leather")
-    (version "0.3.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wireservice/leather.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1ck3dplni99sv4s117cbm07ydwwjsrxkhdy19rnk0iglia1d4s5i"))))
-    (native-inputs
-     `(("python-cssselect" ,python-cssselect)
-       ("python-lxml" ,python-lxml)
-       ,@(package-native-inputs base-package)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (home-page "https://leather.rtfd.org")
-    (synopsis "Python charting for 80% of humans")
-    (description "Leather is a Python charting library for those who need
+  (wireservice-package
+   (name "python-leather")
+   (version "0.3.3")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/wireservice/leather.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1ck3dplni99sv4s117cbm07ydwwjsrxkhdy19rnk0iglia1d4s5i"))))
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-sphinx" ,python-sphinx)
+      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+      ("python-csselect" ,python-cssselect)
+      ("python-lxml" ,python-lxml)))
+   (propagated-inputs
+    `(("python-six" ,python-six)))
+   (home-page "https://leather.rtfd.org")
+   (synopsis "Python charting for 80% of humans")
+   (description "Leather is a Python charting library for those who need
 charts now and don't care if they're perfect.")))
 
 (define-public python-agate
-  (package
-    (inherit base-package)
-    (name "python-agate")
-    (version "1.6.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wireservice/agate.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "077zj8xad8hsa3nqywvf7ircirmx3krxdipl8wr3dynv3l3khcpl"))))
-    (native-inputs
-     `(("python-cssselect" ,python-cssselect)
-       ("python-lxml" ,python-lxml)
-       ,@(package-native-inputs base-package)))
-    (propagated-inputs
-     `(("python-babel" ,python-babel)
-       ("python-isodate" ,python-isodate)
-       ("python-leather" ,python-leather)
-       ("python-parsedatetime" ,python-parsedatetime)
-       ("python-pytimeparse" ,python-pytimeparse)
-       ("python-six" ,python-six)
-       ("python-slugify" ,python-slugify)))
-    (home-page "https://agate.rtfd.org")
-    (synopsis "Data analysis library")
-    (description "Agate is a Python data analysis library.  It is an
+  (wireservice-package
+   (name "python-agate")
+   (version "1.6.1")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/wireservice/agate.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "077zj8xad8hsa3nqywvf7ircirmx3krxdipl8wr3dynv3l3khcpl"))))
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-sphinx" ,python-sphinx)
+      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+      ("python-csselect" ,python-cssselect)
+      ("python-lxml" ,python-lxml)))
+   (propagated-inputs
+    `(("python-babel" ,python-babel)
+      ("python-isodate" ,python-isodate)
+      ("python-leather" ,python-leather)
+      ("python-parsedatetime" ,python-parsedatetime)
+      ("python-pytimeparse" ,python-pytimeparse)
+      ("python-six" ,python-six)
+      ("python-slugify" ,python-slugify)))
+   (home-page "https://agate.rtfd.org")
+   (synopsis "Data analysis library")
+   (description "Agate is a Python data analysis library.  It is an
 alternative to numpy and pandas that solves real-world problems with readable
 code.  Agate was previously known as journalism.")))
 
 (define-public python-agate-sql
-  (package
-    (inherit base-package)
-    (name "python-agate-sql")
-    (version "0.5.4")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wireservice/agate-sql.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "16q0b211n5b1qmhzkfl2jr56lda0rvyh5j1wzw26h2n4pm4wxlx2"))))
-    (propagated-inputs
-     `(("python-agate" ,python-agate)
-       ("python-crate" ,python-crate)
-       ("python-sqlalchemy" ,python-sqlalchemy)))
-    (home-page "https://agate-sql.rtfd.org")
-    (synopsis "SQL read/write support to agate")
-    (description "@code{agatesql} uses a monkey patching pattern to add SQL
+  (wireservice-package
+   (name "python-agate-sql")
+   (version "0.5.4")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/wireservice/agate-sql.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "16q0b211n5b1qmhzkfl2jr56lda0rvyh5j1wzw26h2n4pm4wxlx2"))))
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-sphinx" ,python-sphinx)
+      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+   (propagated-inputs
+    `(("python-agate" ,python-agate)
+      ("python-crate" ,python-crate)
+      ("python-sqlalchemy" ,python-sqlalchemy)))
+   (home-page "https://agate-sql.rtfd.org")
+   (synopsis "SQL read/write support to agate")
+   (description "@code{agatesql} uses a monkey patching pattern to add SQL
 support to all @code{agate.Table} instances.")))
 
 (define-public python-agate-dbf
-  (package
-    (inherit base-package)
-    (name "python-agate-dbf")
-    (version "0.2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wireservice/agate-dbf.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1y49fi6pmm7gzhajvqmfpcca2sqnwj24fqnsvzwk7r1hg2iaa2gi"))))
-    (propagated-inputs
-     `(("python-agate" ,python-agate)
-       ("python-dbfread" ,python-dbfread)))
-    (home-page "https://agate-dbf.rtfd.org")
-    (synopsis "Add read support for dbf files to agate")
-    (description "@code{agatedbf} uses a monkey patching pattern to add read
+  (wireservice-package
+   (name "python-agate-dbf")
+   (version "0.2.1")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/wireservice/agate-dbf.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1y49fi6pmm7gzhajvqmfpcca2sqnwj24fqnsvzwk7r1hg2iaa2gi"))))
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-sphinx" ,python-sphinx)
+      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+   (propagated-inputs
+    `(("python-agate" ,python-agate)
+      ("python-dbfread" ,python-dbfread)))
+   (home-page "https://agate-dbf.rtfd.org")
+   (synopsis "Add read support for dbf files to agate")
+   (description "@code{agatedbf} uses a monkey patching pattern to add read
 for dbf files support to all @code{agate.Table} instances.")))
 
 (define-public python-agate-excel
-  (package
-    (inherit base-package)
-    (name "python-agate-excel")
-    (version "0.2.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/wireservice/agate-excel.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1k5lv21k19s7kgbj5srd1xgrkqvxqqs49qwj33zncs9l7851afy7"))))
-    (propagated-inputs
-     `(("python-agate" ,python-agate)
-       ("python-openpyxl" ,python-openpyxl)
-       ("python-xlrd" ,python-xlrd)))
-    (home-page "https://agate-excel.rtfd.org")
-    (synopsis "Add read support for Excel files (xls and xlsx) to agate")
-    (description "@code{agateexcel} uses a monkey patching pattern to add read
+  (wireservice-package
+   (name "python-agate-excel")
+   (version "0.2.3")
+   (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/wireservice/agate-excel.git")
+                   (commit version)))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "1k5lv21k19s7kgbj5srd1xgrkqvxqqs49qwj33zncs9l7851afy7"))))
+   (native-inputs
+    `(("python-nose" ,python-nose)
+      ("python-sphinx" ,python-sphinx)
+      ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+   (propagated-inputs
+    `(("python-agate" ,python-agate)
+      ("python-openpyxl" ,python-openpyxl)
+      ("python-xlrd" ,python-xlrd)))
+   (home-page "https://agate-excel.rtfd.org")
+   (synopsis "Add read support for Excel files (xls and xlsx) to agate")
+   (description "@code{agateexcel} uses a monkey patching pattern to add read
 for xls and xlsx files support to all @code{agate.Table} instances.")))
 
 (define-public csvkit
