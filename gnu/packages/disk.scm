@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -236,7 +237,8 @@ to recover data more efficiently by only reading the necessary blocks.")
          "0wy13i3i4x2bw1hf5m4fd0myh61f9bcrs035fdlf6gyc1jksrcp6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" %output)
+     `(#:configure-flags (list "--enable-compat-symlinks")
+       #:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")))
     (native-inputs
      `(("xxd" ,xxd))) ; for tests
