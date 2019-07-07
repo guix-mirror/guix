@@ -871,7 +871,7 @@ for efficient socket-like bidirectional reliable communication channels.")
     (inputs
      `(("libidn2" ,libidn2)
        ("libunistring" ,libunistring)
-       ("python-2" ,python-2)))
+       ("python" ,python-wrapper)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
