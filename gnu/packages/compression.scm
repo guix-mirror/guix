@@ -1588,7 +1588,12 @@ recreates the stored directory structure by default.")
                     (lambda _
                       (for-each make-file-writable
                                 (find-files "test" #:directories? #t))
-                      #t)))))
+                      #t)))
+
+       ;; XXX: The default test target attempts to download external resources and
+       ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
+       ;; To prevent confusing log messages, just run a simple zip test that works.
+       #:test-target "check-readme"))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
