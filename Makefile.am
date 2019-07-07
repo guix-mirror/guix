@@ -545,7 +545,6 @@ EXTRA_DIST +=						\
   build-aux/config.rpath				\
   bootstrap						\
   doc/build.scm						\
-  release.nix						\
   $(TESTS)
 
 if !BUILD_DAEMON_OFFLOAD
