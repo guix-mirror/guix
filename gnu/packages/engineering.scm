@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2214,3 +2215,38 @@ interactive modeler, OpenSCAD generates 3D models from a script, giving you
 full programmatic control over your models.")
     (home-page "https://www.openscad.org/")
     (license license:gpl2+)))
+
+(define-public libspnav
+  (package
+    (name "libspnav")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FreeSpacenav/libspnav.git")
+                    (commit (string-append "libspnav-" version))))
+              (sha256
+               (base32
+                "098h1jhlj87axpza5zgy58prp0zn94wyrbch6x0s7q4mzh7dc8ba"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (arguments `(#:tests? #f))
+    (home-page "http://spacenav.sourceforge.net/")
+    (synopsis
+     "Library for communicating with spacenavd or 3dxsrv")
+    (description
+     "The libspnav library is provided as a replacement of the magellan
+library.  It provides a cleaner, and more orthogonal interface.  libspnav
+supports both the original X11 protocol for communicating with the driver, and
+the new alternative non-X protocol.  Programs that choose to use the X11
+protocol, are automatically compatible with either the free spacenavd driver
+or the official 3dxserv, as if they were using the magellan SDK.
+
+Also, libspnav provides a magellan API wrapper on top of the new API.  So, any
+applications that were using the magellan library, can switch to libspnav
+without any changes.  And programmers that are familliar with the magellan API
+can continue using it with a free library without the restrictions of the
+official SDK.")
+    (license license:bsd-3)))
