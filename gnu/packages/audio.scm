@@ -1595,15 +1595,7 @@ synchronous execution of all clients, and low latency operation.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'configure 'set-flags
-          (lambda _
-            ;; Compile with C++11, required by gtkmm.
-            (setenv "CXXFLAGS" "-std=c++11")
-            #t)))))
+       #:python ,python-2))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
