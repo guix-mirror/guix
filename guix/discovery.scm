@@ -78,7 +78,9 @@ DIRECTORY is not accessible."
                                  ((= stat:type 'directory)
                                   (append (scheme-files absolute)
                                           result))
-                                 (_ result)))))
+                                 (_ result)))
+                              (else
+                               result)))
                        (else
                         result))))))
               '()
