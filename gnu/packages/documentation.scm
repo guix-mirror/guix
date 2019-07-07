@@ -140,8 +140,8 @@ markup) can be customized and extended by the user.")
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
-       ("libxml2" ,libxml2) ; provides xmllint for the tests
-       ("python" ,python-2))) ; for creating the documentation
+       ("libxml2" ,libxml2)             ;provides xmllint for the tests
+       ("python" ,python)))             ;for creating the documentation
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments
