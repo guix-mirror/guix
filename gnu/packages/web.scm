@@ -867,11 +867,13 @@ for efficient socket-like bidirectional reliable communication channels.")
                 "04pfagb7ppq3yibx4lhazd1v9nwkxdfkyy2rgcrmrf3mldsirga1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("python" ,python-wrapper)))
     (inputs
      `(("libidn2" ,libidn2)
-       ("libunistring" ,libunistring)
-       ("python" ,python-wrapper)))
+       ("libunistring" ,libunistring)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
