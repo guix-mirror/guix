@@ -331,6 +331,11 @@ also known as DXTn or DXTC) for Mesa.")
                 "-Dllvm=true"))         ; default is x86/x86_64 only
              (_
               '("-Ddri-drivers=nouveau,r200,r100"))))
+
+       ;; XXX: 'debugoptimized' causes LTO link failures on some drivers.  The
+       ;; documentation recommends using 'release' for performance anyway.
+       #:build-type "release"
+
        #:modules ((ice-9 match)
                   (srfi srfi-1)
                   (guix build utils)
