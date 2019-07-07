@@ -1573,14 +1573,22 @@ recreates the stored directory structure by default.")
     (name "zziplib")
     (version "0.13.69")
     (home-page "https://github.com/gdraheim/zziplib")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
-       (sha256
-        (base32
-         "0i052a7shww0fzsxrdp3rd7g4mbzx7324a8ysbc0br7frpblcql4"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'make-files-writable
+                    (lambda _
+                      (for-each make-file-writable
+                                (find-files "test" #:directories? #t))
+                      #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
