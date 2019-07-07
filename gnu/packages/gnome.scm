@@ -5447,7 +5447,7 @@ services.")
                 "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-absolute-paths")))
+     '(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
