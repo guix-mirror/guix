@@ -47,7 +47,7 @@
              (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("python" ,python)))
+    `(("python" ,python-minimal)))
    (inputs
     `(("perl" ,perl)))
    (arguments
