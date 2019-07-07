@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5447,12 +5448,31 @@ services.")
                 "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")))
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((ovpn (string-append (assoc-ref inputs "openvpn")
+                                         "/sbin/openvpn"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" ovpn "\"")))
+               (for-each
+                (lambda (file)
+                  (substitute* file
+                    (("\"/usr/local/sbin/openvpn\"") pretty-ovpn)
+                    (("\"/usr/sbin/openvpn\"") pretty-ovpn)
+                    (("\"/sbin/openvpn\"") pretty-ovpn)
+                    (("/sbin/modprobe") modprobe)))
+                '("src/nm-openvpn-service.c" "properties/nm-openvpn-editor.c")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("kmod" ,kmod)
        ("openvpn" ,openvpn)
        ("network-manager" ,network-manager)
        ("network-manager-applet" ,network-manager-applet) ;for libnma
