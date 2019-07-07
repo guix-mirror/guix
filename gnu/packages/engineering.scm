@@ -2217,6 +2217,51 @@ full programmatic control over your models.")
     (home-page "https://www.openscad.org/")
     (license license:gpl2+)))
 
+(define-public libmedfile
+  (package
+    (name "libmedfile")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://files.salome-platform.org/Salome/other/med-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "017h9p0x533fm4gn6pwc8kmp72rvqmcn6vznx72nkkl2b05yjx54"))))
+    (build-system cmake-build-system)
+    (inputs `(("hdf5" ,hdf5-1.10)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-test-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively
+                (string-append out "/bin/testc"))
+               #t))))))
+    (home-page "https://www.salome-platform.org")
+    (synopsis "Library to read and write MED files")
+    (description
+     "The purpose of the MED module is to provide a standard for storing and
+recovering computer data associated to numerical meshes and fields, and to
+facilitate the exchange between codes and solvers.
+
+The persistent data storage is based upon HDF format (like CGNS, a standard
+developed by Boeing and NASA in the area of Computational Fluid Dynamic).
+
+MED also provides structures to hold data on meshes and fields.  These
+structures are exchanged between solvers, hide the communication level (CORBA
+or MPI), and offer persistence (read/write in .med files).
+
+The main benefit of a common exchange format is reduced complexity of code
+coupling.  It also allows sharing such high level functionalities as
+computation of nodal connectivity of sub-elements (faces and edges),
+arithmetic operations on fields, entity location functionalities, and
+interpolation toolkit.")
+    (license license:gpl3+)))
+
 (define-public libarea
   (let ((revision "1")
         (commit "8f8bac811c10f1f01fda0d742a18591f61dd76ee"))
