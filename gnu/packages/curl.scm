@@ -72,7 +72,7 @@
        ;; to enable the --manual option and make test 1026 pass
        ("groff" ,groff)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python-wrapper)))
    (native-search-paths
     ;; Note: This search path is respected by the `curl` command-line tool only.
     ;; Ideally we would bake this into libcurl itself so other users can benefit,
