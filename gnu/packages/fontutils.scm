@@ -9,6 +9,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -438,9 +439,20 @@ applications should be.")
         (base32
          "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
+   (arguments
+    `(#:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'adjust-test-PYTHONPATH
+                   (lambda _
+                     ;; Tell the build system not to override PYTHONPATH
+                     ;; while running the Python tests.
+                     (substitute* "Graphite.cmake"
+                       (("ENVIRONMENT PYTHONPATH=")
+                        (string-append "ENVIRONMENT PYTHONPATH="
+                                       (getenv "PYTHONPATH") ":")))
+                     #t)))))
    (native-inputs
-    `(("python" ,python-2) ; because of "import imap" in tests
-      ("python-fonttools" ,python2-fonttools)))
+    `(("python" ,python)
+      ("python-fonttools" ,python-fonttools)))
    (inputs
     `(("freetype" ,freetype)))
    (synopsis "Reimplementation of the SIL Graphite text processing engine")
