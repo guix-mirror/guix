@@ -162,7 +162,12 @@ freedesktop.org project.")
                 "07a0w7rak7rvnh6g4j0akwjxwinxfszc1xi9mrx12fv82k3mgsyk"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=false")))
+     `(#:configure-flags '("-Ddocumentation=false")
+
+       ;; XXX: Using 'debug' or 'debugoptimized' pulls in an additional test that
+       ;; hangs, and the comments around it suggests that we should be using this
+       ;; Meson target anyway.
+       #:build-type "release"))
     (native-inputs
      `(("check" ,check)
        ("pkg-config" ,pkg-config)))
