@@ -119,7 +119,7 @@
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("python" ,python-wrapper)
        ("gtk-doc" ,gtk-doc) ; For documentation generation
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
