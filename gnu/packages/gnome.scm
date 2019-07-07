@@ -3871,9 +3871,7 @@ for application developers.")
        ("gst-plugins-good" ,gst-plugins-good)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("adwaita-icon-theme" ,adwaita-icon-theme)
-       ;; XXX We use python-2 because libxml2 because itstool (which needs
-       ;; libxml) currently uses python-2.
-       ("python" ,python-2)
+       ("python" ,python)
        ("python-pygobject" ,python2-pygobject)
        ;; XXX TODO pylint needed for python support
        ("totem-pl-parser" ,totem-pl-parser)

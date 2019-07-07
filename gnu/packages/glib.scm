@@ -451,19 +451,19 @@ The intltool collection can be used to do these things:
 (define itstool
   (package
     (name "itstool")
-    (version "2.0.2")
+    (version "2.0.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.itstool.org/itstool/itstool-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0fh34wi52i0qikgvlmrcpf1vx6gc1xqdad4539l4d9hikfsrz45z"))))
+               "1acjgf8zlyk7qckdk19iqaca4jcmywd7vxjbcs1mm6kaf8icqcv2"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxml2" ,libxml2)
-       ("python2-libxml2" ,python2-libxml2)
-       ("python-2" ,python-2)))
+       ("python-libxml2" ,python-libxml2)
+       ("python" ,python)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
