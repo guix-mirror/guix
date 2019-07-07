@@ -544,6 +544,7 @@ EXTRA_DIST +=						\
   tests/cve-sample.xml					\
   build-aux/config.rpath				\
   bootstrap						\
+  doc/build.scm						\
   release.nix						\
   $(TESTS)
 
