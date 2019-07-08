@@ -7238,23 +7238,7 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
 (define-public r-biocinstaller
-  (package
-    (name "r-biocinstaller")
-    (version "1.32.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocInstaller" version))
-              (sha256
-               (base32
-                "1s1f9qhyf3mc73ir25x2zlgi9hf45a37lg4z8fbva4i21hqisgsl"))))
-    (properties
-     `((upstream-name . "BiocInstaller")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/BiocInstaller")
-    (synopsis "Install Bioconductor packages")
-    (description "This package is used to install and update R packages from
-Bioconductor, CRAN, and Github.")
-    (license license:artistic2.0)))
+  (deprecated-package "r-biocinstaller" r-biocmanager))
 
 (define-public r-biocviews
   (package
