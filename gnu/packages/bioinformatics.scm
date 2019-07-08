@@ -7237,9 +7237,6 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
-(define-public r-biocinstaller
-  (deprecated-package "r-biocinstaller" r-biocmanager))
-
 (define-public r-biocviews
   (package
     (name "r-biocviews")
