@@ -9452,6 +9452,34 @@ generates the smallest layout that is possible with respect to the
 alignment of the record elements.")
     (license license:bsd-3)))
 
+(define-public ghc-storable-tuple
+  (package
+    (name "ghc-storable-tuple")
+    (version "0.0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/storable-tuple/"
+         "storable-tuple-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dfzhxgkn1l6ls7zh6iifhyvhm8l47n40z0ar23c6ibsa94w1ynw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-storable-record" ,ghc-storable-record)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-base-orphans" ,ghc-base-orphans)))
+    (home-page "https://hackage.haskell.org/package/storable-tuple")
+    (synopsis "Storable instance for pairs and triples")
+    (description "This package provides a Storable instance for pairs
+and triples which should be binary compatible with C99 and C++.  The
+only purpose of this package is to provide a standard location for this
+instance so that other packages needing this instance can play nicely
+together.")
+    (license license:bsd-3)))
+
 (define-public ghc-storablevector
   (package
     (name "ghc-storablevector")
