@@ -10,6 +10,7 @@
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -411,6 +412,57 @@ used to keep a folder in sync between computers.")
     (description "HLint reads Haskell programs and suggests changes that
 hopefully make them easier to read.  HLint also makes it easy to disable
 unwanted suggestions, and to add your own custom suggestions.")
+    (license license:bsd-3)))
+
+(define-public hoogle
+  (package
+    (name "hoogle")
+    (version "5.0.17.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/hoogle/hoogle-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "174gp41v0krzj37m75pnr3aawyhkbk2wq4q6zk2z3zh0avvvmgk6"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-connection" ,ghc-connection)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-js-flot" ,ghc-js-flot)
+       ("ghc-js-jquery" ,ghc-js-jquery)
+       ("ghc-mmap" ,ghc-mmap)
+       ("ghc-process-extras" ,ghc-process-extras)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-storable-tuple" ,ghc-storable-tuple)
+       ("ghc-tar" ,ghc-tar)
+       ("ghc-uniplate" ,ghc-uniplate)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-wai-logger" ,ghc-wai-logger)
+       ("ghc-warp" ,ghc-warp)
+       ("ghc-warp-tls" ,ghc-warp-tls)
+       ("ghc-zlib" ,ghc-zlib)))
+    (home-page "https://hoogle.haskell.org/")
+    (synopsis "Haskell API Search")
+    (description "Hoogle is a Haskell API search engine, which allows
+you to search many standard Haskell libraries by either function name,
+or by approximate type signature.")
     (license license:bsd-3)))
 
 (define-public hscolour
