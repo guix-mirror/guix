@@ -158,9 +158,12 @@
        ;; for generating alternative keyboard layouts.
        ("console-setup" ,console-setup)
 
+       ;; Needed for ‘grub-mount’, the only reliable way to tell whether a given
+       ;; file system will be readable by GRUB without rebooting.
+       ("fuse" ,fuse)
+
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
-       ;; ("fuse" ,fuse)
        ("ncurses" ,ncurses)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
