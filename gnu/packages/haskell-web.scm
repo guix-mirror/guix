@@ -1490,3 +1490,30 @@ version number match the upstream jQuery version.  The package is
 designed to meet the redistribution requirements of downstream
 users (e.g. Debian).")
     (license license:expat)))
+
+(define-public ghc-js-flot
+  (package
+    (name "ghc-js-flot")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/js-flot/js-flot-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "0yjyzqh3qzhy5h3nql1fckw0gcfb0f4wj9pm85nafpfqp2kg58hv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-http" ,ghc-http)))
+    (home-page "https://github.com/ndmitchell/js-flot")
+    (synopsis "Obtain minified flot code")
+    (description "This package bundles the minified
+@url{http://www.flotcharts.org/, Flot} code (a jQuery plotting library)
+into a Haskell package, so it can be depended upon by Cabal packages.
+The first three components of the version number match the upstream flot
+version.  The package is designed to meet the redistribution
+requirements of downstream users (e.g. Debian).")
+    (license license:expat)))
