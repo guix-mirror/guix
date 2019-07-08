@@ -600,63 +600,6 @@ allow existing format source files to be used with newer engines, for example
 to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
     (license license:public-domain)))
 
-(define-public texlive-generic-hyph-utf8
-  (package
-    (name "texlive-generic-hyph-utf8")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/hyph-utf8"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1alnn9cd60m2c12vym9f9q22ap1ngywxpkjl9dk472why44g1dmy"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/hyph-utf8")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
-    (home-page "https://ctan.org/pkg/hyph-utf8")
-    (synopsis "Hyphenation patterns expressed in UTF-8")
-    (description "Modern native UTF-8 engines such as XeTeX and LuaTeX need
-hyphenation patterns in UTF-8 format, whereas older systems require
-hyphenation patterns in the 8-bit encoding of the font in use (such encodings
-are codified in the LaTeX scheme with names like OT1, T2A, TS1, OML, LY1,
-etc).  The present package offers a collection of conversions of existing
-patterns to UTF-8 format, together with converters for use with 8-bit fonts in
-older systems.  Since hyphenation patterns for Knuthian-style TeX systems are
-only read at iniTeX time, it is hoped that the UTF-8 patterns, with their
-converters, will completely supplant the older patterns.")
-    ;; Individual files each have their own license.  Most of these files are
-    ;; independent hyphenation patterns.
-    (license (list license:lppl1.0+
-                   license:lppl1.2+
-                   license:lppl1.3
-                   license:lppl1.3+
-                   license:lppl1.3a+
-                   license:lgpl2.1
-                   license:lgpl2.1+
-                   license:lgpl3+
-                   license:gpl2+
-                   license:gpl3+
-                   license:mpl1.1
-                   license:asl2.0
-                   license:expat
-                   license:bsd-3
-                   license:cc0
-                   license:public-domain
-                   license:wtfpl2))))
-
 (define-public texlive-metafont-base
   (package
     (name "texlive-metafont-base")
@@ -1517,6 +1460,154 @@ individual symbols defined in @code{amssymb.sty}.")
 TeXbook, together with various supporting files (some also discussed in the
 book).")
     (license license:knuth)))
+
+(define-public texlive-hyph-utf8
+  (package
+    (inherit (simple-texlive-package
+              "texlive-hyph-utf8"
+              (list "/source/generic/hyph-utf8/"
+                    "/source/luatex/hyph-utf8/"
+                    "/doc/luatex/hyph-utf8/"
+                    "/tex/luatex/hyph-utf8/etex.src"
+                    ;; Used to extract luatex-hyphen.lua
+                    "/tex/latex/base/docstrip.tex"
+
+                    ;; Documentation; we can't use the whole directory because
+                    ;; it includes files from other packages.
+                    "/doc/generic/hyph-utf8/CHANGES"
+                    "/doc/generic/hyph-utf8/HISTORY"
+                    "/doc/generic/hyph-utf8/hyph-utf8.pdf"
+                    "/doc/generic/hyph-utf8/hyph-utf8.tex"
+                    "/doc/generic/hyph-utf8/hyphenation-distribution.pdf"
+                    "/doc/generic/hyph-utf8/hyphenation-distribution.tex"
+                    "/doc/generic/hyph-utf8/img/miktex-languages.png"
+                    "/doc/generic/hyph-utf8/img/texlive-collection.png")
+              (base32
+               "10y8svgk68sivmgzrv8gv137r7kv49cs256cq2wja9ms437pxvbj")))
+    (outputs '("out" "doc"))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 match))
+       #:make-flags
+       (list "-C" "source/luatex/hyph-utf8/"
+             (string-append "DO_TEX = tex --interaction=nonstopmode '&tex' $<")
+             (string-append "RUNDIR =" (assoc-ref %outputs "out") "/share/texmf-dist/tex/luatex/hyph-utf8/")
+             (string-append "DOCDIR =" (assoc-ref %outputs "doc") "/share/texmf-dist/doc/luatex/hyph-utf8/")
+             ;; hyphen.cfg is neither included nor generated, so let's only build the lua file.
+             (string-append "UNPACKED = $(NAME).lua"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; TeX isn't usable at this point, so we first need to generate the
+         ;; tex.fmt.
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Target directories must exist.
+             (mkdir-p (string-append (assoc-ref %outputs "out")
+                                     "/share/texmf-dist/tex/luatex/hyph-utf8/"))
+             (mkdir-p (string-append (assoc-ref %outputs "doc")
+                                     "/share/texmf-dist/doc/luatex/hyph-utf8/"))
+
+             ;; We cannot build the documentation because that requires a
+             ;; fully functional pdflatex, which depends on this package.
+             (substitute* "source/luatex/hyph-utf8/Makefile"
+               (("all: .*") "all: $(RUNFILES)\n"))
+
+             ;; Find required fonts for building tex.fmt
+             (setenv "TFMFONTS"
+                     (string-append (assoc-ref inputs "texlive-fonts-cm")
+                                    "/share/texmf-dist/fonts/tfm/public/cm:"
+                                    (assoc-ref inputs "texlive-fonts-knuth-lib")
+                                    "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
+             ;; ...and find all tex files in this environment.
+             (setenv "TEXINPUTS"
+                     (string-append
+                      (getcwd) ":"
+                      (string-join
+                       (map (match-lambda ((_ . dir) dir)) inputs)
+                       "//:")))
+
+             ;; Generate tex.fmt.
+             (let ((where "source/luatex/hyph-utf8"))
+               (mkdir-p where)
+               (with-directory-excursion where
+                 (invoke "tex" "-ini"
+                         (string-append (assoc-ref inputs "texlive-tex-plain")
+                                        "/share/texmf-dist/tex/plain/config/tex.ini"))))))
+         (add-before 'build 'build-loaders-and-converters
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((root (string-append (assoc-ref outputs "out")
+                                         "/share/texmf-dist"))
+                    (conv
+                     (string-append root
+                                    "/tex/generic/hyph-utf8/conversions")))
+
+               ;; Build converters
+               (mkdir-p conv)
+               (with-directory-excursion "source/generic/hyph-utf8"
+                 (substitute* "generate-converters.rb"
+                   (("\\$path_root=File.*")
+                    (string-append "$path_root=\"" root "\"\n"))
+                   ;; Avoid error with newer Ruby.
+                   (("#1\\{%") "#1{%%"))
+                 (invoke "ruby" "generate-converters.rb"))
+               #t)))
+         (replace 'install
+           (lambda* (#:key source outputs #:allow-other-keys)
+             (let ((doc (assoc-ref outputs "doc"))
+                   (out (assoc-ref outputs "out")))
+               (mkdir-p doc)
+               (copy-recursively
+                (string-append source "/doc")
+                (string-append doc "/doc"))
+               (install-file
+                (string-append source "/tex/luatex/hyph-utf8/etex.src")
+                (string-append out "/share/texmf-dist/tex/luatex/hyph-utf8/")))
+             #t)))))
+    (native-inputs
+     `(("ruby" ,ruby)
+       ("texlive-bin" ,texlive-bin)
+       ;; The following packages are needed for build "tex.fmt", which we need
+       ;; for a working "tex".
+       ("texlive-tex-plain" ,texlive-tex-plain)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+       ("texlive-hyphen-base" ,texlive-hyphen-base)))
+    (home-page "https://ctan.org/pkg/hyph-utf8")
+    (synopsis "Hyphenation patterns expressed in UTF-8")
+    (description "Modern native UTF-8 engines such as XeTeX and LuaTeX need
+hyphenation patterns in UTF-8 format, whereas older systems require
+hyphenation patterns in the 8-bit encoding of the font in use (such encodings
+are codified in the LaTeX scheme with names like OT1, T2A, TS1, OML, LY1,
+etc).  The present package offers a collection of conversions of existing
+patterns to UTF-8 format, together with converters for use with 8-bit fonts in
+older systems.  Since hyphenation patterns for Knuthian-style TeX systems are
+only read at iniTeX time, it is hoped that the UTF-8 patterns, with their
+converters, will completely supplant the older patterns.")
+    ;; Individual files each have their own license.  Most of these files are
+    ;; independent hyphenation patterns.
+    (license (list license:lppl1.0+
+                   license:lppl1.2+
+                   license:lppl1.3
+                   license:lppl1.3+
+                   license:lppl1.3a+
+                   license:lgpl2.1
+                   license:lgpl2.1+
+                   license:lgpl3+
+                   license:gpl2+
+                   license:gpl3+
+                   license:mpl1.1
+                   license:asl2.0
+                   license:expat
+                   license:bsd-3
+                   license:cc0
+                   license:public-domain
+                   license:wtfpl2))))
+
+(define-public texlive-generic-hyph-utf8
+  (deprecated-package "texlive-generic-hyph-utf8" texlive-hyph-utf8))
 
 (define-public texlive-latex-base
   (let ((texlive-dir
