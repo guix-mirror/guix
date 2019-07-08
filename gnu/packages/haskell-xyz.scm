@@ -7756,6 +7756,36 @@ examination.")
      "This package provides various primitive memory-related operations.")
     (license license:bsd-3)))
 
+(define-public ghc-process-extras
+  (package
+    (name "ghc-process-extras")
+    (version "0.7.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/process-extras/"
+         "process-extras-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0klqgr37f1z2z6i0a9b0giapmq0p35l5k9kz1p7f0k1597w7agi9"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-data-default" ,ghc-data-default)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-listlike" ,ghc-listlike)))
+    (home-page "https://github.com/seereason/process-extras")
+    (synopsis "Extra tools for managing processes")
+    (description "This packages extends
+@url{http://hackage.haskell.org/package/process}.  It allows you to read
+process input and output as ByteStrings or Text, or write your own
+ProcessOutput instance.  It also provides lazy process input and output,
+and a ProcessMaker class for more flexibility in the process creation
+API.")
+    (license license:expat)))
+
 (define-public ghc-profunctors
   (package
     (name "ghc-profunctors")
