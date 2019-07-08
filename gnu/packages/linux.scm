@@ -2654,7 +2654,7 @@ time.")
     (inputs
      `(("udev" ,eudev)))
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'configure 'set-makefile-shell
            (lambda _
@@ -2689,7 +2689,12 @@ time.")
                                               (assoc-ref %outputs "out")
                                               "/lib,-rpath="
                                               (assoc-ref %outputs "out")
-                                              "/lib/device-mapper"))
+                                              "/lib/device-mapper")
+                               ;; This is needed when cross-compiling.
+                               ,@(if (%current-target-system)
+                                     '("ac_cv_func_malloc_0_nonnull=yes"
+                                       "ac_cv_func_realloc_0_nonnull=yes")
+                                     '()))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
