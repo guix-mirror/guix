@@ -483,32 +483,14 @@ to PostScript.")
                    license:expat
                    license:lgpl3+))))
 
-(define-public texlive-generic-tex-ini-files
+(define-public texlive-tex-ini-files
   (package
-    (name "texlive-generic-tex-ini-files")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/tex-ini-files"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1wh42n1lmzcvi3g6mm31nm3yd5ha5bl260xqc444jg1m9fdp3wz5"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/tex-ini-files")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-tex-ini-files"
+              (list "/tex/generic/tex-ini-files/")
+              (base32
+               "0q1g62jg0qiqslm93ycvm30bw8ydmssjdshzsnzl7n2vpd62qfi2")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/tex-ini-files")
     (synopsis "Files for creating TeX formats")
     (description "This bundle provides a collection of model \".ini\" files
@@ -517,6 +499,9 @@ distribution-dependent variations in formats.  They are also used to
 allow existing format source files to be used with newer engines, for example
 to adapt the plain e-TeX source file to work with XeTeX and LuaTeX.")
     (license license:public-domain)))
+
+(define-public texlive-generic-tex-ini-files
+  (deprecated-package "texlive-generic-tex-ini-files" texlive-tex-ini-files))
 
 (define-public texlive-metafont-base
   (package
