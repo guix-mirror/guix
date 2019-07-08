@@ -706,24 +706,10 @@ documents.")
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
                (copy-recursively "pk" pk)
-               (mkdir-p type1)
-               (copy-recursively (assoc-ref inputs "cm-type1") type1)
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)
-       ("cm-type1"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/type1/public/amsfonts/cm"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-type1-" version "-checkout"))
-           (sha256
-            (base32
-             "12jyl9jp3hidifa4l5pmi47p71d5mb5kj5rknxkygilix8yz2iy6"))))))
+       ("texlive-metafont-base" ,texlive-metafont-base)))
     (home-page "https://www.ctan.org/pkg/cm")
     (synopsis "Computer Modern fonts for TeX")
     (description "This package provides the Computer Modern fonts by Donald
