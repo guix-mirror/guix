@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,8 @@
                            (string-append "https://dl.bintray.com/boostorg/release/"
                                           version "/source/boost_"
                                           version-with-underscores ".tar.bz2"))))
+              (patches
+               (search-patches "boost-dumpversion.patch"))
               (sha256
                (base32
                 "0y47nc7w0arwgj4x1phadxbvl7wyfcgknbz5kv8lzpl98wsyh2j3"))))
@@ -62,7 +65,9 @@
               ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
-       ("python" ,python-2)
+       ,@(if (%current-target-system)
+             '()
+             `(("python" ,python-2)))
        ("tcsh" ,tcsh)))
     (arguments
      `(#:tests? #f
@@ -76,7 +81,24 @@
 
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
-                            (assoc-ref %outputs "out") "/lib"))
+                            (assoc-ref %outputs "out") "/lib")
+             ,@(if (%current-target-system)
+                   `("--user-config=user-config.jam"
+                     ;; Python is not supported when cross-compiling.
+                     "--without-python"
+                     "binary-format=elf"
+                     "target-os=linux"
+                     ,@(cond
+                        ((string-prefix? "arm" (%current-target-system))
+                         '("abi=aapcs"
+                           "address-model=32"
+                           "architecture=arm"))
+                        ((string-prefix? "aarch64" (%current-target-system))
+                         '("abi=aapcs"
+                           "address-model=64"
+                           "architecture=arm"))
+                        (else '())))
+                   '()))
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
@@ -94,6 +116,14 @@
                (setenv "SHELL" (which "sh"))
                (setenv "CONFIG_SHELL" (which "sh"))
 
+               ,@(if (%current-target-system)
+                     `((call-with-output-file "user-config.jam"
+                          (lambda (port)
+                            (format port
+                                    "using gcc : cross : ~a-c++ ;"
+                                    ,(%current-target-system)))))
+                     '())
+
                (invoke "./bootstrap.sh"
                        (string-append "--prefix=" out)
                        ;; Auto-detection looks for ICU only in traditional
@@ -108,17 +138,20 @@
          (replace 'install
            (lambda* (#:key make-flags #:allow-other-keys)
              (apply invoke "./b2" "install" make-flags)))
-         (add-after 'install 'provide-libboost_python
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               ;; Boost can build support for both Python 2 and Python 3 since
-               ;; version 1.67.0, and suffixes each library with the Python
-               ;; version.  Many consumers only check for libboost_python
-               ;; however, so we provide it here as suggested in
-               ;; <https://github.com/boostorg/python/issues/203>.
-               (with-directory-excursion (string-append out "/lib")
-                 (symlink "libboost_python27.so" "libboost_python.so"))
-               #t))))))
+         ,@(if (%current-target-system)
+               '()
+               '((add-after 'install 'provide-libboost_python
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; Boost can build support for both Python 2 and
+                        ;; Python 3 since version 1.67.0, and suffixes each
+                        ;; library with the Python version.  Many consumers
+                        ;; only check for libboost_python however, so we
+                        ;; provide it here as suggested in
+                        ;; <https://github.com/boostorg/python/issues/203>.
+                        (with-directory-excursion (string-append out "/lib")
+                          (symlink "libboost_python27.so" "libboost_python.so"))
+                        #t))))))))
 
     (home-page "https://www.boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
