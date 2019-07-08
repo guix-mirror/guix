@@ -82,19 +82,22 @@
 (define-public grub
   (package
     (name "grub")
-    (version "2.02")
+    (version "2.04")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/grub/grub-" version ".tar.xz"))
              (sha256
               (base32
-               "03vvdfhdmf16121v7xs8is2krwnv15wpkhkf16a4yf8nsfc3f2w1"))
-             (patches (search-patches "grub-check-error-efibootmgr.patch"
-                                      "grub-binutils-compat.patch"
-                                      "grub-efi-fat-serial-number.patch"))))
+               "0zgp5m3hmc9jh8wpjx6czzkh5id2y8n1k823x2mjvm2sk6b28ag5"))
+             (patches (search-patches "grub-efi-fat-serial-number.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags
+       ;; Counterintuitively, this *disables* a spurious Python dependency by
+       ;; calling the ‘true’ binary instead.  Python is only needed during
+       ;; bootstrapping (for genptl.py), not when building from a release.
+       (list "PYTHON=true")
+       #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-stuff
                    (lambda* (#:key inputs #:allow-other-keys)
                      (substitute* "grub-core/Makefile.in"
@@ -127,6 +130,14 @@
                       (substitute* "Makefile.in"
                         (("grub_cmd_date grub_cmd_set_date grub_cmd_sleep")
                           "grub_cmd_date grub_cmd_sleep"))
+                      #t))
+                  (add-before 'check 'disable-pixel-perfect-test
+                    (lambda _
+                      ;; This test compares many screenshots rendered with an
+                      ;; older Unifont (9.0.06) than that packaged in Guix.
+                      (substitute* "Makefile.in"
+                        (("test_unset grub_func_test")
+                          "test_unset"))
                       #t)))
        ;; Disable tests on ARM and AARCH64 platforms.
        #:tests? ,(not (any (cute string-prefix? <> (or (%current-target-system)

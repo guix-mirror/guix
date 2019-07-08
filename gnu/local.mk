@@ -893,8 +893,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
-  %D%/packages/patches/grub-binutils-compat.patch		\
-  %D%/packages/patches/grub-check-error-efibootmgr.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
