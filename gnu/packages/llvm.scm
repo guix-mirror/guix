@@ -332,7 +332,7 @@ requirements according to version 1.1 of the OpenCL specification.")
     (version (package-version llvm))
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://releases.llvm.org/"
+              (uri (string-append "https://releases.llvm.org/"
                                   version  "/openmp-" version
                                   ".src.tar.xz"))
               (sha256
