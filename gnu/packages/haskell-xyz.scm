@@ -3555,6 +3555,30 @@ simple general-purpose data structure\".")
 arithmetic.")
     (license license:bsd-3)))
 
+(define-public ghc-fmlist
+  (package
+    (name "ghc-fmlist")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/fmlist/fmlist-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "02868865hqm189h5wjd916abvqwkhbrx5b0119s1dwp70ifvbi4g"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/sjoerdvisscher/fmlist")
+    (synopsis "FoldMap lists")
+    (description "FoldMap lists are lists represented by their
+@code{foldMap} function.  FoldMap lists have @math{O(1)} cons, snoc and
+append, just like DLists, but other operations might have favorable
+performance characteristics as well.  These wild claims are still
+completely unverified though.")
+    (license license:bsd-3)))
+
 (define-public ghc-foldl
   (package
     (name "ghc-foldl")
