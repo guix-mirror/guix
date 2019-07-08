@@ -9361,6 +9361,44 @@ Storable instance for Complex which is binary compatible with C99, C++
 and Fortran complex data types.")
     (license license:bsd-3)))
 
+(define-public ghc-storablevector
+  (package
+    (name "ghc-storablevector")
+    (version "0.2.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/storablevector/storablevector-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "1zmr738vwnhnyxbikayqnaz31ilv2qlmscp6iqgl7adcfbal4dzq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-non-negative" ,ghc-non-negative)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-unsafe" ,ghc-unsafe)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page "https://www.haskell.org/haskellwiki/Storable_Vector")
+    (synopsis "Fast, packed, strict storable arrays with a list interface")
+    (description "This library provides fast, packed, strict storable
+arrays with a list interface, a chunky lazy list interface with variable
+chunk size and an interface for write access via the ST monad.  This is
+much like bytestring and binary but can be used for every
+@code{Foreign.Storable.Storable} type.  See also
+@url{http://hackage.haskell.org/package/vector}, a library with a
+similar intention.
+
+This library does not do advanced fusion optimization, since especially
+for lazy vectors this would either be incorrect or not applicable.  See
+@url{http://hackage.haskell.org/package/storablevector-streamfusion} for
+a library that provides fusion with lazy lists.")
+    (license license:bsd-3)))
+
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
