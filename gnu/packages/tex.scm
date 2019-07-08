@@ -529,42 +529,6 @@ to PostScript.")
                    license:expat
                    license:lgpl3+))))
 
-(define-public texlive-generic-dehyph-exptl
-  (package
-    (name "texlive-generic-dehyph-exptl")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/dehyph-exptl"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "03yj1di9py92drp6gpfva6q69vk2iixr79r7cp7ja570s3pr0m33"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/dehyph-exptl")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
-    (home-page "http://projekte.dante.de/Trennmuster/WebHome")
-    (synopsis "Hyphenation patterns for German")
-    (description "The package provides experimental hyphenation patterns for
-the German language, covering both traditional and reformed orthography.  The
-patterns can be used with packages Babel and hyphsubst from the Oberdiek
-bundle.")
-    ;; Hyphenation patterns are under the Expat license; documentation is
-    ;; under LPPL.
-    (license (list license:expat license:lppl))))
-
 (define-public texlive-generic-tex-ini-files
   (package
     (name "texlive-generic-tex-ini-files")
@@ -1608,6 +1572,31 @@ converters, will completely supplant the older patterns.")
 
 (define-public texlive-generic-hyph-utf8
   (deprecated-package "texlive-generic-hyph-utf8" texlive-hyph-utf8))
+
+(define-public texlive-dehyph-exptl
+  (package
+    (inherit (simple-texlive-package
+              "texlive-dehyph-exptl"
+              (list "/tex/generic/dehyph-exptl/"
+                    "/doc/generic/dehyph-exptl/")
+              (base32
+               "1w2danvvy2f52hcb4acvjks53kcanwxr9s990fap6mj279hpgmh2")
+              #:trivial? #t))
+    (propagated-inputs
+     `(("texlive-hyphen-base" ,texlive-hyphen-base)
+       ("texlive-hyph-utf8" ,texlive-hyph-utf8)))
+    (home-page "http://projekte.dante.de/Trennmuster/WebHome")
+    (synopsis "Hyphenation patterns for German")
+    (description "The package provides experimental hyphenation patterns for
+the German language, covering both traditional and reformed orthography.  The
+patterns can be used with packages Babel and hyphsubst from the Oberdiek
+bundle.")
+    ;; Hyphenation patterns are under the Expat license; documentation is
+    ;; under LPPL.
+    (license (list license:expat license:lppl))))
+
+(define-public texlive-generic-dehyph-exptl
+  (deprecated-package "texlive-generic-dehyph-exptl" texlive-dehyph-exptl))
 
 (define-public texlive-latex-base
   (let ((texlive-dir
