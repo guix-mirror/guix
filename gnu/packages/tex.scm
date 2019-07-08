@@ -642,19 +642,15 @@ documents.")
 
 (define-public texlive-fonts-cm
   (package
-    (name "texlive-fonts-cm")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/fonts/source/public/cm"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0vfjhidr9pha613h8mfhnpcpvld6ahdfb449918fpsfs93cppkyj"))))
+    (inherit (simple-texlive-package
+              "texlive-fonts-cm"
+              (list "/fonts/source/public/cm/"
+                    "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map"
+                    "/doc/fonts/cm/README"
+                    "/doc/fonts/cm/README-cmps.txt")
+              (base32
+               "1h0q71paqmg1xjg6k35ni2i6m93kmlq9rdwm913xg9n4qngywl18")))
+    (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -672,40 +668,53 @@ documents.")
                (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
                ;; Tell mf where to look for source files
                (setenv "MFINPUTS"
-                       (string-append (getcwd) ":"
+                       (string-append (getcwd) "/fonts/source/public/cm/:"
                                       mf "/share/texmf-dist/metafont/base")))
-             (mkdir "build")
-             (mkdir-p "pk/ljfour/public/cm/dpi600")
-             (for-each (lambda (font)
-                         (format #t "building font ~a\n" font)
-                         (invoke "mf" "-progname=mf"
-                                 "-output-directory=build"
-                                 (string-append "\\"
-                                                "mode:=ljfour; "
-                                                "mag:=1+0/600; "
-                                                "batchmode; "
-                                                "input "
-                                                (basename font ".mf")))
-                         (invoke "gftopk"
-                                 (string-append "build/"
-                                                (basename font ".mf") ".600gf")
-                                 (string-append "pk/ljfour/public/cm/dpi600/"
-                                                (basename font ".mf") ".pk")))
-                       (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))
+             (for-each make-file-writable
+                       (cons "fonts/source/public/cm/"
+                             (find-files "fonts/source/public/cm/" ".*")))
+             (let ((build (string-append (getcwd) "/build"))
+                   (pkdir (string-append (getcwd) "/pk/ljfour/public/cm/dpi600")))
+               (mkdir-p pkdir)
+               (mkdir-p build)
+               (with-directory-excursion "fonts/source/public/cm/"
+                 (for-each (lambda (font)
+                             (format #t "building font ~a\n" font)
+                             (invoke "mf" "-progname=mf"
+                                     (string-append "-output-directory=" build)
+                                     (string-append "\\"
+                                                    "mode:=ljfour; "
+                                                    "mag:=1+0/600; "
+                                                    "scrollmode; "
+                                                    "input "
+                                                    (basename font ".mf")))
+                             (invoke "gftopk"
+                                     (string-append build "/"
+                                                    (basename font ".mf") ".600gf")
+                                     (string-append pkdir "/"
+                                                    (basename font ".mf") ".pk")))
+                           (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))))
              #t))
          (replace 'install
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out   (assoc-ref outputs "out"))
-                    (fonts (string-append out "/share/texmf-dist/fonts/"))
-                    (pk    (string-append fonts "pk"))
-                    (tfm   (string-append fonts "tfm/public/cm"))
-                    (mf    (string-append fonts "source/public/cm"))
-                    (type1 (string-append fonts "type1/public/amsfonts/cm")))
+             (let* ((out    (assoc-ref outputs "out"))
+                    (doc    (assoc-ref outputs "doc"))
+                    (source (assoc-ref inputs "source"))
+                    (fonts  (string-append out "/share/texmf-dist/fonts/"))
+                    (pk     (string-append fonts "pk"))
+                    (tfm    (string-append fonts "tfm/public/cm"))
+                    (mf     (string-append fonts "source/public/cm")))
                (for-each (cut install-file <> tfm)
                          (find-files "build" "\\.*"))
                (for-each (cut install-file <> mf)
                          (find-files "." "\\.mf"))
                (copy-recursively "pk" pk)
+               (copy-recursively
+                (string-append source "/doc")
+                (string-append doc "/doc"))
+               (install-file
+                (string-append source "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map")
+                (string-append fonts "/map/dvips/cm/cmtext-bsr-interpolated.map"))
                #t))))))
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
