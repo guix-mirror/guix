@@ -10108,6 +10108,27 @@ function which generates instances.")
 @code{TimeLocale}.")
     (license license:bsd-3)))
 
+(define-public ghc-timeit
+  (package
+    (name "ghc-timeit")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/timeit/timeit-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "1sliqpvl501rlcj6s0lhmsf5ym24j4h881wzc1f1wdyvg3jz8kd1"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/merijn/timeit")
+    (synopsis "Time monadic computations with an IO base")
+    (description "This package provides a simple wrapper to show the
+used CPU time of monadic computation with an IO base.")
+    (license license:bsd-3)))
+
 (define-public ghc-tldr
   (package
     (name "ghc-tldr")
