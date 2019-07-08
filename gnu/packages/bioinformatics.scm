@@ -13622,10 +13622,10 @@ sequencing data.")
 
 (define-public r-xbioc
   (let ((revision "1")
-        (commit "f798c187e376fd1ba27abd559f47bbae7e3e466b"))
+        (commit "6ff0670a37ab3036aaf1d94aa4b208310946b0b5"))
     (package
       (name "r-xbioc")
-      (version (git-version "0.1.15" revision commit))
+      (version (git-version "0.1.16" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -13634,13 +13634,13 @@ sequencing data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "03hffh2f6z71y6l6dqpa5cql3hdaw7zigdi8sm2dzgx379k9rgrr"))))
+                  "0w8bsq5myiwkfhh83nm6is5ichiyvwa1axx2szvxnzq39x6knf66"))))
       (build-system r-build-system)
       (propagated-inputs
        `(("r-annotationdbi" ,r-annotationdbi)
          ("r-assertthat" ,r-assertthat)
          ("r-biobase" ,r-biobase)
-         ("r-biocinstaller" ,r-biocinstaller)
+         ("r-biocmanager" ,r-biocmanager)
          ("r-digest" ,r-digest)
          ("r-pkgmaker" ,r-pkgmaker)
          ("r-plyr" ,r-plyr)
