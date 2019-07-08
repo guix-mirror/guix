@@ -19,6 +19,7 @@
 ;;; Copyright © 2018, 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10546,6 +10547,33 @@ and high speed.")
     (inputs
      `(("ghc-hashable" ,ghc-hashable-bootstrap)))
     (properties '(hidden? #t))))
+
+(define-public ghc-unsafe
+  (package
+    (name "ghc-unsafe")
+    (version "0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/unsafe/unsafe-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "0hc6xr1i3hkz25gdgfx1jqgpsc9mwa05bkfynp0mcfdlyz6782nz"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/unsafe")
+    (synopsis "Unified interface to unsafe functions")
+    (description "Safe Haskell introduced the notion of safe and unsafe
+modules.  In order to make as many as possible modules ``safe'', the
+well-known unsafe functions were moved to distinguished modules.  This
+makes it hard to write packages that work with both old and new versions
+of GHC.  This package provides a single module System.Unsafe that
+exports the unsafe functions from the base package.  It provides them in
+a style ready for qualification, that is, you should import them by
+@code{import qualified System.Unsafe as Unsafe}.")
+    (license license:bsd-3)))
 
 (define-public ghc-uri-bytestring
   (package
