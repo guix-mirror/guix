@@ -430,21 +430,21 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.17")
-(define %linux-libre-hash "049mij4z1iilrggw6plfdpcj1lnc1vqz5z445ix9677cq1fmiwlh")
+(define %linux-libre-version "5.2")
+(define %linux-libre-hash "1s9rcjwy2vmfpin5kxv015ys7lvv84y1pxl1y5aiw0y1mif0mgxb")
 
-(define %linux-libre-5.1-patches
+(define %linux-libre-5.2-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
-(define-public linux-libre-5.1
+(define-public linux-libre-5.2
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:configuration-file kernel-config))
 
-(define-public linux-libre-headers-5.1
+(define-public linux-libre-headers-5.2
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
@@ -501,7 +501,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
 
@@ -510,13 +510,13 @@ It has been modified to remove all non-free binary blobs.")
                             "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
 
 (define-public linux-libre-headers linux-libre-headers-4.14.67)
-(define-public linux-libre linux-libre-5.1)
+(define-public linux-libre linux-libre-5.2)
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -539,7 +539,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
