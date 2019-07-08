@@ -9385,6 +9385,38 @@ Storable instance for Complex which is binary compatible with C99, C++
 and Fortran complex data types.")
     (license license:bsd-3)))
 
+(define-public ghc-storable-record
+  (package
+    (name "ghc-storable-record")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/storable-record/"
+         "storable-record-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hjs1km0fc9ch0i1rbycxia5w3939hk4p4md73ikgg4aipqb5zyf"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-storablevector" ,ghc-storablevector)
+       ("ghc-timeit" ,ghc-timeit)))
+    (home-page "https://hackage.haskell.org/package/storable-record")
+    (synopsis "Elegant definition of Storable instances for records")
+    (description "With this package you can build a Storable instance of
+a record type from Storable instances of its elements in an elegant way.
+It does not do any magic, just a bit arithmetic to compute the right
+offsets, that would be otherwise done manually or by a preprocessor like
+C2HS.  There is no guarantee that the generated memory layout is
+compatible with that of a corresponding C struct.  However, the module
+generates the smallest layout that is possible with respect to the
+alignment of the record elements.")
+    (license license:bsd-3)))
+
 (define-public ghc-storablevector
   (package
     (name "ghc-storablevector")
