@@ -708,7 +708,8 @@ name of each input with that input's hash."
 (define* (derivation store name builder args
                      #:key
                      (system (%current-system)) (env-vars '())
-                     (inputs '()) (outputs '("out"))
+                     (inputs '()) (sources '())
+                     (outputs '("out"))
                      hash hash-algo recursive?
                      references-graphs
                      allowed-references disallowed-references
@@ -833,6 +834,8 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
 
   (define input->derivation-input
     (match-lambda
+      ((? derivation-input? input)
+       input)
       (((? derivation? drv))
        (make-derivation-input drv '("out")))
       (((? derivation? drv) sub-drvs ...)
@@ -858,7 +861,8 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
                                                           hash recursive?)))
                           (sort outputs string<?)))
          (sources    (sort (delete-duplicates
-                            (filter-map input->source inputs))
+                            (append (filter-map input->source inputs)
+                                    sources))
                            string<?))
          (inputs     (sort (coalesce-duplicate-inputs
                             (filter-map input->derivation-input inputs))
