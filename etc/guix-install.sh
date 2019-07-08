@@ -100,6 +100,11 @@ chk_require()
           return 1; }
     
     _msg "${PAS}verification of required commands completed"
+}
+
+chk_gpg_keyring()
+{ # Check whether the Guix release signing public key is present.
+    _debug "--- [ $FUNCNAME ] ---"
 
     gpg --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
@@ -415,6 +420,7 @@ main()
 
     chk_term
     chk_require "${REQUIRE[@]}"
+    chk_gpg_keyring
     chk_init_sys
     chk_sys_arch
 
