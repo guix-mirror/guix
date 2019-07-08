@@ -3,6 +3,7 @@
 # Copyright © 2017 sharlatan <sharlatanus@gmail.com>
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -85,14 +86,11 @@ _debug()
 
 chk_require()
 { # Check that every required command is available.
-    declare -a cmds
     declare -a warn
-
-    cmds=(${1})
 
     _debug "--- [ $FUNCNAME ] ---"
 
-    for c in ${cmds[@]}; do
+    for c in "$@"; do
         command -v "$c" &>/dev/null || warn+=("$c")
     done
 
@@ -415,7 +413,7 @@ main()
     _msg "Starting installation ($(date))"
 
     chk_term
-    chk_require "${REQUIRE[*]}"
+    chk_require "${REQUIRE[@]}"
     chk_init_sys
     chk_sys_arch
 
