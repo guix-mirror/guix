@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
+;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2376,6 +2377,36 @@ and minor modes, etc., and can also be used as a pure Guile library.  It
 comes with a simple counter example using FreeGLUT and browser examples
 in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
+
+(define-public emacsy-minimal
+  (let ((commit "f3bf0dbd803d7805b6ae8303253507ad13922293"))
+    (package
+      (inherit emacsy)
+      (name "emacsy-minimal")
+      (version (git-version "v0.4.1" "19" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/emacsy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0ivy28km1p7nlrf63xx3hvrpxf5ld5amk1wcan3k7sqv1kq9mqdb"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-lib" ,guile-lib)
+         ("guile-readline" ,guile-readline)))
+      (propagated-inputs '())
+      (arguments
+       `(#:configure-flags '("--without-examples")
+         #:phases
+         (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))))))))
 
 (define-public guile-jpeg
   (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
