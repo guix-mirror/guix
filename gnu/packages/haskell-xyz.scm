@@ -6736,6 +6736,33 @@ making this package a full replacement for the original newtype package,
 and an alternative to newtype-th.")
     (license license:bsd-3)))
 
+(define-public ghc-non-negative
+  (package
+    (name "ghc-non-negative")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/non-negative/non-negative-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "0f01q916dzkl1i0v15qrw9cviycki5g3fgi6x8gs45iwbzssq52n"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-utility-ht" ,ghc-utility-ht)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/non-negative")
+    (synopsis "Non-negative numbers class")
+    (description "This library provides a class for non-negative numbers,
+a wrapper which can turn any ordered numeric type into a member of that
+class, and a lazy number type for non-negative numbers (a generalization
+of Peano numbers).")
+    (license license:gpl3+)))
+
 (define-public ghc-objectname
   (package
     (name "ghc-objectname")
