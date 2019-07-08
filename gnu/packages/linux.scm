@@ -2620,7 +2620,7 @@ from the module-init-tools project.")
               (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-source-writable
            (lambda _
@@ -2629,19 +2629,25 @@ from the module-init-tools project.")
              (for-each make-file-writable (find-files "."))
              #t))
          (add-before 'bootstrap 'patch-file-names
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
             (substitute* "man/make.sh"
               (("/usr/bin/xsltproc")
-                (string-append (assoc-ref inputs "xsltproc")
+               (string-append (assoc-ref
+                               (or native-inputs inputs) "xsltproc")
                                "/bin/xsltproc")))
             #t))
          (add-after 'install 'build-hwdb
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Build OUT/etc/udev/hwdb.bin.  This allows 'lsusb' and
              ;; similar tools to display product names.
+             ;;
+             ;; XXX: This can't be done when cross-compiling. Find another way
+             ;; to generate hwdb.bin for cross-built systems.
              (let ((out (assoc-ref outputs "out")))
-               (invoke (string-append out "/bin/udevadm")
-                       "hwdb" "--update")))))
+               ,@(if (%current-target-system)
+                     '(#t)
+                     '((invoke (string-append out "/bin/udevadm")
+                               "hwdb" "--update")))))))
        #:configure-flags (list "--enable-manpages")))
     (native-inputs
      `(("autoconf" ,autoconf)
