@@ -5810,6 +5810,41 @@ Kaseorg.")
 vector spaces.")
     (license license:bsd-3)))
 
+(define-public ghc-listlike
+  (package
+    (name "ghc-listlike")
+    (version "4.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/ListLike/ListLike-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "0m65x8yaq7q50gznln8mga2wrc8cvjx6gw9rim8s7xqcrx6y5zjh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-dlist" ,ghc-dlist)
+       ("ghc-fmlist" ,ghc-fmlist)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-utf8-string" ,ghc-utf8-string)))
+    (home-page "https://github.com/JohnLato/listlike")
+    (synopsis "Generic support for list-like structures")
+    (description "The ListLike module provides a common interface to the
+various Haskell types that are list-like.  Predefined interfaces include
+standard Haskell lists, Arrays, ByteStrings, and lazy ByteStrings.
+Custom types can easily be made ListLike instances as well.
+
+ListLike also provides for String-like types, such as String and
+ByteString, for types that support input and output, and for types that
+can handle infinite lists.")
+    (license license:bsd-3)))
+
 (define-public ghc-logging-facade
   (package
     (name "ghc-logging-facade")
