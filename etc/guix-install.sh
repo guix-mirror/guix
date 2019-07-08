@@ -87,6 +87,7 @@ _debug()
 chk_require()
 { # Check that every required command is available.
     declare -a warn
+    local c
 
     _debug "--- [ $FUNCNAME ] ---"
 
