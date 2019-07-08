@@ -298,6 +298,20 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "https://pari.math.u-bordeaux.fr/")))
 
+(define fplll-4-cmh
+  (package
+    (inherit fplll)
+    (name "fplll")
+    (version "4.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://perso.ens-lyon.fr/damien.stehle/fplll/libfplll-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1cbiby7ykis4z84swclpysrljmqhfcllpkcbll1m08rzskgb1a6b"))))))
+
 (define-public cmh
   (package
    (name "cmh")
@@ -316,7 +330,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
        ("mpfr" ,mpfr)
        ("mpc" ,mpc)
        ("mpfrcx" ,mpfrcx)
-       ("fplll" ,fplll)
+       ("fplll" ,fplll-4-cmh)
        ("pari-gp"  ,pari-gp)))
    (synopsis "Igusa class polynomial computations")
    (description
