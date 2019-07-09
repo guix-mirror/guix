@@ -76,6 +76,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dbm)
@@ -324,7 +325,7 @@ data types.")
 (define-public python-3.7
   (package (inherit python-2)
     (name "python")
-    (version "3.7.3")
+    (version "3.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
@@ -335,7 +336,7 @@ data types.")
                         "python-3-search-paths.patch"))
               (sha256
                (base32
-                "066ka8csjwkycqpgyv424d8hhqhfd7r6svsp4sfcvkylci0baq6s"))
+                "0gxiv5617zd7dnqm5k9r4q2188lk327nf9jznwq9j6b8p0s92ygv"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -344,33 +345,31 @@ data types.")
                   (substitute* "Modules/Setup.dist"
                     ;; Link Expat instead of embedding the bundled one.
                     (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
-
-                  (for-each delete-file
-                            '(;; This test may hang and eventually run out of
-                              ;; memory on some systems:
-                              ;; <https://bugs.python.org/issue34587>
-                              "Lib/test/test_socket.py"
-
-                              ;; Delete test that fails on low-memory systems.
-                              "Lib/test/test_mmap.py"
-
-                              ;; These tests fail on AArch64.
-                              "Lib/ctypes/test/test_win32.py"
-                              "Lib/test/test_fcntl.py"
-                              "Lib/test/test_posix.py"))
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:make-flags _)
         `(list (string-append
                 (format #f "TESTOPTS=-j~d" (parallel-job-count))
-                ;; Exclude the following test, which fails as of 3.7.3 (see:
-                ;; https://bugs.python.org/issue35998).
-                ;; Exclude test_email, which fails with glibc 2.29 and later
-                ;; (see <https://https://bugs.python.org/issue35317>).
-                " --exclude test_asyncio test_email")))
+                ;; test_mmap fails on low-memory systems.
+                " --exclude test_mmap"
+                ;; test_socket may hang and eventually run out of memory
+                ;; on some systems: <https://bugs.python.org/issue34587>.
+                " test_socket"
+                ;; XXX: test_ctypes fails on some platforms due to a problem in
+                ;; libffi 3.2.1: <https://bugs.python.org/issue23249>.
+                ,@(if (string-prefix? "aarch64" (%current-system))
+                      '(" test_ctypes")
+                      '()))))
        ((#:phases phases)
        `(modify-phases ,phases
+          (add-before 'check 'set-TZDIR
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; test_email requires the Olson time zone database.
+              (setenv "TZDIR"
+                      (string-append (assoc-ref inputs "tzdata")
+                                     "/share/zoneinfo"))
+              #t))
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
           ;; again afterwards.  See <https://bugs.python.org/issue34022>.
           (add-before 'check 'unset-SOURCE_DATE_EPOCH
@@ -399,6 +398,9 @@ data types.")
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
                  #t)))))))
+    (native-inputs
+     `(("tzdata" ,tzdata-for-tests)
+       ,@(package-native-inputs python-2)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")

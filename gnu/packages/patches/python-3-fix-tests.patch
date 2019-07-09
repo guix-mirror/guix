@@ -85,7 +85,7 @@ diff --git a/Lib/test/_test_multiprocessing.py b/Lib/test/_test_multiprocessing.
 diff --git a/Lib/test/test_asyncio/test_base_events.py b/Lib/test/test_asyncio/test_base_events.py
 --- a/Lib/test/test_asyncio/test_base_events.py
 +++ b/Lib/test/test_asyncio/test_base_events.py
-@@ -1301,6 +1301,8 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
+@@ -1323,6 +1323,8 @@ class BaseEventLoopWithSelectorTests(test_utils.TestCase):
          self._test_create_connection_ip_addr(m_socket, False)
  
      @patch_socket
@@ -128,7 +128,7 @@ diff --git a/Lib/test/test_normalization.py b/Lib/test/test_normalization.py
 diff --git a/Lib/test/test_pathlib.py b/Lib/test/test_pathlib.py
 --- a/Lib/test/test_pathlib.py
 +++ b/Lib/test/test_pathlib.py
-@@ -2130,8 +2130,7 @@ class PosixPathTest(_BasePathTest, unittest.TestCase):
+@@ -2134,8 +2134,7 @@ class PosixPathTest(_BasePathTest, unittest.TestCase):
          self.assertEqual(given, expect)
          self.assertEqual(set(p.rglob("FILEd*")), set())
  
@@ -141,7 +141,7 @@ diff --git a/Lib/test/test_pathlib.py b/Lib/test/test_pathlib.py
 diff --git a/Lib/test/test_pdb.py b/Lib/test/test_pdb.py
 --- a/Lib/test/test_pdb.py
 +++ b/Lib/test/test_pdb.py
-@@ -1133,11 +1133,11 @@ def test_pdb_issue_20766():
+@@ -1150,11 +1150,11 @@ def test_pdb_issue_20766():
      > <doctest test.test_pdb.test_pdb_issue_20766[0]>(6)test_function()
      -> print('pdb %d: %s' % (i, sess._previous_sigint_handler))
      (Pdb) continue
@@ -158,7 +158,7 @@ diff --git a/Lib/test/test_pdb.py b/Lib/test/test_pdb.py
 diff --git a/Lib/test/test_regrtest.py b/Lib/test/test_regrtest.py
 --- a/Lib/test/test_regrtest.py
 +++ b/Lib/test/test_regrtest.py
-@@ -764,6 +764,7 @@ class ArgsTestCase(BaseTestCase):
+@@ -762,6 +762,7 @@ class ArgsTestCase(BaseTestCase):
          output = self.run_tests('--fromfile', filename)
          self.check_executed_tests(output, tests)
  
@@ -166,12 +166,12 @@ diff --git a/Lib/test/test_regrtest.py b/Lib/test/test_regrtest.py
      def test_interrupted(self):
          code = TEST_INTERRUPTED
          test = self.create_test('sigint', code=code)
-@@ -781,6 +782,7 @@ class ArgsTestCase(BaseTestCase):
+@@ -779,6 +780,7 @@ class ArgsTestCase(BaseTestCase):
                   % (self.TESTNAME_REGEX, len(tests)))
          self.check_line(output, regex)
  
 +    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build environment.')
-     def test_slow_interrupted(self):
+     def test_slowest_interrupted(self):
          # Issue #25373: test --slowest with an interrupted test
          code = TEST_INTERRUPTED
 diff --git a/Lib/test/test_resource.py b/Lib/test/test_resource.py
@@ -188,7 +188,7 @@ diff --git a/Lib/test/test_resource.py b/Lib/test/test_resource.py
 diff --git a/Lib/test/test_shutil.py b/Lib/test/test_shutil.py
 --- a/Lib/test/test_shutil.py
 +++ b/Lib/test/test_shutil.py
-@@ -1135,6 +1135,7 @@ class TestShutil(unittest.TestCase):
+@@ -1143,6 +1143,7 @@ class TestShutil(unittest.TestCase):
          self.assertRaises(ValueError, make_archive, base_name, 'xxx')
  
      @support.requires_zlib
@@ -196,7 +196,7 @@ diff --git a/Lib/test/test_shutil.py b/Lib/test/test_shutil.py
      def test_make_archive_owner_group(self):
          # testing make_archive with owner and group, with various combinations
          # this works even if there's not gid/uid support
-@@ -1163,6 +1164,7 @@ class TestShutil(unittest.TestCase):
+@@ -1171,6 +1172,7 @@ class TestShutil(unittest.TestCase):
  
  
      @support.requires_zlib
@@ -269,7 +269,7 @@ diff --git a/Lib/test/test_spwd.py b/Lib/test/test_spwd.py
 diff --git a/Lib/test/test_tarfile.py b/Lib/test/test_tarfile.py
 --- a/Lib/test/test_tarfile.py
 +++ b/Lib/test/test_tarfile.py
-@@ -2504,9 +2504,12 @@ def root_is_uid_gid_0():
+@@ -2509,9 +2509,12 @@ def root_is_uid_gid_0():
          import pwd, grp
      except ImportError:
          return False
@@ -285,6 +285,26 @@ diff --git a/Lib/test/test_tarfile.py b/Lib/test/test_tarfile.py
          return False
      return True
  
+diff --git a/Lib/test/test_threading.py b/Lib/test/test_threading.py
+--- a/Lib/test/test_threading.py
++++ b/Lib/test/test_threading.py
+@@ -1249,6 +1249,7 @@ class MiscTestCase(unittest.TestCase):
+ 
+ 
+ class InterruptMainTests(unittest.TestCase):
++    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build container.')
+     def test_interrupt_main_subthread(self):
+         # Calling start_new_thread with a function that executes interrupt_main
+         # should raise KeyboardInterrupt upon completion.
+@@ -1260,6 +1261,8 @@ class InterruptMainTests(unittest.TestCase):
+             t.join()
+         t.join()
+ 
++
++    @unittest.skipIf(True, 'Keyboard interrupts do not work in the Guix build container.')
+     def test_interrupt_main_mainthread(self):
+         # Make sure that if interrupt_main is called in main thread that
+         # KeyboardInterrupt is raised instantly.
 diff --git a/Tools/scripts/run_tests.py b/Tools/scripts/run_tests.py
 --- a/Tools/scripts/run_tests.py
 +++ b/Tools/scripts/run_tests.py

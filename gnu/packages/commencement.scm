@@ -1887,6 +1887,9 @@ the bootstrap environment."
                      ((#:configure-flags _ ''())
                       `(list "--without-ensurepip"
                              "--without-threads"))
+                     ;; Clear #:make-flags, such that changes to the regular
+                     ;; Python package won't interfere with this one.
+                     ((#:make-flags _ ''()) ''())
                      ((#:phases phases)
                       `(modify-phases ,phases
                          (add-before 'configure 'disable-modules
@@ -1897,7 +1900,8 @@ the bootstrap environment."
                                ;; Prevent the 'ossaudiodev' extension from being
                                ;; built, since it requires Linux headers.
                                (("'linux', ") ""))
-                             #t))))
+                             #t))
+                         (delete 'set-TZDIR)))
                      ((#:tests? _ #f) #f))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs python %boot0-inputs
