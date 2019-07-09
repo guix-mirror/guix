@@ -1359,6 +1359,18 @@ TeXbook, together with various supporting files (some also discussed in the
 book).")
     (license license:knuth)))
 
+(define-public texlive-hyphen-afrikaans
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-afrikaans" "af"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-af.tex")
+              (base32
+               "1vb3jccqnn1pm0680yqx52kvz595fmxnwa0cbf8qman6zglsssiw")))
+    (synopsis "Hyphenation patterns for Afrikaans")
+    (description "The package provides hyphenation patterns for the Afrikaans
+language.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
