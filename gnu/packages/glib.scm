@@ -30,7 +30,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -195,7 +194,6 @@ shared NFS home directories.")
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
       ("perl" ,perl)                              ; needed by GIO tests
-      ("bash" ,bash)
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
     `(#:phases
