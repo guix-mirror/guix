@@ -33,7 +33,6 @@
   #:use-module (gnu packages c)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages code)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages bison)
@@ -1742,7 +1741,7 @@ exec " gcc "/bin/" program
   (let* ((flex (package (inherit flex)
                  (native-inputs `(("bison" ,bison-boot0)))
                  (propagated-inputs `(("m4" ,m4)))
-                 (inputs `(("indent" ,indent)))
+                 (inputs '())
                  (arguments '(#:tests? #f)))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs flex %boot0-inputs

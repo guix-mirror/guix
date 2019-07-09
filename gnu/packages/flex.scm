@@ -27,7 +27,6 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages code)
   #:use-module (srfi srfi-1))
 
 (define-public flex
@@ -53,8 +52,7 @@
                (substitute-keyword-arguments (package-arguments bison)
                  ((#:tests? _ #f) #f)))
               (inputs (alist-delete "flex" (package-inputs bison))))))
-       `(("bison" ,bison-for-tests)
-         ("indent" ,indent))))
+       `(("bison" ,bison-for-tests))))
     ;; m4 is not present in PATH when cross-building
     (native-inputs
      `(("help2man" ,help2man)
