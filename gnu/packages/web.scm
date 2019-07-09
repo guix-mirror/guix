@@ -761,6 +761,7 @@ current version of any major web browser.")
               (sha256
                (base32
                 "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
+              (patches (search-patches "rapidjson-gcc-compat.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
