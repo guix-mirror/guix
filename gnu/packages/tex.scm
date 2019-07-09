@@ -1371,6 +1371,20 @@ book).")
 language.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-ancientgreek
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-ancientgreek" "grc"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-grc.tex"
+                    "/tex/generic/hyphen/grahyph5.tex"
+                    "/tex/generic/hyphen/ibyhyph.tex")
+              (base32
+               "0kwrqsz7wdr1d9kylzwp60ka3wfbj8iad029k5h6y94nb86mf7zv")))
+    (synopsis "Hyphenation patterns for ancient Greek")
+    (description "The package provides hyphenation patterns for ancient
+Greek.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
