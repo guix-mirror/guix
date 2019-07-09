@@ -933,13 +933,10 @@ recursively."
 
   (define input->output-paths
     (match-lambda
-     (((? derivation? drv))
-      (list (derivation->output-path drv)))
-     (((? derivation? drv) sub-drvs ...)
-      (map (cut derivation->output-path drv <>)
-           sub-drvs))
-     ((file)
-      (list file))))
+      ((? derivation-input? input)
+       (derivation-input-output-paths input))
+      ((? string? file)
+       (list file))))
 
   (let ((mapping (fold (lambda (pair result)
                          (match pair
@@ -958,11 +955,11 @@ recursively."
           (($ <derivation-input> drv (sub-drvs ...))
            (match (vhash-assoc (derivation-file-name drv) mapping)
              ((_ . (? derivation? replacement))
-              (cons replacement sub-drvs))
-             ((_ . replacement)
-              (list replacement))
+              (derivation-input replacement sub-drvs))
+             ((_ . (? string? source))
+              source)
              (#f
-              (cons (loop drv) sub-drvs)))))))
+              (derivation-input (loop drv) sub-drvs)))))))
 
     (let loop ((drv drv))
       (let* ((inputs       (map (cut rewritten-input <> loop)
@@ -1001,7 +998,8 @@ recursively."
                                         . ,(substitute value initial
                                                        replacements))))
                                     (derivation-builder-environment-vars drv))
-                    #:inputs (append (map list sources) inputs)
+                    #:inputs (filter derivation-input? inputs)
+                    #:sources (append sources (filter string? inputs))
                     #:outputs (derivation-output-names drv)
                     #:hash (match (derivation-outputs drv)
                              ((($ <derivation-output> _ algo hash))
