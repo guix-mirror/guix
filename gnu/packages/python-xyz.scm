@@ -62,6 +62,7 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15932,3 +15933,24 @@ hash, recno, and queue.  Complete support of Berkeley DB distributed
 transactions.  Complete support for Berkeley DB Replication Manager.
 Complete support for Berkeley DB Base Replication.  Support for RPC.")
     (license license:bsd-3)))
+
+(define-public python-dbfread
+  (package
+    (name "python-dbfread")
+    (version "2.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dbfread" version))
+              (sha256
+               (base32
+                "0gdpwdzf1fngsi6jrdyj4qdf6cr7gnnr3zp80dpkzbgz0spskj07"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://dbfread.readthedocs.io")
+    (synopsis "Read DBF Files with Python")
+    (description
+     "This library reads DBF files and returns the data as native Python data
+types for further processing.  It is primarily intended for batch jobs and
+one-off scripts.")
+    (license license:expat)))

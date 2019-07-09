@@ -490,6 +490,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/wget.scm				\
   %D%/packages/wicd.scm				\
   %D%/packages/wine.scm				\
+  %D%/packages/wireservice.scm				\
   %D%/packages/wm.scm				\
   %D%/packages/wordnet.scm			\
   %D%/packages/wv.scm				\
@@ -741,6 +742,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
+  %D%/packages/patches/csvkit-fix-tests.patch			\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
@@ -891,8 +893,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groff-source-date-epoch.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
-  %D%/packages/patches/grub-binutils-compat.patch		\
-  %D%/packages/patches/grub-check-error-efibootmgr.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
@@ -1231,6 +1231,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
+  %D%/packages/patches/python-slugify-depend-on-unidecode.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\

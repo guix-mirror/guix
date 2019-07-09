@@ -349,13 +349,15 @@ INSTANCES."
     (resolve-dependencies instances))
 
   (define (instance->derivation instance)
-    (mcached (if (eq? instance core-instance)
-                 (build-channel-instance instance)
-                 (mlet %store-monad ((core (instance->derivation core-instance))
-                                     (deps (mapm %store-monad instance->derivation
-                                                 (edges instance))))
-                   (build-channel-instance instance core deps)))
-             instance))
+    (mlet %store-monad ((system (current-system)))
+      (mcached (if (eq? instance core-instance)
+                   (build-channel-instance instance)
+                   (mlet %store-monad ((core (instance->derivation core-instance))
+                                       (deps (mapm %store-monad instance->derivation
+                                                   (edges instance))))
+                     (build-channel-instance instance core deps)))
+               instance
+               system)))
 
   (unless core-instance
     (let ((loc (and=> (any (compose channel-location channel-instance-channel)

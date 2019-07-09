@@ -544,7 +544,7 @@ EXTRA_DIST +=						\
   tests/cve-sample.xml					\
   build-aux/config.rpath				\
   bootstrap						\
-  release.nix						\
+  doc/build.scm						\
   $(TESTS)
 
 if !BUILD_DAEMON_OFFLOAD

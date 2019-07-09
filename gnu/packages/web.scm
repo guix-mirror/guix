@@ -33,6 +33,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5238,16 +5239,28 @@ command-line arguments or read from stdin.")
 (define-public python-internetarchive
   (package
     (name "python-internetarchive")
-    (version "1.7.4")
+    (version "1.8.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jjjake/internetarchive/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jjjake/internetarchive")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sdbb2ag6vmybi8zmbjszi492a587giaaqxyy1p6gy03cb8mc512"))))
+         "0ih7hplv92wbv6cmgc1gs0v35qkajwicalwcq8vcljw30plr24fp"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Python 3.7 removed `_pattern_type'.
+           (for-each (lambda (file)
+                       (chmod file #o644)
+                       (substitute* file
+                         (("^import re\n" line)
+                          (string-append line "re._pattern_type = re.Pattern\n"))))
+                     (find-files "." "\\.py$"))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6498,3 +6511,30 @@ update an existing mirrored site, and resume interrupted downloads.
 
 HTTrack is fully configurable, and has an integrated help system.")
     (license license:gpl3+)))
+
+(define-public anonip
+  (package
+    (name "anonip")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "anonip" version))
+              (sha256
+               (base32
+                "0ckn9nnfhpdnz8b92q8pkysdqj6pdh71ckfqvfj0z01cq0hzbhd2"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/DigitaleGesellschaft/Anonip")
+    (synopsis "Anonymize IP addresses in log files")
+    (description
+     "Anonip masks the last bits of IPv4 and IPv6 addresses in log files.
+That way most of the relevant information is preserved, while the IP address
+does not match a particular individuum anymore.
+
+Depending on your Web server, the log entries may be piped to Anonip directly
+or via a FIFO (named pipe).  Thus the unmasked IP addresses will never be
+written to any file.
+
+It's also possible to rewrite existing log files.
+
+Anonip can also be uses as a Python module in your own Python application.")
+    (license license:bsd-3)))

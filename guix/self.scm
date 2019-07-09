@@ -769,7 +769,8 @@ Info manual."
                    (gnu services)
                    ,@(scheme-modules* source "gnu/bootloader")
                    ,@(scheme-modules* source "gnu/system")
-                   ,@(scheme-modules* source "gnu/services"))
+                   ,@(scheme-modules* source "gnu/services")
+                   ,@(scheme-modules* source "gnu/machine"))
                  (list *core-package-modules* *package-modules*
                        *extra-modules* *core-modules*)
                  #:extensions dependencies
