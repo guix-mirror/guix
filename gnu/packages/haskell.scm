@@ -4038,7 +4038,7 @@ instances of the @code{Pretty} class.")
          "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)))
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
     (description "This is a pretty printing library based on Wadler's paper
@@ -4283,7 +4283,7 @@ interface.")
 (define-public ghc-ansi-terminal
   (package
     (name "ghc-ansi-terminal")
-    (version "0.9.1")
+    (version "0.8.0.4")
     (source
      (origin
        (method url-fetch)
@@ -4293,7 +4293,7 @@ interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "1yr0ld0kqns3w3j9gl62bdwshvyazidx4dv1qkvq19ivnf08w23l"))))
+         "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-colour" ,ghc-colour)))
@@ -4303,21 +4303,6 @@ interface.")
 allows cursor movement, screen clearing, color output showing or hiding the
 cursor, and changing the title.")
     (license license:bsd-3)))
-
-(define-public ghc-ansi-terminal-0.8
-  (package (inherit ghc-ansi-terminal)
-           (name "ghc-ansi-terminal")
-           (version "0.8.0.4")
-           (source
-            (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://hackage.haskell.org/package/ansi-terminal/ansi-terminal-"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))))
 
 (define-public ghc-vault
   (package
@@ -11931,7 +11916,7 @@ example of, \"An applicative functor that is not a monad.\"")
     (inputs
      `(("ghc-async" ,ghc-async)
        ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-terminal-size" ,ghc-terminal-size)))
     (home-page
      "https://hackage.haskell.org/package/concurrent-output")
