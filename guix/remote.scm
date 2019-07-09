@@ -95,40 +95,26 @@ remote store."
                       (remote -> (connect-to-remote-daemon session
                                                            socket-name)))
     (define inputs
-      (cons (gexp-input (lowered-gexp-guile lowered))
+      (cons (derivation-input (lowered-gexp-guile lowered))
             (lowered-gexp-inputs lowered)))
 
-    (define to-build
-      (map (lambda (input)
-             (if (derivation? (gexp-input-thing input))
-                 (cons (gexp-input-thing input)
-                       (gexp-input-output input))
-                 (gexp-input-thing input)))
-           inputs))
+    (define sources
+      (lowered-gexp-sources lowered))
 
     (if build-locally?
-        (let ((to-send (map (lambda (input)
-                              (match (gexp-input-thing input)
-                                ((? derivation? drv)
-                                 (derivation->output-path
-                                  drv (gexp-input-output input)))
-                                ((? store-path? item)
-                                 item)))
-                            inputs)))
+        (let ((to-send (append (map derivation-input-output-paths inputs)
+                               sources)))
           (mbegin %store-monad
-            (built-derivations to-build)
+            (built-derivations inputs)
             ((store-lift send-files) to-send remote #:recursive? #t)
             (return (close-connection remote))
             (return (%remote-eval lowered session))))
-        (let ((to-send (map (lambda (input)
-                              (match (gexp-input-thing input)
-                                ((? derivation? drv)
-                                 (derivation-file-name drv))
-                                ((? store-path? item)
-                                 item)))
-                            inputs)))
+        (let ((to-send (append (map (compose derivation-file-name
+                                             derivation-input-derivation)
+                                    inputs)
+                               sources)))
           (mbegin %store-monad
             ((store-lift send-files) to-send remote #:recursive? #t)
-            (return (build-derivations remote to-build))
+            (return (build-derivations remote inputs))
             (return (close-connection remote))
             (return (%remote-eval lowered session)))))))

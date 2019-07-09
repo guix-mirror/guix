@@ -85,6 +85,7 @@
             lowered-gexp?
             lowered-gexp-sexp
             lowered-gexp-inputs
+            lowered-gexp-sources
             lowered-gexp-guile
             lowered-gexp-load-path
             lowered-gexp-load-compiled-path
@@ -574,9 +575,9 @@ list."
 
 (define* (lower-inputs inputs
                        #:key system target)
-  "Turn any package from INPUTS into a derivation for SYSTEM; return the
-corresponding input list as a monadic value.  When TARGET is true, use it as
-the cross-compilation target triplet."
+  "Turn any object from INPUTS into a derivation input for SYSTEM or a store
+item (a \"source\"); return the corresponding input list as a monadic value.
+When TARGET is true, use it as the cross-compilation target triplet."
   (define (store-item? obj)
     (and (string? obj) (store-path? obj)))
 
@@ -584,27 +585,30 @@ the cross-compilation target triplet."
     (mapm %store-monad
           (match-lambda
             (((? struct? thing) sub-drv ...)
-             (mlet %store-monad ((drv (lower-object
+             (mlet %store-monad ((obj (lower-object
                                        thing system #:target target)))
-               (return (apply gexp-input drv sub-drv))))
+               (return (match obj
+                         ((? derivation? drv)
+                          (let ((outputs (if (null? sub-drv)
+                                             '("out")
+                                             sub-drv)))
+                            (derivation-input drv outputs)))
+                         ((? store-item? item)
+                          item)))))
             (((? store-item? item))
-             (return (gexp-input item)))
-            (input
-             (return (gexp-input input))))
+             (return item)))
           inputs)))
 
 (define* (lower-reference-graphs graphs #:key system target)
   "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
 #:reference-graphs argument, lower it such that each INPUT is replaced by the
-corresponding derivation."
+corresponding <derivation-input> or store item."
   (match graphs
     (((file-names . inputs) ...)
      (mlet %store-monad ((inputs (lower-inputs inputs
                                                #:system system
                                                #:target target)))
-       (return (map (lambda (file input)
-                      (cons file (gexp-input->tuple input)))
-                    file-names inputs))))))
+       (return (map cons file-names inputs))))))
 
 (define* (lower-references lst #:key system target)
   "Based on LST, a list of output names and packages, return a list of output
@@ -637,11 +641,13 @@ names and file names suitable for the #:allowed-references argument to
       ((force proc) system))))
 
 ;; Representation of a gexp instantiated for a given target and system.
+;; It's an intermediate representation between <gexp> and <derivation>.
 (define-record-type <lowered-gexp>
-  (lowered-gexp sexp inputs guile load-path load-compiled-path)
+  (lowered-gexp sexp inputs sources guile load-path load-compiled-path)
   lowered-gexp?
   (sexp                lowered-gexp-sexp)         ;sexp
-  (inputs              lowered-gexp-inputs)       ;list of <gexp-input>
+  (inputs              lowered-gexp-inputs)       ;list of <derivation-input>
+  (sources             lowered-gexp-sources)      ;list of store items
   (guile               lowered-gexp-guile)        ;<derivation> | #f
   (load-path           lowered-gexp-load-path)    ;list of store items
   (load-compiled-path  lowered-gexp-load-compiled-path)) ;list of store items
@@ -740,25 +746,18 @@ derivations--e.g., code evaluated for its side effects."
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
       (return (lowered-gexp sexp
-                            `(,@(if modules
-                                    (list (gexp-input modules))
+                            `(,@(if (derivation? modules)
+                                    (list (derivation-input modules))
                                     '())
                               ,@(if compiled
-                                    (list (gexp-input compiled))
+                                    (list (derivation-input compiled))
                                     '())
-                              ,@(map gexp-input exts)
-                              ,@inputs)
+                              ,@(map derivation-input exts)
+                              ,@(filter derivation-input? inputs))
+                            (filter string? (cons modules inputs))
                             guile
                             load-path
                             load-compiled-path)))))
-
-(define (gexp-input->tuple input)
-  "Given INPUT, a <gexp-input> record, return the corresponding input tuple
-suitable for the 'derivation' procedure."
-  (match (gexp-input-output input)
-    ("out"  `(,(gexp-input-thing input)))
-    (output `(,(gexp-input-thing input)
-              ,(gexp-input-output input)))))
 
 (define* (gexp->derivation name exp
                            #:key
@@ -830,13 +829,10 @@ The other arguments are as for 'derivation'."
   (define (graphs-file-names graphs)
     ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
     (map (match-lambda
-           ;; TODO: Remove 'derivation?' special cases.
-           ((file-name (? derivation? drv))
-            (cons file-name (derivation->output-path drv)))
-           ((file-name (? derivation? drv) sub-drv)
-            (cons file-name (derivation->output-path drv sub-drv)))
-           ((file-name thing)
-            (cons file-name thing)))
+           ((file-name . (? derivation-input? input))
+            (cons file-name (first (derivation-input-output-paths input))))
+           ((file-name . (? string? item))
+            (cons file-name item)))
          graphs))
 
   (define (add-modules exp modules)
@@ -906,13 +902,23 @@ The other arguments are as for 'derivation'."
                       #:outputs outputs
                       #:env-vars env-vars
                       #:system system
-                      #:inputs `((,guile)
-                                 (,builder)
-                                 ,@(map gexp-input->tuple
-                                        (lowered-gexp-inputs lowered))
+                      #:inputs `(,(derivation-input guile '("out"))
+                                 ,@(lowered-gexp-inputs lowered)
                                  ,@(match graphs
-                                     (((_ . inputs) ...) inputs)
-                                     (_ '())))
+                                     (((_ . inputs) ...)
+                                      (filter derivation-input? inputs))
+                                     (#f '())))
+                      #:sources `(,builder
+                                  ,@(if (and (string? modules)
+                                             (store-path? modules))
+                                        (list modules)
+                                        '())
+                                  ,@(lowered-gexp-sources lowered)
+                                  ,@(match graphs
+                                      (((_ . inputs) ...)
+                                       (filter string? inputs))
+                                      (#f '())))
+
                       #:hash hash #:hash-algo hash-algo #:recursive? recursive?
                       #:references-graphs (and=> graphs graphs-file-names)
                       #:allowed-references allowed

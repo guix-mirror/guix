@@ -849,8 +849,9 @@
                              #:effective-version "2.0")))
     (define (matching-input drv output)
       (lambda (input)
-        (and (eq? (gexp-input-thing input) drv)
-             (string=? (gexp-input-output input) output))))
+        (and (eq? (derivation-input-derivation input) drv)
+             (equal? (derivation-input-sub-derivations input)
+                     (list output)))))
 
     (mbegin %store-monad
       (return (and (find (matching-input extension-drv "out")
