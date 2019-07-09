@@ -26,8 +26,6 @@
   #:use-module (guix packages))
 
 (define-public oath-toolkit
-  ;; If gcc@7 breaks this package before its next release, try patching it:
-  ;; <https://gitlab.com/oath-toolkit/oath-toolkit/issues/2#note_52958748>.
   (package
     (name "oath-toolkit")
     (version "2.6.2")
@@ -36,7 +34,18 @@
        (method url-fetch)
        (uri (string-append "https://download.savannah.nongnu.org/releases/"
                            name "/" name "-" version ".tar.gz"))
-       (patches (search-patches "oath-toolkit-glibc-compat.patch"))
+       (patches
+        (append (search-patches "oath-toolkit-glibc-compat.patch")
+                (list (origin
+                        ;; This huge commit updates gnulib for GCC 7 compatibility.
+                        (method url-fetch)
+                        (uri (string-append
+                              "https://gitlab.com/oath-toolkit/oath-toolkit/commit/"
+                              "2fffce2a471f74a585939c84cce16ef3015e5d3d.diff"))
+                        (file-name "oath-toolkit-update-gnulib.patch")
+                        (sha256
+                         (base32
+                          "088c9s4ay1b54bjqc4mwfs5l3f6357zj5vpw771zlq5g4addd4s0"))))))
        (sha256
         (base32 "182ah8vfbg0yhv6mh1b6ap944d0na6x7lpfkwkmzb6jl9gx4cd5h"))))
     (build-system gnu-build-system)
