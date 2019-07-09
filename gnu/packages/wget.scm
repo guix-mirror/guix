@@ -79,7 +79,7 @@ in downloaded documents to relative links.")
 (define-public wgetpaste
   (package
     (name "wgetpaste")
-    (version "2.28")
+    (version "2.29")
     (source
       (origin
         (method url-fetch)
@@ -87,10 +87,10 @@ in downloaded documents to relative links.")
                             version ".tar.bz2"))
         (sha256
          (base32
-          "1hh9svyypqcvdg5mjxyyfzpdzhylhf7s7xq5dzglnm4injx3i3ak"))))
+          "1rp0wxr3zy7y2xp3azaadfghrx7g0m138f9qg6icjxkkz4vj9r22"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:modules ((guix build gnu-build-system)
+     `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
@@ -102,16 +102,17 @@ in downloaded documents to relative links.")
            ;; https://gitweb.gentoo.org/repo/gentoo.git/tree/app-text/wgetpaste/files/wgetpaste-remove-dead.patch
            (lambda _
              (substitute* "wgetpaste"
-               ((" poundpython\"") "\"")
-               (("-poundpython") "-bpaste")) ; dpaste blocks tor users
+               (("-bpaste") "-dpaste")) ; dpaste blocks tor users
              #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
-                    (zsh (string-append out "/share/zsh/site-functions")))
+                    (zsh (string-append out "/share/zsh/site-functions"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
                (install-file "wgetpaste" bin)
                (install-file "_wgetpaste" zsh)
+               (install-file "LICENSE" doc)
                #t)))
          (add-after 'install 'wrap-program
            ;; /bin/wgetpaste prides itself on relying only on the following
