@@ -1421,6 +1421,44 @@ language.")
       ;; Any version of the LGPL.
       (license license:lgpl3+))))
 
+(define-public texlive-hyphen-basque
+  (let ((template (texlive-hyphen-package
+                    "texlive-hyphen-basque" "eu"
+                    (list "/source/generic/hyph-utf8/languages/eu/generate_patterns_eu.rb")
+                    (base32
+                     "1yhsbzf1g9dm70jfixsz51hsfvn26cwfkfxvhg7xv2piynr4v51l"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda _
+                 (let ((target (string-append (getcwd)
+                                              "/tex/generic/hyph-utf8/patterns/tex")))
+                   (mkdir-p target)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/eu/"
+                     (substitute* "generate_patterns_eu.rb"
+                       (("\\$file = File.new.*")
+                        (string-append "$file = File.new(\"" target
+                                       "/hyph-eu.tex\",\"w\")\n")))
+                     (invoke "ruby" "generate_patterns_eu.rb"))
+                   #t)))
+             (add-after 'install 'install-hyph-eu.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (synopsis "Hyphenation patterns for Basque")
+      (description "The package provides hyphenation patterns for the Basque
+language.")
+      ;; "Free for any purpose".
+      (license (license:fsf-free
+                "/source/generic/hyph-utf8/languages/eu/generate_patterns_eu.rb")))))
+
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
