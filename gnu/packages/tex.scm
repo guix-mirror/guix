@@ -1385,6 +1385,42 @@ language.")
 Greek.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-armenian
+  (let ((template (texlive-hyphen-package
+                   "texlive-hyphen-armenian" "hy"
+                   (list "/source/generic/hyph-utf8/languages/hy/generate_patterns_hy.rb")
+                   (base32
+                    "0z666y580w1kpxssdanz67ykq257lf11a1mnp1jrn08zijvfrw9c"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda _
+                 (let ((target (string-append (getcwd)
+                                              "/tex/generic/hyph-utf8/patterns/tex")))
+                   (mkdir-p target)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/hy/"
+                     (substitute* "generate_patterns_hy.rb"
+                       (("\\$file = File.new.*")
+                        (string-append "$file = File.new(\"" target
+                                       "/hyph-hy.tex\",\"w\")\n")))
+                     (invoke "ruby" "generate_patterns_hy.rb"))
+                   #t)))
+             (add-after 'install 'install-hyph-hy.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (synopsis "Hyphenation patterns for Armenian")
+      (description "The package provides hyphenation patterns for the Armenian
+language.")
+      ;; Any version of the LGPL.
+      (license license:lgpl3+))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
