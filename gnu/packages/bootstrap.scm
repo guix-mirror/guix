@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -29,7 +29,7 @@
   #:use-module ((guix store)
                 #:select (run-with-store add-to-store add-text-to-store))
   #:use-module ((guix derivations)
-                #:select (derivation derivation->output-path))
+                #:select (derivation derivation-input derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
   #:use-module (guix memoization)
   #:use-module (srfi srfi-1)
@@ -312,7 +312,8 @@ $out/bin/guile --version~%"
     (derivation store name
                 bash `(,builder)
                 #:system system
-                #:inputs `((,bash) (,builder) (,guile))
+                #:inputs (list (derivation-input guile))
+                #:sources (list bash builder)
                 #:env-vars `(("GUILE_TARBALL"
                               . ,(derivation->output-path guile))))))
 
