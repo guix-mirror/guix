@@ -5239,16 +5239,28 @@ command-line arguments or read from stdin.")
 (define-public python-internetarchive
   (package
     (name "python-internetarchive")
-    (version "1.7.4")
+    (version "1.8.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jjjake/internetarchive/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jjjake/internetarchive")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sdbb2ag6vmybi8zmbjszi492a587giaaqxyy1p6gy03cb8mc512"))))
+         "0ih7hplv92wbv6cmgc1gs0v35qkajwicalwcq8vcljw30plr24fp"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Python 3.7 removed `_pattern_type'.
+           (for-each (lambda (file)
+                       (chmod file #o644)
+                       (substitute* file
+                         (("^import re\n" line)
+                          (string-append line "re._pattern_type = re.Pattern\n"))))
+                     (find-files "." "\\.py$"))
+           #t))))
     (build-system python-build-system)
     (arguments
      `(#:phases
