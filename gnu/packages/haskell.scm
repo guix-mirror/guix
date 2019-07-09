@@ -11913,7 +11913,7 @@ example of, \"An applicative functor that is not a monad.\"")
 (define-public ghc-concurrent-output
   (package
     (name "ghc-concurrent-output")
-    (version "1.10.10")
+    (version "1.10.9")
     (source
      (origin
        (method url-fetch)
@@ -11923,12 +11923,12 @@ example of, \"An applicative functor that is not a monad.\"")
              ".tar.gz"))
        (sha256
         (base32
-         "1wnjxnwbc3l853kiiijagzjyb6fmhz3lmkwls24plbximl1qrr22"))))
+         "0mwf155w89nbbkjln7hhbn8k3f8p0ylcvgrg31cm7ijpx4499i4c"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
        ("ghc-exceptions" ,ghc-exceptions)
-       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)
        ("ghc-terminal-size" ,ghc-terminal-size)))
     (home-page
      "https://hackage.haskell.org/package/concurrent-output")
