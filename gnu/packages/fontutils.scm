@@ -58,13 +58,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.10.0")
+   (version "2.10.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
-                                version ".tar.bz2"))
+                                version ".tar.xz"))
             (sha256 (base32
-                     "01mybx78n3n9dhzylbrdy42wxdwfn8rp514qdkzjy6b5ij965k7w"))))
+                     "0vx2dg1jh5kq34dd6ifpjywkpapp8a7p1bvyq9yq5zi1i94gmnqn"))))
    (build-system gnu-build-system)
    (arguments
     ;; The use of "freetype-config" is deprecated, but other packages still
