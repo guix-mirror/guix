@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,13 +67,18 @@
   (package
     (name "expat")
     (version "2.2.6")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/expat/expat/"
-                                 version "/expat-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p"))))
+    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
+              (origin
+                (method url-fetch)
+                (uri (list (string-append "mirror://sourceforge/expat/expat/"
+                                          version "/expat-" version ".tar.bz2")
+                           (string-append
+                            "https://github.com/libexpat/libexpat/releases/download/R_"
+                            (string-map dot->underscore version)
+                            "/expat-" version ".tar.bz2")))
+                (sha256
+                 (base32
+                  "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p")))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
