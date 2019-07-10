@@ -1409,7 +1409,7 @@ machine.")
              (uri (string-append
                    "https://ftp.gnu.org/non-gnu/cvs/source/feature/"
                    version "/cvs-" version ".tar.bz2"))
-             (patches (search-patches "cvs-2017-12836.patch"))
+             (patches (search-patches "cvs-CVE-2017-12836.patch"))
              (sha256
               (base32
                "0pjir8cwn0087mxszzbsi1gyfc6373vif96cw4q3m1x6p49kd1bq"))))

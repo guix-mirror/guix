@@ -747,7 +747,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
-  %D%/packages/patches/cvs-2017-12836.patch			\
+  %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-CVE-2019-12749.patch		\
   %D%/packages/patches/dealii-mpi-deprecations.patch		\
