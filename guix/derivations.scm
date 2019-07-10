@@ -36,6 +36,8 @@
   #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module (guix deprecation)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (guix monads)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -705,6 +707,13 @@ name of each input with that input's hash."
        ;; character.
        (sha256 (derivation->bytevector (derivation/masked-inputs drv)))))))
 
+
+(define (warn-about-derivation-deprecation name)
+  ;; TRANSLATORS: 'derivation' must not be translated; it refers to the
+  ;; 'derivation' procedure.
+  (warning (G_ "in '~a': deprecated 'derivation' calling convention used~%")
+           name))
+
 (define* (derivation store name builder args
                      #:key
                      (system (%current-system)) (env-vars '())
@@ -715,7 +724,8 @@ name of each input with that input's hash."
                      allowed-references disallowed-references
                      leaked-env-vars local-build?
                      (substitutable? #t)
-                     (properties '()))
+                     (properties '())
+                     (%deprecation-warning? #t))
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -832,19 +842,28 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
             e
             outputs)))
 
+  (define-syntax-rule (warn-deprecation name)
+    (when %deprecation-warning?
+      (warn-about-derivation-deprecation name)))
+
   (define input->derivation-input
     (match-lambda
       ((? derivation-input? input)
        input)
       (((? derivation? drv))
+       (warn-deprecation name)
        (make-derivation-input drv '("out")))
       (((? derivation? drv) sub-drvs ...)
+       (warn-deprecation name)
        (make-derivation-input drv sub-drvs))
-      (_ #f)))
+      (_
+       (warn-deprecation name)
+       #f)))
 
   (define input->source
     (match-lambda
       (((? string? input) . _)
+       (warn-deprecation name)
        (if (direct-store-path? input)
            input
            (add-to-store store (basename input)
@@ -1319,6 +1338,10 @@ and PROPERTIES."
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
+
+                ;; 'build-expression->derivation' is somewhat deprecated so
+                ;; don't bother warning here.
+                #:%deprecation-warning? #f
 
                 #:system system
 
