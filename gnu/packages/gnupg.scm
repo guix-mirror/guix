@@ -907,14 +907,14 @@ them to transform your existing public key into a secret key.")
 (define-public gpa
   (package
     (name "gpa")
-    (version "0.9.10")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gpa/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "09xphbi2456qynwqq5n0yh0zdmdi2ggrj3wk4hsyh5lrzlvcrff3"))))
+                "1cbpc45f8qbdkd62p12s3q2rdq6fa5xdzwmcwd3xrj55bzkspnwm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
