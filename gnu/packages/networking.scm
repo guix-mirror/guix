@@ -2210,6 +2210,9 @@ widely used protocol for monitoring the health and welfare of network
 equipment (e.g. routers), computer equipment and even devices like UPSs.
 Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and
 SNMP v3 using both IPv4 and IPv6.")
+    ;; This only affects OpenBSD
+    ;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8100
+    (properties `((lint-hidden-cve . ("CVE-2015-8100"))))
     (license (list license:bsd-3
                    (license:non-copyleft
                     "http://www.net-snmp.org/about/license.html"
