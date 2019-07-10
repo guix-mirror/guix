@@ -660,6 +660,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/4store-unset-preprocessor-directive.patch	\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
+  %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/acl-fix-perl-regex.patch		\
