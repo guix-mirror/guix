@@ -219,7 +219,9 @@ threads implementation.
 In contrast to GNU Pth is is based on the system's standard threads
 implementation.  This allows the use of libraries which are not
 compatible to GNU Pth.")
-    (license (list license:lgpl3+ license:gpl2+)))) ; dual license
+    (license (list license:lgpl3+ license:gpl2+)) ; dual license
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/npth")))))
 
 (define-public gnupg
   (package
