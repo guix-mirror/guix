@@ -987,7 +987,7 @@ Z64 video plugin.")
        ;; There are no tests.
        #:tests? #f))
     (home-page "https://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus SDL input plugin")
+    (synopsis "Mupen64Plus command line user interface")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
