@@ -2462,7 +2462,7 @@ in order to be able to find it.
 (define-public sedsed
   (package
     (name "sedsed")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -2471,11 +2471,10 @@ in order to be able to find it.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0009lsjsxhqmgaklpwq15hhd94hpiy7r4va69yy0ig3mxi6zbg2z"))))
+        (base32 "05cl35mwljdb9ynbbsfa8zx6ig8r0xncbg2cir9vwn5manndjj18"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sed-in
