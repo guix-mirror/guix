@@ -2503,17 +2503,18 @@ in order to be able to find it.
     (home-page "https://aurelio.net/projects/sedsed")
     (synopsis "Sed sed scripts")
     (description
-     "@code{sedsed} can debug, indent, tokenize and HTMLize your sed(1) script.
+     "@code{sedsed} can debug, indent, tokenize and HTMLize your @command{sed}
+script.
 
-In debug mode it reads your script and add extra commands to it.  When
+In debug mode, it reads your script and adds extra commands to it.  When
 executed you can see the data flow between the commands, revealing all the
-magic sed does on its internal buffers.
+magic sed performs on its internal buffers.
 
-In indent mode your script is reformatted with standard spacing.
+In indent mode, your script is reformatted with standard spacing.
 
-In tokenize mode you can see the elements of every command you use.
+In tokenize mode, you can see the elements of every command you use.
 
-In HTMLize mode your script is converted to a beautiful colored HTML file,
+In HTMLize mode, your script is converted to a beautiful colored HTML file,
 with all the commands and parameters identified for your viewing pleasure.
 
 With sedsed you can master any sed script.  No more secrets, no more hidden
