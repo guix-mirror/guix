@@ -2,7 +2,7 @@
 ;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -117,7 +117,8 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
               (uri (string-append "mirror://sourceforge/libexif/libexif/"
                                   version "/libexif-" version ".tar.bz2"))
               (patches (search-patches "libexif-CVE-2016-6328.patch"
-                                       "libexif-CVE-2017-7544.patch"))
+                                       "libexif-CVE-2017-7544.patch"
+                                       "libexif-CVE-2018-20030.patch"))
               (sha256
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
