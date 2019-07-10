@@ -398,7 +398,9 @@ Because the direct use of GnuPG from an application can be a complicated
 programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/gpgme")))))
 
 (define-public qgpgme
   (package
