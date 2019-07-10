@@ -930,7 +930,9 @@ them to transform your existing public key into a secret key.")
      "GPA, the GNU Privacy Assistant, is a graphical user interface for
 @uref{https://gnupg.org, GnuPG}.  It can be used to encrypt, decrypt, and sign
 files, to verify signatures, and to manage the private and public keys.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/gpa")))))
 
 (define-public parcimonie
   (package
