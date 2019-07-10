@@ -1520,7 +1520,7 @@ characters can be replaced as well, as can UTF-8 characters.")
     (version "7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.cgsecurity.org/testdisk-"
+              (uri (string-append "https://www.cgsecurity.org/testdisk-"
                                   version ".tar.bz2"))
               (sha256
                (base32
