@@ -1182,6 +1182,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
+  %D%/packages/patches/plib-CVE-2011-4620.patch		\
+  %D%/packages/patches/plib-CVE-2012-4552.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
