@@ -2500,7 +2500,7 @@ in order to be able to find it.
                     (sedpy (string-append bin "/sedsed.py")))
                (symlink sedpy sed)
                #t))))))
-    (home-page "http://aurelio.net/projects/sedsed")
+    (home-page "https://aurelio.net/projects/sedsed")
     (synopsis "Sed sed scripts")
     (description
      "@code{sedsed} can debug, indent, tokenize and HTMLize your sed(1) script.
