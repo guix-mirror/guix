@@ -435,8 +435,9 @@ derivation."
   ;; "old style" (before commit 8a0d9bc8a3f153159d9e239a151c0fa98f1e12d8,
   ;; dated May 30, 2018) did not depend on "guix-command.drv".
   (not (find (lambda (input)
-               (string-suffix? "-guix-command.drv"
-                               (derivation-input-path input)))
+               (string=? "guix-command"
+                         (derivation-name
+                          (derivation-input-derivation input))))
              (derivation-inputs drv))))
 
 (define (channel-instances->manifest instances)
