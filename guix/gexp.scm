@@ -648,7 +648,7 @@ names and file names suitable for the #:allowed-references argument to
   (sexp                lowered-gexp-sexp)         ;sexp
   (inputs              lowered-gexp-inputs)       ;list of <derivation-input>
   (sources             lowered-gexp-sources)      ;list of store items
-  (guile               lowered-gexp-guile)        ;<derivation> | #f
+  (guile               lowered-gexp-guile)        ;<derivation-input> | #f
   (load-path           lowered-gexp-load-path)    ;list of store items
   (load-compiled-path  lowered-gexp-load-compiled-path)) ;list of store items
 
@@ -755,7 +755,7 @@ derivations--e.g., code evaluated for its side effects."
                               ,@(map derivation-input exts)
                               ,@(filter derivation-input? inputs))
                             (filter string? (cons modules inputs))
-                            guile
+                            (derivation-input guile '("out"))
                             load-path
                             load-compiled-path)))))
 
@@ -889,7 +889,7 @@ The other arguments are as for 'derivation'."
     (mbegin %store-monad
       (set-grafting graft?)                       ;restore the initial setting
       (raw-derivation name
-                      (string-append (derivation->output-path guile)
+                      (string-append (derivation-input-output-path guile)
                                      "/bin/guile")
                       `("--no-auto-compile"
                         ,@(append-map (lambda (directory)
@@ -902,7 +902,7 @@ The other arguments are as for 'derivation'."
                       #:outputs outputs
                       #:env-vars env-vars
                       #:system system
-                      #:inputs `(,(derivation-input guile '("out"))
+                      #:inputs `(,guile
                                  ,@(lowered-gexp-inputs lowered)
                                  ,@(match graphs
                                      (((_ . inputs) ...)

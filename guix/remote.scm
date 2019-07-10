@@ -46,7 +46,7 @@
     (compose object->string object->string))
 
   (apply open-remote-pipe* session OPEN_READ
-         (string-append (derivation->output-path
+         (string-append (derivation-input-output-path
                          (lowered-gexp-guile lowered))
                         "/bin/guile")
          "--no-auto-compile"
@@ -95,7 +95,7 @@ remote store."
                       (remote -> (connect-to-remote-daemon session
                                                            socket-name)))
     (define inputs
-      (cons (derivation-input (lowered-gexp-guile lowered))
+      (cons (lowered-gexp-guile lowered)
             (lowered-gexp-inputs lowered)))
 
     (define sources

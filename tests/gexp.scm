@@ -868,7 +868,8 @@
                             "/lib/guile/2.0/site-ccache")
                            (lowered-gexp-load-compiled-path lexp))
                    (= 2 (length (lowered-gexp-load-compiled-path lexp)))
-                   (eq? (lowered-gexp-guile lexp) (%guile-for-build)))))))
+                   (eq? (derivation-input-derivation (lowered-gexp-guile lexp))
+                        (%guile-for-build)))))))
 
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad

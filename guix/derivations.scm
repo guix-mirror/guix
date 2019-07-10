@@ -71,6 +71,7 @@
             derivation-input-derivation
             derivation-input-sub-derivations
             derivation-input-output-paths
+            derivation-input-output-path
             valid-derivation-input?
 
             &derivation-error
@@ -220,6 +221,13 @@ download with a fixed hash (aka. `fetchurl')."
     (($ <derivation-input> drv sub-drvs)
      (map (cut derivation->output-path drv <>)
           sub-drvs))))
+
+(define (derivation-input-output-path input)
+  "Return the output file name of INPUT.  If INPUT has more than one outputs,
+an error is raised."
+  (match input
+    (($ <derivation-input> drv (output))
+     (derivation->output-path drv output))))
 
 (define (valid-derivation-input? store input)
   "Return true if INPUT is valid--i.e., if all the outputs it requests are in
