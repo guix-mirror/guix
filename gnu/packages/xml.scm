@@ -66,6 +66,7 @@
 (define-public expat
   (package
     (name "expat")
+    (replacement expat/fixed)
     (version "2.2.6")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
@@ -87,6 +88,14 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define expat/fixed
+  (package
+    (inherit expat)
+    (source
+     (origin
+       (inherit (package-source expat))
+       (patches (search-patches "expat-CVE-2018-20843.patch"))))))
 
 (define-public libebml
   (package
