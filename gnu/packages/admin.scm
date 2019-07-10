@@ -2492,14 +2492,14 @@ in order to be able to find it.
                ;; Just one file to copy around
                (install-file "sedsed.py" bin)
                #t)))
-         (add-after 'install 'symlink
+         (add-after 'wrap 'symlink
            ;; Create 'sedsed' symlink to "sedsed.py".
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (sed (string-append bin "/sedsed"))
                     (sedpy (string-append bin "/sedsed.py")))
-               (symlink  sedpy sed)
+               (symlink sedpy sed)
                #t))))))
     (home-page "http://aurelio.net/projects/sedsed")
     (synopsis "Sed sed scripts")
