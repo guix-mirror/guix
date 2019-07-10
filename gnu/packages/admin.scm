@@ -1517,20 +1517,20 @@ characters can be replaced as well, as can UTF-8 characters.")
 (define-public testdisk
   (package
     (name "testdisk")
-    (version "7.0")
+    (version "7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.cgsecurity.org/testdisk-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ba4wfz2qrf60vwvb1qsq9l6j0pgg81qgf7fh22siaz649mkpfq0"))))
+                "1zlh44w67py416hkvw6nrfmjickc2d43v51vcli5p374d5sw84ql"))))
     (build-system gnu-build-system)
     (inputs
      `(("ntfs-3g" ,ntfs-3g)
        ("util-linux" ,util-linux)
        ("openssl" ,openssl)
-       ;; FIXME: add reiserfs
+       ;; FIXME: add reiserfs.
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
