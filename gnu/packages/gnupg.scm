@@ -546,14 +546,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "03dc8whhvk7ccspbk8vzfhkxli8cd9zfbss5p597g4jldgy8s59d"))))
+         "03pvjyp6q9pr8qa22i38az06ddzhvzy5kj192hxa3gbhnchg1nj5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
