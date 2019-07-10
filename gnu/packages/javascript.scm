@@ -2,7 +2,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -417,32 +417,28 @@ external server.")
 (define-public mujs
   (package
     (name "mujs")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://git.ghostscript.com/mujs.git")
-                    (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "https://mujs.com/downloads/mujs-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0pkv26jxwgv5ax0ylfmi4h96h79hj4gvr95218ns8wngnmgr1ny6"))))
+                "1q9w2dcspfp580pzx7sw7x9gbn8j0ak6dvj75wd1ml3f3q3i43df"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
          (delete 'configure)  ; no configure
          (add-after 'install 'install-shared-library
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (install-file "build/release/libmujs.so"
-                             (string-append out "/lib"))))))
+           (lambda* (#:key (make-flags '()) #:allow-other-keys)
+             (apply invoke "make" "install-shared" make-flags))))
        #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
                           (string-append "CC=gcc"))
        #:tests? #f))                    ; no tests
     (inputs
      `(("readline" ,readline)))
-    (home-page "https://artifex.com/mujs/")
+    (home-page "https://mujs.com/")
     (synopsis "JavaScript interpreter written in C")
     (description "MuJS is a lightweight Javascript interpreter designed for
 embedding in other software to extend them with scripting capabilities.  MuJS
