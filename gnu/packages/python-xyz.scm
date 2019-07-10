@@ -6622,12 +6622,16 @@ pseudo terminal (pty), and interact with both the process and its pty.")
                ;; lines, but the test expects a single line...
                (("env\\['COLUMNS'\\] = '80'")
                 "env['COLUMNS'] = '160'"))
+
+             (substitute* "Makefile"
+               ;; Recent versions of python-coverage have caused the test
+               ;; coverage to decrease (as of version 0.7).  Allow that.
+               (("--fail-under=100")
+                "--fail-under=90"))
+
              #t))
-         (delete 'check)
-         (add-after 'install 'check
+         (replace 'check
            ;; The test phase uses the built library and executable.
-           ;; It's easier to run it after install since the build
-           ;; directory contains version-specific PATH.
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (add-installed-pythonpath inputs outputs)
              (setenv "PATH" (string-append (getenv "PATH") ":"
