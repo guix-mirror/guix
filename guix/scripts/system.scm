@@ -614,7 +614,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
   (cond ((not (file-exists? profile))             ; XXX: race condition
          (raise (condition (&profile-not-found-error
                             (profile profile)))))
-        ((string-null? pattern)
+        ((not pattern)
          (for-each display-system-generation (profile-generations profile)))
         ((matching-generations pattern profile)
          =>
@@ -622,9 +622,7 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
            (if (null-list? numbers)
                (exit 1)
                (leave-on-EPIPE
-                (for-each display-system-generation numbers)))))
-        (else
-         (leave (G_ "invalid syntax: ~a~%") pattern))))
+                (for-each display-system-generation numbers)))))))
 
 
 ;;;
@@ -1232,7 +1230,7 @@ argument list and OPTS is the option alist."
     ;; an operating system configuration file.
     ((list-generations)
      (let ((pattern (match args
-                      (() "")
+                      (() #f)
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (list-generations pattern)))
@@ -1242,7 +1240,7 @@ argument list and OPTS is the option alist."
     ;; operating system configuration file.
     ((delete-generations)
      (let ((pattern (match args
-                      (() "")
+                      (() #f)
                       ((pattern) pattern)
                       (x (leave (G_ "wrong number of arguments~%"))))))
        (with-store store

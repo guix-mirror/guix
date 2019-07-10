@@ -98,7 +98,7 @@ denote ranges as interpreted by 'matching-generations'."
     (cond ((not (file-exists? profile))            ; XXX: race condition
            (raise (condition (&profile-not-found-error
                               (profile profile)))))
-          ((string-null? pattern)
+          ((not pattern)
            (delete-generations store profile
                                (delv current (profile-generations profile))))
           ;; Do not delete the zeroth generation.
@@ -120,9 +120,7 @@ denote ranges as interpreted by 'matching-generations'."
              (let ((numbers (delv current numbers)))
                (when (null-list? numbers)
                  (leave (G_ "no matching generation~%")))
-               (delete-generations store profile numbers))))
-          (else
-           (leave (G_ "invalid syntax: ~a~%") pattern)))))
+               (delete-generations store profile numbers)))))))
 
 (define* (build-and-use-profile store profile manifest
                                 #:key
@@ -457,12 +455,12 @@ command-line option~%")
                            arg-handler)))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result arg-handler)
-                   (values (cons `(query list-generations ,(or arg ""))
+                   (values (cons `(query list-generations ,arg)
                                  result)
                            #f)))
          (option '(#\d "delete-generations") #f #t
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'delete-generations (or arg "")
+                   (values (alist-cons 'delete-generations arg
                                        result)
                            #f)))
          (option '(#\S "switch-generation") #t #f
@@ -683,7 +681,7 @@ processed, #f otherwise."
         (cond ((not (file-exists? profile))       ; XXX: race condition
                (raise (condition (&profile-not-found-error
                                   (profile profile)))))
-              ((string-null? pattern)
+              ((not pattern)
                (match (profile-generations profile)
                  (()
                   #t)
@@ -697,10 +695,7 @@ processed, #f otherwise."
                      (exit 1)
                      (begin
                        (list-generation display-profile-content (car numbers))
-                       (diff-profiles profile numbers)))))
-              (else
-               (leave (G_ "invalid syntax: ~a~%")
-                      pattern))))
+                       (diff-profiles profile numbers)))))))
        #t)
 
       (('list-installed regexp)

@@ -1484,7 +1484,11 @@ DURATION-RELATION with the current time."
         ((string->duration str)
          =>
          filter-by-duration)
-        (else #f)))
+        (else
+         (raise
+          (condition (&message
+                      (message (format #f (G_ "invalid syntax: ~a~%")
+                                       str))))))))
 
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."
