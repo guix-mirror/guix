@@ -867,7 +867,7 @@ Glide64MK2 video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
