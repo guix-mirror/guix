@@ -485,16 +485,17 @@ and Game Boy Color games.")
          (delete 'configure)
          ;; Makefile is in a subdirectory.
          (add-before
-          'build 'cd-to-project-dir
+          'build 'chdir-to-project-directory
           (lambda _
-            (chdir "projects/unix"))))
+            (chdir "projects/unix")
+            #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "all" (string-append "PREFIX=" out)))
        ;; There are no tests.
        #:tests? #f))
     ;; As per the Makefile (in projects/unix/Makefile):
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Nintendo 64 emulator core library")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
