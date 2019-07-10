@@ -2353,22 +2353,52 @@ more expressive and flexible than the traditional @code{format} procedure.")
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
        ("texlive" ,(texlive-union (list texlive-generic-epsf)))))
-    (propagated-inputs
+    (inputs
      `(("dbus-glib" ,dbus-glib)
        ("guile" ,guile-2.2)
        ("guile-lib" ,guile-lib)
        ("guile-readline" ,guile-readline)
-       ("glib-networking" ,glib-networking)
        ("freeglut" ,freeglut)
-       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("glib-networking" ,glib-networking)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (ice-9 regex)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setenv
            (lambda _
              (setenv "GUILE_AUTO_COMPILE" "0")
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (deps (map (cut assoc-ref inputs <>)
+                               '("guile-lib" "guile-readline")))
+                    (scm-path (map (cut string-append <> "/share/guile/site/"
+                                        effective) `(,out ,@deps)))
+                    (go-path (map (cut string-append <> "/lib/guile/" effective
+                                       "/site-ccache/") `(,out ,@deps)))
+                    (examples (filter (cut string-match "emacsy" <>)
+                                      (scandir (string-append out "/bin/"))))
+                    (progs (map (cut string-append out "/bin/" <>)
+                                examples)))
+               (map (cut wrap-program <>
+                         `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
+                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix ,go-path))
+                    progs)
+               #t))))))
     (home-page "https://savannah.nongnu.org/projects/emacsy")
     (synopsis "Embeddable GNU Emacs-like library using Guile")
     (description
