@@ -14,7 +14,7 @@
 ;;; Copyright © 2016, 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
@@ -312,6 +312,30 @@ files.  It can compress them as much as 40% losslessly.")
       (description "A pretty small png library.
 Currently all documentation resides in @file{pnglite.h}.")
       (license license:zlib))))
+
+(define-public libimagequant
+  (package
+    (name "libimagequant")
+    (version "2.12.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ImageOptim/libimagequant.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0qsfq1kv1m5jzn9v9iz0bac66k4clcis1c9877qabnwzwmwma5v0"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f)) ; no check target
+    (home-page "https://pngquant.org/lib/")
+    (synopsis "Image palette quantization library")
+    (description "libimagequant is a small, portable C library for
+high-quality conversion of RGBA images to 8-bit indexed-color (palette)
+images.  This library can significantly reduces file sizes and powers pngquant
+and other PNG optimizers.")
+   (license license:gpl3+)))
 
 (define-public libjpeg
   (package
