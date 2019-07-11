@@ -371,7 +371,7 @@ application (for console or X terminals) and requires ncurses.")
 (define-public pies
   (package
     (name "pies")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
@@ -379,7 +379,7 @@ application (for console or X terminals) and requires ncurses.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "12r7rjjyibjdj08dvwbp0iflfpzl4s0zhn6cr6zj3hwf9gbzgl1g"))))
+         "14jb4pa4zs26d5j2skxbaypnwhsx2lw8jgj1irrgs03c2dnf7gp6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -388,7 +388,7 @@ application (for console or X terminals) and requires ncurses.")
                       ;; Use the right shell when executing user-provided
                       ;; shell commands.
                       (let ((bash (assoc-ref inputs "bash")))
-                        (substitute* "src/progman.c"
+                        (substitute* '("src/progman.c" "src/comp.c")
                           (("\"/bin/sh\"")
                            (string-append "\"" bash "/bin/sh\"")))
                         #t))))))
