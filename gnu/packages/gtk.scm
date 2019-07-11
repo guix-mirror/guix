@@ -199,7 +199,8 @@ affine transformation (scale, rotation, shear, etc.).")
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
    (native-inputs
-    `(("gobject-introspection" ,gobject-introspection)
+    `(("glib:bin" ,glib "bin")          ;for glib-mkenums
+      ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
       ("which" ,which)))
