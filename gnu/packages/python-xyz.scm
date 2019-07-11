@@ -63,6 +63,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15954,3 +15955,39 @@ Complete support for Berkeley DB Base Replication.  Support for RPC.")
 types for further processing.  It is primarily intended for batch jobs and
 one-off scripts.")
     (license license:expat)))
+
+(define-public python-cached-property
+  (package
+    (name "python-cached-property")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cached-property" version))
+       (sha256
+        (base32
+         "010m1bl380l2r3vwq24r5v14l6gwvgm9v0mqqjkjss552jgsa5wj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; https://github.com/pydanny/cached-property/issues/131
+         ;; recent versions of freezegun break one test
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             (substitute* "tests/test_cached_property.py"
+               (("def test_threads_ttl_expiry\\(self\\)" m)
+                (string-append "@unittest.skip(\"Disabled by Guix\")\n"
+                               "    " m)))
+             #t)))))
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)))
+    (home-page
+     "https://github.com/pydanny/cached-property")
+    (synopsis
+     "Decorator for caching properties in classes")
+    (description
+     "This package provides a decorator which makes caching
+time-or-computationally-expensive properties quick and easy and works in Python
+2 or 3.")
+    (license license:bsd-3)))
