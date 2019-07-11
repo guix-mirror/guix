@@ -101,25 +101,32 @@ client.")
 (define-public docker-compose
   (package
     (name "docker-compose")
-    (version "1.5.2")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-compose" version))
        (sha256
         (base32
-         "0ksg7hm2yvc977968dixxisrhcmvskzpcx3pz0v1kazrdqp7xakr"))))
+         "0lx7bx6jvhydbab8vwry0bclhdf0dfj6jrns1m5y45yp9ybqxmd5"))))
     (build-system python-build-system)
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-docker-py" ,python-docker-py)
+     `(("python2-backport-ssl-match-hostname"
+        ,python2-backport-ssl-match-hostname)
+       ("python-cached-property"
+        ,python-cached-property)
+       ("python-colorama" ,python-colorama)
+       ("python-docker-py" ,python-docker-py)
        ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-paramiko" ,python-paramiko)
        ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests-2.7)
+       ("python-requests" ,python-requests-2.20)
        ("python-six" ,python-six)
        ("python-texttable" ,python-texttable)
        ("python-websocket-client" ,python-websocket-client)))
