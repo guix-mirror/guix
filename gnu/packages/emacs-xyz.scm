@@ -16530,3 +16530,37 @@ it forcibly
 @item Dedicated window for debugging program.
 @end enumerate")
       (license license:gpl3+))))
+
+(define-public emacs-elpher
+  (package
+    (name "emacs-elpher")
+    (version "1.4.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tgvaughan/elpher")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07xansmhn4l0b9ghzf56vyx8cqg0q01aq3pz5ikx2i19v5f0rc66"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-doc
+           (lambda _
+             (invoke "makeinfo" "elpher.texi"))))))
+    (home-page "https://github.com/tgvaughan/elpher")
+    (synopsis "Gopher client for Emacs")
+    (description "Elpher is a full-featured gopher client for Emacs.  Its
+features include intuitive keyboard and mouse-driven browsing, out-of-the-box
+compatibility with evil-mode, clickable web and gopher links in plain text,
+caching of visited sites, pleasant and configurable visualization of Gopher
+directories, direct visualisation of image files, jumping directly to links by
+name (with autocompletion), a simple bookmark management system and
+connections using TLS encryption.")
+    (license license:gpl3+)))
