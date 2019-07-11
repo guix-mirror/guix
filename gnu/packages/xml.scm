@@ -88,14 +88,6 @@ stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
 
-(define expat/fixed
-  (package
-    (inherit expat)
-    (source
-     (origin
-       (inherit (package-source expat))
-       (patches (search-patches "expat-CVE-2018-20843.patch"))))))
-
 (define-public libebml
   (package
     (name "libebml")
