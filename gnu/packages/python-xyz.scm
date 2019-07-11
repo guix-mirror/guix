@@ -7233,6 +7233,17 @@ the Python standard library but currently only supports the older 2003
 specification.")
     (license license:bsd-4)))
 
+(define-public python-idna-2.7
+  (package (inherit python-idna)
+           (version "2.7")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "idna" version))
+                     (sha256
+                      (base32
+                       "05jam7d31767dr12x0rbvvs8lxnpb1mhdb2zdlfxgh83z6k3hjk8"))))))
+
+
 (define-public python2-idna
   (package-with-python2 python-idna))
 
