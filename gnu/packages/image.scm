@@ -337,6 +337,50 @@ images.  This library can significantly reduces file sizes and powers pngquant
 and other PNG optimizers.")
    (license license:gpl3+)))
 
+(define-public pngquant
+  (package
+    (name "pngquant")
+    (version "2.12.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kornelski/pngquant.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1yiwbcihn4311fpfd568gg8zmmhqwg80jmhbhkb5msiipgd9xv33"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       '("--with-openmp" "--with-lcms2")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("zlib" , zlib)
+       ("lcms" ,lcms)
+       ("libimagequant" ,libimagequant)))
+    (home-page "https://pngquant.org/")
+    (synopsis "Utility and library for lossy compressing PNG images")
+    (description "pngquant is a PNG compressor that significantly reduces file
+sizes by converting images to a more efficient 8-bit PNG format with alpha
+channel (often 60-80% smaller than 24/32-bit PNG files).  Compressed images
+are fully standards-compliant and are supported by all web browsers and
+operating systems.
+
+Features:
+@enumerate
+@item High-quality palette generation using a combination of vector
+      quantization algorithms.
+@item Unique adaptive dithering algorithm that adds less noise to images
+      than the standard Floyd-Steinberg.
+@item Easy to integrate with shell scripts, GUIs and server-side software.
+@item Fast mode for real-time processing/large numbers of images.
+@end enumerate")
+    (license license:gpl3+)))
+
 (define-public libjpeg
   (package
    (name "libjpeg")
