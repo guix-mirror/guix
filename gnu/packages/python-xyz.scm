@@ -316,14 +316,14 @@ by @code{binstar}, @code{binstar-build} and @code{chalmers}.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))
+        "0a7wawx8vsg7igvz6p3x909fskhg4b2y1910xk4f4c8y22p3aqg8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-freezegun" ,python-freezegun)
@@ -347,6 +347,18 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+;; Sphinx < 2.0 requires this version.  Remove once no longer needed.
+(define-public python2-babel-2.6
+  (package
+    (inherit python2-babel)
+    (version "2.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Babel" version))
+              (sha256
+               (base32
+                "08rxmbx2s4irp0w0gmn498vns5xy0fagm0fg33xa772jiks51flc"))))))
 
 (define-public python2-backport-ssl-match-hostname
   (package
@@ -2329,15 +2341,33 @@ e.g. filters, callbacks and errbacks can all be promises.")
 (define-public python-markupsafe
   (package
     (name "python-markupsafe")
-    (version "1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "MarkupSafe" version))
        (sha256
         (base32
-         "0rdn1s8x9ni7ss8rfiacj7x1085lx8mh2zdwqslnw8xc3l4nkgm6"))))
+         "0sqipg4fk7xbixqd8kq6rlkxj664d157bdwbh93farcphf92x1r9"))))
     (build-system python-build-system)
+    (arguments
+     `(#:modules ((ice-9 ftw)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let ((cwd (getcwd))
+                            (libdir (find (cut string-prefix? "lib." <>)
+                                          (scandir "build"))))
+                      (setenv "PYTHONPATH"
+                              (string-append cwd "/build/" libdir ":"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/mitsuhiko/markupsafe")
     (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
     (description
@@ -2515,14 +2545,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1xb5n3hvhk63kxypc03k7kfry20pny6gygi4bsl9kw1rnzzsdjri"))))
+         "15v2sqm5g12bqa0c7wikfh9ck2nl97ayizy1hpqhmws5gqalq748"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests require sphinx, which depends on this.
@@ -3153,14 +3183,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.7")
+    (version "0.29.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1s61hq2ikawxp6qvmkbfvvaxy9rqj67cddzwgcfc3dwi44b83l2m"))))
+         "1866m01ggl2h3rky4hac3m5p048gg4a0jb09ljkknryiqln54fkn"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -4384,14 +4414,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.18")
+    (version "2.19")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "09mjyw82ibqzl449g7swy8bfxnfpmas0815d2rkdjlcqw81wma4r"))))
+        "1cr5dcj9628lkz1qlwq3fv97c25363qppkmcayqvd05dpy573259"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
@@ -4414,7 +4444,8 @@ a general image processing tool.")
                            (copy-file (string-append "." file)
                                       (string-append doc file)))
                          '("/README.rst" "/CHANGES" "/LICENSE"))
-               (copy-recursively "examples" examples)))))))
+               (copy-recursively "examples" examples)
+               #t))))))
     (home-page "https://github.com/eliben/pycparser")
     (synopsis "C parser in Python")
     (description
@@ -8704,14 +8735,14 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.10")
+    (version "1.0.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0r9rysn19fmrxnzfcn7sg20kjhcrx9qri0my9n5vdzp1g2g92rbi"))))
+         "0h95n0g0k1jwxiqarr09navpfajarvbmpm8mhmw66c25qc675vlm"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))

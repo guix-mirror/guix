@@ -45,14 +45,14 @@
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "2.0.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "0js0rnbzm0nsb4gm2v4z79wlbmr05awqzic57kfl8ydkdxj80cj2"))))
+         "09y4mjmbxz94pmfr2lzf1hkx2xk0khcpb8xsqfmir4l7dds9x9zr"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -132,7 +132,7 @@ sources.")
                            ("python2-imagesize" ,python2-imagesize)
                            ("python2-sphinx-alabaster-theme"
                             ,python2-sphinx-alabaster-theme)
-                           ("python2-babel" ,python2-babel)
+                           ("python2-babel" ,python2-babel-2.6)
                            ("python2-snowballstemmer" ,python2-snowballstemmer)
                            ("python2-docutils" ,python2-docutils)
                            ("python2-jinja2" ,python2-jinja2)

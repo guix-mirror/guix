@@ -23,6 +23,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
@@ -33,7 +34,7 @@
 (define-public libtirpc
   (package
     (name "libtirpc")
-    (version "1.0.3")
+    (version "1.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libtirpc/libtirpc/"
@@ -41,7 +42,7 @@
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ppxl3k3nsz0qdakq844i2kj4fvh9h937lhx26bgmpmxq67sghw6"))))
+                "07anqypf7c719x9y683qz65cxllmzlgmlab2hlahrqcj4bq2k99c"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -105,13 +106,14 @@ universal addresses.")
     (name "libnsl")
     (version "1.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/thkukuk/libnsl/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/thkukuk/libnsl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y6kmxmv1difzvdhx7grqzw0j2v2b74mg4kjb803m8jcgkqqx8m5"))))
+                "1chzqhcgh0yia9js8mh92cmhyka7rh32ql6b3mgdk26n94dqzs8b"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

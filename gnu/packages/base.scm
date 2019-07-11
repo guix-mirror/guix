@@ -1215,15 +1215,15 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2019a")
+    (version "2019b")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://www.iana.org/time-zones/repository/releases/tzdata"
+                   "https://data.iana.org/time-zones/releases/tzdata"
                    version ".tar.gz"))
              (sha256
               (base32
-               "0wlpqm4asvi0waaz24xj20iq40gqfypmb4nldjhkfgm09bgnsdlh"))))
+               "0r0clnlslwm15m1c61dinf1fi9ffgl6aipng7i7yryfwj0n0kn85"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1269,11 +1269,11 @@ command.")
     (inputs `(("tzcode" ,(origin
                           (method url-fetch)
                           (uri (string-append
-                                "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                "https://data.iana.org/time-zones/releases/tzcode"
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1x9z8fpgnhzlsnps0hamb54ymaskjab7ys9m4i4gpk9hpiig2fc7"))))))
+                            "0vbmswvv3li25s31shyllq5v24449lxnrki9hr043nipjd09sirf"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1296,7 +1296,7 @@ and daylight-saving rules.")
      (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.iana.org/time-zones/repository/releases/tzdata"
+                    "https://data.iana.org/time-zones/releases/tzdata"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -1305,7 +1305,7 @@ and daylight-saving rules.")
        `(("tzcode" ,(origin
                      (method url-fetch)
                      (uri (string-append
-                           "http://www.iana.org/time-zones/repository/releases/tzcode"
+                           "http://data.iana.org/time-zones/releases/tzcode"
                            version ".tar.gz"))
                      (sha256
                       (base32
