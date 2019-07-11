@@ -129,14 +129,14 @@ created and all the services are started as specified in the configuration.")
 (define-public python-docker-pycreds
   (package
     (name "python-docker-pycreds")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "docker-pycreds" version))
         (sha256
          (base32
-          "1zxvam1q22qb0jf48553nnncnfrcp88ag4xa0qmq6vr0imn9a3lb"))))
+          "1m44smrggnqghxkqfl7vhapdw89m1p3vdr177r6cq17lr85jgqvc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
