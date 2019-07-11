@@ -131,6 +131,7 @@ module into a binary representation.")
 (define-public libselinux
   (package (inherit libsepol)
     (name "libselinux")
+    (outputs '("out" "python"))
     (arguments
      (substitute-keyword-arguments (package-arguments libsepol)
        ((#:make-flags flags)
@@ -139,7 +140,7 @@ module into a binary representation.")
                               (assoc-ref %build-inputs "libsepol")
                               "/lib/libsepol.a")
                 (string-append "PYSITEDIR="
-                               (assoc-ref %outputs "out")
+                               (assoc-ref %outputs "python")
                                "/lib/python"
                                ,(version-major+minor (package-version python))
                                "/site-packages/")
