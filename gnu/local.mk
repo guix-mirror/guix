@@ -299,6 +299,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
+  %D%/packages/logo.scm				\
   %D%/packages/lolcode.scm                      \
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
@@ -489,6 +490,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/wget.scm				\
   %D%/packages/wicd.scm				\
   %D%/packages/wine.scm				\
+  %D%/packages/wireservice.scm				\
   %D%/packages/wm.scm				\
   %D%/packages/wordnet.scm			\
   %D%/packages/wv.scm				\
@@ -564,6 +566,9 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/uuid.scm				\
   %D%/system/vm.scm				\
 						\
+  %D%/machine.scm				\
+  %D%/machine/ssh.scm				\
+						\
   %D%/build/accounts.scm			\
   %D%/build/activation.scm			\
   %D%/build/bootloader.scm			\
@@ -629,7 +634,7 @@ INSTALLER_MODULES =                             \
   %D%/installer/newt/user.scm			\
   %D%/installer/newt/utils.scm			\
   %D%/installer/newt/welcome.scm		\
-  %D%/installer/newt/wifi.scm	
+  %D%/installer/newt/wifi.scm
 
 # Always ship the installer modules but compile them only when
 # ENABLE_INSTALLER is true.
@@ -655,6 +660,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/4store-unset-preprocessor-directive.patch	\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
+  %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
@@ -728,7 +734,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/clementine-use-openssl.patch		\
   %D%/packages/patches/clisp-remove-failing-test.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
-  %D%/packages/patches/clx-remove-demo.patch			\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
@@ -736,10 +741,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
+  %D%/packages/patches/csvkit-fix-tests.patch			\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
-  %D%/packages/patches/cvs-2017-12836.patch			\
+  %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dealii-mpi-deprecations.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
@@ -775,6 +781,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14860.patch		\
   %D%/packages/patches/exiv2-CVE-2017-14859-14862-14864.patch	\
+  %D%/packages/patches/expat-CVE-2018-20843.patch		\
   %D%/packages/patches/extundelete-e2fsprogs-1.44.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
   %D%/packages/patches/fastcap-mulSetup.patch			\
@@ -893,8 +900,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/gpsbabel-qstring.patch     		\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/groovy-add-exceptionutilsgenerator.patch	\
-  %D%/packages/patches/grub-binutils-compat.patch		\
-  %D%/packages/patches/grub-check-error-efibootmgr.patch	\
   %D%/packages/patches/grub-efi-fat-serial-number.patch		\
   %D%/packages/patches/gsl-test-i686.patch			\
   %D%/packages/patches/gspell-dash-test.patch			\
@@ -1003,11 +1008,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
-  %D%/packages/patches/libgpg-error-gawk-compat.patch		\
+  %D%/packages/patches/libexif-CVE-2018-20030.patch		\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\
   %D%/packages/patches/libgnomeui-utf8.patch			\
+  %D%/packages/patches/libgpg-error-gawk-compat.patch		\
   %D%/packages/patches/libffi-3.2.1-complex-alpha.patch		\
   %D%/packages/patches/libjxr-fix-function-signature.patch	\
   %D%/packages/patches/libjxr-fix-typos.patch			\
@@ -1178,6 +1184,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/pixman-CVE-2016-5296.patch		\
   %D%/packages/patches/plink-1.07-unclobber-i.patch		\
   %D%/packages/patches/plink-endian-detection.patch		\
+  %D%/packages/patches/plib-CVE-2011-4620.patch		\
+  %D%/packages/patches/plib-CVE-2012-4552.patch		\
   %D%/packages/patches/plotutils-libpng-jmpbuf.patch		\
   %D%/packages/patches/podofo-cmake-3.12.patch			\
   %D%/packages/patches/portaudio-audacity-compat.patch		\
@@ -1224,6 +1232,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/python-pygpgme-fix-pinentry-tests.patch	\
   %D%/packages/patches/python-robotframework-honor-source-date-epoch.patch \
+  %D%/packages/patches/python-slugify-depend-on-unidecode.patch	\
   %D%/packages/patches/python2-subprocess32-disable-input-test.patch	\
   %D%/packages/patches/python-unittest2-python3-compat.patch	\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\

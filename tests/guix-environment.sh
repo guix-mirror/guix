@@ -84,6 +84,14 @@ echo "(use-modules (guix profiles) (gnu packages bootstrap))
 guix environment --bootstrap --manifest=$tmpdir/manifest.scm --pure \
      -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile"'
 
+# if not sharing CWD, chdir home
+(
+  cd "$tmpdir" \
+    && guix environment --bootstrap --container --no-cwd --user=foo  \
+            --ad-hoc guile-bootstrap --pure \
+            -- /bin/sh -c 'test $(pwd) == "/home/foo" -a ! -d '"$tmpdir"
+)
+
 # Make sure '-r' works as expected.
 rm -f "$gcroot"
 expected="`guix environment --bootstrap --ad-hoc guile-bootstrap \

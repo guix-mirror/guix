@@ -371,7 +371,7 @@ application (for console or X terminals) and requires ncurses.")
 (define-public pies
   (package
     (name "pies")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
@@ -379,7 +379,7 @@ application (for console or X terminals) and requires ncurses.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "12r7rjjyibjdj08dvwbp0iflfpzl4s0zhn6cr6zj3hwf9gbzgl1g"))))
+         "14jb4pa4zs26d5j2skxbaypnwhsx2lw8jgj1irrgs03c2dnf7gp6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -388,7 +388,7 @@ application (for console or X terminals) and requires ncurses.")
                       ;; Use the right shell when executing user-provided
                       ;; shell commands.
                       (let ((bash (assoc-ref inputs "bash")))
-                        (substitute* "src/progman.c"
+                        (substitute* '("src/progman.c" "src/comp.c")
                           (("\"/bin/sh\"")
                            (string-append "\"" bash "/bin/sh\"")))
                         #t))))))
@@ -1422,7 +1422,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
 (define-public acpica
   (package
     (name "acpica")
-    (version "20190509")
+    (version "20190703")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1430,7 +1430,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "17cf5jhcy9wqla5c9s08khqg0pxhar2nmwdcja2jf2srl2a5y2w6"))))
+                "0kp3ian3lffx9709ajrr3bp6b9cb6c6v1crjziyr8j8pp639jlwz"))))
     (build-system gnu-build-system)
     (native-inputs `(("flex" ,flex)
                      ("bison" ,bison)))
@@ -1517,20 +1517,20 @@ characters can be replaced as well, as can UTF-8 characters.")
 (define-public testdisk
   (package
     (name "testdisk")
-    (version "7.0")
+    (version "7.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.cgsecurity.org/testdisk-"
+              (uri (string-append "https://www.cgsecurity.org/testdisk-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ba4wfz2qrf60vwvb1qsq9l6j0pgg81qgf7fh22siaz649mkpfq0"))))
+                "1zlh44w67py416hkvw6nrfmjickc2d43v51vcli5p374d5sw84ql"))))
     (build-system gnu-build-system)
     (inputs
      `(("ntfs-3g" ,ntfs-3g)
        ("util-linux" ,util-linux)
        ("openssl" ,openssl)
-       ;; FIXME: add reiserfs
+       ;; FIXME: add reiserfs.
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
@@ -2462,7 +2462,7 @@ in order to be able to find it.
 (define-public sedsed
   (package
     (name "sedsed")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
        (method git-fetch)
@@ -2471,11 +2471,10 @@ in order to be able to find it.
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0009lsjsxhqmgaklpwq15hhd94hpiy7r4va69yy0ig3mxi6zbg2z"))))
+        (base32 "05cl35mwljdb9ynbbsfa8zx6ig8r0xncbg2cir9vwn5manndjj18"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:python ,python-2
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-sed-in
@@ -2492,29 +2491,30 @@ in order to be able to find it.
                ;; Just one file to copy around
                (install-file "sedsed.py" bin)
                #t)))
-         (add-after 'install 'symlink
+         (add-after 'wrap 'symlink
            ;; Create 'sedsed' symlink to "sedsed.py".
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (sed (string-append bin "/sedsed"))
                     (sedpy (string-append bin "/sedsed.py")))
-               (symlink  sedpy sed)
+               (symlink sedpy sed)
                #t))))))
-    (home-page "http://aurelio.net/projects/sedsed")
+    (home-page "https://aurelio.net/projects/sedsed")
     (synopsis "Sed sed scripts")
     (description
-     "@code{sedsed} can debug, indent, tokenize and HTMLize your sed(1) script.
+     "@code{sedsed} can debug, indent, tokenize and HTMLize your @command{sed}
+script.
 
-In debug mode it reads your script and add extra commands to it.  When
+In debug mode, it reads your script and adds extra commands to it.  When
 executed you can see the data flow between the commands, revealing all the
-magic sed does on its internal buffers.
+magic sed performs on its internal buffers.
 
-In indent mode your script is reformatted with standard spacing.
+In indent mode, your script is reformatted with standard spacing.
 
-In tokenize mode you can see the elements of every command you use.
+In tokenize mode, you can see the elements of every command you use.
 
-In HTMLize mode your script is converted to a beautiful colored HTML file,
+In HTMLize mode, your script is converted to a beautiful colored HTML file,
 with all the commands and parameters identified for your viewing pleasure.
 
 With sedsed you can master any sed script.  No more secrets, no more hidden

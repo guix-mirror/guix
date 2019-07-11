@@ -565,21 +565,21 @@ and powerline symbols, etc.")
 
 ;; There are no tarball releases.
 (define-public vim-airline-themes
-  (let ((commit "6026eb78bf362cb3aa875aff8487f65728d0f7d8")
-        (revision "1"))
+  (let ((commit "e6f233231b232b6027cde6aebeeb18d9138e5324")
+        (revision "2"))
     (package
       (name "vim-airline-themes")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "0.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
                (url "https://github.com/vim-airline/vim-airline-themes")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "13ijkavh1r0935cn2rjsfbdd1q3ka8bi26kw0bdkrqlrqxwvpss8"))))
+           "1sb7nb7j7bz0pv1c9bgdy0smhr0jk2b1vbdv9yzghg5lrknpsbr6"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f

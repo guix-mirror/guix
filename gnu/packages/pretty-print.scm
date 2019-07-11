@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
@@ -63,7 +63,8 @@
                   #t))
               (patches (search-patches
                         "a2ps-CVE-2001-1593.patch"
-                        "a2ps-CVE-2014-0466.patch"))))
+                        "a2ps-CVE-2014-0466.patch"
+                        "a2ps-CVE-2015-8107.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)

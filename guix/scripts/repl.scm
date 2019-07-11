@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (guix scripts repl)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module (guix repl)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (gnu packages)
@@ -29,8 +30,7 @@
   #:autoload   (system repl repl) (start-repl)
   #:autoload   (system repl server)
                   (make-tcp-server-socket make-unix-domain-server-socket)
-  #:export (machine-repl
-            guix-repl))
+  #:export (guix-repl))
 
 ;;; Commentary:
 ;;;
@@ -68,61 +68,11 @@ Start a Guile REPL in the Guix execution environment.\n"))
   (newline)
   (show-bug-report-information))
 
-(define (self-quoting? x)
-  "Return #t if X is self-quoting."
-  (letrec-syntax ((one-of (syntax-rules ()
-                            ((_) #f)
-                            ((_ pred rest ...)
-                             (or (pred x)
-                                 (one-of rest ...))))))
-    (one-of symbol? string? pair? null? vector?
-            bytevector? number? boolean?)))
-
 (define user-module
   ;; Module where we execute user code.
   (let ((module (resolve-module '(guix-user) #f #f #:ensure #t)))
     (beautify-user-module! module)
     module))
-
-(define* (machine-repl #:optional
-                       (input (current-input-port))
-                       (output (current-output-port)))
-  "Run a machine-usable REPL over ports INPUT and OUTPUT.
-
-The protocol of this REPL is meant to be machine-readable and provides proper
-support to represent multiple-value returns, exceptions, objects that lack a
-read syntax, and so on.  As such it is more convenient and robust than parsing
-Guile's REPL prompt."
-  (define (value->sexp value)
-    (if (self-quoting? value)
-        `(value ,value)
-        `(non-self-quoting ,(object-address value)
-                           ,(object->string value))))
-
-  (write `(repl-version 0 0) output)
-  (newline output)
-  (force-output output)
-
-  (let loop ()
-    (match (read input)
-      ((? eof-object?) #t)
-      (exp
-       (catch #t
-         (lambda ()
-           (let ((results (call-with-values
-                              (lambda ()
-
-                                (primitive-eval exp))
-                            list)))
-             (write `(values ,@(map value->sexp results))
-                    output)
-             (newline output)
-             (force-output output)))
-         (lambda (key . args)
-           (write `(exception ,key ,@(map value->sexp args)))
-           (newline output)
-           (force-output output)))
-       (loop)))))
 
 (define (call-with-connection spec thunk)
   "Dynamically-bind the current input and output ports according to SPEC and

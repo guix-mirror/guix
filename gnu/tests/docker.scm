@@ -27,7 +27,6 @@
   #:use-module (gnu services networking)
   #:use-module (gnu services docker)
   #:use-module (gnu services desktop)
-  #:use-module (gnu packages bootstrap) ; %bootstrap-guile
   #:use-module (gnu packages docker)
   #:use-module (gnu packages guile)
   #:use-module (guix gexp)
@@ -101,7 +100,7 @@ inside %DOCKER-OS."
              marionette))
 
           (test-equal "Load docker image and run it"
-            '("hello world" "hi!")
+            '("hello world" "hi!" "JSON!")
             (marionette-eval
              `(begin
                 (define slurp
@@ -125,8 +124,15 @@ inside %DOCKER-OS."
                        (response2 (slurp          ;default entry point
                                    ,(string-append #$docker-cli "/bin/docker")
                                    "run" repository&tag
-                                   "-c" "(display \"hi!\")")))
-                  (list response1 response2)))
+                                   "-c" "(display \"hi!\")"))
+
+                       ;; Check whether (json) is in $GUILE_LOAD_PATH.
+                       (response3 (slurp    ;default entry point + environment
+                                   ,(string-append #$docker-cli "/bin/docker")
+                                   "run" repository&tag
+                                   "-c" "(use-modules (json))
+  (display (json-string->scm (scm->json-string \"JSON!\")))")))
+                  (list response1 response2 response3)))
              marionette))
 
           (test-end)
@@ -144,7 +150,7 @@ inside %DOCKER-OS."
           (version "0")
           (source #f)
           (build-system trivial-build-system)
-          (arguments `(#:guile ,%bootstrap-guile
+          (arguments `(#:guile ,guile-2.2
                        #:builder
                        (let ((out (assoc-ref %outputs "out")))
                          (mkdir out)
@@ -158,7 +164,7 @@ standard output device and then enters a new line.")
           (home-page #f)
           (license license:public-domain)))
        (profile (profile-derivation (packages->manifest
-                                     (list %bootstrap-guile
+                                     (list guile-2.2 guile-json
                                            guest-script-package))
                                     #:hooks '()
                                     #:locales? #f))

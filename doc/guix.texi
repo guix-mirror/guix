@@ -65,6 +65,7 @@ Copyright @copyright{} 2018 Alex Vong@*
 Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
+Copyright @copyright{} 2019 Jakob L. Kreuze@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -81,6 +82,7 @@ Documentation License''.
 * guix gc: (guix)Invoking guix gc.            Reclaiming unused disk space.
 * guix pull: (guix)Invoking guix pull.        Update the list of available packages.
 * guix system: (guix)Invoking guix system.    Manage the operating system configuration.
+* guix deploy: (guix)Invoking guix deploy.    Manage operating system configurations for remote hosts.
 @end direntry
 
 @dircategory Software development
@@ -269,6 +271,7 @@ System Configuration
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
+* Invoking guix deploy::        Deploying a system configuration to a remote host.
 * Running Guix in a VM::        How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 
@@ -4653,6 +4656,14 @@ guix environment --container --user=foo \
 While this will limit the leaking of user identity through home paths
 and each of the user fields, this is only one useful component of a
 broader privacy/anonymity solution---not one in and of itself.
+
+@item --no-cwd
+For containers, the default behavior is to share the current working
+directory with the isolated container and immediately change to that
+directory within the container.  If this is undesirable, @code{--no-cwd}
+will cause the current working directory to @emph{not} be automatically
+shared and will change to the user's home directory within the container
+instead.  See also @code{--user}.
 
 @item --expose=@var{source}[=@var{target}]
 For containers, expose the file system @var{source} from the host system
@@ -10296,6 +10307,7 @@ instance to support new system services.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Bootloader Configuration::    Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
+* Invoking guix deploy::        Deploying a system configuration to a remote host.
 * Running Guix in a VM::        How to run Guix System in a virtual machine.
 * Defining Services::           Adding new service definitions.
 @end menu
@@ -25391,6 +25403,116 @@ graph} of shepherd services of the operating system defined in
 example graph.
 
 @end table
+
+@node Invoking guix deploy
+@section Invoking @code{guix deploy}
+
+We've already seen @code{operating-system} declarations used to manage a
+machine's configuration locally.  Suppose you need to configure multiple
+machines, though---perhaps you're managing a service on the web that's
+comprised of several servers.  @command{guix deploy} enables you to use those
+same @code{operating-system} declarations to manage multiple remote hosts at
+once as a logical ``deployment''.
+
+@quotation Note
+The functionality described in this section is still under development
+and is subject to change.  Get in touch with us on
+@email{guix-devel@@gnu.org}!
+@end quotation
+
+@example
+guix deploy @var{file}
+@end example
+
+Such an invocation will deploy the machines that the code within @var{file}
+evaluates to.  As an example, @var{file} might contain a definition like this:
+
+@example
+;; This is a Guix deployment of a "bare bones" setup, with
+;; no X11 display server, to a machine with an SSH daemon
+;; listening on localhost:2222. A configuration such as this
+;; may be appropriate for virtual machine with ports
+;; forwarded to the host's loopback interface.
+
+(use-service-modules networking ssh)
+(use-package-modules bootloaders)
+
+(define %system
+  (operating-system
+   (host-name "gnu-deployed")
+   (timezone "Etc/UTC")
+   (bootloader (bootloader-configuration
+                (bootloader grub-bootloader)
+                (target "/dev/vda")
+                (terminal-outputs '(console))))
+   (file-systems (cons (file-system
+                        (mount-point "/")
+                        (device "/dev/vda1")
+                        (type "ext4"))
+                       %base-file-systems))
+   (services
+    (append (list (service dhcp-client-service-type)
+                  (service openssh-service-type
+                           (openssh-configuration
+                            (permit-root-login #t)
+                            (allow-empty-passwords? #t))))
+            %base-services))))
+
+(list (machine
+       (system %system)
+       (environment managed-host-environment-type)
+       (configuration (machine-ssh-configuration
+                       (host-name "localhost")
+                       (identity "./id_rsa")
+                       (port 2222)))))
+@end example
+
+The file should evaluate to a list of @var{machine} objects.  This example,
+upon being deployed, will create a new generation on the remote system
+realizing the @code{operating-system} declaration @var{%system}.
+@var{environment} and @var{configuration} specify how the machine should be
+provisioned---that is, how the computing resources should be created and
+managed.  The above example does not create any resources, as a
+@code{'managed-host} is a machine that is already running the Guix system and
+available over the network.  This is a particularly simple case; a more
+complex deployment may involve, for example, starting virtual machines through
+a Virtual Private Server (VPS) provider.  In such a case, a different
+@var{environment} type would be used.
+
+@deftp {Data Type} machine
+This is the data type representing a single machine in a heterogeneous Guix
+deployment.
+
+@table @asis
+@item @code{system}
+The object of the operating system configuration to deploy.
+
+@item @code{environment}
+An @code{environment-type} describing how the machine should be provisioned.
+At the moment, the only supported value is
+@code{managed-host-environment-type}.
+
+@item @code{configuration} (default: @code{#f})
+An object describing the configuration for the machine's @code{environment}.
+If the @code{environment} has a default configuration, @code{#f} maybe used.
+If @code{#f} is used for an environment with no default configuration,
+however, an error will be thrown.
+@end table
+@end deftp
+
+@deftp {Data Type} machine-ssh-configuration
+This is the data type representing the SSH client parameters for a machine
+with an @code{environment} of @code{managed-host-environment-type}.
+
+@table @asis
+@item @code{host-name}
+@item @code{port} (default: @code{22})
+@item @code{user} (default: @code{"root"})
+@item @code{identity} (default: @code{#f})
+If specified, the path to the SSH private key to use to authenticate with the
+remote host.
+@end table
+@end deftp
 
 @node Running Guix in a VM
 @section Running Guix in a Virtual Machine

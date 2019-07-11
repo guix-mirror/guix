@@ -6,7 +6,7 @@
 ;;; Copyright © 2016, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -332,12 +332,12 @@ requirements according to version 1.1 of the OpenCL specification.")
     (version (package-version llvm))
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://releases.llvm.org/"
+              (uri (string-append "https://releases.llvm.org/"
                                   version  "/openmp-" version
                                   ".src.tar.xz"))
               (sha256
                (base32
-                "030dkg5cypd7j9hq0mcqb5gs31lxwmzfq52j81l7v9ldcy5bf5mz"))
+                "1mf9cpgvix34xlpv0inkgl3qmdvgvp96f7sksqizri0n5xfp1cgp"))
               (file-name (string-append "libomp-" version ".tar.xz"))))
     (build-system cmake-build-system)
     ;; XXX: Note this gets built with GCC because building with Clang itself

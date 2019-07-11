@@ -1434,7 +1434,9 @@ joystick support.")))
                                   "plib-" version ".tar.gz"))
               (sha256
                (base32
-                "0cha71mflpa10vh2l7ipyqk67dq2y0k5xbafwdks03fwdyzj4ns8"))))
+                "0cha71mflpa10vh2l7ipyqk67dq2y0k5xbafwdks03fwdyzj4ns8"))
+              (patches (search-patches "plib-CVE-2011-4620.patch"
+                                       "plib-CVE-2012-4552.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("mesa" ,mesa)

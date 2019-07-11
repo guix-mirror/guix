@@ -756,9 +756,9 @@ from forcing GEXP-PROMISE."
        ("valgrind" ,valgrind)
        ("vulkan-headers" ,vulkan-headers)))
 
-    ;; Building Chromium with a single core takes around 6 hours on an x86_64
-    ;; system.  Give some leeway for slower or busy machines.
-    (properties '((timeout . 64800)))   ;18 hours
+    ;; Building Chromium takes ... a very long time.  On a single core, a busy
+    ;; mid-end x86 system may need more than 24 hours to complete the build.
+    (properties '((timeout . 144000)))  ;40 hours
 
     (home-page "https://github.com/Eloston/ungoogled-chromium")
     (description

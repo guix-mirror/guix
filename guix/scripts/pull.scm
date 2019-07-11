@@ -117,7 +117,7 @@ Download and deploy the latest version of Guix.\n"))
                    (alist-cons 'channel-file arg result)))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result)
-                   (cons `(query list-generations ,(or arg ""))
+                   (cons `(query list-generations ,arg)
                          result)))
          (option '(#\N "news") #f #f
                  (lambda (opt name arg result)
@@ -486,7 +486,7 @@ list of package changes.")))))
       (cond ((not (file-exists? profile))         ; XXX: race condition
              (raise (condition (&profile-not-found-error
                                 (profile profile)))))
-            ((string-null? pattern)
+            ((not pattern)
              (list-generations profile (profile-generations profile)))
             ((matching-generations pattern profile)
              =>

@@ -426,7 +426,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.7.2-guix1")
+(define %icecat-version "60.8.0-guix1")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -448,7 +448,7 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "1hkaq8mavmn2wphfbrlq3v56jvmvfi2nyvrkjgr28rc01jkqx4ca"))))
+              "1gkz90clarbhgfxhq91s0is6lw6bfymyjb0xbyyswdg68kcqfcy1"))))
 
          (upstream-icecat-base-version "60.7.0") ; maybe older than base-version
          (upstream-icecat-gnu-version "1")
@@ -627,7 +627,7 @@ from forcing GEXP-PROMISE."
        ("mesa" ,mesa)
        ("mit-krb5" ,mit-krb5)
        ;; See <https://bugs.gnu.org/32833>
-       ;;   and related comments in the 'snippet' above.
+       ;;   and related comments in the 'remove-bundled-libraries' phase.
        ;; UNBUNDLE-ME! ("nspr" ,nspr)
        ;; UNBUNDLE-ME! ("nss" ,nss)
        ("sqlite" ,sqlite)
@@ -720,7 +720,8 @@ from forcing GEXP-PROMISE."
                            "--with-system-icu"
                            
                            ;; See <https://bugs.gnu.org/32833>
-                           ;;   and related comments in the 'snippet' above.
+                           ;;   and related comments in the
+                           ;;   'remove-bundled-libraries' phase below.
                            ;; UNBUNDLE-ME! "--with-system-nspr"
                            ;; UNBUNDLE-ME! "--with-system-nss"
                            

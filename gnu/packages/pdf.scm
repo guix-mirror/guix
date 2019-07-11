@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
@@ -604,7 +604,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.14.0")
+    (version "1.15.0")
     (source
       (origin
         (method url-fetch)
@@ -612,7 +612,7 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "1psnz02w5p7wc1s1ma7vvjmkjfy641xvsh9ykaqzkk84dflnjgk0"))
+          "0kmcz3ivxmqmks8vg50ri1zar18q5svk829z0g1kj08lgz7kcl2n"))
         (modules '((guix build utils)))
         (snippet
          ;; We keep lcms2 since it is different than our lcms.
@@ -620,7 +620,7 @@ extracting content or merging files.")
             (for-each
               (lambda (dir)
                 (delete-file-recursively (string-append "thirdparty/" dir)))
-              '("curl" "freeglut" "freetype" "harfbuzz" "jbig2dec"
+              '("freeglut" "freetype" "harfbuzz" "jbig2dec"
                 "libjpeg" "mujs" "openjpeg" "zlib"))
                 #t))))
     (build-system gnu-build-system)

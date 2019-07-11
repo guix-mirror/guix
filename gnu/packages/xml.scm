@@ -20,6 +20,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018 Jack Hill <jackhill@jackhill.us>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,13 +67,18 @@
   (package
     (name "expat")
     (version "2.2.7")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/expat/expat/"
-                                 version "/expat-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1y5yax6bq8p9xk49zqkd62pxk8bq266wrgbrqgaxp3wsrw5g9qrh"))))
+    (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
+              (origin
+                (method url-fetch)
+                (uri (list (string-append "mirror://sourceforge/expat/expat/"
+                                          version "/expat-" version ".tar.xz")
+                           (string-append
+                            "https://github.com/libexpat/libexpat/releases/download/R_"
+                            (string-map dot->underscore version)
+                            "/expat-" version ".tar.xz")))
+                (sha256
+                 (base32
+                  "1y5yax6bq8p9xk49zqkd62pxk8bq266wrgbrqgaxp3wsrw5g9qrh")))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -81,6 +87,14 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define expat/fixed
+  (package
+    (inherit expat)
+    (source
+     (origin
+       (inherit (package-source expat))
+       (patches (search-patches "expat-CVE-2018-20843.patch"))))))
 
 (define-public libebml
   (package
@@ -677,14 +691,14 @@ This module provide functions which simplify writing tests for
 (define-public perl-xml-compile
   (package
     (name "perl-xml-compile")
-    (version "1.62")
+    (version "1.63")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
                                   "XML-Compile-" version ".tar.gz"))
               (sha256
                (base32
-                "0a75gr4qcjj8ybzljacbbkdxprbqpypz49bc0jb7cfamx1hp7p2w"))))
+                "0psr5pwsk2biz2bfkigmx04v2rfhs6ybwcfmcrrg7gvh9bpp222b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-carp" ,perl-carp)

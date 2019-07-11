@@ -1870,14 +1870,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.6.3")
+    (version "5.8.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "095zg7h7qwsc456sqgwb1lhhk29ac3mk5z9gm6xja1pl061driy3"))))
+        (base32 "0cq9m86ydd2i0awxkv4a256f4926p2f9pzlisyskl9fngl6f3c8m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2210,6 +2210,9 @@ widely used protocol for monitoring the health and welfare of network
 equipment (e.g. routers), computer equipment and even devices like UPSs.
 Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and
 SNMP v3 using both IPv4 and IPv6.")
+    ;; This only affects OpenBSD
+    ;; https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-8100
+    (properties `((lint-hidden-cve . ("CVE-2015-8100"))))
     (license (list license:bsd-3
                    (license:non-copyleft
                     "http://www.net-snmp.org/about/license.html"

@@ -11,7 +11,7 @@
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright © 2019 Jesse Gildersleve <jessejohngildersleve@protonmail.com>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
@@ -930,42 +930,30 @@ ANSI-compliant Common Lisp implementations.")
   (sbcl-package->cl-source-package sbcl-cl-unicode))
 
 (define-public sbcl-clx
-  (let ((revision "1")
-        (commit "1c62774b03c1cf3fe6e5cb532df8b14b44c96b95"))
-    (package
-      (name "sbcl-clx")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri
-          (git-reference
-           (url "https://github.com/sharplispers/clx.git")
-           (commit commit)))
-         (sha256
-          (base32 "0qffag03ns52kwq9xjns2qg1yr0bf3ba507iwq5cmx5xz0b0rmjm"))
-         (file-name (string-append "clx-" version "-checkout"))
-         (patches
-          (list
-           (search-patch "clx-remove-demo.patch")))
-         (modules '((guix build utils)))
-         (snippet
-          '(begin
-             ;; These removed files cause the compiled system to crash when
-             ;; loading.
-             (delete-file-recursively "demo")
-             (delete-file "test/trapezoid.lisp")
-             (substitute* "clx.asd"
-               (("\\(:file \"trapezoid\"\\)") ""))
-             #t))))
-      (build-system asdf-build-system/sbcl)
-      (home-page "http://www.cliki.net/portable-clx")
-      (synopsis "X11 client library for Common Lisp")
-      (description "CLX is an X11 client library for Common Lisp.  The code was
+  (package
+    (name "sbcl-clx")
+    (version "0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/sharplispers/clx.git")
+         (commit version)))
+       (sha256
+        (base32
+         "1vi67z9hpj5rr4xcmfbfwzmlcc0ah7hzhrmfid6lqdkva238v2wf"))
+       (file-name (string-append "clx-" version))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("fiasco" ,sbcl-fiasco)))
+    (home-page "http://www.cliki.net/portable-clx")
+    (synopsis "X11 client library for Common Lisp")
+    (description "CLX is an X11 client library for Common Lisp.  The code was
 originally taken from a CMUCL distribution, was modified somewhat in order to
 make it compile and run under SBCL, then a selection of patches were added
 from other CLXes around the net.")
-      (license license:x11))))
+    (license license:x11)))
 
 (define-public cl-clx
   (sbcl-package->cl-source-package sbcl-clx))
@@ -5863,11 +5851,12 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
      `(("iolib.asdf" ,sbcl-iolib.asdf)
        ("iolib.conf" ,sbcl-iolib.conf)
        ("iolib.grovel" ,sbcl-iolib.grovel)
-       ("iolib.base", sbcl-iolib.base)
-       ("bordeaux-threads", sbcl-bordeaux-threads)
-       ("idna", sbcl-idna)
-       ("swap-bytes", sbcl-swap-bytes)
-       ("libfixposix", libfixposix)))
+       ("iolib.base" ,sbcl-iolib.base)
+       ("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("idna" ,sbcl-idna)
+       ("swap-bytes" ,sbcl-swap-bytes)
+       ("libfixposix" ,libfixposix)
+       ("cffi" ,sbcl-cffi)))
     (native-inputs
      `(("fiveam" ,sbcl-fiveam)))
     (arguments
@@ -5953,12 +5942,12 @@ floating point values to IEEE 754 binary representation.")
       (name "sbcl-closure-common")
       (build-system asdf-build-system/sbcl)
       (version (git-version "20101006" revision commit))
-      (home-page "https://github.com/sharplispers/closure-common")
+      (home-page "https://common-lisp.net/project/cxml/")
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url home-page)
+               (url "https://github.com/sharplispers/closure-common")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -5972,6 +5961,111 @@ floating point values to IEEE 754 binary representation.")
 Closure is a reference to the web browser it was originally written for.")
       ;; TODO: License?
       (license #f))))
+
+(define-public sbcl-cxml+xml
+  (let ((commit "00b22bf4c4cf11c993d5866fae284f95ab18e6bf")
+        (revision "1"))
+    (package
+      (name "sbcl-cxml+xml")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://common-lisp.net/project/cxml/")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sharplispers/cxml")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "13kif7rf3gqdycsk9zq0d7y0g9y81krkl0z87k0p2fkbjfgrph37"))))
+      (inputs
+       `(("closure-common" ,sbcl-closure-common)
+         ("puri" ,sbcl-puri)
+         ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+      (arguments
+       `(#:asd-file "cxml.asd"
+         #:asd-system-name "cxml/xml"))
+      (synopsis "Common Lisp XML parser")
+      (description "CXML implements a namespace-aware, validating XML 1.0
+parser as well as the DOM Level 2 Core interfaces.  Two parser interfaces are
+offered, one SAX-like, the other similar to StAX.")
+      (license license:llgpl))))
+
+(define sbcl-cxml+dom
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml+dom")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("cxml+xml" ,sbcl-cxml+xml)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml/dom"))))
+
+(define sbcl-cxml+klacks
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml+klacks")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("cxml+xml" ,sbcl-cxml+xml)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml/klacks"))))
+
+(define sbcl-cxml+test
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml+test")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("cxml+xml" ,sbcl-cxml+xml)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml/test"))))
+
+(define-public sbcl-cxml
+  (package
+    (inherit sbcl-cxml+xml)
+    (name "sbcl-cxml")
+    (inputs
+     `(("closure-common" ,sbcl-closure-common)
+       ("puri" ,sbcl-puri)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)
+       ("cxml+dom" ,sbcl-cxml+dom)
+       ("cxml+klacks" ,sbcl-cxml+klacks)
+       ("cxml+test" ,sbcl-cxml+test)))
+    (arguments
+     `(#:asd-file "cxml.asd"
+       #:asd-system-name "cxml"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'install-dtd
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "catalog.dtd"
+                           (string-append
+                            (assoc-ref outputs "out")
+                            "/lib/" (%lisp-type)))))
+         (add-after 'create-asd 'remove-component
+           ;; XXX: The original .asd has no components, but our build system
+           ;; creates an entry nonetheless.  We need to remove it for the
+           ;; generated .asd to load properly.  See trivia.trivial for a
+           ;; similar problem.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (asd (string-append out "/lib/sbcl/cxml.asd")))
+               (substitute* asd
+                 (("  :components
+")
+                  ""))
+               (substitute* asd
+                 ((" *\\(\\(:compiled-file \"cxml--system\"\\)\\)")
+                  ""))))))))))
 
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
@@ -6092,3 +6186,384 @@ cookie headers, cookie creation, cookie jar creation and more.")
       (description "Dexador is yet another HTTP client for Common Lisp with
 neat APIs and connection-pooling.  It is meant to supersede Drakma.")
       (license license:expat))))
+
+(define-public sbcl-lisp-namespace
+  (let ((commit "28107cafe34e4c1c67490fde60c7f92dc610b2e0")
+        (revision "1"))
+    (package
+      (name "sbcl-lisp-namespace")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/guicho271828/lisp-namespace")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1jw2wykp06z2afb9nm1lgfzll5cjlj36pnknjx614057zkkxq4iy"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:test-asd-file "lisp-namespace.test.asd"
+        ;; XXX: Component LISP-NAMESPACE-ASD::LISP-NAMESPACE.TEST not found
+         #:tests? #f))
+      (synopsis "LISP-N, or extensible namespaces in Common Lisp")
+      (description "Common Lisp already has major 2 namespaces, function
+namespace and value namespace (or variable namespace), but there are actually
+more — e.g., class namespace.
+This library offers macros to deal with symbols from any namespace.")
+      (license license:llgpl))))
+
+(define-public sbcl-trivial-cltl2
+  (let ((commit "8eec8407df833e8f27df8a388bc10913f16d9e83")
+        (revision "1"))
+    (package
+      (name "sbcl-trivial-cltl2")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1.1" revision commit))
+      (home-page "https://github.com/Zulu-Inuoe/trivial-cltl2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1dyyxz17vqv8hlfwq287gl8xxbvcnq798ajb7p5jdjz91wqf4bgk"))))
+      (synopsis "Simple CLtL2 compatibility layer for Common Lisp")
+      (description "This library is a portable compatibility layer around
+\"Common Lisp the Language, 2nd
+Edition\" (@url{https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node102.html})
+and it exports symbols from implementation-specific packages.")
+      (license license:llgpl))))
+
+(define-public sbcl-introspect-environment
+  (let ((commit "fff42f8f8fd0d99db5ad6c5812e53de7d660020b")
+        (revision "1"))
+    (package
+      (name "sbcl-introspect-environment")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/Bike/introspect-environment")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i305n0wfmpac63ni4i3vixnnkl8daw5ncxy0k3dv92krgx6qzhp"))))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Common Lisp environment introspection portability layer")
+      (description "This library is a small interface to portable but
+nonstandard introspection of Common Lisp environments.  It is intended to
+allow a bit more compile-time introspection of environments in Common Lisp.
+
+Quite a bit of information is available at the time a macro or compiler-macro
+runs; inlining info, type declarations, that sort of thing.  This information
+is all standard - any Common Lisp program can @code{(declare (integer x))} and
+such.
+
+This info ought to be accessible through the standard @code{&environment}
+parameters, but it is not.  Several implementations keep the information for
+their own purposes but do not make it available to user programs, because
+there is no standard mechanism to do so.
+
+This library uses implementation-specific hooks to make information available
+to users.  This is currently supported on SBCL, CCL, and CMUCL.  Other
+implementations have implementations of the functions that do as much as they
+can and/or provide reasonable defaults.")
+      (license license:wtfpl2))))
+
+(define-public sbcl-type-i
+  (let ((commit "dea233f45f94064105ec09f0767de338f67dcbe2")
+        (revision "1"))
+    (package
+      (name "sbcl-type-i")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/guicho271828/type-i")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "039g5pbrhh65s0bhr9314gmd2nwc2y5lp2377c5qrc2lxky89qs3"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("introspect-environment" ,sbcl-introspect-environment)
+         ("trivia.trivial" ,sbcl-trivia.trivial)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       `(#:test-asd-file "type-i.test.asd"))
+      (synopsis "Type inference utility on unary predicates for Common Lisp")
+      (description "This library tries to provide a way to detect what kind of
+type the given predicate is trying to check.  This is different from inferring
+the return type of a function.")
+      (license license:llgpl))))
+
+(define-public sbcl-optima
+  (let ((commit "373b245b928c1a5cce91a6cb5bfe5dd77eb36195")
+        (revision "1"))
+    (package
+      (name "sbcl-optima")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/m2ym/optima")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1yw4ymq7ms89342kkvb3aqxgv0w38m9kd8ikdqxxzyybnkjhndal"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("eos" ,sbcl-eos)))
+      (arguments
+       ;; XXX: Circular dependencies: tests depend on optima.ppcre which depends on optima.
+       `(#:tests? #f
+         #:test-asd-file "optima.test.asd"))
+      (synopsis "Optimized pattern matching library for Common Lisp")
+      (description "Optima is a fast pattern matching library which uses
+optimizing techniques widely used in the functional programming world.")
+      (license license:expat))))
+
+(define-public sbcl-fare-quasiquote
+  (package
+    (name "sbcl-fare-quasiquote")
+    (build-system asdf-build-system/sbcl)
+    (version "20171130")
+    (home-page "http://common-lisp.net/project/fare-quasiquote")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/fare-quasiquote/"
+                           (date->string (string->date version "~Y~m~d") "~Y-~m-~d")
+                           "/fare-quasiquote-"
+                           version
+                           "-git.tgz"))
+       (sha256
+        (base32
+         "00brmh7ndsi0c97nibi8cy10j3l4gmkyrfrr5jr5lzkfb7ngyfqa"))))
+    (inputs
+     `(("fare-utils" ,sbcl-fare-utils)))
+    (arguments
+     ;; XXX: Circular dependencies: Tests depend on subsystems, which depend on the main systems.
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         ;; XXX: Require 1.0.0 version of fare-utils, and we package some
+         ;; commits after 1.0.0.5, but ASDF fails to read the
+         ;; "-REVISION-COMMIT" part generated by Guix.
+         (add-after 'unpack 'patch-requirement
+           (lambda _
+             (substitute* "fare-quasiquote.asd"
+               (("\\(:version \"fare-utils\" \"1.0.0\"\\)") "\"fare-utils\"")))))))
+    (synopsis "Pattern-matching friendly implementation of quasiquote for Common Lisp")
+    (description "The main purpose of this n+2nd reimplementation of
+quasiquote is enable matching of quasiquoted patterns, using Optima or
+Trivia.")
+    (license license:expat)))
+
+(define-public sbcl-fare-quasiquote-readtable
+  (package
+    (inherit sbcl-fare-quasiquote)
+    (name "sbcl-fare-quasiquote-readtable")
+    (inputs
+     `(("fare-quasiquote" ,sbcl-fare-quasiquote)
+       ("named-readtables" ,sbcl-named-readtables)))
+    (description "The main purpose of this n+2nd reimplementation of
+quasiquote is enable matching of quasiquoted patterns, using Optima or
+Trivia.
+
+This packages uses fare-quasiquote with named-readtable.")))
+
+(define-public sbcl-trivia.level0
+  (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
+        (revision "1"))
+    (package
+      (name "sbcl-trivia.level0")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/guicho271828/trivia")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "11qbab30qqnfy9mx3x9fvgcw1jbvh1qn2cqv3p8xdn2m8981jvhr"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (synopsis "Pattern matching in Common Lisp")
+      (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.")
+      (license license:llgpl))))
+
+(define-public sbcl-trivia.level1
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.level1")
+    (inputs
+     `(("trivia.level0" ,sbcl-trivia.level0)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the core patterns of Trivia.")))
+
+(define-public sbcl-trivia.level2
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.level2")
+    (inputs
+     `(("trivia.level1" ,sbcl-trivia.level1)
+       ("lisp-namespace" ,sbcl-lisp-namespace)
+       ("trivial-cltl2" ,sbcl-trivial-cltl2)
+       ("closer-mop" ,sbcl-closer-mop)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains a non-optimized pattern matcher compatible with Optima,
+with extensible optimizer interface.")))
+
+(define-public sbcl-trivia.trivial
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.trivial")
+    (inputs
+     `(("trivia.level2" ,sbcl-trivia.level2)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'create-asd-file
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib/" (%lisp-type)))
+                    (level2 (assoc-ref inputs "trivia.level2")))
+               (mkdir-p lib)
+               (install-file "trivia.trivial.asd" lib)
+               ;; XXX: This .asd does not have any component and the build
+               ;; system fails to work in this case.  We should update the
+               ;; build system to handle component-less .asd.
+               ;; TODO: How do we append to file in Guile?  It seems that
+               ;; (open-file ... "a") gets a "Permission denied".
+               (substitute* (string-append lib "/trivia.trivial.asd")
+                 (("\"\\)")
+                  (string-append "\")
+
+(progn (asdf/source-registry:ensure-source-registry)
+       (setf (gethash
+               \"trivia.level2\"
+               asdf/source-registry:*source-registry*)
+             #p\""
+                                 level2
+                                 "/share/common-lisp/sbcl-bundle-systems/trivia.level2.asd\"))")))))))))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the base level system of Trivia with a trivial optimizer.")))
+
+(define-public sbcl-trivia.balland2006
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.balland2006")
+    (inputs
+     `(("trivia.trivial" ,sbcl-trivia.trivial)
+       ("iterate" ,sbcl-iterate)
+       ("type-i" ,sbcl-type-i)
+       ("alexandria" ,sbcl-alexandria)))
+    (arguments
+     ;; Tests are done in trivia itself.
+     `(#:tests? #f))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the base level system of Trivia with a trivial optimizer.")))
+
+(define-public sbcl-trivia.ppcre
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.ppcre")
+    (inputs
+     `(("trivia.trivial" ,sbcl-trivia.trivial)
+       ("cl-ppcre" ,sbcl-cl-ppcre)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the PPCRE extention.")))
+
+(define-public sbcl-trivia.quasiquote
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.quasiquote")
+    (inputs
+     `(("trivia.trivial" ,sbcl-trivia.trivial)
+       ("fare-quasiquote" ,sbcl-fare-quasiquote)
+       ("fare-quasiquote-readtable" ,sbcl-fare-quasiquote-readtable)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the fare-quasiquote extension.")))
+
+(define-public sbcl-trivia.cffi
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia.cffi")
+    (inputs
+     `(("cffi" ,sbcl-cffi)
+       ("trivia.trivial" ,sbcl-trivia.trivial)))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.
+
+This system contains the CFFI foreign slot access extension.")))
+
+(define-public sbcl-trivia
+  (package
+    (inherit sbcl-trivia.level0)
+    (name "sbcl-trivia")
+    (inputs
+     `(("trivia.balland2006" ,sbcl-trivia.balland2006)))
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)
+       ("trivia.ppcre" ,sbcl-trivia.ppcre)
+       ("trivia.quasiquote" ,sbcl-trivia.quasiquote)
+       ("trivia.cffi" ,sbcl-trivia.cffi)
+       ("optima" ,sbcl-optima)))
+    (arguments
+     `(#:test-asd-file "trivia.test.asd"))
+    (description "Trivia is a pattern matching compiler that is compatible
+with Optima, another pattern matching library for Common Lisp.  It is meant to
+be faster and more extensible than Optima.")))

@@ -36,6 +36,7 @@ gnu/installer/steps.scm
 gnu/installer/timezone.scm
 gnu/installer/user.scm
 gnu/installer/utils.scm
+gnu/machine/ssh.scm
 gnu/packages/bootstrap.scm
 guix/build/utils.scm
 guix/scripts.scm
@@ -68,6 +69,7 @@ guix/scripts/pack.scm
 guix/scripts/weather.scm
 guix/scripts/describe.scm
 guix/scripts/processes.scm
+guix/scripts/deploy.scm
 guix/gnu-maintenance.scm
 guix/scripts/container.scm
 guix/scripts/container/exec.scm

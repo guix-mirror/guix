@@ -57,12 +57,14 @@
 (define %compression
   "zlib@openssh.com,zlib")
 
-(define* (open-ssh-session host #:key user port
+(define* (open-ssh-session host #:key user port identity
                            (compression %compression))
-  "Open an SSH session for HOST and return it.  When USER and PORT are #f, use
-default values or whatever '~/.ssh/config' specifies; otherwise use them.
-Throw an error on failure."
+  "Open an SSH session for HOST and return it.  IDENTITY specifies the file
+name of a private key to use for authenticating with the host.  When USER,
+PORT, or IDENTITY are #f, use default values or whatever '~/.ssh/config'
+specifies; otherwise use them.  Throw an error on failure."
   (let ((session (make-session #:user user
+                               #:identity identity
                                #:host host
                                #:port port
                                #:timeout 10       ;seconds

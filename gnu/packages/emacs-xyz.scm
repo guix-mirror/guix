@@ -2225,18 +2225,20 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "4.5")
+    (version "4.10")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://gitlab.com/pidu/git-timemachine"
-                           "/-/archive/" version
-                           "/git-timemachine-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/pidu/git-timemachine.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ii40qcincasg7s1yrvqcxkqcqzb4sfs7gcxscn6m4x4ans165zy"))))
+         "08zsn3lsnnf01wkv5ls38jga02s5dnf0j3gigy4qd6im3j3d04m1"))))
     (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-transient" ,emacs-transient)))
     (home-page "https://gitlab.com/pidu/git-timemachine")
     (synopsis "Step through historic versions of Git-controlled files")
     (description "This package enables you to step through historic versions
@@ -2575,7 +2577,7 @@ as horizontal rules.")
 (define-public emacs-simple-httpd
   (package
     (name "emacs-simple-httpd")
-    (version "1.4.6")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -2584,9 +2586,9 @@ as horizontal rules.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qmkc0w28l53zzf5yd2grrk1sq222g5qnsm35ph25s1cfvc1qb2g"))))
+        (base32 "0dpn92rg813c4pq7a1vzj3znyxzp2lmvxqz6pzcqi0l2xn5r3wvb"))))
     (build-system emacs-build-system)
-    (home-page "https://github.com/skeeto/emacs-http-server")
+    (home-page "https://github.com/skeeto/emacs-web-server")
     (synopsis "HTTP server in pure Emacs Lisp")
     (description
      "This package provides a simple HTTP server written in Emacs Lisp to
@@ -2596,7 +2598,7 @@ serve files and directory listings.")
 (define-public emacs-skewer-mode
   (package
     (name "emacs-skewer-mode")
-    (version "1.6.2")
+    (version "1.8.0")
     (source
      (origin
        (method git-fetch)
@@ -2605,7 +2607,7 @@ serve files and directory listings.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "05jndz0c26q60s416vqgvr66axdmxb7qsr2g70fvl5iqavnayhpv"))))
+        (base32 "1ha7jl7776pk1bki5zj2q0jy66450mn8xr3aqjc0m9kj3gc9qxgw"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-simple-httpd" ,emacs-simple-httpd)
@@ -4075,6 +4077,30 @@ organizer.")
 It is built on top of the custom theme support in Emacs 24 or later.")
     (license license:gpl3+)))
 
+(define-public emacs-moe-theme-el
+  (let ((commit "6e086d855d6bb446bbd1090742815589a81a915f")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-moe-theme-el")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kuanyui/moe-theme.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0xj4wfd7h4jqnr193pizm9frf6lmwjr0dsdv2l9mqh9k691z1dnc"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kuanyui/moe-theme.el")
+      (synopsis "Anime-inspired color themes")
+      (description
+       "This package provides vibrant color schemes with light and dark
+variants.")
+      (license license:gpl3+))))
+
 (define-public emacs-solarized-theme
   (package
     (name "emacs-solarized-theme")
@@ -4523,7 +4549,7 @@ fully-functional one.")
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
-    (version "0.14.0")
+    (version "0.15.0")
     (source
      (origin
        (method git-fetch)
@@ -4533,7 +4559,7 @@ fully-functional one.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ln4z2796ycy33g5jcxkqvm7638qxy4sipsab7d2864hh700cikg"))))
+         "0fapvhmhgc9kppf3bvkgry0cd7gyilg7sfvlscfrfjxpx4xvwsfy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
@@ -4757,25 +4783,26 @@ a temporary @code{keep-lines} or @code{occur}.")
     (license license:gpl3+)))
 
 (define-public emacs-zoutline
-  (let ((commit "b3ee0f0e0b916838c2d2c249beba74ffdb8d5699")
-        (revision "0"))
-    (package
-      (name "emacs-zoutline")
-      (version (git-version "0.1" revision commit))
-      (home-page "https://github.com/abo-abo/zoutline")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
-                (sha256
-                 (base32
-                  "0sd0017piw0dis6dhpq5dkqd3acisxqgipl7dj8gmc1vnswhdwr8"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (synopsis "Simple outline library")
-      (description
-       "This library provides helpers for outlines.  Outlines allow users to
+  (package
+    (name "emacs-zoutline")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/zoutline")
+             (commit version)))
+       (sha256
+        (base32
+         "1w0zh6vs7klgivq5r030a82mcfg1zwic4x3fimyiqyg5n8p67hyx"))
+       (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/zoutline")
+    (synopsis "Simple outline library")
+    (description
+     "This library provides helpers for outlines.  Outlines allow users to
 navigate code in a tree-like fashion.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-lispy
   (package
@@ -4833,6 +4860,36 @@ suited towards Evil users.  It can serve as a minimal layer on top of lispy
 for better integration with Evil, but it does not require the use of lispy’s
 keybinding style.  The provided commands allow for editing Lisp in normal
 state and will work even without lispy being enabled.")
+      (license license:gpl3+))))
+
+(define-public emacs-lpy
+  (let ((commit "553d28f7b6523ae5d44d34852ab770b871b0b0ad")
+        (version "0.1.0")
+        (revision "1"))
+    (package
+      (name "emacs-lpy")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/lpy")
+               (commit commit)))
+         (sha256
+          (base32
+           "0kl9b3gga18cwv5cq4db8i6b7waj6mp3h2l7qjnp7wq6dpvwhn0i"))
+         (file-name (git-file-name name version))))
+      (propagated-inputs
+       `(("emacs-zoutline" ,emacs-zoutline)
+         ("emacs-lispy" ,emacs-lispy)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/abo-abo/lpy")
+      (synopsis "Modal editing for Python")
+      (description
+       "This package provides a minor mode for Python that binds useful
+commands to unprefixed keys, such as @code{j} or @code{e}, under certain
+circumstances, and leaves the keys untouched outside of those situations,
+allowing unprefixed keys to insert their respective characters as expected.")
       (license license:gpl3+))))
 
 (define-public emacs-clojure-mode
@@ -6103,28 +6160,33 @@ Emacs that Evil does not cover properly by default, such as @code{help-mode},
       (license license:gpl3+))))
 
 (define-public emacs-goto-chg
-  (package
-    (name "emacs-goto-chg")
-    (version "1.6")
-    (source
-     (origin
-       (method url-fetch)
-       ;; There is no versioned source.
-       (uri "https://www.emacswiki.org/emacs/download/goto-chg.el")
-       (file-name (string-append "goto-chg-" version ".el"))
-       (sha256
-        (base32
-         "078d6p4br5vips7b9x4v6cy0wxf6m5ij9gpqd4g33bryn22gnpij"))))
-    (build-system emacs-build-system)
-    ;; There is no other home page.
-    (home-page "https://www.emacswiki.org/emacs/goto-chg.el")
-    (synopsis "Go to the last change in the Emacs buffer")
-    (description
-     "This package provides @code{M-x goto-last-change} command that goes to
+  (let ((commit "1829a13026c597e358f716d2c7793202458120b5")
+        (version "1.7.3")
+        (revision "1"))
+    (package
+      (name "emacs-goto-chg")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-evil/goto-chg")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1y603maw9xwdj3qiarmf1bp13461f9f5ackzicsbynl0i9la3qki"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-undo-tree" ,emacs-undo-tree)))
+      (home-page "https://github.com/emacs-evil/goto-chg")
+      (synopsis "Go to the last change in the Emacs buffer")
+      (description
+       "This package provides @code{M-x goto-last-change} command that goes to
 the point of the most recent edit in the current Emacs buffer.  When repeated,
 go to the second most recent edit, etc.  Negative argument, @kbd{C-u -}, is
 used for reverse direction.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-janpath-evil-numbers
   (let ((commit "d988041c1fe6e941dc8d591390750b237f71f524")
@@ -8321,13 +8383,13 @@ highlighting.")
     (license license:gpl3+)))
 
 (define-public emacs-restclient
-  (let ((commit "07a3888bb36d0e29608142ebe743b4362b800f40")
-        (revision "1"))                 ;Guix package revision,
+  (let ((commit "422ee8d8b077dffe65706a0f027ed700b84746bc")
+        (version "0")
+        (revision "2"))                 ;Guix package revision,
                                         ;upstream doesn't have official releases
     (package
       (name "emacs-restclient")
-      (version (string-append revision "."
-                              (string-take commit 7)))
+      (version (git-version version revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -8335,7 +8397,7 @@ highlighting.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "00lmjhb5im1kgrp54yipf1h9pshxzgjlg71yf2rq5n973gvb0w0q"))
+                  "067nin7vxkdpffxa0q61ybv7szihhvpdinivmci9qkbb86rs9kkz"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
@@ -9168,33 +9230,25 @@ contexts.
 (define-public emacs-polymode
   (package
     (name "emacs-polymode")
-    (version "0.1.5")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (url "https://github.com/vspinu/polymode.git")
+                    (url "https://github.com/polymode/polymode.git")
                     (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0wwphs54jx48a3ca6x1qaz56j3j9bg4mv8g2akkffrzbdcb8sbc7"))))
+                "04v0gnzfsjb50bgly6kvpryx8cyzwjaq2llw4qv9ijw1l6ixmq3b"))))
     (build-system emacs-build-system)
-    (arguments
-     `(#:include (cons* "^modes/.*\\.el$" %default-include)
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'set-emacs-load-path 'add-modes-subdir-to-load-path
-           (lambda _
-             (setenv "EMACSLOADPATH"
-                     (string-append (getenv "EMACSLOADPATH")
-                                    ":" (getcwd) "/modes" ":")))))))
-    (home-page "https://github.com/vspinu/polymode")
+    (home-page "https://github.com/polymode/polymode")
     (synopsis "Framework for multiple Emacs modes based on indirect buffers")
-    (description "Polymode is an Emacs package that offers generic support
-for multiple major modes inside a single Emacs buffer.  It is lightweight,
-object oriented and highly extensible.  Creating a new polymode typically
-takes only a few lines of code.  Polymode also provides extensible facilities
-for external literate programming tools for exporting, weaving and tangling.")
+    (description
+     "Polymode is an Emacs package that offers generic support for multiple
+major modes inside a single Emacs buffer.  It is lightweight, object oriented
+and highly extensible.  Creating a new polymode typically takes only a few
+lines of code.  Polymode also provides extensible facilities for external
+literate programming tools for exporting, weaving and tangling.")
     (license license:gpl3+)))
 
 (define-public emacs-polymode-ansible
@@ -9225,6 +9279,33 @@ for external literate programming tools for exporting, weaving and tangling.")
       (description
        "Edit YAML files for Ansible containing embedded Jinja2 templating.")
       (license license:gpl3+))))
+
+(define-public emacs-polymode-org
+  (package
+    (name "emacs-polymode-org")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/polymode/poly-org.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04x6apjad4kg30456z1j4ipp64yjgkcaim6hqr6bb0rmrianqhck"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-polymode" ,emacs-polymode)))
+    (properties '((upstream-name . "poly-org")))
+    (home-page "https://github.com/polymode/poly-org")
+    (synopsis "Polymode definitions for Org mode buffers")
+    (description
+     "Provides definitions for @code{emacs-polymode} to support
+@code{emacs-org} buffers.  Edit source blocks in an Org mode buffer using the
+native modes of the blocks' languages while remaining inside the primary Org
+buffer.")
+    (license license:gpl3+)))
 
 (define-public eless
   (package
@@ -10675,33 +10756,30 @@ navigate and display hierarchy structures.")
       (license license:gpl3+))))
 
 (define-public emacs-md4rd
-  (let ((commit "c55512c2f7680db2a1e73db6bdf93adecaf40fec")
-        (revision "1"))
-    (package
-      (name "emacs-md4rd")
-      (version (string-append "0.0.2" "-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/ahungry/md4rd.git")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0mvv1mvsrpkrmikcpfqf2zbawnzgq33j6zjdrlv48mcw57xb2ak9"))))
-      (propagated-inputs
-       `(("emacs-hierarchy" ,emacs-hierarchy)
-         ("emacs-request" ,emacs-request)
-         ("emacs-dash" ,emacs-dash)
-         ("emacs-s" ,emacs-s)
-         ("emacs-tree-mode" ,emacs-tree-mode)))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/ahungry/md4rd")
-      (synopsis "Emacs Mode for Reddit")
-      (description
-       "This package allows to read Reddit from within Emacs interactively.")
-      (license license:gpl3+))))
+  (package
+    (name "emacs-md4rd")
+    (version "0.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ahungry/md4rd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n6g6k4adzkkn1g7z4j27s35xy12c1fg2r08gv345ddr3wplq4ri"))))
+    (propagated-inputs
+     `(("emacs-hierarchy" ,emacs-hierarchy)
+       ("emacs-request" ,emacs-request)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-tree-mode" ,emacs-tree-mode)))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ahungry/md4rd")
+    (synopsis "Emacs Mode for Reddit")
+    (description
+     "This package allows to read Reddit from within Emacs interactively.")
+    (license license:gpl3+)))
 
 (define-public emacs-pulseaudio-control
   (let ((commit "7e1a87068379075a5e9ce36c64c686c03d20d379")
@@ -12265,12 +12343,10 @@ bookmarks and history.")
     (license license:gpl3+)))
 
 (define-public emacs-stumpwm-mode
-  (let ((commit "8fbe071d2c6c040794060a354eb377218dc10b35")
-        (revision "1"))
+  (let ((commit "5328f85fbf6a8b08c758c17b9435368bf7a68f39"))
     (package
       (name "emacs-stumpwm-mode")
-      (version (string-append "0.0.1-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" "1" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -12279,7 +12355,7 @@ bookmarks and history.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1dfwsvz1c8w6j4jp0kzaz78ml3f5dp0a5pvf090kwpbpg176r7iq"))))
+                  "00kf4k8bqadi5s667wb96sn549v2kvw01zwszjrg7nhd805m1ng6"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -12552,7 +12628,7 @@ the current upstream.")
 (define-public emacs-company-restclient
   (package
     (name "emacs-company-restclient")
-    (version "0.1.0")
+    (version "0.3.0")
     (source
      (origin
        (method git-fetch)
@@ -12561,7 +12637,7 @@ the current upstream.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i1fh5lvqwlgn3g3fzh0xacxyljx6gkryipn133vfkv4jbns51n4"))))
+        (base32 "0yp0hlrgcr6yy1xkjvfckys2k24x9xg7y6336ma61bdwn5lpv0x0"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
@@ -13051,14 +13127,14 @@ cohesion with the Emacs Way.")
     (version "1.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://gitlab.com/Ambrevar/emacs-fish-completion/repository/"
-             "archive.tar.gz?ref="
-             version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-fish-completion.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bpvifv6c2a65nks6kvarw0hhm37fnyy74wikwf9qq1i20va0fpv"))))
+         "1pjqnbyjmj64q5nwq1mrdxcls4fp5y0b6zqs785i0s6wdvrm4021"))))
     (build-system emacs-build-system)
     (inputs `(("fish" ,fish)))
     (arguments
@@ -13069,6 +13145,7 @@ cohesion with the Emacs Way.")
              (let ((fish (assoc-ref inputs "fish")))
                ;; Specify the absolute file names of the various
                ;; programs so that everything works out-of-the-box.
+               (make-file-writable "fish-completion.el")
                (emacs-substitute-variables
                    "fish-completion.el"
                  ("fish-completion-command"
@@ -14912,18 +14989,18 @@ opposed to character-based).")
   (package
     (name "emacs-disk-usage")
     (version "1.3.3")
-    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/disk-usage-"
-             version
-             ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/Ambrevar/emacs-disk-usage.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0h1jwznd41gi0vg830ilfgm01q05zknikzahwasm9cizwm2wyizj"))))
+         "0hv2gsd8k5fbjgckgiyisq4rn1i7y4rchbjy8kmixjv6mx563bll"))))
     (build-system emacs-build-system)
+    (home-page "https://gitlab.com/Ambrevar/emacs-disk-usage")
     (synopsis "Sort and browse disk usage listings with Emacs")
     (description "Disk Usage is a file system analyzer: it offers a tabulated
 view of file listings sorted by size.  Directory sizes are computed

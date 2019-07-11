@@ -349,13 +349,15 @@ INSTANCES."
     (resolve-dependencies instances))
 
   (define (instance->derivation instance)
-    (mcached (if (eq? instance core-instance)
-                 (build-channel-instance instance)
-                 (mlet %store-monad ((core (instance->derivation core-instance))
-                                     (deps (mapm %store-monad instance->derivation
-                                                 (edges instance))))
-                   (build-channel-instance instance core deps)))
-             instance))
+    (mlet %store-monad ((system (current-system)))
+      (mcached (if (eq? instance core-instance)
+                   (build-channel-instance instance)
+                   (mlet %store-monad ((core (instance->derivation core-instance))
+                                       (deps (mapm %store-monad instance->derivation
+                                                   (edges instance))))
+                     (build-channel-instance instance core deps)))
+               instance
+               system)))
 
   (unless core-instance
     (let ((loc (and=> (any (compose channel-location channel-instance-channel)
@@ -429,32 +431,27 @@ derivation."
 (define (channel-instances->manifest instances)
   "Return a profile manifest with entries for all of INSTANCES, a list of
 channel instances."
-  (define instance->entry
-    (match-lambda
-      ((instance drv)
-       (let ((commit  (channel-instance-commit instance))
-             (channel (channel-instance-channel instance)))
-         (with-monad %store-monad
-           (return (manifest-entry
-                     (name (symbol->string (channel-name channel)))
-                     (version (string-take commit 7))
-                     (item (if (guix-channel? channel)
-                               (if (old-style-guix? drv)
-                                   (whole-package-for-legacy
-                                    (string-append name "-" version)
-                                    drv)
-                                   drv)
-                               drv))
-                     (properties
-                      `((source (repository
-                                 (version 0)
-                                 (url ,(channel-url channel))
-                                 (branch ,(channel-branch channel))
-                                 (commit ,commit))))))))))))
+  (define (instance->entry instance drv)
+    (let ((commit  (channel-instance-commit instance))
+          (channel (channel-instance-channel instance)))
+      (manifest-entry
+        (name (symbol->string (channel-name channel)))
+        (version (string-take commit 7))
+        (item (if (guix-channel? channel)
+                  (if (old-style-guix? drv)
+                      (whole-package-for-legacy (string-append name "-" version)
+                                                drv)
+                      drv)
+                  drv))
+        (properties
+         `((source (repository
+                    (version 0)
+                    (url ,(channel-url channel))
+                    (branch ,(channel-branch channel))
+                    (commit ,commit))))))))
 
   (mlet* %store-monad ((derivations (channel-instance-derivations instances))
-                       (entries     (mapm %store-monad instance->entry
-                                          (zip instances derivations))))
+                       (entries ->  (map instance->entry instances derivations)))
     (return (manifest entries))))
 
 (define (package-cache-file manifest)

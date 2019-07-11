@@ -61,6 +61,8 @@
 ;;; Copyright © 2019 Sam <smbaines8@gmail.com>
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -667,14 +669,14 @@ other machines, such as over the network.")
 (define-public python-setuptools
   (package
     (name "python-setuptools")
-    (version "40.8.0")
+    (version "41.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "setuptools" version ".zip"))
       (sha256
        (base32
-        "0k9hifpgahnw2a26w3cr346iy733k6d3nwh3f7g9m13y6f8fqkkf"))
+        "04sns22y2hhsrwfy1mha2lgslvpjsjsz8xws7h2rh5a7ylkd28m2"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -4338,19 +4340,18 @@ services for your Python modules and applications.")
 (define-public python-olefile
   (package
     (name "python-olefile")
-    (version "0.45.1")
+    (version "0.46")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/decalage2/olefile/archive/v"
-                           version ".tar.gz"))
+       (uri (string-append "https://github.com/decalage2/olefile/releases/"
+                           "download/v" version "/olefile-" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "18ai19zwagm6nli14k8bii31ipbab2rp7plrvsm6gmfql551a8ai"))))
+         "1kjxh4gr651hpqkjfv89cfzr40hyvf3vjlda7mifiail83j7j07m"))))
     (build-system python-build-system)
-    (home-page
-     "https://www.decalage.info/python/olefileio")
+    (home-page "https://www.decalage.info/python/olefileio")
     (synopsis "Read and write Microsoft OLE2 files.")
     (description
      "@code{olefile} can parse, read and write Microsoft OLE2 files (Structured
@@ -5639,6 +5640,33 @@ implementation of D-Bus.")
     ;; "ValueError: unichr() arg not in range(0x10000) (narrow Python build)"
     (arguments `(#:tests? #f))))
 
+(define-public python-notify2
+  (package
+    (name "python-notify2")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "notify2" version))
+       (sha256
+        (base32
+         "0z8rrv9rsg1r2qgh2dxj3dfj5xnki98kgi3w839kqby4a26i1yik"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))                    ; tests depend on system state
+    (native-inputs
+     `(("python-dbus" ,python-dbus)))
+    (home-page "https://bitbucket.org/takluyver/pynotify2")
+    (synopsis "Python interface to D-Bus notifications")
+    (description
+     "Pynotify2 provides a Python interface for sending D-Bus notifications.
+It is a reimplementation of pynotify in pure Python, and an alternative to
+the GObject Introspection bindings to libnotify for non-GTK applications.")
+    (license (list license:bsd-2
+                   license:lgpl2.1+))))
+
+(define-public python2-notify2
+  (package-with-python2 python-notify2))
+
 (define-public python-lxml
   (package
     (name "python-lxml")
@@ -5713,14 +5741,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-soupsieve
   (package
     (name "python-soupsieve")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "soupsieve" version))
        (sha256
         (base32
-         "1jnzkiwmjl6yvqckc9mf689g87b6yz07sv868hap2aa5arggy3mj"))))
+         "0in9rc9q3h8w5b4qf7kvl3qxcvw6vrz35ckblchgf70hm6pg3dbj"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     ;;XXX: 2 tests fail currently despite claming they were to be
@@ -6873,6 +6901,41 @@ and MAC network addresses.")
 
 (define-public python2-netaddr
   (package-with-python2 python-netaddr))
+
+(define-public python2-pyroute2
+  (package
+    (name "python2-pyroute2")
+    (version "0.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyroute2" version))
+       (sha256
+        (base32
+         "1gmz4r1w0yzj6fjjypnalmfyy0lnfznydyn62gi3wk50j5hhxbny"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))                       ;Python 3.x is not supported
+    (home-page "https://github.com/svinota/pyroute2")
+    (synopsis "Python netlink library")
+    (description
+     "Pyroute2 is a pure Python netlink library with minimal dependencies.
+Supported netlink families and protocols include:
+@itemize
+@item rtnl, network settings - addresses, routes, traffic controls
+@item nfnetlink - netfilter API: ipset, nftables, ...
+@item ipq - simplest userspace packet filtering, iptables QUEUE target
+@item devlink - manage and monitor devlink-enabled hardware
+@item generic - generic netlink families
+  @itemize
+  @item nl80211 - wireless functions API (basic support)
+  @item taskstats - extended process statistics
+  @item acpi_events - ACPI events monitoring
+  @item thermal_events - thermal events monitoring
+  @item VFS_DQUOT - disk quota events monitoring
+  @end itemize
+@end itemize")
+    (license license:gpl2+)))
 
 (define-public python-wrapt
   (package
@@ -15760,6 +15823,42 @@ by Igor Pavlov.")
 (define-public python2-pylzma
   (package-with-python2 python-pylzma))
 
+(define-public python2-zeroconf
+  (package
+    (name "python2-zeroconf")
+
+    ;; This is the last version that supports Python 2.x.
+    (version "0.19.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "zeroconf" version))
+       (sha256
+        (base32
+         "0ykzg730n915qbrq9bn5pn06bv6rb5zawal4sqjyfnjjm66snkj3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-requires
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("enum-compat")
+                "enum34"))
+             #t)))))
+    (native-inputs
+     `(("python2-six" ,python2-six)
+       ("python2-enum32" ,python2-enum34)
+       ("python2-netifaces" ,python2-netifaces)
+       ("python2-typing" ,python2-typing)))
+    (home-page "https://github.com/jstasiak/python-zeroconf")
+    (synopsis "Pure Python mDNS service discovery")
+    (description
+     "Pure Python multicast DNS (mDNS) service discovery library (Bonjour/Avahi
+compatible).")
+    (license license:lgpl2.1+)))
+
 (define-public python-bsddb3
   (package
     (name "python-bsddb3")
@@ -15796,3 +15895,24 @@ hash, recno, and queue.  Complete support of Berkeley DB distributed
 transactions.  Complete support for Berkeley DB Replication Manager.
 Complete support for Berkeley DB Base Replication.  Support for RPC.")
     (license license:bsd-3)))
+
+(define-public python-dbfread
+  (package
+    (name "python-dbfread")
+    (version "2.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "dbfread" version))
+              (sha256
+               (base32
+                "0gdpwdzf1fngsi6jrdyj4qdf6cr7gnnr3zp80dpkzbgz0spskj07"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://dbfread.readthedocs.io")
+    (synopsis "Read DBF Files with Python")
+    (description
+     "This library reads DBF files and returns the data as native Python data
+types for further processing.  It is primarily intended for batch jobs and
+one-off scripts.")
+    (license license:expat)))

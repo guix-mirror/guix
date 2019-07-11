@@ -7237,25 +7237,6 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
-(define-public r-biocinstaller
-  (package
-    (name "r-biocinstaller")
-    (version "1.32.1")
-    (source (origin
-              (method url-fetch)
-              (uri (bioconductor-uri "BiocInstaller" version))
-              (sha256
-               (base32
-                "1s1f9qhyf3mc73ir25x2zlgi9hf45a37lg4z8fbva4i21hqisgsl"))))
-    (properties
-     `((upstream-name . "BiocInstaller")))
-    (build-system r-build-system)
-    (home-page "https://bioconductor.org/packages/BiocInstaller")
-    (synopsis "Install Bioconductor packages")
-    (description "This package is used to install and update R packages from
-Bioconductor, CRAN, and Github.")
-    (license license:artistic2.0)))
-
 (define-public r-biocviews
   (package
     (name "r-biocviews")
@@ -13622,10 +13603,10 @@ sequencing data.")
 
 (define-public r-xbioc
   (let ((revision "1")
-        (commit "f798c187e376fd1ba27abd559f47bbae7e3e466b"))
+        (commit "6ff0670a37ab3036aaf1d94aa4b208310946b0b5"))
     (package
       (name "r-xbioc")
-      (version (git-version "0.1.15" revision commit))
+      (version (git-version "0.1.16" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -13634,13 +13615,13 @@ sequencing data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "03hffh2f6z71y6l6dqpa5cql3hdaw7zigdi8sm2dzgx379k9rgrr"))))
+                  "0w8bsq5myiwkfhh83nm6is5ichiyvwa1axx2szvxnzq39x6knf66"))))
       (build-system r-build-system)
       (propagated-inputs
        `(("r-annotationdbi" ,r-annotationdbi)
          ("r-assertthat" ,r-assertthat)
          ("r-biobase" ,r-biobase)
-         ("r-biocinstaller" ,r-biocinstaller)
+         ("r-biocmanager" ,r-biocmanager)
          ("r-digest" ,r-digest)
          ("r-pkgmaker" ,r-pkgmaker)
          ("r-plyr" ,r-plyr)
@@ -14067,11 +14048,11 @@ choosing which reads pass the filter.")
   ;; <https://github.com/jts/nanopolish#installing-a-particular-release>.
   ;; Also, the differences between release and current version seem to be
   ;; significant.
-  (let ((commit "50e8b5cc62f9b46f5445f5c5e8c5ab7263ea6d9d")
+  (let ((commit "6331dc4f15b9dfabb954ba3fae9d76b6c3ca6377")
         (revision "1"))
     (package
       (name "nanopolish")
-      (version (git-version "0.10.2" revision commit))
+      (version (git-version "0.11.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14081,7 +14062,7 @@ choosing which reads pass the filter.")
                (recursive? #t)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "09j5gz57yr9i34a27vbl72i4g8syv2zzgmsfyjq02yshmnrvkjs6"))
+          (base32 "15ikl3d37y49pwd7vx36xksgsqajhf24q7qqsnpl15dqqyy5qgbc"))
          (modules '((guix build utils)))
          (snippet
           '(begin

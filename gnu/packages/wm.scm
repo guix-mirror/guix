@@ -268,8 +268,8 @@ Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
 
 (define-public i3blocks
-  (let ((commit "37f23805ff886639163fbef8aedba71c8071eff8")
-        (revision "1"))
+  (let ((commit "ec050e79ad8489a6f8deb37d4c20ab10729c25c3")
+        (revision "2"))
     (package
       (name "i3blocks")
       (version (string-append "1.4-" revision "."
@@ -281,7 +281,7 @@ Despite the name it should work with any X11 window manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "15rnrcajzyrmhlz1a21qqsjlj3dkib70806dlb386fliylc2kisb"))
+                  "1fx4230lmqa5rpzph68dwnpcjfaaqv5gfkradcr85hd1z8d1qp1b"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments

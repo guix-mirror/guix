@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2017 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
@@ -70,14 +70,14 @@
 (define-public libraw
   (package
     (name "libraw")
-    (version "0.19.2")
+    (version "0.19.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.libraw.org/data/LibRaw-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0i4nhjm5556xgn966x0i503ygk2wafq6z83kg0lisacjjab4f3a0"))))
+                "0xs1qb6pcvc4c43fy5xi3nkqxcif77gakkw99irf0fc5iccdd5px"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -117,7 +117,8 @@ cameras (CRW/CR2, NEF, RAF, DNG, and others).")
               (uri (string-append "mirror://sourceforge/libexif/libexif/"
                                   version "/libexif-" version ".tar.bz2"))
               (patches (search-patches "libexif-CVE-2016-6328.patch"
-                                       "libexif-CVE-2017-7544.patch"))
+                                       "libexif-CVE-2017-7544.patch"
+                                       "libexif-CVE-2018-20030.patch"))
               (sha256
                (base32
                 "06nlsibr3ylfwp28w8f5466l6drgrnydgxrm4jmxzrmk5svaxk8n"))))
@@ -445,7 +446,7 @@ and enhance them.")
     (inputs
      `(("boost" ,boost)
        ("enblend-enfuse" ,enblend-enfuse)
-       ("exiv2" ,exiv2)
+       ("exiv2" ,exiv2-0.26)
        ("fftw" ,fftw)
        ("flann" ,flann)
        ("freeglut" ,freeglut)

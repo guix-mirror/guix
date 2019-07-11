@@ -227,19 +227,21 @@ threads implementation.
 In contrast to GNU Pth is is based on the system's standard threads
 implementation.  This allows the use of libraries which are not
 compatible to GNU Pth.")
-    (license (list license:lgpl3+ license:gpl2+)))) ; dual license
+    (license (list license:lgpl3+ license:gpl2+)) ; dual license
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/npth")))))
 
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.2.16")
+    (version "2.2.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1jqlzp9b3kpfp1dkjqskm67jjrhvf9nh3lzf45321p7m9d2qvgkc"))))
+                "056mgy09lvsi03531a437qj58la1j2x1y1scvfi53diris3658mg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -404,7 +406,9 @@ Because the direct use of GnuPG from an application can be a complicated
 programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/gpgme")))))
 
 (define-public qgpgme
   (package
@@ -550,14 +554,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.4.3")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "03dc8whhvk7ccspbk8vzfhkxli8cd9zfbss5p597g4jldgy8s59d"))))
+         "03pvjyp6q9pr8qa22i38az06ddzhvzy5kj192hxa3gbhnchg1nj5"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -915,14 +919,14 @@ them to transform your existing public key into a secret key.")
 (define-public gpa
   (package
     (name "gpa")
-    (version "0.9.10")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gpa/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "09xphbi2456qynwqq5n0yh0zdmdi2ggrj3wk4hsyh5lrzlvcrff3"))))
+                "1cbpc45f8qbdkd62p12s3q2rdq6fa5xdzwmcwd3xrj55bzkspnwm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -938,7 +942,9 @@ them to transform your existing public key into a secret key.")
      "GPA, the GNU Privacy Assistant, is a graphical user interface for
 @uref{https://gnupg.org, GnuPG}.  It can be used to encrypt, decrypt, and sign
 files, to verify signatures, and to manage the private and public keys.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/gpa")))))
 
 (define-public parcimonie
   (package

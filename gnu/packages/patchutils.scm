@@ -307,7 +307,7 @@ you to figure out what is going on in that merge you keep avoiding.")
 (define-public patchwork
   (package
     (name "patchwork")
-    (version "2.1.2")
+    (version "2.1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -316,7 +316,7 @@ you to figure out what is going on in that merge you keep avoiding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06ng5pv6744w98zkyfm0ldkmpdgnsql3gbbbh6awq61sr2ndr3qw"))))
+                "0zi1hcqb0pi2diyznbv0c1631qk4rx02zl8ghyrr59g3ljlyr18y"))))
     (build-system python-build-system)
     (arguments
      `(;; TODO: Tests require a running database

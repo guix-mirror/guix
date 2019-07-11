@@ -104,11 +104,14 @@ Invoke the garbage collector.\n"))
           '()))))
 
 (define (delete-old-generations store profile pattern)
-  "Remove the generations of PROFILE that match PATTERN, a duration pattern.
-Do nothing if none matches."
+  "Remove the generations of PROFILE that match PATTERN, a duration pattern;
+do nothing if none matches.  If PATTERN is #f, delete all generations but the
+current one."
   (let* ((current (generation-number profile))
-         (numbers (matching-generations pattern profile
-                                        #:duration-relation >)))
+         (numbers (if (not pattern)
+                      (profile-generations profile)
+                      (matching-generations pattern profile
+                                            #:duration-relation >))))
 
     ;; Make sure we don't inadvertently remove the current generation.
     (delete-generations store profile (delv current numbers))))
@@ -155,8 +158,7 @@ is deprecated; use '-D'~%"))
                         (when (and arg (not (string->duration arg)))
                           (leave (G_ "~s does not denote a duration~%")
                                  arg))
-                        (alist-cons 'delete-generations (or arg "")
-                                    result)))))
+                        (alist-cons 'delete-generations arg result)))))
         (option '("optimize") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'optimize
@@ -287,9 +289,9 @@ is deprecated; use '-D'~%"))
          (assert-no-extra-arguments)
          (let ((min-freed  (assoc-ref opts 'min-freed))
                (free-space (assoc-ref opts 'free-space)))
-           (match (assoc-ref opts 'delete-generations)
+           (match (assq 'delete-generations opts)
              (#f #t)
-             ((? string? pattern)
+             ((_ . pattern)
               (delete-generations store pattern)))
            (cond
             (free-space

@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Jack Hill <jackhill@jackhill.us>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,6 +93,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
@@ -864,14 +866,14 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.13")
+    (version "9.6.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "197964wb5pc5fx81a6mh9hlcrr9sgr3nqlpmljv6asi9aq0d5gpc"))))))
+                "08hsqczy1ixkjyf2vr3s9x69agfz9yr8lh31fir4z0dfr5jw421z"))))))
 
 (define-public python-pymysql
   (package
@@ -3080,3 +3082,24 @@ NumPy, and other traditional Python scientific computing packages.")
 
 (define-public python2-pyarrow
   (package-with-python2 python-pyarrow))
+
+(define-public python-crate
+  (package
+    (name "python-crate")
+    (version "0.23.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "crate" version))
+              (sha256
+               (base32
+                "0s3s7yg4m2zflg9q96aibwb5hizsn10ql63fsj6h5z624qkavnlp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/crate/crate-python")
+    (synopsis "CrateDB Python client")
+    (description
+     "This package provides a Python client library for CrateDB.
+It implements the Python DB API 2.0 specification and includes support for
+SQLAlchemy.")
+    (license license:asl2.0)))

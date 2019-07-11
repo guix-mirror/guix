@@ -1062,7 +1062,7 @@ color temperature should be set to match the lamps in your room.")
 (define-public xscreensaver
   (package
     (name "xscreensaver")
-    (version "5.42")
+    (version "5.43")
     (source
      (origin
        (method url-fetch)
@@ -1070,11 +1070,10 @@ color temperature should be set to match the lamps in your room.")
         (string-append "https://www.jwz.org/xscreensaver/xscreensaver-"
                        version ".tar.gz"))
        (sha256
-        (base32
-         "1qfbsnj7201d03vf0b2lzxmlcq4kvkvzp48r5gcgsjr17c1sl7a4"))))
+        (base32 "1571pj1a9998sq14y9366s2rw9wd2kq3l3dvvsk610vyd0fki3qm"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'adjust-gtk-resource-paths
@@ -1085,9 +1084,7 @@ color temperature should be set to match the lamps in your room.")
              #t)))
        #:configure-flags '("--with-pam" "--with-proc-interrupts"
                            "--without-readdisplay")
-       ;; FIXME: Remove CFLAGS once our default compiler is GCC6 or later.
-       #:make-flags (list "CFLAGS=-std=c99"
-                          (string-append "AD_DIR="
+       #:make-flags (list (string-append "AD_DIR="
                                          (assoc-ref %outputs "out")
                                          "/usr/lib/X11/app-defaults"))))
     (native-inputs

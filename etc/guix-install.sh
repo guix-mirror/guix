@@ -3,6 +3,7 @@
 # Copyright © 2017 sharlatan <sharlatanus@gmail.com>
 # Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+# Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 #
 # This file is part of GNU Guix.
 #
@@ -85,14 +86,12 @@ _debug()
 
 chk_require()
 { # Check that every required command is available.
-    declare -a cmds
     declare -a warn
-
-    cmds=(${1})
+    local c
 
     _debug "--- [ $FUNCNAME ] ---"
 
-    for c in ${cmds[@]}; do
+    for c in "$@"; do
         command -v "$c" &>/dev/null || warn+=("$c")
     done
 
@@ -101,8 +100,15 @@ chk_require()
           return 1; }
     
     _msg "${PAS}verification of required commands completed"
+}
 
-    gpg --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
+chk_gpg_keyring()
+{ # Check whether the Guix release signing public key is present.
+    _debug "--- [ $FUNCNAME ] ---"
+
+    # Without --dry-run this command will create a ~/.gnupg owned by root on
+    # systems where gpg has never been used, causing errors and confusion.
+    gpg --dry-run --list-keys ${OPENPGP_SIGNING_KEY_ID} >/dev/null 2>&1 || (
         _err "${ERR}Missing OpenPGP public key.  Fetch it with this command:"
         echo "  wget https://sv.gnu.org/people/viewgpg.php?user_id=15145 -qO - | gpg --import -"
         exit 1
@@ -415,7 +421,8 @@ main()
     _msg "Starting installation ($(date))"
 
     chk_term
-    chk_require "${REQUIRE[*]}"
+    chk_require "${REQUIRE[@]}"
+    chk_gpg_keyring
     chk_init_sys
     chk_sys_arch
 

@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,6 +65,26 @@
 program uses.  The display output of the program can be customized or saved
 to a file.")
     (license gpl3+)))
+
+(define-public python-pytimeparse
+  (package
+    (name "python-pytimeparse")
+    (version "1.1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytimeparse" version))
+       (sha256
+        (base32
+         "02kaambsgpjx3zi42j6l11rwms2p35b9hsk4f3kdf979gd3kcqg8"))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (build-system python-build-system)
+    (home-page "https://github.com/wroberts/pytimeparse")
+    (synopsis "Time expression parser")
+    (description "This small Python module parses various kinds of time
+expressions.")
+    (license expat)))
 
 (define-public python-pytzdata
   (package

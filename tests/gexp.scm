@@ -832,6 +832,43 @@
       (built-derivations (list drv))
       (return (equal? '(42 84) (call-with-input-file out read))))))
 
+(test-assertm "lower-gexp"
+  (mlet* %store-monad
+      ((extension -> %extension-package)
+       (extension-drv (package->derivation %extension-package))
+       (coreutils-drv (package->derivation coreutils))
+       (exp ->   (with-extensions (list extension)
+                   (with-imported-modules `((guix build utils))
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (hg2g))
+                         #$coreutils:debug
+                         mkdir-p
+                         the-answer))))
+       (lexp     (lower-gexp exp
+                             #:effective-version "2.0")))
+    (define (matching-input drv output)
+      (lambda (input)
+        (and (eq? (gexp-input-thing input) drv)
+             (string=? (gexp-input-output input) output))))
+
+    (mbegin %store-monad
+      (return (and (find (matching-input extension-drv "out")
+                         (lowered-gexp-inputs (pk 'lexp lexp)))
+                   (find (matching-input coreutils-drv "debug")
+                         (lowered-gexp-inputs lexp))
+                   (member (string-append
+                            (derivation->output-path extension-drv)
+                            "/share/guile/site/2.0")
+                           (lowered-gexp-load-path lexp))
+                   (= 2 (length (lowered-gexp-load-path lexp)))
+                   (member (string-append
+                            (derivation->output-path extension-drv)
+                            "/lib/guile/2.0/site-ccache")
+                           (lowered-gexp-load-compiled-path lexp))
+                   (= 2 (length (lowered-gexp-load-compiled-path lexp)))
+                   (eq? (lowered-gexp-guile lexp) (%guile-for-build)))))))
+
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
       ((one (text-file "one" (random-text)))

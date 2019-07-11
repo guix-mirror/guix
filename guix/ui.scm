@@ -835,8 +835,7 @@ check and report what is prerequisites are available for download."
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
-        (substitution-oracle store (map derivation-input-derivation inputs)
-                             #:mode mode)
+        (substitution-oracle store inputs #:mode mode)
         (const #f)))
 
   (let*-values (((build download)
@@ -844,18 +843,6 @@ check and report what is prerequisites are available for download."
                                         #:mode mode
                                         #:substitutable-info
                                         substitutable-info))
-                ((download)                   ; add the references of DOWNLOAD
-                 (if use-substitutes?
-                     (delete-duplicates
-                      (append download
-                              (filter-map (lambda (item)
-                                            (if (valid-path? store item)
-                                                #f
-                                                (substitutable-info item)))
-                                          (append-map
-                                           substitutable-references
-                                           download))))
-                     download))
                 ((graft hook build)
                  (match (fold (lambda (drv acc)
                                 (let ((file (derivation-file-name drv)))
@@ -1497,7 +1484,11 @@ DURATION-RELATION with the current time."
         ((string->duration str)
          =>
          filter-by-duration)
-        (else #f)))
+        (else
+         (raise
+          (condition (&message
+                      (message (format #f (G_ "invalid syntax: ~a~%")
+                                       str))))))))
 
 (define (display-generation profile number)
   "Display a one-line summary of generation NUMBER of PROFILE."

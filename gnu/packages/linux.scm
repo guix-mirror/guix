@@ -421,8 +421,8 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.16")
-(define %linux-libre-hash "055vs2g6z6wx34qvi0aw952x9q3drbj7z27s7g7pks6w730xkga8")
+(define %linux-libre-version "5.1.17")
+(define %linux-libre-hash "049mij4z1iilrggw6plfdpcj1lnc1vqz5z445ix9677cq1fmiwlh")
 
 (define %linux-libre-5.1-patches
   (list %boot-logo-patch
@@ -439,8 +439,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.57")
-(define %linux-libre-4.19-hash "0p9b27hfbzppxgad9q2g7nvfzv0phzdsk16sqy87q3dglc8wqrqq")
+(define %linux-libre-4.19-version "4.19.58")
+(define %linux-libre-4.19-hash "0i2mh0zk1h1niba1bpd49bn938sdn3qrwzkqpqzimxnj31xcjhyz")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -457,8 +457,8 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre-headers %linux-libre-4.19-version
                             %linux-libre-4.19-hash))
 
-(define %linux-libre-4.14-version "4.14.132")
-(define %linux-libre-4.14-hash "0mvp4izw21f8w5kkk8qm8m8b7qjxbp8hshgffdlh1aik41zvcnyq")
+(define %linux-libre-4.14-version "4.14.133")
+(define %linux-libre-4.14-hash "16ay2x0r5i96lg4rgcg151352igvwxa7wh98kwdsjbckiw7fhn08")
 
 (define-public linux-libre-4.14
   (make-linux-libre %linux-libre-4.14-version
@@ -471,14 +471,14 @@ It has been modified to remove all non-free binary blobs.")
                             %linux-libre-4.14-hash))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.184"
-                    "0q3ggndwf0rwsb3xv33zl9awkd1803h2l9b4g6d6ps3f2sjxwxwa"
+  (make-linux-libre "4.9.185"
+                    "1byz9cxvslm45nv01abhzvrm2isdskx5k11gi5rpa39r7lx6bmjp"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.184"
-                    "05v295wk9fid17n5plkx6p9nwz6dvpcn2r7khwsq30sy3pg0vxv5"
+  (make-linux-libre "4.4.185"
+                    "0df22wqj1nwqp60v8341qcmjhwmdr0hgfraishpc7hic8aqdr4p7"
                     '("x86_64-linux" "i686-linux")
                     #:configuration-file kernel-config
                     #:extra-options
@@ -1402,7 +1402,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.1.0")
+    (version "5.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1410,7 +1410,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1kvvrz5mlpjxqcm7vl6i8w6l1cb2amp6p5xyq006pgzafc49hnnw"))))
+                "1a2dywa2kam24951byv9pl32mb9z6klh7d4vp8fwfgrm4vn5vfd5"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.

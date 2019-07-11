@@ -1173,15 +1173,17 @@ which can add many functionalities to the base client.")
                                "--with-tls=gnutls")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-msmtpq
+         (add-after 'install 'install-additional-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/msmtp"))
-                    (msmtpq (string-append "scripts/msmtpq")))
+                    (msmtpq "scripts/msmtpq")
+                    (vimfiles (string-append out "/share/vim/vimfiles/plugin")))
                (install-file (string-append msmtpq "/msmtpq") bin)
                (install-file (string-append msmtpq "/msmtp-queue") bin)
                (install-file (string-append msmtpq "/README.msmtpq") doc)
+               (install-file "scripts/vim/msmtp.vim" vimfiles)
                #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
@@ -2813,8 +2815,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "ea5a738010148284aed211da953ad670003aefea")
-        (revision "3"))
+  (let ((commit "ea0a28f8d5db5761765eb60043b8593901552e25")
+        (revision "4"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2826,7 +2828,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0ci5x8dqjmp74w33q2dbs5csxp4ilfmc1xxaa8q2jnh52d7597hl"))))
+                  "0b6dmi41vhssyf983blgi8a2kj3zjccc9cz7b7kvwh781ldqcywh"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases

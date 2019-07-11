@@ -5012,7 +5012,6 @@ to display dialog boxes from the commandline and shell scripts.")
        ("cairo" ,cairo)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libinput" ,libinput)
        ("libx11" ,libx11)
@@ -7206,7 +7205,7 @@ is suitable as a default application in a Desktop environment.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtksourceview" ,gtksourceview)
+     `(("gtksourceview" ,gtksourceview-3)
        ("libsm" ,libsm)))
     (home-page "https://wiki.gnome.org/Apps/Xpad")
     (synopsis "Virtual sticky note")
@@ -7572,16 +7571,16 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "0.9.521")
+    (version "1.1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "e4df2ed75c5ed71d64afcc668e579b2a/"
+                           "5a7cd7c72b6d83ae08d0c54c4691f9df/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0knsqh24siyw98vmiq6b1hzq4y4cazs9f1hq1js9c96hqqj9rvdx"))))
+         "1r5wn0bja9psz6nr1rcaysdkkwz84rbyzpdfw66cxa6wiy52pkjm"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7614,6 +7613,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("python" ,python)
        ("python-beautifulsoup4" ,python-beautifulsoup4)
        ("python-gst" ,python-gst)
+       ("python-pil" ,python-pillow)
        ("python-pycairo" ,python-pycairo)
        ("python-pygobject" ,python-pygobject)
        ("python-pylast" ,python-pylast)
