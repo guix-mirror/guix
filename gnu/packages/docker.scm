@@ -73,14 +73,14 @@ management tool.")
 (define-public python-dockerpty
   (package
     (name "python-dockerpty")
-    (version "0.3.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dockerpty" version))
        (sha256
         (base32
-         "0za6rr349641wv76ww9l3zcic2xyxrirlxpnzl4296h897648455"))))
+         "1kjn64wx23jmr8dcc6g7bwlmrhfmxr77gh6iphqsl39sayfxdab9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-six" ,python-six)))
