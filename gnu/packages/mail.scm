@@ -1173,15 +1173,17 @@ which can add many functionalities to the base client.")
                                "--with-tls=gnutls")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-msmtpq
+         (add-after 'install 'install-additional-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))
                     (doc (string-append out "/share/doc/msmtp"))
-                    (msmtpq (string-append "scripts/msmtpq")))
+                    (msmtpq "scripts/msmtpq")
+                    (vimfiles (string-append out "/share/vim/vimfiles/plugin")))
                (install-file (string-append msmtpq "/msmtpq") bin)
                (install-file (string-append msmtpq "/msmtp-queue") bin)
                (install-file (string-append msmtpq "/README.msmtpq") doc)
+               (install-file "scripts/vim/msmtp.vim" vimfiles)
                #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
