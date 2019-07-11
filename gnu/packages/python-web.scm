@@ -1528,6 +1528,18 @@ can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
     (license license:expat)))
 
+;; Some software requires an older version of urllib3, notably Docker.
+(define-public python-urllib3-1.24
+  (package (inherit python-urllib3)
+           (version "1.24.3")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "urllib3" version))
+                     (sha256
+                      (base32
+                       "1x0slqrv6kixkbcdnxbglvjliwhc1payavxjvk8fvbqjrnasd4r3"))))))
+
+
 (define-public python2-urllib3
   (package-with-python2 python-urllib3))
 
