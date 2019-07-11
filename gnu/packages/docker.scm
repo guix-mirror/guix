@@ -39,6 +39,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages version-control)
@@ -49,20 +50,24 @@
 (define-public python-docker-py
   (package
     (name "python-docker-py")
-    (version "1.10.6")
+    (version "3.7.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "docker-py" version))
+       (uri (pypi-uri "docker" version))
        (sha256
         (base32
-         "05f49f6hnl7npmi7kigg0ibqk8s3fhzx1ivvz1kqvlv4ay3paajc"))))
+         "0qmrcvpaz37p85hfddsd4yc8hgqlkzs4cz09q9wmy0pz5pwajqm0"))))
     (build-system python-build-system)
     ;; TODO: Tests require a running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-requests" ,python-requests)
+     `(("python-requests" ,python-requests-2.20)
+       ("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-paramiko" ,python-paramiko)
        ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3-1.24)
        ("python-websocket-client" ,python-websocket-client)))
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
