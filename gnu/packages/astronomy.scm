@@ -86,7 +86,7 @@ in FITS files.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
+             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/wcslib" version
              ".tar.bz2"))
        (sha256
         (base32 "1c8g9kv4dxrnawnqi4spi2p10s2xs7x75pdfxhbqxgcc97dkgh0b"))))
