@@ -15,7 +15,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017, 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
+;;; Copyright © 2017, 2018, 2019 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -1617,6 +1617,98 @@ Open CASCADE library.")
                                   ; src/NCollection/NCollection_StdAllocator.hxx
                    license:expat; file src/OpenGl/OpenGl_glext.h
                    license:bsd-3)))); test framework gtest
+
+(define-public opencascade-occt
+  (package
+    (name "opencascade-occt")
+    (version "7.3.0p3")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://git.dev.opencascade.org/repos/occt.git")
+              (commit
+               (string-append "V"
+                              (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                          version)))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0bdywwxb6mk0ykbiajlvsb37295akqjp0a60y672qjfa67k0ljv4"))
+        (modules '((guix build utils)))
+        (snippet
+         '(begin
+            ;; Remove files specific to non-free operating systems.
+            (delete-file-recursively "samples/ios")
+            (delete-file-recursively "samples/mfc")
+            (delete-file-recursively "samples/qt/FuncDemo")
+            (delete-file "genconf.bat")
+            (delete-file "gendoc.bat")
+            (delete-file "genproj.bat")
+            (delete-file "upgrade.bat")
+            ;; Remove references to deleted files.
+            (substitute* "dox/FILES_HTML.txt"
+              ((".*standard.*") "" )
+              ((".*UIKitSample.*") ""))
+            #t))))
+    (build-system cmake-build-system)
+    (arguments
+     '(;; There is no test target for make.  OCCT provides an
+       ;; 'Automated Testing System', which may be accessed after
+       ;; installation via the draw.sh script.  draw.sh is located in
+       ;; the bin directory. For details see:
+       ;; https://www.opencascade.com/doc/occt-7.3.0/overview/html/\
+       ;; occt_dev_guides__tests.html
+       #:tests? #f
+       ;; Configure without freeimage: attempting to link against the
+       ;; freeimage version 3.17 library leads to 'undefined
+       ;; reference' errors.
+       #:configure-flags
+        (list "-DUSE_FREEIMAGE:BOOL=OFF"
+              "-DUSE_TBB:BOOL=ON"
+              "-DUSE_VTK:BOOL=OFF"
+              "-DBUILD_DOC_Overview:BOOL=OFF"
+              "-DCMAKE_EXPORT_NO_PACKAGE_REGISTRY=ON"
+              "-DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=ON"
+              "-UCMAKE_INSTALL_LIBDIR")))
+    (inputs
+     `(("doxygen" ,doxygen)
+       ;("freeimage" ,freeimage)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("mesa" ,mesa)
+       ("tbb" ,tbb)
+       ("tcl" ,tcl)
+       ("tk" ,tk)))
+    ;; TODO: build Overview documentation and add 'doc' output.
+    (home-page "https://www.opencascade.com")
+    (synopsis "Libraries for 3D modeling and numerical simulation")
+    (description
+     "Open CASCADE is a set of libraries for the development of applications
+dealing with 3D CAD data or requiring industrial 3D capabilities.  It includes
+C++ class libraries providing services for 3D surface and solid modeling, CAD
+data exchange, and visualization.  It is used for development of specialized
+software dealing with 3D models in design (CAD), manufacturing (CAM),
+numerical simulation (CAE), measurement equipment (CMM), and quality
+control (CAQ) domains.
+
+This is the certified version of the Open Cascade Technology (OCCT) library.")
+    (license (list ;; OCCT library:
+                   license:lgpl2.1; with an exception for the use of header
+                                  ; files, see OCCT_LGPL_EXCEPTION.txt.
+                   ;; Files src/OpenGl/glext.h, adm/cmake/cotire.cmake and
+                   ;; src/OpenGl/OpenGl_HaltonSampler.hxx:
+                   license:expat
+                   ;; Files src/ExprIntrp/ExprIntrp.tab.* and
+                   ;; src/StepFile/step.tab.*:
+                   license:gpl3+  ; with Bison 2.2 exception.
+                   ;; File src/NCollection/NCollection_UtfIterator.lxx:
+                   (license:non-copyleft
+                    "https://www.unicode.org/license.html")
+                   ;; File src/NCollection/NCollection_StdAllocator.hxx:
+                   license:public-domain))))
 
 (define-public gmsh
   (package
