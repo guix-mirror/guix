@@ -1418,26 +1418,38 @@ the entries in MANIFEST."
         #~(begin
             (use-modules (guix man-db)
                          (guix build utils)
+                         (ice-9 threads)
                          (srfi srfi-1)
                          (srfi srfi-19))
+
+            (define (print-string msg)
+              (display msg)
+              (force-output))
+
+            (define-syntax-rule (print fmt args ...)
+              ;; Build up the string and display it at once.
+              (print-string (format #f fmt args ...)))
+
+            (define (compute-entry directory count total)
+              (print "\r[~3d/~3d] building list of man-db entries..."
+                     count total)
+              (let ((man (string-append directory "/share/man")))
+                (if (directory-exists? man)
+                    (mandb-entries man)
+                    '())))
 
             (define (compute-entries)
               ;; This is the most expensive part (I/O and CPU, due to
               ;; decompression), so report progress as we traverse INPUTS.
-              (let* ((inputs '#$(manifest-inputs manifest))
-                     (total  (length inputs)))
-                (append-map (lambda (directory count)
-                              (format #t "\r[~3d/~3d] building list of \
-man-db entries..."
-                                      count total)
-                              (force-output)
-                              (let ((man (string-append directory
-                                                        "/share/man")))
-                                (if (directory-exists? man)
-                                    (mandb-entries man)
-                                    '())))
-                            inputs
-                            (iota total 1))))
+              ;; Cap at 4 threads because we don't see any speedup beyond that
+              ;; on an SSD laptop.
+              (let* ((inputs  '#$(manifest-inputs manifest))
+                     (total   (length inputs))
+                     (threads (min (parallel-job-count) 4)))
+                (concatenate
+                 (n-par-map threads compute-entry inputs
+                            (iota total 1)
+                            (make-list total total)))))
 
             (define man-directory
               (string-append #$output "/share/man"))
