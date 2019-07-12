@@ -2613,8 +2613,7 @@ library.")
     (inputs
      `(("glib" ,glib)
        ("gnutls" ,gnutls)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("p11-kit" ,p11-kit)))
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (home-page "https://www.gnome.org")
     (synopsis "Network-related GIO modules")
     (description
