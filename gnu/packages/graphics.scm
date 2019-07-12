@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
@@ -230,7 +230,7 @@ WARNING: This is a beta build of Blender.")
      `(("boost" ,boost)
        ("jemalloc" ,jemalloc)
        ("libx11" ,libx11)
-       ("openimageio" ,openimageio)
+       ("openimageio" ,openimageio-1.7)
        ("openexr" ,openexr)
        ("ilmbase" ,ilmbase)
        ("openjpeg" ,openjpeg-1)
@@ -456,7 +456,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "1.7.19")
+    (version "1.8.17")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -465,7 +465,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yxxy43l3lllw7maqg42dlkgqms2d4772sxzxk7kmxg4lnhsvndc"))))
+                "0zq34szprgkrrayg5sl3whrsx2l6lr8nw4hdrnwv2qhn70jbi2w2"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -491,6 +491,22 @@ on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
     (home-page "http://www.openimageio.org")
     (license license:bsd-3)))
+
+;; This older version of OpenImageIO is required for Blender 2.79.
+(define-public openimageio-1.7
+  (package
+    (inherit openimageio)
+    (name "openimageio")
+    (version "1.7.19")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenImageIO/oiio.git")
+                    (commit (string-append "Release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0yxxy43l3lllw7maqg42dlkgqms2d4772sxzxk7kmxg4lnhsvndc"))))))
 
 (define-public openscenegraph
   (package
