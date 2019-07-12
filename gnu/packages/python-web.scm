@@ -168,8 +168,8 @@ using @url{https://github.com/saghul/pycares,pycares}.")
     (home-page "https://github.com/kyuupichan/aiorpcX")
     (synopsis "Generic asyncio RPC implementation")
     (description
-     "aiorpcX is a generic asyncio library implementation of RPC suitable for
-an application that is a client, server or both.
+     "The aiorpcX library is a generic asyncio implementation of RPC suitable
+for an application that is a client, server or both.
 
 The package includes a module with full coverage of JSON RPC versions 1.0 and
 2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
