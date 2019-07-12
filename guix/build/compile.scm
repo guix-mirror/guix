@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build compile)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (ice-9 threads)
@@ -58,13 +59,23 @@
       ((kw _ rest ...)
        (loop rest `(#f ,kw ,@result))))))
 
+(define (supported-warning-type? type)
+  "Return true if TYPE, a symbol, denotes a supported warning type."
+  (find (lambda (warning-type)
+          (eq? type (warning-type-name warning-type)))
+        %warning-types))
+
 (define %warnings
   ;; FIXME: 'format' is missing because it reports "non-literal format
   ;; strings" due to the fact that we use 'G_' instead of '_'.  We'll need
   ;; help from Guile to solve this.
-  '(unsupported-warning unbound-variable arity-mismatch
-    macro-use-before-definition                   ;new in 2.2
-    shadowed-toplevel))                           ;new in 2.2.5
+  (let ((optional (lambda (type)
+                    (if (supported-warning-type? type)
+                        (list type)
+                        '()))))
+    `(unbound-variable arity-mismatch
+      macro-use-before-definition                         ;new in 2.2
+      ,@(optional 'shadowed-toplevel))))                  ;new in 2.2.5
 
 (define (optimization-options file)
   "Return the default set of optimizations options for FILE."
