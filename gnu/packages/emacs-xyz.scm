@@ -15340,6 +15340,30 @@ command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
+(define-public emacs-matcha
+  (let ((commit "c7df5cf5cdac9ae369e241342389ccda0205eab9"))
+    (package
+      (name "emacs-matcha")
+      (version (git-version "0.0.1" "1" commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jojojames/matcha.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lfnh1glg6al677m7ci0x8g5wjdhjxlfl3nv1f1ppsw4dpnwsj9b"))))
+      (propagated-inputs
+       `(("emacs-hydra" ,emacs-hydra)
+         ("emacs-transient" ,emacs-transient)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jojojames/matcha/")
+      (synopsis "Collection of hydras with a generic interface to launch them")
+      (description "Matcha provides a collection of transients for various
+packages with a consistent way to use them.")
+      (license license:gpl3+))))
+
 (define-public emacs-undo-propose-el
   (let ((commit "5f1fa99a04369a959aad01b476fe4f34229f28cd")
         (version "1.0.0")
