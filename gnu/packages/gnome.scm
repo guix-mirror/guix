@@ -601,7 +601,20 @@ and keep up to date translations of documentation.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02xgky22xgvhgd525khqh64l5i21ca839fj9jzaqdi3yvb8pbq8m"))))
+                "02xgky22xgvhgd525khqh64l5i21ca839fj9jzaqdi3yvb8pbq8m"))
+              (patches
+               (list
+                ;; This patch solves an ordering issue that showed up when
+                ;; running the test suite against newer Glib 2.60.  See
+                ;; <https://gitlab.gnome.org/GNOME/gcr/merge_requests/9>.
+                (origin
+                  (method url-fetch)
+                  (uri (string-append "https://gitlab.gnome.org/GNOME/gcr/commit/"
+                                      "45d637578d7643ff96c0183ac267497a0b4c6344.diff"))
+                  (file-name "gcr-hashtable-ordering.patch")
+                  (sha256
+                   (base32
+                    "1vsqiys8fsm1f1vvds783wwf7zwi5v282rhsai8jrsm6x7h79gbi")))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
