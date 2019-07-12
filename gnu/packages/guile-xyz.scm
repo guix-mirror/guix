@@ -1362,7 +1362,7 @@ The library is shipped with documentation in Info format and usage examples.")
 (define-public guile-wisp
   (package
     (name "guile-wisp")
-    (version "0.9.9.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/ArneBab/"
@@ -1370,7 +1370,7 @@ The library is shipped with documentation in Info format and usage examples.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ii14qz1lx7ffhb8i9q7dgaiwbif8g2q182skx17j11skp65c8r3"))))
+                "03pz7pj9jyallynhflp5s7qax8dj1fs8la434wrfgz7g1kgjnvf6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1387,9 +1387,7 @@ The library is shipped with documentation in Info format and usage examples.")
          (add-before 'configure 'patch-/usr/bin/env
            (lambda _
              (substitute* "Makefile.in"
-               (("/usr/bin/env bash") (which "bash"))
-               (("\\$\\(GUILE_EFFECTIVE_VERSION\\)/site")
-                "site/$(GUILE_EFFECTIVE_VERSION)")) ;use the right order
+               (("/usr/bin/env bash") (which "bash")))
              #t))
          ;; auto compilation breaks, but if we set HOME to /tmp,
          ;; that works ok
