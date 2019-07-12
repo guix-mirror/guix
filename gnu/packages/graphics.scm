@@ -78,20 +78,18 @@
   #:use-module (guix utils))
 
 (define-public blender
-  (let ((revision "0")
-        (commit "3c3d80ea22af15e13237f978181a881b90c41e7c"))
   (package
     (name "blender")
-    (version (git-version "2.80-beta" revision commit))
+    (version "v2.80-rc1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://git.blender.org/blender.git")
-                     (commit commit)))
+                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hhn8pf3a5556mxyrb2ggsiy6q0h75hnkdpcgq9b6vg284jl2l4q"))))
+                "11dcf0rjq42mpphk8r8cy7gvhzzl1cj1vslp98ibh8sdjzaz2mdq"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -166,8 +164,8 @@ the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
 application can be customized via its API for Python scripting.
 
-WARNING: This is a beta build of Blender.")
-    (license license:gpl2+))))
+WARNING: This is a release candidate build of Blender.")
+    (license license:gpl2+)))
 
 (define-public blender-2.79
   (package
