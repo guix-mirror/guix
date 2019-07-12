@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
@@ -1076,7 +1076,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
 (define-public rust
   (let ((base-rust
          (rust-bootstrapped-package rust-1.35 "1.36.0"
-           "18r688ih4xi9m8gv55g1amb8inrwkdxp5fbcqb6i4gqxi90l3i0m")))
+           "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04")))
     (package
       (inherit base-rust)
       (arguments
