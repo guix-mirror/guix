@@ -12,6 +12,7 @@
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
@@ -47,9 +50,12 @@
   #:use-module (gnu packages dns)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
@@ -1050,3 +1056,39 @@ Its features are:
 @item get account amount.
 @end itemize")
     (license license:agpl3+)))
+
+(define-public grisbi
+  (package
+    (name "grisbi")
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://sourceforge/grisbi/grisbi%20stable/"
+             (version-major+minor version) ".x/" version
+             "/grisbi-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1piiyyxjsjbw9gcqydvknzxmmfgh8kdqal12ywrxyxih2afwnvbw"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags (list "--without-ofx")))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ; glib-compile-schemas
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libgsf" ,libgsf)))
+    (synopsis "Personal accounting application")
+    (description "Grisbi is a personal accounting application written by
+French developers that is designed to follow French accounting rules.
+Grisbi can manage multiple accounts, currencies and users.  It manages
+third party, expenditure and receipt categories, budgetary lines,
+financial years, budget estimates, bankcard management and other
+information.")
+    (home-page "http://grisbi.org")
+    (license license:gpl2+)))
