@@ -1,0 +1,20 @@
+Fix a problem with the keyfile backend whereby instantiating it with
+the default NULL value would cause an assertion error:
+
+https://gitlab.gnome.org/GNOME/glib/issues/1825
+
+This issue showed up when running the test suites of uhttpmock and spice.
+
+diff --git a/gio/gkeyfilesettingsbackend.c b/gio/gkeyfilesettingsbackend.c
+--- a/gio/gkeyfilesettingsbackend.c
++++ b/gio/gkeyfilesettingsbackend.c
+@@ -740,7 +740,8 @@ g_keyfile_settings_backend_set_property (GObject      *object,
+     case PROP_FILENAME:
+       /* Construct only. */
+       g_assert (kfsb->file == NULL);
+-      kfsb->file = g_file_new_for_path (g_value_get_string (value));
++      if (g_value_get_string (value))
++        kfsb->file = g_file_new_for_path (g_value_get_string (value));
+       break;
+ 
+     case PROP_ROOT_PATH:

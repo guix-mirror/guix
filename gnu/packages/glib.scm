@@ -168,7 +168,8 @@ shared NFS home directories.")
             (sha256
              (base32
               "0bk2l9mhvc44c0gfg442wrifwj2fci1w71dsp3nb50pffvsivpry"))
-            (patches (search-patches "glib-tests-timer.patch"))
+            (patches (search-patches "glib-tests-timer.patch"
+                                     "glib-keyfile-arguments.patch"))
             (modules '((guix build utils)))
             (snippet
              '(begin
