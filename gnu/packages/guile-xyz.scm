@@ -1420,7 +1420,7 @@ The library is shipped with documentation in Info format and usage examples.")
            (assoc-ref emacs:%standard-phases 'build))
          (add-after 'compile-emacs-files 'make-autoloads
            (assoc-ref emacs:%standard-phases 'make-autoloads)))))
-    (home-page "https://draketo.de/english/wisp")
+    (home-page "https://www.draketo.de/english/wisp")
     (inputs
      `(("guile" ,guile-2.2)))
     (native-inputs
