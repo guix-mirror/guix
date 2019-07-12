@@ -5829,6 +5829,31 @@ that indentation determines structure, this mode provides indentation and
 indentation command behavior very similar to that of python-mode.")
     (license license:gpl3+)))
 
+(define-public emacs-gitlab-ci-mode
+  (package
+    (name "emacs-gitlab-ci-mode")
+    (version "20190425.11.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/joewreschnig/gitlab-ci-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jkp9mnbiccqnha9zs646znqyqvy5jjb81kah7ghbkzdqqk2avm0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-yaml-mode" ,emacs-yaml-mode)))
+    (home-page "https://gitlab.com/joewreschnig/gitlab-ci-mode/")
+    (synopsis "Emacs mode for editing GitLab CI files")
+    (description
+     "@code{gitlab-ci-mode} is an Emacs major mode for editing GitLab CI
+files.  It provides syntax highlighting and completion for keywords and
+special variables.  An interface to GitLab’s CI file linter is also provided
+via @code{gitlab-ci-lint}.")
+    (license license:gpl3+)))
+
 (define-public emacs-web-mode
   (package
     (name "emacs-web-mode")
