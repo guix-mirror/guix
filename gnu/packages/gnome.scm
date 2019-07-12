@@ -5089,6 +5089,9 @@ window manager.")
                  (("@libdir@") (string-append lib "/lib"))
                  (("@includedir@") (string-append lib "/include"))
                  (("@datadir@") (string-append lib "/share")))
+               ;; Make sure gobject-introspection knows about the output
+               ;; too (see <https://bugs.gnu.org/36535>).
+               (setenv "outputs" "out lib")
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
