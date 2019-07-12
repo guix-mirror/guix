@@ -75,14 +75,14 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.4.4")
+    (version "3.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "1ykm6kdjkrg556j0zd7dx2l1rsrbh0d9g27ivr6dmaahz9pyrbsi"))))
+         "1gy95ni8rkdwzir9zf14ivpfwp02g69xbhibldykff0rzbs86k4w"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;missing pytest-timeout
