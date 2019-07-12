@@ -982,5 +982,6 @@ first send one message to @email{guix-patches@@gnu.org}, and then send
 subsequent patches to @email{@var{NNN}@@debbugs.gnu.org} to make sure
 they are kept together.  See
 @uref{https://debbugs.gnu.org/Advanced.html, the Debbugs documentation}
-for more information.
+for more information.  You can install @command{git send-email} with
+@command{guix install git:send-email}.
 @c Debbugs bug: https://debbugs.gnu.org/db/15/15361.html
