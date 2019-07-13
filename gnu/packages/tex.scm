@@ -2298,6 +2298,18 @@ T2A and UTF-8 encodings.")
     ;; No version specified
     (license license:lppl)))
 
+(define-public texlive-hyphen-uppersorbian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-uppersorbian" "hsb"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-hsb.tex")
+              (base32
+               "1q42s32cfbynlnzn9hpcldi77fszi5xkn1c85l8xqjmfydqbqdyi")))
+    (synopsis "Upper Sorbian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Upper Sorbian
+in T1/EC and UTF-8 encodings.")
+    (license license:lppl1.3a+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
