@@ -1506,6 +1506,18 @@ language in T2A and UTF-8 encodings.")
               "file:///tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex"
               "Ancestral BSD variant"))))
 
+(define-public texlive-hyphen-catalan
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-catalan" "ca"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ca.tex")
+              (base32
+               "0cisx76jpw8kpd3an37m9h8ppiysnizgfzl48y9d9n3fvx8jyykb")))
+    (synopsis "Hyphenation patterns for Catalan")
+    (description "The package provides hyphenation patterns for Catalan in
+T1/EC and UTF-8 encodings.")
+    (license license:lppl1.0+)))
+
 
 (define-public texlive-hyph-utf8
   (package
