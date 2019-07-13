@@ -1981,6 +1981,20 @@ L7X and UTF-8 encodings.")
     ;; Either of these licenses.
     (license (list license:gpl2 license:lgpl2.1))))
 
+(define-public texlive-hyphen-lithuanian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-lithuanian" "lt"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-lt.tex")
+              (base32
+               "0v9spw0qkygkihj5app2immzqqr98w81pz460bcgvj1ah35jdfsl")))
+    (synopsis "Lithuanian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Lithuanian in
+L7X and UTF-8 encodings.")
+    ;; "Do ... whatever ... as long as you respect the copyright"; as part of
+    ;; the hyph-utf8 package we choose the LPPL license.
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
