@@ -1792,6 +1792,27 @@ T1/EC and UTF-8 encodings.")
 T8M, T8K, and UTF-8 encodings.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-german
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-german" '("de-1901" "de-1996" "de-ch-1901")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-de-1901.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-de-1996.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-de-ch-1901.tex"
+                    "/tex/generic/hyphen/dehyphn.tex"
+                    "/tex/generic/hyphen/dehypht.tex"
+                    "/tex/generic/hyphen/dehyphtex.tex"
+                    "/tex/generic/hyphen/ghyphen.README")
+              (base32
+               "1g0vhpvl2l69rn2lx7lkw0inrjbcxkj2sjgwd2fq7hdi4yb2ms76")))
+    (synopsis "Hyphenation patterns for German")
+    (description "This package provides hyphenation patterns for German in
+T1/EC and UTF-8 encodings, for traditional and reformed spelling, including
+Swiss German.")
+    ;; The patterns are released under the Expat license; the dehyph* files
+    ;; are released under the LPPL version 1 or later.
+    (license (list license:expat license:lppl1.0+))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
