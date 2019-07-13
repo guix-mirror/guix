@@ -2285,6 +2285,19 @@ compatibility with 8-bit engines.")
 T1/EC and UTF-8 encodings.")
       (license license:public-domain))))
 
+(define-public texlive-hyphen-ukrainian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-ukrainian" "uk"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-uk.tex")
+              (base32
+               "17z0gmw5svsf5zlhjkckwk4y21g7prfwj473jlqnwcsr8a941gsf")))
+    (synopsis "Ukrainian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Ukrainian in
+T2A and UTF-8 encodings.")
+    ;; No version specified
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
