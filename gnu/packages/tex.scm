@@ -1780,6 +1780,18 @@ T1/EC and UTF-8 encodings.")
       ;; glhyextr.tex is the only file in the public domain.
       (license (list license:lppl1.3 license:public-domain)))))
 
+(define-public texlive-hyphen-georgian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-georgian" "ka"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ka.tex")
+              (base32
+               "01zhn6mflpiqw4lyi8dx8syiz5mky9jrxm87cgw31hanis5cml4l")))
+    (synopsis "Hyphenation patterns for Georgian")
+    (description "The package provides hyphenation patterns for Georgian in
+T8M, T8K, and UTF-8 encodings.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
