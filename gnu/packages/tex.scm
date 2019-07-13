@@ -1918,6 +1918,20 @@ Irish (Gaeilge) in T1/EC and UTF-8 encodings.")
     ;; Either of these licenses
     (license (list license:gpl2+ license:expat))))
 
+(define-public texlive-hyphen-italian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-italian" "it"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-it.tex")
+              (base32
+               "1a65q3hjn2p212cgv6p7wa0wcn34qnxcz2pl3v3ip0xmb16qqsk5")))
+    (synopsis "Italian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Italian in
+ASCII encoding.  Compliant with the Recommendation UNI 6461 on hyphenation
+issued by the Italian Standards Institution (Ente Nazionale di Unificazione
+UNI).")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
