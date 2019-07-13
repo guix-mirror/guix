@@ -1893,6 +1893,18 @@ Indonesian (Bahasa Indonesia) in ASCII encoding.  They are probably also
 usable for Malay (Bahasa Melayu).")
     (license license:gpl2)))
 
+(define-public texlive-hyphen-interlingua
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-interlingua" "ia"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ia.tex")
+              (base32
+               "1aihgma3rix4jkc1z5k1lh6hlfrncn66yj0givd3j6xjqflafr2g")))
+    (synopsis "Interlingua hyphenation patterns")
+    (description "This package provides hyphenation patterns for Interlingua
+in ASCII encoding.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
