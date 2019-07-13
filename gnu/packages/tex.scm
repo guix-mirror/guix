@@ -1580,6 +1580,19 @@ T1/EC and UTF-8 encodings.")
 and UTF-8 encodings.")
     (license license:gpl2+)))
 
+(define-public texlive-hyphen-danish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-danish" "da"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-da.tex")
+              (base32
+               "0zxzs1b1723mav76i0wiyq4w82x8715cykvwa2bc60ldc2amv0vs")))
+    (synopsis "Hyphenation patterns for Danish")
+    (description "The package provides hyphenation patterns for Danish in
+T1/EC and UTF-8 encodings.")
+    ;; Either LPPL 1.3 or later, or Expat
+    (license (list license:lppl1.3+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
