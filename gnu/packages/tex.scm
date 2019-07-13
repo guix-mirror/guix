@@ -2040,6 +2040,19 @@ It ranges from the Val d'Aran within Catalunya, to the South Western Italian
 Alps encompassing the southern half of the French pentagon.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-piedmontese
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-piedmontese" "pms"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pms.tex")
+              (base32
+               "00fqzymkg374r3dzf1y82k6b18bqrf688vnjv0vkvw5a45srlb5r")))
+    (synopsis "Piedmontese hyphenation patterns")
+    (description "This package provides hyphenation patterns for Piedmontese
+in ASCII encoding.  Compliant with 'Gramatica dla lengua piemonteisa' by
+Camillo Brero.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
