@@ -1844,6 +1844,18 @@ T1/EC and UTF-8 encodings.")
     ;; Any of these licenses
     (license (list license:gpl2 license:lgpl2.1+ license:mpl1.1))))
 
+(define-public texlive-hyphen-icelandic
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-icelandic" "is"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-is.tex")
+              (base32
+               "1ah1f82lgfhqgid4ngsfiypybx10v8gwxnb12396vfsj3bq6j0ba")))
+    (synopsis "Hyphenation patterns for Icelandic")
+    (description "This package provides hyphenation patterns for Icelandic in
+T1/EC and UTF-8 encodings.")
+    (license license:lppl1.2+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
