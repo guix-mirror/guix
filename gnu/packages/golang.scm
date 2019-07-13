@@ -195,11 +195,7 @@
     (inputs
      `(("tzdata" ,tzdata)
        ("pcre" ,pcre)
-       ;; Building Go 1.10 with the Go 1.4 bootstrap, Thread Sanitizer from GCC
-       ;; 5 finds a data race during the the test suite of Go 1.10. With GCC 6,
-       ;; the race doesn't seem to be present:
-       ;; https://github.com/golang/go/issues/24046
-       ("gcc:lib" ,gcc-6 "lib")))
+       ("gcc:lib" ,gcc "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)
