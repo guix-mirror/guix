@@ -1968,6 +1968,19 @@ T1/EC and UTF-8 encodings.")
     ;; Either of these licenses
     (license (list license:lppl1.0+ license:expat))))
 
+(define-public texlive-hyphen-latvian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-latvian" "lv"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-lv.tex")
+              (base32
+               "1xbh5s6nwfjbv7g4kmcpjkm02a6s767p7jn9qjcnz5ip0ndl5g66")))
+    (synopsis "Latvian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Latvian in
+L7X and UTF-8 encodings.")
+    ;; Either of these licenses.
+    (license (list license:gpl2 license:lgpl2.1))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
