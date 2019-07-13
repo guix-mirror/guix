@@ -1813,6 +1813,22 @@ Swiss German.")
     ;; are released under the LPPL version 1 or later.
     (license (list license:expat license:lppl1.0+))))
 
+(define-public texlive-hyphen-greek
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-greek" '("el-monoton" "el-polyton")
+              (list "/doc/generic/elhyphen/"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-el-monoton.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-el-polyton.tex"
+                    "/tex/generic/hyphen/grmhyph5.tex"
+                    "/tex/generic/hyphen/grphyph5.tex")
+              (base32
+               "04626jhlrv2flgdygm7sfv6xpqhfwiavi16gy2ac04iliyk4rypg")))
+    (synopsis "Hyphenation patterns for Greek")
+    (description "This package provides hyphenation patterns for Modern Greek
+in monotonic and polytonic spelling in LGR and UTF-8 encodings.")
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
