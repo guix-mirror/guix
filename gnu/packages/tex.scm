@@ -1530,6 +1530,18 @@ T1/EC and UTF-8 encodings.")
 Chinese pinyin T1/EC and UTF-8 encodings.")
     (license license:gpl2+)))
 
+(define-public texlive-hyphen-churchslavonic
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-churchslavonic" "cu"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cu.tex")
+              (base32
+               "0xkqlz3ixyl4fxsnzrbxqrb82p0n67rhgpddbiyv3qwfnbr2b5a4")))
+    (synopsis "Hyphenation patterns for Church Slavonic")
+    (description "The package provides hyphenation patterns for Church
+Slavonic in UTF-8 encoding.")
+    (license license:expat)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
