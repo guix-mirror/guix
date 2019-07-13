@@ -1632,6 +1632,19 @@ American and British English in ASCII encoding.")
 Latin 3 and UTF-8 encodings.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-estonian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-estonian" "et"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-et.tex")
+              (base32
+               "0idl6xajkkgxqngjn19jcfd29is5rhfn59v0z8h4sv8yjv6k934m")))
+    (synopsis "Hyphenation patterns for Estonian")
+    (description "The package provides hyphenation patterns for Estonian in
+T1/EC and UTF-8 encodings.")
+    ;; Dual licensed under either license.
+    (license (list license:lppl1.3+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
