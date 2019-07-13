@@ -1856,6 +1856,30 @@ T1/EC and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:lppl1.2+)))
 
+(define-public texlive-hyphen-indic
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-indic"
+              '("as" "bn" "gu" "hi" "kn" "ml" "mr" "or" "pa" "ta" "te")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-as.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-bn.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-gu.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-hi.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-kn.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-ml.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-mr.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-or.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-pa.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-ta.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-te.tex")
+              (base32
+               "1v8zc3wdbkhzjrflndmz4gdj11syz8vrcg0vwvm5bwhkx23g91lv")))
+    (synopsis "Indic hyphenation patterns")
+    (description "This package provides hyphenation patterns for Assamese,
+Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Oriya, Panjabi, Tamil
+and Telugu for Unicode engines.")
+    (license license:expat)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
