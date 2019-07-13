@@ -234,7 +234,7 @@ unpacking."
   "Install the source code of IMPORT-PATH to the primary output directory.
 Compiled executable files (Go \"commands\") should have already been installed
 to the store based on $GOBIN in the build phase.
-XXX We can't make us of compiled libraries (Go \"packages\")."
+XXX We can't make use of compiled libraries (Go \"packages\")."
   (when install-source?
     (if (string-null? import-path)
         ((display "WARNING: The Go import path is unset.\n")))
