@@ -2066,6 +2066,18 @@ and UTF-8 encodings.")
     ;; No differing license declared, so we choose the project license.
     (license license:lppl)))
 
+(define-public texlive-hyphen-portuguese
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-portuguese" "pt"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pt.tex")
+              (base32
+               "1waxrmm33fd2qfc4kiaiblg8kwzasrvgq4j3l14z733d0hlg4rfz")))
+    (synopsis "Portuguese hyphenation patterns")
+    (description "This package provides hyphenation patterns for Portuguese in
+T1/EC and UTF-8 encodings.")
+    (license license:bsd-3)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
