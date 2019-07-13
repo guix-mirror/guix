@@ -1323,6 +1323,26 @@ by the amsfonts package.  It provides @code{amsfonts.sty}, with names of
 individual symbols defined in @code{amssymb.sty}.")
     (license license:silofl1.1)))
 
+(define-public texlive-mkpattern
+  (package
+    (inherit (simple-texlive-package
+              "texlive-mkpattern"
+              (list "/doc/plain/mkpattern/README"
+                    "/doc/plain/mkpattern/mkpatdoc.tex"
+                    "/doc/plain/mkpattern/mkpatter.pdf"
+                    "/doc/plain/mkpattern/mkpattern-exmpl.tex"
+                    "/tex/plain/mkpattern/mkpatter.tex")
+              (base32
+               "0sxnkbcc802jl3fj56x9hvg978bpv15lhrwj0aykb4syq29l47ga")
+              #:trivial? #t))
+    (home-page "https://ctan.org/pkg/mkpattern")
+    (synopsis "Utility for making hyphenation patterns")
+    (description "Mkpattern is a general purpose program for the generation of
+hyphenation patterns, with definition of letter sets and template-like
+constructions.  It also provides an easy way to handle different input and
+output encodings, and features generation of clean UTF-8 patterns.")
+    (license license:lppl)))
+
 ;; This provides etex.src which is needed to build various formats, including
 ;; luatex.fmt and pdflatex.fmt
 (define-public texlive-tex-plain
