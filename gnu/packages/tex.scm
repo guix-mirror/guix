@@ -2053,6 +2053,19 @@ in ASCII encoding.  Compliant with 'Gramatica dla lengua piemonteisa' by
 Camillo Brero.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-polish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-polish" "pl"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-pl.tex")
+              (base32
+               "0dzq8ca96q7m5bslh51x8d30pdb86glh2gn3mmvq5ip813ckwh3s")))
+    (synopsis "Polish hyphenation patterns")
+    (description "This package provides hyphenation patterns for Polish in QX
+and UTF-8 encodings.")
+    ;; No differing license declared, so we choose the project license.
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
