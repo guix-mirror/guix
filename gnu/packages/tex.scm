@@ -1932,6 +1932,19 @@ issued by the Italian Standards Institution (Ente Nazionale di Unificazione
 UNI).")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-kurmanji
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-kurmanji" "kmr"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-kmr.tex")
+              (base32
+               "1145ykfd0b0hgklindlxdgkqmsnj3cai3cwgllz411yqmrhjc6y9")))
+    (synopsis "Kurmanji hyphenation patterns")
+    (description "This package provides hyphenation patterns for
+Kurmanji (Northern Kurdish) as spoken in Turkey and by the Kurdish diaspora in
+Europe, in T1/EC and UTF-8 encodings.")
+    (license license:lppl1.3)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
