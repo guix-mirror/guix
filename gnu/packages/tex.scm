@@ -2147,6 +2147,18 @@ T1/EC, T2A and UTF-8 encodings.")
     ;; Any version of the GPL.
     (license license:gpl3+)))
 
+(define-public texlive-hyphen-slovak
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-slovak" "sk"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sk.tex")
+              (base32
+               "1cgw6fmyci3za3vsa49b6m74wqv582w0rpca7s9xva3hqm1m5qdg")))
+    (synopsis "Slovak hyphenation patterns")
+    (description "This package provides hyphenation patterns for Slovak in
+T1/EC and UTF-8 encodings.")
+    (license license:gpl2+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
