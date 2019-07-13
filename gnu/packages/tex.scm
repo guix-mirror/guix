@@ -1696,6 +1696,18 @@ to be linguistically relevant in all cases and should, for proper typography,
 be replaced by files tailored to individual languages.")
       (license license:lppl))))
 
+(define-public texlive-hyphen-finnish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-finnish" "fi"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex")
+              (base32
+               "03n6s8dwwa5vfk9bbyhcdf7p0bc0d1rrr312hpgbz8jfc9fbgd7n")))
+    (synopsis "Hyphenation patterns for Finnish")
+    (description "The package provides hyphenation patterns for Finnish in
+T1/EC and UTF-8 encodings.")
+    (license license:public-domain)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
