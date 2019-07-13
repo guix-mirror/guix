@@ -582,7 +582,6 @@ definitions.")
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
              ("gettext"         ,gettext-minimal)
-             ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)
              ("libX11"          ,libx11)
