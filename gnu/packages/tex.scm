@@ -1880,6 +1880,19 @@ Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Oriya, Panjabi, Tamil
 and Telugu for Unicode engines.")
     (license license:expat)))
 
+(define-public texlive-hyphen-indonesian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-indonesian" "id"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-id.tex")
+              (base32
+               "0mf0hr9c952kb2hmzid7fqg5whshwpribbyndb3ba092wh02abh5")))
+    (synopsis "Indonesian hyphenation patterns")
+    (description "This package provides hyphenation patterns for
+Indonesian (Bahasa Indonesia) in ASCII encoding.  They are probably also
+usable for Malay (Bahasa Melayu).")
+    (license license:gpl2)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
