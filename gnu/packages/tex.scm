@@ -2310,6 +2310,19 @@ T2A and UTF-8 encodings.")
 in T1/EC and UTF-8 encodings.")
     (license license:lppl1.3a+)))
 
+(define-public texlive-hyphen-welsh
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-welsh" "cy"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cy.tex")
+              (base32
+               "0h8yjj5zdg0hvpb2vx9gi376536nl59hp8w286z1a13diaayg1m2")))
+    (synopsis "Welsh hyphenation patterns")
+    (description "This package provides hyphenation patterns for Welsh in
+T1/EC and UTF-8 encodings.")
+    ;; Either license
+    (license (list license:lppl1.0+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
