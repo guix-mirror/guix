@@ -1905,6 +1905,19 @@ usable for Malay (Bahasa Melayu).")
 in ASCII encoding.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-irish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-irish" "ga"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ga.tex")
+              (base32
+               "02k1fykgj3xamczjq16i9fsjjsh78pp5ypmh93p64izk2vymfwk0")))
+    (synopsis "Irish hyphenation patterns")
+    (description "This package provides hyphenation patterns for
+Irish (Gaeilge) in T1/EC and UTF-8 encodings.")
+    ;; Either of these licenses
+    (license (list license:gpl2+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
