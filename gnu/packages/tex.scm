@@ -1732,6 +1732,54 @@ T1/EC and UTF-8 encodings.")
 ASCII encodings.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-galician
+  (let ((template (texlive-hyphen-package
+                   "texlive-hyphen-galician" "gl"
+                   (list "/source/generic/hyph-utf8/languages/gl/README"
+                         "/source/generic/hyph-utf8/languages/gl/glhybiox.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glhyextr.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glhymed.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glhyquim.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glhytec.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glhyxeog.tex"
+                         "/source/generic/hyph-utf8/languages/gl/glpatter-utf8.tex")
+                   (base32
+                    "1yj1gxhkqqlyaand5gd6ij6xwffskryzlbcigdam3871a9p8x18w"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((tex (string-append (getcwd)
+                                           "/tex/generic/hyph-utf8/patterns/tex/")))
+                   (mkdir-p tex)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/gl/"
+                     (setenv "TEXINPUTS"
+                             (string-append (getcwd) "//:"
+                                            (assoc-ref inputs "texlive-mkpattern") "//"))
+                     (invoke "tex" "-ini" "-8bit" "glpatter-utf8.tex")
+                     (rename-file "hyph-gl.tex"
+                                  (string-append tex "/hyph-gl.tex"))
+                     #t))))
+             (add-after 'install 'install-hyph-gl.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (native-inputs
+       `(,@(package-native-inputs template)
+         ("texlive-bin" ,texlive-bin)
+         ("texlive-mkpattern" ,texlive-mkpattern)))
+      (synopsis "Hyphenation patterns for Galician")
+      (description "The package provides hyphenation patterns for Galician in
+T1/EC and UTF-8 encodings.")
+      ;; glhyextr.tex is the only file in the public domain.
+      (license (list license:lppl1.3 license:public-domain)))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
