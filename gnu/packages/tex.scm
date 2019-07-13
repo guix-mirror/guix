@@ -2025,6 +2025,21 @@ Bokmal and Nynorsk in T1/EC and UTF-8 encodings.")
               "/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex"
               "FSF All permissive license"))))
 
+(define-public texlive-hyphen-occitan
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-occitan" "oc"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-oc.tex")
+              (base32
+               "1y6j6ac9ncn79p7hnp6mdwdsw9ij14zyjby5iwdhpvzzn7yyc7p8")))
+    (synopsis "Occitan hyphenation patterns")
+    (description "This package provides hyphenation patterns for Occitan in
+T1/EC and UTF-8 encodings.  They are supposed to be valid for all the Occitan
+variants spoken and written in the wide area called 'Occitanie' by the French.
+It ranges from the Val d'Aran within Catalunya, to the South Western Italian
+Alps encompassing the southern half of the French pentagon.")
+    (license license:lppl1.0+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
