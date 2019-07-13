@@ -2104,6 +2104,18 @@ ASCII encodings.  They are supposed to comply with the rules indicated by the
 Lia Rumantscha (Romansh language society).")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-russian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-russian" "ru"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ru.tex")
+              (base32
+               "09s4vq23x4vff08ykmf08dvcdradjzzwvyys8p2wk6jxaqp980s3")))
+    (synopsis "Russian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Russian in
+T2A and UTF-8 encodings.")
+    (license license:lppl1.2+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
