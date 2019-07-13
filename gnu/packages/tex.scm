@@ -1518,6 +1518,17 @@ language in T2A and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-chinese
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-chinese" "zh-latn-pinyin"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-zh-latn-pinyin.tex")
+              (base32
+               "07gbrn5fcl5d3hyg1zpai3zp1ggl73cmvpalwvh7ah313f57gjkk")))
+    (synopsis "Hyphenation patterns for unaccented Chinese pinyin")
+    (description "The package provides hyphenation patterns for unaccented
+Chinese pinyin T1/EC and UTF-8 encodings.")
+    (license license:gpl2+)))
 
 (define-public texlive-hyph-utf8
   (package
