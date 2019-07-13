@@ -1568,6 +1568,18 @@ UTF-8 encoding as well as in ASCII-based encoding for 8-bit engines.")
 T1/EC and UTF-8 encodings.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-czech
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-czech" "cs"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-cs.tex")
+              (base32
+               "1k5516gbfp1d5p97j247byag9sdgds5zwc11bwxfk58i6zq1v0m6")))
+    (synopsis "Hyphenation patterns for Czech")
+    (description "The package provides hyphenation patterns for Czech in T1/EC
+and UTF-8 encodings.")
+    (license license:gpl2+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
