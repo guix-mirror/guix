@@ -61,12 +61,14 @@
      parser.add_option_group(group)
 --- a/giscanner/shlibs.py
 +++ b/giscanner/shlibs.py
-@@ -57,6 +57,12 @@ def _ldd_library_pattern(library_name):
+@@ -57,6 +57,14 @@ def _ldd_library_pattern(library_name):
      $""" % re.escape(library_name), re.VERBOSE)
  
  
 +def _ldd_library_guix_pattern(library_name):
-+    store_dir = re.escape('/gnu/store')
++    store_dir = re.escape(
++      os.environ.get("NIX_STORE", default="/gnu/store")
++    )
 +    pattern = r'(%s(?:/[^/]*)+lib%s[^A-Za-z0-9_-][^\s\(\)]*)'
 +    return re.compile(pattern % (store_dir, re.escape(library_name)))
 +
@@ -109,14 +111,15 @@
      if len(patterns) == 0:
          return []
  
-@@ -139,8 +145,11 @@ def resolve_from_ldd_output(libraries, output):
+@@ -139,8 +145,12 @@ def resolve_from_ldd_output(libraries, output):
          if line.endswith(':'):
              continue
          for word in line.split():
 -            for library, pattern in patterns.items():
 -                m = pattern.match(word)
 +            for library, (pattern, guix_pattern) in patterns.items():
-+                if line.find('/gnu/store') != -1:
++                store_dir = os.environ.get("NIX_STORE", default="/gnu/store")
++                if line.find(store_dir) != -1:
 +                    m = guix_pattern.match(word)
 +                else:
 +                    m = pattern.match(word)
