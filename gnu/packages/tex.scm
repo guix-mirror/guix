@@ -1542,6 +1542,20 @@ Chinese pinyin T1/EC and UTF-8 encodings.")
 Slavonic in UTF-8 encoding.")
     (license license:expat)))
 
+(define-public texlive-hyphen-coptic
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-coptic" "cop"
+              (list "/tex/generic/hyph-utf8/patterns/tex-8bit/copthyph.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-cop.tex")
+              (base32
+               "07i03jpdfy4ip7zbg4gnk4hk8zwj8rlni9dgrb1p8mfw2w19d80c")))
+    (synopsis "Hyphenation patterns for Coptic")
+    (description "The package provides hyphenation patterns for Coptic in
+UTF-8 encoding as well as in ASCII-based encoding for 8-bit engines.")
+    ;; No explicit license declaration, so we use the project license.
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
