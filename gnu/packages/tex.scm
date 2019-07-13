@@ -1708,6 +1708,18 @@ be replaced by files tailored to individual languages.")
 T1/EC and UTF-8 encodings.")
     (license license:public-domain)))
 
+(define-public texlive-hyphen-french
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-french" "fr"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fr.tex")
+              (base32
+               "1q82mmwvy7fdkm42958ajb53w89qkcdwybswxlwcvqngvhpy3zf0")))
+    (synopsis "Hyphenation patterns for French")
+    (description "The package provides hyphenation patterns for French in
+T1/EC and UTF-8 encodings.")
+    (license license:expat)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
