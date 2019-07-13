@@ -25547,7 +25547,7 @@ vm-image} on x86_64 hardware:
 @example
 $ qemu-system-x86_64 \
    -net user -net nic,model=virtio \
-   -enable-kvm -m 512 \
+   -enable-kvm -m 1024 \
    -device virtio-blk,drive=myhd \
    -drive if=none,file=/tmp/qemu-image,id=myhd
 @end example
