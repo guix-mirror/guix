@@ -2159,6 +2159,19 @@ T1/EC, T2A and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:gpl2+)))
 
+(define-public texlive-hyphen-slovenian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-slovenian" "sl"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sl.tex")
+              (base32
+               "1ixf2pxir9xf1gggq9k28xxglsq9bwqlghd9cl4amk5vrn5bjbds")))
+    (synopsis "Slovenian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Slovenian in
+T1/EC and UTF-8 encodings.")
+    ;; Either license
+    (license (list license:lppl1.0+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
