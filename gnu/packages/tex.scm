@@ -2496,6 +2496,22 @@ bundle.")
 (define-public texlive-generic-dehyph-exptl
   (deprecated-package "texlive-generic-dehyph-exptl" texlive-dehyph-exptl))
 
+(define-public texlive-ukrhyph
+  (package
+    (inherit (simple-texlive-package
+              "texlive-ukrhyph"
+              (list "/doc/generic/ukrhyph/"
+                    "/tex/generic/ukrhyph/")
+              (base32
+               "01ma274sixcrbpb7fpqkxwfvrnzfj2srv9b4a42rfnph1pdql74z")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/ukrhyph")
+    (synopsis "Hyphenation patterns for Ukrainian")
+    (description "The package provides a range of hyphenation patterns for
+Ukrainian, depending on the encoding of the output font including the standard
+T2A.")
+    (license license:lppl)))
+
 (define-public texlive-latex-base
   (let ((texlive-dir
          (lambda (dir hash)
