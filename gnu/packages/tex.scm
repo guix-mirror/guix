@@ -144,6 +144,85 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
      (base32
       "1ix8h637hwhz4vrdhilf84kzzdza0wi8fp26nh7iws0bq08sl517"))))
 
+(define (texlive-hyphen-package name code locations hash)
+  (let ((parent (simple-texlive-package
+                 name locations hash #:trivial? #t)))
+    (package
+      (inherit parent)
+      (arguments
+       (substitute-keyword-arguments (package-arguments parent)
+         ((#:modules _ '())
+          '((guix build gnu-build-system)
+            (guix build utils)
+            (ice-9 match)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (root (string-append out "/share/texmf-dist"))
+                        (patterns
+                         (string-append root "/tex/generic/hyph-utf8/patterns/txt/"))
+                        (loaders
+                         (string-append root "/tex/generic/hyph-utf8/loadhyph"))
+                        (ptex
+                         (string-append root "/tex/generic/hyph-utf8/patterns/ptex"))
+                        (filter-expression
+                         (match ',code
+                           ((? string?)
+                            (format #f "\nlanguages.select!{|l| l.code == \"~a\"}\n" ',code))
+                           ((a b ...)
+                            (format #f "\nlanguages.select!{|l| [~{\"~a\",~}].include? l.code }\n" ',code)))))
+                   (mkdir "scripts")
+                   (copy-recursively
+                    (assoc-ref inputs "hyph-utf8-scripts") "scripts")
+
+                   ;; Prepare target directories
+                   (mkdir-p patterns)
+                   (mkdir-p loaders)
+                   (mkdir-p ptex)
+
+                   ;; Generate plain patterns
+                   (with-directory-excursion "scripts"
+                     (substitute* "languages.rb"
+                       (("../../../tex/generic/") "../tex/generic/"))
+                     (substitute* "generate-plain-patterns.rb"
+                       ;; Ruby 2 does not need this.
+                       (("require 'unicode'") "")
+                       (("Unicode.upcase\\(ch\\)") "ch.upcase")
+                       ;; Write directly to the output directory
+                       (("\\$path_root=File.*")
+                        (string-append "$path_root=\"" out "/share/texmf-dist/\"\n"))
+                       ;; Create quote directory when needed
+                       (("f = File.open\\(\"#\\{\\$path_quote\\}" m)
+                        (string-append "require 'fileutils'; FileUtils.mkdir_p $path_quote;" m))
+                       ;; Only generate patterns for this language.
+                       (("languages =.*" m)
+                        (string-append m filter-expression)))
+                     (invoke "ruby" "generate-plain-patterns.rb")
+
+                     ;; Build pattern loaders
+                     (substitute* "generate-pattern-loaders.rb"
+                       (("\\$path_tex_generic=File.*")
+                        (string-append "$path_tex_generic=\"" root "/tex/generic\"\n"))
+                       ;; Only generate loader for this language.
+                       (("languages =.*" m)
+                        (string-append m filter-expression)))
+                     (invoke "ruby" "generate-pattern-loaders.rb")
+
+                     ;; Build ptex patterns
+                     (substitute* "generate-ptex-patterns.rb"
+                       (("\\$path_root=File.*")
+                        (string-append "$path_root=\"" root "\"\n"))
+                       ;; Only generate ptex patterns for this language.
+                       (("languages =.*" m)
+                        (string-append m filter-expression)))
+                     (invoke "ruby" "generate-ptex-patterns.rb")))))))))
+      (native-inputs
+       `(("ruby" ,ruby)
+         ("hyph-utf8-scripts" ,hyph-utf8-scripts)))
+      (home-page "https://ctan.org/pkg/hyph-utf8"))))
+
 (define texlive-extra-src
   (origin
     (method url-fetch)
