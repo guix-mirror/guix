@@ -2250,6 +2250,41 @@ fit into EC encoding, so support for Ottoman Turkish had to be dropped to keep
 compatibility with 8-bit engines.")
       (license license:lppl1.0+))))
 
+(define-public texlive-hyphen-turkmen
+  (let ((template (texlive-hyphen-package
+                   "texlive-hyphen-turkmen" "tk"
+                   (list "/source/generic/hyph-utf8/languages/tk/generate_patterns_tk.rb")
+                   (base32
+                    "1wlqx8wb0wsqhdv823brc3i8w1vf4m4bkb2vg917j5dq8p8p71aw"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda _
+                 (let ((target (string-append (getcwd)
+                                              "/tex/generic/hyph-utf8/patterns/tex")))
+                   (mkdir-p target)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/tk/"
+                     (substitute* "generate_patterns_tk.rb"
+                       (("\\$file = File.new.*")
+                        (string-append "$file = File.new(\"" target
+                                       "/hyph-tr.tex\",\"w\")\n")))
+                     (invoke "ruby" "generate_patterns_tk.rb"))
+                   #t)))
+             (add-after 'install 'install-hyph-tk.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (synopsis "Hyphenation patterns for Turkmen")
+      (description "The package provides hyphenation patterns for Turkmen in
+T1/EC and UTF-8 encodings.")
+      (license license:public-domain))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
