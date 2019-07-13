@@ -3239,11 +3239,39 @@ writing C extensions for Python as easy as Python itself.")
     (properties `((python2-variant . ,(delay python2-cython))))))
 
 (define-public python2-cython
-  (package (inherit (package-with-python2
-                     (strip-python2-variant python-cython)))
-    (name "python2-cython")
-    (inputs
-     `(("python-2" ,python-2))))) ; this is not automatically changed
+  (let ((base (package-with-python2 (strip-python2-variant python-cython))))
+    (package
+      (inherit base)
+      (name "python2-cython")
+      (inputs
+       `(("python-2" ,python-2)))       ;this is not automatically changed
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'check 'adjust-test_embed
+               (lambda _
+                 (substitute* "runtests.py"
+                   ;; test_embed goes great lengths to find the static libpythonX.Y.a
+                   ;; so it can give the right -L flag to GCC when embedding static
+                   ;; builds of Python.  It is unaware that the Python "config"
+                   ;; directory (where the static library lives) was renamed in
+                   ;; Python 3, and falls back to sysconfig.get_config_var('LIBDIR'),
+                   ;; which works fine, because that is where the shared library is.
+                   ;;
+                   ;; It also appears to be unaware that the Makefile in Demos/embed
+                   ;; already unconditionally pass the static library location to GCC,
+                   ;; after checking sysconfig.get_config_var('LIBPL).
+                   ;;
+                   ;; The effect is that the linker is unable to resolve libexpat
+                   ;; symbols when building for Python 2, because neither the Python 2
+                   ;; shared library nor Expat is available.   To fix it, we can either
+                   ;; add Expat as an input and make it visible to the linker, or just
+                   ;; prevent it from overriding the Python shared library location.
+                   ;; The end result is identical, so we take the easy route.
+                   ((" or libname not in os\\.listdir\\(libdir\\)")
+                    ""))
+                 #t)))))))))
 
 ;; The RPython toolchain currently does not support Python 3.
 (define-public python2-rpython
