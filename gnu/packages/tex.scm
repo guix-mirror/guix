@@ -2187,6 +2187,18 @@ T1/EC and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:expat)))
 
+(define-public texlive-hyphen-swedish
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-swedish" "sv"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sv.tex")
+              (base32
+               "12sf9f43zwyzb4cn57yry8r4zmwdc7cfdljn3qwxwrny4m3sw4w8")))
+    (synopsis "Swedish hyphenation patterns")
+    (description "This package provides hyphenation patterns for Swedish in
+T1/EC and UTF-8 encodings.")
+    (license license:lppl1.2+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
