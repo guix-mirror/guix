@@ -1995,6 +1995,20 @@ L7X and UTF-8 encodings.")
     ;; the hyph-utf8 package we choose the LPPL license.
     (license license:lppl)))
 
+(define-public texlive-hyphen-mongolian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-mongolian" '("mn-cyrl-x-lmc" "mn-cyrl")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl-x-lmc.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl.tex")
+              (base32
+               "0lqq3jgwgnclb1cn3x99xmk90xra9q51b00ypwy5crssmy023hqc")))
+    (synopsis "Mongolian hyphenation patterns in Cyrillic script")
+    (description "This package provides hyphenation patterns for Mongolian in
+T2A, LMC and UTF-8 encodings.")
+    ;; Either of these licenses
+    (license (list license:lppl1.3+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
