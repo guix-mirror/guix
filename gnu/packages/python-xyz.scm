@@ -3229,7 +3229,12 @@ provides additional functionality on the produced Mallard documents.")
 
          (replace 'check
            (lambda _
-             (invoke "python" "runtests.py" "-vv"))))))
+             ;; Disable compiler optimizations to greatly reduce the running
+             ;; time of the test suite.
+             (setenv "CFLAGS" "-O0")
+
+             (invoke "python" "runtests.py" "-vv"
+                     "-j" (number->string (parallel-job-count))))))))
     (home-page "https://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
