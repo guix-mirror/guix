@@ -2132,6 +2132,21 @@ Malayalam longdesc and Telugu scripts for Unicode engines.")
     (license (license:non-copyleft
               "file:///tex/generic/hyph-utf8/patterns/tex/hyph-sa.tex"))))
 
+(define-public texlive-hyphen-serbian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-serbian" '("sh-cyrl" "sh-latn" "sr-cyrl")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-sh-cyrl.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-sh-latn.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-sr-cyrl.tex")
+              (base32
+               "0fhdfydyaspb8dwirlf24vn7y9dzwmhsld0mmw0fz1lmcfaj252n")))
+    (synopsis "Serbian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Serbian in
+T1/EC, T2A and UTF-8 encodings.")
+    ;; Any version of the GPL.
+    (license license:gpl3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
