@@ -1945,6 +1945,29 @@ Kurmanji (Northern Kurdish) as spoken in Turkey and by the Kurdish diaspora in
 Europe, in T1/EC and UTF-8 encodings.")
     (license license:lppl1.3)))
 
+(define-public texlive-hyphen-latin
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-latin" '("la-x-classic" "la-x-liturgic" "la")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-classic.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-la-x-liturgic.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-la.tex")
+              (base32
+               "1d8d6b47r4r000gqgzyl0sy9is0y0dg41jp8fw4gqq8qmcgdxgsg")))
+    (synopsis "Liturgical Latin hyphenation patterns")
+    (description "This package provides hyphenation patterns for Latin in
+T1/EC and UTF-8 encodings, mainly in modern spelling (u when u is needed and v
+when v is needed), medieval spelling with the ligatures @code{\\ae} and
+@code{\\oe} and the (uncial) lowercase 'v' written as a 'u' is also supported.
+Apparently there is no conflict between the patterns of modern Latin and those
+of medieval Latin.  It also includes hyphenation patterns for the Classical
+Latin in T1/EC and UTF-8 encodings.  Classical Latin hyphenation patterns are
+different from those of 'plain' Latin, the latter being more adapted to modern
+Latin.  It also provides hyphenation patterns for the Liturgical Latin in
+T1/EC and UTF-8 encodings.")
+    ;; Either of these licenses
+    (license (list license:lppl1.0+ license:expat))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
