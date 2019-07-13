@@ -3921,6 +3921,19 @@ For the sake of reliability and maintainability, you should avoid dependencies
 on channels that you don't control, and you should aim to keep the number of
 dependencies to a minimum.
 
+@cindex subdirectory, channels
+@subsection Package Modules in a Sub-directory
+
+As a channel author, you may want to keep your channel modules in a
+sub-directory.  If your modules are in the sub-directory @file{guix}, you must
+add a meta-data file @file{.guix-channel} that contains:
+
+@lisp
+(channel
+  (version 0)
+  (directory "guix"))
+@end lisp
+
 @subsection Replicating Guix
 
 @cindex pinning, channels
