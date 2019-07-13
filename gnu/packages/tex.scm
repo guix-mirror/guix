@@ -1720,6 +1720,18 @@ T1/EC and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:expat)))
 
+(define-public texlive-hyphen-friulan
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-friulan" "fur"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-fur.tex")
+              (base32
+               "07m975p0ghzs9sjqqgxy7qdkqmgvg4rx4xp08zwm1parqsdlwd5d")))
+    (synopsis "Hyphenation patterns for Friulan")
+    (description "The package provides hyphenation patterns for Friulan in
+ASCII encodings.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
