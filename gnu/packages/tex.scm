@@ -2116,6 +2116,22 @@ Lia Rumantscha (Romansh language society).")
 T2A and UTF-8 encodings.")
     (license license:lppl1.2+)))
 
+(define-public texlive-hyphen-sanskrit
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-sanskrit" "sa"
+              (list "/doc/generic/hyph-utf8/sa/hyphenmin.txt"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-sa.tex")
+              (base32
+               "0grnn09l4i5yridx10yhm6dg9sbhgc2pmsp1p6hrcy7lzkqwdvs3")))
+    (synopsis "Sanskrit hyphenation patterns")
+    (description "This package provides hyphenation patterns for Sanskrit and
+Prakrit in longdesc transliteration, and in Devanagari, Bengali, Kannada,
+Malayalam longdesc and Telugu scripts for Unicode engines.")
+    ;; "You may freely use, copy, modify and/or distribute this file."
+    (license (license:non-copyleft
+              "file:///tex/generic/hyph-utf8/patterns/tex/hyph-sa.tex"))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
