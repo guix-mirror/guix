@@ -573,6 +573,19 @@ definitions.")
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.gz"))
+            (patches (list (origin
+                             ;; This patch is required to fix a segfault on i686:
+                             ;; <https://github.com/fontforge/fontforge/issues/3780>.
+                             ;; It is a squashed version of these commits:
+                             ;; <https://github.com/fontforge/fontforge/pull/3715>.
+                             (method url-fetch)
+                             (uri (string-append
+                                   "https://github.com/fontforge/fontforge/commit/"
+                                   "570e17b82079bb46af9b2be033c6fbb6b1f16c8f.patch"))
+                             (file-name "fontforge-scripting-array-reference.patch")
+                             (sha256
+                              (base32
+                               "1w0jbbkml149xmraxwchwrllia853i51ii6jdb3s160r2qbhvggc")))))
             (sha256
              (base32 "05v640mnk4fy4jzmxb6c4n4qm800x7hy4sl5gcdgzmm3md2s0qk7"))))
    (build-system gnu-build-system)
