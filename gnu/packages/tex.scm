@@ -1620,6 +1620,18 @@ American and British English in ASCII encoding.")
               "file:///tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex"
               "FSF all permissive license"))))
 
+(define-public texlive-hyphen-esperanto
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-esperanto" "eo"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-eo.tex")
+              (base32
+               "03xbjbzasznsyf4wd45bya6f4snfmzpdzg5zpvqj5q6gjykdg54k")))
+    (synopsis "Hyphenation patterns for Esperanto")
+    (description "The package provides hyphenation patterns for Esperanto ISO
+Latin 3 and UTF-8 encodings.")
+    (license license:lppl1.0+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
