@@ -1605,6 +1605,21 @@ T1/EC and UTF-8 encodings.")
 and UTF-8 encodings.")
     (license license:lppl1.0+)))
 
+(define-public texlive-hyphen-english
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-english" '("en-gb" "en-us")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-en-gb.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex")
+              (base32
+               "08hyih8hn2w2q12gc4zygz0ckbz00mkzzn9898z2bicky02zg3kc")))
+    (synopsis "Hyphenation patterns for American and British English")
+    (description "The package provides additional hyphenation patterns for
+American and British English in ASCII encoding.")
+    (license (license:non-copyleft
+              "file:///tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex"
+              "FSF all permissive license"))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
