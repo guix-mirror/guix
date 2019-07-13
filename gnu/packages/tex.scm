@@ -1829,6 +1829,21 @@ Swiss German.")
 in monotonic and polytonic spelling in LGR and UTF-8 encodings.")
     (license license:lppl)))
 
+(define-public texlive-hyphen-hungarian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-hungarian" "hu"
+              (list "/doc/generic/huhyphen/"
+                    "/doc/generic/hyph-utf8/hu/"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-hu.tex")
+              (base32
+               "0c81w2569cqsi4j56azwz0lfx16541zhiqgmn3m4iwh7mpx3rji8")))
+    (synopsis "Hyphenation patterns for Hungarian")
+    (description "This package provides hyphenation patterns for Hungarian in
+T1/EC and UTF-8 encodings.")
+    ;; Any of these licenses
+    (license (list license:gpl2 license:lgpl2.1+ license:mpl1.1))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
