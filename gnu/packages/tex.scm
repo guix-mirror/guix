@@ -2078,6 +2078,19 @@ and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:bsd-3)))
 
+(define-public texlive-hyphen-romanian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-romanian" "ro"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-ro.tex")
+              (base32
+               "12i1vryl51yhdpj163ahfyiy21rjmf4gkqgslpriirdjmyrwrs65")))
+    (synopsis "Romanian hyphenation patterns")
+    (description "This package provides hyphenation patterns for Romanian in
+T1/EC and UTF-8 encodings.")
+    ;; No differing license declared, so we choose the project license.
+    (license license:lppl)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
