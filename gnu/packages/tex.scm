@@ -2199,6 +2199,18 @@ T1/EC and UTF-8 encodings.")
 T1/EC and UTF-8 encodings.")
     (license license:lppl1.2+)))
 
+(define-public texlive-hyphen-thai
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-thai" "th"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-th.tex")
+              (base32
+               "15k1n4xdw8zzd5nrh76s53z4j95gxa4i2h1av5gx5vrjgblzzl97")))
+    (synopsis "Thai hyphenation patterns")
+    (description "This package provides hyphenation patterns for Thai in LTH
+and UTF-8 encodings.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
