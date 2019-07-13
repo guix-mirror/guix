@@ -2091,6 +2091,19 @@ T1/EC and UTF-8 encodings.")
     ;; No differing license declared, so we choose the project license.
     (license license:lppl)))
 
+(define-public texlive-hyphen-romansh
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-romansh" "rm"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-rm.tex")
+              (base32
+               "06wan8i4appc1zfvc0q4cgnfv1nj0qgk02w3sg56zc11hf8sywl9")))
+    (synopsis "Romansh hyphenation patterns")
+    (description "This package provides hyphenation patterns for Romansh in
+ASCII encodings.  They are supposed to comply with the rules indicated by the
+Lia Rumantscha (Romansh language society).")
+    (license license:lppl1.3+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
