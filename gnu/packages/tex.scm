@@ -1490,6 +1490,22 @@ language.")
 language.")
     (license license:expat)))
 
+(define-public texlive-hyphen-bulgarian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-bulgarian" "bg"
+              (list "/doc/generic/hyph-utf8/bg/azbukaExtended.pdf"
+                    "/doc/generic/hyph-utf8/bg/azbukaExtended.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex")
+              (base32
+               "06dxkk9azsggbri04i6g62lswygzadsx3rpqvbyzvbxc5wxz1dj1")))
+    (synopsis "Hyphenation patterns for Bulgarian")
+    (description "The package provides hyphenation patterns for the Bulgarian
+language in T2A and UTF-8 encodings.")
+    (license (license:non-copyleft
+              "file:///tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex"
+              "Ancestral BSD variant"))))
+
 
 (define-public texlive-hyph-utf8
   (package
