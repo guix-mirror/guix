@@ -1645,6 +1645,57 @@ T1/EC and UTF-8 encodings.")
     ;; Dual licensed under either license.
     (license (list license:lppl1.3+ license:expat))))
 
+(define-public texlive-hyphen-ethiopic
+  (let ((template (texlive-hyphen-package
+                   "texlive-hyphen-ethiopic" "mul-ethi"
+                   (list "/source/generic/hyph-utf8/languages/mul-ethi/generate_patterns_mul-ethi.lua")
+                   (base32
+                    "1dp5qn1mhv62kj27lqc7s0ca65z9bziyavkvif9ds5ivk7aq9drw"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((tex (string-append (getcwd)
+                                           "/tex/generic/hyph-utf8/patterns/tex/")))
+                   (mkdir-p tex)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/mul-ethi/"
+                     (substitute* "generate_patterns_mul-ethi.lua"
+                       (("\"UnicodeData.txt\"")
+                        (string-append "\""
+                                       (assoc-ref inputs "UnicodeData.txt")
+                                       "\"")))
+                     (invoke "texlua" "generate_patterns_mul-ethi.lua")
+                     (rename-file "hyph-mul-ethi.tex"
+                                  (string-append tex "/hyph-mul-ethi.tex"))
+                     #t))))
+             (add-after 'install 'install-hyph-mul-ethi.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (native-inputs
+       `(,@(package-native-inputs template)
+         ("texlive-bin" ,texlive-bin)
+         ("UnicodeData.txt"
+          ,(origin
+             (method url-fetch)
+             (uri (string-append "http://www.unicode.org/Public/10.0.0/ucd/"
+                                 "UnicodeData.txt"))
+             (sha256
+              (base32
+               "1cfak1j753zcrbgixwgppyxhm4w8vda8vxhqymi7n5ljfi6kwhjj"))))))
+      (synopsis "Hyphenation patterns for Ethiopic scripts")
+      (description "The package provides hyphenation patterns for languages
+written using the Ethiopic script for Unicode engines.  They are not supposed
+to be linguistically relevant in all cases and should, for proper typography,
+be replaced by files tailored to individual languages.")
+      (license license:lppl))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
