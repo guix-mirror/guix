@@ -1556,6 +1556,18 @@ UTF-8 encoding as well as in ASCII-based encoding for 8-bit engines.")
     ;; No explicit license declaration, so we use the project license.
     (license license:lppl)))
 
+(define-public texlive-hyphen-croatian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-croatian" "hr"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-hr.tex")
+              (base32
+               "129nz2nqilyq2477n2clx20xfbxh1qxm69zg4n2f6c4d4a8711nc")))
+    (synopsis "Hyphenation patterns for Croatian")
+    (description "The package provides hyphenation patterns for Croatian in
+T1/EC and UTF-8 encodings.")
+    (license license:lppl1.0+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
