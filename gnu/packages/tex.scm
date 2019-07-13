@@ -1593,6 +1593,18 @@ T1/EC and UTF-8 encodings.")
     ;; Either LPPL 1.3 or later, or Expat
     (license (list license:lppl1.3+ license:expat))))
 
+(define-public texlive-hyphen-dutch
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-dutch" "nl"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-nl.tex")
+              (base32
+               "0cq46cmgjc4y2x0xs9b0a5zca3jmszv4rkzmrhgjb5z2nm3xkrpi")))
+    (synopsis "Hyphenation patterns for Dutch")
+    (description "The package provides hyphenation patterns for Dutch in T1/EC
+and UTF-8 encodings.")
+    (license license:lppl1.0+)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
