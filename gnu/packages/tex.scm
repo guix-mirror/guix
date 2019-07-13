@@ -2211,6 +2211,45 @@ T1/EC and UTF-8 encodings.")
 and UTF-8 encodings.")
     (license license:lppl1.3+)))
 
+(define-public texlive-hyphen-turkish
+  (let ((template (texlive-hyphen-package
+                   "texlive-hyphen-turkish" "tr"
+                   (list "/source/generic/hyph-utf8/languages/tr/generate_patterns_tr.rb")
+                   (base32
+                    "0rvlhs2z2sn312lqsf44bzknid5dry7d2sl2q1whfvr0y4qj1g8f"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-patterns
+               (lambda _
+                 (let ((target (string-append (getcwd)
+                                              "/tex/generic/hyph-utf8/patterns/tex")))
+                   (mkdir-p target)
+                   (with-directory-excursion "source/generic/hyph-utf8/languages/tr/"
+                     (substitute* "generate_patterns_tr.rb"
+                       (("\\$file = File.new.*")
+                        (string-append "$file = File.new(\"" target
+                                       "/hyph-tr.tex\",\"w\")\n")))
+                     (invoke "ruby" "generate_patterns_tr.rb"))
+                   #t)))
+             (add-after 'install 'install-hyph-tr.tex
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (target (string-append out "/share/texmf-dist/tex")))
+                   (copy-recursively "tex" target)
+                   #t)))))))
+      (synopsis "Hyphenation patterns for Turkish")
+      (description "The package provides hyphenation patterns for Turkish in
+T1/EC and UTF-8 encodings.  The patterns for Turkish were first produced for
+the Ottoman Texts Project in 1987 and were suitable for both Modern Turkish
+and Ottoman Turkish in Latin script, however the required character set didn't
+fit into EC encoding, so support for Ottoman Turkish had to be dropped to keep
+compatibility with 8-bit engines.")
+      (license license:lppl1.0+))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
