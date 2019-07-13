@@ -8372,16 +8372,16 @@ Pathname.")
 (define-public jekyll
   (package
     (name "jekyll")
-    (version "3.8.5")
+    (version "3.8.6")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "jekyll" version))
               (sha256
                (base32
-                "1nn2sc308l2mz0yiall4r90l6vy67qp4sy9zapi73a948nd4a5k3"))))
+                "1ph1jjjl25vmzif7bvxzviq7azjm384pm7ba4k24cah94285bzhz"))))
     (build-system ruby-build-system)
     (arguments
-     ;; No rakefile, but a test subdirectory
+     ;; No rakefile, but a test subdirectory.
      `(#:tests? #f
        #:phases
        (modify-phases %standard-phases
