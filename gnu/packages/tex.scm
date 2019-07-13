@@ -2172,6 +2172,21 @@ T1/EC and UTF-8 encodings.")
     ;; Either license
     (license (list license:lppl1.0+ license:expat))))
 
+(define-public texlive-hyphen-spanish
+  (package
+    ;; The source files "eshyph-make.lua" and "eshyph.src" are provided to
+    ;; generate obsolete hyphenation patterns, which aren't included in a
+    ;; default TeX Live distribution, so we don't include them either.
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-spanish" "es"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-es.tex")
+              (base32
+               "0jgs0zzyk2wwrjbx2hqdh5qggrnik9xmsxygbfhlb7gdrcrs0mbj")))
+    (synopsis "Hyphenation patterns for Spanish")
+    (description "The package provides hyphenation patterns for Spanish in
+T1/EC and UTF-8 encodings.")
+    (license license:expat)))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
