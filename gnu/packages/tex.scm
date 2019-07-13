@@ -1478,6 +1478,18 @@ language.")
       (license (license:fsf-free
                 "/source/generic/hyph-utf8/languages/eu/generate_patterns_eu.rb")))))
 
+(define-public texlive-hyphen-belarusian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-belarusian" "be"
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-be.tex")
+              (base32
+               "1xvffph824rg43gi2xs3ny9gzlp708fyxj9zfhckmg8pzh9vv3n6")))
+    (synopsis "Hyphenation patterns for Belarusian")
+    (description "The package provides hyphenation patterns for the Belarusian
+language.")
+    (license license:expat)))
+
 
 (define-public texlive-hyph-utf8
   (package
