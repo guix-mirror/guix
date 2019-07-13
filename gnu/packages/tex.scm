@@ -2009,6 +2009,22 @@ T2A, LMC and UTF-8 encodings.")
     ;; Either of these licenses
     (license (list license:lppl1.3+ license:expat))))
 
+(define-public texlive-hyphen-norwegian
+  (package
+    (inherit (texlive-hyphen-package
+              "texlive-hyphen-norwegian" '("nb" "nn" "no")
+              (list "/tex/generic/hyph-utf8/patterns/tex/hyph-nb.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-nn.tex"
+                    "/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex")
+              (base32
+               "1fxnf671yz0p3lmdkspna7fjh96br1jy6yf7v17yh4fxwry3s4yz")))
+    (synopsis "Norwegian Bokmal and Nynorsk hyphenation patterns")
+    (description "This package provides hyphenation patterns for Norwegian
+Bokmal and Nynorsk in T1/EC and UTF-8 encodings.")
+    (license (license:non-copyleft
+              "/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex"
+              "FSF All permissive license"))))
+
 (define-public texlive-hyph-utf8
   (package
     (inherit (simple-texlive-package
