@@ -133,6 +133,17 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
     (description #f)
     (license #f)))
 
+(define hyph-utf8-scripts
+  (origin
+    (method svn-fetch)
+    (uri (texlive-ref "generic" "hyph-utf8"))
+    (file-name (string-append "hyph-utf8-scripts-"
+                              (number->string %texlive-revision)
+                              "-checkout"))
+    (sha256
+     (base32
+      "1ix8h637hwhz4vrdhilf84kzzdza0wi8fp26nh7iws0bq08sl517"))))
+
 (define texlive-extra-src
   (origin
     (method url-fetch)
