@@ -13717,6 +13717,34 @@ viewing files with long lines.")
 accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
+(define-public emacs-deadgrep
+  (let ((commit "caeb37b8d6ab83f0eba353d6bbb29678190d4419")
+        (version "0.7")
+        (revision "1"))
+    (package
+      (name "emacs-deadgrep")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Wilfred/deadgrep")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "158fqha8nilwfzmw15lcsq8b099j8wclzq303md0j4mfr2q2gfvs"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-spinner" ,emacs-spinner)))
+      (home-page "https://github.com/Wilfred/deadgrep")
+      (synopsis "Frontend for @code{ripgrep}")
+      (description "This package provides an Emacs interface for performing
+searches with @code{ripgrep}.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
