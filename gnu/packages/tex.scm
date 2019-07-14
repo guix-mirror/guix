@@ -3978,32 +3978,15 @@ package options.  A specialized system for setting @code{PSTricks} keys is
 provided by the @code{pst-xkey} package.")
     (license license:lppl1.3+)))
 
-(define-public texlive-latex-pstool
+(define-public texlive-pstool
   (package
-    (name "texlive-latex-pstool")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/pstool"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1h816jain8c9nky75kk8pmmwj5b4yf9dpqvdvi2l6jhfj5iqkzr8"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/pstool")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-pstool"
+              (list "/doc/latex/pstool/"
+                    "/tex/latex/pstool/")
+              (base32
+               "12clzcw2cl7g2chr2phgmmiwxw4859cln1gbx1wgp8bl9iw590nc")
+              #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-bigfoot" ,texlive-latex-bigfoot) ; for suffix
        ("texlive-latex-filemod" ,texlive-latex-filemod)
@@ -4023,6 +4006,9 @@ labels within pdfLaTeX documents.  Every graphic is compiled individually,
 drastically speeding up compilation time when only a single figure needs
 re-processing.")
     (license license:lppl)))
+
+(define-public texlive-latex-pstool
+  (deprecated-package "texlive-latex-pstool" texlive-pstool))
 
 (define-public texlive-latex-seminar
   (package
