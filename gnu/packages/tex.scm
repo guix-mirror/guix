@@ -2828,6 +2828,24 @@ verbatim mode; build \"example\" environments (showing both result and
 verbatim source).")
     (license license:lppl1.0+)))
 
+(define-public texlive-graphics-def
+  (package
+    (inherit (simple-texlive-package
+              "texlive-graphics-def"
+              (list "/doc/latex/graphics-def/README.md"
+                    "/tex/latex/graphics-def/")
+              (base32
+               "0zrbn9cwfnnrrl3b2zsd74ldksp9jwpvjh7z93ild1m75crpb39a")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/latex-graphics")
+    (synopsis "Color and graphics option files")
+    (description
+     "This bundle is a combined distribution consisting of @file{dvips.def},
+@file{pdftex.def}, @file{luatex.def}, @file{xetex.def}, @file{dvipdfmx.def},
+and @file{dvisvgm.def} driver option files for the LaTeX graphics and color
+packages.")
+    (license license:lppl1.3c+)))
+
 (define-public texlive-latex-graphics
   (package
     (name "texlive-latex-graphics")
