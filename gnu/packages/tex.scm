@@ -802,33 +802,22 @@ originals.")
 (define-public texlive-fonts-cm-super
   (deprecated-package "texlive-fonts-cm-super" texlive-cm-super))
 
-(define-public texlive-fonts-lm
+(define-public texlive-lm
   (package
-    (name "texlive-fonts-lm")
-    (version "2.004")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.gust.org.pl/projects/e-foundry/"
-                                  "latin-modern/download/lm" version "bas.zip"))
-              (sha256
-               (base32
-                "0z2s253y751m2ci5aw8nq0sf2kyg9hpimv2gyixkch9d07m2b9wp"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((root (string-append (assoc-ref %outputs "out")
-                                    "/share/texmf-dist/")))
-           (mkdir-p root)
-           (with-directory-excursion root
-             (invoke (string-append (assoc-ref %build-inputs "unzip")
-                                    "/bin/unzip")
-                     (assoc-ref %build-inputs "source")))
-           #t))))
-    (native-inputs
-     `(("unzip" ,unzip)))
+    (inherit (simple-texlive-package
+              "texlive-lm"
+              (list "/doc/fonts/lm/"
+                    "/fonts/afm/public/lm/"
+                    "/fonts/enc/dvips/lm/"
+                    "/fonts/map/dvipdfm/lm/"
+                    "/fonts/map/dvips/lm/"
+                    "/fonts/opentype/public/lm/"
+                    "/fonts/tfm/public/lm/"
+                    "/fonts/type1/public/lm/"
+                    "/tex/latex/lm/")
+              (base32
+               "0i1hwr8rp0jqyvs4qyplrirscd4w7lsgwsncyv3yzy80bsa56jq5")
+              #:trivial? #t))
     (home-page "http://www.gust.org.pl/projects/e-foundry/latin-modern/")
     (synopsis "Latin Modern family of fonts")
     (description "The Latin Modern fonts are derived from the famous Computer
@@ -838,6 +827,9 @@ Computers & Typesetting series.")
     ;; Public License (LPPL), version 1.3c or later, but comes with an
     ;; additional but not legally binding clause.
     (license license:lppl1.3c+)))
+
+(define-public texlive-fonts-lm
+  (deprecated-package "texlive-fonts-lm" texlive-lm))
 
 (define-public texlive-fonts-knuth-lib
   (package
