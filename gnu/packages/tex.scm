@@ -4010,32 +4010,15 @@ re-processing.")
 (define-public texlive-latex-pstool
   (deprecated-package "texlive-latex-pstool" texlive-pstool))
 
-(define-public texlive-latex-seminar
+(define-public texlive-seminar
   (package
-    (name "texlive-latex-seminar")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/seminar"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0y4i651b75y6006n03x8n86bsqvjsailvvz9bhzy51dzsznqidq0"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/seminar")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-seminar"
+              (list "/doc/latex/seminar/"
+                    "/tex/latex/seminar/")
+              (base32
+               "1clgw5xy867khzfn8d210rc5hsw5s7r0pznhk84niybvw4zc7r3f")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/seminar")
     (synopsis "Make overhead slides")
     ;; TODO: This package may need fancybox and xcomment at runtime.
@@ -4046,6 +4029,9 @@ reckoned a good basis for a presentation — users are advised to use more
 recent classes such as powerdot or beamer, both of which are tuned to
 21st-century presentation styles.")
     (license license:lppl1.2+)))
+
+(define-public texlive-latex-seminar
+  (deprecated-package "texlive-latex-seminar" texlive-seminar))
 
 (define-public texlive-latex-trimspaces
   (package
