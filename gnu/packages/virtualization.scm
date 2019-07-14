@@ -694,8 +694,14 @@ domains, their live performance and resource utilization statistics.")
              ;; The includes for libnl are located in a sub-directory.
              (setenv "C_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "libnl")
-                                    "/include/libnl3:"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    "/include/libnl3"
+                                    ;; Also add the kernel headers here so that GCC
+                                    ;; treats them as "system headers".  Otherwise
+                                    ;; the build fails with -Werror because parasite.c
+                                    ;; includes both <linux/fs.h> and <sys/mount.h>,
+                                    ;; which define some of the same constants.
+                                    (assoc-ref inputs "kernel-headers")
+                                    "/include"))
              ;; Prevent xmlto from failing the install phase.
              (substitute* "Documentation/Makefile"
                (("XMLTO.*:=.*")
