@@ -784,116 +784,40 @@ display, and mathematical fonts in a range of styles, based on Monotype Modern
 8A.")
     (license license:knuth)))
 
-(define-public texlive-fonts-cm-super
-  (package
-    (name "texlive-fonts-cm-super")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/cm-super"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0ybb4gi2rblzpb6wfzm2wk7dj3y2jnmkzsla7mz7g3zc12y4r2b9"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (let ((root (string-append (assoc-ref %outputs "out")
-                                    "/share/texmf-dist/"))
-               (pkgs '(("source"         . "tex/latex/cm-super")
-                       ("cm-super-afm"   . "fonts/afm/public/cm-super")
-                       ("cm-super-type1" . "fonts/type1/public/cm-super")
-                       ("cm-super-enc"   . "fonts/enc/dvips/cm-super")
-                       ("cm-super-map"   . "fonts/map/dvips/cm-super")
-                       ("cm-super-vtex"  . "fonts/map/vtex/cm-super"))))
-           (for-each (match-lambda
-                       ((pkg . dir)
-                        (let ((target (string-append root dir)))
-                          (mkdir-p target)
-                          (copy-recursively (assoc-ref %build-inputs pkg)
-                                            target))))
-                     pkgs)
-           #t))))
-    (native-inputs
-     `(("cm-super-vtex"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/vtex/cm-super"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-map-vtex-" version "-checkout"))
-           (sha256
-            (base32
-             "14c9allsgfv6za9wznz4cxqxwz5nsmj8rnwvxams8fhs5rvglxqi"))))
-       ("cm-super-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/public/cm-super"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "048ih65f2nghdabdar2p957c4s2spgllmy2gxdscddwqpnmd26yn"))))
-       ("cm-super-type1"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/type1/public/cm-super"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-type1-" version "-checkout"))
-           (sha256
-            (base32
-             "1140swk3w2ka0y4zdsq6pdifrdanb281q71p5gngbbjxdxjxf4qx"))))
-       ("cm-super-map"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/cm-super"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-map-" version "-checkout"))
-           (sha256
-            (base32
-             "10r6xqbwf9wk3ylg7givwyrw1952zydc6p7fw29zjf8ijl0lndim"))))
-       ("cm-super-enc"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/enc/dvips/cm-super"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-enc-" version "-checkout"))
-           (sha256
-            (base32
-             "1pgksy96gfgyjxfhs2k04bgg7nr7i128y01kjcahr7n38080h4ij"))))))
-    (home-page "https://www.ctan.org/pkg/cm-super")
-    (synopsis "Computer Modern Super family of fonts")
-    (description "The CM-Super family provides Adobe Type 1 fonts that replace
+(define-public texlive-cm-super
+  (let ((template (simple-texlive-package
+                   "texlive-cm-super"
+                   (list "/doc/fonts/cm-super/"
+                         "/dvips/cm-super/"
+                         "/fonts/afm/public/cm-super/"
+                         "/fonts/enc/dvips/cm-super/"
+                         "/fonts/map/dvips/cm-super/"
+                         "/fonts/map/vtex/cm-super/"
+                         "/fonts/type1/public/cm-super/"
+                         "/tex/latex/cm-super/")
+                   (base32
+                    "1k3afl0x0bqbr5mnawbnp7rr2126dwn0vwnxzibm9ggvzqilnkm6")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'reset-gzip-timestamps)))))
+      (home-page "https://www.ctan.org/pkg/cm-super")
+      (synopsis "Computer Modern Super family of fonts")
+      (description "The CM-Super family provides Adobe Type 1 fonts that replace
 the T1/TS1-encoded Computer Modern (EC/TC), T1/TS1-encoded Concrete,
 T1/TS1-encoded CM bright and LH Cyrillic fonts (thus supporting all European
 languages except Greek), and bringing many ameliorations in typesetting
 quality.  The fonts exhibit the same metrics as the METAFONT-encoded
 originals.")
-    ;; With font exception
-    (license license:gpl2+)))
+      ;; With font exception
+      (license license:gpl2+))))
+
+(define-public texlive-fonts-cm-super
+  (deprecated-package "texlive-fonts-cm-super" texlive-cm-super))
 
 (define-public texlive-fonts-lm
   (package
