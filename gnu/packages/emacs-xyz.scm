@@ -13665,6 +13665,30 @@ reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
 server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
 
+(define-public emacs-so-long
+  (let ((commit "3ebe97decdb5cbbfba82ca686e0ad2c7d2722b4a")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-so-long")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/so-long.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fi71g5rsdsi978jz8406k8hvzgnssm9wxar8yqfhs97178r9s5m"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/SoLong")
+      (synopsis "Improve performance in files with long lines")
+      (description "This package improves the performance of Emacs when
+viewing files with long lines.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
