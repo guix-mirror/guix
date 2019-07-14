@@ -8,6 +8,7 @@
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1102,19 +1103,23 @@ entry."
 (define* (operating-system-bootcfg os #:optional (old-entries '()))
   "Return the bootloader configuration file for OS.  Use OLD-ENTRIES,
 a list of <menu-entry>, to populate the \"old entries\" menu."
-  (let* ((root-fs         (operating-system-root-file-system os))
+  (let* ((file-systems    (operating-system-file-systems os))
+         (root-fs         (operating-system-root-file-system os))
          (root-device     (file-system-device root-fs))
          (params          (operating-system-boot-parameters
                            os root-device
                            #:system-kernel-arguments? #t))
          (entry           (boot-parameters->menu-entry params))
          (bootloader-conf (operating-system-bootloader os)))
+
     (define generate-config-file
       (bootloader-configuration-file-generator
        (bootloader-configuration-bootloader bootloader-conf)))
 
     (generate-config-file bootloader-conf (list entry)
-                          #:old-entries old-entries)))
+                          #:old-entries old-entries
+                          #:btrfs-subvolume-file-name
+			  (btrfs-store-subvolume-file-name file-systems))))
 
 (define* (operating-system-boot-parameters os root-device
                                            #:key system-kernel-arguments?)

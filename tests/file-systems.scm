@@ -83,4 +83,49 @@
   #f
   (alist->file-system-options '()))
 
+
+;;;
+;;; Btrfs related.
+;;;
+
+(define %btrfs-root-subvolume
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/")
+    (type "btrfs")
+    (options "subvol=rootfs,compress=zstd")))
+
+(define %btrfs-store-subvolid
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/gnu/store")
+    (type "btrfs")
+    (options "subvolid=10,compress=zstd")
+    (dependencies (list %btrfs-root-subvolume))))
+
+(define %btrfs-store-subvolume
+  (file-system
+    (device (file-system-label "btrfs-pool"))
+    (mount-point "/gnu/store")
+    (type "btrfs")
+    (options "subvol=/some/nested/file/name")
+    (dependencies (list %btrfs-root-subvolume))))
+
+(test-assert "btrfs-subvolume? (subvol)"
+  (btrfs-subvolume? %btrfs-root-subvolume))
+
+(test-assert "btrfs-subvolume? (subvolid)"
+  (btrfs-subvolume? %btrfs-store-subvolid))
+
+(test-equal "btrfs-store-subvolume-file-name"
+  "/some/nested/file/name"
+  (parameterize ((%store-prefix "/gnu/store"))
+    (btrfs-store-subvolume-file-name (list %btrfs-root-subvolume
+                                           %btrfs-store-subvolume))))
+
+(test-error "btrfs-store-subvolume-file-name (subvolid)"
+            (parameterize ((%store-prefix "/gnu/store"))
+              (btrfs-store-subvolume-file-name (list %btrfs-root-subvolume
+                                                     %btrfs-store-subvolid))))
+
 (test-end)

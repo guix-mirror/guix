@@ -58,18 +58,29 @@
 ;;;
 ;;; Code:
 
-(define (strip-mount-point mount-point file)
-  "Strip MOUNT-POINT from FILE, which is a gexp or other lowerable object
-denoting a file name."
-  (match mount-point
-    ((? string? mount-point)
-     (if (string=? mount-point "/")
-         file
-         #~(let ((file #$file))
-             (if (string-prefix? #$mount-point file)
-                 (substring #$file #$(string-length mount-point))
-                 file))))
-    (#f file)))
+(define* (normalize-file file mount-point btrfs-subvolume-file-name)
+  "Strip MOUNT-POINT and prepend BTRFS-SUBVOLUME-FILE-NAME to FILE, a
+G-expression or other lowerable object denoting a file name."
+
+  (define (strip-mount-point mount-point file)
+    (if mount-point
+        (if (string=? mount-point "/")
+            file
+            #~(let ((file #$file))
+                (if (string-prefix? #$mount-point file)
+                    (substring #$file #$(string-length mount-point))
+                    file)))
+        file))
+
+  (define (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name file)
+    (if btrfs-subvolume-file-name
+        #~(string-append #$btrfs-subvolume-file-name #$file)
+        file))
+
+  (prepend-btrfs-subvolume-file-name btrfs-subvolume-file-name
+                                     (strip-mount-point mount-point file)))
+
+
 
 (define-record-type* <grub-theme>
   ;; Default theme contributed by Felipe López.
@@ -124,13 +135,14 @@ file with the resolution provided in CONFIG."
            (_ #f)))))
 
 (define* (eye-candy config store-device store-mount-point
-                    #:key system port)
-  "Return a gexp that writes to PORT (a port-valued gexp) the
-'grub.cfg' part concerned with graphics mode, background images, colors, and
-all that.  STORE-DEVICE designates the device holding the store, and
-STORE-MOUNT-POINT is its mount point; these are used to determine where the
-background image and fonts must be searched for.  SYSTEM must be the target
-system string---e.g., \"x86_64-linux\"."
+                    #:key btrfs-store-subvolume-file-name system port)
+  "Return a gexp that writes to PORT (a port-valued gexp) the 'grub.cfg' part
+concerned with graphics mode, background images, colors, and all that.
+STORE-DEVICE designates the device holding the store, and STORE-MOUNT-POINT is
+its mount point; these are used to determine where the background image and
+fonts must be searched for.  SYSTEM must be the target system string---e.g.,
+\"x86_64-linux\".  BTRFS-STORE-SUBVOLUME-FILE-NAME is the file name of the
+Btrfs subvolume, to be prepended to any store path, if any."
   (define setup-gfxterm-body
     (let ((gfxmode
            (or (and-let* ((theme (bootloader-configuration-theme config))
@@ -167,11 +179,14 @@ fi~%" #+font-file)
                      (symbol->string (assoc-ref colors 'bg)))))
 
   (define font-file
-    (strip-mount-point store-mount-point
-                       (file-append grub "/share/grub/unicode.pf2")))
+    (normalize-file (file-append grub "/share/grub/unicode.pf2")
+                    store-mount-point
+                    btrfs-store-subvolume-file-name))
 
   (define image
-    (grub-background-image config))
+    (normalize-file (grub-background-image config)
+                    store-mount-point
+                    btrfs-store-subvolume-file-name))
 
   (and image
        #~(format #$port "
@@ -196,7 +211,7 @@ fi~%"
                  #$(setup-gfxterm config font-file)
                  #$(grub-setup-io config)
 
-                 #$(strip-mount-point store-mount-point image)
+                 #$image
                  #$(theme-colors grub-theme-color-normal)
                  #$(theme-colors grub-theme-color-highlight))))
 
@@ -304,52 +319,66 @@ code."
 (define* (grub-configuration-file config entries
                                   #:key
                                   (system (%current-system))
-                                  (old-entries '()))
+                                  (old-entries '())
+                                  btrfs-subvolume-file-name)
   "Return the GRUB configuration file corresponding to CONFIG, a
 <bootloader-configuration> object, and where the store is available at
-STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list of menu
-entries corresponding to old generations of the system."
+STORE-FS, a <file-system> object.  OLD-ENTRIES is taken to be a list
+of menu entries corresponding to old generations of the system.
+BTRFS-SUBVOLUME-FILE-NAME may be used to specify on which subvolume a
+Btrfs root file system resides."
   (define all-entries
     (append entries (bootloader-configuration-menu-entries config)))
   (define (menu-entry->gexp entry)
-    (let ((device (menu-entry-device entry))
-          (device-mount-point (menu-entry-device-mount-point entry))
-          (label (menu-entry-label entry))
-          (kernel (menu-entry-linux entry))
-          (arguments (menu-entry-linux-arguments entry))
-          (initrd (menu-entry-initrd entry)))
+    (let* ((device (menu-entry-device entry))
+           (device-mount-point (menu-entry-device-mount-point entry))
+           (label (menu-entry-label entry))
+           (arguments (menu-entry-linux-arguments entry))
+           (kernel (normalize-file (menu-entry-linux entry)
+                                   device-mount-point
+                                   btrfs-subvolume-file-name))
+           (initrd (normalize-file (menu-entry-initrd entry)
+                                   device-mount-point
+                                   btrfs-subvolume-file-name)))
       ;; Here DEVICE is the store and DEVICE-MOUNT-POINT is its mount point.
       ;; Use the right file names for KERNEL and INITRD in case
       ;; DEVICE-MOUNT-POINT is not "/", meaning that the store is on a
       ;; separate partition.
-      (let ((kernel  (strip-mount-point device-mount-point kernel))
-            (initrd  (strip-mount-point device-mount-point initrd)))
-        #~(format port "menuentry ~s {
+
+      ;; When BTRFS-SUBVOLUME-FILE-NAME is defined, prepend it the kernel and
+      ;; initrd paths, to allow booting from a Btrfs subvolume.
+      #~(format port "menuentry ~s {
   ~a
   linux ~a ~a
   initrd ~a
 }~%"
-                  #$label
-                  #$(grub-root-search device kernel)
-                  #$kernel (string-join (list #$@arguments))
-                  #$initrd))))
+                #$label
+                #$(grub-root-search device kernel)
+                #$kernel (string-join (list #$@arguments))
+                #$initrd)))
   (define sugar
     (eye-candy config
                (menu-entry-device (first all-entries))
                (menu-entry-device-mount-point (first all-entries))
+               #:btrfs-store-subvolume-file-name btrfs-subvolume-file-name
                #:system system
                #:port #~port))
 
   (define keyboard-layout-config
-    (let ((layout (bootloader-configuration-keyboard-layout config))
-          (grub   (bootloader-package
-                   (bootloader-configuration-bootloader config))))
-      #~(let ((keymap #$(and layout
-                             (keyboard-layout-file layout #:grub grub))))
-          (when keymap
-            (format port "\
+    (let* ((layout (bootloader-configuration-keyboard-layout config))
+           (grub   (bootloader-package
+                    (bootloader-configuration-bootloader config)))
+           (keymap* (and layout
+                         (keyboard-layout-file layout #:grub grub)))
+           (keymap (and keymap*
+                        (if btrfs-subvolume-file-name
+                            #~(string-append #$btrfs-subvolume-file-name
+                                             #$keymap*)
+                            keymap*))))
+      #~(when #$keymap
+          (format port "\
 insmod keylayouts
-keymap ~a~%" keymap)))))
+keymap ~a~%" #$keymap))))
 
   (define builder
     #~(call-with-output-file #$output

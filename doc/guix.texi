@@ -11782,6 +11782,110 @@ and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
 @end defvr
 
+@node Btrfs file system
+@subsection Btrfs file system
+
+The Btrfs has special features, such as subvolumes, that merit being
+explained in more details.  The following section attempts to cover
+basic as well as complex uses of a Btrfs file system with the Guix
+System.
+
+In its simplest usage, a Btrfs file system can be described, for
+example, by:
+
+@lisp
+(file-system
+  (mount-point "/home")
+  (type "btrfs")
+  (device (file-system-label "my-home")))
+@end lisp
+
+The example below is more complex, as it makes use of a Btrfs
+subvolume, named @code{rootfs}.  The parent Btrfs file system is labeled
+@code{my-btrfs-pool}, and is located on an encrypted device (hence the
+dependency on @code{mapped-devices}):
+
+@lisp
+(file-system
+  (device (file-system-label "my-btrfs-pool"))
+  (mount-point "/")
+  (type "btrfs")
+  (options "subvol=rootfs")
+  (dependencies mapped-devices))
+@end lisp
+
+Some bootloaders, for example GRUB, only mount a Btrfs partition at its
+top level during the early boot, and rely on their configuration to
+refer to the correct subvolume path within that top level.  The
+bootloaders operating in this way typically produce their configuration
+on a running system where the Btrfs partitions are already mounted and
+where the subvolume information is readily available.  As an example,
+@command{grub-mkconfig}, the configuration generator command shipped
+with GRUB, reads @file{/proc/self/mountinfo} to determine the top-level
+path of a subvolume.
+
+The Guix System produces a bootloader configuration using the operating
+system configuration as its sole input; it is therefore necessary to
+extract the subvolume name on which @file{/gnu/store} lives (if any)
+from that operating system configuration.  To better illustrate,
+consider a subvolume named 'rootfs' which contains the root file system
+data.  In such situation, the GRUB bootloader would only see the top
+level of the root Btrfs partition, e.g.:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume directory)
+    ├── gnu         (normal directory)
+        ├── store   (normal directory)
+[...]
+@end example
+
+Thus, the subvolume name must be prepended to the @file{/gnu/store} path
+of the kernel, initrd binaries and any other files referred to in the
+GRUB configuration that must be found during the early boot.
+
+The next example shows a nested hierarchy of subvolumes and
+directories:
+
+@example
+/                   (top level)
+├── rootfs          (subvolume)
+    ├── gnu         (normal directory)
+        ├── store   (subvolume)
+[...]
+@end example
+
+This scenario would work without mounting the 'store' subvolume.
+Mounting 'rootfs' is sufficient, since the subvolume name matches its
+intended mount point in the file system hierarchy.  Alternatively, the
+'store' subvolume could be referred to by setting the @code{subvol}
+option to either @code{/rootfs/gnu/store} or @code{rootfs/gnu/store}.
+
+Finally, a more contrived example of nested subvolumes:
+
+@example
+/                           (top level)
+├── root-snapshots          (subvolume)
+    ├── root-current        (subvolume)
+        ├── guix-store      (subvolume)
+[...]
+@end example
+
+Here, the 'guix-store' subvolume doesn't match its intended mount point,
+so it is necessary to mount it.  The subvolume must be fully specified,
+by passing its file name to the @code{subvol} option.  To illustrate,
+the 'guix-store' subvolume could be mounted on @file{/gnu/store} by using
+a file system declaration such as:
+
+@lisp
+(file-system
+  (device (file-system-label "btrfs-pool-1"))
+  (mount-point "/gnu/store")
+  (type "btrfs")
+  (options "subvol=root-snapshots/root-current/guix-store,\
+compress-force=zstd,space_cache=v2"))
+@end lisp
+
 @node Mapped Devices
 @section Mapped Devices
 
