@@ -1346,6 +1346,64 @@ output encodings, and features generation of clean UTF-8 patterns.")
 
 ;; This provides etex.src which is needed to build various formats, including
 ;; luatex.fmt and pdflatex.fmt
+(define-public texlive-etex
+  (let ((template (simple-texlive-package
+                   "texlive-etex"
+                   (list "/doc/etex/base/"
+                         "/doc/man/man1/etex.1"
+                         "/doc/man/man1/etex.man1.pdf"
+                         "/tex/plain/etex/"
+                         "/fonts/source/public/etex/")
+                   (base32
+                    "1qv6vxm5a8pw38gas3i69ivmsn79zj2yq5n5vdmh0rzic5hw2hmc")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Build tfm font.
+             (replace 'build
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+                   ;; Tell mf where to find mf.base
+                   (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+                   ;; Tell mf where to look for source files
+                   (setenv "MFINPUTS"
+                           (string-append (getcwd)
+                                          "/fonts/source/public/etex/:"
+                                          mf "/share/texmf-dist/metafont/base:"
+                                          (assoc-ref inputs "texlive-fonts-cm")
+                                          "/share/texmf-dist/fonts/source/public/cm")))
+                 (invoke "mf" "-progname=mf"
+                         (string-append "\\"
+                                        "mode:=ljfour; "
+                                        "mag:=1; "
+                                        "scrollmode; "
+                                        "input xbmc10"))
+                 #t))
+             (add-after 'install 'install-font
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (install-file
+                  "xbmc10.tfm"
+                  (string-append (assoc-ref outputs "out")
+                                 "/share/texmf-dist/fonts/tfm/public/etex/"))
+                 #t))))))
+      (native-inputs
+       `(("texlive-bin" ,texlive-bin)
+         ("texlive-metafont-base" ,texlive-metafont-base)
+         ("texlive-fonts-cm" ,texlive-fonts-cm)))
+      (home-page "https://www.ctan.org/pkg/etex")
+      (synopsis "Extended version of TeX")
+      (description
+       "This package provides an extended version of TeX (which is capable of
+running as if it were TeX unmodified).  E-TeX has been specified by the LaTeX
+team as the engine for the development of LaTeX2e; as a result, LaTeX
+programmers may assume e-TeX functionality.  The pdftex engine directly
+incorporates the e-TeX extensions.")
+      (license license:knuth))))
+
 (define-public texlive-tex-plain
   (package
     (name "texlive-tex-plain")
