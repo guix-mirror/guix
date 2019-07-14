@@ -3003,32 +3003,15 @@ rawfonts, showkeys, somedefs, tabularx, theorem, trace, varioref, verbatim,
 xr, and xspace.")
     (license license:lppl1.3+)))
 
-(define-public texlive-latex-url
+(define-public texlive-url
   (package
-    (name "texlive-latex-url")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/url"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "184s2543cwia5l7iibhlkl1ffbncfhjpv5p56zq0c15by5sghlac"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/url")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-url"
+              (list "/doc/latex/url/"
+                    "/tex/latex/url/")
+              (base32
+               "184m40wgnx939ky2hbxnj0v9aak023ldrhgffp0lgyk9wdqpxlqg")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/url")
     (synopsis "Verbatim with URL-sensitive line breaks")
     (description "The command @code{\\url} is a form of verbatim command that
@@ -3042,6 +3025,9 @@ of file names.")
     ;; The license header states that it is under LPPL version 2 or later, but
     ;; the latest version is 1.3c.
     (license license:lppl1.3c+)))
+
+(define-public texlive-latex-url
+  (deprecated-package "texlive-latex-url" texlive-url))
 
 (define-public texlive-latex-l3kernel
   (package
