@@ -413,6 +413,20 @@ This package contains the binaries.")
    (home-page "https://www.tug.org/texlive/")))
 
 
+(define texlive-docstrip
+  (package
+    (inherit (simple-texlive-package
+              "texlive-docstrip"
+              (list "/tex/latex/base/docstrip.tex")
+              (base32
+               "17vdy43d9vknldz7wb69hp33r8awmdvn4xszamvgs5ikcl4cp289")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/texlive")
+    (synopsis "Utility to strip documentation from TeX files.")
+    (description "This package provides the docstrip utility to strip
+documentation from TeX files.  It is part of the LaTeX base.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-unicode-data
   (package
     (inherit (simple-texlive-package
