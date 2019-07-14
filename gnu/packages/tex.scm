@@ -4100,32 +4100,15 @@ space-stripped macros.")
 to something that's not a float.")
     (license license:lppl)))
 
-(define-public texlive-latex-doi
+(define-public texlive-doi
   (package
-    (name "texlive-latex-doi")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/doi"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0378rdmrgr2lzbfi4qqy4dfpj5im20diyd8z8b9m4mlg05r7wgnb"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/doi")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-doi"
+              (list "/doc/latex/doi/README"
+                    "/tex/latex/doi/")
+              (base32
+               "17lnnhfmb8g4nh4fnyc9616h8xg3vjrzmlvfmlfqwwlfpma9xnnw")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/doi")
     (synopsis "Create correct hyperlinks for DOI numbers")
     (description
@@ -4137,6 +4120,9 @@ command @code{\\doi{}}, which takes a DOI number, and creates a correct
 hyperlink to the target of the DOI.")
     ;; Any version of the LPPL.
     (license license:lppl1.3+)))
+
+(define-public texlive-latex-doi
+  (deprecated-package "texlive-latex-doi" texlive-doi))
 
 (define-public texlive-latex-etoolbox
   (package
