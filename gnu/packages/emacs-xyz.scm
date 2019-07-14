@@ -13745,6 +13745,30 @@ accept and reject GitHub pull requests.")
 searches with @code{ripgrep}.")
       (license license:gpl3+))))
 
+(define-public emacs-focus
+  (let ((commit "ab42b8779929beeb7878c7fb3d3ccd80d9327c7f")
+        (version "0.1.1")
+        (revision "1"))
+    (package
+      (name "emacs-focus")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/larstvei/Focus")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "079v1syid7h2vr2ya6hs6hl0pgj60qdsw60mqw4cj2zllmkrkwj4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/larstvei/Focus")
+      (synopsis "Minor mode for focusing in on relevant text")
+      (description "This package provides a minor mode that dims the color of
+text in neighboring sections.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
