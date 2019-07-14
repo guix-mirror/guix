@@ -3853,32 +3853,16 @@ without affecting the structure of the list (this works for @code{itemize} and
 @code{enumerate} lists, and numbered lists remain in sequence).")
     (license license:lppl)))
 
-(define-public texlive-latex-filemod
+(define-public texlive-filemod
   (package
-    (name "texlive-latex-filemod")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/filemod"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0vpxilfw69xv78f03g0j0zw0bw4qcn36whqp8phcq48qk1ax2kr2"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/filemod")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-filemod"
+              (list "/doc/latex/filemod/"
+                    "/tex/latex/filemod/"
+                    "/tex/generic/filemod/")
+              (base32
+               "1snsj7kblkj1ig3x3845lsypz7ab04lf0dcpdh946xakgjnz4fb5")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/filemod")
     (synopsis "Provide file modification times, and compare them")
     (description
@@ -3891,6 +3875,9 @@ output with recent versions of the LaTeX compiler which uses pdfLaTeX in DVI
 mode.  The functionality is provided by purely expandable macros or by faster
 but non-expandable ones.")
     (license license:lppl1.3+)))
+
+(define-public texlive-latex-filemod
+  (deprecated-package "texlive-latex-filemod" texlive-filemod))
 
 (define-public texlive-latex-ifplatform
   (package
