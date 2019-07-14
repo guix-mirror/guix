@@ -665,30 +665,13 @@ typesetting in these fonts.")
 
 (define-public texlive-fontname
   (package
-    (name "texlive-fontname")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/fonts/map/fontname"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "05rbn7z30xawd3n6w7c3ijp2yc67ga220jgqmkla9pd9wx185rzq"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/fonts/map/fontname")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-fontname"
+              (list "/doc/fonts/fontname/fontname.texi"
+                    "/fonts/map/fontname/")
+              (base32
+               "0h5im5rnhycrrkd6z10f17m2caa8lv594wf482b68qjmnxfrqnxj")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/fontname")
     (synopsis "Scheme for naming fonts in TeX")
     (description "This is Fontname, a naming scheme for (the base part of)
