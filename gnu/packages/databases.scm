@@ -659,6 +659,10 @@ Language.")
          ;; For now, disable the features that that use libarchive (xtrabackup).
          "-DWITH_LIBARCHIVE=OFF"
 
+         ;; Disable the TokuDB engine, because its test suite frequently fails,
+         ;; and loading it crashes the server: <https://bugs.gnu.org/35521>.
+         "-DTOKUDB_OK=OFF"
+
          ;; Ensure the system libraries are used.
          "-DWITH_JEMALLOC=yes"
          "-DWITH_PCRE=system"
@@ -705,9 +709,6 @@ Language.")
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
                       "main.mysqldump"
-
-                      ;; XXX: Fails sporadically.
-                      "innodb_fts.crash_recovery"
 
                       ;; FIXME: This test fails on i686:
                       ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
@@ -786,7 +787,6 @@ Language.")
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("pcre" ,pcre)
-       ("snappy" ,snappy)
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (propagated-inputs
