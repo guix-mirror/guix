@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -354,11 +355,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
            (lambda _
              (substitute* (find-files "." "^Makefile(\\.include)?$")
                (("/bin/pwd") "pwd"))
-             #t))
-         (add-before 'configure 'work-around-gcc-7-include-path-issue
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
