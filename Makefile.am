@@ -184,7 +184,6 @@ MODULES =					\
   guix/build/haskell-build-system.scm		\
   guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
-  guix/build/json.scm				\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/profiles.scm			\

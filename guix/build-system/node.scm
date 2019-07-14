@@ -18,7 +18,6 @@
 
 (define-module (guix build-system node)
   #:use-module (guix store)
-  #:use-module (guix build json)
   #:use-module (guix build union)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -27,6 +26,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
+  #:use-module (json parser)
   #:export (npm-meta-uri
             %node-build-system-modules
             node-build
@@ -40,8 +40,8 @@ registry."
 (define %node-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build node-build-system)
-    (guix build json)
     (guix build union)
+    (json parser)
     ,@%gnu-build-system-modules)) ;; TODO: Might be not needed
 
 (define (default-node)
@@ -88,9 +88,9 @@ registry."
                      (guile #f)
                      (imported-modules %node-build-system-modules)
                      (modules '((guix build node-build-system)
-				(guix build json)
-				(guix build union)
-                                (guix build utils))))
+                                (guix build union)
+                                (guix build utils)
+				(json parser))))
   "Build SOURCE using NODE and INPUTS."
   (define builder
     `(begin
