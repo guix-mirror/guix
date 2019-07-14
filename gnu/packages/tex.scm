@@ -2779,32 +2779,15 @@ so that other code can determine that it is running under XeTeX.  The package
 requires the e-TeX extensions to the TeX primitive set.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-generic-epsf
+(define-public texlive-epsf
   (package
-    (name "texlive-generic-epsf")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/generic/epsf"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "14w3j81ympyvg8hkk9i1xgr8a0gfnfsb2ki8qqsk5pa051za1xcy"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/generic/epfs")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-epsf"
+              (list "/doc/generic/epsf/"
+                    "/tex/generic/epsf/")
+              (base32
+               "03jcf0kqh47is965d2590miwj7d5kif3c4mgsnvkyl664jzjkh92")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/epsf")
     (synopsis "Simple macros for EPS inclusion")
     (description
@@ -2815,6 +2798,9 @@ deprecated in favour of the more sophisticated standard LaTeX latex-graphics
 bundle of packages.  (The latex-graphics bundle is also available to Plain TeX
 users, via its Plain TeX version.)")
     (license license:public-domain)))
+
+(define-public texlive-generic-epsf
+  (deprecated-package "texlive-generic-epsf" texlive-epsf))
 
 (define-public texlive-latex-fancyvrb
   (package
