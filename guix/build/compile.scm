@@ -129,8 +129,9 @@ front."
       (lambda ()
         (set! path initial-value)))))
 
-(define (call/exit-on-exception thunk)
-  "Evaluate THUNK and exit right away if an exception is thrown."
+(define (call/exit-on-exception file thunk)
+  "Evaluate THUNK and exit right away if an exception is thrown.  Report FILE
+as the file that was being compiled when the exception was thrown."
   (catch #t
     thunk
     (const #f)
@@ -141,15 +142,18 @@ front."
               (stack (make-stack #t))
               (depth (stack-length stack))
               (frame (and (> depth 1) (stack-ref stack 1))))
+         (newline port)
+         (format port "error: failed to compile '~a':~%~%" file)
          (false-if-exception (display-backtrace stack port))
          (print-exception port frame key args)))
 
       ;; Don't go any further.
       (primitive-exit 1))))
 
-(define-syntax-rule (exit-on-exception exp ...)
-  "Evaluate EXP and exit if an exception is thrown."
-  (call/exit-on-exception (lambda () exp ...)))
+(define-syntax-rule (exit-on-exception file exp ...)
+  "Evaluate EXP and exit if an exception is thrown.  Report FILE as the faulty
+file when an exception is thrown."
+  (call/exit-on-exception file (lambda () exp ...)))
 
 (define* (compile-files source-directory build-directory files
                         #:key
@@ -173,6 +177,7 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
 
     ;; Exit as soon as something goes wrong.
     (exit-on-exception
+     file
      (with-target host
        (lambda ()
          (let ((relative (relative-file source-directory file)))
