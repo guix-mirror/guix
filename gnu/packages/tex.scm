@@ -2610,6 +2610,20 @@ patterns supporting a number of Cyrillic font encodings, including T2,
 UCY (Omega Unicode Cyrillic), LCY, LWN (OT2), and koi8-r.")
       (license license:lppl))))
 
+(define-public texlive-latexconfig
+  (package
+    (inherit (simple-texlive-package
+              "texlive-latexconfig"
+              (list "/tex/latex/latexconfig/")
+              (base32
+               "1wa7yhdpnz1nyidwgli68fyr33jn951bnniqrih5lj98k09rqc3h")
+              #:trivial? #t))
+    (home-page "https://www.tug.org/")
+    (synopsis "Configuration files for LaTeX-related formats")
+    (description "The package provides configuration files for LaTeX-related
+formats.")
+    (license license:lppl)))
+
 (define-public texlive-latex-base
   (let ((texlive-dir
          (lambda (dir hash)
