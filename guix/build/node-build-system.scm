@@ -19,12 +19,12 @@
 
 (define-module (guix build node-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
+  #:use-module (guix build json)
   #:use-module (guix build union)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 regex)
-  #:use-module (json parser)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -39,12 +39,12 @@
 (define* (read-package-data #:key (filename "package.json"))
   (call-with-input-file filename
     (lambda (port)
-      (json->scm port))))
+      (read-json port))))
 
 (define* (build #:key inputs #:allow-other-keys)
   (define (build-from-package-json? package-file)
     (let* ((package-data (read-package-data #:filename package-file))
-           (scripts (hash-ref package-data "scripts")))
+           (scripts (assoc-ref package-data "scripts")))
       (assoc-ref scripts "build")))
   "Build a new node module using the appropriate build system."
   ;; XXX: Develop a more robust heuristic, allow override
@@ -103,15 +103,13 @@ the @file{bin} directory."
          (target               (string-append out "/lib"))
          (binaries             (string-append out "/bin"))
          (data                 (read-package-data))
-         (modulename           (hash-ref data "name"))
-         (binary-configuration (match (hash-ref data "bin")
-                                 ((? hash-table? hash-table)
-                                  (hash-map->list cons hash-table))
-                                 ((? string? configuration) configuration)
-                                 (#f #f)))
-         (dependencies (match (hash-ref data "dependencies")
-                         ((? hash-table? hash-table)
-                          (hash-map->list cons hash-table))
+         (modulename           (assoc-ref data "name"))
+         (binary-configuration (match (assoc-ref data "bin")
+				 (('@ configuration ...) configuration)
+				 ((? string? configuration) configuration)
+				 (#f #f)))
+         (dependencies (match (assoc-ref data "dependencies")
+                         (('@ deps ...) deps)
                          (#f #f))))
     (mkdir-p target)
     (copy-recursively "." (string-append target "/node_modules/" modulename))
@@ -123,7 +121,7 @@ the @file{bin} directory."
        (begin
          (mkdir-p binaries)
          (symlink (string-append target "/node_modules/" modulename "/"
-                                 binary-configuration)
+				 binary-configuration)
                   (string-append binaries "/" modulename))))
       ((list? binary-configuration)
        (for-each
@@ -133,12 +131,12 @@ the @file{bin} directory."
               (begin
                 (mkdir-p (dirname (string-append binaries "/" key)))
                 (symlink (string-append target "/node_modules/" modulename "/"
-                                        value)
+					value)
                          (string-append binaries "/" key))))))
          binary-configuration))
       (else
         (symlink (string-append target "/node_modules/" modulename "/bin")
-                 binaries)))
+		 binaries)))
     (when dependencies
       (mkdir-p
         (string-append target "/node_modules/" modulename "/node_modules"))
