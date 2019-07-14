@@ -1139,16 +1139,16 @@ written in C++.")
            (replace 'configure
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((glib (assoc-ref inputs "glib")))
-                 (setenv "CXXFLAGS" "-std=c++11 -fPIC")
+                 (setenv "CXXFLAGS" "-fPIC")
                  (setenv "CPLUS_INCLUDE_PATH"
                          (string-append glib "/include/glib-2.0:"
                                         glib "/lib/glib-2.0/include:"
                                         (assoc-ref inputs "gstreamer")
-                                        "/include/gstreamer-1.0:"
-                                        (getenv "CPLUS_INCLUDE_PATH"))))
+                                        "/include/gstreamer-1.0")))
                (substitute* "Makefile"
                  (("include \\$\\(KALDI_ROOT\\)/src/kaldi.mk") "")
-                 (("\\$\\(error Cannot find") "#"))))
+                 (("\\$\\(error Cannot find") "#"))
+               #t))
            (add-before 'build 'build-depend
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "depend" make-flags)))
