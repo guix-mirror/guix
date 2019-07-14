@@ -2846,6 +2846,22 @@ and @file{dvisvgm.def} driver option files for the LaTeX graphics and color
 packages.")
     (license license:lppl1.3c+)))
 
+(define-public texlive-graphics-cfg
+  (package
+    (inherit (simple-texlive-package
+              "texlive-graphics-cfg"
+              (list "/doc/latex/graphics-cfg/README.md"
+                    "/tex/latex/graphics-cfg/")
+              (base32
+               "00n63adb2laf43lzix39xl68aq0k5k80mmrw602w99w5n7f96gsf")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/latex-graphics")
+    (synopsis "Sample configuration files for LaTeX color and graphics")
+    (description
+     "This bundle includes @file{color.cfg} and @file{graphics.cfg} files that
+set default \"driver\" options for the color and graphics packages.")
+    (license license:public-domain)))
+
 (define-public texlive-latex-graphics
   (package
     (name "texlive-latex-graphics")
