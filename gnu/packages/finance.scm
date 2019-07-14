@@ -509,7 +509,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
          ;; Only try tests that don't need access to network or system
          (replace 'check
            (lambda _
-             (invoke "make" "ARGS=-R 'hash|core_tests'" "test")))
+             (invoke "make" "ARGS=-R 'hash|core_tests' --verbose" "test")))
          (add-after 'check 'unit-tests
            (lambda _
              (let ((excluded-unit-tests
