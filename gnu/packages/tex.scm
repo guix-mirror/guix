@@ -4124,32 +4124,15 @@ hyperlink to the target of the DOI.")
 (define-public texlive-latex-doi
   (deprecated-package "texlive-latex-doi" texlive-doi))
 
-(define-public texlive-latex-etoolbox
+(define-public texlive-etoolbox
   (package
-    (name "texlive-latex-etoolbox")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/etoolbox"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1agmq6bf8wzcd77n20ng8bl4kh69cg5f6sjniii7bcw4llhd3nc8"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/etoolbox")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-etoolbox"
+              (list "/doc/latex/etoolbox/"
+                    "/tex/latex/etoolbox/")
+              (base32
+               "1qg4x5r4ibinl6zy5lq70lv4zcrjsn54n6hwv31k5kl7mwv0mvr3")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/etoolbox")
     (synopsis "e-TeX tools for LaTeX")
     (description
@@ -4161,6 +4144,9 @@ package provides functions that seem to offer alternative ways of implementing
 some LaTeX kernel commands; nevertheless, the package will not modify any part
 of the LaTeX kernel.")
     (license license:lppl1.3+)))
+
+(define-public texlive-latex-etoolbox
+  (deprecated-package "texlive-latex-etoolbox" texlive-etoolbox))
 
 (define-public texlive-latex-fncychap
   (package
