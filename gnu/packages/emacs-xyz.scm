@@ -13689,6 +13689,34 @@ server with @code{M-x pinentry-start}.")
 viewing files with long lines.")
       (license license:gpl3+))))
 
+(define-public emacs-github-review
+  (let ((commit "9c3ffe30fba5d02e9951e76d1a5be2ed046663da")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "emacs-github-review")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charignon/github-review")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "078rv6f2p3wrznhgvmkhd071bwy72007f5l2m2a0r1k2i3vbfaja"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-ghub" ,emacs-ghub)))
+      (home-page "https://github.com/charignon/github-review")
+      (synopsis "Review GitHub pull requests within Emacs")
+      (description "This package provides commands to pull in, comment on, and
+accept and reject GitHub pull requests.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
