@@ -254,3 +254,38 @@ accurately in real time at any rate desired.")
     (arguments
      `(#:configure-flags '("-DENABLE_GTK=ON" "-DENABLE_QT=OFF")
        #:tests? #f))))
+
+(define-public libnova
+  (package
+    (name "libnova")
+    (version "0.16")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://git.code.sf.net/p/libnova/libnova.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0icwylwkixihzni0kgl0j8dx3qhqvym6zv2hkw2dy6v9zvysrb1b"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-git-version
+           (lambda _
+             (substitute* "./git-version-gen"
+               (("/bin/sh") (which "sh")))
+             #t)))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (synopsis "Celestial mechanics, astrometry and astrodynamics library")
+    (description "Libnova is a general purpose, double precision, Celestial
+Mechanics, Astrometry and Astrodynamics library.")
+    (home-page "http://libnova.sourceforge.net/")
+    (license (list license:lgpl2.0+
+                   license:gpl2+)))) ; examples/transforms.c & lntest/*.c
+
