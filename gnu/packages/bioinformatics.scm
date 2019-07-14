@@ -3260,9 +3260,7 @@ comment or quality sections.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          (add-before 'build 'bin-mkdir
@@ -11697,9 +11695,7 @@ bytes of memory space, where n is the length of the string.")
 
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t)))))
     (inputs

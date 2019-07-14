@@ -2289,8 +2289,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
                      (string-append (assoc-ref inputs "curl") "/include:"
                                     (assoc-ref inputs "libpcap") "/include:"
                                     (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include:"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    (assoc-ref inputs "zlib") "/include"))
              #t)))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")

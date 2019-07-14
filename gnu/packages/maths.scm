@@ -4740,8 +4740,7 @@ assemble global function spaces on finite-element grids.")
          (add-after 'build 'build-tests
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "dune-grid") "/share:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                     (string-append (assoc-ref inputs "dune-grid") "/share"))
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)

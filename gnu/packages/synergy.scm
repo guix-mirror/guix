@@ -63,8 +63,7 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "avahi")
-                                    "/include/avahi-compat-libdns_sd/:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                                    "/include/avahi-compat-libdns_sd"))
              ;; See https://github.com/symless/synergy-core/pull/6359/
              (substitute* "src/gui/src/ScreenSetupView.cpp"
                (("#include <QtGui>" m)
