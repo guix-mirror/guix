@@ -1294,3 +1294,31 @@ derivations of regular expressions.")
      "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
 introduces a more general approach for processing XML with Haskell.")
     (license license:expat)))
+
+(define-public ghc-http-common
+  (package
+    (name "ghc-http-common")
+    (version "0.8.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-common/http-common-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14s5a178sb2vm5k00rs21760mds5dz2gs10k9iyn22h01mxyf599"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/afcowie/http-streams/")
+    (synopsis "Common types for HTTP clients and servers")
+    (description "Base types used by a variety of HTTP clients and
+servers.  See http-streams @code{Network.Http.Client} or pipes-http
+@code{Pipes.Http.Client} for full documentation.  You can import
+@code{Network.Http.Types} if you like, but both http-streams and
+pipes-http re-export this package's types and functions.")
+    (license license:bsd-3)))
