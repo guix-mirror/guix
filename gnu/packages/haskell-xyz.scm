@@ -140,3 +140,40 @@ types.")
 reading data types from @code{ByteString} and @code{Text}.  It also
 includes efficient implementations for common data types.")
     (license license:bsd-3)))
+
+(define-public ghc-threads
+  (package
+    (name "ghc-threads")
+    (version "0.5.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "threads/threads-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bjnjhnq3km6xqk0fn1fgyz5xdw4h6lylbwwbcmkkfzwcz0c76hk"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-concurrent-extra" ,ghc-concurrent-extra)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/basvandijk/threads")
+    (synopsis "Fork threads and wait for their result")
+    (description "This package provides functions to fork threads and
+wait for their result, whether it's an exception or a normal value.
+Besides waiting for the termination of a single thread this package also
+provides functions to wait for a group of threads to terminate.  This
+package is similar to the @code{threadmanager}, @code{async} and
+@code{spawn} packages.  The advantages of this package are:
+
+@itemize
+@item Simpler API.
+@item More efficient in both space and time.
+@item No space-leak when forking a large number of threads.
+@item Correct handling of asynchronous exceptions.
+@item GHC specific functionality like @code{forkOn} and
+@code{forkIOWithUnmask}.
+@end itemize")
+    (license license:bsd-3)))
