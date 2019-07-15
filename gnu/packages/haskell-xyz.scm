@@ -76,6 +76,42 @@ This package was inspired by the concurrency libraries of Java and
 Python.")
     (license license:bsd-3)))
 
+(define-public ghc-io-streams
+  (package
+    (name "ghc-io-streams")
+    (version "1.5.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "io-streams/io-streams-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12rcdg2d70644bvn838fxcjkssqj8pssnx5y657si5rijcbkgjsx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-network" ,ghc-network)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-zlib-bindings" ,ghc-zlib-bindings)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:cabal-revision
+       ("2" "1mcab95d6hm098myh9gp7sh10srigjphgvm8s9pfs7jg5hzghy14")))
+    (home-page "http://hackage.haskell.org/package/io-streams")
+    (synopsis "Simple and composable stream I/O")
+    (description "This library contains simple and easy-to-use
+primitives for I/O using streams.")
+    (license license:bsd-3)))
+
 (define-public ghc-language-glsl
   (package
     (name "ghc-language-glsl")
