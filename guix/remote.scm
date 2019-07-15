@@ -102,7 +102,8 @@ remote store."
       (lowered-gexp-sources lowered))
 
     (if build-locally?
-        (let ((to-send (append (map derivation-input-output-paths inputs)
+        (let ((to-send (append (append-map derivation-input-output-paths
+                                           inputs)
                                sources)))
           (mbegin %store-monad
             (built-derivations inputs)
