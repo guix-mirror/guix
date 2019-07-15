@@ -2124,33 +2124,45 @@ retried.")
   (package-with-python2 python-flaky))
 
 (define-public python-pyhamcrest
-  (package
-    (name "python-pyhamcrest")
-    (version "1.9.0")
-    (source (origin
-              ;; Tests not distributed from pypi release.
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/hamcrest/PyHamcrest")
-                     (commit (string-append "V" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "01qnzj9qnzz0y78qa3ing24ssvszb0adw59xc4qqmdn5wryy606b"))))
-    (native-inputs                      ; All native inputs are for tests
-     `(("python-pytest-cov" ,python-pytest-cov)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-hypothesis" ,python-hypothesis)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (build-system python-build-system)
-    (home-page "http://hamcrest.org/")
-    (synopsis "Hamcrest matchers for Python")
-    (description
-     "PyHamcrest is a framework for writing matcher objects,
+  ;; The latest release was in 2016 and its test suite does not work with recent
+  ;; versions of Pytest.  Just take the master branch for now, which seems stable.
+  (let ((commit "25fdc5f00bdf3084335353bc9247253098ec4cf2")
+        (revision "0"))
+    (package
+      (name "python-pyhamcrest")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                ;; Tests not distributed from pypi release.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/hamcrest/PyHamcrest")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1miqmhhi68vaix8sqc1lvpvbm27bacffxh5anm5cbfsvk7g9n6f3"))))
+      (native-inputs                    ;all native inputs are for tests
+       `(("python-pytest-cov" ,python-pytest-cov)
+         ("python-mock" ,python-mock)
+         ("python-pytest" ,python-pytest)
+         ("python-hypothesis" ,python-hypothesis)))
+      (propagated-inputs
+       `(("python-six" ,python-six)))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'check
+                      (lambda _
+                        (setenv "PYTHONPATH"
+                                (string-append "build/lib:"
+                                               (getenv "PYTHONPATH")))
+                        (invoke "pytest" "-vv"))))))
+      (home-page "http://hamcrest.org/")
+      (synopsis "Hamcrest matchers for Python")
+      (description
+       "PyHamcrest is a framework for writing matcher objects,
  allowing you to declaratively define \"match\" rules.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public python2-pyhamcrest
   (package-with-python2 python-pyhamcrest))
