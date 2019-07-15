@@ -177,3 +177,30 @@ package is similar to the @code{threadmanager}, @code{async} and
 @code{forkIOWithUnmask}.
 @end itemize")
     (license license:bsd-3)))
+
+(define-public ghc-zlib-bindings
+  (package
+    (name "ghc-zlib-bindings")
+    (version "0.1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "zlib-bindings/zlib-bindings-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02ciywlz4wdlymgc3jsnicz9kzvymjw1www2163gxidnz4wb8fy8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-zlib" ,ghc-zlib)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("2" "0fq49694gqkab8m0vq4i879blswczwd66n7xh4r4gwiahf0ryvqc")))
+    (home-page "https://github.com/snapframework/zlib-bindings")
+    (synopsis "Low-level bindings to the @code{zlib} package")
+    (description "This package provides low-level bindings to the
+@code{zlib} package.")
+    (license license:bsd-3)))
