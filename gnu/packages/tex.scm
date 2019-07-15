@@ -271,6 +271,20 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
+      ("texlive-scripts"
+       ,(origin
+          (method svn-fetch)
+          (uri (svn-reference
+                (url (string-append "svn://www.tug.org/texlive/tags/"
+                                    %texlive-tag "/Master/texmf-dist/"
+                                    "/scripts/texlive"))
+                (revision %texlive-revision)))
+          (file-name (string-append "texlive-scripts-"
+                                    (number->string %texlive-revision)
+                                    "-checkout"))
+          (sha256
+           (base32
+            "0wrjls1y9b4k1z10l9l8w2l3yjcw7v7by2y16kchdpkiyldlkry6"))))
       ("cairo" ,cairo)
       ("fontconfig" ,fontconfig)
       ("fontforge" ,fontforge)
@@ -386,6 +400,13 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                 (apply unpack (list #:source texlive-extra))
                 (apply patch-source-shebangs (list #:source texlive-extra))
                 (invoke "mv" "tlpkg" share))
+              (let ((scripts (string-append share "/texmf-dist/scripts/texlive/")))
+                (mkdir-p scripts)
+                (copy-recursively (assoc-ref inputs "texlive-scripts") scripts)
+                ;; Make sure that fmtutil can find its Perl modules.
+                (substitute* (string-append scripts "fmtutil.pl")
+                  (("\\$TEXMFROOT/") (string-append share "/"))))
+
               ;; texlua shebangs are not patched by the patch-source-shebangs
               ;; phase because the texlua executable does not exist at that
               ;; time.
