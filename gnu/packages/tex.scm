@@ -6646,8 +6646,7 @@ develop documents with LaTeX, in a single application.")
              (delete-file "book.pdf")
              #t)))))
     (native-inputs
-     `(("texlive" ,(texlive-union (list texlive-latex-amsfonts
-                                        texlive-fonts-amsfonts
+     `(("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-fonts-adobe-palatino
                                         texlive-fonts-adobe-zapfding
                                         texlive-fonts-knuth-lib

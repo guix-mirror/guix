@@ -198,8 +198,7 @@ colors, styles, options and details.")
        ("perl" ,perl)
        ("texinfo" ,texinfo)           ;For generating documentation
        ;; For the manual and the tests.
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-latex-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-latex-geometry
                                         texlive-latex-graphics
                                         texlive-latex-oberdiek ; for ifluatex

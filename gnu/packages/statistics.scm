@@ -319,9 +319,8 @@ as.POSIXct(if (\"\" != Sys.getenv(\"SOURCE_DATE_EPOCH\")) {\
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo) ; for building HTML manuals
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-fonts-ec
-                                        texlive-latex-amsfonts
+       ("texlive" ,(texlive-union (list texlive-fonts-ec
+                                        texlive-amsfonts
                                         texlive-latex-base
                                         texlive-latex-fancyvrb
                                         texlive-latex-graphics
