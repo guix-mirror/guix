@@ -9823,13 +9823,6 @@ graphviz.")
                   (guix build utils)
                   (guix build python-build-system))
        #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'unpack-libev
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (mkdir-p "deps/libev")
-                      ;; FIXME: gevent requires building libev, even though
-                      ;; it only links against the proper one.
-                      (invoke "tar" "-xf" (assoc-ref inputs "libev-source")
-                              "--strip-components=1" "-C" "deps/libev")))
                   (add-before 'patch-source-shebangs 'patch-hard-coded-paths
                     (lambda _
                       (substitute* "src/gevent/subprocess.py"
@@ -9847,6 +9840,11 @@ graphviz.")
                       (setenv "CARES_EMBED" "false")
                       (setenv "EMBED" "false")
 
+                      ;; Prevent building bundled libev.
+                      (substitute* "setup.py"
+                        (("run_make=_BUILDING")
+                         "run_make=False"))
+
                       (let ((greenlet (string-append
                                        (assoc-ref inputs "python-greenlet")
                                        "/include")))
@@ -9854,7 +9852,7 @@ graphviz.")
                                         (lambda (item)
                                           (string-prefix? "python" item)))
                           ((python)
-                           (setenv "CPATH"
+                           (setenv "C_INCLUDE_PATH"
                                    (string-append greenlet "/" python)))))
                       #t))
                   (add-before 'check 'skip-timer-test
@@ -9886,8 +9884,7 @@ graphviz.")
      `(("python-greenlet" ,python-greenlet)
        ("python-objgraph" ,python-objgraph)))
     (native-inputs
-     `(("libev-source" ,(package-source libev))
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (inputs
      `(("c-ares" ,c-ares)
        ("libev" ,libev)))
