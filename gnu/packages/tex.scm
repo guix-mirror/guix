@@ -1039,198 +1039,138 @@ Taco Hoekwater.")
 (define-public texlive-fonts-mflogo-font
   (deprecated-package "texlive-fonts-mflogo-font" texlive-mflogo-font))
 
-(define-public texlive-fonts-amsfonts
-  (package
-    (name "texlive-fonts-amsfonts")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/fonts/source/public/amsfonts"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "07h20rvpbdb4k72hzmjkyb29426zr9wxsfp6yd4ajbbpd3vx8grb"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 match)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:tests? #f                      ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-union"))
-                   (cwd (getcwd)))
-               ;; Make METAFONT reproducible
-               (setenv "SOURCE_DATE_EPOCH" "1")
-               ;; Tell mf where to find mf.base
-               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
-               ;; Tell mf where to look for source files
-               (setenv "MFINPUTS"
-                       (string-append cwd ":"
-                                      cwd "/cmextra:"
-                                      cwd "/cyrillic:"
-                                      cwd "/dummy:"
-                                      cwd "/symbols:"
-                                      mf "/share/texmf-dist/metafont/base:"
-                                      (assoc-ref inputs "texlive-fonts-cm")
-                                      "/share/texmf-dist/fonts/source/public/cm")))
-             (mkdir "build")
-             (for-each (lambda (font)
-                         (format #t "building font ~a\n" (basename font ".mf"))
-                         (with-directory-excursion (dirname font)
-                           (invoke "mf" "-progname=mf"
-                                   "-output-directory=../build"
-                                   (string-append "\\"
-                                                  "mode:=ljfour; "
-                                                  "mag:=1; "
-                                                  "nonstopmode; "
-                                                  "input "
-                                                  (getcwd) "/"
-                                                  (basename font ".mf")))))
-                       (find-files "." "[0-9]+\\.mf$"))
+(define-public texlive-amsfonts
+  (let ((template (simple-texlive-package
+                   "texlive-amsfonts"
+                   (list "/source/latex/amsfonts/"
+                         "/fonts/source/public/amsfonts/"
+                         "/fonts/type1/public/amsfonts/"
+                         "/fonts/afm/public/amsfonts/"
+                         "/fonts/map/dvips/amsfonts/"
+                         "/tex/plain/amsfonts/"
+                         "/doc/fonts/amsfonts/")
+                   (base32
+                    "15q70nkjf8wqzbd5ivcdx3i2sdgqxjb38q0qn9a2qw9i0qcnx6zw"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/amsfonts")
+         ((#:modules modules '())
+          `((guix build texlive-build-system)
+            (guix build utils)
+            (ice-9 match)
+            (srfi srfi-1)
+            (srfi srfi-26)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'build 'build-fonts
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((mf  (assoc-ref inputs "texlive-union"))
+                       (src (string-append (getcwd) "/fonts/source/public/amsfonts/")))
+                   ;; Make METAFONT reproducible
+                   (setenv "SOURCE_DATE_EPOCH" "1")
+                   ;; Tell mf where to find mf.base
+                   (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+                   ;; Tell mf where to look for source files
+                   (setenv "MFINPUTS"
+                           (string-append src ":"
+                                          src "/cmextra:"
+                                          src "/cyrillic:"
+                                          src "/dummy:"
+                                          src "/symbols:"
+                                          mf "/share/texmf-dist/metafont/base:"
+                                          (assoc-ref inputs "texlive-fonts-cm")
+                                          "/share/texmf-dist/fonts/source/public/cm")))
+                 (let ((build (string-append (getcwd) "/build")))
+                   (mkdir-p build)
+                   (with-directory-excursion "fonts/source/public/amsfonts"
+                     (for-each (lambda (font)
+                                 (format #t "building font ~a\n" (basename font ".mf"))
+                                 (with-directory-excursion (dirname font)
+                                   (invoke "mf" "-progname=mf"
+                                           (string-append "-output-directory=" build)
+                                           (string-append "\\"
+                                                          "mode:=ljfour; "
+                                                          "mag:=1; "
+                                                          "nonstopmode; "
+                                                          "input "
+                                                          (getcwd) "/"
+                                                          (basename font ".mf")))))
+                               (find-files "." "[0-9]+\\.mf$"))))
 
-             ;; There are no metafont sources for the Euler fonts, so we
-             ;; convert the afm files instead.
-             (mkdir "build/euler")
-             (for-each (lambda (font)
-                         (format #t "converting afm font ~a\n" (basename font ".afm"))
-                         (invoke "afm2tfm" font
-                                 (string-append "build/euler/"
-                                                (basename font ".tfm"))))
-                       (find-files (assoc-ref inputs "amsfonts-afm")
-                                   "\\.afm$"))
+                 ;; There are no metafont sources for the Euler fonts, so we
+                 ;; convert the afm files instead.
+                 (let ((build (string-append (getcwd) "/build/euler")))
+                   (mkdir build)
+                   (with-directory-excursion "fonts/afm/public/amsfonts/"
+                     (for-each (lambda (font)
+                                 (format #t "converting afm font ~a\n" (basename font ".afm"))
+                                 (invoke "afm2tfm" font
+                                         (string-append build "/"
+                                                        (basename font ".tfm"))))
+                               (find-files "." "\\.afm$")))
 
-             ;; Frustratingly, not all fonts can be created this way.  To
-             ;; generate eufm8.tfm, for example, we first scale down
-             ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
-             ;; the pl file.
-             (with-directory-excursion "build/euler"
-               (setenv "TEXINPUTS"
-                       (string-append (getcwd) "//:"
-                                      (assoc-ref inputs "amsfonts-afm") "//:"
-                                      (assoc-ref inputs "texlive-union") "//"))
-               (for-each (match-lambda
-                           (((target-base target-size)
-                             (source-base source-size))
-                            (let ((factor (number->string
-                                           (truncate/ (* 1000 target-size)
-                                                      source-size))))
-                              (invoke "tex"
-                                      "-interaction=scrollmode"
-                                      (string-append "\\input fontinst.sty "
-                                                     "\\transformfont{" target-base "}"
-                                                     "{\\scalefont{" factor "}"
-                                                     "{\\fromafm{" source-base "}}} "
-                                                     "\\bye")))
-                            (invoke "pltotf"
-                                    (string-append target-base ".pl")
-                                    (string-append target-base ".tfm"))
-                            (delete-file (string-append target-base ".pl"))))
+                   ;; Frustratingly, not all fonts can be created this way.  To
+                   ;; generate eufm8.tfm, for example, we first scale down
+                   ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
+                   ;; the pl file.
+                   (setenv "TEXINPUTS"
+                             (string-append build "//:"
+                                            (getcwd) "/fonts/afm/public/amsfonts//:"
+                                            (assoc-ref inputs "texlive-union") "//"))
+                   (with-directory-excursion build
+                     (for-each (match-lambda
+                                 (((target-base target-size)
+                                   (source-base source-size))
+                                  (let ((factor (number->string
+                                                 (truncate/ (* 1000 target-size)
+                                                            source-size))))
+                                    (invoke "tex"
+                                            "-interaction=scrollmode"
+                                            (string-append "\\input fontinst.sty "
+                                                           "\\transformfont{" target-base "}"
+                                                           "{\\scalefont{" factor "}"
+                                                           "{\\fromafm{" source-base "}}} "
+                                                           "\\bye")))
+                                  (invoke "pltotf"
+                                          (string-append target-base ".pl")
+                                          (string-append target-base ".tfm"))
+                                  (delete-file (string-append target-base ".pl"))))
 
-                         '((("eufm8" 8) ("eufm10" 10))
+                               '((("eufm8" 8) ("eufm10" 10))
 
-                           (("eufb6" 6) ("eufb7" 7))
-                           (("eufb8" 8) ("eufb10" 10))
-                           (("eufb9" 9) ("eufb10" 10))
+                                 (("eufb6" 6) ("eufb7" 7))
+                                 (("eufb8" 8) ("eufb10" 10))
+                                 (("eufb9" 9) ("eufb10" 10))
 
-                           (("eufm6" 6) ("eufb7" 7))
-                           (("eufm9" 9) ("eufb10" 10))
+                                 (("eufm6" 6) ("eufb7" 7))
+                                 (("eufm9" 9) ("eufb10" 10))
 
-                           (("eurb6" 6) ("eurb7" 7))
-                           (("eurb8" 8) ("eurb10" 10))
-                           (("eurb9" 9) ("eurb10" 10))
+                                 (("eurb6" 6) ("eurb7" 7))
+                                 (("eurb8" 8) ("eurb10" 10))
+                                 (("eurb9" 9) ("eurb10" 10))
 
-                           (("eurm6" 6) ("eurm7" 7))
-                           (("eurm8" 8) ("eurm10" 10))
-                           (("eurm9" 9) ("eurm10" 10)))))
-             #t))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out  (assoc-ref outputs "out"))
-                    (root (string-append out "/share/texmf-dist/fonts/"))
-                    (pkgs '(("amsfonts-afm"   . "afm/public/amsfonts")
-                            ("amsfonts-type1" . "type1/public/amsfonts")
-                            ("amsfonts-map"   . "map/dvips/amsfonts"))))
-               (for-each (match-lambda
-                           ((pkg . dir)
-                            (let ((target (string-append root dir)))
-                              (mkdir-p target)
-                              (copy-recursively (assoc-ref inputs pkg)
-                                                target))))
-                         pkgs)
-               (copy-recursively (assoc-ref inputs "amsfonts-plain")
-                                 (string-append out "/share/texmf-dist/tex/plain/amsfonts"))
-               (let* ((tfm (string-append root "tfm/public/amsfonts"))
-                      (mf  (string-append root "source/public/amsfonts")))
-                 (copy-recursively "build" tfm)
-                 (for-each (cut install-file <> mf)
-                           (find-files "." "\\.mf"))
-                 #t)))))))
-    (native-inputs
-     `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
-                                              texlive-fonts-cm
-                                              texlive-metafont-base)))
-       ("amsfonts-plain"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/tex/plain/amsfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-plain-" version "-checkout"))
-           (sha256
-            (base32
-             "1hi8c9rkfb6395sxf7fhkr91xygfg8am1hqij9g3h2c7qx3714qp"))))
-       ("amsfonts-map"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/amsfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-map-" version "-checkout"))
-           (sha256
-            (base32
-             "1lrj3bd9ybj4aawzlygc6qvakbrwc5s0mc5n9rpic331frv3axfs"))))
-       ("amsfonts-type1"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/type1/public/amsfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-type1-" version "-checkout"))
-           (sha256
-            (base32
-             "1zfz33vn6gm19njy74n8wmn7sljrimfhwns5z8qqhxqfh1g4qip2"))))
-       ("amsfonts-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/public/amsfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "1fifzkaihmjgchnk7dmw0c23k0cz999dxnc78ivmqvgi1dhx0iv8"))))))
-    (home-page "https://www.ctan.org/pkg/amsfonts")
-    (synopsis "TeX fonts from the American Mathematical Society")
-    (description
-     "This package provides an extended set of fonts for use in mathematics,
+                                 (("eurm6" 6) ("eurm7" 7))
+                                 (("eurm8" 8) ("eurm10" 10))
+                                 (("eurm9" 9) ("eurm10" 10))))))
+                 #t))
+             (add-after 'install 'install-generated-fonts
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (copy-recursively "build"
+                                   (string-append
+                                    (assoc-ref outputs "out")
+                                    "/share/texmf-dist/fonts/tfm/public/amsfonts"))
+                 #t))))))
+      (native-inputs
+       `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
+                                                texlive-fonts-cm
+                                                texlive-metafont-base)))))
+      (home-page "https://www.ctan.org/pkg/amsfonts")
+      (synopsis "TeX fonts from the American Mathematical Society")
+      (description
+       "This package provides an extended set of fonts for use in mathematics,
 including: extra mathematical symbols; blackboard bold letters (uppercase
 only); fraktur letters; subscript sizes of bold math italic and bold Greek
 letters; subscript sizes of large symbols such as sum and product; added sizes
@@ -1240,31 +1180,13 @@ files, and all except the Euler fonts are provided as Metafont source.  The
 distribution also includes the canonical Type 1 versions of the Computer
 Modern family of fonts.  The Euler fonts are supported by separate packages;
 details can be found in the documentation.")
-    (license license:silofl1.1)))
+      (license license:silofl1.1))))
+
+(define-public texlive-fonts-amsfonts
+  (deprecated-package "texlive-fonts-amsfonts" texlive-amsfonts))
 
 (define-public texlive-latex-amsfonts
-  (package
-    (name "texlive-latex-amsfonts")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "amsfonts"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0slzfv5h2m03b2xvm2sasznz4azh6rgi069z161dja3l8rln79hm"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/amsfonts"))
-    (native-inputs
-     `(("texlive-fonts-cm" ,texlive-fonts-cm)
-       ("texlive-metafont-base" ,texlive-metafont-base)))
-    (home-page "https://www.ctan.org/pkg/amsfonts")
-    (synopsis "TeX fonts from the American Mathematical Society")
-    (description
-     "This package provides basic LaTeX support for the symbol fonts provides
-by the amsfonts package.  It provides @code{amsfonts.sty}, with names of
-individual symbols defined in @code{amssymb.sty}.")
-    (license license:silofl1.1)))
+  (deprecated-package "texlive-latex-amsfonts" texlive-amsfonts))
 
 (define-public texlive-mkpattern
   (package
