@@ -6174,13 +6174,14 @@ and embedded platforms.")
     (inherit uim)
     (name "uim-qt")
     (inputs
-     `(("qt" ,qt-4)
+     `(("qt" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ,@(package-inputs uim)))
     (arguments
      (substitute-keyword-arguments (package-arguments uim)
        ((#:configure-flags configure-flags)
-        (append configure-flags (list "--with-qt4-immodule"
-                                      "--with-qt4")))))
+        (append configure-flags (list "--with-qt5-immodule"
+                                      "--with-qt5")))))
     (synopsis "Multilingual input method framework (Qt support)")))
 
 (define-public keynav
