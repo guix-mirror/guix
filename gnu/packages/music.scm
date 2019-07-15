@@ -2942,8 +2942,7 @@ with a number of bugfixes and changes to improve IT playback.")
               (patches (search-patches "sooperlooper-build-with-wx-30.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-sigc++-includes
            (lambda* (#:key inputs #:allow-other-keys)
@@ -2955,7 +2954,8 @@ with a number of bugfixes and changes to improve IT playback.")
                                       sig "/lib/sigc++-2.0/include:"
                                       xml "/include/libxml2/:"
                                       cwd "/libs/pbd:"
-                                      cwd "/libs/midi++")))
+                                      cwd "/libs/midi++:"
+                                      (or (getenv "CPATH") ""))))
              (substitute* '("src/control_osc.hpp"
                             "src/gui/app_frame.hpp"
                             "src/gui/config_panel.hpp"
