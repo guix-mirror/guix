@@ -61,7 +61,7 @@ to NAME and VERSION."
 (define %cargo-build-system-modules
   ;; Build-side modules imported by default.
   `((guix build cargo-build-system)
-    (json parser)
+    (guix build json)
     ,@%cargo-utils-modules))
 
 (define* (cargo-build store name inputs

@@ -20,6 +20,7 @@
 
 (define-module (guix build cargo-build-system)
   #:use-module ((guix build gnu-build-system) #:prefix gnu:)
+  #:use-module (guix build json)
   #:use-module (guix build utils)
   #:use-module (guix build cargo-utils)
   #:use-module (ice-9 popen)
@@ -27,7 +28,6 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
-  #:use-module (json parser)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -42,15 +42,15 @@
 (define (manifest-targets)
   "Extract all targets from the Cargo.toml manifest"
   (let* ((port (open-input-pipe "cargo read-manifest"))
-         (data (json->scm port))
-         (targets (hash-ref data "targets" '())))
+         (data (read-json port))
+         (targets (or (assoc-ref data "targets") '())))
     (close-port port)
     targets))
 
 (define (has-executable-target?)
   "Check if the current cargo project declares any binary targets."
   (let* ((bin? (lambda (kind) (string=? kind "bin")))
-         (get-kinds (lambda (dep) (hash-ref dep "kind")))
+         (get-kinds (lambda (dep) (assoc-ref dep "kind")))
          (bin-dep? (lambda (dep) (find bin? (get-kinds dep)))))
     (find bin-dep? (manifest-targets))))
 
