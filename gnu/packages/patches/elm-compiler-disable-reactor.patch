@@ -1,0 +1,71 @@
+commit 20d80e2323b565a36751c9455e535d8f73fa32f7
+Author: Robert Vollmert <rob@vllmrt.net>
+Date:   Fri Jun 14 16:05:47 2019 +0200
+
+    disable reactor
+
+diff --git a/elm.cabal b/elm.cabal
+index c75f9689..ece63c46 100644
+--- a/elm.cabal
++++ b/elm.cabal
+@@ -45,9 +45,6 @@ Executable elm
+         builder/src
+         ui/terminal/src
+ 
+-    other-extensions:
+-        TemplateHaskell
+-
+     Main-Is:
+         Main.hs
+ 
+@@ -56,8 +53,6 @@ Executable elm
+         Develop
+         Develop.Generate.Help
+         Develop.Generate.Index
+-        Develop.StaticFiles
+-        Develop.StaticFiles.Build
+         Diff
+         Init
+         Install
+diff --git a/ui/terminal/src/Develop.hs b/ui/terminal/src/Develop.hs
+index 4b2252e1..7ed7716e 100644
+--- a/ui/terminal/src/Develop.hs
++++ b/ui/terminal/src/Develop.hs
+@@ -23,7 +23,6 @@ import Snap.Util.FileServe
+ import qualified Elm.Project as Project
+ import qualified Develop.Generate.Help as Generate
+ import qualified Develop.Generate.Index as Index
+-import qualified Develop.StaticFiles as StaticFiles
+ import qualified Generate.Output as Output
+ import qualified Json.Encode as Encode
+ import qualified Reporting.Exit as Exit
+@@ -219,16 +218,7 @@ compileToHtmlBuilder mode file =
+ 
+ 
+ serveAssets :: Snap ()
+-serveAssets =
+-  do  file <- getSafePath
+-      case StaticFiles.lookup file of
+-        Nothing ->
+-          pass
+-
+-        Just (content, mimeType) ->
+-          do  modifyResponse (setContentType (mimeType <> ";charset=utf-8"))
+-              writeBS content
+-
++serveAssets = pass
+ 
+ 
+ -- MIME TYPES
+diff --git a/ui/terminal/src/Main.hs b/terminal/src/Main.hs
+index 7000f3ca..2c76965a 100644
+--- a/ui/terminal/src/Main.hs
++++ b/ui/terminal/src/Main.hs
+@@ -39,7 +39,6 @@ main =
+       complex intro outro
+         [ repl
+         , init
+-        , reactor
+         , make
+         , install
+         , bump
