@@ -47,7 +47,7 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
-    (version "0.4.27")
+    (version "0.4.30")
     (source
       (origin
         (method url-fetch)
@@ -56,7 +56,7 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
           (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "05c92v787snyaq4ss16vxc9mdv6zndfgsdq8k3hnnyffmsf7ycad"))))
+            "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))
     (build-system cargo-build-system)
     (arguments
       `(#:cargo-inputs (("rust-unicode-xid" ,rust-unicode-xid))
