@@ -4863,6 +4863,31 @@ differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
 texlive-2018.2/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
+;; FIXME: the fonts should be built from source, but running "tex aefonts.tex"
+;; fails with obscure TeX-typical error messages.
+(define-public texlive-ae
+  (package
+    (inherit (simple-texlive-package
+              "texlive-ae"
+              (list "/doc/fonts/ae/"
+                    "/source/fonts/ae/"
+                    "/fonts/tfm/public/ae/"
+                    "/fonts/vf/public/ae/"
+                    "/tex/latex/ae/")
+              (base32
+               "1xkzg381y0avdq381r2m990wp27czkdff0qkvsp2n5q62yc0bdsw")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/ae")
+    (synopsis "Virtual fonts for T1 encoded CMR-fonts")
+    (description
+     "This package provides a set of virtual fonts which emulates T1 coded
+fonts using the standard CM fonts.  The package name, AE fonts, supposedly
+stands for \"Almost European\".  The main use of the package was to produce
+PDF files using Adobe Type 1 versions of the CM fonts instead of bitmapped EC
+fonts.  Note that direct substitutes for the bitmapped EC fonts are available,
+via the CM-super, Latin Modern and (in a restricted way) CM-LGC font sets.")
+    (license license:lppl1.3+)))
+
 (define-public texlive-fonts-adobe-times
   (package
     (name "texlive-fonts-adobe-times")
