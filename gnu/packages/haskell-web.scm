@@ -1409,3 +1409,57 @@ and server written in Haskell.  For more information, you can visit the
 Snap project website at @uref{http://snapframework.com/}.  This library
 contains the core definitions and types for the Snap framework.")
     (license license:bsd-3)))
+
+(define-public ghc-snap-server
+  (package
+    (name "ghc-snap-server")
+    (version "1.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "snap-server/snap-server-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vvw9n8xs272qdlrf3dxhnva41zh3awi7pf022rrjj75lj8a77i4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-clock" ,ghc-clock)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-io-streams-haproxy" ,ghc-io-streams-haproxy)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-snap-core" ,ghc-snap-core)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-random" ,ghc-random)
+       ("ghc-threads" ,ghc-threads)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-http-streams" ,ghc-http-streams)
+       ("ghc-http-common" ,ghc-http-common)
+       ("ghc-parallel" ,ghc-parallel)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (arguments
+     `(#:cabal-revision
+       ("3" "0a9d3nqb5rvgm25nak68lp6yj9m6cwhbgdbg5l7ib5i2czcg7yjh")))
+    (home-page "http://snapframework.com/")
+    (synopsis "Web server for the Snap Framework")
+    (description "Snap is a simple and fast web development framework
+and server written in Haskell.  For more information, you can visit the
+Snap project website at @uref{http://snapframework.com/}.  The Snap HTTP
+server is a high performance web server library written in Haskell.
+Together with the snap-core library upon which it depends, it provides a
+clean and efficient Haskell programming interface to the HTTP
+protocol.")
+    (license license:bsd-3)))
