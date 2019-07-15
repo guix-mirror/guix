@@ -99,6 +99,7 @@ Cargo.toml file present at its root."
     inputs)
 
   ;; Configure cargo to actually use this new directory.
+  (setenv "CARGO_HOME" (string-append (getcwd) "/.cargo"))
   (mkdir-p ".cargo")
   (let ((port (open-file ".cargo/config" "w" #:encoding "utf-8")))
     (display "
@@ -148,9 +149,6 @@ directory = '" port)
     ;; Make cargo reuse all the artifacts we just built instead
     ;; of defaulting to making a new temp directory
     (setenv "CARGO_TARGET_DIR" "./target")
-    ;; Force cargo to honor our .cargo/config definitions
-    ;; https://github.com/rust-lang/cargo/issues/6397
-    (setenv "CARGO_HOME" ".")
 
     ;; Only install crates which include binary targets,
     ;; otherwise cargo will raise an error.
