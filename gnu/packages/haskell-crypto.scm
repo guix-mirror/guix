@@ -25,6 +25,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages tls)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -775,3 +776,33 @@ Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
 extensions.")
     (license license:bsd-3)))
 
+(define-public ghc-hsopenssl
+  (package
+    (name "ghc-hsopenssl")
+    (version "0.11.4.15")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "HsOpenSSL/HsOpenSSL-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0idmak6d8mpbxphyq9hkxkmby2wnzhc1phywlgm0zw6q47pwxgff"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network" ,ghc-network)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "0bkcw2pjfgv1bhgkrpncvwq9czfr7cr4ak14n0v8c2y33i33wk5z")))
+    (home-page "https://github.com/vshabanov/HsOpenSSL")
+    (synopsis "Partial OpenSSL binding for Haskell")
+    (description "HsOpenSSL is an OpenSSL binding for Haskell.  It can
+generate RSA and DSA keys, read and write PEM files, generate message
+digests, sign and verify messages, encrypt and decrypt messages.  It has
+also some capabilities of creating SSL clients and servers.  This
+package is in production use by a number of Haskell based systems and
+stable.  You may also be interested in the tls package,
+@uref{http://hackage.haskell.org/package/tls}, which is a pure Haskell
+implementation of SSL.")
+    (license license:public-domain)))
