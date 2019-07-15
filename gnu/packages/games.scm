@@ -906,7 +906,8 @@ Chess).  It is similar to standard chess but this variant is far more complicate
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
@@ -1118,7 +1119,8 @@ Every puzzle has a complete solution, although there may be more than one.")
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
                     (string-append (assoc-ref inputs "sdl-union")
-                                   "/include/SDL"))
+                                   "/include/SDL:"
+                                   (or (getenv "CPATH") "")))
             #t)))))
    (inputs
     `(("fluidsynth" ,fluidsynth)
@@ -1350,7 +1352,8 @@ can be explored and changed freely.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL"))))
+                                             "/include/SDL:"
+                                             (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -2992,7 +2995,8 @@ http://lavachat.symlynx.com/unix/")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "sdl-union")
-                                      "/include/SDL2"))
+                                      "/include/SDL2:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
@@ -6398,7 +6402,8 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
@@ -6517,7 +6522,8 @@ affected by the gravity of the planets.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -6636,7 +6642,8 @@ the desired spell.")
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
                                (string-append (assoc-ref inputs "sdl2-union")
-                                              "/include/SDL2"))
+                                              "/include/SDL2:"
+                                              (or (getenv "CPATH") "")))
                        #t)))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))

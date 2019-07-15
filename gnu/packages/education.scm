@@ -83,7 +83,8 @@
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-mixer")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("gtk+" ,gtk+-2)
