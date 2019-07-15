@@ -1359,3 +1359,53 @@ library to handle the streaming IO.  The API is optimized for ease of
 use for the rather common case of code needing to query web services and
 deal with the result.")
     (license license:bsd-3)))
+
+(define-public ghc-snap-core
+  (package
+    (name "ghc-snap-core")
+    (version "1.0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "snap-core/snap-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "136q7l4hd5yn5hb507q1ziqx124ma1lkzh5dx0n150p8dx3rhhsc"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-random" ,ghc-random)
+       ("ghc-readable" ,ghc-readable)
+       ("ghc-regex-posix" ,ghc-regex-posix)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-parallel" ,ghc-parallel)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:cabal-revision
+       ("3" "0wlhn33r7c9g7j23y006ddq9d87lkmianvvfrbl8jd8mvjvj2gfa")))
+    (home-page "http://snapframework.com/")
+    (synopsis "Haskell Web Framework (core interfaces and types)")
+    (description "Snap is a simple and fast web development framework
+and server written in Haskell.  For more information, you can visit the
+Snap project website at @uref{http://snapframework.com/}.  This library
+contains the core definitions and types for the Snap framework.")
+    (license license:bsd-3)))
