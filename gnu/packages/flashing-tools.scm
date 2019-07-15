@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2018 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -256,21 +256,21 @@ non-root users.")
       (license license:gpl3))))
 
 (define-public rkflashtool
-  (let ((commit "094bd6410cb016e487e2ccb1050c59eeac2e6dd1")
+  (let ((commit "8966c4e277de8148290554aaaa4146a3a84a3c53")
         (revision "1"))
     (package
       (name "rkflashtool")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "5.2" revision commit))
       (source
         (origin
           (method git-fetch)
           (uri (git-reference
                 (url "https://github.com/linux-rockchip/rkflashtool.git")
                 (commit commit)))
-          (file-name (string-append name "-" version "-checkout"))
+          (file-name (git-file-name name version))
           (sha256
            (base32
-            "1zkd8zxir3rfg3sy9r20bcnxclnplryn583gqpcr3iad0k3xbah7"))))
+            "1ndyzg1zlgg20dd8js9kfqm5kq19k005vddkvf65qj20w0pcyahn"))))
       (build-system gnu-build-system)
       (arguments
        '(#:phases
