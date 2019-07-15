@@ -112,6 +112,40 @@ Python.")
 primitives for I/O using streams.")
     (license license:bsd-3)))
 
+(define-public ghc-io-streams-haproxy
+  (package
+    (name "ghc-io-streams-haproxy")
+    (version "1.0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "io-streams-haproxy/io-streams-haproxy-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "11nh9q158mgnvvb23s5ffg87lkhl5smk039yl43jghxmb214z0bp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-network" ,ghc-network)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (arguments
+     `(#:cabal-revision
+       ("4" "06c51a057n5bc9xfbp2m4jz5ds4z1xvmsx5mppch6qfwbz7x5i9l")))
+    (home-page "http://snapframework.com/")
+    (synopsis "HAProxy protocol 1.5 support for io-streams")
+    (description "HAProxy protocol version 1.5 support
+(see @uref{http://haproxy.1wt.eu/download/1.5/doc/proxy-protocol.txt})
+for applications using io-streams.  The proxy protocol allows information
+about a networked peer (like remote address and port) to be propagated
+through a forwarding proxy that is configured to speak this protocol.")
+    (license license:bsd-3)))
+
 (define-public ghc-language-glsl
   (package
     (name "ghc-language-glsl")
