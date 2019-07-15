@@ -14066,7 +14066,7 @@ more generic data visualisation.")
      "This is a deprecated package for calculating pairwise multiple
 comparisons of mean rank sums.  This package is superseded by the novel
 PMCMRplus package.  The PMCMR package is no longer maintained, but kept for
-compatibility of reverse depending packages for some time.")
+compatibility of dependent packages for some time.")
     (license license:gpl3+)))
 
 (define-public r-downloader
