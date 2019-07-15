@@ -2611,186 +2611,214 @@ formats.")
     (license license:lppl)))
 
 (define-public texlive-latex-base
-  (let ((texlive-dir
-         (lambda (dir hash)
-           (origin
-             (method svn-fetch)
-             (uri (svn-reference
-                   (url (string-append "svn://www.tug.org/texlive/tags/"
-                                       %texlive-tag "/Master/texmf-dist/"
-                                       dir))
-                   (revision %texlive-revision)))
-             (file-name (string-append "texlive-generic-"
-                                       (last (string-split
-                                               (string-drop-right dir 1) #\/))
-                                       "-" (number->string %texlive-revision)
-                                       "-checkout"))
-             (sha256 (base32 hash))))))
-    (package
-      (name "texlive-latex-base")
-      (version (number->string %texlive-revision))
-      (source (origin
-                (method svn-fetch)
-                (uri (texlive-ref "latex" "base"))
-                (file-name (string-append name "-" version "-checkout"))
-                (sha256
-                 (base32
-                  "17bqrzzjz16k52sc7ydl4vw7ddy2z3g0p1xsk2c35h1ynq9h3wwm"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (ice-9 match)
-                    (srfi srfi-1)
-                    (srfi srfi-26))
-         #:tests? #f                    ; no tests
-         #:phases
-         (modify-phases %standard-phases
-           (delete 'configure)
-           (replace 'build
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; Find required fonts
-               (setenv "TFMFONTS"
-                       (string-append (assoc-ref inputs "texlive-fonts-cm")
-                                      "/share/texmf-dist/fonts/tfm/public/cm:"
-                                      (assoc-ref inputs "texlive-fonts-latex")
-                                      "/share/texmf-dist/fonts/tfm/public/latex-fonts:"
-                                      (assoc-ref inputs "texlive-fonts-knuth-lib")
-                                      "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
+  (package
+    (name "texlive-latex-base")
+    (version (number->string %texlive-revision))
+    (source (texlive-origin
+             name version
+             (list "/doc/latex/base/"
+                   "/source/latex/base/"
+                   ;; Almost all files in /tex/latex/base are generated, but
+                   ;; these are not:
+                   "/tex/latex/base/idx.tex"
+                   "/tex/latex/base/lablst.tex"
+                   "/tex/latex/base/lppl.tex"
+                   "/tex/latex/base/ltnews.cls"
+                   "/tex/latex/base/ltxcheck.tex"
+                   "/tex/latex/base/ltxguide.cls"
+                   "/tex/latex/base/minimal.cls"
+                   "/tex/latex/base/sample2e.tex"
+                   "/tex/latex/base/small2e.tex"
+                   "/tex/latex/base/source2e.tex"
+                   "/tex/latex/base/testpage.tex"
+                   "/tex/latex/base/texsys.cfg")
+             (base32
+              "0f8d41wk1gb7i6xq1a10drwhhayc50pg9nwzjkrqnxrv0pcc08w5")))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 match)
+                  (srfi srfi-26))
+       #:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Find required fonts
+             (setenv "TFMFONTS"
+                     (string-join
+                      (map (match-lambda
+                             ((pkg-name . dir)
+                              (string-append
+                               (assoc-ref inputs pkg-name)
+                               "/share/texmf-dist/fonts/tfm/public"
+                               dir)))
+                           '(("texlive-etex" . "/etex")
+                             ("texlive-fonts-cm" . "/cm")
+                             ("texlive-fonts-latex" . "/latex-fonts")
+                             ("texlive-fonts-knuth-lib" . "/knuth-lib")))
+                      ":"))
+             (let ((cwd (getcwd)))
                (setenv "TEXINPUTS"
                        (string-append
-                        (getcwd) ":"
-                        (getcwd) "/build:"
+                        cwd "//:"
+                        cwd "/source/latex/base//:"
+                        cwd "/build:"
                         (string-join
                          (map (match-lambda ((_ . dir) dir)) inputs)
-                         "//:")))
+                         "//:"))))
 
-               ;; Create an empty texsys.cfg, because latex.ltx wants to include
-               ;; it.  This file must exist and it's fine if it's empty.
-               (with-output-to-file "texsys.cfg"
-                 (lambda _ (format #t "%")))
+             ;; This is the actual build step.
+             (mkdir "build")
+             (invoke "tex" "-ini" "-interaction=scrollmode"
+                     "-output-directory=build" "unpack.ins")
 
-               (mkdir "build")
+             ;; XXX: We can't build all formats at this point, nor are they
+             ;; part of the LaTeX base, so we disable them.  Actually, we
+             ;; should be running this all in a profile hook, so that only
+             ;; selected formats and hyphenation patterns are included, but it
+             ;; takes long and TeX Live isn't designed to be modular like
+             ;; that.  Everything operates on a shared directory, which we
+             ;; would only have at profile generation time.
+             (let ((disabled-formats
+                    '("aleph aleph" "lamed aleph" "uptex uptex" "euptex euptex"
+                      "eptex eptex" "ptex ptex" "pdfxmltex pdftex" "platex eptex"
+                      "csplain pdftex" "mf mf-nowin" "mex pdftex" "pdfmex pdftex"
+                      "cont-en xetex" "cont-en pdftex" "pdfcsplain xetex"
+                      "pdfcsplain pdftex" "pdfcsplain luatex" "cslatex pdftex"
+                      "mptopdf pdftex" "uplatex euptex" "jadetex pdftex"
+                      "amstex pdftex" "pdfcslatex pdftex" "lollipop tex"
+                      "xmltex pdftex" "pdfjadetex pdftex" "eplain pdftex"
+                      "texsis pdftex" "mltex pdftex" "utf8mex pdftex")))
                (mkdir "web2c")
-               (invoke "luatex" "-ini" "-interaction=batchmode"
-                       "-output-directory=build" "unpack.ins")
-               (invoke "tex" "-ini" "-interaction=batchmode"
-                       "-output-directory=web2c" "tex.ini")
-               ;; LaTeX, pdfetex/pdftex, and XeTeX require e-TeX, which
-               ;; is enabled only in extended mode (activated with a
-               ;; leading asterisk).  We should not use luatex here,
-               ;; because that would make the generated format files
-               ;; incompatible with any other TeX engine.
-               (for-each (lambda (format)
-                           (invoke "latex" "-ini" "-interaction=batchmode"
-                                   "-output-directory=web2c"
-                                   "-translate-file=cp227.tcx"
-                                   (string-append "*" format ".ini")))
-                         '("latex"
-                           "pdflatex"
-                           "pdfetex"))
-               (for-each (lambda (format)
-                           (invoke format "-ini" "-interaction=batchmode"
-                                   "-output-directory=web2c"
-                                   (string-append "*" format ".ini")))
-                         '("xetex"
-                           "xelatex"))
-               (for-each (lambda (format)
-                           (invoke "luatex" "-ini" "-interaction=batchmode"
-                                   "-output-directory=web2c"
-                                   (string-append format ".ini")))
-                         '("dviluatex" "dvilualatex" "luatex" "lualatex"))
-               #t))
-           (replace 'install
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (target (string-append
-                               out "/share/texmf-dist/tex/latex/base"))
-                      (web2c (string-append
-                              out "/share/texmf-dist/web2c"))
-                      (support-files (assoc-ref inputs "texlive-latex-base-support-files")))
-                 (mkdir-p target)
-                 (mkdir-p web2c)
-                 (for-each delete-file (find-files "." "\\.(log|aux)$"))
-                 (for-each (cut install-file <> target)
-                           (find-files "build" ".*"))
-                 (for-each (cut install-file <> web2c)
-                           (find-files "web2c" ".*"))
-                 ;; pdftex is really just the same as pdfetex, but since it
-                 ;; doesn't have its own format file, we need to copy it.
-                 (copy-file "web2c/pdfetex.fmt"
-                            (string-append web2c "/pdftex.fmt"))
-                 ;; "source" is missing the support files as per doc/latex/base/manifest.txt.
-                 ;; FIXME: We are probably not packaging this right.
-                 (for-each (lambda (file)
-                             (install-file
-                              (string-append support-files "/" file)
-                              target))
-                           '("ltxguide.cls" "ltnews.cls" "minimal.cls" "idx.tex"
-                             "lablst.tex" "testpage.tex" "ltxcheck.tex"))
-                 ;; Install configurations
-                 (copy-recursively
-                  (assoc-ref inputs "texlive-latex-latexconfig")
-                  (string-append out "/share/texmf-dist/tex/latex/latexconfig"))
-                 (copy-recursively
-                  (assoc-ref inputs "texlive-generic-config")
-                  (string-append out "/share/texmf-dist/tex/generic/config"))
-                 (copy-recursively
-                  (assoc-ref inputs "texlive-generic-hyphen")
-                  (string-append out "/share/texmf-dist/tex/generic/hyphen"))
-                 (copy-recursively
-                  (assoc-ref inputs "texlive-generic-ruhyphen")
-                  (string-append out "/share/texmf-dist/tex/generic/ruhyphen"))
-                 (copy-recursively
-                  (assoc-ref inputs "texlive-generic-ukrhyph")
-                  (string-append out "/share/texmf-dist/tex/generic/ukrhyph"))
-                 #t))))))
-      (native-inputs
-       `(("texlive-bin" ,texlive-bin)
-         ("texlive-generic-unicode-data" ,texlive-generic-unicode-data)
-         ("texlive-generic-dehyph-exptl" ,texlive-generic-dehyph-exptl)
-         ("texlive-generic-tex-ini-files" ,texlive-generic-tex-ini-files)
-         ("texlive-latex-latexconfig"
-          ,(texlive-dir "tex/latex/latexconfig/"
-                        "1zb3j49cj8p75yph6c8iysjp7qbdvghwf0mn9j0l7qq3qkbz2xaf"))
-         ("texlive-generic-hyphen"
-          ,(texlive-dir "tex/generic/hyphen/"
-                        "0xim36wybw2625yd0zwlp9m2c2xrcybw58gl4rih9nkph0wqwwhd"))
-         ("texlive-generic-ruhyphen"
-          ,(texlive-dir "tex/generic/ruhyphen/"
-                        "14rjkpl4zkjqs13rcf9kcd24mn2kx7i1jbdwxq8ds94bi66ylzsd"))
-         ("texlive-generic-ukrhyph"
-          ,(texlive-dir "tex/generic/ukrhyph/"
-                        "1cfwdg2rhbayl3w0x1xqd36d45zbc96f029myp13s7cb6kbmbppv"))
-         ("texlive-generic-config"
-          ,(texlive-dir "tex/generic/config/"
-                        "1v90iihy112q93zdpblpdk8zv8rf99fgslsg06s1sxm27zjm9nap"))
-         ("texlive-latex-base-support-files"
-          ,(origin
-             (method svn-fetch)
-             (uri (svn-reference
-                   (url (string-append "svn://www.tug.org/texlive/tags/"
-                                       %texlive-tag "/Master/texmf-dist/"
-                                       "/tex/latex/base"))
-                   (revision %texlive-revision)))
-             (file-name (string-append name "-" version "-checkout"))
-             (sha256
-              (base32
-               "18wy8dlcw8adl6jzqwbg54pdwlhs8hilnfvqbw6ikj6y3zhqkj7q"))))
-         ("texlive-tex-plain" ,texlive-tex-plain)
-         ("texlive-fonts-cm" ,texlive-fonts-cm)
-         ("texlive-fonts-latex" ,texlive-fonts-latex)
-         ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)))
-      (propagated-inputs
-       `(("texlive-generic-hyph-utf8" ,texlive-generic-hyph-utf8)))
-      (home-page "https://www.ctan.org/pkg/latex-base")
-      (synopsis "Base sources of LaTeX")
-      (description
-       "This bundle comprises the source of LaTeX itself, together with several
+               (install-file (string-append
+                              (assoc-ref inputs "texlive-kpathsea")
+                              "/share/texmf-dist/web2c/fmtutil.cnf")
+                             "web2c")
+               (make-file-writable "web2c/fmtutil.cnf")
+               (substitute* "web2c/fmtutil.cnf"
+                 (((string-append "^(" (string-join disabled-formats "|") ")") m)
+                  (string-append "#! " m))))
+             (invoke "fmtutil-sys" "--all"
+                     "--fmtdir=web2c"
+                     (string-append "--cnffile=web2c/fmtutil.cnf"))
+             ;; We don't actually want to install it.
+             (delete-file "web2c/fmtutil.cnf")
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (root (string-append out "/share/texmf-dist"))
+                    (target (string-append root "/tex/latex/base"))
+                    (web2c (string-append root "/web2c"))
+                    (makeindex (string-append root "/makeindex/latex")))
+               (for-each delete-file (find-files "." "\\.(log|aux)$"))
+
+               ;; The usedir directive in docstrip.ins is ignored, so these
+               ;; two files end up in the wrong place.  Move them.
+               (mkdir-p makeindex)
+               (for-each (lambda (file)
+                           (install-file file makeindex)
+                           (delete-file file))
+                         '("build/gglo.ist"
+                           "build/gind.ist"))
+               (for-each (cut install-file <> target)
+                         (find-files "build" ".*"))
+               (for-each (cut install-file <> web2c)
+                         (find-files "web2c" ".*"))
+               #t))))))
+    (native-inputs
+     `(("texlive-bin" ,texlive-bin)
+       ("texlive-tex-ini-files" ,texlive-tex-ini-files)
+       ("texlive-tex-plain" ,texlive-tex-plain)
+       ("texlive-kpathsea" ,texlive-kpathsea)
+       ("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-fonts-latex" ,texlive-fonts-latex)
+       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+       ("texlive-luatexconfig"
+        ,(texlive-origin
+          "texlive-luatexconfig" (number->string %texlive-revision)
+          (list "/tex/generic/config/luatex-unicode-letters.tex"
+                "/tex/generic/config/luatexiniconfig.tex"
+                "/web2c/texmfcnf.lua")
+          (base32
+           "0cs67a8wwh4s5p5gn8l49jyccgy7glw8mfq5klgn3dfsl2fdlhk7")))))
+    (propagated-inputs
+     `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
+       ("texlive-etex" ,texlive-etex)
+       ("texlive-hyph-utf8" ,texlive-hyph-utf8)
+       ("texlive-hyphen-base" ,texlive-hyphen-base)
+       ("texlive-hyphen-afrikaans" ,texlive-hyphen-afrikaans)
+       ("texlive-hyphen-ancientgreek" ,texlive-hyphen-ancientgreek)
+       ("texlive-hyphen-armenian" ,texlive-hyphen-armenian)
+       ("texlive-hyphen-basque" ,texlive-hyphen-basque)
+       ("texlive-hyphen-belarusian" ,texlive-hyphen-belarusian)
+       ("texlive-hyphen-bulgarian" ,texlive-hyphen-bulgarian)
+       ("texlive-hyphen-catalan" ,texlive-hyphen-catalan)
+       ("texlive-hyphen-chinese" ,texlive-hyphen-chinese)
+       ("texlive-hyphen-churchslavonic" ,texlive-hyphen-churchslavonic)
+       ("texlive-hyphen-coptic" ,texlive-hyphen-coptic)
+       ("texlive-hyphen-croatian" ,texlive-hyphen-croatian)
+       ("texlive-hyphen-czech" ,texlive-hyphen-czech)
+       ("texlive-hyphen-danish" ,texlive-hyphen-danish)
+       ("texlive-hyphen-dutch" ,texlive-hyphen-dutch)
+       ("texlive-hyphen-english" ,texlive-hyphen-english)
+       ("texlive-hyphen-esperanto" ,texlive-hyphen-esperanto)
+       ("texlive-hyphen-estonian" ,texlive-hyphen-estonian)
+       ("texlive-hyphen-ethiopic" ,texlive-hyphen-ethiopic)
+       ("texlive-hyphen-finnish" ,texlive-hyphen-finnish)
+       ("texlive-hyphen-french" ,texlive-hyphen-french)
+       ("texlive-hyphen-friulan" ,texlive-hyphen-friulan)
+       ("texlive-hyphen-galician" ,texlive-hyphen-galician)
+       ("texlive-hyphen-georgian" ,texlive-hyphen-georgian)
+       ("texlive-hyphen-german" ,texlive-hyphen-german)
+       ("texlive-hyphen-greek" ,texlive-hyphen-greek)
+       ("texlive-hyphen-hungarian" ,texlive-hyphen-hungarian)
+       ("texlive-hyphen-icelandic" ,texlive-hyphen-icelandic)
+       ("texlive-hyphen-indic" ,texlive-hyphen-indic)
+       ("texlive-hyphen-indonesian" ,texlive-hyphen-indonesian)
+       ("texlive-hyphen-interlingua" ,texlive-hyphen-interlingua)
+       ("texlive-hyphen-irish" ,texlive-hyphen-irish)
+       ("texlive-hyphen-italian" ,texlive-hyphen-italian)
+       ("texlive-hyphen-kurmanji" ,texlive-hyphen-kurmanji)
+       ("texlive-hyphen-latin" ,texlive-hyphen-latin)
+       ("texlive-hyphen-latvian" ,texlive-hyphen-latvian)
+       ("texlive-hyphen-lithuanian" ,texlive-hyphen-lithuanian)
+       ("texlive-hyphen-mongolian" ,texlive-hyphen-mongolian)
+       ("texlive-hyphen-norwegian" ,texlive-hyphen-norwegian)
+       ("texlive-hyphen-occitan" ,texlive-hyphen-occitan)
+       ("texlive-hyphen-piedmontese" ,texlive-hyphen-piedmontese)
+       ("texlive-hyphen-polish" ,texlive-hyphen-polish)
+       ("texlive-hyphen-portuguese" ,texlive-hyphen-portuguese)
+       ("texlive-hyphen-romanian" ,texlive-hyphen-romanian)
+       ("texlive-hyphen-romansh" ,texlive-hyphen-romansh)
+       ("texlive-hyphen-russian" ,texlive-hyphen-russian)
+       ("texlive-hyphen-sanskrit" ,texlive-hyphen-sanskrit)
+       ("texlive-hyphen-serbian" ,texlive-hyphen-serbian)
+       ("texlive-hyphen-slovak" ,texlive-hyphen-slovak)
+       ("texlive-hyphen-slovenian" ,texlive-hyphen-slovenian)
+       ("texlive-hyphen-spanish" ,texlive-hyphen-spanish)
+       ("texlive-hyphen-swedish" ,texlive-hyphen-swedish)
+       ("texlive-hyphen-thai" ,texlive-hyphen-thai)
+       ("texlive-hyphen-turkish" ,texlive-hyphen-turkish)
+       ("texlive-hyphen-turkmen" ,texlive-hyphen-turkmen)
+       ("texlive-hyphen-ukrainian" ,texlive-hyphen-ukrainian)
+       ("texlive-hyphen-uppersorbian" ,texlive-hyphen-uppersorbian)
+       ("texlive-hyphen-welsh" ,texlive-hyphen-welsh)
+       ("texlive-unicode-data" ,texlive-unicode-data)
+       ("texlive-ukrhyph" ,texlive-ukrhyph)
+       ("texlive-ruhyphen" ,texlive-ruhyphen)
+       ("texlive-latexconfig" ,texlive-latexconfig)))
+    (home-page "https://www.ctan.org/pkg/latex-base")
+    (synopsis "Base sources of LaTeX")
+    (description
+     "This bundle comprises the source of LaTeX itself, together with several
 packages which are considered \"part of the kernel\".  This bundle, together
 with the required packages, constitutes what every LaTeX distribution should
 contain.")
-      (license license:lppl1.3c+))))
+    (license license:lppl1.3c+)))
 
 (define-public texlive-latex-filecontents
   (package
