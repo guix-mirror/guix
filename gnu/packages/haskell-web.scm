@@ -28,6 +28,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1321,4 +1322,40 @@ servers.  See http-streams @code{Network.Http.Client} or pipes-http
 @code{Pipes.Http.Client} for full documentation.  You can import
 @code{Network.Http.Types} if you like, but both http-streams and
 pipes-http re-export this package's types and functions.")
+    (license license:bsd-3)))
+
+(define-public ghc-http-streams
+  (package
+    (name "ghc-http-streams")
+    (version "0.8.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-streams/http-streams-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18vxd35n7s3z4gjvad94bknc8z1w9d7ccgphnhsxlz5cackizmxq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-hsopenssl" ,ghc-hsopenssl)
+       ("ghc-openssl-streams" ,ghc-openssl-streams)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-http-common" ,ghc-http-common)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (arguments
+     `(#:tests? #f)) ; tests rely on an outdated version of snap-server
+    (home-page "https://github.com/afcowie/http-streams/")
+    (synopsis "HTTP client using io-streams")
+    (description "An HTTP client using the Snap Framework's io-streams
+library to handle the streaming IO.  The API is optimized for ease of
+use for the rather common case of code needing to query web services and
+deal with the result.")
     (license license:bsd-3)))
