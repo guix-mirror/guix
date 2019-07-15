@@ -2533,6 +2533,50 @@ patterns supporting a number of Cyrillic font encodings, including T2,
 UCY (Omega Unicode Cyrillic), LCY, LWN (OT2), and koi8-r.")
       (license license:lppl))))
 
+(define-public texlive-kpathsea
+  (package
+    (inherit (simple-texlive-package
+              "texlive-kpathsea"
+              (list "/web2c/amiga-pl.tcx"
+                    "/web2c/cp1250cs.tcx"
+                    "/web2c/cp1250pl.tcx"
+                    "/web2c/cp1250t1.tcx"
+                    "/web2c/cp227.tcx"
+                    "/web2c/cp852-cs.tcx"
+                    "/web2c/cp852-pl.tcx"
+                    "/web2c/cp8bit.tcx"
+                    "/web2c/empty.tcx"
+                    "/web2c/fmtutil.cnf"
+                    "/web2c/il1-t1.tcx"
+                    "/web2c/il2-cs.tcx"
+                    "/web2c/il2-pl.tcx"
+                    "/web2c/il2-t1.tcx"
+                    "/web2c/kam-cs.tcx"
+                    "/web2c/kam-t1.tcx"
+                    "/web2c/macce-pl.tcx"
+                    "/web2c/macce-t1.tcx"
+                    "/web2c/maz-pl.tcx"
+                    "/web2c/mktex.cnf"
+                    "/web2c/mktex.opt"
+                    "/web2c/mktexdir"
+                    "/web2c/mktexdir.opt"
+                    "/web2c/mktexnam"
+                    "/web2c/mktexnam.opt"
+                    "/web2c/mktexupd"
+                    "/web2c/natural.tcx"
+                    "/web2c/tcvn-t5.tcx"
+                    "/web2c/viscii-t5.tcx")
+              (base32
+               "0ajfp9kr330lcm2ymr3kl9zn6y2xjkrzpa0c0azc4qdm5jllawb9")
+              #:trivial? #t))
+    (home-page "https://www.tug.org/texlive/")
+    (synopsis "Files related to the path searching library for TeX")
+    (description "Kpathsea is a library and utility programs which provide
+path searching facilities for TeX file types, including the self-locating
+feature required for movable installations, layered on top of a general search
+mechanism.  This package provides supporting files.")
+    (license license:lgpl3+)))
+
 (define-public texlive-latexconfig
   (package
     (inherit (simple-texlive-package
