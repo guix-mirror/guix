@@ -424,10 +424,7 @@ from SOURCE."
           (define (guix-url path)
             (string-append #$%web-site-url path))
 
-          (define (sxml-index language)
-            (define title
-              (translate "GNU Guix Reference Manual" language))
-
+          (define (sxml-index language title body)
             ;; FIXME: Avoid duplicating styling info from guix-artwork.git.
             `(html (@ (lang ,language))
                    (head
@@ -458,45 +455,53 @@ from SOURCE."
                          (a (@ (class "crumb")
                                (href #$%web-site-url))
                             "Home"))
-                    (main
-                     (article
-                      (@ (class "page centered-block limit-width"))
-                      (h2 ,title)
-                      (p (@ (class "post-metadata centered-text"))
-                         #$version " — "
-                         ,(seconds->string #$date language))
-
-                      (div
-                       (ul
-                        (li (a (@ (href "html_node"))
-                               "HTML, with one page per node"))
-                        (li (a (@ (href
-                                   ,(string-append
-                                     #$manual
-                                     (if (string=? language
-                                                   "en")
-                                         ""
-                                         (string-append "."
-                                                        language))
-                                     ".html")))
-                               "HTML, entirely on one page"))
-                        ,@(if (member language '("ru" "zh_CN"))
-                              '()
-                              `((li (a (@ (href ,(string-append
-                                                  #$manual
-                                                  (if (string=? language "en")
-                                                      ""
-                                                      (string-append "."
-                                                                     language))
-                                                  ".pdf"))))
-                                    "PDF")))))))
+                    ,body
                     (footer))))
 
-          (define (write-index language file)
+          (define (language-index language)
+            (define title
+              (translate "GNU Guix Reference Manual" language))
+
+            (sxml-index
+             language title
+             `(main
+               (article
+                (@ (class "page centered-block limit-width"))
+                (h2 ,title)
+                (p (@ (class "post-metadata centered-text"))
+                   #$version " — "
+                   ,(seconds->string #$date language))
+
+                (div
+                 (ul
+                  (li (a (@ (href "html_node"))
+                         "HTML, with one page per node"))
+                  (li (a (@ (href
+                             ,(string-append
+                               #$manual
+                               (if (string=? language
+                                             "en")
+                                   ""
+                                   (string-append "."
+                                                  language))
+                               ".html")))
+                         "HTML, entirely on one page"))
+                  ,@(if (member language '("ru" "zh_CN"))
+                        '()
+                        `((li (a (@ (href ,(string-append
+                                            #$manual
+                                            (if (string=? language "en")
+                                                ""
+                                                (string-append "."
+                                                               language))
+                                            ".pdf"))))
+                              "PDF")))))))))
+
+          (define (write-html file sxml)
             (call-with-output-file file
               (lambda (port)
                 (display "<!DOCTYPE html>\n" port)
-                (sxml->xml (sxml-index language) port))))
+                (sxml->xml sxml port))))
 
           (setenv "GUIX_LOCPATH"
                   #+(file-append glibc-utf8-locales "/lib/locale"))
@@ -512,9 +517,8 @@ from SOURCE."
                                        (normalize language)))
 
                       (mkdir-p directory)
-                      (write-index language
-                                   (string-append directory
-                                                  "/index.html")))
+                      (write-html (string-append directory "/index.html")
+                                  (language-index language)))
                     '#$languages))))
 
   (computed-file "html-indexes" build))
