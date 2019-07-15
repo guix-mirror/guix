@@ -76,8 +76,14 @@ result to the current output port using the (guix repl) protocol."
   (with-imported-modules (source-module-closure '((guix repl)))
     #~(begin
         (use-modules (guix repl))
-        (send-repl-response '(primitive-load #$program)
+
+        ;; We use CURRENT-OUTPUT-PORT for REPL messages, so redirect PROGRAM's
+        ;; output to CURRENT-ERROR-PORT so that it does not interfere.
+        (send-repl-response '(with-output-to-port (current-error-port)
+                               (lambda ()
+                                 (primitive-load #$program)))
                             (current-output-port))
+
         (force-output))))
 
 (define* (remote-eval exp session
