@@ -14754,6 +14754,35 @@ vast-tools, an RNA-Seq pipeline for alternative splicing analysis.  The plots
 are generated using @code{ggplot2}.")
     (license license:expat)))
 
+(define-public python-ont-fast5-api
+  (package
+    (name "python-ont-fast5-api")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/nanoporetech/ont_fast5_api.git")
+             (commit (string-append "release_" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03cbq4zbbwhll8ml2m9k8sa31mirsvcbjkrq1yna0kkzz9fad5fm"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-six" ,python-six)
+       ("python-h5py" ,python-h5py)
+       ("python-progressbar33" ,python-progressbar33)))
+    (home-page "https://github.com/nanoporetech/ont_fast5_api")
+    (synopsis "Interface to HDF5 files of the Oxford Nanopore fast5 file format")
+    (description
+     "This package provides a concrete implementation of the fast5 file schema
+using the generic @code{h5py} library, plain-named methods to interact with
+and reflect the fast5 file schema, and tools to convert between
+@code{multi_read} and @code{single_read} formats.")
+    (license license:mpl2.0)))
+
 (define-public tbsp
   (let ((commit "ec8fff4410cfb13a677dbbb95cbbc60217e64907")
         (revision "1"))
