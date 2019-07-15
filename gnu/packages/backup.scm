@@ -185,7 +185,8 @@ can even repair them.")
      `(#:configure-flags
        `(,(string-append "--sbindir=" (assoc-ref %outputs "out") "/bin"))
        #:tests? #f))
-    (home-page "http://archive.miek.nl/projects/hdup/index.html")
+    (home-page (string-append "http://web.archive.org/web/20150925223424/"
+                              "http://archive.miek.nl/projects/hdup/index.html"))
     (synopsis "Simple incremental backup tool")
     (description
      "Hdup2 is a backup utility, its aim is to make backup really simple.  The
