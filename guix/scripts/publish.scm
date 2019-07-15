@@ -694,7 +694,7 @@ to compress or decompress the log file; just return it as-is."
                             (h1 "GNU Guix Substitute Server")
                             (p "Hi, "
                                (a (@ (href
-                                      "https://gnu.org/s/guix/manual/html_node/Invoking-guix-publish.html"))
+                                      "https://guix.gnu.org/manual/en/html_node/Invoking-guix-publish.html"))
                                   (tt "guix publish"))
                                " speaking.  Welcome!")))
                          port)))))
