@@ -48,13 +48,6 @@
             MNT_EXPIRE
             UMOUNT_NOFOLLOW
 
-            AT_FDCWD
-            AT_SYMLINK_NOFOLLOW
-            AT_REMOVEDIR
-            AT_SYMLINK_FOLLOW
-            AT_NO_AUTOMOUNT
-            AT_EMPTY_PATH
-
             restart-on-EINTR
             mount-points
             swapon
@@ -686,12 +679,12 @@ mounted at FILE."
 
 ;; Flags for the *at command, notably the 'utime' procedure of libguile.
 ;; From <fcntl.h>.
-(define AT_FDCWD             -100)
-(define AT_SYMLINK_NOFOLLOW #x100)
-(define AT_REMOVEDIR        #x200)
-(define AT_SYMLINK_FOLLOW   #x400)
-(define AT_NO_AUTOMOUNT     #x800)
-(define AT_EMPTY_PATH       #x1000)
+(define-as-needed AT_FDCWD             -100)
+(define-as-needed AT_SYMLINK_NOFOLLOW #x100)
+(define-as-needed AT_REMOVEDIR        #x200)
+(define-as-needed AT_SYMLINK_FOLLOW   #x400)
+(define-as-needed AT_NO_AUTOMOUNT     #x800)
+(define-as-needed AT_EMPTY_PATH       #x1000)
 
 (define-syntax BLKRRPART                         ;<sys/mount.h>
   (identifier-syntax #x125F))
