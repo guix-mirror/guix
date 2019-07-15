@@ -23,6 +23,30 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
+(define-public ghc-language-glsl
+  (package
+    (name "ghc-language-glsl")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "language-glsl/language-glsl-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hdg67ainlqpjjghg3qin6fg4p783m0zmjqh4rd5gyizwiplxkp1"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-prettyclass" ,ghc-prettyclass)))
+    (arguments
+     `(#:tests? #f
+       #:cabal-revision
+       ("1" "10ac9pk4jy75k03j1ns4b5136l4kw8krr2d2nw2fdmpm5jzyghc5")))
+    (home-page "http://hackage.haskell.org/package/language-glsl")
+    (synopsis "GLSL abstract syntax tree, parser, and pretty-printer")
+    (description "This package is a Haskell library for the
+representation, parsing, and pretty-printing of GLSL 1.50 code.")
+    (license license:bsd-3)))
+
 (define-public ghc-prettyclass
   (package
     (name "ghc-prettyclass")
