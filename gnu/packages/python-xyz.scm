@@ -8538,6 +8538,28 @@ concurrent.futures package from Python 3.2")
          ("python2-pytest" ,python2-pytest)
          ,@(package-native-inputs promise))))))
 
+(define-public python-progressbar33
+  (package
+    (name "python-progressbar33")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "progressbar33" version))
+       (sha256
+        (base32
+         "1zvf6zs5hzrc03p9nfs4p16vhilqikycvv1yk0pxn8s07fdhvzji"))))
+    (build-system python-build-system)
+    (home-page "http://github.com/germangh/python-progressbar")
+    (synopsis "Text progress bar library for Python")
+    (description
+     "This package provides a text progress bar library for Python.  This
+version only differs from the original @code{progressbar} package in that it
+uses relative package imports instead of absolute imports, which is necessary
+for the module to work under Python 3.3.")
+    ;; Either or both of these licenses may be selected.
+    (license (list license:lgpl2.1+ license:bsd-3))))
+
 (define-public python-colorama
   (package
    (name "python-colorama")
