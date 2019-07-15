@@ -11874,13 +11874,10 @@ The following file formats are supported:
                (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
 
              ;; Ensure that all headers can be found
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
+             (setenv "CPATH"
+                     (string-append (getenv "CPATH")
                                     ":"
                                     (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
