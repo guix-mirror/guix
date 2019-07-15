@@ -21,7 +21,15 @@
   #:use-module (guix utils)
   #:use-module (guix build syscalls)
   #:use-module (gnu build linux-container)
+  #:use-module ((gnu system linux-container)
+                #:select (eval/container))
   #:use-module (gnu system file-systems)
+  #:use-module (guix store)
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
+  #:use-module (guix derivations)
+  #:use-module (guix tests)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -218,5 +226,47 @@
   (container-excursion* (getpid)
     (lambda ()
       (* 6 7))))
+
+(skip-if-unsupported)
+(test-equal "eval/container, exit status"
+  42
+  (let* ((store  (open-connection-for-tests))
+         (status (run-with-store store
+                   (eval/container #~(exit 42)))))
+    (close-connection store)
+    (status:exit-val status)))
+
+(skip-if-unsupported)
+(test-assert "eval/container, writable user mapping"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define store
+       (open-connection-for-tests))
+     (define result
+       (string-append directory "/r"))
+     (define requisites*
+       (store-lift requisites))
+
+     (call-with-output-file result (const #t))
+     (run-with-store store
+       (mlet %store-monad ((status (eval/container
+                                    #~(begin
+                                        (use-modules (ice-9 ftw))
+                                        (call-with-output-file "/result"
+                                          (lambda (port)
+                                            (write (scandir #$(%store-prefix))
+                                                   port))))
+                                    #:mappings
+                                    (list (file-system-mapping
+                                           (source result)
+                                           (target "/result")
+                                           (writable? #t)))))
+                           (reqs   (requisites*
+                                    (list (derivation->output-path
+                                           (%guile-for-build))))))
+         (close-connection store)
+         (return (and (zero? (pk 'status status))
+                      (lset= string=? (cons* "." ".." (map basename reqs))
+                             (pk (call-with-input-file result read))))))))))
 
 (test-end)
