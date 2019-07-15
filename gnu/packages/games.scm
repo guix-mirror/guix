@@ -2691,7 +2691,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.2")
+    (version "0.2.3")
     (source
      (origin
        (method git-fetch)
@@ -2700,7 +2700,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1bfqmb6cbmsjcvj77vppy5lw1m4lkvxd1w3f218ah4788xnkysq2"))))
+        (base32 "01mj6jlbl2cn3wpk6sy34ldzdl0qykpn7fncznjykklj2nqzr4ig"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"
