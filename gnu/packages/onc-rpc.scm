@@ -138,7 +138,8 @@ from the protocol files.")
                 "1chzqhcgh0yia9js8mh92cmhyka7rh32ql6b3mgdk26n94dqzs8b"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (modify-phases %standard-phases
+     `(#:configure-flags '("--disable-static")
+       #:phases (modify-phases %standard-phases
                   (add-before 'bootstrap 'gettextize
                     (lambda _
                       ;; Regenerate the bundled Makefile.in.in to avoid a
