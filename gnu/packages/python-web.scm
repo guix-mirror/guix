@@ -1982,15 +1982,15 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
     (version "0.11.6")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Pypi does not have tests.
-       (uri (string-append
-             "https://github.com/ionrock/cachecontrol/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/ionrock/cachecontrol")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yj60d0f69a2l8p7y86k4zhzzm6rnxpq74sfl240pry9l0lfw2vw"))))
+         "0pb16bzbkk99nh317xyfk8fxc2ngimsbz7lz9pxsw8c82n83d4dh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
