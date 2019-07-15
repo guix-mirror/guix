@@ -25,6 +25,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages tls)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
@@ -806,3 +807,34 @@ stable.  You may also be interested in the tls package,
 @uref{http://hackage.haskell.org/package/tls}, which is a pure Haskell
 implementation of SSL.")
     (license license:public-domain)))
+
+(define-public ghc-openssl-streams
+  (package
+    (name "ghc-openssl-streams")
+    (version "1.2.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "openssl-streams/openssl-streams-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0pwghr7ygv59k572xsj1j97rilkbjz66qaiyj0ra2wfg6pl70wfw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hsopenssl" ,ghc-hsopenssl)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-network" ,ghc-network)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (arguments
+     `(#:cabal-revision
+       ("2" "1004kgdryflpkp19dv4ikilhcn0xbfc5dsp6v3ib34580pcfj7wy")))
+    (home-page "http://hackage.haskell.org/package/openssl-streams")
+    (synopsis "OpenSSL network support for io-streams")
+    (description "This library contains io-streams routines for secure
+networking using OpenSSL (by way of HsOpenSSL).")
+    (license license:bsd-3)))
