@@ -4861,7 +4861,7 @@ fonts are available in (traced) Adobe Type 1 format, as part of the
 set, Latin Modern, is not actually a direct development of the EC set, and
 differs from the EC in a number of particulars.")
     (license (license:fsf-free "https://www.tug.org/svn/texlive/tags/\
-texlive-2017.1/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
+texlive-2018.2/Master/texmf-dist/doc/fonts/ec/copyrite.txt"))))
 
 (define-public texlive-fonts-adobe-times
   (package
