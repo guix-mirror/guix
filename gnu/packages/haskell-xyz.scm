@@ -120,3 +120,23 @@ to @code{Show}, based on the HughesPJ pretty printing library.  It
 provides the pretty printing class and instances for the Prelude
 types.")
     (license license:bsd-3)))
+
+(define-public ghc-readable
+  (package
+    (name "ghc-readable")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "readable/readable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ja39cg26wy2fs00gi12x7iq5k8i366pbqi3p916skfa5jnkfc3h"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/mightybyte/readable")
+    (synopsis "Type class for reading from Text and ByteString")
+    (description "This package provides a @code{Readable} type class for
+reading data types from @code{ByteString} and @code{Text}.  It also
+includes efficient implementations for common data types.")
+    (license license:bsd-3)))
