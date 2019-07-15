@@ -1292,7 +1292,7 @@ Python.")
              "-DgRPC_SSL_PROVIDER=package"
              "-DgRPC_PROTOBUF_PROVIDER=package")))
     (inputs
-     `(("c-ares" ,c-ares)
+     `(("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs

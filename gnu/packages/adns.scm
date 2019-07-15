@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,3 +83,17 @@ queries without blocking, or need to perform multiple DNS queries in parallel.
 The primary examples of such applications are servers which communicate with
 multiple clients and programs with graphical user interfaces.")
     (license (x11-style "https://c-ares.haxx.se/license.html"))))
+
+;; gRPC requires a c-ares built with CMake in order to get the .cmake modules.
+;; We can not build c-ares itself with CMake because that would introduce a
+;; circular dependency through nghttp2.
+;; XXX: It would be nice if we could extract the modules somehow and make them
+;; work with the "normal" c-ares package instead of building a whole new library.
+(define-public c-ares/cmake
+  (hidden-package
+   (package
+     (inherit c-ares)
+     (build-system cmake-build-system)
+     (arguments
+      `(;; XXX: Tests require name resolution (the normal variant runs no tests).
+        #:tests? #f)))))
