@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -108,7 +108,7 @@
                (string-append "-DXFS_INCLUDE_DIR="
                               (assoc-ref %build-inputs "xfsprogs") "/include")
                "-DCMAKE_INSTALL_LOCALSTATEDIR=/var"
-               "-DENABLE_SHARED=ON"
+               "-DBUILD_SHARED_LIBS=ON"
                "-DWITH_SYSTEM_ROCKSDB=ON"
                "-DWITH_SYSTEM_BOOST=ON"
                "-DWITH_PYTHON3=ON"
@@ -279,6 +279,17 @@
                            (wrap-program (string-append out "/bin/" executable)
                              `("PYTHONPATH" ":" prefix (,PYTHONPATH))))
                          scripts)
+               #t)))
+         (add-before 'validate-runpath 'remove-test-executables
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; FIXME: The BUILD_SHARED_LIBS CMake flag causes the test executables
+               ;; to link the bundled googletest dynamically, which in turn causes
+               ;; RUNPATH validation failures because 'libgtest.so' and friends do
+               ;; not get absolute RUNPATH entries.  The next version of Ceph can use
+               ;; an external googletest; for now just remove the test executables.
+               (for-each delete-file (find-files (string-append out "/bin")
+                                                 "ceph_(test|perf)"))
                #t))))))
     (outputs
      '("out" "lib"))
