@@ -699,92 +699,82 @@ from (almost) arbitrarily complex font names, thus helping portability of TeX
 documents.")
     (license license:public-domain)))
 
-(define-public texlive-fonts-cm
-  (package
-    (inherit (simple-texlive-package
-              "texlive-fonts-cm"
-              (list "/fonts/source/public/cm/"
-                    "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map"
-                    "/doc/fonts/cm/README"
-                    "/doc/fonts/cm/README-cmps.txt")
-              (base32
-               "1h0q71paqmg1xjg6k35ni2i6m93kmlq9rdwm913xg9n4qngywl18")))
-    (outputs '("out" "doc"))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1)
-                  (srfi srfi-26))
-       #:tests? #f ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((mf (assoc-ref inputs "texlive-metafont-base")))
-               ;; Tell mf where to find mf.base
-               (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
-               ;; Tell mf where to look for source files
-               (setenv "MFINPUTS"
-                       (string-append (getcwd) "/fonts/source/public/cm/:"
-                                      mf "/share/texmf-dist/metafont/base")))
-             (for-each make-file-writable
-                       (cons "fonts/source/public/cm/"
-                             (find-files "fonts/source/public/cm/" ".*")))
-             (let ((build (string-append (getcwd) "/build"))
-                   (pkdir (string-append (getcwd) "/pk/ljfour/public/cm/dpi600")))
-               (mkdir-p pkdir)
-               (mkdir-p build)
-               (with-directory-excursion "fonts/source/public/cm/"
-                 (for-each (lambda (font)
-                             (format #t "building font ~a\n" font)
-                             (invoke "mf" "-progname=mf"
-                                     (string-append "-output-directory=" build)
-                                     (string-append "\\"
-                                                    "mode:=ljfour; "
-                                                    "mag:=1+0/600; "
-                                                    "scrollmode; "
-                                                    "input "
-                                                    (basename font ".mf")))
-                             (invoke "gftopk"
-                                     (string-append build "/"
-                                                    (basename font ".mf") ".600gf")
-                                     (string-append pkdir "/"
-                                                    (basename font ".mf") ".pk")))
-                           (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))))
-             #t))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out    (assoc-ref outputs "out"))
-                    (doc    (assoc-ref outputs "doc"))
-                    (source (assoc-ref inputs "source"))
-                    (fonts  (string-append out "/share/texmf-dist/fonts/"))
-                    (pk     (string-append fonts "pk"))
-                    (tfm    (string-append fonts "tfm/public/cm"))
-                    (mf     (string-append fonts "source/public/cm")))
-               (for-each (cut install-file <> tfm)
-                         (find-files "build" "\\.*"))
-               (for-each (cut install-file <> mf)
-                         (find-files "." "\\.mf"))
-               (copy-recursively "pk" pk)
-               (copy-recursively
-                (string-append source "/doc")
-                (string-append doc "/doc"))
-               (install-file
-                (string-append source "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map")
-                (string-append fonts "/map/dvips/cm/cmtext-bsr-interpolated.map"))
-               #t))))))
-    (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-metafont-base" ,texlive-metafont-base)))
-    (home-page "https://www.ctan.org/pkg/cm")
-    (synopsis "Computer Modern fonts for TeX")
-    (description "This package provides the Computer Modern fonts by Donald
+(define-public texlive-cm
+  (let ((template (simple-texlive-package
+                   "texlive-cm"
+                   (list "/fonts/source/public/cm/"
+                         "/fonts/map/dvips/cm/cmtext-bsr-interpolated.map"
+                         "/doc/fonts/cm/")
+                   (base32
+                    "1h0q71paqmg1xjg6k35ni2i6m93kmlq9rdwm913xg9n4qngywl18")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:modules modules '())
+          '((guix build gnu-build-system)
+            (guix build utils)
+            (srfi srfi-26)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((mf (assoc-ref inputs "texlive-metafont-base")))
+                   ;; Tell mf where to find mf.base
+                   (setenv "MFBASES" (string-append mf "/share/texmf-dist/web2c"))
+                   ;; Tell mf where to look for source files
+                   (setenv "MFINPUTS"
+                           (string-append (getcwd) "/fonts/source/public/cm/:"
+                                          mf "/share/texmf-dist/metafont/base")))
+                 (for-each make-file-writable
+                           (cons "fonts/source/public/cm/"
+                                 (find-files "fonts/source/public/cm/" ".*")))
+                 (let ((build (string-append (getcwd) "/build"))
+                       (pkdir (string-append (getcwd) "/pk/ljfour/public/cm/dpi600")))
+                   (mkdir-p pkdir)
+                   (mkdir-p build)
+                   (with-directory-excursion "fonts/source/public/cm/"
+                     (for-each (lambda (font)
+                                 (format #t "building font ~a\n" font)
+                                 (invoke "mf" "-progname=mf"
+                                         (string-append "-output-directory=" build)
+                                         (string-append "\\"
+                                                        "mode:=ljfour; "
+                                                        "mag:=1+0/600; "
+                                                        "scrollmode; "
+                                                        "input "
+                                                        (basename font ".mf")))
+                                 (invoke "gftopk"
+                                         (string-append build "/"
+                                                        (basename font ".mf") ".600gf")
+                                         (string-append pkdir "/"
+                                                        (basename font ".mf") ".pk")))
+                               (find-files "." "cm(.*[0-9]+.*|inch)\\.mf$"))))
+                 #t))
+             (add-after 'install 'install-generated-fonts
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out    (assoc-ref outputs "out"))
+                        (fonts  (string-append out "/share/texmf-dist/fonts/"))
+                        (pk     (string-append fonts "pk"))
+                        (tfm    (string-append fonts "tfm/public/cm")))
+                   (for-each (cut install-file <> tfm)
+                             (find-files "build" "\\.*"))
+                   (copy-recursively "pk" pk)
+                   #t)))))))
+      (native-inputs
+       `(("texlive-bin" ,texlive-bin)
+         ("texlive-metafont-base" ,texlive-metafont-base)))
+      (home-page "https://www.ctan.org/pkg/cm")
+      (synopsis "Computer Modern fonts for TeX")
+      (description "This package provides the Computer Modern fonts by Donald
 Knuth.  The Computer Modern font family is a large collection of text,
 display, and mathematical fonts in a range of styles, based on Monotype Modern
 8A.")
-    (license license:knuth)))
+      (license license:knuth))))
+
+(define-public texlive-fonts-cm
+  (deprecated-package "texlive-fonts-cm" texlive-cm))
 
 (define-public texlive-cm-super
   (let ((template (simple-texlive-package
