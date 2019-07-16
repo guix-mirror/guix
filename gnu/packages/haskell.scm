@@ -73,6 +73,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
@@ -571,6 +572,51 @@ interactive environment for the functional language Haskell.")
                                         (string-append "lib/ghc-" version)))
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
+
+(define-public ghc-8.6
+  (package (inherit ghc-8.4)
+    (name "ghc")
+    (version "8.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/ghc/dist/"
+                           version "/" name "-" version "-src.tar.xz"))
+       (sha256
+        (base32 "0qg3zsmbk4rkwkc3jpas3zs74qaxmw4sp4v1mhsbj0a0dzls2jjd"))))
+    (native-inputs
+     `(;; GHC 8.6.5 must be built with GHC >= 8.2.
+       ("ghc-bootstrap" ,ghc-8.4)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/" name "-" version "-testsuite.tar.xz"))
+           (sha256
+            (base32
+             "0pw9r91g2np3i806g2f4f8z4jfdd7mx226cmdizk4swa7av1qf91"))))
+       ,@(filter (match-lambda
+                   (("ghc-bootstrap" . _) #f)
+                   (("ghc-testsuite" . _) #f)
+                   (_ #t))
+                 (package-native-inputs ghc-8.4))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ghc-8.4)
+       ((#:make-flags make-flags ''())
+        `(cons "EXTRA_RUNTEST_OPTS=--skip-perf-tests"
+               ,make-flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           ;; These two tests refer to the root user, which doesn't exist
+           ;; (see <https://bugs.gnu.org/36692>).
+           (add-after 'unpack-testsuite 'skip-tests
+             (lambda _
+               (substitute* "libraries/unix/tests/all.T"
+                 (("^test\\('T8108'") "# guix skipped: test('T8108'"))
+               (substitute* "libraries/unix/tests/libposix/all.T"
+                 (("^test\\('posix010'") "# guix skipped: test('posix010'"))
+               #t))))))))
 
 (define-public ghc-8 ghc-8.4)
 
