@@ -800,6 +800,48 @@ Go programming language.")
       (home-page "https://go.googlesource.com/tools/")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-crypto
+  (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
+        (revision "3"))
+    (package
+      (name "go-golang-org-x-crypto")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-crypto-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1jqfh81mhgwcc6b9l0bs6rb0707s01qpvn7896i5bsmig46lc7zm"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/crypto"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build)
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/golang.org/x/crypto/ed25519/testdata")
+                      ".*\\.gz$"))
+               #t)))))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
+      (synopsis "Supplementary cryptographic libraries in Go")
+      (description "This package provides supplementary cryptographic libraries
+for the Go language.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-crypto-bcrypt
   (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
         (revision "3"))
