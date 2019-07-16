@@ -3584,3 +3584,25 @@ implementation of generics.")
 network protocol.")
     (home-page "https://github.com/lucas-clemente/quic-go")
     (license license:expat)))
+
+(define-public go-github-com-pkg-errors
+  (package
+    (name "go-github-com-pkg-errors")
+    (version "0.8.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pkg/errors.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0g5qcb4d4fd96midz0zdk8b9kz8xkzwfa8kr1cliqbg8sxsy5vd1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/pkg/errors"))
+    (synopsis "Go error handling primitives")
+    (description "This package provides @code{error}, which offers simple
+error handling primitives in Go.")
+    (home-page "https://github.com/pkg/errors")
+    (license license:bsd-2)))
