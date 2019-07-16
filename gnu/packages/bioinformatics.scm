@@ -14072,7 +14072,8 @@ choosing which reads pass the filter.")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "eigen")
-                                      "/include/eigen3"))
+                                      "/include/eigen3:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (delete 'configure)
            (replace 'install
