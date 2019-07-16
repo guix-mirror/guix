@@ -5157,7 +5157,17 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
            (lambda _
              (setenv "HOME" "/tmp")
              (invoke "pytest" "-v")
-             #t)))))
+             #t))
+         (add-after 'install 'set-python-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Record the absolute file name of the 'python' executable in
+             ;; 'kernel.json'.
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/share/jupyter"
+                                           "/kernels/python3/kernel.json")
+                 (("\"python\"")
+                  (string-append "\"" (which "python") "\"")))
+               #t))))))
     (propagated-inputs
      `(("python-ipython" ,python-ipython)
        ;; imported at runtime during connect
