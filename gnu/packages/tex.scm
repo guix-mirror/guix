@@ -5754,120 +5754,24 @@ float, but you can put it in a @code{table} or a @code{table*} or some other
 environment.")
     (license (license:fsf-free "file://threeparttable.sty"))))
 
-(define-public texlive-fonts-txfonts
+(define-public texlive-txfonts
   (package
-    (name "texlive-fonts-txfonts")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/txfonts"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0jl921qdphg8i7bkfprackn3xd4gmvxckc526nmzqsmahqkavgg2"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (let ((root (string-append (assoc-ref %outputs "out")
-                                    "/share/texmf-dist/"))
-               (pkgs '(("source"        . "tex/latex/txfonts")
-                       ("txfonts-vf"    . "fonts/tfm/public/txfonts")
-                       ("txfonts-afm"   . "fonts/afm/public/txfonts")
-                       ("txfonts-tfm"   . "fonts/tfm/public/txfonts")
-                       ("txfonts-type1" . "fonts/type1/public/txfonts")
-                       ("txfonts-enc"   . "fonts/enc/dvips/txfonts")
-                       ("txfonts-map"   . "fonts/map/dvips/txfonts"))))
-           (for-each (match-lambda
-                       ((pkg . dir)
-                        (let ((target (string-append root dir)))
-                          (mkdir-p target)
-                          (copy-recursively (assoc-ref %build-inputs pkg)
-                                            target))))
-                     pkgs)
-           #t))))
-    (native-inputs
-     `(("txfonts-tfm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/tfm/public/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-tfm-" version "-checkout"))
-           (sha256
-            (base32
-             "12ffmbrp48ap35qa3b4mi6ckif9q2vf7972jxh5dc1yzykhla2xv"))))
-       ("txfonts-vf"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/vf/public/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-vf-" version "-checkout"))
-           (sha256
-            (base32
-             "04acyfdwvxpfx4l2xh2bpzdmpvwdf2pzbs7a236b0xckz2jvc1ci"))))
-       ("txfonts-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/public/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "1705klz51pnqzcs89s3521b84b6c89wlczflsh0vci66nl155yis"))))
-       ("txfonts-type1"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/type1/public/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-type1-" version "-checkout"))
-           (sha256
-            (base32
-             "0ajwr7zb6ch3gxd0g8p2i4llhy2wr9a9saz6jq6hm6fxf4pgl5h3"))))
-       ("txfonts-map"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-map-" version "-checkout"))
-           (sha256
-            (base32
-             "0kamr8a9x24jakas3v09dgv7kkpybj3i7qv4vz1iyypqr6kk1raj"))))
-       ("txfonts-enc"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/enc/dvips/txfonts"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-enc-" version "-checkout"))
-           (sha256
-            (base32
-             "1bal5fhw0xlhl37ayv8vlnqnsn1y82kadzfjhbgr223blspp4zsj"))))))
-    (home-page "https://www.ctan.org/pkg/threeparttable")
+    (inherit (simple-texlive-package
+              "texlive-txfonts"
+              (list "/doc/fonts/txfonts/"
+
+                    "/fonts/afm/public/txfonts/"
+                    "/fonts/tfm/public/txfonts/"
+                    "/fonts/type1/public/txfonts/"
+                    "/fonts/vf/public/txfonts/"
+
+                    "/fonts/map/dvips/txfonts/"
+                    "/fonts/enc/dvips/txfonts/"
+                    "/tex/latex/txfonts/")
+              (base32
+               "017zjas5y1zlyq0iy4x6mv1qbz23xcy3y5xs0crj6zdnfvnccqgp")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/txfonts")
     (synopsis "Times-like fonts in support of mathematics")
     (description
      "Txfonts supplies virtual text roman fonts using Adobe Times (or URW
@@ -5884,6 +5788,9 @@ All the fonts are in Type 1 format (AFM and PFB files), and are supported by
 TeX metrics (VF and TFM files) and macros for use with LaTeX.")
     ;; Any version of the GPL with font exception.
     (license license:gpl3+)))
+
+(define-public texlive-fonts-txfonts
+  (deprecated-package "texlive-fonts-txfonts" texlive-txfonts))
 
 (define-public texlive-fonts-iwona
   (package
