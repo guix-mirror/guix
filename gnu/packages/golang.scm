@@ -3556,3 +3556,31 @@ the Go standard library's TLS 1.3 implementation.")
 implementation of generics.")
     (home-page "https://github.com/cheekybits/genny/")
     (license license:expat)))
+
+(define-public go-github-com-lucas-clemente-quic-go
+  (package
+    (name "go-github-com-lucas-clemente-quic-go")
+    (version "0.11.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lucas-clemente/quic-go")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gqm5mc8alg84ra7yxach34il1jvcij8f76qdqcahnd3d2nhjbia"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/lucas-clemente/quic-go"
+       ;; XXX More packages required...
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-github-com-cheekybits-genny" ,go-github-com-cheekybits-genny)
+       ("go-github-com-marten-seemann-qtls" ,go-github-com-marten-seemann-qtls)))
+    (synopsis "QUIC in Go")
+    (description "This package provides a Go language implementation of the QUIC
+network protocol.")
+    (home-page "https://github.com/lucas-clemente/quic-go")
+    (license license:expat)))
