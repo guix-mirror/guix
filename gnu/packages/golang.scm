@@ -3506,3 +3506,29 @@ test.
 All locks are implemented with read-write mutexes.  To use them like a regular
 mutex, simply ignore the RLock/RUnlock functions.")
       (license license:unlicense))))
+
+(define-public go-github-com-marten-seemann-qtls
+  (package
+    (name "go-github-com-marten-seemann-qtls")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/marten-seemann/qtls")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b9p7bwkm9hfg1mb565q4nw5k7xyks0z2xagz5fp95azy2psbnfg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/marten-seemann/qtls"
+       ;; The test suite requires networking.
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (synopsis "TLS 1.3 with QUIC in Go")
+    (description "This package provides @code{qtls}, a QUIC-capable variant of
+the Go standard library's TLS 1.3 implementation.")
+    (home-page "https://github.com/marten-seemann/qtls")
+    (license license:bsd-3)))
