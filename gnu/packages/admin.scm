@@ -1592,14 +1592,14 @@ environment variable is set and output is to tty.")
 (define-public direvent
   (package
     (name "direvent")
-    (version "5.1")
+    (version "5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/direvent/direvent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nwvjmx7kb14ni34c0b8x9a3791pc20gvhj7xaj66d8q4h6n0qf4"))
+                "0m9vi01b1km0cpknflyzsjnknbava0s1n6393b2bpjwyvb6j5613"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "tests/testsuite"
