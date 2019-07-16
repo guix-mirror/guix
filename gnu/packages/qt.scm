@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
@@ -423,11 +425,16 @@ system, and the core design of Django is reused in Grantlee.")
     (inputs
      `(,@(fold alist-delete
                (package-inputs qt)
-               '("harfbuzz" "libjpeg"))
+               '("harfbuzz" "libjpeg" "openssl"))
        ("libjpeg" ,libjpeg-8)
-       ("libsm" ,libsm)))
+       ("libsm" ,libsm)
+       ("openssl" ,openssl-1.0)))
     (native-inputs
-     `(,@(fold alist-delete
+     `(;; XXX: The JavaScriptCore engine does not build with the C++11 standard.
+       ;; We could build it with -std=gnu++98, but then we'll get in trouble with
+       ;; ICU later.  Just keep using GCC 5 for now.
+       ("gcc" ,gcc-5)
+       ,@(fold alist-delete
                (package-native-inputs qt)
                '("vulkan-headers"))))
 
