@@ -769,6 +769,37 @@ expressing configuration which is easy for both humans and machines to read.")
       (home-page "https://github.com/hashicorp/hcl")
       (license license:mpl2.0))))
 
+(define-public go-golang-org-x-tools
+  (let ((commit "8b927904ee0dec805c89aaf9172f4459296ed6e8")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-tools")
+      (version (git-version "0.1.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/tools")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-tools-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "0iinb70xhcjsddgi42ia1n745lx2ibnjdm6m2v666qrk3876vpck"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/tools"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build))))
+      (synopsis "Tools that support the Go programming language")
+      (description "This package provides miscellaneous tools that support the
+Go programming language.")
+      (home-page "https://go.googlesource.com/tools/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-crypto-bcrypt
   (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
         (revision "3"))
