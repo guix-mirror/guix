@@ -108,9 +108,8 @@
   (checkout  channel-instance-checkout))
 
 (define-record-type <channel-metadata>
-  (channel-metadata version directory dependencies)
+  (channel-metadata directory dependencies)
   channel-metadata?
-  (version       channel-metadata-version)
   (directory     channel-metadata-directory)
   (dependencies  channel-metadata-dependencies))
 
@@ -130,7 +129,6 @@ if valid metadata could not be read from PORT."
      (let ((directory    (and=> (assoc-ref properties 'directory) first))
            (dependencies (or (assoc-ref properties 'dependencies) '())))
        (channel-metadata
-        version
         directory
         (map (lambda (item)
                (let ((get (lambda* (key #:optional default)
@@ -180,7 +178,7 @@ file."
 channel INSTANCE."
   (match (channel-instance-metadata instance)
     (#f '())
-    (($ <channel-metadata> version directory dependencies)
+    (($ <channel-metadata> directory dependencies)
      dependencies)))
 
 (define* (latest-channel-instances store channels #:optional (previous-channels '()))
