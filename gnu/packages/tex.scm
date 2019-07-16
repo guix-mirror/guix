@@ -4927,133 +4927,21 @@ Adobe's basic set.")
 (define-public texlive-fonts-adobe-palatino
   (deprecated-package "texlive-fonts-adobe-palatino" texlive-palatino))
 
-(define-public texlive-fonts-adobe-zapfding
+(define-public texlive-zapfding
   (package
-    (name "texlive-fonts-adobe-zapfding")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/fonts/type1/urw/zapfding/"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1sp3jblg3khp0yj121blvhph6ib09919kyrsk5x2lg258yypqyis"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (let ((root (string-append (assoc-ref %outputs "out")
-                                    "/share/texmf-dist/"))
-               (pkgs '(("source"      . "fonts/type1/urw/zapfding")
-                       ("zapf-afm"    . "fonts/afm/adobe/zapfding")
-                       ("zapf-tfm"    . "fonts/tfm/adobe/zapfding")
-                       ("urw-afm"     . "fonts/afm/urw/zapfding")
-                       ("urw35vf-tfm" . "fonts/tfm/urw35vf/zapfding")
-
-                       ("zapf-tex"    . "tex/latex/zapfding")
-                       ("dvips"       . "dvips/zapfding")
-                       ("fonts-map"   . "fonts/map/dvips/zapfding"))))
-           (for-each (match-lambda
-                       ((pkg . dir)
-                        (let ((target (string-append root dir)))
-                          (mkdir-p target)
-                          (copy-recursively (assoc-ref %build-inputs pkg)
-                                            target))))
-                     pkgs)
-           #t))))
-    (native-inputs
-     `(("zapf-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/adobe/zapfding"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "0qvl4w1bfcpiakkd8rvkism46qnvzj9w7x4r8z9m0y7mspbkblyr"))))
-       ("zapf-tfm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/tfm/adobe/zapfding"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-tfm-" version "-checkout"))
-           (sha256
-            (base32
-             "1i8mh9xsl8l4cgsg3nl4ha9q6m55j122riclaxsvkc5ka83432qm"))))
-       ("urw-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/urw/zapfding"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-urw-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "0m4qndqh7ji723ff82c5c1q8ziqvblbaip7vx05vnl15fqbsnfx1"))))
-       ("urw35vf-tfm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/tfm/urw35vf/zapfding"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-urw35vf-tfm-" version "-checkout"))
-           (sha256
-            (base32
-             "167g2x6mpjfqh0w1fhjbw14qcx6ridrj2zm1bd8bi0l2d7phj28m"))))
-       ("zapf-tex"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/tex/latex/zapfding"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-tex-" version "-checkout"))
-           (sha256
-            (base32
-             "0hp7i8f6nbrg7irrwc8fd7n1hrzjysa84d6iyivwlc65v9p7lmd0"))))
-       ("dvips"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/dvips/zapfding/"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-dvips-" version "-checkout"))
-           (sha256
-            (base32
-             "1f18sc4qwxykd786zhn6szcrycqvpvfhlcim71aamxmwghakd7fa"))))
-       ("fonts-map"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/map/dvips/zapfding/"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-fonts-map-" version "-checkout"))
-           (sha256
-            (base32
-             "17kwxmdrgz2fb072hx57a3pidcrhbgayphx11zyld2hv9149pkyl"))))))
+    (inherit (simple-texlive-package
+              "texlive-zapfding"
+              (list "/dvips/zapfding/"
+                    "/fonts/afm/adobe/zapfding/"
+                    "/fonts/afm/urw/zapfding/"
+                    "/fonts/tfm/adobe/zapfding/"
+                    "/fonts/tfm/urw35vf/zapfding/"
+                    "/fonts/type1/urw/zapfding/"
+                    "/fonts/map/dvips/zapfding/"
+                    "/tex/latex/zapfding/")
+              (base32
+               "17mls8wilz9api9ivsbcczpiqp1f39qy8wa6ajssi8zhnc5lq7zn")
+              #:trivial? #t))
     (home-page "https://ctan.org/pkg/urw-base35")
     (synopsis "URW Base 35 font pack for LaTeX")
     (description
@@ -5061,6 +4949,9 @@ Adobe's basic set.")
 Adobe's basic set.")
     ;; No license version specified.
     (license license:gpl3+)))
+
+(define-public texlive-fonts-adobe-zapfding
+  (deprecated-package "texlive-fonts-adobe-zapfding" texlive-zapfding))
 
 (define-public texlive-fonts-rsfs
   (package
