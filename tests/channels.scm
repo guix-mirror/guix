@@ -42,9 +42,9 @@
                         (commit "cafebabe")
                         (spec #f))
   (define instance-dir (mkdtemp! "/tmp/checkout.XXXXXX"))
-  (and spec
-       (with-output-to-file (string-append instance-dir "/.guix-channel")
-         (lambda _ (format #t "~a" spec))))
+  (when spec
+    (call-with-output-file (string-append instance-dir "/.guix-channel")
+      (lambda (port) (write spec port))))
   (checkout->channel-instance instance-dir
                               #:commit commit
                               #:name name))
@@ -55,12 +55,10 @@
                  '(channel (version 42) (dependencies whatever))))
 (define instance--no-deps
   (make-instance #:spec
-                 '(channel
-                   (version 0)
-                   (dependencies
-                    (channel
-                     (name test-channel)
-                     (url "https://example.com/test-channel"))))))
+                 '(channel (version 0))))
+(define instance--sub-directory
+  (make-instance #:spec
+                 '(channel (version 0) (directory "modules"))))
 (define instance--simple
   (make-instance #:spec
                  '(channel
@@ -87,11 +85,26 @@
 
 (define channel-instance-metadata
   (@@ (guix channels) channel-instance-metadata))
+(define channel-metadata-directory
+  (@@ (guix channels) channel-metadata-directory))
+(define channel-metadata-dependencies
+  (@@ (guix channels) channel-metadata-dependencies))
 
 
-(test-equal "channel-instance-metadata returns #f if .guix-channel does not exist"
-  #f
-  (channel-instance-metadata instance--boring))
+(test-equal "channel-instance-metadata returns default if .guix-channel does not exist"
+  '("/" ())
+  (let ((metadata (channel-instance-metadata instance--boring)))
+    (list (channel-metadata-directory metadata)
+          (channel-metadata-dependencies metadata))))
+
+(test-equal "channel-instance-metadata and default dependencies"
+  '()
+  (channel-metadata-dependencies (channel-instance-metadata instance--no-deps)))
+
+(test-equal "channel-instance-metadata and directory"
+  "/modules"
+  (channel-metadata-directory
+   (channel-instance-metadata instance--sub-directory)))
 
 (test-equal "channel-instance-metadata rejects unsupported version"
   1                              ;line number in the generated '.guix-channel'
@@ -141,7 +154,7 @@
                ("test" (values test-dir 'whatever))
                (_ (values "/not-important" 'not-important)))))
           (let ((instances (latest-channel-instances #f (list channel))))
-            (and (eq? 2 (length instances))
+            (and (= 2 (length instances))
                  (lset= eq?
                         '(test test-channel)
                         (map (compose channel-name channel-instance-channel)
@@ -152,9 +165,9 @@
                          (and (eq? (channel-name
                                     (channel-instance-channel instance))
                                    'test-channel)
-                              (eq? (channel-commit
-                                    (channel-instance-channel instance))
-                                   'abc1234)))
+                              (string=? (channel-commit
+                                         (channel-instance-channel instance))
+                                        "abc1234")))
                        instances))))))
 
 (test-assert "channel-instances->manifest"
