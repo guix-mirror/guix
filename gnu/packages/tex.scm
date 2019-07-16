@@ -6927,56 +6927,20 @@ supports advanced interactive documents.  See the ConTeXt garden for a wealth
 of support information.")
     (license license:gpl2+)))
 
-(define-public texlive-latex-beamer
+(define-public texlive-beamer
   (package
-    (name "texlive-latex-beamer")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/latex/beamer"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "09y3qwbj0nckshvg9afgwcv9v3zdif1d7bnpzrggsa1fbr80mgk2"))))
-    (build-system trivial-build-system)
-    (outputs '("out" "doc"))
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/latex/beamer"))
-               (docs   (string-append (assoc-ref %outputs "doc")
-                                      "/share/texmf-dist/doc/latex/beamer/")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-
-           (mkdir-p docs)
-           (copy-recursively (assoc-ref %build-inputs "docs") docs)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-beamer"
+              (list "/doc/latex/beamer/"
+                    "/tex/latex/beamer/")
+              (base32
+               "00z1a32wkz1ffif7dc8h3ar2fn2hlvfnljgim2szjam2k14l82x3")
+              #:trivial? #t))
     (propagated-inputs
      `(("texlive-latex-hyperref" ,texlive-latex-hyperref)
        ("texlive-latex-oberdiek" ,texlive-latex-oberdiek)
        ("texlive-latex-etoolbox" ,texlive-latex-etoolbox)
        ("texlive-latex-pgf" ,texlive-latex-pgf)))
-    (native-inputs
-     `(("docs"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/doc/latex/beamer"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-" version "-checkout"))
-           (sha256
-            (base32
-             "102b18b9nw9dicqqgjwx0srh1mav8vh9wdvwayn741niza9hac23"))))))
     (home-page "https://www.ctan.org/pkg/beamer")
     (synopsis "LaTeX class for producing presentations and slides")
     (description "The beamer LaTeX class can be used for producing slides.
@@ -6991,6 +6955,9 @@ effects, varying slide transitions and animations.")
     ;; Code is dual licensed under GPLv2+ or LPPL1.3c+; documentation is
     ;; dual-licensed under either FDLv1.3+ or LPPL1.3c+.
     (license (list license:lppl1.3c+ license:gpl2+ license:fdl1.3+))))
+
+(define-public texlive-latex-beamer
+  (deprecated-package "texlive-latex-beamer" texlive-beamer))
 
 (define-public texlive-latex-xmpincl
   (package
