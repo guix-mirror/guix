@@ -3532,3 +3532,27 @@ mutex, simply ignore the RLock/RUnlock functions.")
 the Go standard library's TLS 1.3 implementation.")
     (home-page "https://github.com/marten-seemann/qtls")
     (license license:bsd-3)))
+
+(define-public go-github-com-cheekybits-genny
+  (package
+    (name "go-github-com-cheekybits-genny")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cheekybits/genny")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pcir5ic86713aqa51581rfb67rgc3m0c72ddjfcp3yakv9vyq87"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cheekybits/genny"))
+    (propagated-inputs
+     `(("go-golang-org-x-tools" ,go-golang-org-x-tools)))
+    (synopsis "Generics for Go")
+    (description "This package provides @code{genny}, a Go language
+implementation of generics.")
+    (home-page "https://github.com/cheekybits/genny/")
+    (license license:expat)))
