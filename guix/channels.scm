@@ -121,32 +121,55 @@
     (#f      `(branch . ,(channel-branch channel)))
     (commit  `(commit . ,(channel-commit channel)))))
 
+(define (read-channel-metadata port)
+  "Read from PORT channel metadata in the format expected for the
+'.guix-channel' file.  Return a <channel-metadata> record, or raise an error
+if valid metadata could not be read from PORT."
+  (match (read port)
+    (('channel ('version 0) properties ...)
+     (let ((directory    (and=> (assoc-ref properties 'directory) first))
+           (dependencies (or (assoc-ref properties 'dependencies) '())))
+       (channel-metadata
+        version
+        directory
+        (map (lambda (item)
+               (let ((get (lambda* (key #:optional default)
+                            (or (and=> (assoc-ref item key) first) default))))
+                 (and-let* ((name (get 'name))
+                            (url (get 'url))
+                            (branch (get 'branch "master")))
+                   (channel
+                    (name name)
+                    (branch branch)
+                    (url url)
+                    (commit (get 'commit))))))
+             dependencies))))
+    ((and ('channel ('version version) _ ...) sexp)
+     (raise (condition
+             (&message (message "unsupported '.guix-channel' version"))
+             (&error-location
+              (location (source-properties->location
+                         (source-properties sexp)))))))
+    (sexp
+     (raise (condition
+             (&message (message "invalid '.guix-channel' file"))
+             (&error-location
+              (location (source-properties->location
+                         (source-properties sexp)))))))))
+
 (define (read-channel-metadata-from-source source)
   "Return a channel-metadata record read from channel's SOURCE/.guix-channel
 description file, or return #F if SOURCE/.guix-channel does not exist."
-  (let ((meta-file (string-append source "/.guix-channel")))
-    (and (file-exists? meta-file)
-         (let* ((raw (call-with-input-file meta-file read))
-                (version (and=> (assoc-ref raw 'version) first))
-                (directory (and=> (assoc-ref raw 'directory) first))
-                (dependencies (or (assoc-ref raw 'dependencies) '())))
-           (channel-metadata
-            version
-            directory
-            (map (lambda (item)
-                   (let ((get (lambda* (key #:optional default)
-                                (or (and=> (assoc-ref item key) first) default))))
-                     (and-let* ((name (get 'name))
-                                (url (get 'url))
-                                (branch (get 'branch "master")))
-                       (channel
-                        (name name)
-                        (branch branch)
-                        (url url)
-                        (commit (get 'commit))))))
-                 dependencies))))))
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file (string-append source "/.guix-channel")
+        read-channel-metadata))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          #f
+          (apply throw args)))))
 
-(define (read-channel-metadata instance)
+(define (channel-instance-metadata instance)
   "Return a channel-metadata record read from the channel INSTANCE's
 description file, or return #F if the channel instance does not include the
 file."
@@ -155,7 +178,7 @@ file."
 (define (channel-instance-dependencies instance)
   "Return the list of channels that are declared as dependencies for the given
 channel INSTANCE."
-  (match (read-channel-metadata instance)
+  (match (channel-instance-metadata instance)
     (#f '())
     (($ <channel-metadata> version directory dependencies)
      dependencies)))

@@ -26,8 +26,12 @@
   #:use-module (guix derivations)
   #:use-module (guix sets)
   #:use-module (guix gexp)
+  #:use-module ((guix utils)
+                #:select (error-location? error-location location-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -46,6 +50,9 @@
                               #:name name))
 
 (define instance--boring (make-instance))
+(define instance--unsupported-version
+  (make-instance #:spec
+                 '(channel (version 42) (dependencies whatever))))
 (define instance--no-deps
   (make-instance #:spec
                  '(channel
@@ -78,24 +85,30 @@
                      (name test-channel)
                      (url "https://example.com/test-channel-elsewhere"))))))
 
-(define read-channel-metadata
-  (@@ (guix channels) read-channel-metadata))
+(define channel-instance-metadata
+  (@@ (guix channels) channel-instance-metadata))
 
 
-(test-equal "read-channel-metadata returns #f if .guix-channel does not exist"
+(test-equal "channel-instance-metadata returns #f if .guix-channel does not exist"
   #f
-  (read-channel-metadata instance--boring))
+  (channel-instance-metadata instance--boring))
 
-(test-assert "read-channel-metadata returns <channel-metadata>"
+(test-equal "channel-instance-metadata rejects unsupported version"
+  1                              ;line number in the generated '.guix-channel'
+  (guard (c ((and (message-condition? c) (error-location? c))
+             (location-line (error-location c))))
+    (channel-instance-metadata instance--unsupported-version)))
+
+(test-assert "channel-instance-metadata returns <channel-metadata>"
   (every (@@ (guix channels) channel-metadata?)
-         (map read-channel-metadata
+         (map channel-instance-metadata
               (list instance--no-deps
                     instance--simple
                     instance--with-dupes))))
 
-(test-assert "read-channel-metadata dependencies are channels"
+(test-assert "channel-instance-metadata dependencies are channels"
   (let ((deps ((@@ (guix channels) channel-metadata-dependencies)
-               (read-channel-metadata instance--simple))))
+               (channel-instance-metadata instance--simple))))
     (match deps
       (((? channel? dep)) #t)
       (_ #f))))
