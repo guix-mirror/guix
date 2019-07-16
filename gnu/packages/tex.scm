@@ -1270,36 +1270,18 @@ incorporates the e-TeX extensions.")
 
 (define-public texlive-tex-plain
   (package
-    (name "texlive-tex-plain")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/tex/plain"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "1xknlb3gcw6jjqh97bhghxi594bzpj1zfzzfsrr9pvr9s1bx7dnf"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
-         (let ((target (string-append (assoc-ref %outputs "out")
-                                      "/share/texmf-dist/tex/plain")))
-           (mkdir-p target)
-           (copy-recursively (assoc-ref %build-inputs "source") target)
-           #t))))
+    (inherit (simple-texlive-package
+              "texlive-tex-plain"
+              (list "/tex/plain/")
+              (base32
+               "1rrfay4d7lbyj02wlf23mwvbpjd160nwlgryx97hq1vb7dva4swr")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/plain")
     (synopsis "Plain TeX format and supporting files")
     (description
-     "Contains files used to build the Plain TeX format, as described in the
-TeXbook, together with various supporting files (some also discussed in the
-book).")
+     "This package contains files used to build the Plain TeX format, as
+described in the TeXbook, together with various supporting files (some also
+discussed in the book).")
     (license license:knuth)))
 
 (define-public texlive-hyphen-afrikaans
