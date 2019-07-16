@@ -7258,74 +7258,29 @@ be specified in the document itself (one often needs a LaTeX citation-style
 package, such as @command{natbib} as well).")
     (license license:knuth)))
 
-(define-public texlive-fonts-charter
+(define-public texlive-charter
   (package
-    (name "texlive-fonts-charter")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (svn-reference
-                    (url (string-append "svn://www.tug.org/texlive/tags/"
-                                        %texlive-tag "/Master/texmf-dist/"
-                                        "/fonts/type1/bitstrea/charter"))
-                    (revision %texlive-revision)))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0yvib45xxff3jm5270zij4q888pivbc18cqs7lz4pqfhn1am4wnv"))))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils)
-                  (ice-9 match))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match))
-         (let ((root (string-append (assoc-ref %outputs "out")
-                                    "/share/texmf-dist/"))
-               (pkgs '(("source" . "fonts/type1/bitstrea/charter")
-                       ("charter-afm" . "fonts/afm/bitstrea/charter")
-                       ("charter-tfm" . "fonts/tfm/bitstrea/charter"))))
-           (for-each (match-lambda
-                       ((pkg . dir)
-                        (let ((target (string-append root dir)))
-                          (mkdir-p target)
-                          (copy-recursively (assoc-ref %build-inputs pkg)
-                                            target))))
-                     pkgs)
-           #t))))
-    (native-inputs
-     `(("charter-afm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/afm/bitstrea/charter"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-afm-" version "-checkout"))
-           (sha256
-            (base32
-             "02nbkqrlr3vypnzslmr7dxg1353mmc0rl4ynx0s6qbvf313fq76a"))))
-       ("charter-tfm"
-        ,(origin
-           (method svn-fetch)
-           (uri (svn-reference
-                 (url (string-append "svn://www.tug.org/texlive/tags/"
-                                     %texlive-tag "/Master/texmf-dist/"
-                                     "/fonts/tfm/bitstrea/charter"))
-                 (revision %texlive-revision)))
-           (file-name (string-append name "-tfm-" version "-checkout"))
-           (sha256
-            (base32
-             "0j7ci9vprivbhac70aq0z7m23hqcpx1g0i3wp1k0h8ilhimj80xk"))))))
+    (inherit (simple-texlive-package
+              "texlive-charter"
+              (list "/doc/fonts/charter/readme.charter"
+                    "/fonts/afm/bitstrea/charter/"
+                    "/fonts/tfm/bitstrea/charter/"
+                    "/fonts/type1/bitstrea/charter/"
+                    "/fonts/vf/bitstrea/charter/")
+              (base32
+               "09l5ymgz48s3hyn776l01g3isk3dnhrj1vdavdw4qq4kfxxpqdn9")
+              #:trivial? #t))
     (home-page "https://www.ctan.org/pkg/charter")
     (synopsis "Charter fonts for TeX")
-    (description "A commercial text font donated for the common good.  Support
-for use with LaTeX is available in @code{freenfss}, part of
+    (description "This package provides a copy of the Charter Type-1 fonts
+which Bitstream contributed to the X consortium, renamed for use with TeX.
+Support for use with LaTeX is available in @code{freenfss}, part of
 @command{psnfss}. ")
-    (license (license:non-copyleft (string-append "http://mirrors.ctan.org/"
-                                                  "fonts/charter/readme.charter")))))
+    (license (license:non-copyleft
+              "http://mirrors.ctan.org/fonts/charter/readme.charter"))))
+
+(define-public texlive-fonts-charter
+  (deprecated-package "texlive-fonts-charter" texlive-charter))
 
 (define-public texlive-context-base
   (package
