@@ -177,6 +177,9 @@ makeinfo OPTIONS."
                            #:languages languages
                            #:date date))
 
+  (define images
+    (texinfo-manual-images source))
+
   (define build
     (with-imported-modules '((guix build utils))
       #~(begin
@@ -228,7 +231,15 @@ makeinfo OPTIONS."
                                                   ""
                                                   (string-append "." language))
                                               ".html")
-                               opts)))
+                               opts)
+
+                        ;; Make sure images are available.
+                        (symlink #$images
+                                 (string-append #$output "/" (normalize language)
+                                                "/images"))
+                        (symlink #$images
+                                 (string-append #$output "/" (normalize language)
+                                                "/html_node/images"))))
                     '#$languages))))
 
   (computed-file (string-append manual "-html-manual") build))
