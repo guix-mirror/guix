@@ -3809,22 +3809,11 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)
-       ;; The 'gtk+' package (and 'gdk-pixbuf', 'atk' and 'pango' propagated
-       ;; from 'gtk+') provides the required 'typelib' files used by
-       ;; 'gobject-introspection'. The location of these files is set with the
-       ;; help of the environment variable GI_TYPELIB_PATH. At build time this
-       ;; is done automatically by a 'native-search-path' procedure. However,
-       ;; at run-time the user must set this variable as follows:
-       ;;
-       ;; export GI_TYPELIB_PATH=~/.guix-profile/lib/girepository-1.0
-       ("gtk+" ,gtk+)
        ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
        ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
        ;; object. For this reason we need to import both libraries.
        ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
        ("python-pycairo" ,python-pycairo)
-       ;; XXX: qtwebkit cannot be built reliably.
-       ("python-pyqt" ,python-pyqt-without-qtwebkit)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("libpng" ,libpng)
@@ -3845,12 +3834,10 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        (modify-phases %standard-phases
          (add-before 'build 'configure-environment
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cairo (assoc-ref inputs "cairo"))
-                   (gtk+ (assoc-ref inputs "gtk+")))
-               ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
+             (let ((cairo (assoc-ref inputs "cairo")))
+               ;; Setting this directory in the 'basedirlist' of 'setup.cfg'
                ;; has not effect.
-               (setenv "LD_LIBRARY_PATH"
-                       (string-append cairo "/lib:" gtk+ "/lib"))
+               (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
                (setenv "HOME" (getcwd))
                (call-with-output-file "setup.cfg"
                  (lambda (port)
