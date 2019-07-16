@@ -2889,7 +2889,7 @@ interface.")
      `(("fluidsynth" ,fluidsynth)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
-    (home-page "http://qsynth.sourceforge.net")
+    (home-page "https://qsynth.sourceforge.io")
     (synopsis "Graphical user interface for FluidSynth")
     (description
      "Qsynth is a GUI front-end application for the FluidSynth SoundFont
