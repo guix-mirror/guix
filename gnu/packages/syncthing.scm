@@ -1225,3 +1225,28 @@ quoting, commenting, and escaping.")
 virtual connections from a single physical connection.")
       (home-page "https://github.com/AudriusButkevicius/pfilter")
       (license expat))))
+
+(define-public go-github-com-ccding-go-stun
+  (let ((commit "be486d185f3dfcb2dbf8429332da50a0da7f95a6")
+        (revision "2"))
+    (package
+      (name "go-github-com-ccding-go-stun")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ccding/go-stun.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1gr0rw1c1y7wh6913lyn5k4ig023by27i36bly6am8dwgrgp34ww"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ccding/go-stun"))
+      (synopsis "STUN client implementation")
+      (description "Go-stun is a go implementation of the STUN client (RFC 3489
+and RFC 5389).")
+      (home-page "https://github.com/ccding/go-stun")
+      (license asl2.0))))
