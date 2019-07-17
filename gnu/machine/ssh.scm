@@ -49,7 +49,7 @@
 ;;; Commentary:
 ;;;
 ;;; This module implements remote evaluation and system deployment for
-;;; machines that are accessable over SSH and have a known host-name. In the
+;;; machines that are accessible over SSH and have a known host-name. In the
 ;;; sense of the broader "machine" interface, we describe the environment for
 ;;; such machines as 'managed-host.
 ;;;
@@ -351,7 +351,7 @@ environment type of 'managed-host."
    (machine-remote-eval managed-host-remote-eval)
    (deploy-machine      deploy-managed-host)
    (name                'managed-host-environment-type)
-   (description         "Provisioning for machines that are accessable over SSH
+   (description         "Provisioning for machines that are accessible over SSH
 and have a known host-name. This entails little more than maintaining an SSH
 connection to the host.")))
 
