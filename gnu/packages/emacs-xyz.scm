@@ -13769,6 +13769,30 @@ searches with @code{ripgrep}.")
 text in neighboring sections.")
       (license license:gpl3+))))
 
+(define-public emacs-pandoc-mode
+  (package
+    (name "emacs-pandoc-mode")
+    (version "2.27.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/pandoc-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04bqc7mhgkfks3nsvimd3rrriv4nqbksmv5ahlbbd03aqa2b0vrv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-hydra" ,emacs-hydra)))
+    (home-page "https://github.com/joostkremers/pandoc-mode")
+    (synopsis "Minor mode for interacting with Pandoc")
+    (description "This package provides a Hydra menu for interacting with the
+Pandoc, the document-conversion tool.")
+    (license license:bsd-3)))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
