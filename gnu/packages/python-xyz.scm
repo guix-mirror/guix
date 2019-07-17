@@ -13121,17 +13121,18 @@ from your Flask project.  It is a fork of Flask-Swagger.")
 (define-public python-swagger-spec-validator
   (package
     (name "python-swagger-spec-validator")
-    (version "2.1.0")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "swagger-spec-validator" version))
        (sha256
         (base32
-         "13hkpn2lycwr0468yqhjb3kwszqf7hjwlq61w7vdxq1caz31k4nw"))))
+         "11g627icrsqwazsncwi0sdvprcj6hwaayw5xk3xsj8d97bmrzqjp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-jsonschema" ,python-jsonschema)
+       ("python-pyyaml" ,python-pyyaml)
        ("python-six" ,python-six)))
     (home-page
      "https://github.com/Yelp/swagger_spec_validator")
