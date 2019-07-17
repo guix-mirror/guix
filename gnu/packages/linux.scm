@@ -561,7 +561,9 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
     (search-auxiliary-file file)))
 
 (define %default-extra-linux-options
-  `(;; Modules required for initrd:
+  `(;; Some very mild hardening.
+    ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
+    ;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
     ("CONFIG_VIRTIO_BLK" . m)
