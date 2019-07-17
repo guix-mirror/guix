@@ -243,6 +243,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
   %D%/packages/hyperledger.scm			\
+  %D%/packages/i2p.scm				\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
   %D%/packages/idris.scm			\
