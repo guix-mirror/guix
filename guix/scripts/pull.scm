@@ -193,7 +193,7 @@ newest generation of PROFILE."
     (_ #t)))
 
 (define* (build-and-install instances profile
-                            #:key verbose? dry-run?)
+                            #:key use-substitutes? verbose? dry-run?)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
 true, display what would be built without actually building it."
   (define update-profile
@@ -206,6 +206,7 @@ true, display what would be built without actually building it."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
+                      #:use-substitutes? use-substitutes?
                       #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
@@ -600,6 +601,8 @@ Use '~/.config/guix/channels.scm' instead."))
                           (build-and-install instances profile
                                              #:dry-run?
                                              (assoc-ref opts 'dry-run?)
+                                             #:use-substitutes?
+                                             (assoc-ref opts 'substitutes?)
                                              #:verbose?
                                              (assoc-ref opts 'verbose?))))))))))))))
 
