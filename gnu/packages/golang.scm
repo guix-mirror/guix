@@ -1214,8 +1214,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "4d1cda033e0619309c606fc686de3adcf599539e")
-        (revision "2"))
+  (let ((commit "5ed2794edfdc1c54dfb61d619c5944285f35d444")
+        (revision "3"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1227,7 +1227,7 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wgaldbnkmh568v8kkgvnmkskaj96fqrbzhx23yji2kh1432q6gh"))))
+                  "1qy8hmv5nwpcywk7sh1pg0s32jwpd4ykh492xzl4mmxy8galwsr5"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
