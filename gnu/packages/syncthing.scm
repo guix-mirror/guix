@@ -1027,7 +1027,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
 (define-public go-github-com-client-golang-prometheus-promhttp
     (package
       (name "go-github-com-client-golang-prometheus-promhttp")
-      (version "0.9.3")
+      (version "0.9.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1036,7 +1036,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1608rm1y2p3iv8k2x7wyc6hshvpbfkv2k77hy0x870syms1g3g1p"))))
+                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
       (build-system go-build-system)
       (arguments
        '(#:tests? #f ; The tests require internet access
@@ -1065,7 +1065,7 @@ server tools for Prometheus metrics.")
 (define-public go-github-com-prometheus-client-golang-prometheus
     (package
       (name "go-github-com-prometheus-client-golang-prometheus")
-      (version "0.9.3")
+      (version "0.9.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1074,7 +1074,7 @@ server tools for Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1608rm1y2p3iv8k2x7wyc6hshvpbfkv2k77hy0x870syms1g3g1p"))))
+                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_golang/prometheus"
