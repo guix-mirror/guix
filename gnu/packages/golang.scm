@@ -49,6 +49,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -1362,12 +1363,11 @@ is similar to Go's standard library @code{json} and @code{xml} package.")
     (license license:expat)))
 
 (define-public go-github-com-getsentry-raven-go
-  (let ((commit
-         "dffeb57df75d6a911f00232155194e43d79d38d7")
+  (let ((commit "5c24d5110e0e198d9ae16f1f3465366085001d92")
         (revision "0"))
     (package
       (name "go-github-com-getsentry-raven-go")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.2.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1377,14 +1377,16 @@ is similar to Go's standard library @code{json} and @code{xml} package.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "13sb9rvl3369m7fah3ss9g0hwky259snqfn8gmbr0h5zvp651lja"))))
+           "0lvc376sq8r8jhy2v1m6rf1wyld61pvbk0x6j9xpg56ivqy69xs7"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/getsentry/raven-go"))
-      (home-page
-       "https://github.com/getsentry/raven-go")
+      (propagated-inputs
+       `(("go-github-com-certifi-gocertifi" ,go-github-com-certifi-gocertifi)
+         ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
+      (home-page "https://github.com/getsentry/raven-go")
       (synopsis "Sentry client in Go")
-      (description "This package is Go client API for the Sentry event/error
+      (description "This package is a Go client API for the Sentry event/error
 logging system.")
       (license license:bsd-3))))
 
