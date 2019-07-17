@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,7 +105,6 @@
   #:use-module (gnu packages samba)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
-  #:use-module (gnu packages storage)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
@@ -421,26 +421,26 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.1.17")
-(define %linux-libre-hash "049mij4z1iilrggw6plfdpcj1lnc1vqz5z445ix9677cq1fmiwlh")
+(define %linux-libre-version "5.2.1")
+(define %linux-libre-hash "1qj3zsjynz45p97n6sngdbh4xfd1jks3hbn85nmhzds6sxgg4c54")
 
-(define %linux-libre-5.1-patches
+(define %linux-libre-5.2-patches
   (list %boot-logo-patch
         %linux-libre-arm-export-__sync_icache_dcache-patch))
 
-(define-public linux-libre-5.1
+(define-public linux-libre-5.2
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:configuration-file kernel-config))
 
-(define-public linux-libre-headers-5.1
+(define-public linux-libre-headers-5.2
   (make-linux-libre-headers %linux-libre-version
                             %linux-libre-hash))
 
-(define %linux-libre-4.19-version "4.19.58")
-(define %linux-libre-4.19-hash "0i2mh0zk1h1niba1bpd49bn938sdn3qrwzkqpqzimxnj31xcjhyz")
+(define %linux-libre-4.19-version "4.19.59")
+(define %linux-libre-4.19-hash "1c9qfw1mnz68ki48kg1brmv47wmsdvq41ip6202rlnmwgncj5yrw")
 
 (define %linux-libre-4.19-patches
   (list %boot-logo-patch
@@ -492,7 +492,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:configuration-file kernel-config-veyron
                     #:extra-version "arm-veyron"))
 
@@ -501,13 +501,13 @@ It has been modified to remove all non-free binary blobs.")
                             "1zqiic55viy065lhnkmhn33sz3bbbr2ykbm5f92yzd8lpc9zl7yx"))
 
 (define-public linux-libre-headers linux-libre-headers-4.19.56)
-(define-public linux-libre linux-libre-5.1)
+(define-public linux-libre linux-libre-5.2)
 
 (define-public linux-libre-arm-generic
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:defconfig "multi_v7_defconfig"
                     #:extra-version "arm-generic"))
 
@@ -530,7 +530,7 @@ It has been modified to remove all non-free binary blobs.")
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("armhf-linux")
-                    #:patches %linux-libre-5.1-patches
+                    #:patches %linux-libre-5.2-patches
                     #:defconfig "omap2plus_defconfig"
                     #:extra-version "arm-omap2plus"))
 
@@ -3245,7 +3245,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.9")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -3253,7 +3253,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jhi6bhl4ih75rfmyyjxd35ghgch5ls1gw40cjxwy9d6bd41z6q1"))
+                "0kb4mhzwyygdbikikmby6hj39pb3nrzv05v526c75wnycwnpxg31"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -3303,8 +3303,7 @@ arrays when needed.")
        ("pkg-config" ,pkg-config)
        ("valgrind" ,valgrind)))
     (inputs
-     `(("ceph:lib" ,ceph "lib")
-       ("json-c" ,json-c)
+     `(("json-c" ,json-c)
        ("libaio" ,libaio)
        ("liburcu" ,liburcu)
        ("lvm2" ,lvm2)

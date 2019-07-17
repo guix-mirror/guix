@@ -39,6 +39,7 @@
   #:use-module (gnu packages networking)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages version-control)
@@ -49,20 +50,24 @@
 (define-public python-docker-py
   (package
     (name "python-docker-py")
-    (version "1.10.6")
+    (version "3.7.3")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "docker-py" version))
+       (uri (pypi-uri "docker" version))
        (sha256
         (base32
-         "05f49f6hnl7npmi7kigg0ibqk8s3fhzx1ivvz1kqvlv4ay3paajc"))))
+         "0qmrcvpaz37p85hfddsd4yc8hgqlkzs4cz09q9wmy0pz5pwajqm0"))))
     (build-system python-build-system)
     ;; TODO: Tests require a running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-requests" ,python-requests)
+     `(("python-requests" ,python-requests-2.20)
+       ("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-paramiko" ,python-paramiko)
        ("python-six" ,python-six)
+       ("python-urllib3" ,python-urllib3-1.24)
        ("python-websocket-client" ,python-websocket-client)))
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
@@ -73,14 +78,14 @@ management tool.")
 (define-public python-dockerpty
   (package
     (name "python-dockerpty")
-    (version "0.3.4")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "dockerpty" version))
        (sha256
         (base32
-         "0za6rr349641wv76ww9l3zcic2xyxrirlxpnzl4296h897648455"))))
+         "1kjn64wx23jmr8dcc6g7bwlmrhfmxr77gh6iphqsl39sayfxdab9"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-six" ,python-six)))
@@ -96,25 +101,32 @@ client.")
 (define-public docker-compose
   (package
     (name "docker-compose")
-    (version "1.5.2")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "docker-compose" version))
        (sha256
         (base32
-         "0ksg7hm2yvc977968dixxisrhcmvskzpcx3pz0v1kazrdqp7xakr"))))
+         "0lx7bx6jvhydbab8vwry0bclhdf0dfj6jrns1m5y45yp9ybqxmd5"))))
     (build-system python-build-system)
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python-docker-py" ,python-docker-py)
+     `(("python2-backport-ssl-match-hostname"
+        ,python2-backport-ssl-match-hostname)
+       ("python-cached-property"
+        ,python-cached-property)
+       ("python-colorama" ,python-colorama)
+       ("python-docker-py" ,python-docker-py)
        ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
+       ("python-ipaddress" ,python-ipaddress)
+       ("python-paramiko" ,python-paramiko)
        ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-requests" ,python-requests-2.7)
+       ("python-requests" ,python-requests-2.20)
        ("python-six" ,python-six)
        ("python-texttable" ,python-texttable)
        ("python-websocket-client" ,python-websocket-client)))
@@ -129,14 +141,14 @@ created and all the services are started as specified in the configuration.")
 (define-public python-docker-pycreds
   (package
     (name "python-docker-pycreds")
-    (version "0.3.0")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "docker-pycreds" version))
         (sha256
          (base32
-          "1zxvam1q22qb0jf48553nnncnfrcp88ag4xa0qmq6vr0imn9a3lb"))))
+          "1m44smrggnqghxkqfl7vhapdw89m1p3vdr177r6cq17lr85jgqvc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

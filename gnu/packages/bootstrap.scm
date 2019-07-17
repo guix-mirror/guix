@@ -30,7 +30,7 @@
   #:use-module ((guix store)
                 #:select (run-with-store add-to-store add-text-to-store))
   #:use-module ((guix derivations)
-                #:select (derivation derivation->output-path))
+                #:select (derivation derivation-input derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
   #:use-module (guix memoization)
   #:use-module (guix i18n)
@@ -400,8 +400,9 @@ $out/bin/guile --version~%"
     (derivation store name
                 (derivation->output-path bash) `(,builder)
                 #:system system
-                #:inputs `((,bash) (,mkdir) (,tar) (,xz)
-                           (,builder) (,guile))
+                #:inputs (map derivation-input
+                              (list bash mkdir tar xz guile))
+                #:sources (list builder)
                 #:env-vars `(("GUILE_TARBALL"
                               . ,(derivation->output-path guile))))))
 

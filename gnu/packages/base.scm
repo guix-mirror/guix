@@ -971,7 +971,7 @@ with the Linux kernel.")
                   (("/bin/pwd") "pwd"))
                 #t))))))))
 
-(define (make-gcc-libc base-gcc libc)
+(define-public (make-gcc-libc base-gcc libc)
   "Return a GCC that targets LIBC."
   (package (inherit base-gcc)
            (name (string-append (package-name base-gcc) "-"

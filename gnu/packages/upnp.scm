@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Theodoros Foradis <theodoros@foradis.org>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,13 +22,22 @@
 
 (define-module (gnu packages upnp)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages photo)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages python)
   #:use-module (guix build-system gnu)
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (ice-9 match))
 
 (define-public miniupnpc
   (package
@@ -150,3 +160,42 @@ compliant with Version 1.0 of the Universal Plug and Play Device Architecture
 Specification and support several operating systems like Linux, *BSD, Solaris
 and others.")
     (license bsd-3)))
+
+(define-public readymedia
+  (package
+    (name "readymedia")
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/minidlna/git")
+             (commit (string-append
+                      "v"
+                      (string-map (match-lambda
+                                    (#\. #\_)
+                                    (chr chr))
+                                  version)))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "160915yv38k0p5zmyncs12kkbbcd8m8fk9jq70fkfd5x6dz40xm4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("automake" ,automake)
+       ("autoconf" ,autoconf)
+       ("gettext" ,gettext-minimal)))
+    (inputs
+     `(("libexif" ,libexif)
+       ("libjpeg" ,libjpeg)
+       ("libid3tag" ,libid3tag)
+       ("flac" ,flac)
+       ("libvorbis" ,libvorbis)
+       ("sqlite" ,sqlite)
+       ("ffmpeg" ,ffmpeg)))
+    (home-page "https://sourceforge.net/projects/minidlna/")
+    (synopsis "DLNA/UPnP-AV media server")
+    (description "ReadyMedia (formerly known as MiniDLNA) is a simple media
+server, which serves multimedia content to compatible clients on the network.
+It aims to be fully compliant with DLNA and UPnP-AV standards.")
+    (license gpl2)))

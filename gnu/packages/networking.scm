@@ -1440,7 +1440,7 @@ gone wild and are suddenly taking up your bandwidth.")
 (define-public nzbget
   (package
     (name "nzbget")
-    (version "20.0")
+    (version "21.0")
     (source
      (origin
        (method url-fetch)
@@ -1449,7 +1449,7 @@ gone wild and are suddenly taking up your bandwidth.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0q93aqqyzccn5r9sny38499rmg846qdh9pi2v5kvf9m23v54yk60"))
+         "0l3dzxz7d7jf6cyach41zirvsx1x0vs4nh053c0miycv7zjyrly7"))
        (modules '((guix build utils)))
        (snippet
         ;; Reported upstream as <https://github.com/nzbget/nzbget/pull/414>.

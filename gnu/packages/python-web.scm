@@ -75,14 +75,14 @@
 (define-public python-aiohttp
   (package
     (name "python-aiohttp")
-    (version "3.4.4")
+    (version "3.5.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiohttp" version))
        (sha256
         (base32
-         "1ykm6kdjkrg556j0zd7dx2l1rsrbh0d9g27ivr6dmaahz9pyrbsi"))))
+         "1gy95ni8rkdwzir9zf14ivpfwp02g69xbhibldykff0rzbs86k4w"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;missing pytest-timeout
@@ -154,22 +154,22 @@ using @url{https://github.com/saghul/pycares,pycares}.")
 (define-public python-aiorpcx
   (package
     (name "python-aiorpcx")
-    (version "0.10.2")
+    (version "0.18.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "aiorpcX" version))
        (sha256
         (base32
-         "1p88k15jh0d2a18pnnbfcamsqi2bxvmmhpizmdlxfdxf8vy5ggyj"))))
+         "0k545hc7wl6sh1svydzbv6x7sx5pig2pqkl3yxs9riwmvzawx9xp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-attrs" ,python-attrs)))
     (home-page "https://github.com/kyuupichan/aiorpcX")
     (synopsis "Generic asyncio RPC implementation")
     (description
-     "aiorpcX is a generic asyncio library implementation of RPC suitable for
-an application that is a client, server or both.
+     "The aiorpcX library is a generic asyncio implementation of RPC suitable
+for an application that is a client, server or both.
 
 The package includes a module with full coverage of JSON RPC versions 1.0 and
 2.0, JSON RPC protocol auto-detection, and arbitrary message framing.  It also
@@ -1352,6 +1352,22 @@ WebSocket usage in Python programs.")
 than Python’s urllib2 library.")
     (license license:asl2.0)))
 
+;; Some software requires an older version of Requests, notably Docker/Docker
+;; Compose.
+(define-public python-requests-2.20
+  (package (inherit python-requests)
+           (version "2.20.1")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "requests" version))
+                     (sha256
+                      (base32
+                       "0qzj6cgv3k9wyj7wlxgz7xq0cfg4jbbkfm24pp8dnhczwl31527a"))))
+           (propagated-inputs
+            `(("python-urllib3" ,python-urllib3-1.24)
+              ("python-idna" ,python-idna-2.7)
+              ,@(package-propagated-inputs python-requests)))))
+
 ;; Some software requires an older version of Requests, notably Docker
 ;; Compose.
 (define-public python-requests-2.7
@@ -1527,6 +1543,18 @@ authenticated session objects providing things like keep-alive.")
 can reuse the same socket connection for multiple requests, it can POST files,
 supports url redirection and retries, and also gzip and deflate decoding.")
     (license license:expat)))
+
+;; Some software requires an older version of urllib3, notably Docker.
+(define-public python-urllib3-1.24
+  (package (inherit python-urllib3)
+           (version "1.24.3")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "urllib3" version))
+                     (sha256
+                      (base32
+                       "1x0slqrv6kixkbcdnxbglvjliwhc1payavxjvk8fvbqjrnasd4r3"))))))
+
 
 (define-public python2-urllib3
   (package-with-python2 python-urllib3))
@@ -1954,15 +1982,15 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
     (version "0.11.6")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Pypi does not have tests.
-       (uri (string-append
-             "https://github.com/ionrock/cachecontrol/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/ionrock/cachecontrol")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0yj60d0f69a2l8p7y86k4zhzzm6rnxpq74sfl240pry9l0lfw2vw"))))
+         "0pb16bzbkk99nh317xyfk8fxc2ngimsbz7lz9pxsw8c82n83d4dh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2161,6 +2189,30 @@ pretty printer and a tree visitor.")
       "HTTP basic access authentication for Flask")
     (description
       "This package provides HTTP basic access authentication for Flask.")
+    (license license:bsd-3)))
+
+(define-public python-flask-htpasswd
+  (package
+    (name "python-flask-htpasswd")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flask-htpasswd" version))
+        (sha256
+          (base32
+            "14q1y1y9i9bhabdnwd25jqzc4ljli23smxfyyh8abxz1vq93pxra"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-itsdangerous" ,python-itsdangerous)
+       ("python-passlib" ,python-passlib)
+       ("python-tox" ,python-tox)))
+    (home-page "http://github.com/carsongee/flask-htpasswd")
+    (synopsis "Basic authentication via htpasswd files in Flask applications")
+    (description "This package provides Basic authentication via
+@file{htpasswd} files and access_token authentication in Flask
+applications.")
     (license license:bsd-3)))
 
 (define-public python-flask-sqlalchemy

@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2104,14 +2105,14 @@ different audio devices such as ALSA or PulseAudio.")
 (define-public qjackctl
   (package
     (name "qjackctl")
-    (version "0.5.8")
+    (version "0.5.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/qjackctl/qjackctl/"
                                   version "/qjackctl-" version ".tar.gz"))
               (sha256
                (base32
-                "1r5hf3hcr20n93jrrm7xk2zf6yx264pcr4d10cpybhrancxh602n"))))
+                "1saywsda9m124rmjp7i3n0llryaliabjxhqhvqr6dm983qy7pypk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f))                    ; no check target
@@ -2853,19 +2854,17 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.5.6")
+    (version "0.5.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/qsynth/qsynth/" version
                            "/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "0h4hhja8qbyzd6v24flw9wr4mwl03nplryx1gyrppn7sg13l1sx6"))))
+        (base32 "18im4w8agj60nkppwbkxqnhpp13z5li3w30kklv4lgs20rvgbvl6"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f                      ; no "check" phase
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ; no "check" phase
     (native-inputs
      `(("qttools" ,qttools)
        ("pkg-config" ,pkg-config)))
@@ -2873,7 +2872,7 @@ interface.")
      `(("fluidsynth" ,fluidsynth)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)))
-    (home-page "http://qsynth.sourceforge.net")
+    (home-page "https://qsynth.sourceforge.io")
     (synopsis "Graphical user interface for FluidSynth")
     (description
      "Qsynth is a GUI front-end application for the FluidSynth SoundFont
@@ -3707,3 +3706,32 @@ library.")
     (description "FAudio is an XAudio reimplementation that focuses solely on
 developing fully accurate DirectX Audio runtime libraries.")
     (license license:zlib)))
+
+(define-public gnaural
+  (package
+    (name "gnaural")
+    (version "20110606")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/gnaural/Gnaural/gnaural_"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "1gq519c0imsh57zklyi0f8h64l3ai48lh672c834470z8c6kvbfi"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("gtk+" ,gtk+-2)
+       ("libsndfile" ,libsndfile)
+       ("portaudio" ,portaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://gnaural.sourceforge.net/")
+    (synopsis "Binaural beat synthesizer")
+    (description "Gnaural is a programmable auditory binaural beat synthesizer
+intended to be used for brainwave entrainment.  Gnaural supports creation of
+binaural beat tracks of different frequencies and exporting of tracks into
+different audio formats.  Gnaural can also be linked over the internet with
+other Gnaural instances, allowing synchronous sessions between many users.")
+    (license license:gpl2+)))

@@ -352,6 +352,7 @@ playing your music.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("ao" ,ao)
+       ("faad2" ,faad2)
        ("ffmpeg" ,ffmpeg)
        ("flac" ,flac)
        ("jack" ,jack-1)

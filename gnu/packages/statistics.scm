@@ -57,6 +57,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision)
@@ -5765,62 +5766,76 @@ as a boxplot function.")
     (license license:lgpl3+)))
 
 (define-public python-rpy2
-  (package
-    (name "python-rpy2")
-    (version "2.9.4")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "rpy2" version))
-       (sha256
-        (base32
-         "0bl1d2qhavmlrvalir9hmkjh74w21vzkvc2sg3cbb162s10zfmxy"))))
-    (build-system python-build-system)
-    (arguments
-     '(#:modules ((ice-9 ftw)
-                  (srfi srfi-1)
-                  (srfi srfi-26)
-                  (guix build utils)
-                  (guix build python-build-system))
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cwd (getcwd)))
-               (setenv "PYTHONPATH"
-                       (string-append cwd "/build/"
-                                      (find (cut string-prefix? "lib" <>)
-                                            (scandir (string-append cwd "/build")))
-                                      ":"
-                                      (getenv "PYTHONPATH"))))
-             (invoke "python" "-m" "rpy2.tests" "-v"))))))
-    (propagated-inputs
-     `(("python-six" ,python-six)
-       ("python-jinja2" ,python-jinja2)
-       ("python-pytz" ,python-pytz)))
-    (inputs
-     `(("readline" ,readline)
-       ("icu4c" ,icu4c)
-       ("pcre" ,pcre)
-       ("r-minimal" ,r-minimal)
-       ("r-survival" ,r-survival)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-rsqlite" ,r-rsqlite)
-       ("r-dplyr" ,r-dplyr)
-       ("r-dbplyr" ,r-dbplyr)
-       ("python-numpy" ,python-numpy)))
-    (native-inputs
-     `(("zlib" ,zlib)))
-    (home-page "https://rpy2.bitbucket.io/")
-    (synopsis "Python interface to the R language")
-    (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
+  ;; We need to take this changeset instead of the RELEASE_3_0_4 tag, because
+  ;; it fixes a regression when using ggplot 3.2.0.
+  (let ((changeset "19868a8")
+        (revision "1"))
+    (package
+      (name "python-rpy2")
+      (version (git-version "3.0.4" revision changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/rpy2/rpy2")
+               (changeset changeset)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1bb0wslcbj3wjvyk3jb9yyzdi6adfqh5vfgcvn22dyzxzbhcs8kk"))))
+      (build-system python-build-system)
+      (arguments
+       '(#:modules ((ice-9 ftw)
+                    (srfi srfi-1)
+                    (srfi srfi-26)
+                    (guix build utils)
+                    (guix build python-build-system))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* (#:key outputs inputs #:allow-other-keys)
+               (let ((cwd (getcwd)))
+                 (setenv "TZ" "UTC")
+                 (setenv "PYTHONPATH"
+                         (string-append cwd "/build/"
+                                        (find (cut string-prefix? "lib" <>)
+                                              (scandir (string-append cwd "/build")))
+                                        ":"
+                                        (getenv "PYTHONPATH"))))
+               (invoke "pytest" "-v" "rpy/tests/"))))))
+      (propagated-inputs
+       `(("python-cffi" ,python-cffi)
+         ("python-six" ,python-six)
+         ("python-jinja2" ,python-jinja2)
+         ("python-numpy" ,python-numpy)
+         ("python-pandas" ,python-pandas)
+         ("python-pytz" ,python-pytz)
+         ("python-ipython" ,python-ipython)
+         ("python-tzlocal" ,python-tzlocal)))
+      (inputs
+       `(("readline" ,readline)
+         ("icu4c" ,icu4c)
+         ("pcre" ,pcre)
+         ("r-minimal" ,r-minimal)
+         ("r-survival" ,r-survival)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-rsqlite" ,r-rsqlite)
+         ("r-dplyr" ,r-dplyr)
+         ("r-dbplyr" ,r-dbplyr)
+         ("python-numpy" ,python-numpy)))
+      (native-inputs
+       `(("zlib" ,zlib)
+         ("python-pytest" ,python-pytest)))
+      (home-page "https://rpy2.bitbucket.io/")
+      (synopsis "Python interface to the R language")
+      (description "rpy2 is a redesign and rewrite of rpy.  It is providing a
 low-level interface to R from Python, a proposed high-level interface,
 including wrappers to graphical libraries, as well as R-like structures and
 functions.")
-    ;; Any of these licenses can be picked for the R interface.  The whole
-    ;; project is released under GPLv2+ according to the license declaration
-    ;; in "setup.py".
-    (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+))))
+      ;; Any of these licenses can be picked for the R interface.  The whole
+      ;; project is released under GPLv2+ according to the license declaration
+      ;; in "setup.py".
+      (license (list license:mpl2.0 license:gpl2+ license:lgpl2.1+)))))
 
 (define-public java-jdistlib
   (package

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,9 +108,10 @@
   (checkout  channel-instance-checkout))
 
 (define-record-type <channel-metadata>
-  (channel-metadata version dependencies)
+  (channel-metadata version directory dependencies)
   channel-metadata?
   (version       channel-metadata-version)
+  (directory     channel-metadata-directory)
   (dependencies  channel-metadata-dependencies))
 
 (define (channel-reference channel)
@@ -119,18 +121,18 @@
     (#f      `(branch . ,(channel-branch channel)))
     (commit  `(commit . ,(channel-commit channel)))))
 
-(define (read-channel-metadata instance)
-  "Return a channel-metadata record read from the channel INSTANCE's
-description file, or return #F if the channel instance does not include the
-file."
-  (let* ((source (channel-instance-checkout instance))
-         (meta-file (string-append source "/.guix-channel")))
+(define (read-channel-metadata-from-source source)
+  "Return a channel-metadata record read from channel's SOURCE/.guix-channel
+description file, or return #F if SOURCE/.guix-channel does not exist."
+  (let ((meta-file (string-append source "/.guix-channel")))
     (and (file-exists? meta-file)
-         (and-let* ((raw (call-with-input-file meta-file read))
-                    (version (and=> (assoc-ref raw 'version) first))
-                    (dependencies (or (assoc-ref raw 'dependencies) '())))
+         (let* ((raw (call-with-input-file meta-file read))
+                (version (and=> (assoc-ref raw 'version) first))
+                (directory (and=> (assoc-ref raw 'directory) first))
+                (dependencies (or (assoc-ref raw 'dependencies) '())))
            (channel-metadata
             version
+            directory
             (map (lambda (item)
                    (let ((get (lambda* (key #:optional default)
                                 (or (and=> (assoc-ref item key) first) default))))
@@ -144,12 +146,18 @@ file."
                         (commit (get 'commit))))))
                  dependencies))))))
 
+(define (read-channel-metadata instance)
+  "Return a channel-metadata record read from the channel INSTANCE's
+description file, or return #F if the channel instance does not include the
+file."
+  (read-channel-metadata-from-source (channel-instance-checkout instance)))
+
 (define (channel-instance-dependencies instance)
   "Return the list of channels that are declared as dependencies for the given
 channel INSTANCE."
   (match (read-channel-metadata instance)
     (#f '())
-    (($ <channel-metadata> version dependencies)
+    (($ <channel-metadata> version directory dependencies)
      dependencies)))
 
 (define* (latest-channel-instances store channels #:optional (previous-channels '()))
@@ -230,36 +238,39 @@ of COMMIT at URL.  Use NAME as the channel name."
 modules in SOURCE and that depend on DEPENDENCIES, a list of lowerable
 objects.  The assumption is that SOURCE contains package modules to be added
 to '%package-module-path'."
-  ;; FIXME: We should load, say SOURCE/.guix-channel.scm, which would allow
-  ;; channel publishers to specify things such as the sub-directory where .scm
-  ;; files live, files to exclude from the channel, preferred substitute URLs,
-  ;; etc.
 
-  (define build
-    ;; This is code that we'll run in CORE, a Guix instance, with its own
-    ;; modules and so on.  That way, we make sure these modules are built for
-    ;; the right Guile version, with the right dependencies, and that they get
-    ;; to see the right (gnu packages …) modules.
-    (with-extensions dependencies
-      #~(begin
-          (use-modules (guix build compile)
-                       (guix build utils)
-                       (srfi srfi-26))
+  (let* ((metadata (read-channel-metadata-from-source source))
+         (directory (and=> metadata channel-metadata-directory)))
 
-          (define go
-            (string-append #$output "/lib/guile/" (effective-version)
-                           "/site-ccache"))
-          (define scm
-            (string-append #$output "/share/guile/site/"
-                           (effective-version)))
+    (define build
+      ;; This is code that we'll run in CORE, a Guix instance, with its own
+      ;; modules and so on.  That way, we make sure these modules are built for
+      ;; the right Guile version, with the right dependencies, and that they get
+      ;; to see the right (gnu packages …) modules.
+      (with-extensions dependencies
+        #~(begin
+            (use-modules (guix build compile)
+                         (guix build utils)
+                         (srfi srfi-26))
 
-          (compile-files #$source go
-                         (find-files #$source "\\.scm$"))
-          (mkdir-p (dirname scm))
-          (symlink #$source scm)
-          scm)))
+            (define go
+              (string-append #$output "/lib/guile/" (effective-version)
+                             "/site-ccache"))
+            (define scm
+              (string-append #$output "/share/guile/site/"
+                             (effective-version)))
 
-  (gexp->derivation-in-inferior name build core))
+            (let* ((subdir (if #$directory
+                               (string-append "/" #$directory)
+                               ""))
+                   (source (string-append #$source subdir)))
+              (compile-files source go (find-files source "\\.scm$"))
+              (mkdir-p (dirname scm))
+              (symlink (string-append #$source subdir) scm))
+
+            scm)))
+
+    (gexp->derivation-in-inferior name build core)))
 
 (define* (build-from-source name source
                             #:key core verbose? commit
@@ -424,8 +435,9 @@ derivation."
   ;; "old style" (before commit 8a0d9bc8a3f153159d9e239a151c0fa98f1e12d8,
   ;; dated May 30, 2018) did not depend on "guix-command.drv".
   (not (find (lambda (input)
-               (string-suffix? "-guix-command.drv"
-                               (derivation-input-path input)))
+               (string=? "guix-command"
+                         (derivation-name
+                          (derivation-input-derivation input))))
              (derivation-inputs drv))))
 
 (define (channel-instances->manifest instances)

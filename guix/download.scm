@@ -436,8 +436,7 @@ download by itself using its own dependencies."
                     #:hash-algo hash-algo
                     #:hash hash
                     #:recursive? executable?
-                    #:inputs `((,mirrors)
-                               (,content-addressed-mirrors))
+                    #:sources (list mirrors content-addressed-mirrors)
 
                     ;; Honor the user's proxy and locale settings.
                     #:leaked-env-vars '("http_proxy" "https_proxy"

@@ -42,7 +42,7 @@ make sure to run ‘git pull --rebase’.
 All commits that are pushed to the central repository on Savannah must be
 signed with an OpenPGP key, and the public key should be uploaded to your user
 account on Savannah and to public key servers, such as
-‘pool.sks-keyservers.net’.  To configure Git to automatically sign commits,
+‘keys.openpgp.org’.  To configure Git to automatically sign commits,
 run:
 
   git config commit.gpgsign true

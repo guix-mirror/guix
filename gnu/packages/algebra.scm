@@ -224,7 +224,7 @@ the real span of the lattice.")
 (define-public pari-gp
   (package
     (name "pari-gp")
-    (version "2.11.1")
+    (version "2.11.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -232,7 +232,7 @@ the real span of the lattice.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1jfax92jpydjd02fwl30r6b8kfzqqd6sm4yx94gidyz9lqjb7a94"))))
+                "0fck8ssmirl8fy7s4mspgrxjs5sag76xbshqlqzkcl3kqyrk4raa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
@@ -267,7 +267,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.11pl1")
+   (version "0.0.11pl2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -275,7 +275,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "1c6f6vmncw032kfzrfyr8bynw6yd3faxpy2285r009fmr0zxfs5s"))))
+                "0wqsf05wgkqvmmsx7jinvzdqav6rl56sr8haibgs31nzz4x9xz9g"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -1022,7 +1022,7 @@ xtensor provides:
 (define-public gap
   (package
     (name "gap")
-    (version "4.10.1")
+    (version "4.10.2")
     (source
      (origin
        (method url-fetch)
@@ -1032,8 +1032,7 @@ xtensor provides:
                            version
                            ".tar.bz2"))
        (sha256
-        (base32
-         "136s0zvhcw41fshj5zgsrjcy2kd58cdh2m3ddp5rdizi4rx54f10"))
+        (base32 "0cp6ddk0469zzv1m1vair6gm27ic6c5m77ri8rn0znq3gaps6x94"))
        (modules '((guix build utils) (ice-9 ftw) (srfi srfi-1)))
        (snippet
         '(begin

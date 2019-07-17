@@ -242,7 +242,7 @@ other lower-level build files.")
 (define-public osc
   (package
     (name "osc")
-    (version "0.165.1")
+    (version "0.165.2")
     (source
      (origin
        (method git-fetch)
@@ -251,7 +251,7 @@ other lower-level build files.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "16p4z34ziy4z2w7mfpclk13x1w2p69wivkdwp0224x18r2fwj67v"))))
+        (base32 "0yjwvbvv9fgkpiyvrag89zxchyn3nbgp9jz0wn5p0z9450zwfyz6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

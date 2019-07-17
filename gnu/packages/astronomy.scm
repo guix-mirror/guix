@@ -81,20 +81,25 @@ in FITS files.")
 (define-public wcslib
   (package
     (name "wcslib")
-    (version "5.20")
+    (version "6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/" name "-" version
+             "ftp://ftp.atnf.csiro.au/pub/software/wcslib/wcslib" version
              ".tar.bz2"))
        (sha256
-        (base32 "1c8g9kv4dxrnawnqi4spi2p10s2xs7x75pdfxhbqxgcc97dkgh0b"))))
+        (base32 "01fqckazhbfqqhyr0wd9vcks1m2afmsh83l981alxg2r54jgwkdv"))))
     (inputs
      `(("cfitsio" ,cfitsio)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags
+       (list (string-append "--with-cfitsiolib="
+                            (assoc-ref %build-inputs "cfitsio") "/lib")
+             (string-append "--with-cfitsioinc="
+                            (assoc-ref %build-inputs "cfitsio") "/include"))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-/bin/sh
            (lambda _

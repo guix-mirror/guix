@@ -51,11 +51,9 @@
                     (("\\$\\(LDFLAGS\\)")
                      "$(LDFLAGS) -Wl,-rpath=$(PREFIX)/lib"))
 
-                  ;; Delete the bundled TinyXML.
-                  (delete-file-recursively "cpp/tinyxml")
-                  (substitute* "cpp/build/Makefile"
-                    (("LIBS \\+= -ludev")
-                     "LIBS += -ludev -ltinyxml "))
+                  ;; XXX: There's a bundled TinyXML under cpp/tinyxml.  Keep
+                  ;; it because using our own TinyXML leads to double-free
+                  ;; down the road.
 
                   ;; Delete the bundled HIDAPI.
                   (delete-file-recursively "cpp/hidapi")
@@ -80,8 +78,7 @@
                      ("pkg-config" ,pkg-config)
                      ("perl" ,perl)               ;for tests
                      ("perl-xml-simple" ,perl-xml-simple)))
-    (inputs `(("tinyxml" ,tinyxml)
-              ("hidapi" ,hidapi)
+    (inputs `(("hidapi" ,hidapi)
               ("eudev" ,eudev)))
     (home-page "http://www.openzwave.net/")
     (synopsis "Access Z-Wave devices from C++ programs")

@@ -4238,7 +4238,7 @@ them easier to distinguish from other, less important buffers.")
 (define-public emacs-prescient
   (package
     (name "emacs-prescient")
-    (version "3.1")
+    (version "3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4247,7 +4247,7 @@ them easier to distinguish from other, less important buffers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1cdjvlwlvxxazz7hlxgvdp0pznvj1gzqa2r6k4im0cpdrnnng6j6"))))
+                "0d60h4rfm5jcf8cf11z91wjqp0xcrviskqzyqhfliqvy2i2yl6ks"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
@@ -5827,6 +5827,31 @@ serialization format.  It was initially developed by Yoshiki Kurihara and many
 features were added by Marshall Vandegrift.  As YAML and Python share the fact
 that indentation determines structure, this mode provides indentation and
 indentation command behavior very similar to that of python-mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-gitlab-ci-mode
+  (package
+    (name "emacs-gitlab-ci-mode")
+    (version "20190425.11.10")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.com/joewreschnig/gitlab-ci-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1jkp9mnbiccqnha9zs646znqyqvy5jjb81kah7ghbkzdqqk2avm0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-yaml-mode" ,emacs-yaml-mode)))
+    (home-page "https://gitlab.com/joewreschnig/gitlab-ci-mode/")
+    (synopsis "Emacs mode for editing GitLab CI files")
+    (description
+     "@code{gitlab-ci-mode} is an Emacs major mode for editing GitLab CI
+files.  It provides syntax highlighting and completion for keywords and
+special variables.  An interface to GitLab’s CI file linter is also provided
+via @code{gitlab-ci-lint}.")
     (license license:gpl3+)))
 
 (define-public emacs-web-mode
@@ -13640,6 +13665,30 @@ reload the configuration with @code{gpgconf --reload gpg-agent}, and start the
 server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
 
+(define-public emacs-so-long
+  (let ((commit "3ebe97decdb5cbbfba82ca686e0ad2c7d2722b4a")
+        (version "1.0")
+        (revision "1"))
+    (package
+      (name "emacs-so-long")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.savannah.gnu.org/git/so-long.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fi71g5rsdsi978jz8406k8hvzgnssm9wxar8yqfhs97178r9s5m"))))
+      (build-system emacs-build-system)
+      (home-page "https://www.emacswiki.org/emacs/SoLong")
+      (synopsis "Improve performance in files with long lines")
+      (description "This package improves the performance of Emacs when
+viewing files with long lines.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
@@ -15340,6 +15389,30 @@ command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
+(define-public emacs-matcha
+  (let ((commit "c7df5cf5cdac9ae369e241342389ccda0205eab9"))
+    (package
+      (name "emacs-matcha")
+      (version (git-version "0.0.1" "1" commit)) ;no upstream release
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jojojames/matcha.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1lfnh1glg6al677m7ci0x8g5wjdhjxlfl3nv1f1ppsw4dpnwsj9b"))))
+      (propagated-inputs
+       `(("emacs-hydra" ,emacs-hydra)
+         ("emacs-transient" ,emacs-transient)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jojojames/matcha/")
+      (synopsis "Collection of hydras with a generic interface to launch them")
+      (description "Matcha provides a collection of transients for various
+packages with a consistent way to use them.")
+      (license license:gpl3+))))
+
 (define-public emacs-undo-propose-el
   (let ((commit "5f1fa99a04369a959aad01b476fe4f34229f28cd")
         (version "1.0.0")
@@ -16481,3 +16554,37 @@ it forcibly
 @item Dedicated window for debugging program.
 @end enumerate")
       (license license:gpl3+))))
+
+(define-public emacs-elpher
+  (package
+    (name "emacs-elpher")
+    (version "1.4.6")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tgvaughan/elpher")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07xansmhn4l0b9ghzf56vyx8cqg0q01aq3pz5ikx2i19v5f0rc66"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'build-doc
+           (lambda _
+             (invoke "makeinfo" "elpher.texi"))))))
+    (home-page "https://github.com/tgvaughan/elpher")
+    (synopsis "Gopher client for Emacs")
+    (description "Elpher is a full-featured gopher client for Emacs.  Its
+features include intuitive keyboard and mouse-driven browsing, out-of-the-box
+compatibility with evil-mode, clickable web and gopher links in plain text,
+caching of visited sites, pleasant and configurable visualization of Gopher
+directories, direct visualisation of image files, jumping directly to links by
+name (with autocompletion), a simple bookmark management system and
+connections using TLS encryption.")
+    (license license:gpl3+)))

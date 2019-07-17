@@ -98,6 +98,7 @@ MODULES =					\
   guix/self.scm					\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/lint.scm				\
   guix/glob.scm					\
   guix/git.scm					\
   guix/graph.scm				\
@@ -125,6 +126,7 @@ MODULES =					\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
   guix/build-system/linux-module.scm		\
+  guix/build-system/node.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
   guix/build-system/ocaml.scm			\
@@ -170,6 +172,7 @@ MODULES =					\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/guile-build-system.scm		\
+  guix/build/node-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/ocaml-build-system.scm		\
@@ -182,6 +185,7 @@ MODULES =					\
   guix/build/haskell-build-system.scm		\
   guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
+  guix/build/json.scm				\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/profiles.scm			\
@@ -303,11 +307,11 @@ dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
-  gnu/packages/aux-files/linux-libre/5.1-arm.conf	\
-  gnu/packages/aux-files/linux-libre/5.1-arm-veyron.conf       \
-  gnu/packages/aux-files/linux-libre/5.1-arm64.conf	\
-  gnu/packages/aux-files/linux-libre/5.1-i686.conf	\
-  gnu/packages/aux-files/linux-libre/5.1-x86_64.conf	\
+  gnu/packages/aux-files/linux-libre/5.2-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.2-arm-veyron.conf       \
+  gnu/packages/aux-files/linux-libre/5.2-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.2-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.2-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm.conf	\
   gnu/packages/aux-files/linux-libre/4.19-arm64.conf	\
   gnu/packages/aux-files/linux-libre/4.19-i686.conf	\

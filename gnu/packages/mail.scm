@@ -1149,15 +1149,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.4")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32
-         "1xr926lyy44baqdgv9q0sw5z6ll2cb4lx2g4lgpgbqn8bglpzpg5"))))
+        (base32 "0fczpfxlr62wkr7bwhp24clxg962k5khgz14h818qyy4v77dl4qn"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1949,14 +1948,14 @@ converts them to maildir format directories.")
 (define-public mpop
   (package
     (name "mpop")
-    (version "1.4.4")
+    (version "1.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/mpop/releases/"
                            "mpop-" version ".tar.xz"))
        (sha256
-        (base32 "0j21cp8bw12vgfymxi3i4av3j97lrcyb5y9xa3mb59wr17izz73x"))))
+        (base32 "1m6743j8g777lijvxqw2wz6pv2g5a9wlh6zq7awk0hvd44xp4sav"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)

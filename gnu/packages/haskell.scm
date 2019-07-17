@@ -4795,6 +4795,16 @@ unbounded @code{Integer} type.")
 timer functions of different operating systems via a unified API.")
     (license license:bsd-3)))
 
+;; This package builds `clock` without tests, since the tests rely on tasty
+;; and tasty-quickcheck, which in turn require clock to build.
+(define-public ghc-clock-bootstrap
+  (package
+    (inherit ghc-clock)
+    (name "ghc-clock-bootstrap")
+    (arguments '(#:tests? #f))
+    (inputs '())
+    (properties '((hidden? #t)))))
+
 (define-public ghc-charset
   (package
     (name "ghc-charset")

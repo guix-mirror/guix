@@ -153,30 +153,6 @@ output file should be identical to the corresponding @code{golden} file, which
 contains the correct result for the test.")
     (license license:expat)))
 
-;; This package builds `clock` without tests, since the tests rely on tasty
-;; and tasty-quickcheck, which in turn require clock to build.
-(define ghc-clock-bootstrap
-  (package
-    (name "ghc-clock-bootstrap")
-    (version "0.5.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/"
-             "clock/"
-             "clock-" version ".tar.gz"))
-       (sha256
-        (base32 "1ncph7vi2q6ywwc8ysxl1ibw6i5dwfvln88ssfazk8jgpj4iyykw"))))
-    (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ;; Testing suite depends on tasty and
-                               ;; tasty-quickcheck, which need clock to build.
-    (home-page "https://hackage.haskell.org/package/clock")
-    (synopsis "High-resolution clock for Haskell")
-    (description "A package for convenient access to high-resolution clock and
-timer functions of different operating systems via a unified API.")
-    (license license:bsd-3)))
-
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")

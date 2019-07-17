@@ -524,17 +524,16 @@ board-independent tools.")))
 
 (define-public (make-u-boot-package board triplet)
   "Returns a u-boot package for BOARD cross-compiled for TRIPLET."
-  (let ((same-arch? (if (string-prefix? (%current-system)
-                                        (gnu-triplet->nix-system triplet))
-                      `#t
-                      `#f)))
+  (let ((same-arch? (lambda ()
+                      (string=? (%current-system)
+                                (gnu-triplet->nix-system triplet)))))
     (package
       (inherit u-boot)
       (name (string-append "u-boot-"
                            (string-replace-substring (string-downcase board)
                                                      "_" "-")))
       (native-inputs
-       `(,@(if (not same-arch?)
+       `(,@(if (not (same-arch?))
              `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
                ("cross-binutils" ,(cross-binutils triplet)))
              `(("gcc-7" ,gcc-7)))
@@ -547,7 +546,7 @@ board-independent tools.")))
          #:test-target "test"
          #:make-flags
          (list "HOSTCC=gcc"
-               ,@(if (not same-arch?)
+               ,@(if (not (same-arch?))
                    `((string-append "CROSS_COMPILE=" ,triplet "-"))
                    '()))
          #:phases

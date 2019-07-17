@@ -1989,23 +1989,20 @@ server.")
 (define-public xauth
   (package
     (name "xauth")
-    (version "1.0.10")
+    (version "1.1")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xauth-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0kgwz9rmxjfdvi2syf8g0ms5rr5cgyqx4n0n1m960kyz7k745zjs"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://xorg/individual/app/xauth-" version
+                           ".tar.bz2"))
+       (sha256
+        (base32 "032klzzw8r09z36x1272ssd79bcisz8j5p8gbdy111fiknvx27bd"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxmu" ,libxmu)
-        ("libxext" ,libxext)
-        ("libxau" ,libxau)
-        ("libx11" ,libx11)))
+     `(("libxmu" ,libxmu)
+       ("libxext" ,libxext)
+       ("libxau" ,libxau)
+       ("libx11" ,libx11)))
     (native-inputs
      `(("cmdtest" ,cmdtest)
        ("pkg-config" ,pkg-config)))
@@ -6186,13 +6183,14 @@ and embedded platforms.")
     (inherit uim)
     (name "uim-qt")
     (inputs
-     `(("qt" ,qt-4)
+     `(("qt" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ,@(package-inputs uim)))
     (arguments
      (substitute-keyword-arguments (package-arguments uim)
        ((#:configure-flags configure-flags)
-        (append configure-flags (list "--with-qt4-immodule"
-                                      "--with-qt4")))))
+        (append configure-flags (list "--with-qt5-immodule"
+                                      "--with-qt5")))))
     (synopsis "Multilingual input method framework (Qt support)")))
 
 (define-public keynav

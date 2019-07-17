@@ -63,6 +63,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3848,22 +3849,11 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        ("python-pillow" ,python-pillow)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)
-       ;; The 'gtk+' package (and 'gdk-pixbuf', 'atk' and 'pango' propagated
-       ;; from 'gtk+') provides the required 'typelib' files used by
-       ;; 'gobject-introspection'. The location of these files is set with the
-       ;; help of the environment variable GI_TYPELIB_PATH. At build time this
-       ;; is done automatically by a 'native-search-path' procedure. However,
-       ;; at run-time the user must set this variable as follows:
-       ;;
-       ;; export GI_TYPELIB_PATH=~/.guix-profile/lib/girepository-1.0
-       ("gtk+" ,gtk+)
        ;; From version 1.4.0 'matplotlib' makes use of 'cairocffi' instead of
        ;; 'pycairo'. However, 'pygobject' makes use of a 'pycairo' 'context'
        ;; object. For this reason we need to import both libraries.
        ;; https://pythonhosted.org/cairocffi/cffi_api.html#converting-pycairo
        ("python-pycairo" ,python-pycairo)
-       ;; XXX: qtwebkit cannot be built reliably.
-       ("python-pyqt" ,python-pyqt-without-qtwebkit)
        ("python-cairocffi" ,python-cairocffi)))
     (inputs
      `(("libpng" ,libpng)
@@ -3884,12 +3874,10 @@ convert between colorspaces like sRGB, XYZ, CIEL*a*b*, CIECAM02, CAM02-UCS, etc.
        (modify-phases %standard-phases
          (add-before 'build 'configure-environment
            (lambda* (#:key outputs inputs #:allow-other-keys)
-             (let ((cairo (assoc-ref inputs "cairo"))
-                   (gtk+ (assoc-ref inputs "gtk+")))
-               ;; Setting these directories in the 'basedirlist' of 'setup.cfg'
+             (let ((cairo (assoc-ref inputs "cairo")))
+               ;; Setting this directory in the 'basedirlist' of 'setup.cfg'
                ;; has not effect.
-               (setenv "LD_LIBRARY_PATH"
-                       (string-append cairo "/lib:" gtk+ "/lib"))
+               (setenv "LD_LIBRARY_PATH" (string-append cairo "/lib"))
                (setenv "HOME" (getcwd))
                (call-with-output-file "setup.cfg"
                  (lambda (port)
@@ -5209,7 +5197,17 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
            (lambda _
              (setenv "HOME" "/tmp")
              (invoke "pytest" "-v")
-             #t)))))
+             #t))
+         (add-after 'install 'set-python-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Record the absolute file name of the 'python' executable in
+             ;; 'kernel.json'.
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/share/jupyter"
+                                           "/kernels/python3/kernel.json")
+                 (("\"python\"")
+                  (string-append "\"" (which "python") "\"")))
+               #t))))))
     (propagated-inputs
      `(("python-ipython" ,python-ipython)
        ;; imported at runtime during connect
@@ -7228,6 +7226,17 @@ the Python standard library but currently only supports the older 2003
 specification.")
     (license license:bsd-4)))
 
+(define-public python-idna-2.7
+  (package (inherit python-idna)
+           (version "2.7")
+           (source (origin
+                     (method url-fetch)
+                     (uri (pypi-uri "idna" version))
+                     (sha256
+                      (base32
+                       "05jam7d31767dr12x0rbvvs8lxnpb1mhdb2zdlfxgh83z6k3hjk8"))))))
+
+
 (define-public python2-idna
   (package-with-python2 python-idna))
 
@@ -8136,14 +8145,14 @@ the standard library.")
 (define-public python-texttable
   (package
     (name "python-texttable")
-    (version "0.8.7")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "texttable" version))
        (sha256
         (base32
-         "1liiiydgkg37i46a418aw19fyf6z3ds51wdwwpyjbs12x0phhf4a"))))
+         "0yawv64c0zbawwv6zz84whb32fnb2n9jylwjcfsrcdgh7xvl340i"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/foutaise/texttable/")
@@ -8526,6 +8535,28 @@ concurrent.futures package from Python 3.2")
        `(("python2-futures" ,python2-futures)
          ("python2-pytest" ,python2-pytest)
          ,@(package-native-inputs promise))))))
+
+(define-public python-progressbar33
+  (package
+    (name "python-progressbar33")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "progressbar33" version))
+       (sha256
+        (base32
+         "1zvf6zs5hzrc03p9nfs4p16vhilqikycvv1yk0pxn8s07fdhvzji"))))
+    (build-system python-build-system)
+    (home-page "http://github.com/germangh/python-progressbar")
+    (synopsis "Text progress bar library for Python")
+    (description
+     "This package provides a text progress bar library for Python.  This
+version only differs from the original @code{progressbar} package in that it
+uses relative package imports instead of absolute imports, which is necessary
+for the module to work under Python 3.3.")
+    ;; Either or both of these licenses may be selected.
+    (license (list license:lgpl2.1+ license:bsd-3))))
 
 (define-public python-colorama
   (package
@@ -13086,17 +13117,18 @@ from your Flask project.  It is a fork of Flask-Swagger.")
 (define-public python-swagger-spec-validator
   (package
     (name "python-swagger-spec-validator")
-    (version "2.1.0")
+    (version "2.4.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "swagger-spec-validator" version))
        (sha256
         (base32
-         "13hkpn2lycwr0468yqhjb3kwszqf7hjwlq61w7vdxq1caz31k4nw"))))
+         "11g627icrsqwazsncwi0sdvprcj6hwaayw5xk3xsj8d97bmrzqjp"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-jsonschema" ,python-jsonschema)
+       ("python-pyyaml" ,python-pyyaml)
        ("python-six" ,python-six)))
     (home-page
      "https://github.com/Yelp/swagger_spec_validator")
@@ -15939,3 +15971,39 @@ Complete support for Berkeley DB Base Replication.  Support for RPC.")
 types for further processing.  It is primarily intended for batch jobs and
 one-off scripts.")
     (license license:expat)))
+
+(define-public python-cached-property
+  (package
+    (name "python-cached-property")
+    (version "1.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cached-property" version))
+       (sha256
+        (base32
+         "010m1bl380l2r3vwq24r5v14l6gwvgm9v0mqqjkjss552jgsa5wj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; https://github.com/pydanny/cached-property/issues/131
+         ;; recent versions of freezegun break one test
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             (substitute* "tests/test_cached_property.py"
+               (("def test_threads_ttl_expiry\\(self\\)" m)
+                (string-append "@unittest.skip(\"Disabled by Guix\")\n"
+                               "    " m)))
+             #t)))))
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)))
+    (home-page
+     "https://github.com/pydanny/cached-property")
+    (synopsis
+     "Decorator for caching properties in classes")
+    (description
+     "This package provides a decorator which makes caching
+time-or-computationally-expensive properties quick and easy and works in Python
+2 or 3.")
+    (license license:bsd-3)))

@@ -5,7 +5,7 @@
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;;
@@ -1047,7 +1047,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                       (delete-file-recursively "vendor/jemalloc-sys/jemalloc")
                       #t)))))))
 
-(define-public rust
+(define-public rust-1.35
   (let ((base-rust
          (rust-bootstrapped-package rust-1.34 "1.35.0"
            "0bbizy6b7002v1rdhrxrf5gijclbyizdhkglhp81ib3bf5x66kas")))
@@ -1069,3 +1069,15 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "src/tools/tidy/src/main.rs"
                    (("bins::check") "//bins::check"))
                  #t)))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.35 "1.36.0"
+           "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'patch-process-docs-rev-cmd))))))))

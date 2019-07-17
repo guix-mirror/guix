@@ -75,7 +75,7 @@
                           (package-name "GNU Guix")
                           (package-version "0")
                           (bug-report-address "bug-guix@gnu.org")
-                          (home-page-url "https://gnu.org/s/guix"))
+                          (home-page-url "https://guix.gnu.org"))
 
   ;; Hack so that Geiser is not confused.
   (define defmod 'define-module)

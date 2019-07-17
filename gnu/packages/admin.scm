@@ -1453,6 +1453,28 @@ tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
     (license license:gpl2)))            ; dual GPLv2/ACPICA Licence
 
+(define-public s-tui
+  (package
+    (name "s-tui")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "s-tui" version))
+       (sha256
+        (base32
+         "00lsh2v4i8rwfyjyxx5lijd6rnk9smcfffhzg5sv94ijpcnh216m"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-urwid" ,python-urwid)))
+    (home-page "https://github.com/amanusk/s-tui")
+    (synopsis "Interactive terminal stress test and monitoring tool")
+    (description
+     "The Stress Terminal UI displays graphs of the CPU frequency,
+utilization, temperature and power.")
+    (license license:gpl2+)))
+
 (define-public stress
   (package
     (name "stress")
@@ -1570,14 +1592,14 @@ environment variable is set and output is to tty.")
 (define-public direvent
   (package
     (name "direvent")
-    (version "5.1")
+    (version "5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/direvent/direvent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1nwvjmx7kb14ni34c0b8x9a3791pc20gvhj7xaj66d8q4h6n0qf4"))
+                "0m9vi01b1km0cpknflyzsjnknbava0s1n6393b2bpjwyvb6j5613"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (substitute* "tests/testsuite"

@@ -36,6 +36,8 @@
   #:use-module (guix memoization)
   #:use-module (guix combinators)
   #:use-module (guix deprecation)
+  #:use-module (guix diagnostics)
+  #:use-module (guix i18n)
   #:use-module (guix monads)
   #:use-module (gcrypt hash)
   #:use-module (guix base32)
@@ -69,6 +71,7 @@
             derivation-input-derivation
             derivation-input-sub-derivations
             derivation-input-output-paths
+            derivation-input-output-path
             valid-derivation-input?
 
             &derivation-error
@@ -218,6 +221,13 @@ download with a fixed hash (aka. `fetchurl')."
     (($ <derivation-input> drv sub-drvs)
      (map (cut derivation->output-path drv <>)
           sub-drvs))))
+
+(define (derivation-input-output-path input)
+  "Return the output file name of INPUT.  If INPUT has more than one outputs,
+an error is raised."
+  (match input
+    (($ <derivation-input> drv (output))
+     (derivation->output-path drv output))))
 
 (define (valid-derivation-input? store input)
   "Return true if INPUT is valid--i.e., if all the outputs it requests are in
@@ -705,16 +715,25 @@ name of each input with that input's hash."
        ;; character.
        (sha256 (derivation->bytevector (derivation/masked-inputs drv)))))))
 
+
+(define (warn-about-derivation-deprecation name)
+  ;; TRANSLATORS: 'derivation' must not be translated; it refers to the
+  ;; 'derivation' procedure.
+  (warning (G_ "in '~a': deprecated 'derivation' calling convention used~%")
+           name))
+
 (define* (derivation store name builder args
                      #:key
                      (system (%current-system)) (env-vars '())
-                     (inputs '()) (outputs '("out"))
+                     (inputs '()) (sources '())
+                     (outputs '("out"))
                      hash hash-algo recursive?
                      references-graphs
                      allowed-references disallowed-references
                      leaked-env-vars local-build?
                      (substitutable? #t)
-                     (properties '()))
+                     (properties '())
+                     (%deprecation-warning? #t))
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -831,17 +850,28 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
             e
             outputs)))
 
+  (define-syntax-rule (warn-deprecation name)
+    (when %deprecation-warning?
+      (warn-about-derivation-deprecation name)))
+
   (define input->derivation-input
     (match-lambda
+      ((? derivation-input? input)
+       input)
       (((? derivation? drv))
+       (warn-deprecation name)
        (make-derivation-input drv '("out")))
       (((? derivation? drv) sub-drvs ...)
+       (warn-deprecation name)
        (make-derivation-input drv sub-drvs))
-      (_ #f)))
+      (_
+       (warn-deprecation name)
+       #f)))
 
   (define input->source
     (match-lambda
       (((? string? input) . _)
+       (warn-deprecation name)
        (if (direct-store-path? input)
            input
            (add-to-store store (basename input)
@@ -858,7 +888,8 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
                                                           hash recursive?)))
                           (sort outputs string<?)))
          (sources    (sort (delete-duplicates
-                            (filter-map input->source inputs))
+                            (append (filter-map input->source inputs)
+                                    sources))
                            string<?))
          (inputs     (sort (coalesce-duplicate-inputs
                             (filter-map input->derivation-input inputs))
@@ -929,13 +960,10 @@ recursively."
 
   (define input->output-paths
     (match-lambda
-     (((? derivation? drv))
-      (list (derivation->output-path drv)))
-     (((? derivation? drv) sub-drvs ...)
-      (map (cut derivation->output-path drv <>)
-           sub-drvs))
-     ((file)
-      (list file))))
+      ((? derivation-input? input)
+       (derivation-input-output-paths input))
+      ((? string? file)
+       (list file))))
 
   (let ((mapping (fold (lambda (pair result)
                          (match pair
@@ -954,11 +982,11 @@ recursively."
           (($ <derivation-input> drv (sub-drvs ...))
            (match (vhash-assoc (derivation-file-name drv) mapping)
              ((_ . (? derivation? replacement))
-              (cons replacement sub-drvs))
-             ((_ . replacement)
-              (list replacement))
+              (derivation-input replacement sub-drvs))
+             ((_ . (? string? source))
+              source)
              (#f
-              (cons (loop drv) sub-drvs)))))))
+              (derivation-input (loop drv) sub-drvs)))))))
 
     (let loop ((drv drv))
       (let* ((inputs       (map (cut rewritten-input <> loop)
@@ -997,7 +1025,8 @@ recursively."
                                         . ,(substitute value initial
                                                        replacements))))
                                     (derivation-builder-environment-vars drv))
-                    #:inputs (append (map list sources) inputs)
+                    #:inputs (filter derivation-input? inputs)
+                    #:sources (append sources (filter string? inputs))
                     #:outputs (derivation-output-names drv)
                     #:hash (match (derivation-outputs drv)
                              ((($ <derivation-output> _ algo hash))
@@ -1317,6 +1346,10 @@ and PROPERTIES."
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
+
+                ;; 'build-expression->derivation' is somewhat deprecated so
+                ;; don't bother warning here.
+                #:%deprecation-warning? #f
 
                 #:system system
 

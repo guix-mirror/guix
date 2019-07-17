@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5335,6 +5336,7 @@ users.")
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
                                   (version-major+minor version) "/"
                                   "NetworkManager-" version ".tar.xz"))
+              (patches (search-patches "nm-plugin-path.patch"))
               (sha256
                (base32
                 "064cgj9za0kzarks0lrv0qw2ysdphb5l97iw0c964bfiqzjfv8rm"))
@@ -5486,12 +5488,31 @@ services.")
                 "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-absolute-paths")))
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((ovpn (string-append (assoc-ref inputs "openvpn")
+                                         "/sbin/openvpn"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" ovpn "\"")))
+               (for-each
+                (lambda (file)
+                  (substitute* file
+                    (("\"/usr/local/sbin/openvpn\"") pretty-ovpn)
+                    (("\"/usr/sbin/openvpn\"") pretty-ovpn)
+                    (("\"/sbin/openvpn\"") pretty-ovpn)
+                    (("/sbin/modprobe") modprobe)))
+                '("src/nm-openvpn-service.c" "properties/nm-openvpn-editor.c")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("kmod" ,kmod)
        ("openvpn" ,openvpn)
        ("network-manager" ,network-manager)
        ("network-manager-applet" ,network-manager-applet) ;for libnma
@@ -5503,6 +5524,55 @@ services.")
 to virtual private networks (VPNs) via OpenVPN.")
     (license license:gpl2+)
     (properties `((upstream-name . "NetworkManager-openvpn")))))
+
+(define-public network-manager-vpnc
+  (package
+    (name "network-manager-vpnc")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/NetworkManager-vpnc/"
+                    (version-major+minor version)
+                    "/NetworkManager-vpnc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1js5lwcsqws4klgypfxl4ikmakv7v7xgddij1fj6b0y0qicx0kyy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((vpnc (string-append (assoc-ref inputs "vpnc")
+                                         "/sbin/vpnc"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" vpnc "\"")))
+               (substitute* "src/nm-vpnc-service.c"
+                    (("\"/usr/local/sbin/vpnc\"") pretty-ovpn)
+                    (("\"/usr/sbin/vpnc\"") pretty-ovpn)
+                    (("\"/sbin/vpnc\"") pretty-ovpn)
+                    (("/sbin/modprobe") modprobe)))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("kmod" ,kmod)
+       ("vpnc" ,vpnc)
+       ("network-manager" ,network-manager)
+       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("libsecret" ,libsecret)))
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
+    (synopsis "VPNC plug-in for NetworkManager")
+    (description
+     "Support for configuring virtual private networks based on VPNC.
+Compatible with Cisco VPN concentrators configured to use IPsec.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "NetworkManager-vpnc")))))
 
 (define-public mobile-broadband-provider-info
   (package

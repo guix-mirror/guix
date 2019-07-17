@@ -136,7 +136,7 @@
                               #:env-vars '(("HOME" . "/homeless")
                                            ("zzz"  . "Z!")
                                            ("AAA"  . "A!"))
-                              #:inputs `((,%bash) (,builder))))
+                              #:sources `(,%bash ,builder)))
          (succeeded?
           (build-derivations %store (list drv))))
     (and succeeded?
@@ -145,36 +145,13 @@
                 (string=? (call-with-input-file path read-line)
                           "hello, world"))))))
 
-(test-assert "derivation with local file as input"
-  (let* ((builder    (add-text-to-store
-                      %store "my-builder.sh"
-                      "(while read line ; do echo \"$line\" ; done) < $in > $out"
-                      '()))
-         (input      (search-path %load-path "ice-9/boot-9.scm"))
-         (input*     (add-to-store %store (basename input)
-                                   #t "sha256" input))
-         (drv        (derivation %store "derivation-with-input-file"
-                                 %bash `(,builder)
-
-                                 ;; Cheat to pass the actual file name to the
-                                 ;; builder.
-                                 #:env-vars `(("in" . ,input*))
-
-                                 #:inputs `((,%bash)
-                                            (,builder)
-                                            (,input))))) ; ← local file name
-    (and (build-derivations %store (list drv))
-         ;; Note: we can't compare the files because the above trick alters
-         ;; the contents.
-         (valid-path? %store (derivation->output-path drv)))))
-
 (test-assert "derivation fails but keep going"
   ;; In keep-going mode, 'build-derivations' should fail because of D1, but it
   ;; must return only after D2 has succeeded.
   (with-store store
     (let* ((d1 (derivation %store "fails"
                            %bash `("-c" "false")
-                           #:inputs `((,%bash))))
+                           #:sources (list %bash)))
            (d2 (build-expression->derivation %store "sleep-then-succeed"
                                              `(begin
                                                 ,(random-text)
@@ -204,10 +181,10 @@
                                      '()))
          (drv1    (derivation %store "foo"
                               %bash `(,build1)
-                              #:inputs `((,%bash) (,build1))))
+                              #:sources `(,%bash ,build1)))
          (drv2    (derivation %store "bar"
                               %bash `(,build2)
-                              #:inputs `((,%bash) (,build2)))))
+                              #:sources `(,%bash ,build2))))
     (and (build-derivations %store (list drv1 drv2))
          (let ((file1 (derivation->output-path drv1))
                (file2 (derivation->output-path drv2)))
@@ -343,7 +320,7 @@
          (hash       (sha256 (string->utf8 "hello")))
          (drv        (derivation %store "fixed"
                                  %bash `(,builder)
-                                 #:inputs `((,builder))
+                                 #:sources (list builder)
                                  #:hash hash #:hash-algo 'sha256)))
     (fixed-output-derivation? drv)))
 
@@ -353,7 +330,7 @@
          (hash       (sha256 (string->utf8 "hello")))
          (drv        (derivation %store "fixed"
                                  %bash `(,builder)
-                                 #:inputs `((,builder)) ; optional
+                                 #:sources `(,builder) ;optional
                                  #:hash hash #:hash-algo 'sha256))
          (succeeded? (build-derivations %store (list drv))))
     (and succeeded?
@@ -385,7 +362,7 @@
          (hash       (sha256 (string->utf8 "hello")))
          (drv        (derivation %store "fixed-rec"
                                  %bash `(,builder)
-                                 #:inputs `((,builder))
+                                 #:sources (list builder)
                                  #:hash (base32 "0sg9f58l1jj88w6pdrfdpj5x9b1zrwszk84j81zvby36q9whhhqa")
                                  #:hash-algo 'sha256
                                  #:recursive? #t))
@@ -419,11 +396,13 @@
          (final1     (derivation %store "final"
                                  %bash `(,builder3)
                                  #:env-vars `(("in" . ,fixed-out))
-                                 #:inputs `((,%bash) (,builder3) (,fixed1))))
+                                 #:sources (list %bash builder3)
+                                 #:inputs (list (derivation-input fixed1))))
          (final2     (derivation %store "final"
                                  %bash `(,builder3)
                                  #:env-vars `(("in" . ,fixed-out))
-                                 #:inputs `((,%bash) (,builder3) (,fixed2))))
+                                 #:sources (list %bash builder3)
+                                 #:inputs (list (derivation-input fixed2))))
          (succeeded? (build-derivations %store
                                         (list final1 final2))))
     (and succeeded?
@@ -439,7 +418,7 @@
                                  #:env-vars '(("HOME" . "/homeless")
                                               ("zzz"  . "Z!")
                                               ("AAA"  . "A!"))
-                                 #:inputs `((,%bash) (,builder))
+                                 #:sources `(,%bash ,builder)
                                  #:outputs '("out" "second")))
          (succeeded? (build-derivations %store (list drv))))
     (and succeeded?
@@ -459,7 +438,7 @@
                                         '()))
          (drv        (derivation %store "fixed"
                                  %bash `(,builder)
-                                 #:inputs `((,%bash) (,builder))
+                                 #:sources `(,%bash ,builder)
                                  #:outputs '("out" "AAA")))
          (succeeded? (build-derivations %store (list drv))))
     (and succeeded?
@@ -481,15 +460,15 @@
          (inputs  (map (lambda (file)
                          (derivation %store "derivation-input"
                                      %bash '()
-                                     #:inputs `((,%bash) (,file))))
+                                     #:sources `(,%bash ,file)))
                        sources))
          (builder (add-text-to-store %store "builder.sh"
                                      "echo one > $one ; echo two > $two"
                                      '()))
          (drv     (derivation %store "derivation"
                               %bash `(,builder)
-                              #:inputs `((,%bash) (,builder)
-                                         ,@(map list (append sources inputs)))
+                              #:sources `(,%bash ,builder ,@sources)
+                              #:inputs (map derivation-input inputs)
                               #:outputs '("two" "one")))
          (drv*    (call-with-input-file (derivation-file-name drv)
                     read-derivation)))
@@ -520,7 +499,7 @@
                                         '()))
          (mdrv       (derivation %store "multiple-output"
                                  %bash `(,builder1)
-                                 #:inputs `((,%bash) (,builder1))
+                                 #:sources (list %bash builder1)
                                  #:outputs '("out" "two")))
          (builder2   (add-text-to-store %store "my-mo-user-builder.sh"
                                         "read x < $one;
@@ -535,11 +514,11 @@
                                               ("two"
                                                . ,(derivation->output-path
                                                    mdrv "two")))
-                                 #:inputs `((,%bash)
-                                            (,builder2)
-                                            ;; two occurrences of MDRV:
-                                            (,mdrv)
-                                            (,mdrv "two")))))
+                                 #:sources (list %bash builder2)
+                                 ;; two occurrences of MDRV:
+                                 #:inputs
+                                 (list (derivation-input mdrv)
+                                       (derivation-input mdrv '("two"))))))
     (and (build-derivations %store (list (pk 'udrv udrv)))
          (let ((p (derivation->output-path udrv)))
            (and (valid-path? %store p)
@@ -565,7 +544,7 @@
                               `(("bash" . ,%bash)
                                 ("input1" . ,input1)
                                 ("input2" . ,input2))
-                              #:inputs `((,%bash) (,builder))))
+                              #:sources (list %bash builder)))
          (out     (derivation->output-path drv)))
     (define (deps path . deps)
       (let ((count (length deps)))
@@ -598,7 +577,7 @@
 (test-assert "derivation #:allowed-references, ok"
   (let ((drv (derivation %store "allowed" %bash
                          '("-c" "echo hello > $out")
-                         #:inputs `((,%bash))
+                         #:sources (list %bash)
                          #:allowed-references '())))
     (build-derivations %store (list drv))))
 
@@ -606,7 +585,7 @@
   (let* ((txt (add-text-to-store %store "foo" "Hello, world."))
          (drv (derivation %store "disallowed" %bash
                           `("-c" ,(string-append "echo " txt "> $out"))
-                          #:inputs `((,%bash) (,txt))
+                          #:sources (list %bash txt)
                           #:allowed-references '())))
     (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
@@ -617,14 +596,14 @@
 (test-assert "derivation #:allowed-references, self allowed"
   (let ((drv (derivation %store "allowed" %bash
                          '("-c" "echo $out > $out")
-                         #:inputs `((,%bash))
+                         #:sources (list %bash)
                          #:allowed-references '("out"))))
     (build-derivations %store (list drv))))
 
 (test-assert "derivation #:allowed-references, self not allowed"
   (let ((drv (derivation %store "disallowed" %bash
                          `("-c" ,"echo $out > $out")
-                         #:inputs `((,%bash))
+                         #:sources (list %bash)
                          #:allowed-references '())))
     (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
@@ -635,7 +614,7 @@
 (test-assert "derivation #:disallowed-references, ok"
   (let ((drv (derivation %store "disallowed" %bash
                          '("-c" "echo hello > $out")
-                         #:inputs `((,%bash))
+                         #:sources (list %bash)
                          #:disallowed-references '("out"))))
     (build-derivations %store (list drv))))
 
@@ -643,7 +622,7 @@
   (let* ((txt (add-text-to-store %store "foo" "Hello, world."))
          (drv (derivation %store "disdisallowed" %bash
                           `("-c" ,(string-append "echo " txt "> $out"))
-                          #:inputs `((,%bash) (,txt))
+                          #:sources (list %bash txt)
                           #:disallowed-references (list txt))))
     (guard (c ((store-protocol-error? c)
                ;; There's no specific error message to check for.
@@ -662,7 +641,7 @@
                             '("-c" "echo -n $GUIX_STATE_DIRECTORY > $out")
                             #:hash (sha256 (string->utf8 value))
                             #:hash-algo 'sha256
-                            #:inputs `((,%bash))
+                            #:sources (list %bash)
                             #:leaked-env-vars '("GUIX_STATE_DIRECTORY"))))
     (and (build-derivations %store (list drv))
          (call-with-input-file (derivation->output-path drv)
@@ -688,8 +667,8 @@
                                     ,(string-append
                                       (derivation->output-path %coreutils)
                                       "/bin")))
-                      #:inputs `((,builder)
-                                 (,%coreutils))))
+                      #:sources (list builder)
+                      #:inputs (list (derivation-input %coreutils))))
          (succeeded?
           (build-derivations %store (list drv))))
     (and succeeded?
@@ -1239,7 +1218,9 @@
                                 (derivation->output-path bash-full)
 
                                 `("-e" ,script1)
-                                #:inputs `((,bash-full) (,script1))))
+                                #:sources (list script1)
+                                #:inputs
+                                (list (derivation-input bash-full '("out")))))
          (drv2      (map-derivation %store drv1
                                     `((,bash-full . ,%bash)
                                       (,script1 . ,script2))))
