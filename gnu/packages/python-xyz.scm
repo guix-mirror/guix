@@ -4864,7 +4864,7 @@ them as the version argument or in a SCM managed file.")
      `(("python-scandir" ,python-scandir)
        ("python-six" ,python-six)))
     (home-page "https://pypi.python.org/pypi/pathlib2/")
-    (synopsis "Object-oriented filesystem paths")
+    (synopsis "Object-oriented file system paths")
     (description "The goal of pathlib2 is to provide a backport of the
 standard @code{pathlib} module which tracks the standard library module, so
 all the newest features of the standard @code{pathlib} can be used also on
