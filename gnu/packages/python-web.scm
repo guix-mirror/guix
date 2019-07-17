@@ -2191,6 +2191,30 @@ pretty printer and a tree visitor.")
       "This package provides HTTP basic access authentication for Flask.")
     (license license:bsd-3)))
 
+(define-public python-flask-htpasswd
+  (package
+    (name "python-flask-htpasswd")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "flask-htpasswd" version))
+        (sha256
+          (base32
+            "14q1y1y9i9bhabdnwd25jqzc4ljli23smxfyyh8abxz1vq93pxra"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-flask" ,python-flask)
+       ("python-itsdangerous" ,python-itsdangerous)
+       ("python-passlib" ,python-passlib)
+       ("python-tox" ,python-tox)))
+    (home-page "http://github.com/carsongee/flask-htpasswd")
+    (synopsis "Basic authentication via htpasswd files in Flask applications")
+    (description "This package provides Basic authentication via
+@file{htpasswd} files and access_token authentication in Flask
+applications.")
+    (license license:bsd-3)))
+
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
