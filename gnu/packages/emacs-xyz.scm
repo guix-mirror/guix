@@ -13793,6 +13793,34 @@ text in neighboring sections.")
 Pandoc, the document-conversion tool.")
     (license license:bsd-3)))
 
+(define-public emacs-ccls
+  (let ((commit "2764ddd57b03646f0327ea680a954b4a67450aef")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "emacs-ccls")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/MaskRay/emacs-ccls")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16427jvzhjy8kpvlgl3qzkzppv98124hkgi8q8pv1h7m46k9lhh3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-projectile" ,emacs-projectile)
+         ("emacs-lsp-mode" ,emacs-lsp-mode)))
+      (home-page "https://github.com/MaskRay/emacs-ccls")
+      (synopsis "Emacs support for the @code{ccls} language server")
+      (description "This package extends @code{lsp-mode} to work with @code{C}
+and @code{C++} files through the @code{ccls} language server.")
+      (license license:bsd-3))))
+
 (define-public emacs-org-brain
   (package
     (name "emacs-org-brain")
