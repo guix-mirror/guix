@@ -5941,8 +5941,7 @@ devices using the GNOME desktop.")
                (base32
                 "0gih1cmqbv803kp30704sllghb0impa0mmv3j8pndfg4zr2mnq9r"))
               (patches
-               (search-patches
-                "gnome-control-center-use-udisks-to-get-disk-size.patch"))))
+               (search-patches "gnome-control-center-udisks.patch"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
