@@ -21349,7 +21349,7 @@ from garbage collection for at least @var{ttl} seconds.
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
 
-@item --listen=@var{host}
+@item @code{host} (default: @code{"localhost"})
 Listen on the network interface for @var{host}.  The default is to
 accept connections from localhost.
 
