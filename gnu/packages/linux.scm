@@ -3249,7 +3249,7 @@ arrays when needed.")
 (define-public multipath-tools
   (package
     (name "multipath-tools")
-    (version "0.7.9")
+    (version "0.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://git.opensvc.com/?p=multipath-tools/"
@@ -3257,7 +3257,7 @@ arrays when needed.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1jhi6bhl4ih75rfmyyjxd35ghgch5ls1gw40cjxwy9d6bd41z6q1"))
+                "0kb4mhzwyygdbikikmby6hj39pb3nrzv05v526c75wnycwnpxg31"))
               (modules '((guix build utils)))
               (snippet
                '(begin
