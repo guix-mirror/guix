@@ -26407,11 +26407,6 @@ gnu/packages/image.scm:312:2: openjpeg@@2.1.0: probably vulnerable to CVE-2016-1
 
 @xref{Invoking guix lint}, for more information.
 
-@quotation Note
-As of version @value{VERSION}, the feature described below is considered
-``beta''.
-@end quotation
-
 Guix follows a functional
 package management discipline (@pxref{Introduction}), which implies
 that, when a package is changed, @emph{every package that depends on it}
