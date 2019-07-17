@@ -95,7 +95,7 @@ program to exhibit a bug.")
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.8.0")
+    (version "2.10.0")
     (source
      (origin
       (method url-fetch)
@@ -103,13 +103,12 @@ program to exhibit a bug.")
             (string-append "http://embed.cs.utah.edu/creduce/"
                            "creduce-" version ".tar.gz")))
       (sha256
-       (base32
-        "1vqx73ymfscvlyig03972a5m7ar3gx2yv6m8c6h2mibz792j5xkp"))))
+       (base32 "0qx0zq8jxzx2as2zf0740g7kvgq163ayn3041di4vwk77490y76v"))))
     (build-system gnu-build-system)
     (inputs
      `(("astyle"          ,astyle)
-       ("llvm"            ,llvm-6)
-       ("clang"           ,clang-6)
+       ("llvm"            ,llvm)
+       ("clang"           ,clang)
        ("flex"            ,flex)
        ("indent"          ,indent)
        ("perl"            ,perl)
