@@ -569,11 +569,11 @@ run-time in Go.")
     (license asl2.0)))
 
 (define-public go-github-com-syndtr-goleveldb
-  (let ((commit "34011bf325bce385408353a30b101fe5e923eb6e")
-        (revision "2"))
+  (let ((commit "c3a204f8e96543bb0cc090385c001078f184fc46")
+        (revision "3"))
     (package
       (name "go-github-com-syndtr-goleveldb")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -582,7 +582,7 @@ run-time in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "097ja0vyj6p27zrxha9nhk09fj977xsvhmd3bk2hbyvnbw4znnhd"))))
+                  "18cac90dim2z5g28vazzibxa058q2ynihsmf0vbscwzba6l5s5ms"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
