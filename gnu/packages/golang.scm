@@ -3610,3 +3610,26 @@ network protocol.")
 error handling primitives in Go.")
       (home-page "https://github.com/pkg/errors")
       (license license:bsd-2))))
+
+(define-public go-github-com-maruel-panicparse
+  (package
+    (name "go-github-com-maruel-panicparse")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/maruel/panicparse")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05hf68ifb7ww4rpmxyywbj9r0kyap45p1273ncq4qy2ydv042l8j"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/maruel/panicparse"))
+    (synopsis "Toolkit for parsing Go stack traces")
+    (description "This package provides a toolkit for parsing Go language panic
+stack traces.  It simplifies the traces to make salient information more visible
+and aid debugging.")
+    (home-page "https://github.com/maruel/panicparse")
+    (license license:asl2.0)))
