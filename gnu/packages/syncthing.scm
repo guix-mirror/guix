@@ -1200,3 +1200,28 @@ quoting, commenting, and escaping.")
     (description "This package is an internal component of Prometheus.")
     (home-page "https://github.com/prometheus/common")
     (license asl2.0)))
+
+(define-public go-github-com-audriusbutkevicius-pfilter
+  (let ((commit "c55ef6137fc6f075801eac099cc2687ede0f101d")
+        (revision "3"))
+    (package
+      (name "go-github-com-audriusbutkevicius-pfilter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/AudriusButkevicius/pfilter.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0xzhwyd0w21bhvzl5pinn22hp0y6h44rh3s2ppql69rafc6zd3c6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/AudriusButkevicius/pfilter"))
+      (synopsis "Filter packets into mulitple virtual connections")
+      (description "Pfilter is a Go package for filtering packets into multiple
+virtual connections from a single physical connection.")
+      (home-page "https://github.com/AudriusButkevicius/pfilter")
+      (license expat))))
