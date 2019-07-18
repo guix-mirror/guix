@@ -16877,3 +16877,35 @@ deleting words.  These goals were partly inspired by 750words.com where the
 goal of the site is to encourage writing by setting a goal of 750 words at a
 time.")
     (license license:gpl3+)))
+
+(define-public emacs-mastodon
+  (package
+    (name "emacs-mastodon")
+    (version "0.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jdenen/mastodon.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hwax6y9dghqwsbnb6f1bnc7gh8xsh5cvcnayk2sn49x8b0zi5h1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Move the source files to the top level, which is included in
+         ;; the EMACSLOADPATH.
+         (add-after 'unpack 'move-source-files
+           (lambda _
+             (let ((el-files (find-files "./lisp" ".*\\.el$")))
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         el-files))
+             #t)))))
+    (home-page "https://github.com/jdenen/mastodon.el")
+    (synopsis "Emacs client for Mastodon")
+    (description "@code{mastodon.el} is an Emacs client for Mastodon, the
+federated microblogging social network.")
+    (license license:gpl3+)))
