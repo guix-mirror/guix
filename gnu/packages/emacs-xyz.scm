@@ -16828,3 +16828,28 @@ which should give broad compatibility.  It should also be relatiely easy to
 convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
 zip utility (default is @code{zip}).")
     (license license:gpl3+)))
+
+(define-public emacs-ox-pandoc
+  (package
+    (name "emacs-ox-pandoc")
+    (version "20180510")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kawabata/ox-pandoc.git")
+                    (commit "aa37dc7e94213d4ebedb85c384c1ba35007da18e")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0iibxplgdp34bpq1yll2gmqjd8d8lnqn4mqjvx6cdf0y438yr4jz"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/kawabata/ox-pandoc")
+    (synopsis "Org exporter for Pandoc")
+    (description "@code{ox-pandoc} is an exporter for converting Org-mode
+files to numerous other formats via Pandoc.")
+    (license license:gpl3+)))
