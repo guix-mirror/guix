@@ -468,7 +468,11 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
     ;; https://github.com/OpenImageIO/oiio/blob/master/INSTALL
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+       ;; XXX: Work around a problem with Boost 1.70 and CMake 3.14.  See
+       ;; <https://bugs.gnu.org/36721> for details.
+       #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
