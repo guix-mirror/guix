@@ -6541,6 +6541,12 @@ complexity of Python source code.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; Be compatible with Pytest 4:
+             ;; https://gitlab.com/pycqa/flake8-polyfill/merge_requests/7
+             (substitute* "setup.cfg"
+               (("\\[pytest\\]")
+                "[tool:pytest]"))
+
              (setenv "PYTHONPATH"
                      (string-append (getcwd) "/build/lib:"
                                     (getenv "PYTHONPATH")))
