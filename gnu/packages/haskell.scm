@@ -11851,6 +11851,35 @@ provides a means to round-trip any code that can be compiled by GHC, currently
 excluding @file{.lhs} files.")
     (license license:bsd-3)))
 
+(define-public ghc-microlens-mtl
+  (package
+    (name "ghc-microlens-mtl")
+    (version "0.1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/microlens-mtl/microlens-mtl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l6z1gkzwcpv89bxf5vgfrjb6gq2pj7sjjc53nvi5b9alx34zryk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-microlens" ,ghc-microlens)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/monadfix/microlens")
+    (synopsis
+     "@code{microlens} support for Reader/Writer/State from mtl")
+    (description
+     "This package contains functions (like @code{view} or @code{+=}) which
+work on @code{MonadReader}, @code{MonadWriter}, and @code{MonadState} from the
+mtl package.  This package is a part of the
+@uref{http://hackage.haskell.org/package/microlens, microlens} family; see the
+readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
