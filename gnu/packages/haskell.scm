@@ -11949,6 +11949,36 @@ you need.  This package is a part of the
 readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
     (license license:bsd-3)))
 
+(define-public ghc-hasktags
+  (package
+    (name "ghc-hasktags")
+    (version "0.71.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hasktags/hasktags-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s2k9qrgy1jily96img2pmn7g35mwnnfiw6si3aw32jfhg5zsh1c"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-json" ,ghc-json)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-microlens-platform" ,ghc-microlens-platform)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/MarcWeber/hasktags")
+    (synopsis "Make @code{Ctags} and @code{Etags} files for Haskell programs")
+    (description
+     "This package provides a means of generating tag files for Emacs and
+Vim.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
