@@ -11880,6 +11880,32 @@ mtl package.  This package is a part of the
 readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
     (license license:bsd-3)))
 
+(define-public ghc-microlens-ghc
+  (package
+    (name "ghc-microlens-ghc")
+    (version "0.4.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/microlens-ghc/microlens-ghc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "03iwgg8zww9irv59l70c8yy7vzxir1zf66y12210xk91k5hq6jrj"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-microlens" ,ghc-microlens)))
+    (home-page "https://github.com/monadfix/microlens")
+    (synopsis "Use @code{microlens} with GHC libraries like @code{array}")
+    (description "This library provides everything that @code{microlens}
+provides plus instances to make @code{each}, @code{at}, and @code{ix}
+usable with arrays, @code{ByteString}, and containers.  This package is
+a part of the @uref{http://hackage.haskell.org/package/microlens,
+microlens} family; see the readme
+@uref{https://github.com/aelve/microlens#readme, on Github}.")
+    (license license:bsd-3)))
+
 (define-public ghc-stylish-haskell
   (package
     (name "ghc-stylish-haskell")
