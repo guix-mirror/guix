@@ -3264,24 +3264,33 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "1.7")
+    (version "2.0.0.2")
+    ;; As recommended by the upstream maintainer, use the git source code
+    ;; instead of the released source tarball until missing files in the tarball
+    ;; are added.  The 'url-fetch' method may be appropriate again after the
+    ;; next update.  See https://github.com/pr-starfighter/starfighter/issues/1
+    ;; for more details.
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah/starfighter/"
-                    (version-major+minor version) "/"
-                    "starfighter-" version "-src.tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/pr-starfighter/starfighter")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1646hpjq8bz2fkfkja1dah511hn7zd2r7da4w9c9blhad3p5732v"))))
+                "0p81ywgm2dxjbpmbsgx4f2d83sy6lv3hinrr1vzprkf9viidqnd2"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("sdl2" ,sdl2)
+     `(("pango" ,pango)
+       ("sdl2" ,sdl2)
        ("sdl2-image" ,sdl2-image)
-       ("sdl2-mixer" ,sdl2-mixer)))
-    (home-page "http://starfighter.nongnu.org/")
+       ("sdl2-mixer" ,sdl2-mixer)
+       ("sdl2-ttf" ,sdl2-ttf)))
+    (home-page "https://pr-starfighter.github.io/")
     (synopsis "2D scrolling shooter game")
     (description
      "In the year 2579, the intergalactic weapons corporation, WEAPCO, has
