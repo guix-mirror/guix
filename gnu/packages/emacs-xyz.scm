@@ -16853,3 +16853,27 @@ zip utility (default is @code{zip}).")
     (description "@code{ox-pandoc} is an exporter for converting Org-mode
 files to numerous other formats via Pandoc.")
     (license license:gpl3+)))
+
+(define-public emacs-wc-mode
+  (package
+    (name "emacs-wc-mode")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bnbeckwith/wc-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pjlxv46zzqdq6q131jb306vqlg4sfqls1x8vag7mmfw462hafqp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bnbeckwith/wc-mode")
+    (synopsis "Running word count with goals (minor mode)")
+    (description "@code{wc-mode} is a minor mode, providing a ‘wc’ function
+for Emacs buffers as well as a modeline addition with live word, line and
+character counts.  Additionally, a user can set specific goals for adding or
+deleting words.  These goals were partly inspired by 750words.com where the
+goal of the site is to encourage writing by setting a goal of 750 words at a
+time.")
+    (license license:gpl3+)))
