@@ -2746,6 +2746,7 @@ of modern, widely supported codecs.")
                            "code-archive-downloads/v2/"
                            "code.google.com/mp4v2/mp4v2-" version ".tar.bz2"))
        (file-name (string-append name "-" version ".tar.bz2"))
+       (patches (search-patches "libmp4v2-c++11.patch"))
        (sha256
         (base32
          "0f438bimimsvxjbdp4vsr8hjw2nwggmhaxgcw07g2z361fkbj683"))))
