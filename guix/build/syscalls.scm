@@ -396,17 +396,11 @@ the returned procedure is called."
     ((_ (proc args ...) body ...)
      (define-as-needed proc (lambda* (args ...) body ...)))
     ((_ variable value)
-     (begin
-       (when (module-defined? the-scm-module 'variable)
-         (re-export variable))
-
-       (define variable
-         (if (module-defined? the-scm-module 'variable)
-             (module-ref the-scm-module 'variable)
-             value))
-
-       (unless (module-defined? the-scm-module 'variable)
-         (export variable))))))
+     (if (module-defined? the-scm-module 'variable)
+         (module-re-export! (current-module) '(variable))
+         (begin
+           (module-define! (current-module) 'variable value)
+           (module-export! (current-module) '(variable)))))))
 
 
 ;;;
