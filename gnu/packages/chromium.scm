@@ -36,6 +36,7 @@
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -68,7 +69,8 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
 
 (define %preserved-third-party-files
   '("base/third_party/dmg_fp" ;X11-style
@@ -191,6 +193,8 @@
     "third_party/ungoogled" ;BSD-3
     "third_party/usb_ids" ;BSD-3
     "third_party/usrsctp" ;BSD-2
+    "third_party/wayland/wayland_scanner_wrapper.py" ;BSD-3
+    "third_party/wayland-protocols" ;Expat
     "third_party/web-animations-js" ;ASL2.0
     "third_party/webdriver" ;ASL2.0
     "third_party/webrtc" ;BSD-3
@@ -777,3 +781,30 @@ disabled in order to protect the users privacy.")
                    (license:non-copyleft "chrome://credits"
                                          "See chrome://credits for more information.")
                    license:lgpl2.1+))))
+
+(define-public ungoogled-chromium/wayland
+  (package/inherit ungoogled-chromium
+    (name "ungoogled-chromium-wayland")
+    (inputs
+     `(("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)
+       ;; Remove inputs only needed for X11.
+       ,@(fold alist-delete (package-inputs ungoogled-chromium)
+               '("libx11" "libxcb" "libxcomposite" "libxcursor"
+                 "libxdamage" "libxext" "libxfixes" "libxi"
+                 "libxrender" "libxtst" "libxext" "libxrandr"
+                 "libxscrnsaver"))))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments ungoogled-chromium)
+       ((#:configure-flags flags)
+        `(append (list "use_ozone=true"
+                       "ozone_platform_wayland=true"
+                       "ozone_auto_platforms=false"
+                       "use_xkbcommon=true"
+                       "use_system_minigbm=true"
+                       "use_system_libwayland=true"
+                       (string-append "system_wayland_scanner_path=\""
+                                      (assoc-ref %build-inputs "wayland")
+                                      "/bin/wayland-scanner\""))
+                 (delete "use_vaapi=true" ,flags)))))))

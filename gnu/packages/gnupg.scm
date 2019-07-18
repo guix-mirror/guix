@@ -209,14 +209,13 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public npth
   (package
     (name "npth")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/npth/npth-" version ".tar.bz2"))
-      (sha256
-       (base32
-        "1hmkkp6vzyrh8v01c2ynzf9vwikyagp7p1lxhbnr4ysk3w66jji9"))))
+       (method url-fetch)
+       (uri (string-append "mirror://gnupg/npth/npth-" version ".tar.bz2"))
+       (sha256
+        (base32 "1lg2lkdd3z1s3rpyf88786l243adrzyk9p4q8z9n41ygmpcsp4qk"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnupg.org")
     (synopsis "Non-preemptive thread library")

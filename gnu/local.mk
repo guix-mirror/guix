@@ -243,6 +243,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/hugs.scm				\
   %D%/packages/hurd.scm				\
   %D%/packages/hyperledger.scm			\
+  %D%/packages/i2p.scm				\
   %D%/packages/ibus.scm				\
   %D%/packages/icu4c.scm			\
   %D%/packages/idris.scm			\
@@ -886,7 +887,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glibc-2.27-supported-locales.patch     	\
   %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
-  %D%/packages/patches/glog-gcc-5-demangling.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
   %D%/packages/patches/gnome-control-center-udisks.patch	\

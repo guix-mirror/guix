@@ -6579,14 +6579,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20190402")
+    (version "20190715")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "0hbrhhq6sa0gz4ylzr54raxandqs4y953894b0hlr553b8sfl1wk"))))
+                "0yxxkcaxhp5bmjsfdd9pz79rj9s7nb4gj5ci51sh4pf8mimk9542"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -13688,6 +13688,138 @@ server with @code{M-x pinentry-start}.")
       (description "This package improves the performance of Emacs when
 viewing files with long lines.")
       (license license:gpl3+))))
+
+(define-public emacs-github-review
+  (let ((commit "9c3ffe30fba5d02e9951e76d1a5be2ed046663da")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "emacs-github-review")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/charignon/github-review")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "078rv6f2p3wrznhgvmkhd071bwy72007f5l2m2a0r1k2i3vbfaja"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-ghub" ,emacs-ghub)))
+      (home-page "https://github.com/charignon/github-review")
+      (synopsis "Review GitHub pull requests within Emacs")
+      (description "This package provides commands to pull in, comment on, and
+accept and reject GitHub pull requests.")
+      (license license:gpl3+))))
+
+(define-public emacs-deadgrep
+  (let ((commit "caeb37b8d6ab83f0eba353d6bbb29678190d4419")
+        (version "0.7")
+        (revision "1"))
+    (package
+      (name "emacs-deadgrep")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Wilfred/deadgrep")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "158fqha8nilwfzmw15lcsq8b099j8wclzq303md0j4mfr2q2gfvs"))))
+      (build-system emacs-build-system)
+      (inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-s" ,emacs-s)
+         ("emacs-spinner" ,emacs-spinner)))
+      (home-page "https://github.com/Wilfred/deadgrep")
+      (synopsis "Frontend for @code{ripgrep}")
+      (description "This package provides an Emacs interface for performing
+searches with @code{ripgrep}.")
+      (license license:gpl3+))))
+
+(define-public emacs-focus
+  (let ((commit "ab42b8779929beeb7878c7fb3d3ccd80d9327c7f")
+        (version "0.1.1")
+        (revision "1"))
+    (package
+      (name "emacs-focus")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/larstvei/Focus")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "079v1syid7h2vr2ya6hs6hl0pgj60qdsw60mqw4cj2zllmkrkwj4"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/larstvei/Focus")
+      (synopsis "Minor mode for focusing in on relevant text")
+      (description "This package provides a minor mode that dims the color of
+text in neighboring sections.")
+      (license license:gpl3+))))
+
+(define-public emacs-pandoc-mode
+  (package
+    (name "emacs-pandoc-mode")
+    (version "2.27.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/joostkremers/pandoc-mode")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "04bqc7mhgkfks3nsvimd3rrriv4nqbksmv5ahlbbd03aqa2b0vrv"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-hydra" ,emacs-hydra)))
+    (home-page "https://github.com/joostkremers/pandoc-mode")
+    (synopsis "Minor mode for interacting with Pandoc")
+    (description "This package provides a Hydra menu for interacting with the
+Pandoc, the document-conversion tool.")
+    (license license:bsd-3)))
+
+(define-public emacs-ccls
+  (let ((commit "2764ddd57b03646f0327ea680a954b4a67450aef")
+        (version "0.1")
+        (revision "1"))
+    (package
+      (name "emacs-ccls")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/MaskRay/emacs-ccls")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16427jvzhjy8kpvlgl3qzkzppv98124hkgi8q8pv1h7m46k9lhh3"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-projectile" ,emacs-projectile)
+         ("emacs-lsp-mode" ,emacs-lsp-mode)))
+      (home-page "https://github.com/MaskRay/emacs-ccls")
+      (synopsis "Emacs support for the @code{ccls} language server")
+      (description "This package extends @code{lsp-mode} to work with @code{C}
+and @code{C++} files through the @code{ccls} language server.")
+      (license license:bsd-3))))
 
 (define-public emacs-org-brain
   (package

@@ -34,6 +34,7 @@
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
@@ -854,6 +856,39 @@ for efficient socket-like bidirectional reliable communication channels.")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
     (license license:lgpl2.1)))
+
+(define-public websocketpp
+  (package
+    (name "websocketpp")
+    (version "0.8.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/zaphoyd/websocketpp.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "12ffczcrryh74c1xssww35ic6yiy2l2xgdd30lshiq9wnzl2brgy"))))
+    (build-system cmake-build-system)
+    (inputs `(("boost" ,boost)
+              ("openssl" ,openssl)))
+    (arguments '(#:configure-flags '("-DBUILD_TESTS=ON")
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-after 'install 'remove-tests
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let* ((install-dir (assoc-ref outputs "out"))
+                              (bin-dir (string-append install-dir "/bin")))
+                         (delete-file-recursively bin-dir)
+                         #t))))))
+    (home-page "https://www.zaphoyd.com/websocketpp/")
+    (synopsis "C++ library implementing the WebSocket protocol")
+    (description "WebSocket++ is a C++ library that can be used to implement
+WebSocket functionality.  The goals of the project are to provide a WebSocket
+implementation that is simple, portable, flexible, lightweight, low level, and
+high performance.")
+    (license license:bsd-3)))
 
 (define-public libpsl
   (package

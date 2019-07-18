@@ -21349,7 +21349,7 @@ from garbage collection for at least @var{ttl} seconds.
 @item @code{port} (default: @code{8081})
 Port number used by the HTTP server.
 
-@item --listen=@var{host}
+@item @code{host} (default: @code{"localhost"})
 Listen on the network interface for @var{host}.  The default is to
 accept connections from localhost.
 
@@ -26406,11 +26406,6 @@ gnu/packages/image.scm:312:2: openjpeg@@2.1.0: probably vulnerable to CVE-2016-1
 @end smallexample
 
 @xref{Invoking guix lint}, for more information.
-
-@quotation Note
-As of version @value{VERSION}, the feature described below is considered
-``beta''.
-@end quotation
 
 Guix follows a functional
 package management discipline (@pxref{Introduction}), which implies

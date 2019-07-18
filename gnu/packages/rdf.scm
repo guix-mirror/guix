@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -309,7 +309,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
                "13fshxwpipjrvsah1m2jw1kf022z2q5vpw24bzcznglgvms13x89"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -319,10 +319,10 @@ ideal (e.g. in LV2 implementations or embedded applications).")
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
             #t)))))
-    (inputs
-     `(("serd" ,serd)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("serd" ,serd)))                 ; required by sord-0.pc
     (home-page "https://drobilla.net/software/sord/")
     (synopsis "C library for storing RDF data in memory")
     (description

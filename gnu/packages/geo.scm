@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages astronomy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
@@ -45,6 +47,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages datastructures)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -58,6 +61,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -905,3 +909,67 @@ given GPS coordinates,draws a GPS track, and points of interest on a moving
 map display.  Downloads map data from a number of websites, including
 @url{https://www.openstreetmap.org}.")
     (license license:gpl2+)))
+
+(define-public xygrib
+  (package
+    (name "xygrib")
+    (version "1.2.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/opengribs/XyGrib.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0qzaaavil2c7mkkai5mg54cv8r452i7psy7cg75qjja96d2d7rbd"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin (delete-file-recursively "data/fonts") #t))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-directories
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jpeg (assoc-ref inputs "openjpeg"))
+                   (font (assoc-ref inputs "font-liberation")))
+               (substitute* "CMakeLists.txt"
+                 ;; Find libjpeg.
+                 (("/usr") jpeg)
+                 ;; Fix install locations.
+                 (("set\\(PREFIX_BIN.*") "set(PREFIX_BIN \"bin\")\n")
+                 (("set\\(PREFIX_PKGDATA.*") "set(PREFIX_PKGDATA \"share/${PROJECT_NAME}\")\n")
+                 ;; Skip looking for the static library.
+                 (("\"libnova.a\"") ""))
+               ;; Don't use the bundled font-liberation.
+               (substitute* "src/util/Font.cpp"
+                 (("Util::pathFonts\\(\\)\\+\"liberation-fonts/\"")
+                  (string-append "\"" font "/share/fonts/truetype/\"")))
+               (substitute* "src/util/Util.h"
+                 (("pathData\\(\\)\\+\"data/fonts/\"")
+                  (string-append "\"" font "/share/fonts/\""))))
+             #t)))
+       #:tests? #f)) ; no tests
+    (native-inputs
+     `(("qttools" ,qttools)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("font-liberation" ,font-liberation)
+       ("libnova" ,libnova)
+       ("libpng" ,libpng)
+       ("openjpeg" ,openjpeg)
+       ("proj.4" ,proj.4)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (synopsis "Weather Forecast Visualization")
+    (description
+     "XyGrib is a Grib file reader and visualizes meteorological data providing
+an off-line capability to analyse weather forecasts or hindcasts.  It is
+intended to be used as a capable weather work station for anyone with a serious
+interest in examining weather. This would include members of the sailing
+community, private and sport aviators, farmers, weather buffs and many more.
+XyGrib is the continuation of the zyGrib software package with a new team of
+volunteers.")
+    (home-page "https://opengribs.org")
+    (license license:gpl3+)))

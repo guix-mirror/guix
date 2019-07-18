@@ -64,40 +64,22 @@ staying as close to their API as is reasonable.")
 (define-public glog
   (package
     (name "glog")
-    (version "0.3.5")
+    (version "0.4.0")
     (home-page "https://github.com/google/glog")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/v" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
               (sha256
                (base32
-                "1q6ihk2asbx95a56kmyqwysq1x3grrw9jwqllafaidf0l84f903m"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (patches (search-patches "glog-gcc-5-demangling.patch"))))
+                "1xd3maiipfbxmhc9rrblc5x52nxvkwxp14npg31y5njqvkvzax9b"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)                             ;for tests
        ("autoconf" ,autoconf-wrapper)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'add-automake-files
-                    (lambda _
-                      ;; The 'test-driver' file is a dangling symlink to
-                      ;; /usr/share/automake; replace it.  We can't just run
-                      ;; 'automake -ac' because it complains about version
-                      ;; mismatch, so run the whole thing.
-                      (delete-file "test-driver")
-                      (delete-file "configure")   ;it's read-only
-                      (invoke "autoreconf" "-vfi")))
-                  (add-before 'check 'disable-signal-tests
-                    (lambda _
-                      ;; See e.g. https://github.com/google/glog/issues/219
-                      ;; and https://github.com/google/glog/issues/256
-                      (substitute* "Makefile"
-                        (("\tsignalhandler_unittest_sh") "\t$(EMPTY)"))
-                      #t)))))
     (synopsis "C++ logging library")
     (description
      "Google glog is a library that implements application-level logging.

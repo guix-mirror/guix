@@ -52,6 +52,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 format)
   #:export (display-profile-content
             guix-pull))
 
@@ -162,16 +163,11 @@ Download and deploy the latest version of Guix.\n"))
 
          %standard-build-options))
 
-(define what-to-build
-  (store-lift show-what-to-build))
-(define indirect-root-added
-  (store-lift add-indirect-root))
-
 (define* (display-profile-news profile #:key concise?
                                current-is-newer?)
   "Display what's up in PROFILE--new packages, and all that.  If
 CURRENT-IS-NEWER? is true, assume that the current process represents the
-newest generation of PROFILE.x"
+newest generation of PROFILE."
   (match (memv (generation-number profile)
                (reverse (profile-generations profile)))
     ((current previous _ ...)
@@ -197,7 +193,7 @@ newest generation of PROFILE.x"
     (_ #t)))
 
 (define* (build-and-install instances profile
-                            #:key verbose? dry-run?)
+                            #:key use-substitutes? verbose? dry-run?)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
 true, display what would be built without actually building it."
   (define update-profile
@@ -210,6 +206,7 @@ true, display what would be built without actually building it."
   (mlet %store-monad ((manifest (channel-instances->manifest instances)))
     (mbegin %store-monad
       (update-profile profile manifest
+                      #:use-substitutes? use-substitutes?
                       #:hooks %channel-profile-hooks
                       #:dry-run? dry-run?)
       (munless dry-run?
@@ -604,6 +601,8 @@ Use '~/.config/guix/channels.scm' instead."))
                           (build-and-install instances profile
                                              #:dry-run?
                                              (assoc-ref opts 'dry-run?)
+                                             #:use-substitutes?
+                                             (assoc-ref opts 'substitutes?)
                                              #:verbose?
                                              (assoc-ref opts 'verbose?))))))))))))))
 
