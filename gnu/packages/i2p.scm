@@ -63,20 +63,18 @@
                                (make-flags '())
                                (parallel-tests? #t)
                                #:allow-other-keys)
-                       (let ((oldpwd (getcwd))
-                             (source (assoc-ref %build-inputs "source")))
+                       (let ((source (assoc-ref %build-inputs "source")))
                          (copy-recursively (string-append source "/tests")
                                            "./tests")
-                         (chdir "./tests")
-                         (substitute* "Makefile"
-                           (("../libi2pd/") (string-append source "/libi2pd/")))
-                         (apply invoke "make" "all"
-                                `(,@(if parallel-tests?
-                                        `("-j" ,(number->string
-                                                 (parallel-job-count)))
-                                        '())
-                                  ,@make-flags))
-                         (chdir oldpwd))))
+                         (with-directory-excursion "tests"
+                           (substitute* "Makefile"
+                             (("../libi2pd/") (string-append source "/libi2pd/")))
+                           (apply invoke "make" "all"
+                                  `(,@(if parallel-tests?
+                                          `("-j" ,(number->string
+                                                    (parallel-job-count)))
+                                          '())
+                                    ,@make-flags))))))
                    (add-after 'install 'install-headers
                      (lambda* (#:key outputs #:allow-other-keys)
                        (let* ((install-dir (assoc-ref outputs "out"))
