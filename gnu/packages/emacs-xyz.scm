@@ -16805,3 +16805,26 @@ message.
 @item Start a new message with a given Identity pre-selected.
 @end itemize")
     (license license:gpl2+)))
+
+(define-public emacs-ox-epub
+  (package
+    (name "emacs-ox-epub")
+    (version "0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ofosos/ox-epub.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "057sqmvm8hwkhcg3yd4i8zz2xlqsqrpyiklyiw750s3i5mxdn0k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ofosos/ox-epub")
+    (synopsis "Export org mode projects to EPUB")
+    (description "@code{ox-epub} extends the (X)HTML exporter to generate
+@code{.epub} files directly from OrgMode.  This will export EPUB version 2,
+which should give broad compatibility.  It should also be relatiely easy to
+convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
+zip utility (default is @code{zip}).")
+    (license license:gpl3+)))
