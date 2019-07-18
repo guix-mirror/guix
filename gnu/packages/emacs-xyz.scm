@@ -16775,3 +16775,33 @@ connections using TLS encryption.")
      "Zerodark is a dark theme inspired from One Dark and Niflheim.
 An optional mode-line format can be enabled with @code{zerodark-setup-modeline-format}.")
     (license license:gpl3+)))
+
+(define-public emacs-gnus-alias
+  (package
+    (name "emacs-gnus-alias")
+    (version "20150316")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hexmode/gnus-alias.git")
+                    (commit "9447d3ccb4c0e75d0468899cccff7aa249657bac")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1i278npayv3kfxxd1ypi9n83q5l402sbc1zkm11pf8g006ifqsp4"))))
+    (build-system emacs-build-system)
+    (home-page "https://melpa.org/#/gnus-alias")
+    (synopsis "Alternative to @code{gnus-posting-styles}")
+    (description "This Emacs add-on provides a simple mechanism to switch
+Identities when using a @code{message-mode} or a @code{message-mode} derived
+mode.  Identities can include @code{From} and @code{Organisation} headers,
+extra headers, body and signature.  Other features include:
+
+@itemize
+@item Switch Identities in a message buffer.
+@item Access original message to help determine Identity of the followup/reply
+message.
+@item Act on a forwarded message as if it were a message being replied to.
+@item Start a new message with a given Identity pre-selected.
+@end itemize")
+    (license license:gpl2+)))
