@@ -13,7 +13,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2019 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2016, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
@@ -1793,7 +1793,21 @@ single-member files which can't be decompressed in parallel.")
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:tests? #f)) ;; No tests available.
+    `(#:tests? #f
+      ;; XXX: Work around a problem with the CMake support in Boost 1.70:
+      ;; <https://github.com/dscharrer/innoextract/issues/88>.
+      #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'glibc-is-already-a-system-library
+                   (lambda _
+                     ;; Prevent the build system from passing the glibc
+                     ;; header files to GCC as "system headers", because
+                     ;; it conflicts with the system headers already known
+                     ;; to GCC, causing #include_next failures.
+                     (substitute* "CMakeLists.txt"
+                       (("include_directories\\(SYSTEM \\$\\{iconv")
+                        "include_directories(${iconv"))
+                     #t)))))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
