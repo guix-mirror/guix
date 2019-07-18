@@ -50,6 +50,7 @@
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -947,6 +948,33 @@ regexps, including deprecated syntax and bad practice.  It also checks the
 regexp-like arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
+
+(define-public emacs-bug-hunter
+  (let ((commit "b88d981afa9154b236c5a3a83b50d5889d46c6a7")
+        (revision "1"))
+    (package
+      (name "emacs-bug-hunter")
+      (version (git-version "1.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Malabarba/elisp-bug-hunter.git")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "134fj493sdn93pyyac8rpz1fzahzmayvphsrmqp3wvgysmfqm38l"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/Malabarba/elisp-bug-hunter")
+      (synopsis "Hunt down errors by bisecting elisp files")
+      (description
+       "The Bug Hunter is an Emacs library that finds the source of an error
+or unexpected behavior inside an elisp configuration file (typically
+@file{init.el} or @file{.emacs}).")
+      (license license:gpl3+))))
 
 
 ;;;
