@@ -1109,9 +1109,6 @@ relying on a complex dependency tree.")
       (build-system cmake-build-system)
       (arguments
        `(#:parallel-build? #f))
-      (inputs
-       `(("gcc" ,gcc-5))) ; Compilation of bpp-phyl fails with GCC 4.9 so we
-                          ; compile all of the bpp packages with GCC 5.
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "C++ libraries for Bioinformatics")
       (description
@@ -1147,10 +1144,7 @@ providing them a set of re-usable tools.")
          #:out-of-source? #f))
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ;; GCC 4.8 fails due to an 'internal compiler error', so we use a more
-         ;; modern GCC.
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ phylogenetic Library")
       (description
@@ -1182,8 +1176,7 @@ library provides phylogenetics-related modules.")
          #:tests? #f)) ; There are no tests.
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ population genetics library")
       (description
@@ -1216,8 +1209,7 @@ library provides population genetics-related modules.")
          ;; so the tests fail.
          #:out-of-source? #f))
       (inputs
-       `(("bpp-core" ,bpp-core)
-         ("gcc" ,gcc-5))) ; Use GCC 5 as per 'bpp-core'.
+       `(("bpp-core" ,bpp-core)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ sequence library")
       (description
@@ -1255,8 +1247,7 @@ library provides sequence-related modules.")
        `(("bpp-core" ,bpp-core)
          ("bpp-seq" ,bpp-seq)
          ("bpp-phyl" ,bpp-phyl)
-         ("bpp-phyl" ,bpp-popgen)
-         ("gcc" ,gcc-5)))
+         ("bpp-phyl" ,bpp-popgen)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bioinformatics tools written with the Bio++ libraries")
       (description
