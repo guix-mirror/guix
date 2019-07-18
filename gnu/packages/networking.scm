@@ -1626,7 +1626,7 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     (arguments
      `(#:tests? #f)) ; No tests are included
     (inputs
-     `(("openssl" ,openssl))) ; For the DES library
+     `(("openssl" ,openssl-1.0)))       ;for the DES library
     (home-page "https://www.lysator.liu.se/~pen/pidentd/")
     (synopsis "Small Ident Daemon")
     (description
