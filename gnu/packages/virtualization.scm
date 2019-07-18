@@ -62,6 +62,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -423,6 +424,15 @@ manage system or application containers.")
              (substitute* "config.h.in"
                (("/bin/sh") (which "sh")))
              #t))
+         (add-before 'configure 'patch-libtirpc-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libvirt uses an m4 macro instead of pkg-config to determine where
+             ;; the RPC headers are located.  Tell it to look in the right place.
+             (substitute* "configure"
+               (("/usr/include/tirpc")  ;defined in m4/virt-xdr.m4
+                (string-append (assoc-ref inputs "libtirpc")
+                               "/include/tirpc")))
+             #t))
          (add-before 'configure 'disable-broken-tests
            (lambda _
              (let ((tests (list "commandtest"      ; hangs idly
@@ -459,8 +469,9 @@ manage system or application containers.")
        ("qemu" ,qemu)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
+       ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
        ("libuuid" ,util-linux)
-       ("lvm2" ,lvm2)                   ; for libdevmapper
+       ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
