@@ -67,6 +67,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -1996,6 +1997,13 @@ lv2-c++-tools.")
                               "/lib/libasound.so.2"
                               "\")")))
             #t)))))
+    (native-inputs
+     `(;; FIXME: On i686-linux, GCC 7 hits an internal compiler error
+       ;; upon building utils/makehrtf.c:3281:
+       ;; "internal compiler error: in gen_rtx_SUBREG, at emit-rtl.c:908"
+       ;; https://ci.guix.gnu.org/log/r2fjx9m75m9rifg2yjbnn853wqy2547n-openal-1.19.1
+       ;; Remove this when the default compiler is GCC 9 or later.
+       ("gcc" ,gcc-9)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
