@@ -305,7 +305,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.4.0")
+    (version "1.5.3")
     (source
      (origin
        (method git-fetch)
@@ -315,7 +315,7 @@ Japanese language input in most graphical applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zkx1wfbd94v55gfycyd2b94jxclfyk2zl7yw35pyjx63qdlb6sd"))
+         "0xskhdhk7dgpc71r39pfzxi5vrlzy90aqj1gzv8nnapq91p2awhv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -325,7 +325,9 @@ Japanese language input in most graphical applications.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
+     '(;; XXX: Work around <https://bugs.gnu.org/36721>.
+       #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda _
