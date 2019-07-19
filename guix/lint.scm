@@ -742,21 +742,21 @@ descriptions maintained upstream."
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
   (define (warnings-for-uris uris)
-    (filter lint-warning?
-            (map
-             (lambda (uri)
-               (validate-uri uri package 'source))
-             (append-map (cut maybe-expand-mirrors <> %mirrors)
-                         uris))))
+    (filter-map (lambda (uri)
+                  (match (validate-uri uri package 'source)
+                    (#t #f)
+                    ((? lint-warning? warning) warning)))
+                uris))
 
   (let ((origin (package-source package)))
     (if (and origin
              (eqv? (origin-method origin) url-fetch))
-        (let* ((uris (map string->uri (origin-uris origin)))
+        (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
+                                     (map string->uri (origin-uris origin))))
                (warnings (warnings-for-uris uris)))
 
           ;; Just make sure that at least one of the URIs is valid.
-          (if (eq? (length uris) (length warnings))
+          (if (= (length uris) (length warnings))
               ;; When everything fails, report all of WARNINGS, otherwise don't
               ;; report anything.
               ;;
