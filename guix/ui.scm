@@ -392,6 +392,8 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
        (warning loc (G_ "~a~%") message)))
+    (('unbound-variable _ ...)
+     (report-unbound-variable-error args))
     (('srfi-34 obj)
      (if (message-condition? obj)
          (warning (G_ "failed to load '~a': ~a~%")
