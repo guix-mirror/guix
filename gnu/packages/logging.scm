@@ -75,6 +75,16 @@ staying as close to their API as is reasonable.")
                 "1xd3maiipfbxmhc9rrblc5x52nxvkwxp14npg31y5njqvkvzax9b"))
               (file-name (git-file-name name version))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-signal-tests
+                    (lambda _
+                      ;; XXX: This test fails on non x86_64.  See e.g.
+                      ;; https://github.com/google/glog/issues/219 and
+                      ;; https://github.com/google/glog/issues/256.
+                      (substitute* "Makefile"
+                        (("\tsignalhandler_unittest_sh") "\t$(EMPTY)"))
+                      #t)))))
     (native-inputs
      `(("perl" ,perl)                             ;for tests
        ("autoconf" ,autoconf-wrapper)
