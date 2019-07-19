@@ -5420,7 +5420,7 @@ window manager.")
 (define-public gnome-online-accounts
   (package
     (name "gnome-online-accounts")
-    (version "3.30.2")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5428,7 +5428,7 @@ window manager.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1p1gdgryziklrgngn6m13xnvfx4gb01h723nndfi9944r24fbiq5"))))
+                "1anlx0rb2hafg9929pgfms25mdz23sd0vdva06h6zlf8f5byc68w"))))
     (outputs '("out" "lib"))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -5454,6 +5454,7 @@ window manager.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      `(("glib" ,glib)           ; required by goa-1.0.pc
