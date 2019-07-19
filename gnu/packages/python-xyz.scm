@@ -5122,7 +5122,19 @@ without using the configuration machinery.")
     ;; Tests fail because of missing native python kernel which I assume is
     ;; provided by the ipython package, which we cannot use because it would
     ;; cause a dependency cycle.
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'set-tool-file-names
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((iproute (assoc-ref inputs "iproute")))
+                        (substitute* "jupyter_client/localinterfaces.py"
+                          (("'ip'")
+                           (string-append "'" iproute "/sbin/ip'")))
+                        #t))))))
+    (inputs
+     `(("iproute" ,iproute)))
     (propagated-inputs
      `(("python-pyzmq" ,python-pyzmq)
        ("python-traitlets" ,python-traitlets)
