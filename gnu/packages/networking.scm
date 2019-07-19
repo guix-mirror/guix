@@ -296,7 +296,7 @@ more.")
 (define-public czmq
   (package
     (name "czmq")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -305,21 +305,19 @@ more.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1h5hrcsc30fcwb032vy5gxkq4j4vv1y4dj460rfs1hhxi0cz83zh"))))
+                "1szciz62sk3fm4ga9qjpxz0n0lazvphm32km95bq92ncng12kayg"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; TODO Tests fail for some reason:
-       ;;  * zauth: OK
-       ;;  * zbeacon: OK (skipping test, no UDP broadcasting)
-       ;; E: (czmq_selftest) 18-02-24 16:25:52 No broadcast interface found, (ZSYS_INTERFACE=lo)
-       ;; make[2]: *** [Makefile:2245: check-local] Segmentation fault
-       ;; make[2]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make[1]: *** [Makefile:2032: check-am] Error 2
-       ;; make[1]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make: *** [Makefile:1588: check-recursive] Error 1
-       ;; phase `check' failed after 19.4 seconds
-       #:tests? #f
-       #:configure-flags '("--enable-drafts")))
+     '(#:configure-flags '("--enable-drafts")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'patch-tests
+                    (lambda _
+                      ;; XXX FIXME: Disable the zproc test, which fails on some
+                      ;; hardware: <https://github.com/zeromq/czmq/issues/2007>.
+                      (substitute* "src/czmq_selftest.c"
+                        (("\\{ \"zproc\", zproc_test.*")
+                         ""))
+                      #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
     (home-page "http://zeromq.org")
