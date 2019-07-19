@@ -164,6 +164,17 @@ grep "unbound" "$module_dir/err"		     # actual error
 grep "forget.*(gnu packages base)" "$module_dir/err" # hint
 rm -f "$module_dir"/*
 
+# Wrong 'define-module' clause reported by 'warn-about-load-error'.
+cat > "$module_dir/foo.scm" <<EOF
+(define-module (something foo)
+  #:use-module (guix)
+  #:use-module (gnu))
+EOF
+guix build guile-bootstrap -n 2> "$module_dir/err"
+grep "does not match file name" "$module_dir/err"
+
+rm "$module_dir"/*
+
 # Should all return valid log files.
 drv="`guix build -d -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
 out="`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
@@ -265,6 +276,7 @@ cat > "$module_dir/gexp.scm"<<EOF
 EOF
 guix build --file="$module_dir/gexp.scm" -d
 guix build --file="$module_dir/gexp.scm" -d | grep 'gexp\.drv'
+rm "$module_dir"/*.scm
 
 # Using 'GUIX_BUILD_OPTIONS'.
 GUIX_BUILD_OPTIONS="--dry-run --no-grafts"

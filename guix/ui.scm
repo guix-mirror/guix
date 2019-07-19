@@ -311,6 +311,36 @@ arguments."
         (display-hint (format #f (G_ "Did you forget @code{(use-modules ~a)}?")
                               (module-name module))))))))
 
+(define (check-module-matches-file module file)
+  "Check whether FILE starts with 'define-module MODULE' and print a hint if
+it doesn't."
+  ;; This is a common mistake when people start writing their own package
+  ;; definitions and try loading them with 'guix build -L …', so help them
+  ;; diagnose the problem.
+  (define (hint)
+    (display-hint (format #f (G_ "File @file{~a} should probably start with:
+
+@example\n(define-module ~a)\n@end example")
+                          file module)))
+
+  (catch 'system-error
+    (lambda ()
+      (let* ((sexp (call-with-input-file file read))
+             (loc  (and (pair? sexp)
+                        (source-properties->location (source-properties sexp)))))
+        (match sexp
+          (('define-module (names ...) _ ...)
+           (unless (equal? module names)
+             (warning loc
+                      (G_ "module name ~a does not match file name '~a'~%")
+                      names (module->source-file-name module))
+             (hint)))
+          ((? eof-object?)
+           (warning (G_ "~a: file is empty~%") file))
+          (else
+           (hint)))))
+    (const #f)))
+
 (define* (report-load-error file args #:optional frame)
   "Report the failure to load FILE, a user-provided Scheme file.
 ARGS is the list of arguments received by the 'throw' handler."
@@ -352,13 +382,13 @@ ARGS is the list of arguments received by the 'throw' handler."
         ;; above and need to be printed with 'print-exception'.
         (print-exception (current-error-port) frame key args))))))
 
-(define (warn-about-load-error file args)         ;FIXME: factorize with ↑
+(define (warn-about-load-error file module args)  ;FIXME: factorize with ↑
   "Report the failure to load FILE, a user-provided Scheme file, without
 exiting.  ARGS is the list of arguments received by the 'throw' handler."
   (match args
     (('system-error . rest)
      (let ((err (system-error-errno args)))
-       (warning (G_ "failed to load '~a': ~a~%") file (strerror err))))
+       (warning (G_ "failed to load '~a': ~a~%") module (strerror err))))
     (('syntax-error proc message properties form . rest)
      (let ((loc (source-properties->location properties)))
        (warning loc (G_ "~a~%") message)))
@@ -370,8 +400,9 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
          (warning (G_ "failed to load '~a': exception thrown: ~s~%")
                   file obj)))
     ((error args ...)
-     (warning (G_ "failed to load '~a':~%") file)
-     (apply display-error #f (current-error-port) args))))
+     (warning (G_ "failed to load '~a':~%") module)
+     (apply display-error #f (current-error-port) args)
+     (check-module-matches-file module file))))
 
 (define (call-with-unbound-variable-handling thunk)
   (define tag
