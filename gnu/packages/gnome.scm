@@ -954,11 +954,9 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      `(("icon-naming-utils" ,icon-naming-utils)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://art.gnome.org/")
-    (synopsis
-     "GNOME icon theme")
-    (description
-     "Icons for the GNOME desktop.")
+    (home-page "https://wiki.gnome.org/Personalization")
+    (synopsis "GNOME icon theme")
+    (description "Icons for the GNOME desktop.")
     (license license:lgpl3))) ; or Creative Commons BY-SA 3.0
 
 ;; gnome-icon-theme was renamed to adwaita-icon-theme after version 3.12.0.
