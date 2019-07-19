@@ -619,6 +619,23 @@
          (lint-warning-message second-warning))))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
+(test-equal "source: 404 and 200"
+  '()
+  (with-http-server 404 %long-string
+    (let ((bad-url (%local-url)))
+      (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+        (with-http-server 200 %long-string
+          (let ((pkg (package
+                       (inherit (dummy-package "x"))
+                       (source (origin
+                                 (method url-fetch)
+                                 (uri (list bad-url (%local-url)))
+                                 (sha256 %null-sha256))))))
+            ;; Since one of the two URLs is good, this should return the empty
+            ;; list.
+            (check-source pkg)))))))
+
+(test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 200"
   "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
   (with-http-server 200 %long-string
