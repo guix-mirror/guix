@@ -30,6 +30,7 @@
   #:use-module (guix monads)
   #:use-module (guix ui)
   #:use-module (guix pki)
+  #:use-module (gcrypt common)
   #:use-module (gcrypt pk-crypto)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
