@@ -854,7 +854,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.28.1")
+    (version "3.32.0")
     (source
      (origin
       (method url-fetch)
@@ -863,8 +863,8 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0bshwm49cd01ighsxqlbqn10q0ch71ff99gcrx8pr2gyky2ad3pq"))))
-    (build-system gnu-build-system)
+        "0d8a6479vappgplq5crdr3ah0ykqcr3fw533wkx9v1a8lnrv8n9d"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (add-after 'unpack 'set-adwaita-theme-file-name
