@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -352,7 +352,7 @@ TARGET in the other system."
     (mount-point (%store-prefix))
     (type "none")
     (check? #f)
-    (flags '(read-only bind-mount))))
+    (flags '(read-only bind-mount no-atime))))
 
 (define %control-groups
   (let ((parent (file-system
