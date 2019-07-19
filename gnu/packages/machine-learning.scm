@@ -1853,6 +1853,7 @@ with image data, text data, and sequence data.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Keras" version))
+       (patches (search-patches "python-keras-integration-test.patch"))
        (sha256
         (base32
          "1j8bsqzh49vjdxy6l1k4iwax5vpjzniynyd041xjavdzvfii1dlh"))))
