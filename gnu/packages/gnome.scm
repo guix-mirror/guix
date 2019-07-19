@@ -5190,7 +5190,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.30.2")
+    (version "3.32.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5198,38 +5198,68 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qwig35hzvjaqic9x92jcpmycnvcybsbnbiw6rppryx0arwb3wza"))))
-    (build-system glib-or-gtk-build-system)
+                "1q2rk7fym542c7k3bn2wlnzgy384gxacbifsjny0spbg95gfybvl"))))
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       ;; Otherwise, the RUNPATH will lack the final path component.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib/gedit"))
+       #:phases
        (modify-phases %standard-phases
-         (add-after
-          'install 'wrap-gedit
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out               (assoc-ref outputs "out"))
-                  (gtksourceview     (assoc-ref inputs "gtksourceview"))
-                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
-                  (python-path       (getenv "PYTHONPATH")))
-              (wrap-program (string-append out "/bin/gedit")
-                ;; For plugins.
-                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
-                `("PYTHONPATH" ":" prefix (,python-path))
-                ;; For language-specs.
-                `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
-                                                              "/share")))))
-            #t)))))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson/post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'patch-libgd-fetch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libgd (assoc-ref inputs "libgd")))
+               ;; Calling git is unnecessary because libgd is fetched as a
+               ;; native input to this package.
+               (substitute* "meson.build"
+                 ((".*git.*") ""))
+               (copy-recursively libgd "subprojects/libgd")
+               #t)))
+         (add-after 'install 'wrap-gedit
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out               (assoc-ref outputs "out"))
+                   (gtksourceview     (assoc-ref inputs "gtksourceview"))
+                   (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                   (python-path       (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/gedit")
+                 ;; For plugins.
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                 `("PYTHONPATH" ":" prefix (,python-path))
+                 ;; For language-specs.
+                 `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
+                                                               "/share")))))
+             #t)))))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
+       ("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
+       ("libgd"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://gitlab.gnome.org/GNOME/libgd")
+                 (commit "c7c7ff4e05d3fe82854219091cf116cce6b19de0")))
+           (file-name (git-file-name "libgd" version))
+           (sha256
+            (base32 "16yld0ap7qj1n96h4f2sqkjmibg7xx5xwkqxdfzam2nmyfdlrrrs"))))
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
        ("gspell" ,gspell)
        ("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)
+       ("gtksourceview" ,gtksourceview)
        ("libpeas" ,libpeas)
        ("libxml2" ,libxml2)
        ("iso-codes" ,iso-codes)
