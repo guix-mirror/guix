@@ -3519,12 +3519,12 @@ with the \"Stamp\" tool within Tux Paint.")
              (base32
               "1h1s4abirkdv4ag22zvyk6zkk64skqbjmcnnba67ps4hdzxfbhy4"))
             (patches
-             (search-patches "supertux-fix-build-with-gcc5.patch"
-                             "supertux-unbundle-squirrel.patch"))))
+             (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
-                          "-DENABLE_BOOST_STATIC_LIBS=OFF"
+                          ;; XXX: Work around <https://bugs.gnu.org/36721>.
+                          "-DBoost_NO_BOOST_CMAKE=ON"
                           "-DUSE_SYSTEM_PHYSFS=ON")
       #:phases
       (modify-phases %standard-phases
