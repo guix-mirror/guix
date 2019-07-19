@@ -740,11 +740,18 @@ descriptions maintained upstream."
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
   (define (warnings-for-uris uris)
-    (filter-map (lambda (uri)
-                  (match (validate-uri uri package 'source)
-                    (#t #f)
-                    ((? lint-warning? warning) warning)))
-                uris))
+    (let loop ((uris uris)
+               (warnings '()))
+      (match uris
+        (()
+         (reverse warnings))
+        ((uri rest ...)
+         (match (validate-uri uri package 'source)
+           (#t
+            ;; We found a working URL, so stop right away.
+            '())
+           ((? lint-warning? warning)
+            (loop rest (cons warning warnings))))))))
 
   (let ((origin (package-source package)))
     (if (and origin
