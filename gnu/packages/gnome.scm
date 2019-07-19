@@ -5025,7 +5025,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.30.1")
+    (version "3.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5033,11 +5033,12 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kiragsqyixyx15747b71qc4nw8y4jx9d55wgg612xb0hp5l9pj1"))))
+                "0irm72cf8222h93skivn0nn0ckahiiiimy4rb9r3ccjvhi3hiaqw"))))
     (build-system meson-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("intltool" ,intltool)
+       ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
        ("glib:bin" ,glib "bin")))
@@ -5048,7 +5049,7 @@ share them with others via social networking and more.")
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libnotify" ,libnotify)
-       ("itstool" ,itstool)
+       ("nettle" ,nettle)
        ("libxml2" ,libxml2)))
     (synopsis "Graphical archive manager for GNOME")
     (description "File Roller is an archive manager for the GNOME desktop
