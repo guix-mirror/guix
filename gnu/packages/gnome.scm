@@ -5967,7 +5967,10 @@ devices using the GNOME desktop.")
     (arguments
      '(#:glib-or-gtk? #t
        #:configure-flags
-       (list "-Dcheese=false")
+       (list "-Dcheese=false"
+             (string-append "-Dgnome_session_libexecdir="
+                            (assoc-ref %build-inputs "gnome-session")
+                            "/libexec"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-paths
@@ -5975,7 +5978,8 @@ devices using the GNOME desktop.")
              (let ((libc   (assoc-ref inputs "libc"))
                    (tzdata (assoc-ref inputs "tzdata"))
                    (libgnomekbd (assoc-ref inputs "libgnomekbd"))
-                   (nm-applet   (assoc-ref inputs "network-manager-applet")))
+                   (nm-applet   (assoc-ref inputs "network-manager-applet"))
+                   (gnome-desktop (assoc-ref inputs "gnome-desktop")))
                (substitute* "panels/datetime/tz.h"
                  (("/usr/share/zoneinfo/zone.tab")
                   (string-append tzdata "/share/zoneinfo/zone.tab")))
@@ -5995,6 +5999,10 @@ devices using the GNOME desktop.")
                (substitute* '("panels/user-accounts/run-passwd.c")
                  (("/usr/bin/passwd")
                   "/run/setuid-programs/passwd"))
+               (substitute* "panels/info/cc-info-overview-panel.c"
+                 (("DATADIR \"/gnome/gnome-version.xml\"")
+                  (string-append "\"" gnome-desktop
+                                 "/share/gnome/gnome-version.xml\"")))
                #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
@@ -6014,6 +6022,7 @@ devices using the GNOME desktop.")
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-online-accounts" ,gnome-online-accounts)
        ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
+       ("gnome-session" ,gnome-session)
        ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("grilo" ,grilo)
        ("ibus" ,ibus)
