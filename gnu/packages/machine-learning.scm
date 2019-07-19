@@ -1604,6 +1604,9 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("protobuf:native" ,protobuf-next) ; protoc
        ("protobuf:src" ,(package-source protobuf-next))
        ("eigen:src" ,(package-source eigen-for-tensorflow))
+       ;; install_pip_packages.sh wants setuptools 39.1.0 specifically.
+       ("python-setuptools" ,python-setuptools-for-tensorflow)
+
        ;; The commit hashes and URLs for third-party source code are taken
        ;; from "tensorflow/workspace.bzl".
        ("boringssl-src"

@@ -713,6 +713,19 @@ Python 3 support.")
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
 
+;; The setuptools provided by Python 3.7.4 is too new for Tensorflow.
+(define-public python-setuptools-for-tensorflow
+  (hidden-package
+   (package
+     (inherit python-setuptools)
+     (version "39.1.0")
+     (source (origin
+               (inherit (package-source python-setuptools))
+               (uri (pypi-uri "setuptools" version ".zip"))
+               (sha256
+                (base32
+                 "1mzdhvfhnv4lggxa8rjl0dzqxvfx377gg5sqs57v89wrp09lwj65")))))))
+
 (define-public python-uniseg
   (package
     (name "python-uniseg")
