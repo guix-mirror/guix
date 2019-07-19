@@ -6252,7 +6252,7 @@ usage and information about running processes.")
 (define-public gnome-bluetooth
   (package
     (name "gnome-bluetooth")
-    (version "3.28.0")
+    (version "3.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6260,7 +6260,7 @@ usage and information about running processes.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0q7yzklrlayj99risj096mr5x35anx94wvr6nbf6pwbvvzv7453p"))))
+                "1am1gf0nzwg6x1s8ly13j0xnjzgrfj06j0dp52x4zy9s67ywlhb4"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
@@ -6271,10 +6271,11 @@ usage and information about running processes.")
        ("xmllint" ,libxml2)))
     (propagated-inputs
      ;; gnome-bluetooth-1.0.pc refers to all these.
-     `(("gtk+" ,gtk+)
-       ("udev" ,eudev)))
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)))
     (inputs
-     `(("libcanberra" ,libcanberra)
+     `(("eudev" ,eudev)
+       ("libcanberra" ,libcanberra)
        ("libnotify" ,libnotify)))
     (synopsis "GNOME Bluetooth subsystem")
     (home-page "https://wiki.gnome.org/Projects/GnomeBluetooth")
