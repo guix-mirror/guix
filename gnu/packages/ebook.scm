@@ -37,6 +37,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages glib)
@@ -294,7 +295,8 @@ designed to be used in a generic text renderer.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("gcc" ,gcc-5)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; No tests exist.
        #:make-flags `("CC=gcc" "TARGET_ARCH=desktop" "UI_TYPE=gtk"
