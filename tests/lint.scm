@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Alex Kost <alezost@gmail.com>
@@ -710,12 +710,12 @@
 
 (test-equal "cve"
   '()
-  (mock ((guix scripts lint) package-vulnerabilities (const '()))
+  (mock ((guix lint) package-vulnerabilities (const '()))
         (check-vulnerabilities (dummy-package "x"))))
 
 (test-equal "cve: one vulnerability"
   "probably vulnerable to CVE-2015-1234"
-  (mock ((guix scripts lint) package-vulnerabilities
+  (mock ((guix lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
@@ -726,7 +726,7 @@
 
 (test-equal "cve: one patched vulnerability"
   '()
-  (mock ((guix scripts lint) package-vulnerabilities
+  (mock ((guix lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
@@ -742,7 +742,7 @@
 
 (test-equal "cve: known safe from vulnerability"
   '()
-  (mock ((guix scripts lint) package-vulnerabilities
+  (mock ((guix lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
@@ -755,7 +755,7 @@
 
 (test-equal "cve: vulnerability fixed in replacement version"
   '()
-  (mock ((guix scripts lint) package-vulnerabilities
+  (mock ((guix lint) package-vulnerabilities
          (lambda (package)
            (match (package-version package)
              ("0"
@@ -772,7 +772,7 @@
 
 (test-equal "cve: patched vulnerability in replacement"
   '()
-  (mock ((guix scripts lint) package-vulnerabilities
+  (mock ((guix lint) package-vulnerabilities
          (lambda (package)
            (list (make-struct (@@ (guix cve) <vulnerability>) 0
                               "CVE-2015-1234"
