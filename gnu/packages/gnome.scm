@@ -4682,7 +4682,7 @@ a secret password store, an adblocker, and a modern UI.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.30.4")
+    (version "3.32.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/epiphany/"
@@ -4690,7 +4690,7 @@ a secret password store, an adblocker, and a modern UI.")
                                   "epiphany-" version ".tar.xz"))
               (sha256
                (base32
-                "0nk0krzrfck6hhfs52f4sjmj93yjyvabm72bq8i8f9l1pass5vgd"))))
+                "0gx386k1p78ppjhvdanv99hfiwana0ccn9d499qrp0rvlicnijrw"))))
 
     (build-system meson-build-system)
     (arguments
