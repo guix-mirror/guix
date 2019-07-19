@@ -249,6 +249,7 @@ coreboot.")
     (build-system gnu-build-system)
     (native-inputs
      `(("acpica" ,acpica)
+       ("gcc" ,gcc-5)
        ("nasm" ,nasm)
        ("python-2" ,python-2)
        ("util-linux" ,util-linux)))
