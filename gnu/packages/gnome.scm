@@ -475,7 +475,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.30.2")
+    (version "3.32.2")
     (source
      (origin
       (method url-fetch)
@@ -484,8 +484,8 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0k6iccfj9naw42dl2mgljfvk12dmvg06plg86qd81nksrf9ycxal"))))
-    (build-system gnu-build-system)
+        "0bidx4626x7k2myv6f64qv4fzmxv8v475wibiz19kj8hjfr737q9"))))
+    (build-system meson-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -495,27 +495,39 @@ commonly used macros.")
                (substitute* "libgnome-desktop/gnome-languages.c"
                  (("\"locale\"")
                   (string-append "\"" libc "/bin/locale\"")))
-               #t))))))
+               #t)))
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Tests require a running X server and locales.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             (setenv "GUIX_LOCPATH"
+                     (string-append (assoc-ref inputs "glibc-locales")
+                                    "/lib/locale"))
+             #t)))))
     (native-inputs
-     `(("gobject-introspection" ,gobject-introspection)
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen
+       ("glibc-locales" ,glibc-locales) ; for tests
+       ("gobject-introspection" ,gobject-introspection)
        ("itstool" ,itstool)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("xmllint" ,libxml2)))
+       ("xmllint" ,libxml2)
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      ;; Required by gnome-desktop-3.0.pc.
      `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)))
-    (inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
+       ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("libseccomp" ,libseccomp)
        ("libx11" ,libx11)
+       ("xkeyboard-config" ,xkeyboard-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
        ("libxext" ,libxext)
        ("libxkbfile" ,libxkbfile)
-       ("libxrandr" ,libxrandr)
-       ("xkeyboard-config" ,xkeyboard-config)))
+       ("libxrandr" ,libxrandr)))
     (home-page "https://www.gnome.org/")
     (synopsis
      "Libgnome-desktop, gnome-about, and desktop-wide documents")
