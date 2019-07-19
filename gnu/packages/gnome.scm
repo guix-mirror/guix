@@ -5162,6 +5162,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version) "/"
                                   name "-" version ".tar.xz"))
+              (patches (search-patches "evolution-data-server-locales.patch"))
               (sha256
                (base32
                 "1s952wyhgcbmq9nfgk75v15zdy1h3wy5p5rmkqibaavmc0pk3mli"))))
@@ -5205,22 +5206,6 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                            "tests/libedata-cal/test-cal-cache-utils.c")
               (("/bin/rm") (which "rm")))
             #t))
-         ;; This phase fixes locale canonicalization when using newer
-         ;; versions of ICU.  The bug has been fixed upstream, and
-         ;; should appear starting in version 3.33.5.
-         ;; <https://gitlab.gnome.org/GNOME/evolution-data-server/issues/137>.
-         (add-after 'unpack 'patch-locale-canonicalization
-           (lambda _
-             (substitute* "src/libedataserver/e-collator.c"
-               (("len = uloc_canonicalize \\(posix_locale,.*" x)
-                ((lambda (xs) (string-join xs "\n" 'suffix))
-                 (list
-                  "if (posix_locale && ("
-                  "    g_ascii_strcasecmp(posix_locale, \"C\") == 0 ||"
-                  "    g_ascii_strcasecmp(posix_locale, \"POSIX\") == 0))"
-                  "  posix_locale = \"en_US_POSIX\";"
-                  x))))
-             #t))
          (add-before 'configure 'dont-override-rpath
            (lambda _
              (substitute* "CMakeLists.txt"
