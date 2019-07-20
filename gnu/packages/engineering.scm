@@ -11,6 +11,7 @@
 ;;; Copyright © 2018, 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
+;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2062,3 +2063,49 @@ purpose circuit simulator and can perform DC and transient analyses, fourier
 analysis and AC analysis.  The engine is designed to do true mixed-mode
 simulation.")
     (license license:gpl3+)))
+
+(define-public cutter
+  (package
+    (name "cutter")
+    (version "1.8.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/radareorg/cutter")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "03f3cdckh51anx9gd1b0ndb2fg7061hqngvygf32ky29mm2m2lyv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (radare2 (assoc-ref inputs "radare2")))
+               ;; fix pkg-config detection ./src/lib_radare2.pri:PREFIX=/usr/lib
+               ;; override `qmake PREFIX=`
+               (substitute* "./src/lib_radare2.pri"
+                 (("PREFIX") "R2PREFIX")
+                 (("R2PREFIX=/usr") (string-append "R2PREFIX=" radare2)))
+               (invoke "qmake"
+                       (string-append "PREFIX=" out)
+                       "./src/Cutter.pro")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("openssl" ,openssl)
+       ("radare2" ,radare2)))
+    (home-page "https://github.com/radareorg/cutter")
+    (synopsis "GUI for radare2 reverse engineering framework")
+    (description "Cutter is a GUI for radare2 reverse engineering framework.
+Its goal is making an advanced andcustomizable reverse-engineering platform
+while keeping the user experience at mind.  Cutter is created by reverse
+engineers for reverse engineers.")
+    (license (list license:cc-by-sa3.0  ;the "Iconic" icon set
+                   license:gpl3+))))    ;everything else
