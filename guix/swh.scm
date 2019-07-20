@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +31,9 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 popen)
   #:use-module ((ice-9 ftw) #:select (scandir))
-  #:export (origin?
+  #:export (%swh-base-url
+
+            origin?
             origin-id
             origin-type
             origin-url
@@ -115,11 +117,11 @@
 
 (define %swh-base-url
   ;; Presumably we won't need to change it.
-  "https://archive.softwareheritage.org")
+  (make-parameter "https://archive.softwareheritage.org"))
 
 (define (swh-url path . rest)
   (define url
-    (string-append %swh-base-url path
+    (string-append (%swh-base-url) path
                    (string-join rest "/" 'prefix)))
 
   ;; Ensure there's a trailing slash or we get a redirect.
