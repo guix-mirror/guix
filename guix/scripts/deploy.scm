@@ -23,6 +23,7 @@
   #:use-module (guix scripts build)
   #:use-module (guix store)
   #:use-module (guix ui)
+  #:use-module (guix utils)
   #:use-module (guix grafts)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
@@ -41,6 +42,8 @@
 (define (show-help)
   (display (G_ "Usage: guix deploy [OPTION] FILE...
 Perform the deployment specified by FILE.\n"))
+  (display (G_ "
+  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (show-build-options-help)
   (newline)
   (display (G_ "
@@ -55,10 +58,14 @@ Perform the deployment specified by FILE.\n"))
                  (lambda args
                    (show-help)
                    (exit 0)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
          %standard-build-options))
 
 (define %default-options
-  '((system . ,(%current-system))
+  `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
     (graft? . #t)
@@ -81,6 +88,7 @@ Perform the deployment specified by FILE.\n"))
       (set-build-options-from-command-line store opts)
       (for-each (lambda (machine)
                   (info (G_ "deploying to ~a...") (machine-display-name machine))
-                  (parameterize ((%graft? (assq-ref opts 'graft?)))
+                  (parameterize ((%current-system (assq-ref opts 'system))
+                                 (%graft? (assq-ref opts 'graft?)))
                     (run-with-store store (deploy-machine machine))))
                 machines))))
