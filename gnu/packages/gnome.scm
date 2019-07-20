@@ -4046,7 +4046,7 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.3.3")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -4055,13 +4055,15 @@ as possible!")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1qx072m0gl6m3d5g5cbbf13p4h217icmlxjnrn829x5xqwi451sw"))))
-    (build-system gnu-build-system)
+         "1wnabc69730jsv8dljj5ik8g7p581nw60mw1mkgamkzjcb6821bk"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("gobject-introspection" ,gobject-introspection)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk-doc" ,gtk-doc)
+       ("vala" ,vala)))
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
        ("glib" ,glib)
@@ -4070,26 +4072,12 @@ as possible!")
        ("liboauth" ,liboauth)
        ("libsoup" ,libsoup)
        ("totem-pl-parser" ,totem-pl-parser)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-introspection-install-dir
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out")))
-                        (substitute* '("src/Makefile.in"
-                                       "libs/pls/Makefile.in"
-                                       "libs/net/Makefile.in")
-                          (("@INTROSPECTION_GIRDIR@")
-                           (string-append out "/share/gir-1.0/"))
-                          (("@INTROSPECTION_TYPELIBDIR@")
-                           (string-append out "/lib/girepository-1.0/")))
-                        #t))))))
     (native-search-paths
      (list (search-path-specification
             (variable "GRL_PLUGIN_PATH")
             (files (list (string-append "lib/grilo-"
                                         (version-major+minor version)))))))
-    (home-page "https://live.gnome.org/Grilo")
+    (home-page "https://wiki.gnome.org/action/show/Projects/Grilo")
     (synopsis "Framework for discovering and browsing media")
     (description
      "Grilo is a framework focused on making media discovery and browsing easy
