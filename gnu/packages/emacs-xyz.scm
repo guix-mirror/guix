@@ -4578,7 +4578,7 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -4588,7 +4588,7 @@ automatically.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "009n8zjycs62cv4i1k9adbb284wz2w3r13xki2740sj34k683v13"))))
+         "0xgngn3jhmyn6mlkk9kmgfgh0w5i50b27syr4cgfgarg6p77j05w"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
