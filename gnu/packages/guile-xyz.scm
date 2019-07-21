@@ -146,7 +146,7 @@
       ;; projects.
       ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
       (inputs `(("guile" ,guile-2.2)
-                ("guile-json" ,guile-json)
+                ("guile-json" ,guile-json-1)
                 ("guile-redis" ,guile-redis)))
       (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
                        ("pkgconfig"  ,pkg-config)
@@ -844,7 +844,7 @@ messaging library.")
       (inputs
        `(("openssl" ,openssl)
          ("guile" ,guile-2.2)
-         ("guile-json" ,guile-json)
+         ("guile-json" ,guile-json-1)
          ("guile-simple-zmq" ,guile-simple-zmq)))
       (synopsis "Guile kernel for the Jupyter Notebook")
       (description
@@ -1008,7 +1008,7 @@ Scheme by using Guile’s foreign function interface.")
     (inputs
      `(("guile" ,guile-2.2)
        ("gnutls" ,gnutls)
-       ("guile-json" ,guile-json)))
+       ("guile-json" ,guile-json-1)))
     (home-page "https://framagit.org/prouby/guile-mastodon")
     (synopsis "Guile Mastodon REST API module")
     (description "This package provides Guile modules to access the

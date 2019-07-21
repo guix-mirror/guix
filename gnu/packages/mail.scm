@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -2848,7 +2848,7 @@ replacement for the @code{urlview} program.")
        `(("guile-debbugs" ,guile-debbugs-next)
          ("guile-email" ,guile-email)
          ("guile-fibers" ,guile-fibers)
-         ("guile-json" ,guile-json)
+         ("guile-json" ,guile-json-1)
          ("guile-syntax-highlight" ,guile-syntax-highlight)
          ("guile" ,guile-2.2)))
       (native-inputs

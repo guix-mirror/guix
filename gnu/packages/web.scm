@@ -6509,7 +6509,7 @@ compressed JSON header blocks.
       (propagated-inputs
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json)))
+         ("guile-json" ,guile-json-1)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
