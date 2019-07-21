@@ -17557,3 +17557,32 @@ a variety of languages, including elisp itself.")
 interfaces.  Several interfaces are supported beside the classic ido: popup,
 helm and ivy.")
     (license license:gpl3+)))
+
+(define-public emacs-org-emms
+  (let ((commit "07a8917f3d628c32e5de1dbd118ac08203772533")
+        (revision "1"))
+    (package
+      (name "emacs-org-emms")
+      (version
+       (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jagrg/org-emms.git")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "1sqsm5sv311xfdk4f4rsnvprdf2v2vm7l1b3vqi7pc0g8adlnw1d"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emms" ,emacs-emms)
+         ("emacs-org" ,emacs-org)))
+      (home-page "https://gitlab.com/jagrg/org-emms")
+      (synopsis "Play multimedia files from org-mode")
+      (description
+       "This package provides a new org link type for playing back multimedia
+files from org-mode using EMMS, The Emacs Multimedia System.  If the link
+contains a track position, playback will start at the specified position.")
+      (license license:gpl3+))))
