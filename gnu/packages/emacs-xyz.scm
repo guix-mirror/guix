@@ -17635,3 +17635,31 @@ JIRA issue servers.")
     (description
      "Major mode for editing systemd units in GNU Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-ssh-config-mode
+  (let ((commit "4c1dfa57d452cb5654453bf186c8ff63e1e71b56")
+        (revision "1"))
+    (package
+      (name "emacs-ssh-config-mode")
+      (version (git-version "8.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/jhgorrell/ssh-config-mode-el.git")
+           (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "0crglfdazzckizbwzmgl2rn6j85avfzkr1q7ijxd17rp2anvr9bd"))))
+      (build-system emacs-build-system)
+      (arguments '(#:include '("\\.el$" "\\.txt$")))
+      (home-page
+       "https://github.com/jhgorrell/ssh-config-mode-el")
+      (synopsis
+       "Mode for fontification of ~/.ssh/config")
+      (description
+       "This packages fontifies the ssh config keywords and creates
+keybindings for skipping from host section to host section.")
+      (license license:gpl3+))))
