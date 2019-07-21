@@ -52,6 +52,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
+;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17526,4 +17527,33 @@ Emacs Lisp's (relatively new) EIEIO object oriented libraries.")
     (description "Emacs Refactor (EMR) is a framework for providing
 language-specific refactoring in Emacs.  It includes refactoring commands for
 a variety of languages, including elisp itself.")
+    (license license:gpl3+)))
+
+(define-public emacs-flyspell-correct
+  (package
+    (name "emacs-flyspell-correct")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/d12frosted/flyspell-correct.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r9hmz7sihhy7npv6nxp04sy57glzmfax5d67mwn96fdnc0yhlnd"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-popup" ,emacs-popup)))
+    (home-page
+     "https://github.com/d12frosted/flyspell-correct")
+    (synopsis
+     "Correcting words with flyspell via custom interfaces")
+    (description
+     "This package provides functionality for correcting words via custom
+interfaces.  Several interfaces are supported beside the classic ido: popup,
+helm and ivy.")
     (license license:gpl3+)))
