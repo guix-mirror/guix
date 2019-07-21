@@ -3751,3 +3751,36 @@ binaural beat tracks of different frequencies and exporting of tracks into
 different audio formats.  Gnaural can also be linked over the internet with
 other Gnaural instances, allowing synchronous sessions between many users.")
     (license license:gpl2+)))
+
+(define-public darkice
+  (package
+    (name "darkice")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/darkice/darkice/"
+                                  version "/darkice-" version ".tar.gz"))
+              (sha256
+               (base32 "1rlxds7ssq7nk2in4s46xws7xy9ylxsqgcz85hxjgh17lsm0y39c"))
+              (patches
+               (search-patches "darkice-workaround-fpermissive-error.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("lame" ,lame)
+              ("libvorbis" ,libvorbis)
+              ("opus" ,opus)
+              ("twolame" ,twolame)
+              ("alsa-lib" ,alsa-lib)
+              ("pulseaudio" ,pulseaudio)
+              ("jack" ,jack-1)
+              ("libsamplerate" ,libsamplerate)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-lame-prefix="
+                            (assoc-ref %build-inputs "lame")))))
+    (home-page "http://www.darkice.org/")
+    (synopsis "Live audio streamer")
+    (description "DarkIce is a live audio streamer.  It takes audio input from
+a sound card, encodes it into Ogg Vorbis and/or mp3, and sends the audio
+stream to one or more IceCast and/or ShoutCast servers.")
+    (license license:gpl3+)))
