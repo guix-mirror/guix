@@ -17613,3 +17613,25 @@ contains a track position, playback will start at the specified position.")
     "This package provides an extension to org-mode for syncing issues with
 JIRA issue servers.")
    (license license:gpl3+)))
+
+(define-public emacs-systemd-mode
+  (package
+    (name "emacs-systemd-mode")
+    (version "1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/holomorph/systemd-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0ylgnvpfindg4cxccbqy02ic7p0i9rygf1w16dm1filwhbqvjplq"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.txt$")))
+    (home-page "https://github.com/holomorph/systemd-mode")
+    (synopsis
+     "Major mode for editing systemd units")
+    (description
+     "Major mode for editing systemd units in GNU Emacs.")
+    (license license:gpl3+)))
