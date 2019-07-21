@@ -51,7 +51,7 @@
 (define-public cmake-minimal
   (package
     (name "cmake-minimal")
-    (version "3.14.5")
+    (version "3.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.cmake.org/files/v"
@@ -59,7 +59,7 @@
                                   "/cmake-" version ".tar.gz"))
               (sha256
                (base32
-                "01lcl6ynxfgqn09ncfz1gr24ha5pv1slk0azzaawaqrwpsgf8njh"))
+                "1xyprly3sf4wi0n1x79k4n22yxm6pb7fv70gqr9lvc7qv14cbphq"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -125,7 +125,6 @@
              (substitute*
                  '("Modules/CompilerId/Xcode-3.pbxproj.in"
                    "Modules/CPack.RuntimeScript.in"
-                   "Source/cmakexbuild.cxx"
                    "Source/cmGlobalXCodeGenerator.cxx"
                    "Source/cmLocalUnixMakefileGenerator3.cxx"
                    "Source/cmExecProgramCommand.cxx"
