@@ -8674,7 +8674,7 @@ example package definition in JSON format:
   "synopsis": "Hello, GNU world: An example GNU package",
   "description": "GNU Hello prints a greeting.",
   "license": "GPL-3.0+",
-  "native-inputs": ["gcc@@6"]
+  "native-inputs": ["gettext"]
 @}
 @end example
 
