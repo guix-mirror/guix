@@ -17586,3 +17586,30 @@ helm and ivy.")
 files from org-mode using EMMS, The Emacs Multimedia System.  If the link
 contains a track position, playback will start at the specified position.")
       (license license:gpl3+))))
+
+(define-public emacs-org-jira
+  (package
+   (name "emacs-org-jira")
+   (version "4.3.1")
+   (source
+    (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/ahungry/org-jira.git")
+           (commit version)))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32
+       "1l80r2a9zzbfk2c78i40h0ww79vm9v4j6xi2h5i4w9kqh10rs6h2"))))
+   (build-system emacs-build-system)
+   (propagated-inputs
+    `(("emacs-request" ,emacs-request)
+      ("emacs-s" ,emacs-s)
+      ("emacs-dash" ,emacs-dash)
+      ("emacs-org" ,emacs-org)))
+   (home-page "https://github.com/ahungry/org-jira")
+   (synopsis "Syncing between Jira and Org-mode")
+   (description
+    "This package provides an extension to org-mode for syncing issues with
+JIRA issue servers.")
+   (license license:gpl3+)))
