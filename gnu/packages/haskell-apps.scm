@@ -143,7 +143,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180926")
+    (version "7.20190708")
     (source
      (origin
        (method url-fetch)
@@ -151,7 +151,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "1251rj8h63y30sfqk0zh670yhz14p256y59n3590pg015pf3575d"))))
+         "18s563swrp8mx479995pdhhmn40y3xwlbm1z3w63qsnjqmj7zlij"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -219,6 +219,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
        ("ghc-bloomfilter" ,ghc-bloomfilter)
        ("ghc-byteable" ,ghc-byteable)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-concurrent-output" ,ghc-concurrent-output)
        ("ghc-crypto-api" ,ghc-crypto-api)
        ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-data-default" ,ghc-data-default)
