@@ -17111,6 +17111,29 @@ convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
 zip utility (default is @code{zip}).")
     (license license:gpl3+)))
 
+(define-public emacs-ox-hugo
+  (package
+    (name "emacs-ox-hugo")
+    (version "0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kaushalmodi/ox-hugo.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11h464cyc28ld0b0zridgm4drydc1qjxbm1y24zrwlkyqqjk6yr7"))))
+    (build-system emacs-build-system)
+    (home-page "https://ox-hugo.scripter.co")
+    (synopsis "Hugo markdown back-end for Org export engine")
+    (description
+     "Ox-hugo is an Org exporter backend that exports Org to Hugo-compatible
+Markdown, Blackfriday, and also generates the front-matter in TOML or YAML
+format.")
+    (license license:gpl3+)))
+
 (define-public emacs-ox-pandoc
   (package
     (name "emacs-ox-pandoc")
