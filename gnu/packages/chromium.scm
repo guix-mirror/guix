@@ -408,9 +408,6 @@ from forcing GEXP-PROMISE."
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
-       ;; Chromiums build processes may consume up to 8GiB of memory per core.
-       ;; Disable parallel builds to avoid thrashing end user systems.
-       #:parallel-build? #f
        ;; FIXME: Chromiums RUNPATH lacks entries for some libraries, so
        ;; we have to disable validation and add a wrapper below.
        #:validate-runpath? #f
@@ -467,6 +464,9 @@ from forcing GEXP-PROMISE."
              ;; Optimize for building everything at once, as opposed to
              ;; incrementally for development.  See "docs/jumbo.md".
              "use_jumbo_build=true"
+             ;; The default file merge limit of 50 requires huge amounts of RAM.
+             ;; Cap it to make sure the build succeeds on commodity hardware.
+             "jumbo_file_merge_limit=8"
 
              ;; Prefer system libraries.
              "use_system_freetype=true"
