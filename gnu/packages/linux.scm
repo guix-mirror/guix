@@ -127,6 +127,9 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
@@ -155,6 +158,174 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
         ((string-prefix? "powerpc64le-" system) "ppc64_defconfig")
         (else "defconfig")))
 
+
+;;;
+;;; Kernel source code deblobbing.
+;;;
+
+(define (linux-libre-deblob-scripts version
+                                    deblob-hash
+                                    deblob-check-hash)
+  (list (version-major+minor version)
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://linux-libre.fsfla.org"
+                              "/pub/linux-libre/releases/" version "-gnu/"
+                              "deblob-" (version-major+minor version)))
+          (sha256 deblob-hash))
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://linux-libre.fsfla.org"
+                              "/pub/linux-libre/releases/" version "-gnu/"
+                              "deblob-check"))
+          (sha256 deblob-check-hash))))
+
+(define deblob-scripts-5.2
+  (linux-libre-deblob-scripts
+   "5.2.1"
+   (base32 "076fwxlm6jq6z4vg1xq3kr474zz7qk71r90sf9dnfia3rw2pb4fa")
+   (base32 "030cccchli7vnzvxcw261spyzsgnq0m113bjsz8y4vglf6gaz4n9")))
+
+(define deblob-scripts-4.19
+  (linux-libre-deblob-scripts
+   "4.19.59"
+   (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
+   (base32 "07z1bsyny8lldncfh27lb16mgx9r38nswx4vmd24c7n4xva12k2s")))
+
+(define deblob-scripts-4.14
+  (linux-libre-deblob-scripts
+   "4.14.133"
+   (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
+   (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
+
+(define deblob-scripts-4.9
+  (linux-libre-deblob-scripts
+   "4.9.185"
+   (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
+   (base32 "1gmjn5cwxydg6qb47wcmahwkv37npsjx4papynzkkdxyidmrccya")))
+
+(define deblob-scripts-4.4
+  (linux-libre-deblob-scripts
+   "4.4.185"
+   (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
+   (base32 "1x40lbiaizksy8z38ax7wpqr9ldgq7qvkxbb0ca98vd1axpklb10")))
+
+(define* (computed-origin-method gexp-promise hash-algo hash
+                                 #:optional (name "source")
+                                 #:key (system (%current-system))
+                                 (guile (default-guile)))
+  "Return a derivation that executes the G-expression that results
+from forcing GEXP-PROMISE."
+  (mlet %store-monad ((guile (package->derivation guile system)))
+    (gexp->derivation (or name "computed-origin")
+                      (force gexp-promise)
+                      #:graft? #f       ;nothing to graft
+                      #:system system
+                      #:guile-for-build guile)))
+
+(define (make-linux-libre-source version
+                                 upstream-source
+                                 deblob-scripts)
+  "Return a 'computed' origin that generates a Linux-libre tarball from the
+corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
+  (match deblob-scripts
+    ((deblob-version (? origin? deblob) (? origin? deblob-check))
+     (unless (string=? deblob-version (version-major+minor version))
+       ;; The deblob script cannot be expected to work properly on a
+       ;; different version (major+minor) of Linux, even if no errors
+       ;; are signaled during execution.
+       (error "deblob major+minor version mismatch"))
+     (origin
+       (method computed-origin-method)
+       (file-name (string-append "linux-libre-" version "-guix.tar.xz"))
+       (sha256 #f)
+       (uri
+        (delay
+          (with-imported-modules '((guix build utils))
+            #~(begin
+                (use-modules (guix build utils)
+                             (srfi srfi-1)
+                             (ice-9 match)
+                             (ice-9 ftw))
+                (let ((dir (string-append "linux-" #$version)))
+
+                  (mkdir "/tmp/bin")
+                  (set-path-environment-variable
+                   "PATH" '("bin")
+                   (list "/tmp"
+                         #+(canonical-package bash)
+                         #+(canonical-package coreutils)
+                         #+(canonical-package diffutils)
+                         #+(canonical-package findutils)
+                         #+(canonical-package patch)
+                         #+(canonical-package xz)
+                         #+(canonical-package sed)
+                         #+(canonical-package grep)
+                         #+(canonical-package bzip2)
+                         #+(canonical-package gzip)
+                         #+(canonical-package tar)
+                         ;; The comments in the 'deblob-check' script
+                         ;; claim that it supports Python 2 and 3, but
+                         ;; in fact it fails when run in Python 3 as
+                         ;; of version 5.1.3.
+                         #+python-2))
+
+                  (with-directory-excursion "/tmp/bin"
+
+                    (copy-file #+deblob "deblob")
+                    (chmod "deblob" #o755)
+                    (substitute* "deblob"
+                      (("/bin/sh") (which "sh")))
+
+                    (copy-file #+deblob-check "deblob-check")
+                    (chmod "deblob-check" #o755)
+                    (substitute* "deblob-check"
+                      (("/bin/sh") (which "sh"))
+                      (("/bin/sed") (which "sed"))
+                      (("/usr/bin/python") (which "python"))))
+
+                  (if (file-is-directory? #+upstream-source)
+                      (begin
+                        (format #t "Copying upstream linux source...~%")
+                        (force-output)
+                        (invoke "cp" "--archive" #+upstream-source dir)
+                        (invoke "chmod" "--recursive" "u+w" dir))
+                      (begin
+                        (format #t "Unpacking upstream linux tarball...~%")
+                        (force-output)
+                        (invoke "tar" "xf" #$upstream-source)
+                        (match (scandir "."
+                                        (lambda (name)
+                                          (and (not (member name '("." "..")))
+                                               (file-is-directory? name))))
+                          ((unpacked-dir)
+                           (unless (string=? dir unpacked-dir)
+                             (rename-file unpacked-dir dir)))
+                          (dirs
+                           (error "multiple directories found" dirs)))))
+
+                  (with-directory-excursion dir
+                    (setenv "PYTHON" (which "python"))
+                    (format #t "Running deblob script...~%")
+                    (force-output)
+                    (invoke "/tmp/bin/deblob"))
+
+                  (format #t "~%Packing new Linux-libre tarball...~%")
+                  (force-output)
+                  (invoke "tar" "cfa" #$output
+                          ;; Avoid non-determinism in the archive.
+                          "--mtime=@0"
+                          "--owner=root:0"
+                          "--group=root:0"
+                          "--sort=name"
+                          "--hard-dereference"
+                          dir))))))))))
+
+
+;;;
+;;; Kernel sources.
+;;;
+
 (define (linux-libre-urls version)
   "Return a list of URLs for Linux-Libre VERSION."
   (list (string-append
@@ -171,14 +342,121 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
          "mirror://gnu/linux-libre/" version "-gnu/linux-libre-"
          version "-gnu.tar.xz")))
 
-(define (make-linux-libre-headers version hash)
+(define (%upstream-linux-source version hash)
+  (origin
+    (method url-fetch)
+    (uri (string-append "mirror://kernel.org"
+                        "/linux/kernel/v" (version-major version) ".x/"
+                        "linux-" version ".tar.xz"))
+    (sha256 hash)))
+
+(define-public linux-libre-5.2-version "5.2.1")
+(define-public linux-libre-5.2-pristine-source
+  (let ((version linux-libre-5.2-version)
+        (hash (base32 "01k5v3kdwk65cfx6bw4cl32jbfvf976jbya7q4a8lab3km7fi09m")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.2)))
+
+(define-public linux-libre-4.19-version "4.19.59")
+(define-public linux-libre-4.19-pristine-source
+  (let ((version linux-libre-4.19-version)
+        (hash (base32 "0nxkr196q0b1hs3a3zavpsjp0jgbqmcwdf0y0f3hbpirshjiid5q")))
+    (make-linux-libre-source version
+                             (%upstream-linux-source version hash)
+                             deblob-scripts-4.19)))
+
+(define-public linux-libre-4.14-version "4.14.133")
+(define-public linux-libre-4.14-pristine-source
+  (let ((version linux-libre-4.14-version)
+        (hash (base32 "005pg4f8l2qz8g6hd71pj567z91hwjwdwb37h4dbb3fj6kjl965y")))
+    (make-linux-libre-source version
+                             (%upstream-linux-source version hash)
+                             deblob-scripts-4.14)))
+
+(define-public linux-libre-4.9-version "4.9.185")
+(define-public linux-libre-4.9-pristine-source
+  (let ((version linux-libre-4.9-version)
+        (hash (base32 "16z3ijfzffpkp4mj42j3j8zbnpba1a67kd5cdqwb28spf32a66vc")))
+    (make-linux-libre-source version
+                             (%upstream-linux-source version hash)
+                             deblob-scripts-4.9)))
+
+(define-public linux-libre-4.4-version "4.4.185")
+(define-public linux-libre-4.4-pristine-source
+  (let ((version linux-libre-4.4-version)
+        (hash (base32 "1ll694m5193dmwn8ys4sf2p6a6njd5pm38v862ih1iw7l3vj0l3s")))
+    (make-linux-libre-source version
+                             (%upstream-linux-source version hash)
+                             deblob-scripts-4.4)))
+
+(define %boot-logo-patch
+  ;; Linux-Libre boot logo featuring Freedo and a gnu.
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://www.fsfla.org/svn/fsfla/software/linux-libre/"
+                        "lemote/gnewsense/branches/3.16/100gnu+freedo.patch"))
+    (sha256
+     (base32
+      "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
+
+(define %linux-libre-arm-export-__sync_icache_dcache-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "https://salsa.debian.org/kernel-team/linux"
+          "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
+          "/debian/patches/bugfix/arm/"
+          "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
+    (file-name "linux-libre-arm-export-__sync_icache_dcache.patch")
+    (sha256
+     (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
+
+(define (source-with-patches source patches)
+  (origin
+    (inherit source)
+    (patches (append (origin-patches source)
+                     patches))))
+
+(define-public linux-libre-5.2-source
+  (source-with-patches linux-libre-5.2-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
+(define-public linux-libre-4.19-source
+  (source-with-patches linux-libre-4.19-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
+(define-public linux-libre-4.14-source
+  (source-with-patches linux-libre-4.14-pristine-source
+                       (list %boot-logo-patch)))
+
+(define-public linux-libre-4.9-source
+  (source-with-patches linux-libre-4.9-pristine-source
+                       (list %boot-logo-patch)))
+
+(define-public linux-libre-4.4-source
+  (source-with-patches linux-libre-4.4-pristine-source
+                       (list %boot-logo-patch)))
+
+
+;;;
+;;; Kernel headers.
+;;;
+
+(define (make-linux-libre-headers version hash-string)
+  (make-linux-libre-headers* version
+                             (origin
+                               (method url-fetch)
+                               (uri (linux-libre-urls version))
+                               (sha256 (base32 hash-string)))))
+
+(define (make-linux-libre-headers* version source)
   (package
     (name "linux-libre-headers")
     (version version)
-    (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256 (base32 hash))))
+    (source source)
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ,@(if (version>=? version "4.16")
@@ -232,27 +510,38 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
 
-(define %boot-logo-patch
-  ;; Linux-Libre boot logo featuring Freedo and a gnu.
-  (origin
-    (method url-fetch)
-    (uri (string-append "http://www.fsfla.org/svn/fsfla/software/linux-libre/"
-                        "lemote/gnewsense/branches/3.16/100gnu+freedo.patch"))
-    (sha256
-     (base32
-      "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
+(define-public linux-libre-headers-5.2
+  (make-linux-libre-headers* linux-libre-5.2-version
+                             linux-libre-5.2-source))
 
-(define %linux-libre-arm-export-__sync_icache_dcache-patch
-  (origin
-    (method url-fetch)
-    (uri (string-append
-          "https://salsa.debian.org/kernel-team/linux"
-          "/raw/34a7d9011fcfcfa38b68282fd2b1a8797e6834f0"
-          "/debian/patches/bugfix/arm/"
-          "arm-mm-export-__sync_icache_dcache-for-xen-privcmd.patch"))
-    (file-name "linux-libre-arm-export-__sync_icache_dcache.patch")
-    (sha256
-     (base32 "1ifnfhpakzffn4b8n7x7w5cps9mzjxlkcfz9zqak2vaw8nzvl39f"))))
+(define-public linux-libre-headers-4.19
+  (make-linux-libre-headers* linux-libre-4.19-version
+                             linux-libre-4.19-source))
+
+(define-public linux-libre-headers-4.14
+  (make-linux-libre-headers* linux-libre-4.14-version
+                             linux-libre-4.14-source))
+
+(define-public linux-libre-headers-4.9
+  (make-linux-libre-headers* linux-libre-4.9-version
+                             linux-libre-4.9-source))
+
+(define-public linux-libre-headers-4.4
+  (make-linux-libre-headers* linux-libre-4.4-version
+                             linux-libre-4.4-source))
+
+;; The following package is used in the early bootstrap, and thus must be kept
+;; stable and with minimal build requirements.
+(define-public linux-libre-headers-4.14.67
+  (make-linux-libre-headers "4.14.67"
+                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
+
+(define-public linux-libre-headers linux-libre-headers-4.14.67)
+
+
+;;;
+;;; Kernel configurations.
+;;;
 
 (define* (kernel-config arch #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
@@ -295,7 +584,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                     options)
                "\n"))
 
-(define* (make-linux-libre version hash supported-systems
+
+;;;
+;;; Kernel package utilities.
+;;;
+
+(define* (make-linux-libre version hash-string supported-systems
                            #:key
                            ;; A function that takes an arch and a variant.
                            ;; See kernel-config for an example.
@@ -304,16 +598,32 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
                            (defconfig "defconfig")
                            (extra-options %default-extra-linux-options)
                            (patches (list %boot-logo-patch)))
+  (make-linux-libre* version
+                     (origin
+                       (method url-fetch)
+                       (uri (linux-libre-urls version))
+                       (sha256 (base32 hash-string))
+                       (patches patches))
+                     supported-systems
+                     #:extra-version extra-version
+                     #:configuration-file configuration-file
+                     #:defconfig defconfig
+                     #:extra-options extra-options))
+
+(define* (make-linux-libre* version source supported-systems
+                            #:key
+                            ;; A function that takes an arch and a variant.
+                            ;; See kernel-config for an example.
+                            (extra-version #f)
+                            (configuration-file #f)
+                            (defconfig "defconfig")
+                            (extra-options %default-extra-linux-options))
   (package
     (name (if extra-version
               (string-append "linux-libre-" extra-version)
               "linux-libre"))
     (version version)
-    (source (origin
-              (method url-fetch)
-              (uri (linux-libre-urls version))
-              (sha256 (base32 hash))
-              (patches patches)))
+    (source source)
     (supported-systems supported-systems)
     (build-system gnu-build-system)
     (native-inputs
@@ -425,133 +735,105 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)))
 
-(define %linux-libre-version "5.2.1")
-(define %linux-libre-hash "1qj3zsjynz45p97n6sngdbh4xfd1jks3hbn85nmhzds6sxgg4c54")
-
-(define %linux-libre-5.2-patches
-  (list %boot-logo-patch
-        %linux-libre-arm-export-__sync_icache_dcache-patch))
+
+;;;
+;;; Generic kernel packages.
+;;;
 
 (define-public linux-libre-5.2
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-5.2-patches
-                    #:configuration-file kernel-config))
+  (make-linux-libre* linux-libre-5.2-version
+                     linux-libre-5.2-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     #:configuration-file kernel-config))
 
-(define-public linux-libre-headers-5.2
-  (make-linux-libre-headers %linux-libre-version
-                            %linux-libre-hash))
-
-(define %linux-libre-4.19-version "4.19.59")
-(define %linux-libre-4.19-hash "1c9qfw1mnz68ki48kg1brmv47wmsdvq41ip6202rlnmwgncj5yrw")
-
-(define %linux-libre-4.19-patches
-  (list %boot-logo-patch
-        %linux-libre-arm-export-__sync_icache_dcache-patch))
+(define-public linux-libre-version         linux-libre-5.2-version)
+(define-public linux-libre-pristine-source linux-libre-5.2-pristine-source)
+(define-public linux-libre-source          linux-libre-5.2-source)
+(define-public linux-libre                 linux-libre-5.2)
 
 (define-public linux-libre-4.19
-  (make-linux-libre %linux-libre-4.19-version
-                    %linux-libre-4.19-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                    #:patches %linux-libre-4.19-patches
-                    #:configuration-file kernel-config))
-
-(define-public linux-libre-headers-4.19
-  (make-linux-libre-headers %linux-libre-4.19-version
-                            %linux-libre-4.19-hash))
-
-(define %linux-libre-4.14-version "4.14.133")
-(define %linux-libre-4.14-hash "16ay2x0r5i96lg4rgcg151352igvwxa7wh98kwdsjbckiw7fhn08")
+  (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.14
-  (make-linux-libre %linux-libre-4.14-version
-                    %linux-libre-4.14-hash
-                    '("x86_64-linux" "i686-linux" "armhf-linux")
-                    #:configuration-file kernel-config))
-
-(define-public linux-libre-headers-4.14
-  (make-linux-libre-headers %linux-libre-4.14-version
-                            %linux-libre-4.14-hash))
+  (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.9
-  (make-linux-libre "4.9.185"
-                    "1byz9cxvslm45nv01abhzvrm2isdskx5k11gi5rpa39r7lx6bmjp"
-                    '("x86_64-linux" "i686-linux")
-                    #:configuration-file kernel-config))
+  (make-linux-libre* linux-libre-4.9-version
+                     linux-libre-4.9-source
+                     '("x86_64-linux" "i686-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.4
-  (make-linux-libre "4.4.185"
-                    "0df22wqj1nwqp60v8341qcmjhwmdr0hgfraishpc7hic8aqdr4p7"
-                    '("x86_64-linux" "i686-linux")
-                    #:configuration-file kernel-config
-                    #:extra-options
-                    (append
-                     `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-                       ;; This option was removed upstream in version 4.7.
-                       ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
-                     %default-extra-linux-options)))
+  (make-linux-libre* linux-libre-4.4-version
+                     linux-libre-4.4-source
+                     '("x86_64-linux" "i686-linux")
+                     #:configuration-file kernel-config
+                     #:extra-options
+                     (append
+                      `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                        ;; This option was removed upstream in version 4.7.
+                        ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t))
+                      %default-extra-linux-options)))
+
+
+;;;
+;;; Specialized kernel variants.
+;;;
 
 (define-public linux-libre-arm-veyron
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-5.2-patches
-                    #:configuration-file kernel-config-veyron
-                    #:extra-version "arm-veyron"))
-
-(define-public linux-libre-headers-4.14.67
-  (make-linux-libre-headers "4.14.67"
-                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
-
-(define-public linux-libre-headers linux-libre-headers-4.14.67)
-(define-public linux-libre linux-libre-5.2)
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("armhf-linux")
+                     #:configuration-file kernel-config-veyron
+                     #:extra-version "arm-veyron"))
 
 (define-public linux-libre-arm-generic
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-5.2-patches
-                    #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-generic-4.19
-  (make-linux-libre %linux-libre-4.19-version
-                    %linux-libre-4.19-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-4.19-patches
-                    #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
+  (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-generic-4.14
-  (make-linux-libre %linux-libre-4.14-version
-                    %linux-libre-4.14-hash
-                    '("armhf-linux")
-                    #:defconfig "multi_v7_defconfig"
-                    #:extra-version "arm-generic"))
+  (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-source
+                     '("armhf-linux")
+                     #:defconfig "multi_v7_defconfig"
+                     #:extra-version "arm-generic"))
 
 (define-public linux-libre-arm-omap2plus
-  (make-linux-libre %linux-libre-version
-                    %linux-libre-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-5.2-patches
-                    #:defconfig "omap2plus_defconfig"
-                    #:extra-version "arm-omap2plus"))
+  (make-linux-libre* linux-libre-version
+                     linux-libre-source
+                     '("armhf-linux")
+                     #:defconfig "omap2plus_defconfig"
+                     #:extra-version "arm-omap2plus"))
 
 (define-public linux-libre-arm-omap2plus-4.19
-  (make-linux-libre %linux-libre-4.19-version
-                    %linux-libre-4.19-hash
-                    '("armhf-linux")
-                    #:patches %linux-libre-4.19-patches
-                    #:defconfig "omap2plus_defconfig"
-                    #:extra-version "arm-omap2plus"))
+  (make-linux-libre* linux-libre-4.19-version
+                     linux-libre-4.19-source
+                     '("armhf-linux")
+                     #:defconfig "omap2plus_defconfig"
+                     #:extra-version "arm-omap2plus"))
 
 (define-public linux-libre-arm-omap2plus-4.14
-  (make-linux-libre %linux-libre-4.14-version
-                    %linux-libre-4.14-hash
-                    '("armhf-linux")
-                    #:defconfig "omap2plus_defconfig"
-                    #:extra-version "arm-omap2plus"))
+  (make-linux-libre* linux-libre-4.14-version
+                     linux-libre-4.14-source
+                     '("armhf-linux")
+                     #:defconfig "omap2plus_defconfig"
+                     #:extra-version "arm-omap2plus"))
 
 
 ;;;
