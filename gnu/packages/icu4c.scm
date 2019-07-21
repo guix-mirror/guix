@@ -31,6 +31,28 @@
   #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu))
 
+;; These patches are taken from ICUs 'maint-64' branch and will be included in
+;; 64.3.  The latter patch is needed because many packages use "invalid"
+;; locales which misbehave with ICU 64.2.  See discussion at
+;; <https://lists.gnu.org/archive/html/guix-devel/2019-07/msg00343.html>.
+(define %icu4c-patches
+  (list (origin
+          (method url-fetch)
+          (uri (string-append "https://github.com/unicode-org/icu/commit/"
+                              "7788f04eb9be0d7ecade6af46cf7b9825447763d.patch"))
+          (file-name "icu4c-datetime-regression.patch")
+          (sha256
+           (base32
+            "0gs2sbdfpzwwdjqcqr0c16fw3g7wy3gb1gbgvzs9k1ciw0bhpv4w")))
+        (origin
+          (method url-fetch)
+          (uri (string-append "https://github.com/unicode-org/icu/commit/"
+                              "cfb20862909ff105d4f2c43923c97561bc5a5815.patch"))
+          (file-name "icu4c-locale-mapping.patch")
+          (sha256
+           (base32
+            "0s5psb60aisj6icziblvlp9dqcz56n3887i8ib0yidbjnnrw5b97")))))
+
 (define-public icu4c
   (package
    (name "icu4c")
@@ -43,6 +65,8 @@
                   "/icu4c-"
                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                   "-src.tgz"))
+            (patches %icu4c-patches)
+            (patch-flags '("-p2"))
             (sha256
              (base32 "0v0xsf14xwlj125y9fd8lrhsaych4d8liv8gr746zng6g225szb2"))))
    (build-system gnu-build-system)
