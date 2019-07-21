@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,12 +213,13 @@ backups (called chunks) to allow easy burning to CD/DVD.")
          "0pl25mmz1b1cnwf35kxmygyy9g7z7hslxbx329a9yx8csh7dahw6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("nettle" ,nettle)
-       ("lzo" ,lzo)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
        ("libxml2" ,libxml2)
-       ("xz" ,xz)))
+       ("lzo" ,lzo)
+       ("nettle" ,nettle)
+       ("xz" ,xz)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -232,6 +234,13 @@ backups (called chunks) to allow easy burning to CD/DVD.")
              ;; test_write_disk_lookup tests expect user 'root' to exist, but
              ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
              ;;
+             ;; XXX: Adjust test that fails with zstd 1.4.1 because the default
+             ;; options compresses two bytes better than this test expects.
+             ;; https://github.com/libarchive/libarchive/issues/1226
+             (substitute* "libarchive/test/test_write_filter_zstd.c"
+               (("compression-level\", \"6\"")
+                "compression-level\", \"7\""))
+
              ;; The tests allow one to disable tests matching a globbing pattern.
              (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
              ;; XXX: This glob disables too much.
@@ -246,6 +255,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                     (libxml2 (assoc-ref inputs "libxml2"))
                     (xz      (assoc-ref inputs "xz"))
                     (zlib    (assoc-ref inputs "zlib"))
+                    (zstd    (assoc-ref inputs "zstd"))
                     (bzip2   (assoc-ref inputs "bzip2")))
                (substitute* (string-append lib "/pkgconfig/libarchive.pc")
                  (("-lnettle")
@@ -256,6 +266,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                   (string-append "-L" xz "/lib -llzma"))
                  (("-lz")
                   (string-append "-L" zlib "/lib -lz"))
+                 (("-lzstd")
+                  (string-append "-L" zstd "/lib -lzstd"))
                  (("-lbz2")
                   (string-append "-L" bzip2 "/lib -lbz2")))
                #t))))))
