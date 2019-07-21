@@ -286,7 +286,7 @@ server and embedded PowerPC, and S390 guests.")
 (define-public libosinfo
   (package
     (name "libosinfo")
-    (version "1.0.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
@@ -294,30 +294,21 @@ server and embedded PowerPC, and S390 guests.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0srrs2m6irqd4f867g8ls6jp2dq3ql0l9d0fh80d55sivvn2bd7p"))))
+         "12b0xj9fz9q91d1pz9xm6aqap5k1ip0m9m3qvqmwjy1lk1kjasdz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "--with-usb-ids-path="
                             (assoc-ref %build-inputs "usb.ids"))
              (string-append "--with-pci-ids-path="
-                            (assoc-ref %build-inputs "pci.ids")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; This odd test fails for unknown reasons.
-         (add-after 'unpack 'disable-broken-test
-           (lambda _
-             (substitute* "test/Makefile.in"
-               (("test-isodetect\\$\\(EXEEXT\\)") ""))
-             #t)))))
+                            (assoc-ref %build-inputs "pci.ids")))))
     (inputs
      `(("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("gobject-introspection" ,gobject-introspection)))
     (native-inputs
-     `(("check" ,check)
-       ("glib" ,glib "bin")  ; glib-mkenums, etc.
+     `(("glib" ,glib "bin")  ; glib-mkenums, etc.
        ("gtk-doc" ,gtk-doc)
        ("vala" ,vala)
        ("intltool" ,intltool)
