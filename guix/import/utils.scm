@@ -45,7 +45,6 @@
   #:use-module (srfi srfi-41)
   #:export (factorize-uri
 
-            hash-table->alist
             flatten
             assoc-ref*
 
@@ -99,21 +98,6 @@ of the string VERSION is replaced by the symbol 'version."
                            result))))
                '()
                indices))))))
-
-(define (hash-table->alist table)
-  "Return an alist represenation of TABLE."
-  (map (match-lambda
-        ((key . (lst ...))
-         (cons key
-               (map (lambda (x)
-                      (if (hash-table? x)
-                          (hash-table->alist x)
-                          x))
-                    lst)))
-        ((key . (? hash-table? table))
-         (cons key (hash-table->alist table)))
-        (pair pair))
-       (hash-map->list cons table)))
 
 (define (flatten lst)
   "Return a list that recursively concatenates all sub-lists of LST."
@@ -330,11 +314,14 @@ the expected fields of an <origin> object."
       (lookup-build-system-by-name
        (string->symbol (assoc-ref meta "build-system"))))
     (native-inputs
-     (specs->package-lists (or (assoc-ref meta "native-inputs") '())))
+     (specs->package-lists
+      (vector->list (or (assoc-ref meta "native-inputs") '#()))))
     (inputs
-     (specs->package-lists (or (assoc-ref meta "inputs") '())))
+     (specs->package-lists
+      (vector->list (or (assoc-ref meta "inputs") '#()))))
     (propagated-inputs
-     (specs->package-lists (or (assoc-ref meta "propagated-inputs") '())))
+     (specs->package-lists
+      (vector->list (or (assoc-ref meta "propagated-inputs") '#()))))
     (home-page
      (assoc-ref meta "home-page"))
     (synopsis

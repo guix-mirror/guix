@@ -40,7 +40,7 @@
 (define (rubygems-fetch name)
   "Return an alist representation of the RubyGems metadata for the package NAME,
 or #f on failure."
-  (json-fetch-alist
+  (json-fetch
    (string-append "https://rubygems.org/api/v1/gems/" name ".json")))
 
 (define (ruby-package-name name)
@@ -130,14 +130,18 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                                (assoc-ref package "info")))
                 (home-page    (assoc-ref package "homepage_uri"))
                 (dependencies-names (map (lambda (dep) (assoc-ref dep "name"))
-                                         (assoc-ref* package "dependencies" "runtime")))
+                                         (vector->list
+                                          (assoc-ref* package
+                                                      "dependencies"
+                                                      "runtime"))))
                 (dependencies (map (lambda (dep)
                                      (if (string=? dep "bundler")
                                          "bundler" ; special case, no prefix
                                          (ruby-package-name dep)))
                                    dependencies-names))
                 (licenses     (map string->license
-                                   (assoc-ref package "licenses"))))
+                                   (vector->list
+                                    (assoc-ref package "licenses")))))
            (values (make-gem-sexp name version hash home-page synopsis
                                   description dependencies licenses)
                    dependencies-names)))))

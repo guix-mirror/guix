@@ -138,16 +138,16 @@ following SPEC, a series of field specifications."
                         (json->scm input))
                        ((string? input)
                         (json-string->scm input))
-                       ((hash-table? input)
+                       ((or (null? input) (pair? input))
                         input))))
       (let-syntax ((extract-field (syntax-rules ()
                                     ((_ table (field key json->value))
-                                     (json->value (hash-ref table key)))
+                                     (json->value (assoc-ref table key)))
                                     ((_ table (field key))
-                                     (hash-ref table key))
+                                     (assoc-ref table key))
                                     ((_ table (field))
-                                     (hash-ref table
-                                               (symbol->string 'field))))))
+                                     (assoc-ref table
+                                                (symbol->string 'field))))))
         (ctor (extract-field table spec) ...)))))
 
 (define-syntax-rule (define-json-mapping rtd ctor pred json->record
@@ -257,12 +257,13 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (target-url   branch-target-url))
 
 (define (json->branches branches)
-  (hash-map->list (lambda (key value)
-                    (make-branch key
-                                 (string->symbol
-                                  (hash-ref value "target_type"))
-                                 (hash-ref value "target_url")))
-                  branches))
+  (map (match-lambda
+         ((key . value)
+          (make-branch key
+                       (string->symbol
+                        (assoc-ref value "target_type"))
+                       (assoc-ref value "target_url"))))
+       branches))
 
 ;; <https://archive.softwareheritage.org/api/1/release/1f44934fb6e2cefccbecd4fa347025349fa9ff76/>
 (define-json-mapping <release> make-release release?
@@ -292,9 +293,10 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (license-url   content-license-url "license_url"))
 
 (define (json->checksums checksums)
-  (hash-map->list (lambda (key value)
-                    (cons key (base16-string->bytevector value)))
-                  checksums))
+  (map (match-lambda
+         ((key . value)
+          (cons key (base16-string->bytevector value))))
+       checksums))
 
 ;; <https://archive.softwareheritage.org/api/1/directory/27c69c5d298a43096a53affbf881e7b13f17bdcd/>
 (define-json-mapping <directory-entry> make-directory-entry directory-entry?
@@ -365,14 +367,15 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   json->directory-entries)
 
 (define (json->directory-entries port)
-  (map json->directory-entry (json->scm port)))
+  (map json->directory-entry
+       (vector->list (json->scm port))))
 
 (define (origin-visits origin)
   "Return the list of visits of ORIGIN, a record as returned by
 'lookup-origin'."
   (call (swh-url (origin-visits-url origin))
         (lambda (port)
-          (map json->visit (json->scm port)))))
+          (map json->visit (vector->list (json->scm port))))))
 
 (define (visit-snapshot visit)
   "Return the snapshot corresponding to VISIT."

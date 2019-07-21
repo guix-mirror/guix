@@ -174,6 +174,27 @@ AC_DEFUN([GUIX_CHECK_GUILE_SQLITE3], [
      fi])
 ])
 
+dnl GUIX_CHECK_GUILE_JSON
+dnl
+dnl Check whether a recent-enough Guile-JSON is available.
+AC_DEFUN([GUIX_CHECK_GUILE_JSON], [
+  dnl Check whether we're using Guile-JSON 3.x, which uses a JSON-to-Scheme
+  dnl mapping different from that of earlier versions.
+  AC_CACHE_CHECK([whether Guile-JSON is available and recent enough],
+    [guix_cv_have_recent_guile_json],
+    [GUILE_CHECK([retval],
+      [(use-modules (json) (ice-9 match))
+       (match (json-string->scm \"[[] { \\\"a\\\": 42 } []]\")
+         (#(("a" . 42)) #t)
+	 (_ #f))])
+     if test "$retval" = 0; then
+       guix_cv_have_recent_guile_json="yes"
+     else
+       guix_cv_have_recent_guile_json="no"
+     fi])
+])
+
+
 dnl GUIX_TEST_ROOT_DIRECTORY
 AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
   AC_CACHE_CHECK([for unit test root directory],

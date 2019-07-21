@@ -51,7 +51,7 @@
   (define (crate-kind-predicate kind)
     (lambda (dep) (string=? (assoc-ref dep "kind") kind)))
 
-  (and-let* ((crate-json (json-fetch-alist (string-append crate-url crate-name)))
+  (and-let* ((crate-json (json-fetch (string-append crate-url crate-name)))
              (crate (assoc-ref crate-json "crate"))
              (name (assoc-ref crate "name"))
              (version (assoc-ref crate "max_version"))
@@ -63,8 +63,8 @@
                                  string->license)
                           '()))                   ;missing license info
              (path (string-append "/" version "/dependencies"))
-             (deps-json (json-fetch-alist (string-append crate-url name path)))
-             (deps (assoc-ref deps-json "dependencies"))
+             (deps-json (json-fetch (string-append crate-url name path)))
+             (deps (vector->list (assoc-ref deps-json "dependencies")))
              (dep-crates (filter (crate-kind-predicate "normal") deps))
              (dev-dep-crates
               (filter (lambda (dep)

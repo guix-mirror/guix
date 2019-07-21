@@ -514,7 +514,7 @@ system."
         (name  (string-append name ".tar.gz"))
         (graph "system-graph"))
     (define build
-      (with-extensions (cons guile-json           ;for (guix docker)
+      (with-extensions (cons guile-json-3         ;for (guix docker)
                              gcrypt-sqlite3&co)   ;for (guix store database)
         (with-imported-modules `(,@(source-module-closure
                                     '((guix docker)

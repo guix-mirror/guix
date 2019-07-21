@@ -479,7 +479,7 @@ the image."
 
   (define build
     ;; Guile-JSON and Guile-Gcrypt are required by (guix docker).
-    (with-extensions (list guile-json guile-gcrypt)
+    (with-extensions (list guile-json-3 guile-gcrypt)
       (with-imported-modules `(((guix config) => ,(make-config.scm))
                                ,@(source-module-closure
                                   `((guix docker)

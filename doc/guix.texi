@@ -750,7 +750,7 @@ or later;
 @c FIXME: Specify a version number once a release has been made.
 @uref{https://gitlab.com/guile-git/guile-git, Guile-Git}, from August
 2017 or later;
-@item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON};
+@item @uref{https://savannah.nongnu.org/projects/guile-json/, Guile-JSON} 3.x;
 @item @url{https://zlib.net, zlib};
 @item @url{https://www.gnu.org/software/make/, GNU Make}.
 @end itemize
