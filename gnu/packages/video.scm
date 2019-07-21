@@ -473,7 +473,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "3.0")
+    (version "3.1.1")
     (outputs '("out" "static"))
     (source
       (origin
@@ -482,7 +482,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0qh65wdpasrspkm1y0dlfa123myax568yi0sas0lmg5b1hkgrff5"))
+          "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
