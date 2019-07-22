@@ -4072,7 +4072,7 @@ relic support.")
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
-    (version "0.200")
+    (version "0.300")
     (source
      (origin
        (method url-fetch)
@@ -4080,8 +4080,10 @@ relic support.")
                            "Hash-Merge-" version ".tar.gz"))
        (sha256
         (base32
-         "0r1a2axz85wn6573zrl9rk8mkfl2cvf1gp9vwya5qndp60rz1ya7"))))
+         "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
     (build-system perl-build-system)
+    (inputs
+     `(("perl-clone-choose" ,perl-clone-choose)))
     (home-page "https://metacpan.org/release/Hash-Merge")
     (synopsis "Merge arbitrarily deep hashes into a single hash")
     (description "Hash::Merge merges two arbitrarily deep hashes into a single
