@@ -4046,9 +4046,11 @@ performance.")
                 "16ljv43sc3fxmv63w7b2ff8m1s7h89xhazwmbm1bicz8axq8fjz0"))))
     (build-system gnu-build-system)
     (inputs
-     `(("openssl" ,openssl)
-       ("curl" ,curl)
-       ("zlib" ,zlib)))
+     `(("curl" ,curl)
+       ("openssl" ,openssl)))
+    ;; This is referred to in the pkg-config file as a required library.
+    (propagated-inputs
+     `(("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "http://www.htslib.org")
