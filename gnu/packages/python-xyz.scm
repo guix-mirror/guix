@@ -3122,19 +3122,19 @@ and is very extensible.")
 (define-public mallard-ducktype
   (package
     (name "mallard-ducktype")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method git-fetch)
-       ;; git-reference because a proper source tarball is not available
-       ;; https://lists.gnu.org/archive/html/guix-devel/2019-05/msg00209.html
+       ;; git-reference because tests are not included in pypi source tarball
+       ;; https://issues.guix.gnu.org/issue/36755#2
        (uri (git-reference
              (url "https://github.com/projectmallard/mallard-ducktype.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0crland0kmpsyjfmnflcw7gaqy5b87b6ah17cmr9d5z1kyazf54n"))))
+         "1jk9bfz7g04ip78s03b0xak6d54rj4h9zpgadkziy1ji216g6y4c"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
