@@ -5464,7 +5464,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.30.5")
+    (version "3.32.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5473,7 +5473,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
               (patches (search-patches "evolution-data-server-locales.patch"))
               (sha256
                (base32
-                "1s952wyhgcbmq9nfgk75v15zdy1h3wy5p5rmkqibaavmc0pk3mli"))))
+                "0zsc9xwy6ixk3x0dx69ax5isrdw8qxjdxg2i5fr95s40nss7rxl3"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -5500,11 +5500,13 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
              (delete-file-recursively "tests/book-migration")
              (substitute* "tests/CMakeLists.txt"
                (("add_subdirectory\\(book-migration\\)") ""))
-             ;; tests/libedata-cal/test-cal-meta-backend.c:1328:test_get_attachment_uris:
-             ;; assertion failed (uris->data == expected_uri):
-             ;; ("" == "file:///tests/libedata-cal/components/event-1.ics")
-             (substitute* "tests/libedata-cal/CMakeLists.txt"
-               (("test-cal-meta-backend") ""))
+             ;; tests/libebook/client/test-book-client-view-operations:8077):
+             ;; e-data-server-WARNING **:
+             ;; (src/libedataserver/e-source-registry.c:264):thread_closure_free:
+             ;; runtime check failed:
+             ;; (!g_main_context_pending (closure->main_context))
+             (substitute* "tests/libebook/client/CMakeLists.txt"
+               (("test-book-client-view-operations") ""))
              #t))
          (add-after 'unpack 'patch-paths
           (lambda _
