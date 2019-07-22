@@ -1388,7 +1388,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
@@ -1398,7 +1398,7 @@ access to mpv's powerful playback capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "079pb80am08lj8y5rx99vdr99mdqis9067f172zq12alkz849n93"))
+                "0mm1dcfa268rwsrgzqpbbgq4lwrvdzgp90h9dxsnkhai70l7gipq"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
