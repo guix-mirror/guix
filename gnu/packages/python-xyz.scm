@@ -3136,6 +3136,13 @@ and is very extensible.")
         (base32
          "0crland0kmpsyjfmnflcw7gaqy5b87b6ah17cmr9d5z1kyazf54n"))))
     (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               (invoke "sh" "runtests")))))))
     (home-page "http://projectmallard.org")
     (synopsis "Convert Ducktype to Mallard documentation markup")
     (description
