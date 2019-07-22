@@ -7240,7 +7240,7 @@ and bring the war to your enemy.")
 (define-public harmonist
   (package
     (name "harmonist")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7249,7 +7249,7 @@ and bring the war to your enemy.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "006vkhb84v78ssfwppc221n4za0y02ypg7ihrihin4vj4gllmzf7"))))
+                "0hqy9kqwgirwkq1v3vj1hp9m93hjvdj4nxcfbjfvvwk2bbzri3s2"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "git.tuxfamily.org/harmonist/harmonist"))
