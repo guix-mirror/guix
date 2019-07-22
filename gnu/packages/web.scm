@@ -3336,7 +3336,7 @@ and retry a few times.")
 (define-public perl-net-http
   (package
     (name "perl-net-http")
-    (version "6.18")
+    (version "6.19")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3344,7 +3344,7 @@ and retry a few times.")
                    "Net-HTTP-" version ".tar.gz"))
              (sha256
               (base32
-               "074mp9s37q1j290xa3qj1wwgalzla328i2zpnh73xkmdnwnxyhky"))))
+               "1i1gbcwdzx74whn5vn6xbr2cp7frldfz2rfrcjp2qljr770nxdsj"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-io-socket-ssl" ,perl-io-socket-ssl)

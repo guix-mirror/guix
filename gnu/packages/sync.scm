@@ -227,7 +227,7 @@ and does not hamper local file system performance.")
        ("rsync" ,rsync)))                         ;for tests
     (inputs
      `(("xz" ,xz)                                 ;for liblzma
-       ("zstd" ,zstd)
+       ("zstd" ,zstd "lib")
        ("curl" ,curl)
        ("acl" ,acl)
        ("libselinux" ,libselinux)

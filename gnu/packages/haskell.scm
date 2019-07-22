@@ -42,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -11345,6 +11346,421 @@ further Unicode goodness you can enable the @code{UnicodeSyntax}
 language extension}.  This extension enables Unicode characters to be used to
 stand for certain ASCII character sequences, i.e. → instead of @code{->},
 ∀ instead of @code{forall} and many others.")
+    (license license:bsd-3)))
+
+(define-public ghc-genvalidity
+  (package
+    (name "ghc-genvalidity")
+    (version "0.5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/genvalidity/genvalidity-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17ykq38j9a2lzir6dqz5jgy6ndaafrpkhqhcg96c5ppg7wcxaaj0"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-validity" ,ghc-validity)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-hspec-core" ,ghc-hspec-core)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis
+     "Testing utilities for the @code{validity} library")
+    (description
+     "This package provides testing utilities that are useful in conjunction
+with the @code{Validity} typeclass.")
+    (license license:expat)))
+
+(define-public ghc-genvalidity-property
+  (package
+    (name "ghc-genvalidity-property")
+    (version "0.2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "genvalidity-property/genvalidity-property-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cjw5i2pydidda9bnp6x37ylhxdk9g874x5sadr6sscg5kq85a1b"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-genvalidity" ,ghc-genvalidity)
+       ("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)
+       ("ghc-validity" ,ghc-validity)))
+    (native-inputs `(("ghc-doctest" ,ghc-doctest)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis
+     "Standard properties for functions on @code{Validity} types")
+    (description
+     "This package supplements the @code{Validity} typeclass with standard
+properties for functions operating on them.")
+    (license license:expat)))
+
+(define-public ghc-validity
+  (package
+    (name "ghc-validity")
+    (version "0.7.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/validity/validity-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xribw98amafihw87ddajk6vlirp7w9b26lrnjgq7jfm4710j95f"))))
+    (build-system haskell-build-system)
+    (native-inputs `(("ghc-hspec" ,ghc-hspec)
+                     ("hspec-discover" ,hspec-discover)))
+    (home-page
+     "https://github.com/NorfairKing/validity")
+    (synopsis "Validity typeclass")
+    (description
+     "Values of custom types usually have invariants imposed upon them.  This
+package provides the @code{Validity} type class, which makes these invariants
+explicit by providing a function to check whether the invariants hold.")
+    (license license:expat)))
+
+(define-public ghc-path
+  (package
+    (name "ghc-path")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/path/path-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0nayla4k1gb821k8y5b9miflv1bi8f0czf9rqr044nrr2dddi2sb"))))
+    (build-system haskell-build-system)
+    (arguments
+     ;; TODO: There are some Windows-related tests and modules that need to be
+     ;; danced around.
+     `(#:tests? #f
+       #:cabal-revision
+       ("1" "05b1zwx2a893h4h5wvgpc5g5pyx71hfmx409rqisd8s1bq1hn463")))
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hashable" ,ghc-hashable)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-genvalidity" ,ghc-genvalidity)
+       ("ghc-genvalidity-property" ,ghc-genvalidity-property)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-validity" ,ghc-validity)))
+    (home-page
+     "http://hackage.haskell.org/package/path")
+    (synopsis "Support for well-typed paths")
+    (description "This package introduces a type for paths upholding useful
+invariants.")
+    (license license:bsd-3)))
+
+(define-public ghc-path-io
+  (package
+    (name "ghc-path-io")
+    (version "1.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/path-io/path-io-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1g9m3qliqjk1img894wsb89diym5zrq51qkkrwhz4sbm9a8hbv1a"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-dlist" ,ghc-dlist)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-path" ,ghc-path)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (arguments
+    `(#:cabal-revision
+      ("3" "1h9hsibbflkxpjl2fqamqiv3x3gasf51apnmklrs9l9x8r32hzcc")))
+    (home-page
+     "https://github.com/mrkkrp/path-io")
+    (synopsis "Functions for manipulating well-typed paths")
+    (description "This package provides an interface to the @code{directory}
+package for users of @code{path}.  It also implements some missing stuff like
+recursive scanning and copying of directories, working with temporary
+files/directories, and more.")
+    (license license:bsd-3)))
+
+(define-public ghc-hindent
+  (package
+    (name "ghc-hindent")
+    (version "5.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hindent/hindent-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0wkfik7mvqskk23kyh7ybgnlh3j9j1ym7d3ncahsbli9w654b7xg"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:modules ((guix build haskell-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%haskell-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'emacs-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (elisp-file "elisp/hindent.el")
+                    (dest  (string-append out "/share/emacs/site-lisp"
+                                          "/guix.d/hindent-" ,version))
+                    (emacs (string-append (assoc-ref inputs "emacs")
+                                          "/bin/emacs")))
+               (make-file-writable elisp-file)
+               (emacs-substitute-variables elisp-file
+                 ("hindent-process-path"
+                  (string-append out "/bin/hindent")))
+               (install-file elisp-file dest)
+               (emacs-generate-autoloads "hindent" dest)))))))
+    (inputs
+     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-path" ,ghc-path)
+       ("ghc-path-io" ,ghc-path-io)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-diff" ,ghc-diff)
+       ("emacs" ,emacs-minimal)))
+    (home-page
+     "https://github.com/commercialhaskell/hindent")
+    (synopsis "Extensible Haskell pretty printer")
+    (description
+     "This package provides automatic formatting for Haskell files.  Both a
+library and an executable.")
+    (license license:bsd-3)))
+
+(define-public ghc-descriptive
+  (package
+    (name "ghc-descriptive")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/descriptive/descriptive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0y5693zm2kvqjilybbmrcv1g6n6x2p6zjgi0k0axjw1sdhh1g237"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page
+     "https://github.com/chrisdone/descriptive")
+    (synopsis
+     "Self-describing consumers/parsers: forms, cmd-line args, JSON, etc.")
+    (description
+     "This package provides datatypes and functions for creating consumers
+and parsers with useful semantics.")
+    (license license:bsd-3)))
+
+(define-public ghc-exactprint
+  (package
+    (name "ghc-exactprint")
+    (version "0.5.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "ghc-exactprint/ghc-exactprint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "141k6qiys0m0r4br7ikp4i546vs3xcil9cwglzcdfcbnb5nj1z87"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-paths" ,ghc-paths)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-free" ,ghc-free)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-filemanip" ,ghc-filemanip)))
+    (home-page
+     "http://hackage.haskell.org/package/ghc-exactprint")
+    (synopsis "ExactPrint for GHC")
+    (description
+     "Using the API Annotations available from GHC 7.10.2, this library
+provides a means to round-trip any code that can be compiled by GHC, currently
+excluding @file{.lhs} files.")
+    (license license:bsd-3)))
+
+(define-public ghc-microlens-mtl
+  (package
+    (name "ghc-microlens-mtl")
+    (version "0.1.11.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/microlens-mtl/microlens-mtl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l6z1gkzwcpv89bxf5vgfrjb6gq2pj7sjjc53nvi5b9alx34zryk"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-microlens" ,ghc-microlens)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (home-page "https://github.com/monadfix/microlens")
+    (synopsis
+     "@code{microlens} support for Reader/Writer/State from mtl")
+    (description
+     "This package contains functions (like @code{view} or @code{+=}) which
+work on @code{MonadReader}, @code{MonadWriter}, and @code{MonadState} from the
+mtl package.  This package is a part of the
+@uref{http://hackage.haskell.org/package/microlens, microlens} family; see the
+readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
+    (license license:bsd-3)))
+
+(define-public ghc-microlens-ghc
+  (package
+    (name "ghc-microlens-ghc")
+    (version "0.4.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/microlens-ghc/microlens-ghc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "03iwgg8zww9irv59l70c8yy7vzxir1zf66y12210xk91k5hq6jrj"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-microlens" ,ghc-microlens)))
+    (home-page "https://github.com/monadfix/microlens")
+    (synopsis "Use @code{microlens} with GHC libraries like @code{array}")
+    (description "This library provides everything that @code{microlens}
+provides plus instances to make @code{each}, @code{at}, and @code{ix}
+usable with arrays, @code{ByteString}, and containers.  This package is
+a part of the @uref{http://hackage.haskell.org/package/microlens,
+microlens} family; see the readme
+@uref{https://github.com/aelve/microlens#readme, on Github}.")
+    (license license:bsd-3)))
+
+(define-public ghc-microlens-platform
+  (package
+    (name "ghc-microlens-platform")
+    (version "0.3.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/"
+             "microlens-platform/microlens-platform-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1d4nhmgf9jq0ixc7qhwm7aaw3xdr0nalw58d0ydsydgf02cyazwv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-microlens" ,ghc-microlens)
+       ("ghc-microlens-ghc" ,ghc-microlens-ghc)
+       ("ghc-microlens-mtl" ,ghc-microlens-mtl)
+       ("ghc-microlens-th" ,ghc-microlens-th)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://github.com/monadfix/microlens")
+    (synopsis "Feature-complete microlens")
+    (description
+     "This package exports a module which is the recommended starting point
+for using @uref{http://hackage.haskell.org/package/microlens, microlens} if
+you aren't trying to keep your dependencies minimal.  By importing
+@code{Lens.Micro.Platform} you get all functions and instances from
+@uref{http://hackage.haskell.org/package/microlens, microlens},
+@uref{http://hackage.haskell.org/package/microlens-th, microlens-th},
+@uref{http://hackage.haskell.org/package/microlens-mtl, microlens-mtl},
+@uref{http://hackage.haskell.org/package/microlens-ghc, microlens-ghc}, as
+well as instances for @code{Vector}, @code{Text}, and @code{HashMap}.  The
+minor and major versions of @code{microlens-platform} are incremented whenever
+the minor and major versions of any other @code{microlens} package are
+incremented, so you can depend on the exact version of
+@code{microlens-platform} without specifying the version of @code{microlens}
+you need.  This package is a part of the
+@uref{http://hackage.haskell.org/package/microlens, microlens} family; see the
+readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
+    (license license:bsd-3)))
+
+(define-public ghc-hasktags
+  (package
+    (name "ghc-hasktags")
+    (version "0.71.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hasktags/hasktags-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1s2k9qrgy1jily96img2pmn7g35mwnnfiw6si3aw32jfhg5zsh1c"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-system-filepath" ,ghc-system-filepath)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-json" ,ghc-json)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-microlens-platform" ,ghc-microlens-platform)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://github.com/MarcWeber/hasktags")
+    (synopsis "Make @code{Ctags} and @code{Etags} files for Haskell programs")
+    (description
+     "This package provides a means of generating tag files for Emacs and
+Vim.")
     (license license:bsd-3)))
 
 (define-public ghc-stylish-haskell

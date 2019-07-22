@@ -607,6 +607,25 @@ utilities for data translation and processing.")
                ;; frmts/mrf/libLERC
                license:asl2.0))))
 
+(define-public python-gdal
+  (package (inherit gdal)
+    (name "python-gdal")
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f                      ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'chdir
+           (lambda _
+             (chdir "swig/python")
+             #t)))))
+    (native-inputs '())
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("gdal" ,gdal)))
+    (synopsis "GDAL (Geospatial Data Abstraction Library) python bindings")))
+
 (define-public postgis
   (package
     (name "postgis")

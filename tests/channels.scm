@@ -26,8 +26,12 @@
   #:use-module (guix derivations)
   #:use-module (guix sets)
   #:use-module (guix gexp)
+  #:use-module ((guix utils)
+                #:select (error-location? error-location location-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -38,22 +42,23 @@
                         (commit "cafebabe")
                         (spec #f))
   (define instance-dir (mkdtemp! "/tmp/checkout.XXXXXX"))
-  (and spec
-       (with-output-to-file (string-append instance-dir "/.guix-channel")
-         (lambda _ (format #t "~a" spec))))
+  (when spec
+    (call-with-output-file (string-append instance-dir "/.guix-channel")
+      (lambda (port) (write spec port))))
   (checkout->channel-instance instance-dir
                               #:commit commit
                               #:name name))
 
 (define instance--boring (make-instance))
+(define instance--unsupported-version
+  (make-instance #:spec
+                 '(channel (version 42) (dependencies whatever))))
 (define instance--no-deps
   (make-instance #:spec
-                 '(channel
-                   (version 0)
-                   (dependencies
-                    (channel
-                     (name test-channel)
-                     (url "https://example.com/test-channel"))))))
+                 '(channel (version 0))))
+(define instance--sub-directory
+  (make-instance #:spec
+                 '(channel (version 0) (directory "modules"))))
 (define instance--simple
   (make-instance #:spec
                  '(channel
@@ -78,24 +83,45 @@
                      (name test-channel)
                      (url "https://example.com/test-channel-elsewhere"))))))
 
-(define read-channel-metadata
-  (@@ (guix channels) read-channel-metadata))
+(define channel-instance-metadata
+  (@@ (guix channels) channel-instance-metadata))
+(define channel-metadata-directory
+  (@@ (guix channels) channel-metadata-directory))
+(define channel-metadata-dependencies
+  (@@ (guix channels) channel-metadata-dependencies))
 
 
-(test-equal "read-channel-metadata returns #f if .guix-channel does not exist"
-  #f
-  (read-channel-metadata instance--boring))
+(test-equal "channel-instance-metadata returns default if .guix-channel does not exist"
+  '("/" ())
+  (let ((metadata (channel-instance-metadata instance--boring)))
+    (list (channel-metadata-directory metadata)
+          (channel-metadata-dependencies metadata))))
 
-(test-assert "read-channel-metadata returns <channel-metadata>"
+(test-equal "channel-instance-metadata and default dependencies"
+  '()
+  (channel-metadata-dependencies (channel-instance-metadata instance--no-deps)))
+
+(test-equal "channel-instance-metadata and directory"
+  "/modules"
+  (channel-metadata-directory
+   (channel-instance-metadata instance--sub-directory)))
+
+(test-equal "channel-instance-metadata rejects unsupported version"
+  1                              ;line number in the generated '.guix-channel'
+  (guard (c ((and (message-condition? c) (error-location? c))
+             (location-line (error-location c))))
+    (channel-instance-metadata instance--unsupported-version)))
+
+(test-assert "channel-instance-metadata returns <channel-metadata>"
   (every (@@ (guix channels) channel-metadata?)
-         (map read-channel-metadata
+         (map channel-instance-metadata
               (list instance--no-deps
                     instance--simple
                     instance--with-dupes))))
 
-(test-assert "read-channel-metadata dependencies are channels"
+(test-assert "channel-instance-metadata dependencies are channels"
   (let ((deps ((@@ (guix channels) channel-metadata-dependencies)
-               (read-channel-metadata instance--simple))))
+               (channel-instance-metadata instance--simple))))
     (match deps
       (((? channel? dep)) #t)
       (_ #f))))
@@ -128,7 +154,7 @@
                ("test" (values test-dir 'whatever))
                (_ (values "/not-important" 'not-important)))))
           (let ((instances (latest-channel-instances #f (list channel))))
-            (and (eq? 2 (length instances))
+            (and (= 2 (length instances))
                  (lset= eq?
                         '(test test-channel)
                         (map (compose channel-name channel-instance-channel)
@@ -139,9 +165,9 @@
                          (and (eq? (channel-name
                                     (channel-instance-channel instance))
                                    'test-channel)
-                              (eq? (channel-commit
-                                    (channel-instance-channel instance))
-                                   'abc1234)))
+                              (string=? (channel-commit
+                                         (channel-instance-channel instance))
+                                        "abc1234")))
                        instances))))))
 
 (test-assert "channel-instances->manifest"

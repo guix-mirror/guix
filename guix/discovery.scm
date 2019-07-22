@@ -106,14 +106,14 @@ name and the exception key and arguments."
     (string-length directory))
 
   (filter-map (lambda (file)
-                (let* ((file   (substring file prefix-len))
-                       (module (file-name->module-name file)))
+                (let* ((relative (string-drop file prefix-len))
+                       (module   (file-name->module-name relative)))
                   (catch #t
                     (lambda ()
                       (resolve-interface module))
                     (lambda args
                       ;; Report the error, but keep going.
-                      (warn module args)
+                      (warn file module args)
                       #f))))
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)

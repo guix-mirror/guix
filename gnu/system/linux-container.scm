@@ -35,7 +35,8 @@
   #:use-module (gnu system file-systems)
   #:export (system-container
             containerized-operating-system
-            container-script))
+            container-script
+            eval/container))
 
 (define* (container-essential-services os #:key shared-network?)
   "Return a list of essential services corresponding to OS, a
@@ -205,3 +206,49 @@ that will be shared with the host system."
                                %namespaces)))))
 
     (gexp->script "run-container" script)))
+
+(define* (eval/container exp
+                         #:key
+                         (mappings '())
+                         (namespaces %namespaces))
+  "Evaluate EXP, a gexp, in a new process executing in separate namespaces as
+listed in NAMESPACES.  Add MAPPINGS, a list of <file-system-mapping>, to the
+set of directories visible in the process's mount namespace.  Return the
+process' exit status as a monadic value.
+
+This is useful to implement processes that, unlike derivations, are not
+entirely pure and need to access the outside world or to perform side
+effects."
+  (mlet %store-monad ((lowered (lower-gexp exp)))
+    (define inputs
+      (cons (lowered-gexp-guile lowered)
+            (lowered-gexp-inputs lowered)))
+
+    (define items
+      (append (append-map derivation-input-output-paths inputs)
+              (lowered-gexp-sources lowered)))
+
+    (mbegin %store-monad
+      (built-derivations inputs)
+      (mlet %store-monad ((closure ((store-lift requisites) items)))
+        (return (call-with-container (map file-system-mapping->bind-mount
+                                          (append (map (lambda (item)
+                                                         (file-system-mapping
+                                                          (source item)
+                                                          (target source)))
+                                                       closure)
+                                                  mappings))
+                  (lambda ()
+                    (apply execl
+                           (string-append (derivation-input-output-path
+                                           (lowered-gexp-guile lowered))
+                                          "/bin/guile")
+                           "guile"
+                           (append (map (lambda (directory) `("-L" ,directory))
+                                        (lowered-gexp-load-path lowered))
+                                   (map (lambda (directory) `("-C" ,directory))
+                                        (lowered-gexp-load-compiled-path
+                                         lowered))
+                                   (list "-c"
+                                         (object->string
+                                          (lowered-gexp-sexp lowered))))))))))))

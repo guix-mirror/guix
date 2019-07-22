@@ -473,7 +473,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "3.0")
+    (version "3.1.1")
     (outputs '("out" "static"))
     (source
       (origin
@@ -482,7 +482,7 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
                             "x265_" version ".tar.gz"))
         (sha256
          (base32
-          "0qh65wdpasrspkm1y0dlfa123myax568yi0sas0lmg5b1hkgrff5"))
+          "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -756,14 +756,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.3")
+    (version "4.1.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0gdnprc7gk4b7ckq8wbxbrj7i00r76r9a5g9mj7iln40512j0c0c"))))
+               "1qd7a10gs12ifcp31gramcgqjl77swskjfp7cijibgyg5yl4kw7i"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -1073,7 +1073,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("libva" ,libva)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
-       ("libvpx" ,libvpx-1.7)
+       ("libvpx" ,libvpx)
        ("libtheora" ,libtheora)
        ("libx264" ,libx264)
        ("libxext" ,libxext)
@@ -1388,7 +1388,7 @@ access to mpv's powerful playback capabilities.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.8.0")
+    (version "1.8.1")
     (source (origin
               ;; XXX: Upstream does not provide tarballs for > 1.6.1.
               (method git-fetch)
@@ -1398,7 +1398,7 @@ access to mpv's powerful playback capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "079pb80am08lj8y5rx99vdr99mdqis9067f172zq12alkz849n93"))
+                "0mm1dcfa268rwsrgzqpbbgq4lwrvdzgp90h9dxsnkhai70l7gipq"))
               (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments

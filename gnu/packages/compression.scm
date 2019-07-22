@@ -1387,22 +1387,50 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.3.8")
+    (version "1.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "13nlsqhkn276frxrzjdn7wz0j9zz414lf336885ykyxcvw2a0gr9"))))
+        (base32 "180sfl0iz5hy43xcr0gh8kz2vxgpb8rh5d7wmpxn3bxkgs320l2k"))))
     (build-system gnu-build-system)
+    (outputs '("out"                    ;1.1MiB executables and documentation
+               "lib"                    ;1MiB shared library and headers
+               "static"))               ;1MiB static library
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (delete 'configure))           ; no configure script
+         (delete 'configure)            ;no configure script
+         (add-after 'install 'adjust-library-locations
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (assoc-ref outputs "lib"))
+                    (static (assoc-ref outputs "static"))
+                    (shared-libs (string-append lib "/lib"))
+                    (static-libs (string-append static "/lib")))
+               ;; Move the static library to its own output to save ~1MiB.
+               (mkdir-p static-libs)
+               (for-each (lambda (ar)
+                           (link ar (string-append static-libs "/"
+                                                   (basename ar)))
+                           (delete-file ar))
+                         (find-files shared-libs "\\.a$"))
+
+               ;; While here, remove prefix= from the pkg-config file because it
+               ;; is unused, and because it contains a needless reference to $out.
+               ;; XXX: It would be great if #:disallow-references worked between
+               ;; outputs.
+               (substitute* (string-append shared-libs "/pkgconfig/libzstd.pc")
+                 (("^prefix=.*") ""))
+
+               #t))))
        #:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "LIBDIR=" (assoc-ref %outputs "lib") "/lib")
+             (string-append "INCLUDEDIR=" (assoc-ref %outputs "lib") "/include")
              ;; Skip auto-detection of, and creating a dependency on, the build
              ;; environment's ‘xz’ for what amounts to a dubious feature anyway.
              "HAVE_LZMA=0"

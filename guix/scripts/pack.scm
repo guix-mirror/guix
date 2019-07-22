@@ -509,9 +509,10 @@ the image."
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:environment environment
-                                #:entry-point #$(and entry-point
-                                                     #~(string-append #$profile "/"
-                                                                      #$entry-point))
+                                #:entry-point
+                                #$(and entry-point
+                                       #~(list (string-append #$profile "/"
+                                                              #$entry-point)))
                                 #:symlinks '#$symlinks
                                 #:compressor '#$(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))

@@ -67,7 +67,7 @@
        ("libevent" ,libevent)
        ("libseccomp" ,libseccomp)
        ("xz" ,xz)
-       ("zstd" ,zstd)))
+       ("zstd" ,zstd "lib")))
     (home-page "https://www.torproject.org/")
     (synopsis "Anonymous network router to improve privacy on the Internet")
     (description

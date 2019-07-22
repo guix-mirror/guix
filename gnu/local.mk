@@ -747,6 +747,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cube-nocheck.patch			\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
+  %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dealii-mpi-deprecations.patch		\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\

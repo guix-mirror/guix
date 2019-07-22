@@ -43,9 +43,7 @@
   #:use-module (guix scripts)
   #:use-module ((guix ui) #:select (texi->plain-text fill-paragraph))
   #:use-module (guix gnu-maintenance)
-  #:use-module (guix monads)
   #:use-module (guix cve)
-  #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -742,21 +740,28 @@ descriptions maintained upstream."
   "Emit a warning if PACKAGE has an invalid 'source' field, or if that
 'source' is not reachable."
   (define (warnings-for-uris uris)
-    (filter lint-warning?
-            (map
-             (lambda (uri)
-               (validate-uri uri package 'source))
-             (append-map (cut maybe-expand-mirrors <> %mirrors)
-                         uris))))
+    (let loop ((uris uris)
+               (warnings '()))
+      (match uris
+        (()
+         (reverse warnings))
+        ((uri rest ...)
+         (match (validate-uri uri package 'source)
+           (#t
+            ;; We found a working URL, so stop right away.
+            '())
+           ((? lint-warning? warning)
+            (loop rest (cons warning warnings))))))))
 
   (let ((origin (package-source package)))
     (if (and origin
              (eqv? (origin-method origin) url-fetch))
-        (let* ((uris (map string->uri (origin-uris origin)))
+        (let* ((uris     (append-map (cut maybe-expand-mirrors <> %mirrors)
+                                     (map string->uri (origin-uris origin))))
                (warnings (warnings-for-uris uris)))
 
           ;; Just make sure that at least one of the URIs is valid.
-          (if (eq? (length uris) (length warnings))
+          (if (= (length uris) (length warnings))
               ;; When everything fails, report all of WARNINGS, otherwise don't
               ;; report anything.
               ;;

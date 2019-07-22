@@ -1266,14 +1266,14 @@ arrays for their internal representation.")
 (define-public perl-clone
   (package
     (name "perl-clone")
-    (version "0.41")
+    (version "0.42")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
                                   "Clone-" version ".tar.gz"))
               (sha256
                (base32
-                "060mlm31lacirpnp5fl9jqk4m9cl07vjlh89k83qk25wykf5dh78"))))
+                "1r87rdm0nilfayxwlzvylwc8r3hr5m24180x437j30qpizdk1aal"))))
     (build-system perl-build-system)
     (synopsis "Recursively copy Perl datatypes")
     (description
@@ -4072,7 +4072,7 @@ relic support.")
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
-    (version "0.200")
+    (version "0.300")
     (source
      (origin
        (method url-fetch)
@@ -4080,8 +4080,10 @@ relic support.")
                            "Hash-Merge-" version ".tar.gz"))
        (sha256
         (base32
-         "0r1a2axz85wn6573zrl9rk8mkfl2cvf1gp9vwya5qndp60rz1ya7"))))
+         "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
     (build-system perl-build-system)
+    (inputs
+     `(("perl-clone-choose" ,perl-clone-choose)))
     (home-page "https://metacpan.org/release/Hash-Merge")
     (synopsis "Merge arbitrarily deep hashes into a single hash")
     (description "Hash::Merge merges two arbitrarily deep hashes into a single
@@ -9516,7 +9518,7 @@ grammars to generate Perl object oriented parser modules.")
 (define-public perl-cpan-meta
   (package
     (name "perl-cpan-meta")
-    (version "2.143240")
+    (version "2.150010")
     (source
      (origin
        (method url-fetch)
@@ -9524,7 +9526,7 @@ grammars to generate Perl object oriented parser modules.")
                            "CPAN-Meta-" version ".tar.gz"))
        (sha256
         (base32
-         "1d80bxphpp5dq7fx5ipxszn7j8q9d85w6fnapdrbym21k1vsmlf6"))))
+         "1mm3dfw3ffyzb2ikpqn9l6zyqrxijb4vyywmbx2l21ryqwp0zy74"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta-requirements" ,perl-cpan-meta-requirements)

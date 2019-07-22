@@ -11,6 +11,7 @@
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Jonathan Brielmaier <jonathan.brielmaier@web.de>
+;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -1051,6 +1053,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("unixodbc" ,unixodbc)
        ("unzip" ,unzip)
        ("vigra" ,vigra)
+       ("xdg-utils" ,xdg-utils)
        ("xmlsec" ,xmlsec-nss)
        ("zip" ,zip)))
     (arguments
@@ -1082,6 +1085,13 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                   (string-append "$$(INCLUDE) -I"
                                  (assoc-ref inputs "gpgme")
                                  "/include/gpgme++")))
+
+               ;; /usr/bin/xdg-open doesn't exist on Guix System.
+               (substitute* '("shell/source/unix/exec/shellexec.cxx"
+                              "shell/source/unix/misc/senddoc.sh")
+                 (("/usr/bin/xdg-open")
+                  (string-append (assoc-ref inputs "xdg-utils")
+                                 "/bin/xdg-open")))
 
                #t))
            (add-after 'install 'bin-and-desktop-install

@@ -375,6 +375,7 @@ SCM_TESTS =					\
   tests/modules.scm				\
   tests/gnu-maintenance.scm			\
   tests/substitute.scm				\
+  tests/swh.scm					\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/glob.scm				\

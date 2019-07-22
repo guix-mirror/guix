@@ -146,8 +146,8 @@ test `guix build -d --sources=transitive foo \
       | wc -l` -eq 3
 
 
-# Unbound variables.
-cat > "$module_dir/foo.scm"<<EOF
+# Unbound variable in thunked field.
+cat > "$module_dir/foo.scm" <<EOF
 (define-module (foo)
   #:use-module (guix tests)
   #:use-module (guix build-system trivial))
@@ -162,7 +162,33 @@ if guix build package-with-something-wrong -n; then false; else true; fi
 guix build package-with-something-wrong -n 2> "$module_dir/err" || true
 grep "unbound" "$module_dir/err"		     # actual error
 grep "forget.*(gnu packages base)" "$module_dir/err" # hint
+
+# Unbound variable at the top level.
+cat > "$module_dir/foo.scm" <<EOF
+(define-module (foo)
+  #:use-module (guix tests))
+
+(define-public foo
+  (dummy-package "package-with-something-wrong"
+    (build-system gnu-build-system)))      ;unbound variable
+EOF
+
+guix build sed -n 2> "$module_dir/err"
+grep "unbound" "$module_dir/err"		     # actual error
+grep "forget.*(guix build-system gnu)" "$module_dir/err" # hint
+
 rm -f "$module_dir"/*
+
+# Wrong 'define-module' clause reported by 'warn-about-load-error'.
+cat > "$module_dir/foo.scm" <<EOF
+(define-module (something foo)
+  #:use-module (guix)
+  #:use-module (gnu))
+EOF
+guix build guile-bootstrap -n 2> "$module_dir/err"
+grep "does not match file name" "$module_dir/err"
+
+rm "$module_dir"/*
 
 # Should all return valid log files.
 drv="`guix build -d -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
@@ -265,6 +291,7 @@ cat > "$module_dir/gexp.scm"<<EOF
 EOF
 guix build --file="$module_dir/gexp.scm" -d
 guix build --file="$module_dir/gexp.scm" -d | grep 'gexp\.drv'
+rm "$module_dir"/*.scm
 
 # Using 'GUIX_BUILD_OPTIONS'.
 GUIX_BUILD_OPTIONS="--dry-run --no-grafts"

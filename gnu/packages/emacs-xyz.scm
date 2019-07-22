@@ -49,6 +49,7 @@
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4577,7 +4578,7 @@ automatically.")
 (define-public emacs-ivy
   (package
     (name "emacs-ivy")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
        (method git-fetch)
@@ -4587,7 +4588,7 @@ automatically.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "009n8zjycs62cv4i1k9adbb284wz2w3r13xki2740sj34k683v13"))))
+         "0xgngn3jhmyn6mlkk9kmgfgh0w5i50b27syr4cgfgarg6p77j05w"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -16719,4 +16720,30 @@ caching of visited sites, pleasant and configurable visualization of Gopher
 directories, direct visualisation of image files, jumping directly to links by
 name (with autocompletion), a simple bookmark management system and
 connections using TLS encryption.")
+    (license license:gpl3+)))
+
+(define-public emacs-zerodark-theme
+  (package
+    (name "emacs-zerodark-theme")
+    (version "4.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.petton.fr/nico/zerodark-theme.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0nnlxzsmhsbszqigcyxak9i1a0digrd13gv6v18ck4h760mihh1m"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-all-the-icons" ,emacs-all-the-icons)))
+    (home-page
+     "https://gitlab.petton.fr/nico/zerodark-theme")
+    (synopsis
+     "Dark, medium contrast theme for Emacs")
+    (description
+     "Zerodark is a dark theme inspired from One Dark and Niflheim.
+An optional mode-line format can be enabled with @code{zerodark-setup-modeline-format}.")
     (license license:gpl3+)))
