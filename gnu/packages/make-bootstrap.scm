@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages libunistring)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages mes)
   #:use-module (gnu packages multiprecision)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -46,6 +48,7 @@
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
             %guile-bootstrap-tarball
+            %mescc-tools-bootstrap-tarball
             %bootstrap-tarballs
 
             %guile-static-stripped))
@@ -534,6 +537,67 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
+;; One package: build + remove store references
+;; (define %mescc-tools-static-stripped
+;;   ;; A statically linked Mescc Tools with store references removed, for
+;;   ;; bootstrap.
+;;   (package
+;;     (inherit mescc-tools)
+;;     (name "mescc-tools-static-stripped")
+;;     (arguments
+;;      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+;;                           "CC=gcc -static")
+;;        #:test-target "test"
+;;        #:phases (modify-phases %standard-phases
+;;                   (delete 'configure)
+;;                   (add-after 'install 'strip-store-references
+;;                     (lambda _
+;;                       (let* ((out (assoc-ref %outputs "out"))
+;;                              (bin (string-append out "/bin")))
+;;                         (for-each (lambda (file)
+;;                                  (let ((target (string-append bin "/" file)))
+;;                                    (format #t "strippingg `~a'...~%" target)
+;;                                    (remove-store-references target)))
+;;                                   '( "M1" "blood-elf" "hex2"))))))))))
+
+;; Two packages: first build static, bare minimum content.
+(define %mescc-tools-static
+  ;; A statically linked MesCC Tools.
+  (package
+    (inherit mescc-tools)
+    (name "mescc-tools-static")
+    (arguments
+     `(#:system "i686-linux"
+       ,@(substitute-keyword-arguments (package-arguments mescc-tools)
+           ((#:make-flags flags)
+            `(cons "CC=gcc -static" ,flags)))))))
+
+;; ... next remove store references.
+(define %mescc-tools-static-stripped
+  ;; A statically linked Mescc Tools with store references removed, for
+  ;; bootstrap.
+  (package
+    (inherit %mescc-tools-static)
+    (name (string-append (package-name %mescc-tools-static) "-stripped"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((in  (assoc-ref %build-inputs "mescc-tools"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin")))
+           (mkdir-p bin)
+           (for-each (lambda (file)
+                       (let ((target (string-append bin "/" file)))
+                         (format #t "copying `~a'...~%" file)
+                         (copy-file (string-append in "/bin/" file)
+                                    target)
+                         (remove-store-references target)))
+                     '( "M1" "blood-elf" "hex2"))
+           #t))))
+    (inputs `(("mescc-tools" ,%mescc-tools-static)))))
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
@@ -700,6 +764,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
   (tarball-package %guile-static-stripped))
+
+(define %mescc-tools-bootstrap-tarball
+  ;; A tarball with statically-linked MesCC binary seed.
+  (tarball-package %mescc-tools-static-stripped))
 
 (define %bootstrap-tarballs
   ;; A single derivation containing all the bootstrap tarballs, for
