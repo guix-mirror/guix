@@ -9518,7 +9518,7 @@ grammars to generate Perl object oriented parser modules.")
 (define-public perl-cpan-meta
   (package
     (name "perl-cpan-meta")
-    (version "2.143240")
+    (version "2.150010")
     (source
      (origin
        (method url-fetch)
@@ -9526,7 +9526,7 @@ grammars to generate Perl object oriented parser modules.")
                            "CPAN-Meta-" version ".tar.gz"))
        (sha256
         (base32
-         "1d80bxphpp5dq7fx5ipxszn7j8q9d85w6fnapdrbym21k1vsmlf6"))))
+         "1mm3dfw3ffyzb2ikpqn9l6zyqrxijb4vyywmbx2l21ryqwp0zy74"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-cpan-meta-requirements" ,perl-cpan-meta-requirements)
