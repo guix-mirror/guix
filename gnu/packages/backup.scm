@@ -627,7 +627,7 @@ detection, and lossless compression.")
        ;; transitional package for now:
        ;; <https://bugs.gnu.org/30662>
        ("python-msgpack" ,python-msgpack-transitional)
-       ("zstd" ,zstd)))
+       ("zstd" ,zstd "lib")))
     (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
     (description "Borg is a deduplicating backup program.  Optionally, it
 supports compression and authenticated encryption.  The main goal of Borg is to
