@@ -4139,7 +4139,7 @@ for application developers.")
 (define-public totem
   (package
     (name "totem")
-    (version "3.30.0")
+    (version "3.32.1")
     (source
      (origin
        (method url-fetch)
@@ -4148,9 +4148,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0rahkybxbmxhlmrrgrzxny1xm7wycx7ib4blxp1i2l1q3i8s84b0"))
-       (patches (search-patches "totem-meson-easy-codec.patch"
-                                "totem-meson-compat.patch"))))
+         "0yra8apc7smpwf7d1k8crhrm8d4wix24ds6i9yxbch1v11jnhr3v"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -4159,7 +4157,9 @@ for application developers.")
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
        ("intltool" ,intltool)
        ("itstool" ,itstool)
-       ("xmllint" ,libxml2)))
+       ("xmllint" ,libxml2)
+       ("python-pylint" ,python-pylint)
+       ("xorg-server" ,xorg-server-for-tests)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (inputs
@@ -4187,20 +4187,13 @@ for application developers.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("python" ,python)
-       ("python-pygobject" ,python2-pygobject)
-       ;; XXX TODO pylint needed for python support
+       ("python-pygobject" ,python-pygobject)
        ("totem-pl-parser" ,totem-pl-parser)
        ("grilo" ,grilo)
        ("grilo-plugins" ,grilo-plugins)
        ("vala" ,vala)))
     (arguments
      `(#:glib-or-gtk? #t
-
-       ;; Disable parallel builds until
-       ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=28813 is
-       ;; fixed.  Try enabling it when updating this package in case
-       ;; upstream has fixed it.
-       #:parallel-build? #f
 
        ;; Disable automatic GStreamer plugin installation via PackageKit and
        ;; all that.
@@ -4209,7 +4202,6 @@ for application developers.")
                            ;; Do not build .a files for the plugins, it's
                            ;; completely useless.  This saves 2 MiB.
                            "--default-library" "shared")
-
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
@@ -4222,6 +4214,13 @@ for application developers.")
           'install 'disable-cache-generation
           (lambda _
             (setenv "DESTDIR" "/")
+            #t))
+         (add-before
+          'check 'pre-check
+          (lambda _
+            ;; Tests require a running X server.
+            (system "Xvfb :1 &")
+            (setenv "DISPLAY" ":1")
             #t))
          (add-after
           'install 'wrap-totem
