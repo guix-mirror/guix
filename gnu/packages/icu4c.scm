@@ -76,17 +76,19 @@
     `(("perl" ,perl)))
    (arguments
     `(#:configure-flags
-      '("--enable-rpath"
-        ,@(if (let ((s (or (%current-target-system)
-                           (%current-system))))
-                (or (string-prefix? "arm" s)
-                    (string-prefix? "mips" s)))
-              '("--with-data-packaging=archive")
-              '()))
+      '("--enable-rpath")
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'chdir-to-source
           (lambda _ (chdir "source") #t))
+        (add-after 'chdir-to-source 'update-LDFLAGS
+          (lambda _
+            ;; Do not create a "data-only" libicudata.so because it causes
+            ;; problems on some architectures (notably armhf and MIPS).
+            (substitute* "config/mh-linux"
+              (("LDFLAGSICUDT=-nodefaultlibs -nostdlib")
+               "LDFLAGSICUDT="))
+            #t))
         (add-after 'install 'avoid-coreutils-reference
           ;; Don't keep a reference to the build tools.
           (lambda* (#:key outputs #:allow-other-keys)
