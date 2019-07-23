@@ -221,7 +221,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-pwd
            (lambda _
