@@ -5304,7 +5304,7 @@ to display dialog boxes from the commandline and shell scripts.")
 (define-public mutter
   (package
     (name "mutter")
-    (version "3.30.2")
+    (version "3.32.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -5312,39 +5312,46 @@ to display dialog boxes from the commandline and shell scripts.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qr3w480p31nbiad49213rj9rk6p9fl82a68pzznpz36p30dq96z"))))
+                "1h577i2ap7dpfy1jg101jvc6nzccc0csgvd55ahydlr8f94frcva"))))
     ;; NOTE: Since version 3.21.x, mutter now bundles and exports forked
     ;; versions of cogl and clutter.  As a result, many of the inputs,
     ;; propagated-inputs, and configure flags used in cogl and clutter are
     ;; needed here as well.
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     '(#:configure-flags
-       ;; XXX: build fails with [-Werror]:
-       ;;    backends/meta-cursor-renderer.c:112:5: error:
-       ;;      implicit declaration of function ?roundf?
-       (list "--enable-compile-warnings=minimum"
-
-             "--enable-native-backend"
+     '(;; XXX: All mutter tests fail with the following error:
+       ;;   Settings schema 'org.gnome.mutter' is not installed
+       #:tests? #f
+       #:glib-or-gtk? #t
+       #:configure-flags
+       ;; Otherwise, the RUNPATH will lack the final path component.
+       (list (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib:"
+                            (assoc-ref %outputs "out") "/lib/mutter-4")
 
              ;; The following flags are needed for the bundled clutter
-             "--enable-x11-backend=yes"
-
-             (string-append "--with-xwayland-path="
+             (string-append "-Dxwayland_path="
                             (assoc-ref %build-inputs "xorg-server-xwayland")
                             "/bin/Xwayland")
 
              ;; the remaining flags are needed for the bundled cogl
-             "--enable-cogl-gst"
-             (string-append "--with-gl-libname="
+             (string-append "-Dopengl_libname="
                             (assoc-ref %build-inputs "mesa")
                             "/lib/libGL.so"))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-werror
+           (lambda _
+             ;; XXX: build fails with [-Werror]:
+             ;;    backends/meta-cursor-renderer.c:112:5: error:
+             ;;      implicit declaration of function ?roundf?
+             (substitute* "meson.build"
+               (("'-Werror=.*',") ""))
+             #t))
          ;; Replace references to systemd libraries to elogind references.
          (add-before 'configure 'use-elogind
            (lambda _
-             (substitute* (list "configure"
+             (substitute* (list "meson.build"
                                 "src/backends/native/meta-launcher.c"
                                 "src/core/main.c")
                (("systemd") "elogind"))
@@ -5354,6 +5361,7 @@ to display dialog boxes from the commandline and shell scripts.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("xorg-server" ,xorg-server-for-tests)
        ;; For git build
        ("autoconf" ,autoconf)
        ("automake" ,automake)
@@ -5383,13 +5391,16 @@ to display dialog boxes from the commandline and shell scripts.")
     (inputs
      `(("elogind" ,elogind)
        ("gnome-desktop" ,gnome-desktop)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
        ("libcanberra-gtk" ,libcanberra)
        ("libgudev" ,libgudev)
        ("libice" ,libice)
        ("libsm" ,libsm)
+       ("libwacom" ,libwacom)
        ("libxkbfile" ,libxkbfile)
        ("libxrandr" ,libxrandr)
        ("libxtst" ,libxtst)
+       ("pipewire" ,pipewire)
        ("startup-notification" ,startup-notification)
        ("upower-glib" ,upower)
        ("xkeyboard-config" ,xkeyboard-config)
