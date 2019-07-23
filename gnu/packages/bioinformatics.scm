@@ -4829,7 +4829,7 @@ generated using the PacBio Iso-Seq protocol.")
 (define-public prank
   (package
     (name "prank")
-    (version "150803")
+    (version "170427")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4837,7 +4837,7 @@ generated using the PacBio Iso-Seq protocol.")
                     version ".tgz"))
               (sha256
                (base32
-                "0am4z94fs3w2n5xpfls9zda61vq7qqz4q2i7b9hlsxz5q4j3kfm4"))))
+                "0nc8g9c5rkdxcir46s0in9ci1sxwzbjibxrvkksf22ybnplvagk2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
