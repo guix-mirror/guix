@@ -69,6 +69,11 @@
        #:make-flags
        (list "threading=multi" "link=shared"
 
+             ;; XXX: Disable installation of Boosts modular CMake config scripts
+             ;; which conflicts in 1.70.0 with the ones provided by CMake.
+             ;; See <https://bugs.gnu.org/36721>.
+             "--no-cmake-config"
+
              ;; Set the RUNPATH to $libdir so that the libs find each other.
              (string-append "linkflags=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
