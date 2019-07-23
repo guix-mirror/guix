@@ -20598,6 +20598,21 @@ thus not visible in @file{/gnu/store}---e.g., you could store secret
 key configuration in @file{/etc/knot/secrets.conf} and add this file
 to the @code{includes} list.
 
+One can generate a secret tsig key (for nsupdate and zone transfers with the
+keymgr command from the knot package.  Note that the package is not automatically
+installed by the service.  The following example shows how to generate a new
+tsig key:
+
+@example
+keymgr -t mysecret > /etc/knot/secrets.conf
+chmod 600 /etc/knot/secrets.conf
+@end example
+
+Also note that the generated key will be named @var{mysecret}, so it is the
+name that needs to be used in the @var{key} field of the
+@code{knot-acl-configuration} record and in other places that need to refer
+to that key.
+
 It can also be used to add configuration not supported by this interface.
 
 @item @code{listen-v4} (default: @code{"0.0.0.0"})
