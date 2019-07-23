@@ -28,7 +28,7 @@ Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@*
+Copyright @copyright{} 2015, 2016, 2017, 2019 Leo Famulari@*
 Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@*
@@ -564,6 +564,10 @@ $ wget @value{OPENPGP-SIGNING-KEY-URL} \
 
 @noindent
 and rerun the @code{gpg --verify} command.
+
+Take note that a warning like ``This key is not certified with a trusted
+signature!'' is normal.
+
 @c end authentication part
 
 @item
@@ -1911,6 +1915,10 @@ $ wget @value{OPENPGP-SIGNING-KEY-URL} \
 
 @noindent
 and rerun the @code{gpg --verify} command.
+
+Take note that a warning like ``This key is not certified with a trusted
+signature!'' is normal.
+
 @c end duplication
 
 This image contains the tools necessary for an installation.
