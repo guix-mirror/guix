@@ -6779,7 +6779,7 @@ shared object databases, search tools and indexing.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.30.5")
+    (version "3.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6787,7 +6787,7 @@ shared object databases, search tools and indexing.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "144r4py9b8w9ycsg6fggjg05kwvymh003qsb3h6apgpch5y3zgnv"))))
+                "0vmrvimv4183l3ij4kv0ir2c9rfzk7gh3xc2pa4wkqq9kn7h6m7s"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t
@@ -6808,9 +6808,11 @@ shared object databases, search tools and indexing.")
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ("gnome-autoar" ,gnome-autoar)
+       ("gst-plugins-base" ,gst-plugins-base)
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
        ("tracker" ,tracker)
+       ("tracker-miners" ,tracker-miners)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;
        ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
