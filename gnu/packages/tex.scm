@@ -942,7 +942,7 @@ fonts.")
                (setenv "MFINPUTS"
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base:"
-                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      (assoc-ref inputs "texlive-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
              (for-each (lambda (font)
@@ -975,7 +975,7 @@ fonts.")
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
-       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+       ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/latex-fonts")
     (synopsis "Collection of fonts used in LaTeX distributions")
     (description "This is a collection of fonts for use with standard LaTeX
@@ -1071,7 +1071,7 @@ Taco Hoekwater.")
                                           src "/dummy:"
                                           src "/symbols:"
                                           mf "/share/texmf-dist/metafont/base:"
-                                          (assoc-ref inputs "texlive-fonts-cm")
+                                          (assoc-ref inputs "texlive-cm")
                                           "/share/texmf-dist/fonts/source/public/cm")))
                  (let ((build (string-append (getcwd) "/build")))
                    (mkdir-p build)
@@ -1155,7 +1155,7 @@ Taco Hoekwater.")
                  #t))))))
       (native-inputs
        `(("texlive-union" ,(texlive-union (list texlive-tex-fontinst-base
-                                                texlive-fonts-cm
+                                                texlive-cm
                                                 texlive-metafont-base)))))
       (home-page "https://www.ctan.org/pkg/amsfonts")
       (synopsis "TeX fonts from the American Mathematical Society")
@@ -1228,7 +1228,7 @@ output encodings, and features generation of clean UTF-8 patterns.")
                            (string-append (getcwd)
                                           "/fonts/source/public/etex/:"
                                           mf "/share/texmf-dist/metafont/base:"
-                                          (assoc-ref inputs "texlive-fonts-cm")
+                                          (assoc-ref inputs "texlive-cm")
                                           "/share/texmf-dist/fonts/source/public/cm")))
                  (invoke "mf" "-progname=mf"
                          (string-append "\\"
@@ -1247,7 +1247,7 @@ output encodings, and features generation of clean UTF-8 patterns.")
       (native-inputs
        `(("texlive-bin" ,texlive-bin)
          ("texlive-metafont-base" ,texlive-metafont-base)
-         ("texlive-fonts-cm" ,texlive-fonts-cm)))
+         ("texlive-cm" ,texlive-cm)))
       (home-page "https://www.ctan.org/pkg/etex")
       (synopsis "Extended version of TeX")
       (description
@@ -2274,7 +2274,7 @@ T1/EC and UTF-8 encodings.")
 
              ;; Find required fonts for building tex.fmt
              (setenv "TFMFONTS"
-                     (string-append (assoc-ref inputs "texlive-fonts-cm")
+                     (string-append (assoc-ref inputs "texlive-cm")
                                     "/share/texmf-dist/fonts/tfm/public/cm:"
                                     (assoc-ref inputs "texlive-fonts-knuth-lib")
                                     "/share/texmf-dist/fonts/tfm/public/knuth-lib"))
@@ -2329,7 +2329,7 @@ T1/EC and UTF-8 encodings.")
        ;; The following packages are needed for build "tex.fmt", which we need
        ;; for a working "tex".
        ("texlive-tex-plain" ,texlive-tex-plain)
-       ("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-cm" ,texlive-cm)
        ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
        ("texlive-hyphen-base" ,texlive-hyphen-base)))
     (home-page "https://ctan.org/pkg/hyph-utf8")
@@ -2550,7 +2550,7 @@ formats.")
                                "/share/texmf-dist/fonts/tfm/public"
                                dir)))
                            '(("texlive-etex" . "/etex")
-                             ("texlive-fonts-cm" . "/cm")
+                             ("texlive-cm" . "/cm")
                              ("texlive-fonts-latex" . "/latex-fonts")
                              ("texlive-fonts-knuth-lib" . "/knuth-lib")))
                       ":"))
@@ -2628,7 +2628,7 @@ formats.")
        ("texlive-tex-ini-files" ,texlive-tex-ini-files)
        ("texlive-tex-plain" ,texlive-tex-plain)
        ("texlive-kpathsea" ,texlive-kpathsea)
-       ("texlive-fonts-cm" ,texlive-fonts-cm)
+       ("texlive-cm" ,texlive-cm)
        ("texlive-fonts-latex" ,texlive-fonts-latex)
        ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
        ("texlive-luatexconfig"
@@ -3480,7 +3480,7 @@ packages.")
           (list texlive-bin
                 texlive-dvips
                 texlive-fontname
-                texlive-fonts-cm
+                texlive-cm
                 texlive-fonts-latex
                 texlive-metafont-base
                 texlive-latex-base
@@ -4804,7 +4804,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
                (setenv "MFINPUTS"
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base:"
-                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      (assoc-ref inputs "texlive-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
              (for-each (lambda (font)
@@ -4833,7 +4833,7 @@ in SGML; use maths minus in text as appropriate; simple Young tableaux.")
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
-       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+       ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/ec")
     (synopsis "Computer modern fonts in T1 and TS1 encodings")
     (description
@@ -4995,7 +4995,7 @@ Adobe's basic set.")
                (setenv "MFINPUTS"
                        (string-append (getcwd) ":"
                                       mf "/share/texmf-dist/metafont/base:"
-                                      (assoc-ref inputs "texlive-fonts-cm")
+                                      (assoc-ref inputs "texlive-cm")
                                       "/share/texmf-dist/fonts/source/public/cm")))
              (mkdir "build")
              (for-each (lambda (font)
@@ -5024,7 +5024,7 @@ Adobe's basic set.")
     (native-inputs
      `(("texlive-bin" ,texlive-bin)
        ("texlive-metafont-base" ,texlive-metafont-base)
-       ("texlive-fonts-cm" ,texlive-fonts-cm)))
+       ("texlive-cm" ,texlive-cm)))
     (home-page "https://www.ctan.org/pkg/rsfs")
     (synopsis "Ralph Smith's Formal Script font")
     (description
