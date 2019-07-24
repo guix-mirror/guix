@@ -4974,3 +4974,53 @@ also beyond the realm of omics (e.g.  spectral imaging).  The methods
 implemented in mixOmics can also handle missing values without having to
 delete entire rows with missing data.")
     (license license:gpl2+)))
+
+(define-public r-depecher
+  (package
+    (name "r-depecher")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DepecheR" version))
+       (sha256
+        (base32
+         "0qj2h2a50fncppvi2phh0mbivxkn1mv702mqpi9mvvkf3bzq8m0h"))))
+    (properties `((upstream-name . "DepecheR")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-syntax-error
+           (lambda _
+             (substitute* "src/Makevars"
+               ((" & ") " && "))
+             #t)))))
+    (propagated-inputs
+     `(("r-beanplot" ,r-beanplot)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-dosnow" ,r-dosnow)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mixomics" ,r-mixomics)
+       ("r-moments" ,r-moments)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-reshape2" ,r-reshape2)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://bioconductor.org/packages/DepecheR/")
+    (synopsis "Identify traits of clusters in high-dimensional entities")
+    (description
+     "The purpose of this package is to identify traits in a dataset that can
+separate groups.  This is done on two levels.  First, clustering is performed,
+using an implementation of sparse K-means.  Secondly, the generated clusters
+are used to predict outcomes of groups of individuals based on their
+distribution of observations in the different clusters.  As certain clusters
+with separating information will be identified, and these clusters are defined
+by a sparse number of variables, this method can reduce the complexity of
+data, to only emphasize the data that actually matters.")
+    (license license:expat)))
