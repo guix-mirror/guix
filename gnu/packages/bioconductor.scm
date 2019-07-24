@@ -4798,6 +4798,32 @@ gene fusion discovery.  It can be applied to all major sequencing techologies
 and to both short and long sequence reads.")
     (license license:gpl3)))
 
+(define-public r-flowutils
+  (package
+    (name "r-flowutils")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowUtils" version))
+       (sha256
+        (base32
+         "1r7b0rszdzjq7jphh65p5m4x5ps0zbbagxl26gn2mapbjdyb47rm"))))
+    (properties `((upstream-name . "flowUtils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-corpcor" ,r-corpcor)
+       ("r-flowcore" ,r-flowcore)
+       ("r-graph" ,r-graph)
+       ("r-runit" ,r-runit)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/jspidlen/flowUtils")
+    (synopsis "Utilities for flow cytometry")
+    (description
+     "This package provides utilities for flow cytometry data.")
+    (license license:artistic2.0)))
+
 (define-public r-flowcore
   (package
     (name "r-flowcore")
