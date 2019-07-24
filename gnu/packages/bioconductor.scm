@@ -4824,6 +4824,31 @@ and to both short and long sequence reads.")
      "This package provides utilities for flow cytometry data.")
     (license license:artistic2.0)))
 
+(define-public r-consensusclusterplus
+  (package
+    (name "r-consensusclusterplus")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ConsensusClusterPlus" version))
+       (sha256
+        (base32
+         "1mlcm3wq5n8s0gxs35j0ph9576fhbrbrrsj2xy84fy20prcfs4w8"))))
+    (properties
+     `((upstream-name . "ConsensusClusterPlus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-all" ,r-all)
+       ("r-biobase" ,r-biobase)
+       ("r-cluster" ,r-cluster)))
+    (home-page "https://bioconductor.org/packages/ConsensusClusterPlus")
+    (synopsis "Clustering algorithm")
+    (description
+     "This package provides an implementation of an algorithm for determining
+cluster count and membership by stability evidence in unsupervised analysis.")
+    (license license:gpl2)))
+
 (define-public r-flowcore
   (package
     (name "r-flowcore")
