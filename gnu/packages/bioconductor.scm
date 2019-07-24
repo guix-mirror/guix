@@ -865,6 +865,34 @@ which were then sequenced to a depth of ~4 million reads per library,
 resulting in a complete gene expression profile for each cell.")
     (license license:artistic2.0)))
 
+(define-public r-all
+  (package
+    (name "r-all")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "ALL_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z7kpjw4ndj6fkxwvhqf3gawhrn26ksrlns7j2c78qzxqmjndik9"))))
+    (properties `((upstream-name . "ALL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/ALL")
+    (synopsis "Acute Lymphoblastic Leukemia data from the Ritz laboratory")
+    (description
+     "The data consist of microarrays from 128 different individuals with
+@dfn{acute lymphoblastic leukemia} (ALL).  A number of additional covariates
+are available.  The data have been normalized (using rma) and it is the
+jointly normalized data that are available here.  The data are presented in
+the form of an @code{exprSet} object.")
+    (license license:artistic2.0)))
+
 
 ;;; Packages
 
