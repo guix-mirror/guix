@@ -12676,6 +12676,29 @@ When @code{gac-automatically-push-p} is non-nil, it also tries to push to
 the current upstream.")
     (license license:gpl3+)))
 
+(define-public emacs-scroll-on-drag
+  (let ((commit "888abd04c34753b1fc4b2fe541bc004ebec5c996")
+        (revision "1"))
+    (package
+      (name "emacs-scroll-on-drag")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ideasman42/emacs-scroll-on-drag.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1si4hdqa3jw1inbyh3wb3i5i9grbms1nwky3vyk9zg7iznwm8a9p"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/ideasman42/emacs-scroll-on-drag")
+      (synopsis "Interactive scrolling")
+      (description "This package permits scrolling at increasing speeds based
+on drag distance.")
+      (license license:gpl3+))))
+
 (define-public emacs-company-restclient
   (package
     (name "emacs-company-restclient")
