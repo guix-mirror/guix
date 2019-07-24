@@ -489,19 +489,21 @@ to integrate other virtualization mechanisms if needed.")
                 "0six9ckmvlwwyavyjkgc262qkpvfqgi8rjij7cyk00bmqq8c9s4l"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libxml2" ,libxml2)
-       ("libvirt" ,libvirt)
-       ("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("openssl" ,openssl)
+     `(("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("lvm2" ,lvm2) ; for libdevmapper
+       ("lvm2" ,lvm2)                   ; for libdevmapper
        ("libyajl" ,libyajl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
        ("vala" ,vala)))
+    (propagated-inputs
+     ;; ‘Required:’ by the installed .pc files.
+     `(("glib" ,glib)
+       ("libvirt" ,libvirt)
+       ("libxml2" ,libxml2)
+       ("gobject-introspection" ,gobject-introspection)))
     (home-page "https://libvirt.org")
     (synopsis "GLib wrapper around libvirt")
     (description "libvirt-glib wraps the libvirt library to provide a
