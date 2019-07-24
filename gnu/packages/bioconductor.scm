@@ -4932,3 +4932,45 @@ change point detection.")
      "FlowSOM offers visualization options for cytometry data, by using
 self-organizing map clustering and minimal spanning trees.")
     (license license:gpl2+)))
+
+(define-public r-mixomics
+  (package
+    (name "r-mixomics")
+    (version "6.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mixOmics" version))
+       (sha256
+        (base32
+         "1f08jx35amn3sfcmqb96mjxxsm6dnpzhff625z758x1992wj4zsk"))))
+    (properties `((upstream-name . "mixOmics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-corpcor" ,r-corpcor)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ellipse" ,r-ellipse)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-igraph" ,r-igraph)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rarpack" ,r-rarpack)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.mixOmics.org")
+    (synopsis "Multivariate methods for exploration of biological datasets")
+    (description
+     "mixOmics offers a wide range of multivariate methods for the exploration
+and integration of biological datasets with a particular focus on variable
+selection.  The package proposes several sparse multivariate models we have
+developed to identify the key variables that are highly correlated, and/or
+explain the biological outcome of interest.  The data that can be analysed
+with mixOmics may come from high throughput sequencing technologies, such as
+omics data (transcriptomics, metabolomics, proteomics, metagenomics etc) but
+also beyond the realm of omics (e.g.  spectral imaging).  The methods
+implemented in mixOmics can also handle missing values without having to
+delete entire rows with missing data.")
+    (license license:gpl2+)))
