@@ -4797,3 +4797,33 @@ read mapping, read counting, SNP calling, structural variant detection and
 gene fusion discovery.  It can be applied to all major sequencing techologies
 and to both short and long sequence reads.")
     (license license:gpl3)))
+
+(define-public r-flowcore
+  (package
+    (name "r-flowcore")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowCore" version))
+       (sha256
+        (base32
+         "0pvcyzycsmgc8iw60q9xnhllfan6ihwpz3gvk8h1n9jmhpxzylan"))))
+    (properties `((upstream-name . "flowCore")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-corpcor" ,r-corpcor)
+       ("r-graph" ,r-graph)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "https://bioconductor.org/packages/flowCore")
+    (synopsis "Basic structures for flow cytometry data")
+    (description
+     "This package provides S4 data structures and basic functions to deal
+with flow cytometry data.")
+    (license license:artistic2.0)))
