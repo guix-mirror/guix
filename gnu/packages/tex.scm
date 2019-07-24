@@ -3014,6 +3014,23 @@ of file names.")
 (define-public texlive-latex-url
   (deprecated-package "texlive-latex-url" texlive-url))
 
+(define-public texlive-tetex
+  (package
+    (inherit (simple-texlive-package
+              "texlive-tetex"
+              (list "/dvips/tetex/"
+                    "/fonts/enc/dvips/tetex/"
+                    "/fonts/map/dvips/tetex/")
+              (base32
+               "1si3as8mwi8837965djlw6jhwwzsp3r1hkflvdxv2avx9vb45hjb")
+              #:trivial? #t))
+    (home-page "https://www.ctan.org/pkg/tetex")
+    (synopsis "Font maps originally from teTeX")
+    (description "This package provides font maps that were originally part of
+the now obsolete teTeX distributions but are still used at the core of the TeX
+Live distribution.")
+    (license license:public-domain)))
+
 (define-public texlive-latex-l3kernel
   (package
     (name "texlive-latex-l3kernel")
