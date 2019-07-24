@@ -14530,3 +14530,27 @@ including regression, classification and ranking.  The package is made to be
 extensible, so that users are also allowed to define their own objectives
 easily.")
     (license license:asl2.0)))
+
+(define-public r-umap
+  (package
+    (name "r-umap")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "umap" version))
+       (sha256
+        (base32
+         "1s82w9gy1387h7cprjfbhp49l89zbmn3gc9s0wzqb1s73nza9n31"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rspectra" ,r-rspectra)))
+    (home-page "https://github.com/tkonopka/umap")
+    (synopsis "Uniform manifold approximation and projection")
+    (description
+     "Uniform manifold approximation and projection is a technique for
+dimension reduction.  This package provides an interface to the UMAP algorithm
+in R, including a translation of the original algorithm into R.")
+    (license license:expat)))
