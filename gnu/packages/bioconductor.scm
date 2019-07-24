@@ -4878,3 +4878,29 @@ cluster count and membership by stability evidence in unsupervised analysis.")
      "This package provides S4 data structures and basic functions to deal
 with flow cytometry data.")
     (license license:artistic2.0)))
+
+(define-public r-flowmeans
+  (package
+    (name "r-flowmeans")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowMeans" version))
+       (sha256
+        (base32
+         "0yp6y3mq5h4nf1d7ybqnriigwfmwanrqavpj3ry482sgiaip1hp2"))))
+    (properties `((upstream-name . "flowMeans")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-feature" ,r-feature)
+       ("r-flowcore" ,r-flowcore)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "https://bioconductor.org/packages/flowMeans")
+    (synopsis "Non-parametric flow cytometry data gating")
+    (description
+     "This package provides tools to identify cell populations in Flow
+Cytometry data using non-parametric clustering and segmented-regression-based
+change point detection.")
+    (license license:artistic2.0)))
