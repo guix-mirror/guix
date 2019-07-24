@@ -8156,6 +8156,9 @@ advanced image management tool")
        ("python2-pygobject" ,python2-pygobject)
        ("python2-psutil" ,python2-psutil)
        ("vte" ,vte)))
+    (propagated-inputs
+     ;; Terminator refuses to start when these are not present.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
      `(#:python ,python-2                          ;Python 3 not supported
        #:phases
