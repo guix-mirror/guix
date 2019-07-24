@@ -8772,7 +8772,7 @@ internally.")
 (define-public emacs-gitpatch
   (package
     (name "emacs-gitpatch")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method git-fetch)
@@ -8781,7 +8781,7 @@ internally.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jj12pjwza6cq8a3kr8nqnmm3vxs0wam8h983irry4xr4ifywsn4"))))
+        (base32 "1drf4fvmak7brf16axkh4nfz8pg44i7pjhfjz3dbkycbpp8y5vig"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/tumashu/gitpatch")
     (synopsis "Mail git patch from Emacs")
