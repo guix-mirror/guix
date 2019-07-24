@@ -41,6 +41,7 @@
                                        delete-matching-generations)
   #:use-module (guix graph)
   #:use-module (guix scripts graph)
+  #:use-module (guix scripts system reconfigure)
   #:use-module (guix build utils)
   #:use-module (guix progress)
   #:use-module ((guix build syscalls) #:select (terminal-columns))
@@ -178,43 +179,9 @@ TARGET, and register them."
 
     (return *unspecified*)))
 
-(define* (install-bootloader installer
-                             #:key
-                             bootcfg bootcfg-file
-                             target)
-  "Run INSTALLER, a bootloader installation script, with error handling, in
-%STORE-MONAD."
-  (mlet %store-monad ((installer-drv (if installer
-                                         (lower-object installer)
-                                         (return #f)))
-                      (bootcfg       (lower-object bootcfg)))
-    (let* ((gc-root      (string-append target %gc-roots-directory
-                                        "/bootcfg"))
-           (temp-gc-root (string-append gc-root ".new"))
-           (install (and installer-drv
-                         (derivation->output-path installer-drv)))
-           (bootcfg (derivation->output-path bootcfg)))
-      ;; Prepare the symlink to bootloader config file to make sure that it's
-      ;; a GC root when 'installer-drv' completes (being a bit paranoid.)
-      (switch-symlinks temp-gc-root bootcfg)
-
-      (unless (false-if-exception
-               (begin
-                 (install-boot-config bootcfg bootcfg-file target)
-                 (when install
-                   (save-load-path-excursion (primitive-load install)))))
-        (delete-file temp-gc-root)
-        (leave (G_ "failed to install bootloader ~a~%") install))
-
-      ;; Register bootloader config file as a GC root so that its dependencies
-      ;; (background image, font, etc.) are not reclaimed.
-      (rename-file temp-gc-root gc-root)
-      (return #t))))
-
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
-                  bootloader-installer install-bootloader?
-                  bootcfg bootcfg-file)
+                  install-bootloader? bootloader bootcfg)
   "Copy the closure of BOOTCFG, which includes the output of OS-DRV, to
 directory TARGET.  TARGET must be an absolute directory name since that's what
 'register-path' expects.
@@ -265,10 +232,11 @@ the ownership of '~a' may be incorrect!~%")
         (populate os-dir target)
 
         (mwhen install-bootloader?
-          (install-bootloader bootloader-installer
-                              #:bootcfg bootcfg
-                              #:bootcfg-file bootcfg-file
-                              #:target target))))))
+          (install-bootloader local-eval bootloader bootcfg
+                              #:target target)
+          (return
+           (info (G_ "bootloader successfully installed on '~a'~%")
+                 (bootloader-configuration-target bootloader))))))))
 
 
 ;;;
@@ -334,82 +302,6 @@ unload."
      (with-monad %store-monad
        (warning (G_ "failed to obtain list of shepherd services~%"))
        (return #f)))))
-
-(define (upgrade-shepherd-services os)
-  "Upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
-services specified in OS and not currently running.
-
-This is currently very conservative in that it does not stop or unload any
-running service.  Unloading or stopping the wrong service ('udev', say) could
-bring the system down."
-  (define new-services
-    (service-value
-     (fold-services (operating-system-services os)
-                    #:target-type shepherd-root-service-type)))
-
-  ;; Arrange to simply emit a warning if the service upgrade fails.
-  (with-shepherd-error-handling
-   (call-with-service-upgrade-info new-services
-     (lambda (to-restart to-unload)
-        (for-each (lambda (unload)
-                    (info (G_ "unloading service '~a'...~%") unload)
-                    (unload-service unload))
-                  to-unload)
-
-        (with-monad %store-monad
-          (munless (null? new-services)
-            (let ((new-service-names  (map shepherd-service-canonical-name new-services))
-                  (to-restart-names   (map shepherd-service-canonical-name to-restart))
-                  (to-start           (filter shepherd-service-auto-start? new-services)))
-              (info (G_ "loading new services:~{ ~a~}...~%") new-service-names)
-              (unless (null? to-restart-names)
-                ;; Listing TO-RESTART-NAMES in the message below wouldn't help
-                ;; because many essential services cannot be meaningfully
-                ;; restarted.  See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=22039#30>.
-                (format #t (G_ "To complete the upgrade, run 'herd restart SERVICE' to stop,
-upgrade, and restart each service that was not automatically restarted.\n")))
-              (mlet %store-monad ((files (mapm %store-monad
-                                               (compose lower-object
-                                                        shepherd-service-file)
-                                               new-services)))
-                ;; Here we assume that FILES are exactly those that were computed
-                ;; as part of the derivation that built OS, which is normally the
-                ;; case.
-                (load-services/safe (map derivation->output-path files))
-
-                (for-each start-service
-                          (map shepherd-service-canonical-name to-start))
-                (return #t)))))))))
-
-(define* (switch-to-system os
-                           #:optional (profile %system-profile))
-  "Make a new generation of PROFILE pointing to the directory of OS, switch to
-it atomically, and then run OS's activation script."
-  (mlet* %store-monad ((drv (operating-system-derivation os))
-                       (script (lower-object (operating-system-activation-script os))))
-    (let* ((system     (derivation->output-path drv))
-           (number     (+ 1 (generation-number profile)))
-           (generation (generation-file-name profile number)))
-      (switch-symlinks generation system)
-      (switch-symlinks profile generation)
-
-      (format #t (G_ "activating system...~%"))
-
-      ;; The activation script may change $PATH, among others, so protect
-      ;; against that.
-      (save-environment-excursion
-       ;; Tell 'activate-current-system' what the new system is.
-       (setenv "GUIX_NEW_SYSTEM" system)
-
-       ;; The activation script may modify '%load-path' & co., so protect
-       ;; against that.  This is necessary to ensure that
-       ;; 'upgrade-shepherd-services' gets to see the right modules when it
-       ;; computes derivations with 'gexp->derivation'.
-       (save-load-path-excursion
-        (primitive-load (derivation->output-path script))))
-
-      ;; Finally, try to update system services.
-      (upgrade-shepherd-services os))))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
@@ -505,18 +397,13 @@ STORE is an open connection to the store."
                      ((bootloader-configuration-file-generator bootloader)
                       bootloader-config entries
                       #:old-entries old-entries)))
-           (bootcfg-file -> (bootloader-configuration-file bootloader))
-           (target -> "/")
            (drvs -> (list bootcfg)))
         (mbegin %store-monad
           (show-what-to-build* drvs)
           (built-derivations drvs)
-          ;; Only install bootloader configuration file. Thus, no installer is
-          ;; provided here.
-          (install-bootloader #f
-                              #:bootcfg bootcfg
-                              #:bootcfg-file bootcfg-file
-                              #:target target))))))
+          ;; Only install bootloader configuration file.
+          (install-bootloader local-eval bootloader-config bootcfg
+                              #:run-installer? #f))))))
 
 
 ;;;
@@ -820,8 +707,17 @@ and TARGET arguments."
                                         (condition-message c))
                                 (exit 1)))
                        (#$installer #$bootloader #$device #$target)
-                       (format #t "bootloader successfully installed on '~a'~%"
-                               #$device))))))
+                       (info (G_ "bootloader successfully installed on '~a'~%")
+                             #$device))))))
+
+(define (local-eval exp)
+  "Evaluate EXP, a G-Expression, in-place."
+  (mlet* %store-monad ((lowered (lower-gexp exp))
+                       (_ (built-derivations (lowered-gexp-inputs lowered))))
+    (save-load-path-excursion
+     (set! %load-path (lowered-gexp-load-path lowered))
+     (set! %load-compiled-path (lowered-gexp-load-compiled-path lowered))
+     (return (primitive-eval (lowered-gexp-sexp lowered))))))
 
 (define* (perform-action action os
                          #:key skip-safety-checks?
@@ -858,18 +754,11 @@ static checks."
         (map boot-parameters->menu-entry (profile-boot-parameters))))
 
   (define bootloader
-    (bootloader-configuration-bootloader (operating-system-bootloader os)))
+    (operating-system-bootloader os))
 
   (define bootcfg
     (and (memq action '(init reconfigure))
          (operating-system-bootcfg os menu-entries)))
-
-  (define bootloader-script
-    (let ((installer (bootloader-installer bootloader))
-          (target    (or target "/")))
-      (bootloader-installer-script installer
-                                   (bootloader-package bootloader)
-                                   bootloader-target target)))
 
   (when (eq? action 'reconfigure)
     (maybe-suggest-running-guix-pull))
@@ -897,9 +786,7 @@ static checks."
        ;; See <http://bugs.gnu.org/21068>.
        (drvs      (mapm %store-monad lower-object
                         (if (memq action '(init reconfigure))
-                            (if install-bootloader?
-                                (list sys bootcfg bootloader-script)
-                                (list sys bootcfg))
+                            (list sys bootcfg)
                             (list sys))))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
@@ -909,28 +796,32 @@ static checks."
 
     (if (or dry-run? derivations-only?)
         (return #f)
-        (let ((bootcfg-file (bootloader-configuration-file bootloader)))
+        (begin
           (for-each (compose println derivation->output-path)
                     drvs)
 
           (case action
             ((reconfigure)
+             (newline)
+             (format #t (G_ "activating system...~%"))
              (mbegin %store-monad
-               (switch-to-system os)
+               (switch-to-system local-eval os)
                (mwhen install-bootloader?
-                 (install-bootloader bootloader-script
-                                     #:bootcfg bootcfg
-                                     #:bootcfg-file bootcfg-file
-                                     #:target "/"))))
+                 (install-bootloader local-eval bootloader bootcfg
+                                     #:target (or target "/"))
+                 (return
+                  (info (G_ "bootloader successfully installed on '~a'~%")
+                        (bootloader-configuration-target bootloader))))
+               (with-shepherd-error-handling
+                  (upgrade-shepherd-services local-eval os))))
             ((init)
              (newline)
              (format #t (G_ "initializing operating system under '~a'...~%")
                      target)
              (install sys (canonicalize-path target)
                       #:install-bootloader? install-bootloader?
-                      #:bootcfg bootcfg
-                      #:bootcfg-file bootcfg-file
-                      #:bootloader-installer bootloader-script))
+                      #:bootloader bootloader
+                      #:bootcfg bootcfg))
             (else
              ;; All we had to do was to build SYS and maybe register an
              ;; indirect GC root.
