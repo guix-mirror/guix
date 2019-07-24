@@ -1045,6 +1045,8 @@ Taco Hoekwater.")
       (inherit template)
       (arguments
        (substitute-keyword-arguments (package-arguments template)
+         ((#:build-targets _ #t)
+          '(list "amsfonts.ins"))
          ((#:tex-directory _ #t)
           "latex/amsfonts")
          ((#:modules modules '())
@@ -1073,7 +1075,7 @@ Taco Hoekwater.")
                                           mf "/share/texmf-dist/metafont/base:"
                                           (assoc-ref inputs "texlive-cm")
                                           "/share/texmf-dist/fonts/source/public/cm")))
-                 (let ((build (string-append (getcwd) "/build")))
+                 (let ((build (string-append (getcwd) "/build-fonts")))
                    (mkdir-p build)
                    (with-directory-excursion "fonts/source/public/amsfonts"
                      (for-each (lambda (font)
@@ -1092,7 +1094,7 @@ Taco Hoekwater.")
 
                  ;; There are no metafont sources for the Euler fonts, so we
                  ;; convert the afm files instead.
-                 (let ((build (string-append (getcwd) "/build/euler")))
+                 (let ((build (string-append (getcwd) "/build-fonts/euler")))
                    (mkdir build)
                    (with-directory-excursion "fonts/afm/public/amsfonts/"
                      (for-each (lambda (font)
@@ -1107,9 +1109,10 @@ Taco Hoekwater.")
                    ;; eufm10.afm to eufm8.pl, and then generate the tfm file from
                    ;; the pl file.
                    (setenv "TEXINPUTS"
-                             (string-append build "//:"
-                                            (getcwd) "/fonts/afm/public/amsfonts//:"
-                                            (assoc-ref inputs "texlive-union") "//"))
+                           (string-append build "//:"
+                                          (getcwd) "/fonts/afm/public/amsfonts//:"
+                                          (getcwd) "/source/latex/amsfonts//:"
+                                          (assoc-ref inputs "texlive-union") "//"))
                    (with-directory-excursion build
                      (for-each (match-lambda
                                  (((target-base target-size)
@@ -1148,7 +1151,7 @@ Taco Hoekwater.")
                  #t))
              (add-after 'install 'install-generated-fonts
                (lambda* (#:key inputs outputs #:allow-other-keys)
-                 (copy-recursively "build"
+                 (copy-recursively "build-fonts"
                                    (string-append
                                     (assoc-ref outputs "out")
                                     "/share/texmf-dist/fonts/tfm/public/amsfonts"))
