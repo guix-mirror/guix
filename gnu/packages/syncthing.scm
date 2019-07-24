@@ -841,20 +841,18 @@ bounds.")
       (license expat))))
 
 (define-public go-github-com-golang-protobuf-proto
-  (let ((commit "1e59b77b52bf8e4b449a57e6f79f21226d571845")
-        (revision "0"))
     (package
       (name "go-github-com-golang-protobuf-proto")
-      (version (git-version "0.0.0" revision commit))
+      (version "1.3.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/golang/protobuf.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "19bkh81wnp6njg3931wky6hsnnl2d1ig20vfjxpv450sd3k6yys8"))))
+                  "15am4s4646qy6iv0g3kkqq52rzykqjhm4bf08dk0fy2r58knpsyl"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/golang/protobuf/proto"
@@ -865,7 +863,7 @@ bounds.")
       (description "This package provides Go support for the Protocol Buffers
 data serialization format.")
       (home-page "https://github.com/golang/protobuf")
-      (license bsd-3))))
+      (license bsd-3)))
 
 (define-public go-github-com-prometheus-client-model-go
   (let ((commit "fd36f4220a901265f90734c3183c5f0c91daa0b8")
