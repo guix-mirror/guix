@@ -14165,7 +14165,7 @@ buffers – other modes on the TODO list).
 (define-public emacs-magit-todos
   (package
     (name "emacs-magit-todos")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -14175,7 +14175,7 @@ buffers – other modes on the TODO list).
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17a18gszbypz82bj36xbfyykc4s9rz83vwmpxvlf65svhd51c0nh"))))
+         "0gfm6wn2a4v5i9lfsvvin0kwpr9n96ddm3z4yf50jd3kg2igzry1"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
