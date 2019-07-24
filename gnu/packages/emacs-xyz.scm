@@ -16632,6 +16632,30 @@ provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
 
+(define-public emacs-evil-traces
+  (let ((commit "b41b7432b8110378c199a3d25af464083777f453")
+        (revision "1"))
+    (package
+      (name "emacs-evil-traces")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mamapanda/evil-traces.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0a15f2saynz9fws1h5s7py3cshsk4xs1kwgwj1m5rsin36g0j6hc"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/mamapanda/evil-traces")
+      (synopsis "Visual hints for @code{evil-ex}")
+      (description "This package adds visual hints to certain @code{ex}
+commands in @code{evil-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-xterm-color
   (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
         (version "1.8")
