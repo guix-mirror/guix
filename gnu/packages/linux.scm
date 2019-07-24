@@ -37,6 +37,7 @@
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages libusb)
@@ -104,6 +106,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages slang)
   #:use-module (gnu packages texinfo)
@@ -122,6 +125,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system linux-module)
@@ -6082,6 +6086,47 @@ have to construct the archives directly, without using the archiver.")
     (description "inputattach dispatches input events from several device
 types and interfaces and translates so that the X server can use them.")
     (license license:gpl2+)))
+
+(define-public pipewire
+  (package
+    (name "pipewire")
+    (version "0.2.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/PipeWire/pipewire")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1rv1cprga0zy696pjk6gbb29p7nrbkvyla9iviii0pigflgnz6yl"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags '("-Dsystemd=false")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("dbus" ,dbus)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("libva" ,libva)
+       ("sbc" ,sbc)
+       ("sdl2" ,sdl2)))
+    (home-page "https://pipewire.org/")
+    (synopsis "Server and user space API to deal with multimedia pipelines")
+    (description
+     "PipeWire is a project that aims to greatly improve handling of audio and
+video under Linux.  It aims to support the usecases currently handled by both
+PulseAudio and Jack and at the same time provide same level of powerful handling
+of Video input and output.  It also introduces a security model that makes
+interacting with audio and video devices from containerized applications easy,
+with supporting Flatpak applications being the primary goal.  Alongside Wayland
+and Flatpak we expect PipeWire to provide a core building block for the future
+of Linux application development.")
+    (license license:lgpl2.0+)))
 
 (define-public ell
   (package
