@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.4")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0pkb9vdb10lnlk6sgg6hxgkdjnvxx90cfdf8vgrc5sljzm5qhr6l"))
+                "1l7crhggg2vq4y7pgzsj8wp7k4l9hw5yblflly5bzwywzxz8ff83"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -102,10 +102,14 @@
        ("go-github-com-vitrun-qart-coding" ,go-github-com-vitrun-qart-coding)
        ("go-github-com-vitrun-qart-gf256" ,go-github-com-vitrun-qart-gf256)
        ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
-       ("go-golang-org-x-crypto-bcrypt" ,go-golang-org-x-crypto-bcrypt)
-       ("go-golang-org-x-crypto-blowfish" ,go-golang-org-x-crypto-blowfish)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-flynn-archive-go-shlex"
         ,go-github-com-flynn-archive-go-shlex)
+       ("go-github-com-getsentry-raven-go" ,go-github-com-getsentry-raven-go)
+       ("go-github-com-maruel-panicparse" ,go-github-com-maruel-panicparse)
+       ("go-github-com-ccding-go-stun" ,go-github-com-ccding-go-stun)
+       ("go-github-com-audriusbutkevicius-pfilter" ,go-github-com-audriusbutkevicius-pfilter)
+       ("go-github-com-lucas-clemente-quic-go" ,go-github-com-lucas-clemente-quic-go)
 
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
