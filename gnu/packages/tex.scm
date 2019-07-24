@@ -3492,7 +3492,8 @@ packages.")
                 texlive-latex-cyrillic
                 texlive-latex-graphics
                 texlive-latex-psnfss
-                texlive-latex-tools)))
+                texlive-latex-tools
+                texlive-tetex)))
     (package
       (name "texlive-base")
       (version (number->string %texlive-revision))
