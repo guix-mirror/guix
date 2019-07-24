@@ -1180,7 +1180,7 @@ quoting, commenting, and escaping.")
 (define-public go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg
   (package
     (name "go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg")
-    (version "0.2.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1189,7 +1189,7 @@ quoting, commenting, and escaping.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02kym6lcfnlq23qbv277jr0q1n7jj0r14gqg93c7wn7gc44jv3vp"))))
+                "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg"
