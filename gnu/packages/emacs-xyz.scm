@@ -7159,6 +7159,32 @@ find files owned by packages...  And much more, including performing all the
 above over the network.")
       (license license:gpl3+))))
 
+(define-public emacs-helm-org-rifle
+  (package
+    (name "emacs-helm-org-rifle")
+    (version "1.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/helm-org-rifle")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r38xhwvgbv6kn5x159phz3xgss7f1rc7icq27rnr4d8aj91wm6k"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/alphapapa/helm-org-rifle")
+    (synopsis "Rifle through Org files")
+    (description "This package searches both headings and contents of entries
+in Org buffers and displays matching entries.")
+    (license license:gpl3+)))
+
 (define-public emacs-memoize
   (package
     (name "emacs-memoize")
