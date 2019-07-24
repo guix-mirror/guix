@@ -4904,3 +4904,31 @@ with flow cytometry data.")
 Cytometry data using non-parametric clustering and segmented-regression-based
 change point detection.")
     (license license:artistic2.0)))
+
+(define-public r-flowsom
+  (package
+    (name "r-flowsom")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "FlowSOM" version))
+       (sha256
+        (base32
+         "03wl3xk7g7vajc4kkrqa0gsbjfxlqr918qi849h5nir31963398l"))))
+    (properties `((upstream-name . "FlowSOM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-consensusclusterplus" ,r-consensusclusterplus)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowutils" ,r-flowutils)
+       ("r-igraph" ,r-igraph)
+       ("r-tsne" ,r-tsne)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/FlowSOM/")
+    (synopsis "Visualize and interpret cytometry data")
+    (description
+     "FlowSOM offers visualization options for cytometry data, by using
+self-organizing map clustering and minimal spanning trees.")
+    (license license:gpl2+)))
