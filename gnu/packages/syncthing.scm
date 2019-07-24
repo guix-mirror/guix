@@ -999,28 +999,29 @@ implementation.")
       (license asl2.0))))
 
 (define-public go-github-com-prometheus-procfs
-  (let ((commit "b15cd069a83443be3154b719d0cc9fe8117f09fb")
-        (revision "0"))
     (package
       (name "go-github-com-prometheus-procfs")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.0.3")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/prometheus/procfs.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1cr45wg2m40bj2za8f32mq09rjlcnk5kfam0h0hr8wcb015k4wxj"))))
+                  "18c4m795fwng8f8qa395f3crvamlbk5y5afk8b5rzyisnmjq774y"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/prometheus/procfs"))
+       '(#:import-path "github.com/prometheus/procfs"
+         ;; The tests require Go modules, which are not yet supported in Guix's
+         ;; Go build system.
+         #:tests? #f))
       (synopsis "Go library for reading @file{/proc}")
       (description "The @code{procfs} Go package provides functions to retrieve
 system, kernel, and process metrics from the @file{/proc} pseudo file system.")
       (home-page "https://github.com/prometheus/procfs")
-      (license asl2.0))))
+      (license asl2.0)))
 
 (define-public go-github-com-client-golang-prometheus-promhttp
     (package
