@@ -6082,7 +6082,7 @@ libxml2.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.30.3")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -6090,7 +6090,7 @@ libxml2.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "15f7lz7z75krgbq8vb800afj96h8mw2fpy1s28za2911x5vgq0ak"))))
+                "12ypdz9i24hwbl1d1wnnxb8zlvfa4f49n9ac5cl9d6h8qp4b0gb4"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -6199,7 +6199,7 @@ libxml2.")
                               "\") == 0 && "
                               "g_strcmp0(base_name, \"fail.desktop\") == 0)"))
               (("g_error [(]\"GdmSession: no session desktop files installed, aborting\\.\\.\\.\"[)];")
-               "{ self->priv->fallback_session_name = g_strdup(\"fail\"); goto out; }"))
+               "{ self->fallback_session_name = g_strdup(\"fail\"); goto out; }"))
             #t))
          ;; GDM requires that there be at least one desktop entry
          ;; file.  This phase installs a hidden one that simply
