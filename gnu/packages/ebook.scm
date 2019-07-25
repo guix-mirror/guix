@@ -56,7 +56,8 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages wxwidgets))
 
 (define-public chmlib
   (package
@@ -329,4 +330,28 @@ following formats:
 @item TXT
 @item XHTML
 @end enumerate")
+    (license license:gpl2+)))
+
+(define-public xchm
+  (package
+    (name "xchm")
+    (version "1.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rzvncj/xCHM"
+                                  "/releases/download/"
+                                  version "/xchm-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1865wb3ppmx5y12rqfhv4wri0lfdah41zsfz94xb8gym80m8zac5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("wxwidgets" ,wxwidgets)
+       ("chmlib" ,chmlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/rzvncj/xCHM")
+    (synopsis "CHM file viewer")
+    (description "xCHM is a graphical CHM file viewer.  It is a frontend to
+the CHM library CHMLIB.")
     (license license:gpl2+)))
