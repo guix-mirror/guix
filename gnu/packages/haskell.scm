@@ -11236,6 +11236,9 @@ imported with the correct Haskell types.")
         (base32
          "1931m23iqb4wddpdidm4ph746zpaw41kkjzmb074j7yyfpk7x1jv"))))
     (build-system haskell-build-system)
+    ;; Tests fail on i686.
+    ;; See https://github.com/vimus/libmpd-haskell/issues/112
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-old-locale" ,ghc-old-locale)
