@@ -2014,7 +2014,7 @@ work with any mail server.  It comprises two separate proxies, an outbound
 proxy for signing outgoing email, and an inbound proxy for verifying signatures
 of incoming email.  With Postfix, the proxies can operate as either
 @code{Before-Queue} or @code{After-Queue} content filters.")
-    (license gpl3+)))
+    (license gpl2+)))
 
 (define-public mb2md
   (package
