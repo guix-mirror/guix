@@ -3264,26 +3264,19 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.0.0.2")
-    ;; As recommended by the upstream maintainer, use the git source code
-    ;; instead of the released source tarball until missing files in the tarball
-    ;; are added.  The 'url-fetch' method may be appropriate again after the
-    ;; next update.  See https://github.com/pr-starfighter/starfighter/issues/1
-    ;; for more details.
+    (version "2.0.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/pr-starfighter/starfighter")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pr-starfighter/starfighter/releases"
+                    "/download/v" version "/starfighter-"
+                    (version-major+minor version) "-src.tar.gz"))
               (sha256
                (base32
-                "0p81ywgm2dxjbpmbsgx4f2d83sy6lv3hinrr1vzprkf9viidqnd2"))))
+                "13vi5kh9ahws4f52421cbyw0jn7pmbnld358lqfmr6flql7ilj3b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("pango" ,pango)
        ("sdl2" ,sdl2)
