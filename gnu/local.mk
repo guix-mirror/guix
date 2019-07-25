@@ -1042,6 +1042,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-add-includes.patch		\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
+  %D%/packages/patches/libvirt-remove-ATTRIBUTE_UNUSED.patch	\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
