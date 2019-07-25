@@ -3147,7 +3147,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.30.1.1")
+    (version "3.32.2")
     (source
      (origin
        (method url-fetch)
@@ -3156,12 +3156,17 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "08ddk400sg1g3q26gnm5mgv81vdqyix0yl7pd47p50vkc1w6f33z"))))
+         "1nv966wkp2rqxzcdb76bwlbzpjqadcaqzrnkxpzwnvjjr167yx8g"))))
     (build-system meson-build-system)
     (arguments
-     `(#:phases
+     '(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
-         (delete 'bootstrap))))
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
        ("pkg-config" ,pkg-config)
