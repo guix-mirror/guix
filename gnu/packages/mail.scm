@@ -1924,6 +1924,38 @@ is not fully compliant with the RFC but it tries to implement most styles of
 Authentication-Results header seen in the wild.")
     (license perl-license)))
 
+(define-public perl-mail-dkim
+  (package
+    (name "perl-mail-dkim")
+    (version "0.55")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://cpan/authors/id/M/MB/MBRADSHAW/Mail-DKIM-"
+                     version
+                     ".tar.gz"))
+              (sha256
+               (base32
+                "18nsh1ff6fkns4xk3y2ixmzmadgggydj11qkzj6nlnq2hzqxsafz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
+       ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
+       ("perl-mailtools" ,perl-mailtools)
+       ("perl-net-dns" ,perl-net-dns)))
+    (native-inputs
+     `(("perl-net-dns-resolver-mock" ,perl-net-dns-resolver-mock)
+       ("perl-test-requiresinternet" ,perl-test-requiresinternet)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (home-page "https://metacpan.org/release/Mail-DKIM")
+    (synopsis "Signs/verifies Internet mail with DKIM/DomainKey signatures")
+    (description "Mail::DKIM is a Perl module that implements the new Domain
+Keys Identified Mail (DKIM) standard, and the older Yahoo! DomainKeys standard,
+both of which sign and verify emails using digital signatures and DNS records.
+Mail-DKIM can be used by any Perl program that wants to provide support for
+DKIM and/or DomainKeys.")
+    (license gpl3+)))
+
 (define-public mb2md
   (package
     (name "mb2md")
