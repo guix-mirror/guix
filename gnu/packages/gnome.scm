@@ -3103,7 +3103,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public five-or-more
   (package
     (name "five-or-more")
-    (version "3.30.0")
+    (version "3.32.0")
     (source
      (origin
        (method url-fetch)
@@ -3112,16 +3112,29 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "00d729p251kh96624i7qg2370r5mxwafs016i6hy01vsr71jzb9x"))))
-    (build-system glib-or-gtk-build-system)
+         "0v52i22ygv6y4zqs8nyb1qmacmj9whhqrw7qss6vn7by4nsikhrn"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("appstream-glib" ,appstream-glib)
        ("desktop-file-utils" ,desktop-file-utils)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources
        ("intltool" ,intltool)
        ("itstool" ,itstool)
+       ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("libgnome-games-support" ,libgnome-games-support)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Five%20or%20more")
     (synopsis "Logic puzzle game")
