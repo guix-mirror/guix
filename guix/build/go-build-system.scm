@@ -135,6 +135,9 @@ of the package being built and its dependencies, and GOBIN, which determines
 where executables (\"commands\") are installed to.  This phase is sometimes used
 by packages that use (guix build-system gnu) but have a handful of Go
 dependencies, so it should be self-contained."
+  ;; The Go cache is required starting in Go 1.12.  We don't actually use it but
+  ;; we need it to be a writable directory.
+  (setenv "GOCACHE" "/tmp/go-cache")
   ;; Using the current working directory as GOPATH makes it easier for packagers
   ;; who need to manipulate the unpacked source code.
   (setenv "GOPATH" (getcwd))

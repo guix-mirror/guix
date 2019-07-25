@@ -584,7 +584,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go go-1.11)
+(define-public go go-1.12)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
