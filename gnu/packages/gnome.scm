@@ -2246,7 +2246,7 @@ controls using the Bonobo component framework.")
 (define-public libwnck
   (package
     (name "libwnck")
-    (version "3.30.0")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2254,10 +2254,12 @@ controls using the Bonobo component framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0f9lvhm3w25046dqq8xyg7nzggxpmdriwrb661nng05a8qk0svdc"))))
-    (build-system gnu-build-system)
+                "1jp3p1lnwnwi6fxl2rz3166cmwzwy9vqz896anpwc3wdy9f875cm"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
        ("intltool" ,intltool)))
     (propagated-inputs
      `(("gtk+" ,gtk+)
