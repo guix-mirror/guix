@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2014, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
@@ -95,6 +95,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1899,6 +1900,29 @@ Khard can also be used from within the email client @command{mutt}.")
     (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
     (license bsd-3)))
+
+(define-public perl-mail-authenticationresults
+  (package
+    (name "perl-mail-authenticationresults")
+    (version "1.20180923")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://cpan/authors/id/M/MB/MBRADSHAW/"
+                     "Mail-AuthenticationResults-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1wym9vcbhldwvi4w5pl0fhd4jh2icj975awf4wr5xmkli9mxbz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "https://metacpan.org/release/Mail-AuthenticationResults")
+    (synopsis "Object Oriented Authentication-Results Headers")
+    (description "Mail::AuthenticationResults parses the message header field
+that indicates the message authentication status as per RFC7601.  This module
+is not fully compliant with the RFC but it tries to implement most styles of
+Authentication-Results header seen in the wild.")
+    (license perl-license)))
 
 (define-public mb2md
   (package
