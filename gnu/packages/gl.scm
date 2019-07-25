@@ -286,9 +286,9 @@ also known as DXTn or DXTC) for Mesa.")
        '(,@(match (%current-system)
              ((or "armhf-linux" "aarch64-linux")
               ;; TODO: Fix svga driver for aarch64 and armhf.
-              '("-Dgallium-drivers=etnaviv,freedreno,iris,nouveau,r300,r600,swrast,tegra,v3d,vc4,virgl"))
+              '("-Dgallium-drivers=etnaviv,freedreno,nouveau,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
-              '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
+              '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "-Dplatforms=x11,drm,surfaceless,wayland"
