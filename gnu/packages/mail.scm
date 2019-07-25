@@ -2007,12 +2007,15 @@ DKIM and/or DomainKeys.")
        ("perl-net-server" ,perl-net-server)
        ("perl-socket6" ,perl-socket6)))
     (home-page "http://dkimproxy.sourceforge.net/")
-    (synopsis "SMTP-proxy for DKIM signing and verifying")
-    (description "DKIMproxy is an SMTP-proxy that signs and/or verifies emails,
-using the @code{Mail::DKIM} module.  It is designed for Postfix, but should
-work with any mail server.  It comprises two separate proxies, an outbound
+    (synopsis "SMTP proxy to sign and verify Internet mail with DKIM headers")
+    (description
+     "DKIMproxy is an SMTP proxy that signs and verifies Internet mail using the
+@code{Mail::DKIM} Perl module.  It comprises two separate proxies: an outbound
 proxy for signing outgoing email, and an inbound proxy for verifying signatures
-of incoming email.  With Postfix, the proxies can operate as either
+of incoming messages.
+
+It was designed for Postfix, but can be used to add DKIM support to nearly any
+existing mail server.  With Postfix, the proxies can operate as either
 @code{Before-Queue} or @code{After-Queue} content filters.")
     (license gpl2+)))
 
