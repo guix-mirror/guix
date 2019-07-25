@@ -1098,10 +1098,11 @@ offline emulation of DNS.")
     (inputs
      `(("perl-net-dns" ,perl-net-dns)))
     (home-page "https://metacpan.org/release/Net-DNS-Resolver-Mock")
-    (synopsis "Mock a DNS Resolver object for testing")
-    (description "Net::DNS::Resolver::Mock is a a subclass of
-@code{Net::DNS::Resolver} which parses a zonefile for it's data source.  It is
-primarily for use in testing.")
+    (synopsis "Mock DNS Resolver object for testing")
+    (description
+     "Net::DNS::Resolver::Mock is a subclass of Net::DNS::Resolver, but returns
+static data from any provided DNS zone file instead of querying the network.
+It is intended primarily for use in testing.")
     (license license:perl-license)))
 
 (define-public perl-netaddr-ip
