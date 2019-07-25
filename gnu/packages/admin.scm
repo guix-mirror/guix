@@ -929,6 +929,7 @@ by bandwidth they use.")
     (propagated-inputs
      `(("xterm" ,xterm)
        ("perl-exception-class" ,perl-exception-class)
+       ("perl-sort-naturally" ,perl-sort-naturally)
        ("perl-tk" ,perl-tk)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-x11-protocol" ,perl-x11-protocol)
