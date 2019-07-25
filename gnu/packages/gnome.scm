@@ -7983,7 +7983,7 @@ accessibility infrastructure.")
 (define-public orca
   (package
     (name "orca")
-    (version "3.30.2")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7992,7 +7992,7 @@ accessibility infrastructure.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "17asibc46i5gr2fw04jvvdi85zzmxwlnhyq7r6cr3m5prrdr8a53"))))
+                "05jqzlg0f1x53hyl0l9282ynmw37159g6dsbrid12b7sjs12cc1i"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
