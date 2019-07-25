@@ -1102,28 +1102,6 @@ the ‘haddock’ package.")
 documentation-generation tool for Haskell libraries.")
     (license license:bsd-3)))
 
-(define-public ghc-haddock-test
-  (package
-    (name "ghc-haddock-test")
-    (version "0.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "haddock-test/haddock-test-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1ax8fnfrwx66csj952f3virxzapipan9da7z5l1zc12nqkifbs7w"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-xml" ,ghc-xml)
-       ("ghc-syb" ,ghc-syb)))
-    (home-page "http://www.haskell.org/haddock/")
-    (synopsis "Test utilities for Haddock")
-    (description "This package provides test utilities for Haddock.")
-    (license license:bsd-3)))
-
 (define-public ghc-haddock
   (package
     (name "ghc-haddock")
