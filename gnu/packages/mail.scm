@@ -1956,6 +1956,62 @@ Mail-DKIM can be used by any Perl program that wants to provide support for
 DKIM and/or DomainKeys.")
     (license gpl3+)))
 
+(define-public dkimproxy
+  (package
+    (name "dkimproxy")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://sourceforge/dkimproxy/dkimproxy/"
+                     version "/dkimproxy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gc5c7lg2qrlck7b0lvjfqr824ch6jkrzkpsn0gjvlzg7hfmld75"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'make-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                 (lambda (prog)
+                   (wrap-program (string-append out "/bin/" prog)
+                     `("PERL5LIB" ":" prefix
+                       (,(string-append (assoc-ref inputs "perl-mail-dkim")
+                                        "/lib/perl5/site_perl")
+                        ,(string-append (assoc-ref inputs "perl-mailtools")
+                                        "/lib/perl5/site_perl")
+                        ,(string-append
+                           (assoc-ref inputs "perl-mail-authenticationresults")
+                           "/lib/perl5/site_perl")
+                        ,(string-append (assoc-ref inputs "perl-crypt-openssl-rsa")
+                                        "/lib/perl5/site_perl")
+                        ,(string-append (assoc-ref inputs "perl-net-dns")
+                                        "/lib/perl5/site_perl")
+                        ,(string-append (assoc-ref inputs "perl-net-server")
+                                        "/lib/perl5/site_perl")))))
+                 '("dkimproxy.in" "dkimproxy.out")))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
+       ("perl-mailtools" ,perl-mailtools)
+       ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
+       ("perl-mail-dkim" ,perl-mail-dkim)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-net-server" ,perl-net-server)))
+    (home-page "http://dkimproxy.sourceforge.net/")
+    (synopsis "SMTP-proxy for DKIM signing and verifying")
+    (description "DKIMproxy is an SMTP-proxy that signs and/or verifies emails,
+using the @code{Mail::DKIM} module.  It is designed for Postfix, but should
+work with any mail server.  It comprises two separate proxies, an outbound
+proxy for signing outgoing email, and an inbound proxy for verifying signatures
+of incoming email.  With Postfix, the proxies can operate as either
+@code{Before-Queue} or @code{After-Queue} content filters.")
+    (license gpl3+)))
+
 (define-public mb2md
   (package
     (name "mb2md")
