@@ -1095,7 +1095,7 @@ offline emulation of DNS.")
                (base32
                 "0m3rxpkv1b9121srvbqkrgzg4m8mnydiydqv34in1i1ixwrl6jn9"))))
     (build-system perl-build-system)
-    (propagated-inputs
+    (inputs
      `(("perl-net-dns" ,perl-net-dns)))
     (home-page "https://metacpan.org/release/Net-DNS-Resolver-Mock")
     (synopsis "Mock a DNS Resolver object for testing")
