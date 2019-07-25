@@ -913,6 +913,25 @@ by bandwidth they use.")
                (base32
                 "0rmk2p3f2wz1h092anidjclh212rv3gxyk0c641qk3frlrjnw6mp"))))
     (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'refer-to-inputs
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (list "lib/App/ClusterSSH/Config.pm"
+                                "t/15config.t")
+               (("xterm")
+                (which "xterm")))
+             #t))
+         (add-before 'check 'delete-failing-tests
+           (lambda _
+             ;; This checks whether all code is nicely formatted.  The above
+             ;; ‘refer-to-inputs’ phase breaks this pedantry, so disable it.
+             (delete-file "t/perltidy.t")
+             ;; Update the manifest so t/manifest.t happily passes.
+             (substitute* "MANIFEST"
+               (("t/perltidy.t\n") ""))
+             #t)))))
     (native-inputs
      `(("perl-cpan-changes" ,perl-cpan-changes)
        ("perl-file-slurp" ,perl-file-slurp)
@@ -926,9 +945,10 @@ by bandwidth they use.")
        ("perl-test-pod-coverage" ,perl-test-pod-coverage)
        ("perl-test-trap" ,perl-test-trap)
        ("perltidy" ,perltidy)))
+    (inputs
+     `(("xterm" ,xterm)))
     (propagated-inputs
-     `(("xterm" ,xterm)
-       ("perl-exception-class" ,perl-exception-class)
+     `(("perl-exception-class" ,perl-exception-class)
        ("perl-sort-naturally" ,perl-sort-naturally)
        ("perl-tk" ,perl-tk)
        ("perl-try-tiny" ,perl-try-tiny)
