@@ -6210,6 +6210,9 @@ back-ends.")
                (base32
                 "0cbsyh4ilvjzq1q7pxls43k6pdqxg1l85xzibcwpbvmlvrizh86w"))))
     (build-system haskell-build-system)
+    ;; The tests are broken on i686.  They are fixed in 0.10.3.0.
+    ;; See https://github.com/snoyberg/yaml/issues/158
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
