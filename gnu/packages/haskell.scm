@@ -2951,30 +2951,6 @@ Haskell library @code{regex-base}.")
 @code{regex-posix} to replace @code{Text.Regex}.")
     (license license:bsd-3)))
 
-(define-public ghc-regex-tdfa-rc
-  (package
-    (name "ghc-regex-tdfa-rc")
-    (version "1.1.8.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/regex-tdfa-rc/regex-tdfa-rc-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1vi11i23gkkjg6193ak90g55akj69bhahy542frkwb68haky4pp3"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page
-     "https://hackage.haskell.org/package/regex-tdfa")
-    (synopsis "Tagged DFA regex engine for Haskell")
-    (description "A new all-Haskell \"tagged\" DFA regex engine, inspired by
-@code{libtre} (fork by Roman Cheplyaka).")
-    (license license:bsd-3)))
-
 (define-public ghc-regex-tdfa-text
   (package
     (name "ghc-regex-tdfa-text")
