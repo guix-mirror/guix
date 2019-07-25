@@ -7944,7 +7944,7 @@ kill/reinice processes.")
 (define-public python-pyatspi
   (package
     (name "python-pyatspi")
-    (version "2.26.0")
+    (version "2.32.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -7953,9 +7953,7 @@ kill/reinice processes.")
                     "/pyatspi-" version ".tar.xz"))
               (sha256
                (base32
-                "0xdnix7gxzgf75xy9ris4dd6b05mqwicw190b98xqmypydyf95n6"))
-              ;; Patch from upstream, fixed in newer versions.
-              (patches (search-patches "python-pyatspi-python-37.patch"))))
+                "1283cbwd2kacgdij96xk26721f6amyzdhy2py11kdj5cprdlm5c4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
