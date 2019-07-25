@@ -1998,6 +1998,13 @@ DKIM and/or DomainKeys.")
                               "perl-net-dns"
                               "perl-net-server"
                               "perl-socket6"))
+               (wrap.pl (list "/bin/dkim_responder.pl")
+                        (list "perl-crypt-openssl-rsa"
+                              "perl-mail-dkim"
+                              "perl-mailtools"
+                              "perl-mime-tools"
+                              "perl-net-dns"
+                              "perl-timedate"))
                #t))))))
     (inputs
      `(("perl" ,perl)
@@ -2006,9 +2013,11 @@ DKIM and/or DomainKeys.")
        ("perl-mailtools" ,perl-mailtools)
        ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
        ("perl-mail-dkim" ,perl-mail-dkim)
+       ("perl-mime-tools" ,perl-mime-tools)
        ("perl-net-dns" ,perl-net-dns)
        ("perl-net-server" ,perl-net-server)
-       ("perl-socket6" ,perl-socket6)))
+       ("perl-socket6" ,perl-socket6)
+       ("perl-timedate" ,perl-timedate)))
     (home-page "http://dkimproxy.sourceforge.net/")
     (synopsis "SMTP proxy to sign and verify Internet mail with DKIM headers")
     (description
