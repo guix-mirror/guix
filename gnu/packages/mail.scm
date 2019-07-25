@@ -1976,26 +1976,29 @@ DKIM and/or DomainKeys.")
        (modify-phases %standard-phases
          (add-after 'install 'make-wrapper
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (for-each
-                 (lambda (prog)
-                   (wrap-program (string-append out "/bin/" prog)
-                     `("PERL5LIB" ":" prefix
-                       (,(string-append (assoc-ref inputs "perl-mail-dkim")
-                                        "/lib/perl5/site_perl")
-                        ,(string-append (assoc-ref inputs "perl-mailtools")
-                                        "/lib/perl5/site_perl")
-                        ,(string-append
-                           (assoc-ref inputs "perl-mail-authenticationresults")
-                           "/lib/perl5/site_perl")
-                        ,(string-append (assoc-ref inputs "perl-crypt-openssl-rsa")
-                                        "/lib/perl5/site_perl")
-                        ,(string-append (assoc-ref inputs "perl-net-dns")
-                                        "/lib/perl5/site_perl")
-                        ,(string-append (assoc-ref inputs "perl-net-server")
-                                        "/lib/perl5/site_perl")))))
-                 '("dkimproxy.in" "dkimproxy.out")))
-             #t)))))
+             (let* ((out (assoc-ref outputs "out"))
+                    (wrap.pl (lambda (scripts keys)
+                               (for-each
+                                (lambda (script)
+                                  (wrap-program (string-append out script)
+                                    `("PERL5LIB" ":" prefix
+                                      ,(map (λ (input)
+                                              (string-append
+                                               (assoc-ref inputs input)
+                                               "/lib/perl5/site_perl"))
+                                            keys))))
+                                scripts))))
+               (wrap.pl (list "/bin/dkimproxy.in"
+                              "/bin/dkimproxy.out")
+                        (list "perl-crypt-openssl-rsa"
+                              "perl-io-socket-inet6"
+                              "perl-mailtools"
+                              "perl-mail-authenticationresults"
+                              "perl-mail-dkim"
+                              "perl-net-dns"
+                              "perl-net-server"
+                              "perl-socket6"))
+               #t))))))
     (inputs
      `(("perl" ,perl)
        ("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
