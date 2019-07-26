@@ -41,7 +41,7 @@
 ;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2017, 2018, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2017 Muriithi Frederick Muriuki <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2019 Brendan Tildesley <mail@brendan.scot>
@@ -103,6 +103,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages gstreamer)
@@ -16711,3 +16712,40 @@ converters and more, those based on the library itself.")
      "This package provides a parser, schema validator, and data binding tool
 for YAML and JSON.")
     (license license:expat)))
+
+(define-public python-dbusmock
+  (package
+  (name "python-dbusmock")
+  (version "0.18.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "python-dbusmock" version))
+      (sha256
+        (base32
+          "1hj02p65cic4jdc6a5xf1hx8j5icwy7dcrm5kg91lkjks4gwpg5h"))))
+  (build-system python-build-system)
+  (arguments
+   '(#:phases
+     (modify-phases %standard-phases
+       (add-after 'unpack 'patch-/bin/sh
+         (lambda _
+           (substitute* "tests/test_code.py"
+             (("/bin/sh") (which "sh")))
+           #t)))))
+  (native-inputs
+   `(;; For tests.
+     ("dbus" ,dbus) ; for dbus-daemon
+     ("python-nose" ,python-nose)
+     ("which" ,which)))
+  (propagated-inputs
+   `(("python-dbus" ,python-dbus)
+     ("python-pygobject" ,python-pygobject)))
+  (home-page "https://github.com/martinpitt/python-dbusmock")
+  (synopsis "Python library for mock D-Bus objects")
+  (description "python-dbusmock allows for the easy creation of mock objects on
+D-Bus.  This is useful for writing tests for software which talks to D-Bus
+services such as upower, systemd, logind, gnome-session or others, and it is
+hard (or impossible without root privileges) to set the state of the real
+services to what you expect in your tests.")
+  (license license:lgpl3+)))
