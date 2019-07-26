@@ -54,7 +54,7 @@ test "$v0_1_0_drv" != "$orig_drv"
 
 v0_1_0_drv="`guix build guix --with-commit=guile-gcrypt=v0.1.0 -d`"
 guix gc -R "$v0_1_0_drv" | grep guile-gcrypt-git.v0.1.0
-guix gc -R "$v0_1_0_drv" | grep guile-gcrypt-8fe64e8 # this is the *tag* ID
+guix gc -R "$v0_1_0_drv" | grep guile-gcrypt-9e3eacd
 test "$v0_1_0_drv" != "$latest_drv"
 test "$v0_1_0_drv" != "$orig_drv"
 
