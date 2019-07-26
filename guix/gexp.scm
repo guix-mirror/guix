@@ -1345,6 +1345,7 @@ last one is created from the given <scheme-file> object."
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
                            (system (%current-system))
+                           target
                            (guile (%guile-for-build))
                            (module-path %load-path)
                            (extensions '())
@@ -1355,7 +1356,8 @@ last one is created from the given <scheme-file> object."
                            (pre-load-modules? #t))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
-they can refer to each other."
+they can refer to each other.  When TARGET is true, cross-compile MODULES for
+TARGET, a GNU triplet."
   (define total (length modules))
 
   (mlet %store-monad ((modules (imported-modules modules
@@ -1374,6 +1376,12 @@ they can refer to each other."
                       (srfi srfi-26)
                       (system base compile))
 
+         ;; TODO: Inline this on the next rebuild cycle.
+         (ungexp-splicing
+          (if target
+              (gexp ((use-modules (system base target))))
+              (gexp ())))
+
          (define (regular? file)
            (not (member file '("." ".."))))
 
@@ -1391,9 +1399,19 @@ they can refer to each other."
                                                    (gexp ()))))
                          (ungexp (* total (if pre-load-modules? 2 1)))
                          entry)
-                 (compile-file entry
-                               #:output-file output
-                               #:opts %auto-compilation-options)
+
+                 (ungexp-splicing
+                  (if target
+                      (gexp ((with-target (ungexp target)
+                               (lambda ()
+                                 (compile-file entry
+                                               #:output-file output
+                                               #:opts
+                                               %auto-compilation-options)))))
+                      (gexp ((compile-file entry
+                                           #:output-file output
+                                           #:opts %auto-compilation-options)))))
+
                  (+ 1 processed))))
 
          (define (process-directory directory output processed)
