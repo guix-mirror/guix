@@ -1013,7 +1013,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.7")
+    (version "3.0.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1022,7 +1022,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                    "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "05irswyg9acflxzy4vfyvgi643r72vsvagv118zawjqg1wagxdaw"))))
+               "1xb4c8n0hkwijzfdlbwadhxnx9z8rlhmrdq4c7q74rq9f51q0m86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
