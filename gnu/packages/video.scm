@@ -753,6 +753,40 @@ entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
 standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (license license:expat)))
 
+(define-public libva-utils
+  (package
+    (name "libva-utils")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/intel/libva-utils/releases/download/"
+                           version "/libva-utils-" version ".tar.bz2"))
+       (sha256
+        (base32 "05rasyqnsg522zqxak1q8rrm1hys7wwbi41kd0szjq0d27awjf4j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-wayland"
+             "--enable-x11")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libva" ,libva)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)))
+    (home-page "https://01.org/linuxmedia/vaapi")
+    (synopsis "Collection of testing utilities for VA-API")
+    (description
+     "This is a collection of utilities  to query and test the @acronym{VA-API,
+Video Acceleration API} implemented by the libva library.
+
+These tools require a supported graphics chip, driver, and VA-API back end to
+operate properly.")
+    (license license:expat)))
+
 (define-public ffmpeg
   (package
     (name "ffmpeg")
