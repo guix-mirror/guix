@@ -6436,8 +6436,8 @@ compressed JSON header blocks.
     (license license:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
-        (revision "3"))
+  (let ((commit "f39c90b35e99e4122b0866ec4337020d61c81508")
+        (revision "4"))
     (package
       (name "hpcguix-web")
       (version (git-version "0.0.1" revision commit))
@@ -6449,7 +6449,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ah4pn9697vazhbvd45n4b1rrkx2nbhnw384cr0b941q3sz1dfyc"))))
+                  "0idzzlwnaymk6hm5q9nh146h5m6vd8acp32vlmzp6qq08mimfkq7"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -6509,7 +6509,7 @@ compressed JSON header blocks.
       (propagated-inputs
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json-1)))
+         ("guile-json" ,guile-json-3)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages
