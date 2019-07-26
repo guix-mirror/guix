@@ -7185,6 +7185,30 @@ above over the network.")
 in Org buffers and displays matching entries.")
     (license license:gpl3+)))
 
+(define-public emacs-dired-toggle-sudo
+  (package
+    (name "emacs-dired-toggle-sudo")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/renard/dired-toggle-sudo")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ajj8d6k5in2hclcrqckinfh80ylddplva0ryfbkzsjkfq167cv2"))
+       (patches
+        (search-patches
+         "emacs-dired-toggle-sudo-emacs-26.patch"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/renard/dired-toggle-sudo")
+    (synopsis "Browse directory with @code{sudo} privileges")
+    (description "This package allows for the use of @code{dired} with
+@code{sudo} privileges.")
+    (license license:wtfpl2)))
+
 (define-public emacs-memoize
   (package
     (name "emacs-memoize")
