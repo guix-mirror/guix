@@ -427,7 +427,9 @@ This is the declarative counterpart of 'gexp->script'."
     (($ <program-file> name gexp guile module-path)
      (gexp->script name gexp
                    #:module-path module-path
-                   #:guile (or guile (default-guile))))))
+                   #:guile (or guile (default-guile))
+                   #:system system
+                   #:target target))))
 
 (define-record-type <scheme-file>
   (%scheme-file name gexp splice?)
@@ -1512,7 +1514,7 @@ TARGET, a GNU triplet."
               'guile-2.2))
 
 (define* (load-path-expression modules #:optional (path %load-path)
-                               #:key (extensions '()))
+                               #:key (extensions '()) system target)
   "Return as a monadic value a gexp that sets '%load-path' and
 '%load-compiled-path' to point to MODULES, a list of module names.  MODULES
 are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
@@ -1520,10 +1522,13 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
       (with-monad %store-monad
         (return #f))
       (mlet %store-monad ((modules  (imported-modules modules
-                                                      #:module-path path))
+                                                      #:module-path path
+                                                      #:system system))
                           (compiled (compiled-modules modules
                                                       #:extensions extensions
-                                                      #:module-path path)))
+                                                      #:module-path path
+                                                      #:system system
+                                                      #:target target)))
         (return (gexp (eval-when (expand load eval)
                         (set! %load-path
                           (cons (ungexp modules)
@@ -1545,14 +1550,18 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
-                       (module-path %load-path))
+                       (module-path %load-path)
+                       (system (%current-system))
+                       target)
   "Return an executable script NAME that runs EXP using GUILE, with EXP's
 imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
   (mlet %store-monad ((set-load-path
                        (load-path-expression (gexp-modules exp)
                                              module-path
                                              #:extensions
-                                             (gexp-extensions exp))))
+                                             (gexp-extensions exp)
+                                             #:system system
+                                             #:target target)))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1572,6 +1581,8 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
 
                            (write '(ungexp exp) port)
                            (chmod port #o555))))
+                      #:system system
+                      #:target target
                       #:module-path module-path)))
 
 (define* (gexp->file name exp #:key

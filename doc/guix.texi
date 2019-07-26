@@ -7439,7 +7439,8 @@ This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp} @
-  [#:guile (default-guile)] [#:module-path %load-path]
+  [#:guile (default-guile)] [#:module-path %load-path] @
+  [#:system (%current-system)] [#:target #f]
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile}, with @var{exp}'s imported modules in its search path.
 Look up @var{exp}'s modules in @var{module-path}.
