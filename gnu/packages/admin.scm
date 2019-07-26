@@ -931,7 +931,33 @@ by bandwidth they use.")
              ;; Update the manifest so t/manifest.t happily passes.
              (substitute* "MANIFEST"
                (("t/perltidy.t\n") ""))
-             #t)))))
+             #t))
+         (add-after 'install 'augment-library-path
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (with-directory-excursion bin
+                 (for-each
+                  (lambda (program)
+                    (wrap-program program
+                      `("PERL5LIB" ":" prefix
+                        ,(map (lambda (file-name)
+                                (string-append file-name
+                                               "/lib/perl5/site_perl"))
+                              (cons out
+                                    (map (lambda (input)
+                                           (assoc-ref inputs input))
+                                         ;; These may be propagated and hence
+                                         ;; not explicitly listed as inputs.
+                                         (list "perl-class-data-inheritable"
+                                               "perl-devel-stacktrace"
+                                               "perl-exception-class"
+                                               "perl-tk"
+                                               "perl-try-tiny"
+                                               "perl-x11-protocol"
+                                               "perl-x11-protocol-other")))))))
+                  (find-files "." ".*")))
+               #t))))))
     (native-inputs
      `(("perl-cpan-changes" ,perl-cpan-changes)
        ("perl-file-slurp" ,perl-file-slurp)
@@ -946,14 +972,13 @@ by bandwidth they use.")
        ("perl-test-trap" ,perl-test-trap)
        ("perltidy" ,perltidy)))
     (inputs
-     `(("xterm" ,xterm)))
-    (propagated-inputs
      `(("perl-exception-class" ,perl-exception-class)
        ("perl-sort-naturally" ,perl-sort-naturally)
        ("perl-tk" ,perl-tk)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-x11-protocol" ,perl-x11-protocol)
-       ("perl-x11-protocol-other" ,perl-x11-protocol-other)))
+       ("perl-x11-protocol-other" ,perl-x11-protocol-other)
+       ("xterm" ,xterm)))
     ;; The clusterssh.sourceforge.net address requires login to view
     (home-page "https://sourceforge.net/projects/clusterssh/")
     (synopsis "Secure concurrent multi-server terminal control")
