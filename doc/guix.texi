@@ -8048,7 +8048,7 @@ guix build --with-branch=guile-sqlite3=master cuirass
 @item --with-commit=@var{package}=@var{commit}
 This is similar to @code{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
-Git commit SHA1 identifier.
+Git commit SHA1 identifier or a tag.
 @end table
 
 @node Additional Build Options

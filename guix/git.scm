@@ -330,7 +330,7 @@ Log progress and checkout info to LOG-PORT."
   git-checkout?
   (url     git-checkout-url)
   (branch  git-checkout-branch (default "master"))
-  (commit  git-checkout-commit (default #f))
+  (commit  git-checkout-commit (default #f))      ;#f | tag | commit
   (recursive? git-checkout-recursive? (default #f)))
 
 (define* (latest-repository-commit* url #:key ref recursive? log-port)
@@ -369,7 +369,7 @@ Log progress and checkout info to LOG-PORT."
     (($ <git-checkout> url branch commit recursive?)
      (latest-repository-commit* url
                                 #:ref (if commit
-                                          `(commit . ,commit)
+                                          `(tag-or-commit . ,commit)
                                           `(branch . ,branch))
                                 #:recursive? recursive?
                                 #:log-port (current-error-port)))))
