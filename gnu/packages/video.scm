@@ -2695,6 +2695,50 @@ of modern, widely supported codecs.")
     ;; Combination under GPLv2.  See LICENSE.
     (license license:gpl2)))
 
+(define-public intel-vaapi-driver
+  (package
+    (name "intel-vaapi-driver")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/intel/intel-vaapi-driver/"
+                           "releases/download/" version "/intel-vaapi-driver-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1qyzxh3p8cw4fv8bz9zd4kc8hajlaps7xryzh6pad814n3m5sbjw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libva" ,libva)
+       ("libx11" ,libx11)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "LIBVA_DRIVERS_PATH" (string-append out "/lib/dri"))
+               #t))))))
+    ;; XXX Because of <https://issues.guix.gnu.org/issue/22138>, we need to add
+    ;; this to all VA-API back ends instead of once to libva.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LIBVA_DRIVERS_PATH")
+            (files '("lib/dri")))))
+    (home-page "https://01.org/linuxmedia/vaapi")
+    (synopsis "VA-API video acceleration driver for Intel GEN Graphics devices")
+    (description
+     "This is the @acronym{VA-API, Video Acceleration API} back end required for
+hardware-accelerated video processing on Intel GEN Graphics devices supported by
+the i915 driver, such as integrated Intel HD Graphics.  It provides access to
+both hardware and shader functionality for faster encoding, decoding, and
+post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
+    (license (list license:bsd-2        ; src/gen9_vp9_const_def.c
+                   license:expat))))    ; the rest, excluding the test suite
+
 (define-public openh264
   (package
     (name "openh264")
