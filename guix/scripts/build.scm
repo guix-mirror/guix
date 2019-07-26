@@ -341,10 +341,15 @@ strings like \"guile-next=cabba9e\" meaning that packages are built using
   (define (replace old url commit)
     (package
       (inherit old)
-      (version (string-append "git."
-                              (if (< (string-length commit) 7)
-                                  commit
-                                  (string-take commit 7))))
+      (version (if (and (> (string-length commit) 1)
+                        (string-prefix? "v" commit)
+                        (char-set-contains? char-set:digit
+                                            (string-ref commit 1)))
+                   (string-drop commit 1)        ;looks like a tag like "v1.0"
+                   (string-append "git."
+                                  (if (< (string-length commit) 7)
+                                      commit
+                                      (string-take commit 7)))))
       (source (git-checkout (url url) (commit commit)
                             (recursive? #t)))))
 
