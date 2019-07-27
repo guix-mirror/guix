@@ -312,7 +312,7 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
                   (format #t "~%Packing new Linux-libre tarball...~%")
                   (force-output)
-                  (invoke "tar" "cfa" #$output
+                  (invoke "tar" "cvfa" #$output
                           ;; Avoid non-determinism in the archive.
                           "--mtime=@0"
                           "--owner=root:0"
