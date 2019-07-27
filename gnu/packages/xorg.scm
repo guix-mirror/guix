@@ -4786,7 +4786,7 @@ common definitions and porting layer.")
 (define-public libice
   (package
     (name "libice")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -4796,7 +4796,7 @@ common definitions and porting layer.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00p2b6bsg6kcdbb39bv46339qcywxfl4hsrz8asm4hy6q7r34w4g"))))
+            "0j638yvmyna2k4mz465jywgdybgdchdqppfx6xfazg7l5khxr1kg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
