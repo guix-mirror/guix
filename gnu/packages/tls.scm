@@ -70,7 +70,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
       (method url-fetch)
@@ -78,7 +78,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
+        "025sqnlzji78ss2fi78dajc0v0h5fi02wp39hws41sn8qnjlnq4y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
