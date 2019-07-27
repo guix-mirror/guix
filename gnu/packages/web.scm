@@ -205,14 +205,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.1")
+    (version "1.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0gp7cy2bbn8yi1wapjzssf4bhmn4d4vphdb0k1wiaq2fa6s2a63g"))))
+                "1v39gslwbvpfhqqv74q0lkfrhrwsp59xc8pwhvxns7af8s3kccsy"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
