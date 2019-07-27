@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -320,6 +320,50 @@ input bits thoroughly but are not suitable for cryptography.")
     ;; problems for everyone that trying to make something public domain
     ;; entails."
     (license license:public-domain)))
+
+(define-public ascii2binary
+  (package
+    (name "ascii2binary")
+    (version "2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://billposer.org/Software/Downloads/"
+                           "ascii2binary-" version ".tar.bz2"))
+       (sha256
+        (base32 "0dc9fxcdmppbs9s06jvq61zbk552laxps0xyk098gj41697ihd96"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://billposer.org/Software/a2b.html")
+    (synopsis "Convert between ASCII, hexadecimal and binary representations")
+    (description "The two programs are useful for generating test data, for
+inspecting binary files, and for interfacing programs that generate textual
+output to programs that require binary input and conversely.  They can also be
+useful when it is desired to reformat numbers.
+
+@itemize
+
+@item @command{ascii2binary} reads input consisting of ascii or hexadecimal
+   representation numbers separated by whitespace and produces as output
+   the binary equivalents.  The type and precision of the binary output
+   is selected using command line flags.
+
+@item @command{binary2ascii} reads input consisting of binary numbers
+   and converts them to their ascii or hexadecimal representation.
+   Command line flags specify the type and size of the binary numbers
+   and provide control over the format of the output.
+   Unsigned integers may be written out in binary, octal, decimal,
+   or hexadecimal.
+
+   Signed integers may be written out only in binary or decimal.  Floating
+   point numbers may be written out only decimal, either in standard or
+   scientific notation.  (If you want to examine the binary representation
+   of floating point numbers, just treat the input as a sequence of unsigned
+   characters.)
+
+@end itemize")
+    (license license:gpl3)))
 
 (define-public libconfig
   (package
