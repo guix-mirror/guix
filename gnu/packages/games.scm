@@ -8414,6 +8414,45 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
     (home-page "https://www.stepmania.com")
     (license license:expat)))
 
+(define-public oshu
+  (package
+    (name "oshu")
+    (version "2.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/fmang/oshu")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1g598incc6zlls876slgwqblwiwiszkmqa4xpzw0z7mbjmmzsizz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           ;; `make test' doesn't actually build the test executable
+           (lambda _ (invoke "make" "zerotokei"))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("ffmpeg" ,ffmpeg)
+       ("pango" ,pango)
+       ("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)))
+    (home-page "https://github.com/fmang/oshu/")
+    (synopsis "Rhythm game in which you click on circles")
+    (description "@i{oshu!} is a minimalist variant of the @i{osu!} rhythm game,
+which is played by pressing buttons and following along sliders as they appear
+on screen.  Its aim is to be able to play any beatmap even on low-end hardware.
+
+This package provides the core application, but no beatmaps.  You need to
+download and unpack them separately.")
+    (license license:gpl3+)))
+
 (define-public btanks
   (package
     (name "btanks")
