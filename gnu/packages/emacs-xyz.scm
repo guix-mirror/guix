@@ -6126,21 +6126,21 @@ xref, etc...) are still available, but with better integration.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
-  (let ((commit "652e299cb967fccca827dda381d61a9c144d97de")
-        (revision "1"))
+  (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
+        (revision "2"))
     (package
       (name "emacs-lua-mode")
-      (version (string-append "20151025." revision "-" (string-take commit 9)))
+      (version (git-version "20151025" revision commit))
       (home-page "https://github.com/immerrr/lua-mode/")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url home-page)
                       (commit commit)))
-                (file-name (string-append name "-" version ".checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "053025k930wh0lak6rc1973ynfrmm8zsyzfqhhd39x7abkl41hc9"))))
+                  "1mra4db25ds64526dsj8m5yv0kfq3lgggjh1x6xmqypdaryddbcp"))))
       (build-system emacs-build-system)
       (synopsis "Major mode for lua")
       (description
