@@ -6406,12 +6406,11 @@ aligning text objects based on separators.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-expat
-  (let ((commit "4c344ea19b789002d759a202ffbf594730d2c59a")
-        (version "0.0.1")
+  (let ((commit "f4fcd0aa3edc359adb5c986b5dd9188d220d84e2")
         (revision "1"))
     (package
       (name "emacs-evil-expat")
-      (version (git-version version revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -6421,7 +6420,7 @@ aligning text objects based on separators.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "16v7fnldxag6l1lsnrnhdjkga9qi78lbdfbb82k6pmv04991mbkr"))))
+           "0872ix682hkdz0k8pn6sb54rqkx00rz5fxpd5j2snx406yagpaxz"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
       (home-page "https://github.com/edkolev/evil-expat")
