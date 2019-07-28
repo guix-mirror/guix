@@ -108,7 +108,7 @@ topology functions.")
 (define-public gnome-maps
   (package
     (name "gnome-maps")
-    (version "3.30.2.1")
+    (version "3.30.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -116,7 +116,7 @@ topology functions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "01hqv36j5ji0djq4vl151113bqhh4hpz72d88fm8zds4pdlx7l57"))))
+                "0xqk3yrds0w8bjmpf4jw0370phvm65av82nqrx7fp1648h9nq7xi"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -130,8 +130,11 @@ topology functions.")
                                        (assoc-ref inputs "geocode-glib")
                                        "/lib"))
                    (goa-path (string-append
-                              (assoc-ref inputs "gnome-online-accounts")
+                              (assoc-ref inputs "gnome-online-accounts:lib")
                               "/lib"))
+                   (gdk-pixbuf-path (string-append
+                                     (assoc-ref inputs "gdk-pixbuf")
+                                     "/lib"))
                    (webkitgtk-path (string-append
                                     (assoc-ref inputs "webkitgtk")
                                     "/lib")))
@@ -140,9 +143,11 @@ topology functions.")
 
                  ;; There seems to be no way to embed the path of
                  ;; libgoa-1.0.so.0, libwebkit2gtk-4.0.so.37,
-                 ;; libjavascriptcoregtk-4.0.so.18, and libgeocode-glib.so.0
+                 ;; libgdk_pixbuf-2.0.so, libjavascriptcoregtk-4.0.so.18, and
+                 ;; libgeocode-glib.so.0
                  `("LD_LIBRARY_PATH" ":" prefix (,goa-path
                                                  ,webkitgtk-path
+                                                 ,gdk-pixbuf-path
                                                  ,geocode-glib-path)))
                #t))))))
     (native-inputs
@@ -158,14 +163,14 @@ topology functions.")
        ("libsoup" ,libsoup)
        ("libgweather" ,libgweather)
        ("libxml2" ,libxml2)
-       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gdk-pixbuf" ,gdk-pixbuf+svg)
        ("glib-networking" ,glib-networking)
        ("geoclue" ,geoclue)
        ("geocode-glib" ,geocode-glib)
        ("gfbgraph" ,gfbgraph)
        ("gjs" ,gjs)
        ("glib" ,glib)
-       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)))
