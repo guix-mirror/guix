@@ -8448,7 +8448,7 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
 (define-public ghex
   (package
     (name "ghex")
-    (version "3.18.3")
+    (version "3.18.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/ghex/"
@@ -8456,10 +8456,21 @@ micro-pauses and rest breaks, and restricts you to your daily limit.")
                                   "ghex-" version ".tar.xz"))
               (sha256
                (base32
-                "1lq8920ad2chi9ibmyq0x9hg9yk63b0kdbzid03w42cwdzw50x66"))))
-    (build-system glib-or-gtk-build-system)
+                "1h1pjrr9wynclfykizqd78dbi785wjz6b63p31k87kjvzy8w3nf2"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") (which "true")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas
        ("gnome-common" ,gnome-common)
        ("which" ,which)
        ("intltool" ,intltool)
