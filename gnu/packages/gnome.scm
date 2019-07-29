@@ -5670,7 +5670,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.14.4")
+    (version "1.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -5679,7 +5679,7 @@ users.")
               (patches (search-patches "nm-plugin-path.patch"))
               (sha256
                (base32
-                "064cgj9za0kzarks0lrv0qw2ysdphb5l97iw0c964bfiqzjfv8rm"))
+                "1hx5dx5dgdqh3p8fq7q1pxy2bx2iymc74lj60ycrf7ydfjlprnad"))
               (modules '((guix build utils)))
               (snippet
                '(begin
