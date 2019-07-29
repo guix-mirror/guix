@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,21 @@
 ;; Builder-side code of the standard Rust package build procedure.
 ;;
 ;; Code:
+
+;; TODO: Move this to (guix build cargo-utils). Will cause a full rebuild
+;; of all rust compilers.
+
+(define (generate-all-checksums dir-name)
+  (for-each
+    (lambda (filename)
+      (let* ((dir (dirname filename))
+             (checksum-file (string-append dir "/.cargo-checksum.json")))
+        (when (file-exists? checksum-file) (delete-file checksum-file))
+        (display (string-append
+                   "patch-cargo-checksums: generate-checksums for "
+                   dir "\n"))
+        (generate-checksums dir)))
+    (find-files dir-name "Cargo.toml$")))
 
 (define (manifest-targets)
   "Extract all targets from the Cargo.toml manifest"
@@ -94,8 +110,7 @@ Cargo.toml file present at its root."
               ;; so that we can generate any cargo checksums.
               ;; The --strip-components argument is needed to prevent creating
               ;; an extra directory within `crate-dir`.
-              (invoke "tar" "xvf" path "-C" crate-dir "--strip-components" "1")
-              (generate-checksums crate-dir)))))
+              (invoke "tar" "xvf" path "-C" crate-dir "--strip-components" "1")))))
     inputs)
 
   ;; Configure cargo to actually use this new directory.
@@ -119,6 +134,31 @@ directory = '" port)
   ;; upgrading the compiler for example.
   (setenv "RUSTFLAGS" "--cap-lints allow")
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+  #t)
+
+;; The Cargo.lock file tells the build system which crates are required for
+;; building and hardcodes their version and checksum.  In order to build with
+;; the inputs we provide, we need to recreate the file with our inputs.
+(define* (update-cargo-lock #:key
+                            (vendor-dir "guix-vendor")
+                            #:allow-other-keys)
+  "Regenerate the Cargo.lock file with the current build inputs."
+  (when (file-exists? "Cargo.lock")
+    (begin
+      ;; Unfortunately we can't generate a Cargo.lock file until the checksums
+      ;; are generated, so we have an extra round of generate-all-checksums here.
+      (generate-all-checksums vendor-dir)
+      (delete-file "Cargo.lock")
+      (invoke "cargo" "generate-lockfile")))
+  #t)
+
+;; After the 'patch-generated-file-shebangs phase any vendored crates who have
+;; their shebangs patched will have a mismatch on their checksum.
+(define* (patch-cargo-checksums #:key
+                                (vendor-dir "guix-vendor")
+                                #:allow-other-keys)
+  "Patch the checksums of the vendored crates after patching their shebangs."
+  (generate-all-checksums vendor-dir)
   #t)
 
 (define* (build #:key
@@ -162,7 +202,9 @@ directory = '" port)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
-    (replace 'install install)))
+    (replace 'install install)
+    (add-after 'configure 'update-cargo-lock update-cargo-lock)
+    (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums patch-cargo-checksums)))
 
 (define* (cargo-build #:key inputs (phases %standard-phases)
                       #:allow-other-keys #:rest args)

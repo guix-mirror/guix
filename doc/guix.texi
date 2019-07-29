@@ -5854,8 +5854,11 @@ should be added to the package definition via the
 
 In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
-parameters available to cargo.  The @code{install} phase installs any crate
-the binaries if they are defined by the crate.
+parameters available to cargo.  The @code{update-cargo-lock} phase will,
+when there is a @code{Cargo.lock} file, update the @code{Cargo.lock} file
+with the inputs and their versions available at build time.  The
+@code{install} phase installs any crate the binaries if they are defined by
+the crate.
 @end defvr
 
 @cindex Clojure (programming language)
