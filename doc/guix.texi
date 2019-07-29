@@ -6034,6 +6034,29 @@ Packages built with @code{guile-build-system} must provide a Guile package in
 their @code{native-inputs} field.
 @end defvr
 
+@defvr {Scheme Variable} julia-build-system
+This variable is exported by @code{(guix build-system julia)}.  It implements
+the build procedure used by @uref{https://julialang.org/, julia} packages,
+which essentially is similar to running @command{julia -e 'using Pkg;
+Pkg.add(package)'} in an environment where @code{JULIA_LOAD_PATH} contains the
+paths to all Julia package inputs.  Tests are run not run.
+
+Julia packages require the source @code{file-name} to be the real name of the
+package, correctly capitalized.
+
+For packages requiring shared library dependencies, you may need to write the
+@file{/deps/deps.jl} file manually. It's usually a line of @code{const
+variable = /gnu/store/libary.so} for each dependency, plus a void function
+@code{check_deps() = nothing}.
+
+Some older packages that aren't using @file{Package.toml} yet, will require
+this file to be created, too. The function @code{julia-create-package-toml}
+helps creating the file. You need to pass the outputs and the source of the
+package, it's name (the same as the @code{file-name} parameter), the package
+uuid, the package version, and a list of dependencies specified by their name
+and their uuid.
+@end defvr
+
 @defvr {Scheme Variable} minify-build-system
 This variable is exported by @code{(guix build-system minify)}.  It
 implements a minification procedure for simple JavaScript packages.
