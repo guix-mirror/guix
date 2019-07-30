@@ -118,6 +118,26 @@ experiment that allows a generic to warn if any arguments passed in @code{...}
 are not used.")
     (license license:gpl3)))
 
+(define-public r-grr
+  (package
+    (name "r-grr")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grr" version))
+       (sha256
+        (base32
+         "0arbcgrvhkwb5xk4nry1ffg2qj0v8ivhjghdr505ib4357g0c9i9"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/grr")
+    (synopsis "Alternative implementations of base R functions")
+    (description
+     "This package provides alternative implementations of some base R
+functions, including @code{sort}, @code{order}, and @code{match}.  The
+functions are simplified but can be faster or have other advantages.")
+    (license license:gpl3)))
+
 (define-public r-sys
   (package
     (name "r-sys")
