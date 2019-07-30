@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -2262,6 +2263,68 @@ differential expression analysis, clustering, visualization, and other useful
 tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
+
+(define-public r-monocle3
+  (package
+    (name "r-monocle3")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1cjxqfw3qvy269hsf5v80d4kshl932wrl949iayas02saj6f70ls"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-grr" ,r-grr)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-limma" ,r-limma)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-matrix-utils" ,r-matrix-utils)
+       ("r-pbapply" ,r-pbapply)
+       ("r-pbmcapply" ,r-pbmcapply)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plotly" ,r-plotly)
+       ("r-pryr" ,r-pryr)
+       ("r-proxy" ,r-proxy)
+       ("r-pscl" ,r-pscl)
+       ("r-purrr" ,r-purrr)
+       ("r-rann" ,r-rann)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-reshape2" ,r-reshape2)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-rtsne" ,r-rtsne)
+       ("r-shiny" ,r-shiny)
+       ("r-slam" ,r-slam)
+       ("r-spdep" ,r-spdep)
+       ("r-speedglm" ,r-speedglm)
+       ("r-stringr" ,r-stringr)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-uwot" ,r-uwot)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/cole-trapnell-lab/monocle3")
+    (synopsis "Analysis toolkit for single-cell RNA-Seq data")
+    (description
+     "Monocle 3 is an analysis toolkit for single-cell RNA-Seq experiments.")
+    (license license:expat)))
 
 (define-public r-noiseq
   (package
