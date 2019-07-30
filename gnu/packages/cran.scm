@@ -14780,6 +14780,38 @@ dimension reduction.  This package provides an interface to the UMAP algorithm
 in R, including a translation of the original algorithm into R.")
     (license license:expat)))
 
+(define-public r-uwot
+  (package
+    (name "r-uwot")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "uwot" version))
+       (sha256
+        (base32
+         "1mq6qi8q9xslh1b99srj480s2a08pfv4bs9m2ykyijj44j9fcdj9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dqrng" ,r-dqrng)
+       ("r-fnn" ,r-fnn)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppannoy" ,r-rcppannoy)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rcppprogress" ,r-rcppprogress)
+       ("r-rspectra" ,r-rspectra)))
+    (home-page "https://github.com/jlmelville/uwot")
+    (synopsis "Uniform manifold approximation and projection")
+    (description
+     "This package provides an implementation of the Uniform Manifold
+Approximation and Projection dimensionality reduction by McInnes et
+al. (2018).  It also provides means to transform new data and to carry out
+supervised dimensionality reduction.  An implementation of the related
+LargeVis method of Tang et al. (2016) is also provided.")
+    (license license:gpl3)))
+
 (define-public r-kableextra
   (package
     (name "r-kableextra")
