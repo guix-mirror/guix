@@ -14,7 +14,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
-;;; Copyright © 2016, 2017 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2016, 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2018 Leo Famulari <leo@famulari.name>
@@ -104,6 +104,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages ibus)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
@@ -116,6 +117,7 @@
   #:use-module (gnu packages lirc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
@@ -6691,6 +6693,77 @@ easy, safe, and automatic.")
        ("libsoup" ,libsoup)
        ("libuuid" ,util-linux)
        ("network-manager" ,network-manager)))
+    (synopsis "Metadata database, indexer and search tool")
+    (home-page "https://wiki.gnome.org/Projects/Tracker")
+    (description
+     "Tracker is an advanced framework for first class objects with associated
+metadata and tags.  It provides a one stop solution for all metadata, tags,
+shared object databases, search tools and indexing.")
+    ;; src/libtracker-*/* and src/tracker-extract/* are covered by lgpl2.1+,
+    ;; src/gvdb/* are covered by lgpl2.0+, and the rest is gpl2+.
+    (license (list license:gpl2+
+                   license:lgpl2.1+
+                   license:lgpl2.0+))))
+
+(define-public tracker-miners
+  (package
+    (name "tracker-miners")
+    (version "2.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/tracker-miners/"
+                                  (version-major+minor version)
+                                  "/tracker-miners-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0kk5xaajamb8jlm6cfdbc2m3axzr6bnph84m7697xmb0pkg8hdiw"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:configure-flags
+       (list "-Dminer_rss=false" ; libgrss is required.
+             ;; Ensure the RUNPATH contains all installed library locations.
+             (string-append "-Dc_link_args=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib/tracker-miners-2.0")
+             ;; TODO: Enable functional tests. Currently, the following error
+             ;; appears:
+             ;; Exception: The functional tests require DConf to be the default
+             ;; GSettings backend. Got GKeyfileSettingsBackend instead.
+             "-Dfunctional_tests=false")))
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python-pygobject" ,python-pygobject)))
+    (inputs
+     `(("exempi" ,exempi)
+       ("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("giflib" ,giflib)
+       ("glib" ,glib)
+       ("gstreamer" ,gstreamer)
+       ("icu4c" ,icu4c)
+       ("libcue" ,libcue)
+       ("libexif" ,libexif)
+       ("libgsf" ,libgsf)
+       ("libgxps" ,libgxps)
+       ("libiptcdata" ,libiptcdata)
+       ("libjpeg" ,libjpeg)
+       ("libosinfo" ,libosinfo)
+       ("libpng" ,libpng)
+       ("libseccomp" ,libseccomp)
+       ("libtiff" ,libtiff)
+       ("libvorbis" ,libvorbis)
+       ("libxml2" ,libxml2)
+       ("poppler" ,poppler)
+       ("taglib" ,taglib)
+       ("totem-pl-parser" ,totem-pl-parser)
+       ("tracker" ,tracker)
+       ("upower" ,upower)
+       ("zlib" ,zlib)))
     (synopsis "Metadata database, indexer and search tool")
     (home-page "https://wiki.gnome.org/Projects/Tracker")
     (description
