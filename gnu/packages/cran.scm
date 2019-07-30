@@ -8790,6 +8790,29 @@ package provides a minimal R interface by relying on the Rcpp package.")
     ;; hnswlib is released under Version 2.0 of the Apache License.
     (license (list license:gpl3 license:asl2.0))))
 
+(define-public r-rcppparallel
+  (package
+    (name "r-rcppparallel")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppParallel" version))
+       (sha256
+        (base32
+         "1ym0bzs9g6bsg2lz24fisxxa3gypr6xcvrczn304czmrrag9413s"))))
+    (properties `((upstream-name . "RcppParallel")))
+    (build-system r-build-system)
+    (home-page "http://rcppcore.github.io/RcppParallel")
+    (synopsis "Parallel programming tools for Rcpp")
+    (description
+     "This package provides high level functions for parallel programming with
+Rcpp.  For example, the @code{parallelFor()} function can be used to convert
+the work of a standard serial @code{for} loop into a parallel one and the
+@code{parallelReduce()} function can be used for accumulating aggregates or
+other values.")
+    (license license:gpl2)))
+
 (define-public r-ncdf4
   (package
     (name "r-ncdf4")
