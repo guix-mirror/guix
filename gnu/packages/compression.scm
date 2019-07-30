@@ -1954,3 +1954,49 @@ reading from and writing to ZIP archives. ")
     ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
     ;; distributed under zlib terms.
     (license (list license:lgpl2.1+ license:zlib))))
+
+(define-public zutils
+  (package
+    (name "zutils")
+    ;; Check and remove the lint-hidden-cve property when updating.
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/zutils/zutils-" version ".tar.lz"))
+       (sha256
+        (base32 "0dx35mv78fgqgz6sszs05ng8ipz2xy09ry9vpmka2rmy08b7x907"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+          (lambda* (#:key make-flags outputs #:allow-other-keys)
+            (apply invoke "make" "install"
+                   (string-append "sysconfdir=" (assoc-ref outputs "out")
+                                  "/etc")
+                   make-flags))))))
+    (native-inputs
+     ;; Needed to extract the source tarball and run the test suite.
+     `(("lzip" ,lzip)))
+    (properties `((lint-hidden-cve . ("CVE-2018-1000637"))))
+    (home-page "https://www.nongnu.org/zutils/zutils.html")
+    (synopsis "Utilities that transparently operate on compressed files")
+    (description
+     "Zutils is a collection of utilities able to process any combination of
+compressed and uncompressed files transparently.  If any given file, including
+standard input, is compressed, its decompressed content is used instead.
+
+@command{zcat}, @command{zcmp}, @command{zdiff}, and @command{zgrep} are
+improved replacements for the shell scripts provided by GNU gzip.
+@command{ztest} tests the integrity of supported compressed files.
+@command{zupdate} recompresses files with lzip, similar to gzip's
+@command{znew}.
+
+Supported compression formats are bzip2, gzip, lzip, and xz.  Zutils uses
+external compressors: the compressor to be used for each format is configurable
+at run time, and must be installed separately.")
+    (license (list license:bsd-2        ; arg_parser.{cc,h}
+                   license:gpl2+))))    ; the rest
