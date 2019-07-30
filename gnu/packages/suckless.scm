@@ -724,3 +724,31 @@ as -1, to be used instead of U+FFFD.
 It is a front end for ii-like chat programs.  It uses @code{tail -f} to get the
 chat output in the background.")
       (license license:isc))))
+
+(define-public scron
+  (package
+    (name "scron")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://dl.2f30.org/releases/"
+                           name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "066fwa55kqcgfrsqgxh94sqbkxfsr691360xg4ljxr4i75d25s2a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; No configure script
+    (home-page "https://git.2f30.org/scron/")
+    (synopsis "Simple cron daemon")
+    (description
+     "Schedule commands to be run at specified dates and times.
+Single daemon and configuration file.  Log to stdout or syslog.  No mail
+support.")
+    (license license:expat)))
