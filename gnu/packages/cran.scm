@@ -14314,6 +14314,25 @@ Molecular Epidemiology\" (SCRIME).  The main focus is on SNP data, but most of
 the functions can also be applied to other types of categorical data.")
     (license license:gpl2)))
 
+(define-public r-pbmcapply
+  (package
+    (name "r-pbmcapply")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbmcapply" version))
+       (sha256
+        (base32
+         "0i58gcqpnbyvc448qfgm45b7rpbmrnagsvk1h1hsqchbbicfslnz"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/kvnkuang/pbmcapply")
+    (synopsis "Track the progress of apply procedures with a progress bar")
+    (description
+     "This light-weight package helps you track and visualize the progress of
+parallel versions of vectorized R functions of the @code{mc*apply} family.")
+    (license license:expat)))
+
 (define-public r-blme
   (package
     (name "r-blme")
