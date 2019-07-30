@@ -138,6 +138,31 @@ functions, including @code{sort}, @code{order}, and @code{match}.  The
 functions are simplified but can be faster or have other advantages.")
     (license license:gpl3)))
 
+(define-public r-matrix-utils
+  (package
+    (name "r-matrix-utils")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Matrix.utils" version))
+       (sha256
+        (base32
+         "1x64r4aj3gy1dzjjysyrk1j9jq3qsnyrqws8i6bs7q8pf6gvr7va"))))
+    (properties `((upstream-name . "Matrix.utils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-grr" ,r-grr)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/cvarrichio/Matrix.utils")
+    (synopsis
+     "Data.frame-Like Operations on Sparse and Dense Matrix Objects")
+    (description
+     "This package implements data manipulation methods such as @code{cast},
+@code{aggregate}, and @code{merge}/@code{join} for Matrix and Matrix-like
+objects.")
+    (license license:gpl3)))
+
 (define-public r-sys
   (package
     (name "r-sys")
