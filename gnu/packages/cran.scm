@@ -9394,6 +9394,29 @@ only sparse real matrices in Matrix package format are supported.")
     ;; BSD-3.
     (license (list license:bsd-3 license:bsd-2))))
 
+(define-public r-speedglm
+  (package
+    (name "r-speedglm")
+    (version "0.3-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "speedglm" version))
+       (sha256
+        (base32
+         "1b25zimk0z7ad62yacqdg0zk0qs0jja4i918ym942xfw4j1z3jjz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/speedglm")
+    (synopsis "Fit linear and generalized linear models to large data sets")
+    (description
+     "This package provides tools for fitting linear models and generalized
+linear models to large data sets by updating algorithms.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
+
 (define-public r-densityclust
   (package
     (name "r-densityclust")
