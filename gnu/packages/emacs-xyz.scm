@@ -3411,6 +3411,32 @@ completion candidate when using the Company text completion framework.")
 @code{company-math}.")
       (license license:gpl3+))))
 
+(define-public emacs-company-math
+  (let ((commit "600e49449644f6835f9dc3501bc58461999e8ab9")
+        (revision "1"))
+    (package
+      (name "emacs-company-math")
+      (version (git-version "1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vspinu/company-math.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ps2lpkzn8mjbpcbvvy1qz3xbgrh6951x8y9bsd1fm32drdph9lh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-math-symbol-lists" ,emacs-math-symbol-lists)
+         ("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/vspinu/company-math")
+      (synopsis "Completion backends for Unicode math symbols and @code{LaTeX} tags")
+      (description "This package provides a backend for use with
+@code{company-mode} allowing for completion of common math symbols.")
+      (license license:gpl3+))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
