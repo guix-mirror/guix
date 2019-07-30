@@ -8705,6 +8705,32 @@ available key bindings that follow C-x (or as many as space allows given your
 settings).")
     (license license:gpl3+)))
 
+(define-public emacs-hercules
+  (let ((commit "3345904a0dab4c7a4d4478f0766f1d9f5d1bb501")
+        (revision "1"))
+    (package
+      (name "emacs-hercules")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jjzmajic/hercules.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cpq8h6l47nqhzch6snax5yrhxl8p4wn35q13ci35lj3iq8kmlk8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-which-key" ,emacs-which-key)))
+      (home-page "https://gitlab.com/jjzmajic/hercules.el")
+      (synopsis "Call a chain of related commands without repeated prefix keys")
+      (description
+       "This package provides sticky-key-like functionality to obviate the
+need for repeated prefix-key sequences, and can reuse existing keymaps. The
+list of commands is displayed in a handy popup.")
+      (license license:gpl3+))))
+
 (define-public emacs-ws-butler
   (package
     (name "emacs-ws-butler")
