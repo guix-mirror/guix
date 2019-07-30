@@ -903,6 +903,40 @@ tools for @code{partykit}, @code{igraph}, @code{table}, and @code{data.frame}
 R objects into the JSON format that the d3.js library expects.")
     (license license:bsd-3)))
 
+;; We use the latest commit here because the last release was in 2016 while
+;; the latest commit was in 2018.
+(define-public r-sankeyd3
+  (let ((commit "fd50a74e29056e0d67d75b4d04de47afb2f932bc")
+        (revision "1"))
+    (package
+      (name "r-sankeyd3")
+      (version (git-version "0.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fbreitwieser/sankeyD3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0jrcnfax321pszbpjdifnkbrgbjr43bjzvlzv1p5a8wskksqwiyx"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-d3r" ,r-d3r)
+         ("r-htmlwidgets" ,r-htmlwidgets)
+         ("r-shiny" ,r-shiny)
+         ("r-magrittr" ,r-magrittr)))
+      (home-page "https://github.com/fbreitwieser/sankeyD3")
+      (synopsis "Sankey network graphs from R")
+      (description
+       "This package provides an R library to generate Sankey network graphs
+in R and Shiny via the D3 visualization library.")
+      ;; The R code is licensed under GPLv3+.  It includes the non-minified
+      ;; JavaScript source code of d3-sankey, which is released under the
+      ;; 3-clause BSD license.
+      (license (list license:gpl3+ license:bsd-3)))))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
