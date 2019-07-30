@@ -822,6 +822,87 @@ this gives the user direct access to the file system without the need to
 well as file saving is available.")
     (license license:gpl2+)))
 
+;; The package sources include minified variants of d3.js and non-minified
+;; source code of d3-jetpack.
+(define-public r-d3r
+  (package
+    (name "r-d3r")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "d3r" version))
+       (sha256
+        (base32
+         "0vcmiyhd000xyl28k6rm7ba50x5sz5b2cpllxnq36q13qhdnqw6k"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/www/d3/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "d3.v3.js")
+                         "v3/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v4.js")
+                         "v4/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v5.js")
+                         "v5/dist/d3.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (delete-file target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-htmltools" ,r-htmltools)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("d3.v3.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v3.js")
+           (sha256
+            (base32
+             "1arr7sr08vy7wh0nvip2mi7dpyjw4576vf3bm45rp4g5lc1k1x41"))))
+       ("d3.v4.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v4.js")
+           (sha256
+            (base32
+             "0y7byf6kcinfz9ac59jxc4v6kppdazmnyqfav0dm4h550fzfqqlg"))))
+       ("d3.v5.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v5.js")
+           (sha256
+            (base32
+             "0kxvx5pfagxn6nhavdwsdnzyd26g0z5dsfi1pi5dvcmb0c8ipcdn"))))))
+    (home-page "https://github.com/timelyportfolio/d3r")
+    (synopsis "d3.js utilities for R")
+    (description
+     "This package provides a suite of functions to help ease the use of the
+d3.js visualization library in R.  These helpers include
+@code{htmltools::htmlDependency} functions, hierarchy builders, and conversion
+tools for @code{partykit}, @code{igraph}, @code{table}, and @code{data.frame}
+R objects into the JSON format that the d3.js library expects.")
+    (license license:bsd-3)))
+
 (define-public r-crosstalk
   (package
     (name "r-crosstalk")
