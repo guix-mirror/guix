@@ -14729,3 +14729,24 @@ customize styles using a readable syntax.")
 using a lasso (L1) penalty.  Facilities are provided for estimates along a
 path of values for the regularization parameter.")
     (license license:gpl2)))
+
+(define-public r-rhpcblasctl
+  (package
+    (name "r-rhpcblasctl")
+    (version "0.18-205")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RhpcBLASctl" version))
+       (sha256
+        (base32
+         "1ls2286fvrp1g7p8v4l6axznychh3qndranfpzqz806cm9ml1cdp"))))
+    (properties `((upstream-name . "RhpcBLASctl")))
+    (build-system r-build-system)
+    (home-page "http://prs.ism.ac.jp/~nakama/Rhpc/")
+    (synopsis "Control the number of threads on BLAS")
+    (description
+     "This package allows you to control the number of threads the BLAS
+library uses.  It is also possible to control the number of threads in
+OpenMP.")
+    (license license:agpl3+)))
