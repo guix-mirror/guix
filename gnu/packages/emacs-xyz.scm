@@ -3389,6 +3389,28 @@ for the current function or variable in the minibuffer.")
 completion candidate when using the Company text completion framework.")
     (license license:gpl3+)))
 
+(define-public emacs-math-symbol-lists
+  (let ((commit "dc7531cff0c845d5470a50c24d5d7309b2ced7eb")
+        (revision "1"))
+    (package
+      (name "emacs-math-symbol-lists")
+      (version (git-version "1.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vspinu/math-symbol-lists.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "094m21i9rns6m59cmhxcivxxafbg52w8f8na4y3v47aq67zmhhqm"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/vspinu/math-symbol-lists")
+      (synopsis "Lists of Unicode math symbols and @code{LaTeX} commands")
+      (description "This is a storage package used by completion engines like
+@code{company-math}.")
+      (license license:gpl3+))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
