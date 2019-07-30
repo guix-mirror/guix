@@ -130,7 +130,11 @@ C_*INCLUDE_PATH."
 
             (substitute* (string-append mingw-headers "/crt/_mingw.h")
               (("@MINGW_HAS_SECURE_API@")
-               "#define MINGW_HAS_SECURE_API 1"))
+               "#define MINGW_HAS_SECURE_API 1")
+              (("@DEFAULT_WIN32_WINNT@")
+               "0x502")
+              (("@DEFAULT_MSVCRT_VERSION@")
+               "0x700"))
 
             (let ((cpath (string-append mingw-headers "/include"
                                         ":" mingw-headers "/crt"

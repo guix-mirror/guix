@@ -1098,7 +1098,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
-  %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
+  %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/monero-use-system-miniupnpc.patch			\

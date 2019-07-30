@@ -36,15 +36,15 @@
   (let ((triplet (string-append machine "-" "w64-mingw32")))
     (package
       (name (string-append "mingw-w64" "-" machine))
-      (version "5.0.4")
+      (version "6.0.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
                       "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
                       "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
                 (sha256
-                 (base32 "00zq3z1hbzd5yzmskskjg79xrzwsqx7ihyprfaxy4hb897vf29sm"))
-                (patches (search-patches "mingw-w64-5.0rc2-gcc-4.9.3.patch"))))
+                 (base32 "1w28mynv500y03h92nh87rgw3fnp82qwnjbxrrzqkmr63q812pl0"))
+                (patches (search-patches "mingw-w64-6.0.0-gcc.patch"))))
       (native-inputs `(("xgcc-core" ,(cross-gcc triplet))
                        ("xbinutils" ,(cross-binutils triplet))))
       (build-system gnu-build-system)
