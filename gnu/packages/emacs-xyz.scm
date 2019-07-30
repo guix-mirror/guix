@@ -3410,6 +3410,32 @@ completion candidate when using the Company text completion framework.")
 simultaneous cursors.")
     (license license:gpl3+)))
 
+(define-public emacs-mc-extras
+  (let ((commit "053abc52181b8718559d7361a587bbb795faf164")
+        (revision "1"))
+    (package
+      (name "emacs-mc-extras")
+      (version (git-version "1.2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/knu/mc-extras.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16y48qrd20m20vypvys5jp4v4gc1qrqlkm75s1pk1r68i9zrw481"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-multiple-cursors" ,emacs-multiple-cursors)))
+      (home-page "https://github.com/knu/mc-extras.el")
+      (synopsis "Extra functions for manipulating multiple cursors")
+      (description
+       "This package provides additional functions for
+@code{multiple-cursors}, including functions for marking s-expressions,
+comparing characters, removing cursors, and more.")
+      (license license:bsd-2))))
+
 (define-public emacs-typo
   (package
     (name "emacs-typo")
