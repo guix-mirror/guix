@@ -25510,7 +25510,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
             %base-services))))
 
 (list (machine
-       (system %system)
+       (operating-system %system)
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
@@ -25551,7 +25551,7 @@ This is the data type representing a single machine in a heterogeneous Guix
 deployment.
 
 @table @asis
-@item @code{system}
+@item @code{operating-system}
 The object of the operating system configuration to deploy.
 
 @item @code{environment}

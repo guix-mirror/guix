@@ -34,7 +34,7 @@
             machine?
             this-machine
 
-            machine-system
+            machine-operating-system
             machine-environment
             machine-configuration
             machine-display-name
@@ -85,14 +85,14 @@
   make-machine
   machine?
   this-machine
-  (system        machine-system)       ; <operating-system>
-  (environment   machine-environment)  ; symbol
-  (configuration machine-configuration ; configuration object
-                 (default #f)))        ; specific to environment
+  (operating-system machine-operating-system) ; <operating-system>
+  (environment      machine-environment)      ; symbol
+  (configuration    machine-configuration     ; configuration object
+                    (default #f)))            ; specific to environment
 
 (define (machine-display-name machine)
   "Return the host-name identifying MACHINE."
-  (operating-system-host-name (machine-system machine)))
+  (operating-system-host-name (machine-operating-system machine)))
 
 (define (machine-remote-eval machine exp)
   "Evaluate EXP, a gexp, on MACHINE. Ensure that all the elements EXP refers to

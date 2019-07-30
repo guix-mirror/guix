@@ -166,7 +166,7 @@ of MACHINE's system profile, ordered from most recent to oldest."
 environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
   (mlet %store-monad ((boot-parameters (machine-boot-parameters machine)))
-    (let* ((os (machine-system machine))
+    (let* ((os (machine-operating-system machine))
            (eval (cut machine-remote-eval machine <>))
            (menu-entries (map boot-parameters->menu-entry boot-parameters))
            (bootloader-configuration (operating-system-bootloader os))
