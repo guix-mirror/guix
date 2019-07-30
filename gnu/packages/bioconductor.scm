@@ -5024,3 +5024,44 @@ with separating information will be identified, and these clusters are defined
 by a sparse number of variables, this method can reduce the complexity of
 data, to only emphasize the data that actually matters.")
     (license license:expat)))
+
+(define-public r-cicero
+  (package
+    (name "r-cicero")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "cicero" version))
+       (sha256
+        (base32
+         "0f15l8zrh7l7nnvznb66116hvfk15djb9q240vbscm2w0y5fvkcr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glasso" ,r-glasso)
+       ("r-gviz" ,r-gviz)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-monocle" ,r-monocle)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://bioconductor.org/packages/cicero/")
+    (synopsis "Predict cis-co-accessibility from single-cell data")
+    (description
+     "Cicero computes putative cis-regulatory maps from single-cell chromatin
+accessibility data.  It also extends the monocle package for use in chromatin
+accessibility data.")
+    (license license:expat)))
