@@ -64,14 +64,14 @@
 (define-public glu
   (package
     (name "glu")
-    (version "9.0.0")
+    (version "9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/glu/glu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
+                "1xqhk9bn10nbvffw3r4p4rjslwz1l7gaycc0x2pqkr2irp7q9x7n"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa))) ; according to glu.pc
