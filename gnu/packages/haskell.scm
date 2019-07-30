@@ -3043,6 +3043,7 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
                (base32
                 "0hznd8i65s81xy13i2qc7cvipw3lfb2yhkv53apbdsh6sbljz5sk"))))
     (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; doctest suite fails to build on i686
     (inputs
      `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
