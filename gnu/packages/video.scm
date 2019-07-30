@@ -2762,6 +2762,7 @@ of modern, widely supported codecs.")
      (list (search-path-specification
             (variable "LIBVA_DRIVERS_PATH")
             (files '("lib/dri")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://01.org/linuxmedia/vaapi")
     (synopsis "VA-API video acceleration driver for Intel GEN Graphics devices")
     (description
