@@ -1387,14 +1387,14 @@ or junctions, and always follows hard links.")
 (define-public zstd
   (package
     (name "zstd")
-    (version "1.4.1")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/facebook/zstd/releases/download/"
                            "v" version "/zstd-" version ".tar.gz"))
        (sha256
-        (base32 "180sfl0iz5hy43xcr0gh8kz2vxgpb8rh5d7wmpxn3bxkgs320l2k"))))
+        (base32 "1ja3nrjynmiwwdjrf6crraizkbagp7y414bqqq2ady91nn1hjwqj"))))
     (build-system gnu-build-system)
     (outputs '("out"                    ;1.1MiB executables and documentation
                "lib"                    ;1MiB shared library and headers

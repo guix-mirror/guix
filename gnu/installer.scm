@@ -69,7 +69,7 @@ version of this file."
         (setlocale LC_ALL "en_US.utf8")))
 
   (define builder
-    (with-extensions (list guile-json)
+    (with-extensions (list guile-json-3)
       (with-imported-modules (source-module-closure
                               '((gnu installer locale)))
         #~(begin
@@ -313,7 +313,7 @@ selected keymap."
     ;; packages …), etc. modules.
     (with-extensions (list guile-gcrypt guile-newt
                            guile-parted guile-bytestructures
-                           guile-json guile-git guix)
+                           guile-json-3 guile-git guix)
       (with-imported-modules `(,@(source-module-closure
                                   `(,@modules
                                     (gnu services herd)

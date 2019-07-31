@@ -232,8 +232,8 @@ APNG patch provides APNG support to libpng.")
       ("zlib" , zlib)))
    (home-page "https://pmt.sourceforge.io/pngcrush")
    (synopsis "Utility to compress PNG files")
-   (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
-files.  It can compress them as much as 40% losslessly.")
+   (description "Pngcrush optimizes @acronym{PNG, Portable Network Graphics}
+images.  It can further losslessly compress them by as much as 40%.")
    (license license:zlib)))
 
 (define-public pngcrunch

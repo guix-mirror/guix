@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +23,7 @@
   #:use-module (guix http-client)
   #:use-module (guix import utils)
   #:use-module (srfi srfi-34)
-  #:export (json-fetch
-            json-fetch-alist))
+  #:export (json-fetch))
 
 (define* (json-fetch url
                      ;; Note: many websites returns 403 if we omit a
@@ -43,9 +42,3 @@ the query."
            (result (json->scm port)))
       (close-port port)
       result)))
-
-(define (json-fetch-alist url)
-  "Return an alist representation of the JSON resource URL, or #f if URL
-returns 403 or 404."
-  (and=> (json-fetch url)
-         hash-table->alist))

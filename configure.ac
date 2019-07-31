@@ -119,8 +119,8 @@ if test "x$have_guile_git" != "xyes"; then
 fi
 
 dnl Check for Guile-JSON.
-GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
-if test "x$have_guile_json" != "xyes"; then
+GUIX_CHECK_GUILE_JSON
+if test "x$guix_cv_have_recent_guile_json" != "xyes"; then
   AC_MSG_ERROR([Guile-JSON is missing; please install it.])
 fi
 

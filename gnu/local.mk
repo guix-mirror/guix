@@ -597,6 +597,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
+  %D%/tests/reconfigure.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/security-token.scm			\
   %D%/tests/singularity.scm			\
@@ -753,6 +754,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
+  %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
@@ -1044,6 +1046,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-add-includes.patch		\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
+  %D%/packages/patches/libvirt-remove-ATTRIBUTE_UNUSED.patch	\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\

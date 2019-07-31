@@ -87,15 +87,16 @@ for example, 'linuxdcpp'. Return #f if there is no releases."
     ;; example, "5.1.0-rc1") are assumed to be pre-releases.
     (not (string-every (char-set-union (char-set #\.)
                                        char-set:digit)
-                       (hash-ref x "version"))))
+                       (assoc-ref x "version"))))
 
-  (hash-ref
+  (assoc-ref
    (last (remove
           pre-release?
-          (hash-ref (json-fetch
-                     (string-append "https://api.launchpad.net/1.0/"
-                                    package-name "/releases"))
-                    "entries")))
+          (vector->list
+           (assoc-ref (json-fetch
+                       (string-append "https://api.launchpad.net/1.0/"
+                                      package-name "/releases"))
+                      "entries"))))
    "version"))
 
 (define (latest-release pkg)

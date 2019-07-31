@@ -392,13 +392,15 @@ manage system or application containers.")
   (package
     (name "libvirt")
     (version "5.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://libvirt.org/sources/libvirt-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1s1mzw4cmkcfivs1kphpgy4lpddx0w1qnjysr4ggk5558w4yy1i3"))))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://libvirt.org/sources/libvirt-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "1s1mzw4cmkcfivs1kphpgy4lpddx0w1qnjysr4ggk5558w4yy1i3"))
+       (patches
+        (search-patches "libvirt-remove-ATTRIBUTE_UNUSED.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -490,37 +492,31 @@ to integrate other virtualization mechanisms if needed.")
 (define-public libvirt-glib
   (package
     (name "libvirt-glib")
-    (version "1.0.0")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://libvirt.org/libvirt/glib/"
                                   "libvirt-glib-" version ".tar.gz"))
               (sha256
                (base32
-                "0iwa5sdbii52pjpdm5j37f67sdmf0kpcky4liwhy1nf43k85i4fa"))))
+                "0six9ckmvlwwyavyjkgc262qkpvfqgi8rjij7cyk00bmqq8c9s4l"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-           (lambda _
-             (substitute* "tests/test-events.c"
-               (("/bin/true") (which "true")))
-             #t)))))
     (inputs
-     `(("libxml2" ,libxml2)
-       ("libvirt" ,libvirt)
-       ("gobject-introspection" ,gobject-introspection)
-       ("glib" ,glib)
-       ("openssl" ,openssl)
+     `(("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("lvm2" ,lvm2) ; for libdevmapper
+       ("lvm2" ,lvm2)                   ; for libdevmapper
        ("libyajl" ,libyajl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib" ,glib "bin")
        ("vala" ,vala)))
+    (propagated-inputs
+     ;; ‘Required:’ by the installed .pc files.
+     `(("glib" ,glib)
+       ("libvirt" ,libvirt)
+       ("libxml2" ,libxml2)
+       ("gobject-introspection" ,gobject-introspection)))
     (home-page "https://libvirt.org")
     (synopsis "GLib wrapper around libvirt")
     (description "libvirt-glib wraps the libvirt library to provide a

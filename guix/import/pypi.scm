@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
@@ -56,7 +56,7 @@
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."
-  (json-fetch-alist (string-append "https://pypi.org/pypi/" name "/json")))
+  (json-fetch (string-append "https://pypi.org/pypi/" name "/json")))
 
 ;; For packages found on PyPI that lack a source distribution.
 (define-condition-type &missing-source-error &error
@@ -69,7 +69,7 @@ or #f on failure."
                               (assoc-ref* pypi-package "info" "version"))))
     (or (find (lambda (release)
                 (string=? "sdist" (assoc-ref release "packagetype")))
-              releases)
+              (vector->list releases))
         (raise (condition (&missing-source-error
                            (package pypi-package)))))))
 
@@ -80,7 +80,7 @@ or #f if there isn't any."
                               (assoc-ref* pypi-package "info" "version"))))
     (or (find (lambda (release)
                 (string=? "bdist_wheel" (assoc-ref release "packagetype")))
-              releases)
+              (vector->list releases))
         #f)))
 
 (define (python->package-name name)

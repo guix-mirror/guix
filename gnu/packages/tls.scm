@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -33,8 +33,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system go)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module (guix build-system cmake)
@@ -924,3 +926,27 @@ coding footprint.")
 ACME-server (currently only provided by Let's Encrypt) implemented as a
 relatively simple Bash script.")
     (license license:expat)))
+
+(define-public go-github-com-certifi-gocertifi
+  (let ((commit "d2eda712971317d7dd278bc2a52acda7e945f97e")
+        (revision "0"))
+    (package
+      (name "go-github-com-certifi-gocertifi")
+      (version (git-version "2018.01.18" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/certifi/gocertifi")
+                       (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0f3v26xps7gadw4qfmh1kxbpgp0cgqdd61a257xnnvnd7ll6k8dh"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/certifi/gocertifi"))
+      (synopsis "X.509 TLS root certificate bundle for Go")
+      (description "This package is a Go language X.509 TLS root certificate bundle,
+derived from Mozilla's collection.")
+      (home-page "https://certifi.io")
+      (license license:mpl2.0))))

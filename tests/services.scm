@@ -26,10 +26,6 @@
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
-(define live-service
-  (@@ (gnu services herd) live-service))
-
-
 (test-begin "services")
 
 (test-equal "services, default value"

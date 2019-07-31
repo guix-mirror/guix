@@ -431,6 +431,10 @@ specification.  These are the main features:
     ;; Version 1.2.0 switched to GPLv3+ (from LGPLv3+).
     (license license:gpl3+)))
 
+(define-public guile-json-1
+  ;; This is the 1.x branch of Guile-JSON.
+  guile-json)
+
 (define-public guile2.2-json
   (deprecated-package "guile2.2-json" guile-json))
 

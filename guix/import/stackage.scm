@@ -60,7 +60,7 @@
      (let* ((url (if (string=? "" version)
                      (string-append %stackage-url "/lts")
                      (string-append %stackage-url "/lts-" version)))
-            (lts-info (json-fetch-alist url)))
+            (lts-info (json-fetch url)))
        (if lts-info
            (reverse lts-info)
            (leave-with-message "LTS release version not found: ~a" version))))))
@@ -74,7 +74,7 @@
 (define (lts-package-version pkgs-info name)
   "Return the version of the package with upstream NAME included in PKGS-INFO."
   (let ((pkg (find (lambda (pkg) (string=? (stackage-package-name pkg) name))
-                   pkgs-info)))
+                   (vector->list pkgs-info))))
     (stackage-package-version pkg)))
 
 

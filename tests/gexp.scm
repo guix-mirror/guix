@@ -1104,6 +1104,25 @@
           (return (and (zero? (close-pipe pipe))
                        (= 42 (string->number str)))))))))
 
+(test-assertm "program-file #:system"
+  (let* ((exp    (with-imported-modules '((guix build utils))
+                   (gexp (begin
+                           (use-modules (guix build utils))
+                           (display "hi!")))))
+         (system (if (string=? (%current-system) "x86_64-linux")
+                     "armhf-linux"
+                     "x86_64-linux"))
+         (file   (program-file "program" exp)))
+    (mlet %store-monad ((drv (lower-object file system)))
+      (return (and (string=? (derivation-system drv) system)
+                   (find (lambda (input)
+                           (let ((drv (pk (derivation-input-derivation input))))
+                             (and (string=? (derivation-name drv)
+                                            "module-import-compiled")
+                                  (string=? (derivation-system drv)
+                                            system))))
+                         (derivation-inputs drv)))))))
+
 (test-assertm "scheme-file"
   (let* ((text   (plain-file "foo" "Hello, world!"))
          (scheme (scheme-file "bar" #~(list "foo" #$text))))

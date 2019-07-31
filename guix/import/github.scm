@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
@@ -130,7 +130,7 @@ repository separated by a forward slash, from a string URL of the form
 
 (define (fetch-releases-or-tags url)
   "Fetch the list of \"releases\" or, if it's empty, the list of tags for the
-repository at URL.  Return the corresponding JSON dictionaries (hash tables),
+repository at URL.  Return the corresponding JSON dictionaries (alists),
 or #f if the information could not be retrieved.
 
 We look at both /releases and /tags because the \"release\" feature of GitHub
@@ -172,11 +172,11 @@ empty list."
 'https://github.com/arq5x/bedtools2/archive/v2.24.0.tar.gz' and the name of
 the package e.g. 'bedtools2'.  Return #f if there is no releases"
   (define (pre-release? x)
-    (hash-ref x "prerelease"))
+    (assoc-ref x "prerelease"))
 
   (define (release->version release)
-    (let ((tag (or (hash-ref release "tag_name") ;a "release"
-                   (hash-ref release "name")))   ;a tag
+    (let ((tag (or (assoc-ref release "tag_name") ;a "release"
+                   (assoc-ref release "name")))   ;a tag
           (name-length (string-length package-name)))
       (cond
        ;; some tags include the name of the package e.g. "fdupes-1.51"
@@ -197,7 +197,8 @@ the package e.g. 'bedtools2'.  Return #f if there is no releases"
         tag)
        (else #f))))
 
-  (let* ((json (fetch-releases-or-tags url)))
+  (let* ((json (and=> (fetch-releases-or-tags url)
+                      vector->list)))
     (if (eq? json #f)
         (if (%github-token)
             (error "Error downloading release information through the GitHub

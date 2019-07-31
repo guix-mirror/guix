@@ -118,6 +118,51 @@ experiment that allows a generic to warn if any arguments passed in @code{...}
 are not used.")
     (license license:gpl3)))
 
+(define-public r-grr
+  (package
+    (name "r-grr")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "grr" version))
+       (sha256
+        (base32
+         "0arbcgrvhkwb5xk4nry1ffg2qj0v8ivhjghdr505ib4357g0c9i9"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/grr")
+    (synopsis "Alternative implementations of base R functions")
+    (description
+     "This package provides alternative implementations of some base R
+functions, including @code{sort}, @code{order}, and @code{match}.  The
+functions are simplified but can be faster or have other advantages.")
+    (license license:gpl3)))
+
+(define-public r-matrix-utils
+  (package
+    (name "r-matrix-utils")
+    (version "0.9.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Matrix.utils" version))
+       (sha256
+        (base32
+         "1x64r4aj3gy1dzjjysyrk1j9jq3qsnyrqws8i6bs7q8pf6gvr7va"))))
+    (properties `((upstream-name . "Matrix.utils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-grr" ,r-grr)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://github.com/cvarrichio/Matrix.utils")
+    (synopsis
+     "Data.frame-Like Operations on Sparse and Dense Matrix Objects")
+    (description
+     "This package implements data manipulation methods such as @code{cast},
+@code{aggregate}, and @code{merge}/@code{join} for Matrix and Matrix-like
+objects.")
+    (license license:gpl3)))
+
 (define-public r-sys
   (package
     (name "r-sys")
@@ -821,6 +866,121 @@ this gives the user direct access to the file system without the need to
 \"download\" files to a temporary location.  Both file and folder selection as
 well as file saving is available.")
     (license license:gpl2+)))
+
+;; The package sources include minified variants of d3.js and non-minified
+;; source code of d3-jetpack.
+(define-public r-d3r
+  (package
+    (name "r-d3r")
+    (version "0.8.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "d3r" version))
+       (sha256
+        (base32
+         "0vcmiyhd000xyl28k6rm7ba50x5sz5b2cpllxnq36q13qhdnqw6k"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'process-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/www/d3/"
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "d3.v3.js")
+                         "v3/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v4.js")
+                         "v4/dist/d3.min.js")
+                        (,(assoc-ref inputs "d3.v5.js")
+                         "v5/dist/d3.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (delete-file target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-htmltools" ,r-htmltools)
+       ("r-tidyr" ,r-tidyr)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("d3.v3.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v3.js")
+           (sha256
+            (base32
+             "1arr7sr08vy7wh0nvip2mi7dpyjw4576vf3bm45rp4g5lc1k1x41"))))
+       ("d3.v4.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v4.js")
+           (sha256
+            (base32
+             "0y7byf6kcinfz9ac59jxc4v6kppdazmnyqfav0dm4h550fzfqqlg"))))
+       ("d3.v5.js"
+        ,(origin
+           (method url-fetch)
+           (uri "https://d3js.org/d3.v5.js")
+           (sha256
+            (base32
+             "0kxvx5pfagxn6nhavdwsdnzyd26g0z5dsfi1pi5dvcmb0c8ipcdn"))))))
+    (home-page "https://github.com/timelyportfolio/d3r")
+    (synopsis "d3.js utilities for R")
+    (description
+     "This package provides a suite of functions to help ease the use of the
+d3.js visualization library in R.  These helpers include
+@code{htmltools::htmlDependency} functions, hierarchy builders, and conversion
+tools for @code{partykit}, @code{igraph}, @code{table}, and @code{data.frame}
+R objects into the JSON format that the d3.js library expects.")
+    (license license:bsd-3)))
+
+;; We use the latest commit here because the last release was in 2016 while
+;; the latest commit was in 2018.
+(define-public r-sankeyd3
+  (let ((commit "fd50a74e29056e0d67d75b4d04de47afb2f932bc")
+        (revision "1"))
+    (package
+      (name "r-sankeyd3")
+      (version (git-version "0.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/fbreitwieser/sankeyD3.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0jrcnfax321pszbpjdifnkbrgbjr43bjzvlzv1p5a8wskksqwiyx"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-d3r" ,r-d3r)
+         ("r-htmlwidgets" ,r-htmlwidgets)
+         ("r-shiny" ,r-shiny)
+         ("r-magrittr" ,r-magrittr)))
+      (home-page "https://github.com/fbreitwieser/sankeyD3")
+      (synopsis "Sankey network graphs from R")
+      (description
+       "This package provides an R library to generate Sankey network graphs
+in R and Shiny via the D3 visualization library.")
+      ;; The R code is licensed under GPLv3+.  It includes the non-minified
+      ;; JavaScript source code of d3-sankey, which is released under the
+      ;; 3-clause BSD license.
+      (license (list license:gpl3+ license:bsd-3)))))
 
 (define-public r-crosstalk
   (package
@@ -8675,6 +8835,29 @@ package provides a minimal R interface by relying on the Rcpp package.")
     ;; hnswlib is released under Version 2.0 of the Apache License.
     (license (list license:gpl3 license:asl2.0))))
 
+(define-public r-rcppparallel
+  (package
+    (name "r-rcppparallel")
+    (version "4.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RcppParallel" version))
+       (sha256
+        (base32
+         "1ym0bzs9g6bsg2lz24fisxxa3gypr6xcvrczn304czmrrag9413s"))))
+    (properties `((upstream-name . "RcppParallel")))
+    (build-system r-build-system)
+    (home-page "http://rcppcore.github.io/RcppParallel")
+    (synopsis "Parallel programming tools for Rcpp")
+    (description
+     "This package provides high level functions for parallel programming with
+Rcpp.  For example, the @code{parallelFor()} function can be used to convert
+the work of a standard serial @code{for} loop into a parallel one and the
+@code{parallelReduce()} function can be used for accumulating aggregates or
+other values.")
+    (license license:gpl2)))
+
 (define-public r-ncdf4
   (package
     (name "r-ncdf4")
@@ -9278,6 +9461,29 @@ only sparse real matrices in Matrix package format are supported.")
     ;; SVDLIBC is released under BSD-2.  The R interface is released under
     ;; BSD-3.
     (license (list license:bsd-3 license:bsd-2))))
+
+(define-public r-speedglm
+  (package
+    (name "r-speedglm")
+    (version "0.3-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "speedglm" version))
+       (sha256
+        (base32
+         "1b25zimk0z7ad62yacqdg0zk0qs0jja4i918ym942xfw4j1z3jjz"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)))
+    (home-page "https://cran.r-project.org/web/packages/speedglm")
+    (synopsis "Fit linear and generalized linear models to large data sets")
+    (description
+     "This package provides tools for fitting linear models and generalized
+linear models to large data sets by updating algorithms.")
+    ;; Any version of the GPL
+    (license license:gpl2+)))
 
 (define-public r-densityclust
   (package
@@ -14199,6 +14405,25 @@ Molecular Epidemiology\" (SCRIME).  The main focus is on SNP data, but most of
 the functions can also be applied to other types of categorical data.")
     (license license:gpl2)))
 
+(define-public r-pbmcapply
+  (package
+    (name "r-pbmcapply")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pbmcapply" version))
+       (sha256
+        (base32
+         "0i58gcqpnbyvc448qfgm45b7rpbmrnagsvk1h1hsqchbbicfslnz"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/kvnkuang/pbmcapply")
+    (synopsis "Track the progress of apply procedures with a progress bar")
+    (description
+     "This light-weight package helps you track and visualize the progress of
+parallel versions of vectorized R functions of the @code{mc*apply} family.")
+    (license license:expat)))
+
 (define-public r-blme
   (package
     (name "r-blme")
@@ -14530,3 +14755,140 @@ including regression, classification and ranking.  The package is made to be
 extensible, so that users are also allowed to define their own objectives
 easily.")
     (license license:asl2.0)))
+
+(define-public r-umap
+  (package
+    (name "r-umap")
+    (version "0.2.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "umap" version))
+       (sha256
+        (base32
+         "1s82w9gy1387h7cprjfbhp49l89zbmn3gc9s0wzqb1s73nza9n31"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rspectra" ,r-rspectra)))
+    (home-page "https://github.com/tkonopka/umap")
+    (synopsis "Uniform manifold approximation and projection")
+    (description
+     "Uniform manifold approximation and projection is a technique for
+dimension reduction.  This package provides an interface to the UMAP algorithm
+in R, including a translation of the original algorithm into R.")
+    (license license:expat)))
+
+(define-public r-uwot
+  (package
+    (name "r-uwot")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "uwot" version))
+       (sha256
+        (base32
+         "1mq6qi8q9xslh1b99srj480s2a08pfv4bs9m2ykyijj44j9fcdj9"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dqrng" ,r-dqrng)
+       ("r-fnn" ,r-fnn)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppannoy" ,r-rcppannoy)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-rcppprogress" ,r-rcppprogress)
+       ("r-rspectra" ,r-rspectra)))
+    (home-page "https://github.com/jlmelville/uwot")
+    (synopsis "Uniform manifold approximation and projection")
+    (description
+     "This package provides an implementation of the Uniform Manifold
+Approximation and Projection dimensionality reduction by McInnes et
+al. (2018).  It also provides means to transform new data and to carry out
+supervised dimensionality reduction.  An implementation of the related
+LargeVis method of Tang et al. (2016) is also provided.")
+    (license license:gpl3)))
+
+(define-public r-kableextra
+  (package
+    (name "r-kableextra")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "kableExtra" version))
+       (sha256
+        (base32
+         "1nicvw06xsf3a1f5c10mih07b76m2v5s5h165vmz0qx6n1a3492i"))))
+    (properties `((upstream-name . "kableExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-glue" ,r-glue)
+       ("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-magrittr" ,r-magrittr)
+       ("r-readr" ,r-readr)
+       ("r-rmarkdown" ,r-rmarkdown)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-rvest" ,r-rvest)
+       ("r-scales" ,r-scales)
+       ("r-stringr" ,r-stringr)
+       ("r-viridislite" ,r-viridislite)
+       ("r-webshot" ,r-webshot)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://haozhu233.github.io/kableExtra/")
+    (synopsis "Construct complex tables with pipe syntax")
+    (description
+     "Build complex HTML or LaTeX tables using @code{kable()} from
+@code{knitr} and the piping syntax from @code{magrittr}.  The function
+@code{kable()} is a light weight table generator coming from @code{knitr}.
+This package simplifies the way to manipulate the HTML or LaTeX codes
+generated by @code{kable()} and allows users to construct complex tables and
+customize styles using a readable syntax.")
+    (license license:expat)))
+
+(define-public r-glasso
+  (package
+    (name "r-glasso")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "glasso" version))
+       (sha256
+        (base32
+         "0nshpx14v2yny7lr8ll6nnz71n0f02sddh2c2dglfprbk89p9yp6"))))
+    (build-system r-build-system)
+    (native-inputs `(("gfortran" ,gfortran)))
+    (home-page "http://www-stat.stanford.edu/~tibs/glasso")
+    (synopsis "Graphical Lasso: estimation of Gaussian graphical models")
+    (description
+     "This is a package for estimation of a sparse inverse covariance matrix
+using a lasso (L1) penalty.  Facilities are provided for estimates along a
+path of values for the regularization parameter.")
+    (license license:gpl2)))
+
+(define-public r-rhpcblasctl
+  (package
+    (name "r-rhpcblasctl")
+    (version "0.18-205")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RhpcBLASctl" version))
+       (sha256
+        (base32
+         "1ls2286fvrp1g7p8v4l6axznychh3qndranfpzqz806cm9ml1cdp"))))
+    (properties `((upstream-name . "RhpcBLASctl")))
+    (build-system r-build-system)
+    (home-page "http://prs.ism.ac.jp/~nakama/Rhpc/")
+    (synopsis "Control the number of threads on BLAS")
+    (description
+     "This package allows you to control the number of threads the BLAS
+library uses.  It is also possible to control the number of threads in
+OpenMP.")
+    (license license:agpl3+)))

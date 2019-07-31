@@ -293,7 +293,7 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json)
+         ("guile-json" ,guile-json-1)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
@@ -325,7 +325,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
-       ("guile-json" ,guile-json)
+       ("guile-json" ,guile-json-1)
        ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))

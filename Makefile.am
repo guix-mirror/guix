@@ -249,6 +249,7 @@ MODULES =					\
   guix/scripts/describe.scm			\
   guix/scripts/system.scm			\
   guix/scripts/system/search.scm		\
+  guix/scripts/system/reconfigure.scm		\
   guix/scripts/lint.scm				\
   guix/scripts/challenge.scm			\
   guix/scripts/import/crate.scm			\
@@ -361,77 +362,77 @@ TEST_EXTENSIONS = .scm .sh
 if CAN_RUN_TESTS
 
 SCM_TESTS =					\
+  tests/accounts.scm				\
   tests/base16.scm				\
   tests/base32.scm				\
   tests/base64.scm				\
+  tests/bournish.scm				\
+  tests/builders.scm				\
+  tests/build-utils.scm			\
+  tests/cache.scm				\
+  tests/challenge.scm				\
   tests/channels.scm				\
+  tests/combinators.scm			\
+  tests/containers.scm				\
   tests/cpan.scm				\
   tests/cpio.scm				\
-  tests/crate.scm				\
-  tests/gem.scm					\
-  tests/pki.scm					\
-  tests/print.scm				\
-  tests/sets.scm				\
-  tests/modules.scm				\
-  tests/gnu-maintenance.scm			\
-  tests/substitute.scm				\
-  tests/swh.scm					\
-  tests/builders.scm				\
-  tests/derivations.scm				\
-  tests/glob.scm				\
-  tests/grafts.scm				\
-  tests/ui.scm					\
-  tests/status.scm				\
-  tests/records.scm				\
-  tests/processes.scm				\
-  tests/upstream.scm				\
-  tests/combinators.scm				\
-  tests/discovery.scm				\
-  tests/utils.scm				\
-  tests/build-utils.scm				\
-  tests/packages.scm				\
-  tests/snix.scm				\
-  tests/hackage.scm				\
   tests/cran.scm				\
-  tests/elpa.scm				\
-  tests/texlive.scm				\
-  tests/store.scm				\
-  tests/monads.scm				\
-  tests/gexp.scm				\
-  tests/nar.scm					\
-  tests/union.scm				\
-  tests/profiles.scm				\
-  tests/search-paths.scm			\
-  tests/syscalls.scm				\
-  tests/inferior.scm				\
-  tests/gremlin.scm				\
+  tests/crate.scm				\
+  tests/cve.scm				\
   tests/debug-link.scm				\
-  tests/bournish.scm				\
-  tests/lint.scm				\
-  tests/publish.scm				\
-  tests/scripts.scm				\
-  tests/size.scm				\
-  tests/graph.scm				\
-  tests/challenge.scm				\
-  tests/cache.scm				\
-  tests/cve.scm					\
-  tests/workers.scm				\
-  tests/zlib.scm				\
-  tests/lzlib.scm				\
+  tests/derivations.scm			\
+  tests/discovery.scm				\
+  tests/elpa.scm				\
   tests/file-systems.scm			\
-  tests/uuid.scm				\
-  tests/system.scm				\
-  tests/accounts.scm				\
-  tests/services.scm				\
-  tests/scripts-build.scm			\
-  tests/containers.scm				\
-  tests/opam.scm				\
-  tests/pack.scm				\
-  tests/pypi.scm				\
+  tests/gem.scm				\
+  tests/gexp.scm				\
+  tests/glob.scm				\
+  tests/gnu-maintenance.scm			\
+  tests/grafts.scm				\
+  tests/graph.scm				\
+  tests/gremlin.scm				\
+  tests/hackage.scm				\
   tests/import-utils.scm			\
+  tests/inferior.scm				\
+  tests/lint.scm				\
+  tests/lzlib.scm				\
+  tests/modules.scm				\
+  tests/monads.scm				\
+  tests/nar.scm				\
+  tests/opam.scm				\
+  tests/packages.scm				\
+  tests/pack.scm				\
+  tests/pki.scm				\
+  tests/print.scm				\
+  tests/processes.scm				\
+  tests/profiles.scm				\
+  tests/publish.scm				\
+  tests/pypi.scm				\
+  tests/records.scm				\
+  tests/scripts.scm				\
+  tests/scripts-build.scm			\
+  tests/search-paths.scm			\
+  tests/services.scm				\
+  tests/sets.scm				\
+  tests/size.scm				\
+  tests/snix.scm				\
+  tests/status.scm				\
   tests/store-database.scm			\
-  tests/store-deduplication.scm			\
-  tests/store-roots.scm
+  tests/store-deduplication.scm		\
+  tests/store-roots.scm			\
+  tests/store.scm				\
+  tests/substitute.scm				\
+  tests/swh.scm				\
+  tests/syscalls.scm				\
+  tests/system.scm				\
+  tests/texlive.scm				\
+  tests/ui.scm					\
+  tests/union.scm				\
+  tests/upstream.scm				\
+  tests/utils.scm				\
+  tests/uuid.scm				\
+  tests/workers.scm				\
+  tests/zlib.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\

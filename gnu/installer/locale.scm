@@ -134,16 +134,18 @@ ISO639-3 and ISO639-5 files."
         (lambda (port-iso639-5)
           (filter-map
            (lambda (hash)
-             (let ((alpha2 (hash-ref hash "alpha_2"))
-                   (alpha3 (hash-ref hash "alpha_3"))
-                   (name   (hash-ref hash "name")))
+             (let ((alpha2 (assoc-ref hash "alpha_2"))
+                   (alpha3 (assoc-ref hash "alpha_3"))
+                   (name   (assoc-ref hash "name")))
                (and (supported-locale? locales alpha2 alpha3)
                     `((alpha2 . ,alpha2)
                       (alpha3 . ,alpha3)
                       (name   . ,name)))))
            (append
-            (hash-ref (json->scm port-iso639-3) "639-3")
-            (hash-ref (json->scm port-iso639-5) "639-5"))))))))
+            (vector->list
+             (assoc-ref (json->scm port-iso639-3) "639-3"))
+            (vector->list
+             (assoc-ref (json->scm port-iso639-5) "639-5")))))))))
 
 (define (language-code->language-name languages language-code)
   "Using LANGUAGES as a list of ISO639 association lists, return the language
@@ -179,10 +181,11 @@ ISO3166 file."
   (call-with-input-file iso3166
     (lambda (port)
       (map (lambda (hash)
-             `((alpha2 . ,(hash-ref hash "alpha_2"))
-               (alpha3 . ,(hash-ref hash "alpha_3"))
-               (name   . ,(hash-ref hash "name"))))
-           (hash-ref (json->scm port) "3166-1")))))
+             `((alpha2 . ,(assoc-ref hash "alpha_2"))
+               (alpha3 . ,(assoc-ref hash "alpha_3"))
+               (name   . ,(assoc-ref hash "name"))))
+           (vector->list
+            (assoc-ref (json->scm port) "3166-1"))))))
 
 (define (territory-code->territory-name territories territory-code)
   "Using TERRITORIES as a list of ISO3166 association lists return the
