@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,7 @@
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:select (openldap2.8 lgpl2.1+ gpl3+ psfl))
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
@@ -79,16 +81,46 @@
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
              ("gnutls" ,gnutls)
-             ("groff" ,groff)
              ("icu4c" ,icu4c)
              ("libgcrypt" ,libgcrypt)
              ("zlib" ,zlib)))
-   (native-inputs `(("libtool" ,libtool)))
+   (native-inputs `(("libtool" ,libtool)
+                    ("groff" ,groff)
+                    ("bdb" ,bdb-5.3)
+                    ;; For up to date 'config.guess' and 'config.sub'.
+                    ("automake" ,automake)))
    (arguments
     `(#:tests? #f
-      #:configure-flags '("--disable-static")
+      #:configure-flags
+      '("--disable-static"
+        ,@(if (%current-target-system)
+              '("--with-yielding_select=yes"
+                "ac_cv_func_memcmp_working=yes")
+              '()))
+      ;; Disable install stripping as it breaks cross-compiling.
+      #:make-flags '("STRIP=")
       #:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'fix-configure
+          (lambda* (#:key inputs native-inputs #:allow-other-keys)
+            ;; Replace outdated config.sub and config.guess:
+            (with-directory-excursion "build"
+              (for-each (lambda (file)
+                          (install-file (string-append
+                                         (assoc-ref
+                                          (or native-inputs inputs) "automake")
+                                         "/share/automake-"
+                                         ,(version-major+minor
+                                           (package-version automake))
+                                         "/" file) "."))
+                        '("config.sub" "config.guess")))
+            #t))
+        ,@(if (%current-target-system)
+              '((add-before 'configure 'fix-cross-gcc
+                  (lambda* (#:key target #:allow-other-keys)
+                    (setenv "CC" (string-append target "-gcc"))
+                    #t)))
+              '())
         (add-after 'install 'patch-sasl-path
           ;; Give -L arguments for cyrus-sasl to avoid propagation.
           (lambda* (#:key inputs outputs #:allow-other-keys)
