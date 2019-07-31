@@ -223,7 +223,6 @@
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)
-       ("nettle" ,nettle)
        ("totem-pl-parser" ,totem-pl-parser)))
     (home-page "https://projects.gnome.org/brasero/")
     (synopsis "CD/DVD burning tool for Gnome")
@@ -428,8 +427,7 @@ access the common Google services, and has full asynchronous support.")
      `(("gtk+" ,gtk+)
        ("libjpeg" ,libjpeg-turbo)
        ("lcms" ,lcms)
-       ("libtiff" ,libtiff)
-       ("nettle" ,nettle)))
+       ("libtiff" ,libtiff)))
     (propagated-inputs
      ;; In Requires of libgxps.pc.
      `(("cairo" ,cairo)
@@ -817,10 +815,6 @@ forgotten when the session ends.")
        ("dconf" ,dconf)
        ("libcanberra" ,libcanberra)
        ("libsecret" ,libsecret)
-
-       ;; XXX: 'libarchive.pc' adds '-lnettle' so Nettle should really be
-       ;; propagated from there.
-       ("nettle" ,nettle)
 
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
@@ -3332,8 +3326,7 @@ settings, themes, mouse settings, and startup of other daemons.")
       ("libgcrypt" ,libgcrypt)
       ("libxml2" ,libxml2)))
    (inputs
-    `(("nettle" ,nettle)
-      ("libsoup" ,libsoup)))
+    `(("libsoup" ,libsoup)))
    (home-page "https://projects.gnome.org/totem")
    (synopsis "Library to parse and save media playlists for GNOME")
    (description "Totem-pl-parser is a GObjects-based library to parse and save
@@ -3788,7 +3781,6 @@ as possible!")
        ("libxml2" ,libxml2)
        ("liboauth" ,liboauth)
        ("libsoup" ,libsoup)
-       ("nettle" ,nettle)
        ("totem-pl-parser" ,totem-pl-parser)))
     (arguments
      `(#:phases
@@ -3837,7 +3829,6 @@ for application developers.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("grilo" ,grilo)
-       ("nettle" ,nettle) ; XXX: required by libgrlpls-0.3.la
        ("glib" ,glib)
        ("libxml2" ,libxml2)
        ("sqlite" ,sqlite)
@@ -3926,7 +3917,6 @@ for application developers.")
        ("totem-pl-parser" ,totem-pl-parser)
        ("grilo" ,grilo)
        ("grilo-plugins" ,grilo-plugins)
-       ("nettle" ,nettle)
        ("vala" ,vala)))
     (arguments
      `(#:glib-or-gtk? #t
@@ -4028,7 +4018,6 @@ which can read a large number of file formats.")
       ("python-pygobject" ,python2-pygobject)
       ("vala" ,vala)
       ("gmime" ,gmime)
-      ("nettle" ,nettle)
       ("adwaita-icon-theme" ,adwaita-icon-theme)
       ("grilo" ,grilo)
       ("grilo-plugins" ,grilo-plugins)
@@ -4244,7 +4233,6 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("libsmbclient" ,samba)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)
-       ("nettle" ,nettle) ; XXX: required by libarchive.pc
        ("openssh" ,openssh)
        ("polkit" ,polkit)
        ("udisks" ,udisks)))
@@ -4760,7 +4748,6 @@ share them with others via social networking and more.")
        ("json-glib" ,json-glib)
        ("libarchive" ,libarchive)
        ("libnotify" ,libnotify)
-       ("nettle" ,nettle)
        ("itstool" ,itstool)
        ("libxml2" ,libxml2)))
     (synopsis "Graphical archive manager for GNOME")
@@ -6217,8 +6204,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
     (propagated-inputs
      `(("libarchive" ,libarchive)))  ; XXX document why
     (inputs
-     `(("gtk+" ,gtk+)
-       ("nettle" ,nettle))) ; XXX: required by libarchive.pc
+     `(("gtk+" ,gtk+)))
     (synopsis "Archives integration support for GNOME")
     (home-page "https://git.gnome.org/browse/gnome-autoar/")
     (description
@@ -6286,7 +6272,6 @@ easy, safe, and automatic.")
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("sqlite" ,sqlite)
-       ("nettle" ,nettle)  ; XXX why is this needed?
        ("python" ,python)
        ("poppler" ,poppler)
        ("libgsf" ,libgsf)
@@ -6355,7 +6340,6 @@ shared object databases, search tools and indexing.")
        ("gnome-autoar" ,gnome-autoar)
        ("libseccomp" ,libseccomp)
        ("libselinux" ,libselinux)
-       ("nettle" ,nettle) ; XXX required by libarchive.pc via gnome-autoar
        ("tracker" ,tracker)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
        ;;
