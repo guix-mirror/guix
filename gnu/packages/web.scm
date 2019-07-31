@@ -4345,15 +4345,15 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "libwapcaplet-" version "-src.tar.gz"))
        (sha256
         (base32
-         "134pljlm8kby1yy49826f0ixnpig8iqak6xpyl3aivagnsjnxzy8"))))
+         "1fjwzbn7j8bi1b9bvwxsy3i2cr6byq2s2d29866801pjnf528g86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
