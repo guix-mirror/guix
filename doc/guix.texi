@@ -12442,6 +12442,40 @@ gexps to introduce job definitions that are passed to mcron
                   %base-services)))
 @end lisp
 
+For more complex jobs defined in Scheme where you need control over the top
+level, for instance to introduce a @code{use-modules} form that defines syntax
+(macros), you can move your code to a separate program using the
+@code{program-file} procedure of the @code{(guix gexp)} module
+(@pxref{G-Expressions}).  The example below illustrates that.
+
+@lisp
+(define %battery-alert-job
+  ;; Beep when the battery percentage falls below %MIN-LEVEL.
+  #~(job
+     '(next-minute (range 0 60 1))
+     #$(program-file
+        "battery-alert.scm"
+        (with-imported-modules (source-module-closure
+                                '((guix build utils)))
+          #~(begin
+              (define %min-level 20)
+              (use-modules (guix build utils)
+                           (ice-9 popen)
+                           (ice-9 regex)
+                           (ice-9 textual-ports)
+                           (srfi srfi-2))
+              (setenv "LC_ALL" "C")     ;ensure English output
+              (and-let* ((input-pipe (open-pipe*
+                                      OPEN_READ
+                                      #$(file-append acpi "/bin/acpi")))
+                         (output (get-string-all input-pipe))
+                         (m (string-match "Discharging, ([0-9]+)%" output))
+                         (level (string->number (match:substring m 1)))
+                         ((< level %min-level)))
+                (format #t "warning: Battery level is low (~a%)~%" level)
+                (invoke #$(file-append beep "/bin/beep") "-r5")))))))
+@end lisp
+
 @xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
