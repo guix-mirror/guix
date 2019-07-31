@@ -16684,6 +16684,26 @@ Org-mode (the notes may have outlines, latex fragments, babel, etc...) while
 acting like notes that are made @emph{in} the document.")
     (license license:gpl3+)))
 
+(define-public emacs-org-redmine
+  (let ((commit "e77d013bc3784947c46a5c53f03cd7d3c68552fc"))
+    (package
+      (name "emacs-org-redmine")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gongo/org-redmine.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06miv3mf2a39vkf6mmm5ssc47inqh7dq82khsyc03anz4d4lj822"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/gongo/org-redmine/")
+      (synopsis "Redmine tools using Emacs")
+      (description "This program provides an Emacs client for Redmine.")
+      (license license:gpl3+))))
+
 (define-public emacs-multi-term
   (let ((commit "0804b11e52b960c80f5cd0712ee1e53ae70d83a4"))
     (package
