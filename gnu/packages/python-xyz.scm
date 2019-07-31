@@ -10970,12 +10970,11 @@ command @command{natsort} that exposes this functionality in the command line.")
      ("python-psutil" ,python-psutil)))
   (home-page
     "https://github.com/nicolargo/glances")
-  (synopsis
-    "A cross-platform curses-based monitoring tool")
+  (synopsis "Cross-platform curses-based monitoring tool")
   (description
     "Glances is a curses-based monitoring tool for a wide variety of platforms.
-Glances uses the PsUtil library to get information from your system. It monitors
-CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
+Glances uses the PsUtil library to get information from your system.  It
+monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
 
 (define-public python2-glances
