@@ -791,6 +791,8 @@ This package provides the library for GLib applications.")
                 "mirror://sourceforge/dbus-cplusplus/dbus-c%2B%2B/"
                 version "/libdbus-c%2B%2B-" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
+              (patches (search-patches "dbus-c++-gcc-compat.patch"
+                                       "dbus-c++-threading-mutex.patch"))
               (sha256
                (base32
                 "0qafmy2i6dzx4n1dqp6pygyy6gjljnb7hwjcj2z11c1wgclsq4dw"))))
@@ -812,7 +814,8 @@ This package provides the library for GLib applications.")
            (lambda _
              (substitute* "include/dbus-c++/eventloop-integration.h"
                (("#include <errno.h>")
-                "#include <errno.h>\n#include <unistd.h>")))))))
+                "#include <errno.h>\n#include <unistd.h>"))
+             #t)))))
     (synopsis "D-Bus API for C++")
     (description "This package provides D-Bus client API bindings for the C++
 programming language.  It also contains the utility
