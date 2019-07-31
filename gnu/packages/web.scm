@@ -4558,15 +4558,15 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "nsgenbind-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0v1cb1rz5fix9ql31nzmglj7sybya6d12b2fkaypm1avcca59xwj"))))
+         "0rplmky4afsjwiwh7grkmcdmzg86zksa55j93dvq92f91yljwqqq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
