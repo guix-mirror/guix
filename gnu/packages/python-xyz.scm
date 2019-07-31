@@ -10952,7 +10952,18 @@ command @command{natsort} that exposes this functionality in the command line.")
       (uri (pypi-uri "Glances" version))
       (sha256
         (base32
-          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))))
+          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; Glances phones PyPI for weekly update checks by default.
+          ;; Disable these.  The user can re-enable them if desired.
+          (substitute* "glances/outdated.py"
+            (("^(.*)self\\.load_config\\(config\\)\n" line indentation)
+             (string-append indentation
+                            "self.args.disable_check_update = True\n"
+                            line)))
+          #t))))
   (build-system python-build-system)
   (propagated-inputs
    `(("python-future" ,python-future)
