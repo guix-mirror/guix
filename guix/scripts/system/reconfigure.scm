@@ -161,12 +161,7 @@ services as defined by OS."
                                              target-services)
                                         (map live-service-canonical-name
                                              live-services)))
-             (service-files
-              (map shepherd-service-file
-                   (filter (lambda (service)
-                             (memq (shepherd-service-canonical-name service)
-                                   to-start))
-                           target-services))))
+             (service-files (map shepherd-service-file target-services)))
         (eval #~(primitive-load #$(upgrade-services-program service-files
                                                             to-start
                                                             to-unload
