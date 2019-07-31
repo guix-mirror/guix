@@ -38,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 
 ;;; Annotations
@@ -5128,3 +5129,25 @@ data, to only emphasize the data that actually matters.")
 accessibility data.  It also extends the monocle package for use in chromatin
 accessibility data.")
     (license license:expat)))
+
+;; This is the latest commit on the "monocle3" branch.
+(define-public r-cicero-monocle3
+  (let ((commit "fa2fb6515857a8cfc88bc9af044f34de1bcd2b7b")
+        (revision "1"))
+    (package (inherit r-cicero)
+      (name "r-cicero-monocle3")
+      (version (git-version "1.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "077yza93wdhi08n40md20jwk55k9lw1f3y0063qkk90cpz60wi0c"))))
+      (propagated-inputs
+       `(("r-monocle3" ,r-monocle3)
+         ,@(alist-delete "r-monocle"
+                         (package-propagated-inputs r-cicero)))))))
