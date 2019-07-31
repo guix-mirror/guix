@@ -117,6 +117,7 @@
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses)
@@ -1120,7 +1121,8 @@ compresses it.")
               ("libxml2" ,libxml2)
               ("perl" ,perl)
               ("python-2" ,python-2)
-              ("mime-info" ,shared-mime-info)))
+              ("mime-info" ,shared-mime-info)
+              ("startup-notification" ,startup-notification)))
     (arguments
       '(#:configure-flags
         '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
