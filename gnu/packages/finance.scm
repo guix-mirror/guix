@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system go)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -1086,3 +1088,26 @@ financial years, budget estimates, bankcard management and other
 information.")
     (home-page "http://grisbi.org")
     (license license:gpl2+)))
+
+(define-public trezord
+  (package
+    (name "trezord")
+    (version "2.0.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/trezor/trezord-go.git")
+              (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0nqzpq0i3crh0i4r1cppja5sn3rwi1fv9afxzwzv63096x5l30a7"))
+       (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/trezor/trezord-go"))
+    (home-page "https://trezor.io")
+    (synopsis "Trezor Communication Daemon aka Trezor Bridge (written in Go)")
+    (description "This allows a Trezor hardware wallet to communicate to the
+Trezor wallet.")
+    (license license:lgpl3+)))
