@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6444,9 +6445,10 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                 (assoc-ref outputs "lib")))
              #t))
          (add-before 'check 'set-timezone-directory
-           (lambda* (#:key inputs #:allow-other-keys)
-             (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo"))
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (setenv "TZDIR" (string-append
+                               (assoc-ref (or native-inputs inputs) "tzdata")
+                               "/share/zoneinfo"))
              #t)))))
     (home-page "https://nghttp2.org/")
     (synopsis "HTTP/2 protocol client, proxy, server, and library")
