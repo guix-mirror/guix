@@ -325,9 +325,7 @@ Japanese language input in most graphical applications.")
            #t))))
     (build-system cmake-build-system)
     (arguments
-     '(;; XXX: Work around <https://bugs.gnu.org/36721>.
-       #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-source
            (lambda _

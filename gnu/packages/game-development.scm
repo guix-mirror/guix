@@ -1116,8 +1116,7 @@ of use.")
     (arguments
      `(#:tests? #f                      ; No test target
        #:configure-flags
-       (list "-DDESIRED_QT_VERSION=5"
-             "-DBoost_NO_BOOST_CMAKE=ON"))) ;work around <https://bugs.gnu.org/36721>
+       (list "-DDESIRED_QT_VERSION=5")))
     (native-inputs
      `(("boost" ,boost)
        ("doxygen" ,doxygen)

@@ -1822,9 +1822,6 @@ single-member files which can't be decompressed in parallel.")
    (build-system cmake-build-system)
    (arguments
     `(#:tests? #f
-      ;; XXX: Work around a problem with the CMake support in Boost 1.70:
-      ;; <https://github.com/dscharrer/innoextract/issues/88>.
-      #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")
       #:phases (modify-phases %standard-phases
                  (add-before 'configure 'glibc-is-already-a-system-library
                    (lambda _

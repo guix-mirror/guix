@@ -3516,8 +3516,6 @@ with the \"Stamp\" tool within Tux Paint.")
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
-                          ;; XXX: Work around <https://bugs.gnu.org/36721>.
-                          "-DBoost_NO_BOOST_CMAKE=ON"
                           "-DUSE_SYSTEM_PHYSFS=ON")
       #:phases
       (modify-phases %standard-phases
@@ -5390,8 +5388,6 @@ Github or Gitlab.")
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
-       ;; XXX: Work around <https://bugs.gnu.org/36721>.
-       #:configure-flags '("-DBoost_NO_BOOST_CMAKE=ON")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'make-git-checkout-writable
@@ -7616,9 +7612,7 @@ remake of that series or any other game.")
       ("qtbase" ,qtbase)
       ("zlib" ,zlib)))
    (arguments
-    '(#:configure-flags '("-DUSE_BLAS=YES"
-                          ;; XXX: Work around <https://bugs.gnu.org/36721>.
-                          "-DBoost_NO_BOOST_CMAKE=ON")
+    '(#:configure-flags '("-DUSE_BLAS=YES")
       #:phases (modify-phases %standard-phases
                  (add-before 'configure 'fix-tests
                    (lambda* (#:key outputs #:allow-other-keys)
