@@ -127,6 +127,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages xml))
 
 (define-public httpd
@@ -4586,7 +4587,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.8")
+    (version "3.9")
     (source
      (origin
        (method url-fetch)
@@ -4594,7 +4595,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0hjm1h4m1i913y4mhkl7yqdifn8k70fwi58zdh6faypawzryc3m0"))
+         "1hzcm2s2wh5sapgr000lg63hcdbj6hyajxl43xa1x80kc5piqbyp"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"
@@ -4607,7 +4608,8 @@ w3c webidl files and a binding configuration file.")
        ("check" ,check)
        ("perl" ,perl)
        ("perl-html-parser" ,perl-html-parser)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xxd" ,xxd)))
     (inputs
      `(("curl" ,curl)
        ("gtk+" ,gtk+-2)
