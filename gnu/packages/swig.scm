@@ -62,6 +62,7 @@
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(;; Provide these to run the corresponding tests.
+              ("pcre" ,pcre)
               ("guile" ,guile-2.0)
               ("perl" ,perl)))
               ;; FIXME: reactivate input python as soon as the test failures
