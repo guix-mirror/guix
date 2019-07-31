@@ -712,9 +712,6 @@ the Monero GUI client.")
 Ledger Nano as a hardware SSH/GPG agent.")
     (license license:lgpl3)))
 
-(define-public python2-trezor-agent
-  (package-with-python2 python-trezor-agent))
-
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
@@ -809,9 +806,6 @@ Ledger Blue/Nano S.")
     (description "@code{trezor} is a Python library for communicating with
 TREZOR Hardware Wallet.")
     (license license:lgpl3)))
-
-(define-public python2-trezor
-  (package-with-python2 python-trezor))
 
 (define-public python-keepkey
   (package
