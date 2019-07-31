@@ -4510,6 +4510,34 @@ written in C.  It is developed as part of the NetSurf project.")
 C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
 
+(define-public libnslog
+  (package
+    (name "libnslog")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "libnslog-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "1ggs6xvxp8fbg5w8pifalipm458ygr9ab6j2yvj8fnnmxwvdh4jd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("check" ,check)                 ;for tests
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Logging library")
+    (description
+     "Libnslog provides a category-based logging library which supports
+complex logging filters, multiple log levels, and provides context through to
+client applications.  It is developed as part of the NetSurf project.")
+    (license license:expat)))
+
 (define-public libnsutils
   (package
     (name "libnsutils")
