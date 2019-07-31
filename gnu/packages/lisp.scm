@@ -6567,3 +6567,34 @@ This system contains the CFFI foreign slot access extension.")))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
+
+(define-public sbcl-mk-string-metrics
+  (package
+    (name "sbcl-mk-string-metrics")
+    (version "0.1.2")
+    (home-page "https://github.com/cbaggers/mk-string-metrics/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32 "0bg0bv2mfd4k0g3x72x563hvmrx18xavaffr6xk5rh4if5j7kcf6"))
+              (file-name (git-file-name name version))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Calculate various string metrics efficiently in Common Lisp")
+    (description "This library implements efficient algorithms that calculate
+various string metrics in Common Lisp:
+
+@itemize
+@item Damerau-Levenshtein distance
+@item Hamming distance
+@item Jaccard similarity coefficient
+@item Jaro distance
+@item Jaro-Winkler distance
+@item Levenshtein distance
+@item Normalized Damerau-Levenshtein distance
+@item Normalized Levenshtein distance
+@item Overlap coefficient
+@end itemize\n")
+    (license license:x11)))
