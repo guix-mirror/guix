@@ -10945,17 +10945,18 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "3.0.2")
+  (version "3.1.1")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
         (base32
-          "09fxysfp1n16csqvzvawy74qm6a94nvwjf3vcf5gkqp4i6k4vjjy"))))
+          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-psutil" ,python-psutil)))
+   `(("python-future" ,python-future)
+     ("python-psutil" ,python-psutil)))
   (home-page
     "https://github.com/nicolargo/glances")
   (synopsis
