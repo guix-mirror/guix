@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -4239,15 +4239,15 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           "lib" name "-" version "-src.tar.gz"))
+                           "libhubbub-" version "-src.tar.gz"))
        (sha256
         (base32
-         "13yq1k96a7972x4r71i9bcsz9yiglj0yx7lj0ziq5r94w5my70ma"))
+         "1x3v7xvagx85v9h3pypzc86rcxs4mij87mmcqkp8pq50q6awfmnp"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
