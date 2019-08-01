@@ -12654,14 +12654,14 @@ several utilities, as well as an API for building localization tools.")
 (define-public python-packaging
   (package
     (name "python-packaging")
-    (version "19.0")
+    (version "19.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "packaging" version))
         (sha256
          (base32
-          "1brjhygq9dz6x1kdljivkjfldi3qf5rbkqgck1bpgv9qpv8ab60c"))))
+          "1zpaz9xrs6xawjs8l4xmfa0w5i66bc5f7nrfj00wr9sd563wm4f4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
