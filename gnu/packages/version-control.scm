@@ -1301,7 +1301,7 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.10.4")
+    (version "1.10.6")
     (source (origin
              (method url-fetch)
              (uri
@@ -1312,7 +1312,7 @@ following features:
                                 "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "18c1vdq32nil76w678lxmp73jsbqha3dmzgmfrj76nc0xjmywql2"))))
+               "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
