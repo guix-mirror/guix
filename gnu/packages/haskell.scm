@@ -5896,35 +5896,6 @@ within an enclosed computation, while remaining responsive to (external)
 asynchronous exceptions.")
     (license license:expat)))
 
-(define-public ghc-packedstring
-  (package
-    (name "ghc-packedstring")
-    (version "0.1.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/"
-                                  "packedstring/packedstring-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x78pzzdlnpcmh9p37rlf8m5cxf3yqm2alf3whl4zpr9w25r0qj8"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'enable-extension
-          (lambda _
-            ;; This package won't compile without the StandaloneDeriving
-            ;; extension.
-            (substitute* "packedstring.cabal"
-              (("CPP") "CPP, StandaloneDeriving"))
-            #t)))))
-    (home-page "https://hackage.haskell.org/package/packedstring")
-    (synopsis "Library for packed strings")
-    (description
-     "This deprecated library provides an implementation of packed strings.")
-    (license license:bsd-3)))
-
 (define-public ghc-th-abstraction
   (package
     (name "ghc-th-abstraction")
