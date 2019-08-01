@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +61,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages crypto)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages file)
@@ -112,6 +114,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages mpi)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web))
 
 (define-public aide
@@ -1901,6 +1904,101 @@ sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
 handles configuration management, application deployment, cloud provisioning,
 ad hoc task execution, and multinode orchestration---including trivializing
 things like zero-downtime rolling updates with load balancers.")
+    (license license:gpl3+)))
+
+(define-public debops
+  (package
+    (name "debops")
+    (version "1.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/debops/debops")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "052b2dykdn35pdpn9s4prawl6nl6yzih8nyf54hpvhpisvjrm1v5"))
+       (patches
+        (search-patches "debops-constants-for-external-program-names.patch"
+                        "debops-debops-defaults-fall-back-to-less.patch"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("git" ,git)))
+    (inputs
+     `(("ansible" ,ansible)
+       ("encfs" ,encfs)
+       ("fuse" ,fuse)
+       ("util-linux" ,util-linux)  ;; for umount
+       ("findutils" ,findutils)
+       ("gnupg" ,gnupg)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("python-future" ,python-future)
+       ("python-distro" ,python-distro)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'nuke-debops-update
+           (lambda _
+             (chmod "bin/debops-update" #o755) ; FIXME work-around git-fetch issue
+             (with-output-to-file "bin/debops-update"
+               (lambda ()
+                 (format #t "#!/bin/sh
+echo 'debops is installed via guix. guix-update is useless in this case.
+Please use `guix package -u debops` instead.'")))
+             #t))
+         ;; patch shebangs only in actuall scripts, not in files included in
+         ;; roles (which are to be delivered to the targte systems)
+         (delete `patch-generated-file-shebangs)
+         (replace 'patch-source-shebangs
+           (lambda _
+             (for-each patch-shebang
+                       (find-files "bin"
+                                   (lambda (file stat)
+                                     ;; Filter out symlinks.
+                                     (eq? 'regular (stat:type stat)))
+                                   #:stat lstat))))
+         (add-after 'unpack 'fix-paths
+           (lambda _
+             (define (substitute-program-names file)
+               ;; e.g. ANSIBLE_PLAYBOOK = '/gnu/store/…/bin/ansible-playbook'
+               (for-each
+                (lambda (name)
+                  (let ((varname (string-upcase
+                                  (string-map
+                                   (lambda (c) (if (char=? c #\-) #\_ c))
+                                   name))))
+                    (substitute* file
+                      (((string-append "^(" varname " = )'.*'") line prefix)
+                       (string-append prefix "'" (which name) "'")))))
+                '("ansible-playbook" "encfs" "find" "fusermount"
+                  "umount" "gpg" "ansible" "which")))
+             (for-each substitute-program-names
+                       '("bin/debops"
+                         "bin/debops-padlock"
+                         "bin/debops-task"
+                         "debops/__init__.py"
+                         "debops/cmds/__init__.py"))
+             #t)))))
+    (home-page "https://www.debops.org/")
+    (synopsis "Collection of general-purpose Ansible roles")
+    (description "The Ansible roles provided by that can be used to manage
+Debian or Ubuntu hosts.  In addition, a default set of Ansible playbooks can
+be used to apply the provided roles in a controlled way, using Ansible
+inventory groups.
+
+The roles are written with a high customization in mind, which can be done
+using Ansible inventory.  This way the role and playbook code can be shared
+between multiple environments, with different configuration in to each one.
+
+Services can be managed on a single host, or spread between multiple hosts.
+DebOps provides support for different SQL and NoSQL databases, web servers,
+programming languages and specialized applications useful in a data center
+environment or in a cluster.  The project can also be used to deploy
+virtualization environments using KVM/libvirt, Docker or LXC technologies to
+manage virtual machines and/or containers.")
     (license license:gpl3+)))
 
 (define-public emacs-ansible-doc

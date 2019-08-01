@@ -1,0 +1,276 @@
+From 78d5cddafebb28e2e54efeb781495b5607ddb356 Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Thu, 8 Aug 2019 15:19:48 +0200
+Subject: [PATCH] Scripts: Use constants for external program names.
+
+This makes it much, much easier to replace the program
+with one using an absolute path. This is necessary for
+e.g. Guix to keep references to these external programs.
+---
+ bin/debops              | 10 +++++++---
+ bin/debops-padlock      | 21 +++++++++++++++------
+ bin/debops-task         |  7 +++++--
+ bin/debops-update       | 18 +++++++++++-------
+ debops/__init__.py      | 17 ++++++++++++-----
+ debops/cmds/__init__.py |  6 +++++-
+ 6 files changed, 55 insertions(+), 24 deletions(-)
+
+diff --git a/bin/debops b/bin/debops
+index 2b7ad3f88..caaeb892f 100755
+--- a/bin/debops
++++ b/bin/debops
+@@ -59,6 +59,10 @@ ConfigFileHeader = """\
+ # You can manipulate the contents of this file via `.debops.cfg`.
+ """
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++ANSIBLE_PLAYBOOK = 'ansible-playbook'
++
+ 
+ def write_config(filename, config):
+     cfgparser = configparser.ConfigParser()
+@@ -131,7 +135,7 @@ def gen_ansible_cfg(filename, config, project_root, playbooks_path,
+             os.path.join(playbooks_path, "roles"),
+             "/etc/ansible/roles")))
+ 
+-    ansible_version_out = subprocess.check_output(["ansible-playbook",
++    ansible_version_out = subprocess.check_output([ANSIBLE_PLAYBOOK,
+                                                    "--version"]).decode()
+ 
+     # Get first line and split by spaces to get second 'word'.
+@@ -197,7 +201,7 @@ def main(cmd_args):
+         playbooks_path = '/nonexistent'
+ 
+     # Make sure required commands are present
+-    require_commands('ansible-playbook')
++    require_commands(ANSIBLE_PLAYBOOK)
+ 
+     # Check if user specified a potential playbook name as the first
+     # argument. If yes, use it as the playbook name and remove it from
+@@ -256,7 +260,7 @@ def main(cmd_args):
+         print("Running Ansible playbooks:")
+         for element in play_list:
+             print(element)
+-        return subprocess.call(['ansible-playbook'] + play_list + arg_list)
++        return subprocess.call([ANSIBLE_PLAYBOOK] + play_list + arg_list)
+     finally:
+         if revert_unlock:
+             padlock_lock(encfs_encrypted)
+diff --git a/bin/debops-padlock b/bin/debops-padlock
+index bfdfb8e06..2a97716cd 100755
+--- a/bin/debops-padlock
++++ b/bin/debops-padlock
+@@ -67,6 +67,14 @@ devrandom = os.environ.get('DEVRANDOM', "/dev/urandom")
+ 
+ SCRIPT_FILENAME = 'padlock-script'
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++ENCFS = 'encfs'
++FIND = 'find'
++FUSERMOUNT = 'fusermount'
++UMOUNT = 'umount'
++GPG = 'gpg'
++
+ # ---- DebOps environment setup ----
+ 
+ 
+@@ -80,9 +88,9 @@ def main(subcommand_func, **kwargs):
+     # Make sure required commands are present
+     # OS X compatibility
+     if sys.platform == 'darwin':
+-        require_commands('encfs', 'find', 'umount', 'gpg')
++        require_commands(ENCFS, FIND, UMOUNT, GPG)
+     else:
+-        require_commands('encfs', 'find', 'fusermount', 'gpg')
++        require_commands(ENCFS, FIND, FUSERMOUNT, GPG)
+ 
+     inventory_path = find_inventorypath(project_root, required=False)
+     # If inventory hasn't been found automatically, assume it's the default
+@@ -121,7 +129,7 @@ def init(encfs_decrypted, encfs_encrypted, recipients):
+     # Generate a random password and encrypt it with GPG keys of recipients.
+     print("Generating a random", ENCFS_KEYFILE_LENGTH, "char password")
+     pwd = gen_pwd()
+-    gpg = subprocess.Popen(['gpg', '--encrypt', '--armor',
++    gpg = subprocess.Popen([GPG, '--encrypt', '--armor',
+                             '--output', encfs_keyfile] + recipients,
+                            stdin=subprocess.PIPE)
+     gpg.communicate(pwd.encode('utf-8'))
+@@ -133,9 +141,10 @@ def init(encfs_decrypted, encfs_encrypted, recipients):
+     # NB2: We can not use padlock_unlock here, because the config file
+     # does not yet exist.
+     encfs = subprocess.Popen([
+-        'encfs', encfs_encrypted, encfs_decrypted,
++        ENCFS, encfs_encrypted, encfs_decrypted,
+         '--extpass',
+-        'gpg --decrypt --no-mdc-warning --output - '+shquote(encfs_keyfile)],
++        GPG + ' --decrypt --no-mdc-warning --output - '
++        + shquote(encfs_keyfile)],
+         stdin=subprocess.PIPE)
+     encfs.communicate(('p\n'+pwd).encode('utf-8'))
+ 
+@@ -154,7 +163,7 @@ def init(encfs_decrypted, encfs_encrypted, recipients):
+ 
+     # Protect the EncFS configuration file by also encrypting it with
+     # the GPG keys of recipients.
+-    subprocess.call(['gpg', '--encrypt', '--armor',
++    subprocess.call([GPG, '--encrypt', '--armor',
+                      '--output', encfs_configfile+'.asc']
+                     + recipients + [encfs_configfile])
+     os.remove(encfs_configfile)
+diff --git a/bin/debops-task b/bin/debops-task
+index 223e5f834..dc31ad4e6 100755
+--- a/bin/debops-task
++++ b/bin/debops-task
+@@ -49,11 +49,14 @@ project_root = find_debops_project(required=True)
+ # todo: need to decide on semantics!
+ # config = read_config(project_root)
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++ANSIBLE = 'ansible'
+ 
+ # ---- Main script ----
+ 
+ # Make sure required commands are present
+-require_commands('ansible')
++require_commands(ANSIBLE)
+ 
+ ansible_inventory = find_inventorypath(project_root)
+ 
+@@ -71,5 +74,5 @@ if INSECURE:
+     os.environ['ANSIBLE_HOST_KEY_CHECKING'] = 'False'
+ 
+ # Run ansible with custom environment
+-cmd = ['ansible'] + module + sys.argv[1:]
++cmd = [ANSIBLE] + module + sys.argv[1:]
+ subprocess.call(cmd)
+diff --git a/bin/debops-update b/bin/debops-update
+index 88c5e2c82..cc7e57cb0 100755
+--- a/bin/debops-update
++++ b/bin/debops-update
+@@ -90,6 +90,10 @@ GALAXY_REQUIREMENTS = "galaxy/requirements.txt"
+ # Default Ansible Galaxy user account name
+ GALAXY_ACCOUNT = "debops"
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++GIT = 'git'
++
+ 
+ # ---- Functions ----
+ 
+@@ -137,7 +141,7 @@ def clone_git_repository(repo_uri, branch, destination, dry_run=False):
+     if dry_run:
+         print("Cloning '%s' to %s..." % (repo_uri, destination))
+     else:
+-        subprocess.call(['git', 'clone', '--quiet', '--branch', branch,
++        subprocess.call([GIT, 'clone', '--quiet', '--branch', branch,
+                          repo_uri, destination])
+ 
+ 
+@@ -152,22 +156,22 @@ def update_git_repository(path, dry_run=False, remote_uri=False):
+     os.chdir(path)
+ 
+     if dry_run:
+-        subprocess.call(['git', 'fetch'])
+-        subprocess.call(['git', 'diff', 'HEAD', 'origin', '--stat'])
++        subprocess.call([GIT, 'fetch'])
++        subprocess.call([GIT, 'diff', 'HEAD', 'origin', '--stat'])
+     else:
+         # Get the current sha of the head branch
+         current_sha = subprocess.check_output(
+-                ['git', 'rev-parse', 'HEAD']).strip()
++                [GIT, 'rev-parse', 'HEAD']).strip()
+ 
+         # Fetch it silently and store the new sha
+-        subprocess.call(['git', 'fetch', '--quiet'])
++        subprocess.call([GIT, 'fetch', '--quiet'])
+         fetch_sha = subprocess.check_output(
+-                ['git', 'rev-parse', 'FETCH_HEAD']).strip()
++                [GIT, 'rev-parse', 'FETCH_HEAD']).strip()
+ 
+         if current_sha != fetch_sha:
+             print()
+             print('--')
+-            subprocess.call(['git', 'merge', fetch_sha])
++            subprocess.call([GIT, 'merge', fetch_sha])
+ 
+             if remote_uri:
+                 compare_uri = (remote_uri + '/compare/' + current_sha[:7]
+diff --git a/debops/__init__.py b/debops/__init__.py
+index 1c2cedcb0..da8430e41 100644
+--- a/debops/__init__.py
++++ b/debops/__init__.py
+@@ -93,6 +93,13 @@ ENCFS_KEYFILE = ".encfs6.keyfile"
+ # Length of the random EncFS password stored in encrypted keyfile
+ ENCFS_KEYFILE_LENGTH = 256
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++ENCFS = 'encfs'
++FUSERMOUNT = 'fusermount'
++UMOUNT = 'umount'
++GPG = 'gpg'
++
+ 
+ # ---- Functions ----
+ 
+@@ -180,9 +187,9 @@ def padlock_lock(encrypted_path):
+         return False
+     # OS X compatibility
+     if sys.platform == 'darwin':
+-        subprocess.call(['umount', decrypted_path])
++        subprocess.call([UMOUNT, decrypted_path])
+     else:
+-        subprocess.call(['fusermount', '-u', decrypted_path])
++        subprocess.call([FUSERMOUNT, '-u', decrypted_path])
+     return True
+ 
+ 
+@@ -237,14 +244,14 @@ def padlock_unlock(encrypted_path):
+     # Start encfs. It will wait for input on the `configfile` named
+     # pipe.
+     encfs = subprocess.Popen([
+-        'encfs', encrypted_path, decrypted_path,
++        ENCFS, encrypted_path, decrypted_path,
+         '--extpass',
+-        'gpg --decrypt --no-mdc-warning --output - %s' % shquote(keyfile)])
++        GPG + ' --decrypt --no-mdc-warning --output - %s' % shquote(keyfile)])
+     # now decrypt the config and write it into the named pipe
+     with open(configfile, 'w') as fh:
+         # NB: gpg must write to stdout to avoid it is asking whether
+         # the file should be overwritten
+-        subprocess.Popen(['gpg',
++        subprocess.Popen([GPG,
+                           '--decrypt', '--no-mdc-warning', '--output', '-',
+                           crypted_configfile], stdout=fh).wait()
+     encfs.wait()
+diff --git a/debops/cmds/__init__.py b/debops/cmds/__init__.py
+index b221fa191..9fabf43a5 100644
+--- a/debops/cmds/__init__.py
++++ b/debops/cmds/__init__.py
+@@ -55,6 +55,10 @@ SCRIPT_NAME = os.path.basename(sys.argv[0])
+ # command line)
+ INSECURE = bool(os.environ.get('INSECURE', False))
+ 
++# External programms used. List here for easy substitution for
++# hard-coded paths.
++WHICH = 'which'
++
+ 
+ def error_msg(message, severity="Error"):
+     """
+@@ -70,7 +74,7 @@ def require_commands(*cmd_names):
+     Check if required commands exist.
+     """
+     def command_exists(cmd_name):
+-        which = "where" if platform.system() == "Windows" else "which"
++        which = "where" if platform.system() == "Windows" else WHICH
+         return not subprocess.call([which, cmd_name],
+                                    stdout=DEVNULL, stderr=subprocess.STDOUT)
+ 
+-- 
+2.21.0
+
