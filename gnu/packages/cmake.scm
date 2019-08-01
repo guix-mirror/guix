@@ -9,7 +9,6 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
-
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -212,6 +211,9 @@ and workspaces that can be used in the compiler environment of your choice.")
   (package
     (inherit cmake)
     (name "emacs-cmake-mode")
+    (native-inputs '())
+    (inputs '())
+    (outputs '("out"))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -219,7 +221,8 @@ and workspaces that can be used in the compiler environment of your choice.")
          (add-after 'unpack 'chdir-elisp
            ;; Elisp directory is not in root of the source.
            (lambda _
-             (chdir "Auxiliary"))))))
+             (chdir "Auxiliary")
+             #t)))))
     (synopsis "Emacs major mode for editing Cmake expressions")
     (description "@code{cmakeos-mode} provides an Emacs major mode for editing
 Cmake files.  It supports syntax highlighting, indenting and refilling of
