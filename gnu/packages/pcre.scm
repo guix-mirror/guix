@@ -89,6 +89,7 @@ POSIX regular expression API.")
 (define-public pcre2
   (package
     (name "pcre2")
+    (replacement pcre2/fixed)
     (version "10.33")
     (source (origin
               (method url-fetch)
@@ -125,3 +126,14 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "https://www.pcre.org/")))
+
+(define-public pcre2/fixed
+  ;; PHP >= 7.3.8 requires a fixed version at build time, so make it public
+  ;; and hide it in the UI.
+  (package
+    (inherit pcre2)
+    (source
+     (origin
+       (inherit (package-source pcre2))
+       (patches (search-patches "pcre2-fix-jit_match-crash.patch"))))
+    (properties '((hidden? . #t)))))
