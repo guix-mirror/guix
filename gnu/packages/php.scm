@@ -63,7 +63,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "distributions/"
-                                  name "-" version ".tar.xz"))
+                                  "php-" version ".tar.xz"))
               (sha256
                (base32
                 "0r51aiff2abbr3d2swhvja0wm56sjxzqbciabcvvq3m3v9kqkz7y"))
