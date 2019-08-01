@@ -3437,6 +3437,28 @@ completion candidate when using the Company text completion framework.")
 @code{company-mode} allowing for completion of common math symbols.")
       (license license:gpl3+))))
 
+(define-public emacs-nswbuff
+  (let ((commit "362da7f3687e2eb5bb11667347de85f4a9d002bc")
+        (revision "1"))
+    (package
+      (name "emacs-nswbuff")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joostkremers/nswbuff.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l2xfz8z5qd4hz3kv6zn7h6qq3narkilri8a071y1n8j31jps4ma"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/joostkremers/nswbuff")
+      (synopsis "Quickly switch between buffers")
+      (description "This package allows for navigating between buffers within
+a customizable list.")
+      (license license:gpl3+))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
