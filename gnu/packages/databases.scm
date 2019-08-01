@@ -616,15 +616,15 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.40")
+    (version "10.1.41")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://downloads.mariadb.org/f/"
-                                  name "-" version "/source/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://downloads.mariadb.com/MariaDB"
+                                  "/mariadb-" version "/source/mariadb-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "19375bnq0yg52kqh6cy00s5rglcxdrs5bb2hy7dqv2xqa9z7lxci"))
+                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
