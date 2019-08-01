@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -945,6 +946,34 @@ security.  It focuses on different areas of WiFi security: monitoring,
 attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
+
+(define-public pixiewps
+  (package
+    (name "pixiewps")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wiire-a/pixiewps/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "07nym6bqml0k9v29vnj003nrgnwrywgjvnljb7cdpsvnwilhbp64"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)) ; no configure script
+       #:tests? #f)) ; there are no tests
+    (home-page "https://github.com/wiire-a/pixiewps/")
+    (synopsis "Offline brute-force tool for Wi-Fi Protected Setup")
+    (description "Pixiewps implements the pixie-dust attack to brute
+force the Wi-Fi Protected Setup (WPS) PIN by exploiting the low or
+non-existing entropy of some access points.")
+    (license license:gpl3+)))
 
 (define-public perl-danga-socket
   (package
