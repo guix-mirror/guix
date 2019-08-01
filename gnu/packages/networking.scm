@@ -975,6 +975,54 @@ force the Wi-Fi Protected Setup (WPS) PIN by exploiting the low or
 non-existing entropy of some access points.")
     (license license:gpl3+)))
 
+(define-public reaver
+  (package
+    (name "reaver")
+    (version "1.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/t6x/reaver-wps-fork-t6x/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sva3g0kwgv143n9l3lg4qp5iiqz7nk76nr0hwivsnglbhk9sbil"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; Save session files to current directory instead of /var.
+       (list "--enable-savetocurrent"
+             "--localstatedir=/tmp/dummy") ; prevent creating /var during install
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'change-directory
+           (lambda _
+             (chdir "src")
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "../docs")
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (man1 (string-append out "/share/man/man1")))
+               (for-each (lambda (file) (install-file file doc))
+                         (find-files "." "README.*"))
+               (install-file "reaver.1" man1)
+               #t))))
+       #:tests? #f)) ; there are no tests
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (propagated-inputs
+     `(("aircrack-ng" ,aircrack-ng)
+       ("pixiewps" ,pixiewps)))
+    (home-page "https://github.com/t6x/reaver-wps-fork-t6x/")
+    (synopsis "Attack tool for Wi-Fi Protected Setup")
+    (description "Reaver performs a brute force attack against an access
+point's Wi-Fi Protected Setup (WPS) PIN.  Once the PIN is found, the WPA
+passphrase can be recovered and the AP's wireless settings can be
+reconfigured.")
+    (license license:gpl2+)))
+
 (define-public perl-danga-socket
   (package
     (name "perl-danga-socket")
