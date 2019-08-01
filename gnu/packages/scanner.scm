@@ -34,15 +34,16 @@
 (define-public sane-backends-minimal
   (package
     (name "sane-backends-minimal")
-    (version "1.0.27")
+    (version "1.0.28")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://alioth.debian.org/frs/download.php/latestfile/176/"
+                   "https://gitlab.com/sane-project/backends/uploads/"
+                   "9e718daff347826f4cfe21126c8d5091/"
                    "sane-backends-" version ".tar.gz"))
              (sha256
               (base32
-               "1j9nbqspaj0rlgalafb5z6r606k0i22kz0rcpd744p176yzlfdr9"))
+               "00yy8q9hqdf0zjxxl4d8njr9zf0hhi3a9ib23ikc2anqf8zhy9ii"))
              (modules '((guix build utils)))
              (snippet
               ;; Generated HTML files and udev rules normally embed a
@@ -63,6 +64,10 @@
          (add-before 'configure 'disable-backends
            (lambda _
              (setenv "BACKENDS" " ")
+
+             ;; Disable tests that may require back ends to be built.
+             (substitute* "testsuite/Makefile.in"
+               ((" backend ") " "))
              #t))
          (add-after 'unpack 'disable-failing-tests
            (lambda _
