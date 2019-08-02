@@ -7,6 +7,7 @@
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
@@ -145,7 +147,15 @@ markup) can be customized and extended by the user.")
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments
-     `(#:test-target "tests"
+     ;; Force cmake to use iconv header from cross-libc instead of the one
+     ;; from native libc.
+     `(,@(if (%current-target-system)
+             '(#:configure-flags
+               (list (string-append "-DICONV_INCLUDE_DIR="
+                                    (assoc-ref %build-inputs "cross-libc")
+                                    "/include")))
+             '())
+       #:test-target "tests"
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'patch-sh
                               (lambda* (#:key inputs #:allow-other-keys)
