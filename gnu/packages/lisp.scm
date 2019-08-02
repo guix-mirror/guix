@@ -6563,7 +6563,24 @@ This system contains the CFFI foreign slot access extension.")))
        ("trivia.cffi" ,sbcl-trivia.cffi)
        ("optima" ,sbcl-optima)))
     (arguments
-     `(#:test-asd-file "trivia.test.asd"))
+     `(#:test-asd-file "trivia.test.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'create-asd 'remove-component
+           ;; XXX: The original .asd has no components, but our build system
+           ;; creates an entry nonetheless.  We need to remove it for the
+           ;; generated .asd to load properly.  See trivia.trivial for a
+           ;; similar problem.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (asd (string-append out "/lib/" (%lisp-type) "/trivia.asd")))
+               (substitute* asd
+                 (("  :components
+")
+                  ""))
+               (substitute* asd
+                 ((" *\\(\\(:compiled-file \"trivia--system\"\\)\\)")
+                  ""))))))))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
