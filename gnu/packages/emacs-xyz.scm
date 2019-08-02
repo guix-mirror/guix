@@ -4107,6 +4107,38 @@ minutes is started automatically.  Every 4 breaks a long break is
 started with 20 minutes.  All values are customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-org-sidebar
+  (let ((commit "74ca98b9920f3de3f13d49866581435e1ec63ec5")
+        (revision "1"))
+    (package
+      (name "emacs-org-sidebar")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/org-sidebar.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03p1ndyw2qp2skib5hszc4xyh84w7p2mhkd4a9dy6qv8q47xpsqn"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+         ("emacs-org" ,emacs-org)
+         ("emacs-org-ql" ,emacs-org-ql)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/org-sidebar")
+      (synopsis "Helpful sidebar for Org buffers")
+      (description "This package provides a sidebar for Org buffers.  At the
+top is a chronological list of scheduled and deadlined tasks in the current
+buffer (similar to the Org agenda ,but without all its features), and below
+that is a list of all other non-done to-do items.  If the buffer is narrowed,
+the sidebar only shows items in the narrowed portion; this allows seeing an
+overview of tasks in a subtree.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
