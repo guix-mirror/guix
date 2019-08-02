@@ -6598,3 +6598,38 @@ various string metrics in Common Lisp:
 @item Overlap coefficient
 @end itemize\n")
     (license license:x11)))
+
+(define-public sbcl-cl-str
+  (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
+    (package
+      (name "sbcl-cl-str")
+      (version (git-version "0.8" "1" commit))
+      (home-page "https://github.com/vindarel/cl-str")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32 "0szzzbygw9h985yxz909vvqrp69pmpcpahn7hn350lnyjislk9ga"))
+                (file-name (git-file-name name version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (arguments
+       `(#:asd-file "str.asd"
+         #:asd-system-name "str"
+         #:test-asd-file "str.test.asd"))
+      (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
+      (description "A modern and consistent Common Lisp string manipulation
+library that focuses on modernity, simplicity and discoverability:
+@code{(str:trim s)} instead of @code{(string-trim '(#\\Space ...) s)}), or
+@code{str:concat strings} instead of an unusual format construct; one
+discoverable library instead of many; consistency and composability, where
+@code{s} is always the last argument, which makes it easier to feed pipes and
+arrows.")
+      (license license:expat))))
