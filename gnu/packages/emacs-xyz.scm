@@ -8680,12 +8680,11 @@ the actual transformations.")
       (license license:gpl2+))))
 
 (define-public emacs-dired-hacks
-  (let ((commit "2c1234592aee91dcd9401bcd67213e6a4a464fd9")
-        (revision "1"))
+  (let ((commit "886befe113fae397407c804f72c45613d1d43535")
+        (revision "2"))
     (package
       (name "emacs-dired-hacks")
-      (version (string-append "0.0.1-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -8694,7 +8693,7 @@ the actual transformations.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1g7mky41cahpryzj6frdgzdymknpqq7pidzfjj9304887kijmhj3"))))
+                  "1cvibg90ggyrivpjmcfprpi2fx7dpa68f8kzg08s88gw5ib75djl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
@@ -8705,7 +8704,9 @@ the actual transformations.")
       (synopsis
        "Collection of useful dired additions")
       (description
-       "Collection of Emacs dired mode additions:
+       "This package provides the following collection of Emacs dired mode
+additions:
+
 @itemize
 @item dired-avfs
 @item dired-columns
