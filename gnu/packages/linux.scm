@@ -1141,10 +1141,16 @@ by Robert Shea and Robert Anton Wilson.")
                 "0r84kwa5fl0sjdashcn4vh7hgfm7ahdcysig3mcjvpmkzi7p9g8h"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:modules ((guix build utils)
+     `(#:modules ((guix build utils)
                   (guix build gnu-build-system)
                   (srfi srfi-1)
                   (srfi srfi-26))
+       ,@(if (%current-target-system)
+             '(#:configure-flags
+               (list
+                "ac_cv_func_malloc_0_nonnull=yes"
+                "ac_cv_func_realloc_0_nonnull=yes"))
+             '())
        #:phases
        (modify-phases %standard-phases
          (add-after
