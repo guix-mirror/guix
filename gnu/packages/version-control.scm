@@ -141,6 +141,10 @@ changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license license:gpl2+)))
 
+(define git-cross-configure-flags
+  '("ac_cv_fread_reads_directories=yes"
+    "ac_cv_snprintf_returns_bogus=no"))
+
 (define-public git
   (package
    (name "git")
@@ -233,7 +237,10 @@ as well as the classic centralized workflow.")
       ;; absolute file name to 'wish'.
       #:configure-flags (list (string-append "--with-tcltk="
                                              (assoc-ref %build-inputs "tk")
-                                             "/bin/wish8.6")) ; XXX
+                                             "/bin/wish8.6")  ; XXX
+                              ,@(if (%current-target-system)
+                                    git-cross-configure-flags
+                                    '()))
 
       #:modules ((srfi srfi-1)
                  (srfi srfi-26)
@@ -250,6 +257,15 @@ as well as the classic centralized workflow.")
                               (remove (cut string-prefix? bash-full <>) path)
                               ":"))
               #t)))
+        ;; Add cross curl-config script to PATH when cross-compiling.
+        ,@(if (%current-target-system)
+              '((add-before 'configure 'add-cross-curl-config
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (setenv "PATH"
+                             (string-append (assoc-ref inputs "curl") "/bin:"
+                                            (getenv "PATH")))
+                     #t)))
+              '())
         (add-after 'configure 'patch-makefiles
           (lambda _
             (substitute* "Makefile"
@@ -506,7 +522,10 @@ everything from small to very large projects with speed and efficiency.")
                   (string-append out "/share/gitweb"))
                  #t)))))
        ((#:configure-flags flags)
-        ''())
+        `(list
+          ,@(if (%current-target-system)
+                git-cross-configure-flags
+                '())))
        ((#:disallowed-references lst '())
         `(,perl ,@lst))))
     (outputs '("out"))
