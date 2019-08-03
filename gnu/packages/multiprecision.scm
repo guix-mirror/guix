@@ -127,8 +127,8 @@ correct rounding.")
                         ("mpfr" ,mpfr)))
    (synopsis "C library for arbitrary-precision complex arithmetic")
    (description
-    "GNU@tie{}@dfn{MPC} (Multiple Precision Complex library) is a C library for
-performing arithmetic on complex numbers.  It supports arbitrarily high
+    "GNU@tie{}@acronym{MPC, Multiple Precision Complex library} is a C library
+for performing arithmetic on complex numbers.  It supports arbitrarily high
 precision and correctly rounds the results.")
    (license lgpl3+)
    (home-page "http://multiprecision.org/mpc/")))
