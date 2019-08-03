@@ -484,9 +484,7 @@ integrated into the main branch.")
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
                ;; Exclude specific patches that conflict with FAudio.
-               (invoke script (string-append "DESTDIR=" ".") "--all" "-W"
-                       "xaudio2-revert" "-W" "xaudio2_CommitChanges" "-W"
-                       "xaudio2_7-WMA_support" "-W" "xaudio2_7-CreateFX-FXEcho")
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)
