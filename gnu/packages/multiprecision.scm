@@ -149,11 +149,11 @@ precision and correctly rounds the results.")
                          ("mpfr" ,mpfr)))
     (synopsis "C library for arbitrary-precision interval arithmetic")
     (description
-     "@dfn{MPFI} (Multiple Precision Floating-point Interval) is a portable C
+     "@acronym{MPFI, Multiple Precision Floating-point Interval} is a portable C
 library for arbitrary-precision interval arithmetic, with intervals represented
-using MPFR reliable floating-point numbers.  It's based on the @dfn{GMP} (GNU
-Multiple Precision Arithmetic) and GNU@tie{}@dfn{MPFR} (Multiple Precision
-Floating-Point Reliably) libraries.
+using MPFR reliable floating-point numbers.  It's based on the @acronym{GMP, GNU
+Multiple Precision Arithmetic} and GNU@tie{}@acronym{MPFR, Multiple Precision
+Floating-Point Reliably} libraries.
 
 The purpose of arbitrary-precision interval arithmetic is to get results that
 are both guaranteed, thanks to interval computation, and accurate, thanks to
