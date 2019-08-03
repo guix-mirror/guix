@@ -4613,7 +4613,7 @@ are exceeded.")
 (define-public mtd-utils
   (package
     (name "mtd-utils")
-    (version "2.0.2")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4621,7 +4621,7 @@ are exceeded.")
                     "mtd-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "1f30jszknc5v6ykmil8ajxgksmcg54q3rsp84jsancp9x0dycggv"))))
+                "1lijl89l7hljx8xx70vrz9srd3h41v5gh4b0lvqnlv831yvyh5cd"))))
     (arguments
      '(#:configure-flags '("--enable-unit-tests")))
     (native-inputs
@@ -4631,7 +4631,8 @@ are exceeded.")
      `(("acl" ,acl) ; for XATTR
        ("libuuid" ,util-linux)
        ("lzo" ,lzo)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (build-system gnu-build-system)
     (synopsis "MTD Flash Storage Utilities")
     (description "This package provides utilities for testing, partitioning, etc
