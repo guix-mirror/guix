@@ -7333,6 +7333,32 @@ automatically using existing List-ID headers in your mu database.  Just press
 automatically discovered and presented in recency order.")
       (license license:gpl3+))))
 
+(define-public emacs-mu4e-patch
+  (let ((commit "522da46c1653b1cacc79cde91d6534da7ae9517d")
+        (revision "1"))
+    (package
+      (name "emacs-mu4e-patch")
+      (version (git-version "0.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/seanfarley/mu4e-patch")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "10lzf3b70pk6rzdrgx0ww0gc94v0ydh9zj1gbsa20xw27ds7hmfn"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("mu" ,mu)))
+      (home-page "https://github.com/seanfarley/mu4e-patch")
+      (synopsis "Colorize patch-like emails in mu4e")
+      (description
+        "Extension for mu4e to colorize patch-like emails with diff-mode.
+This is based on Frank Terbeck's @code{gnus-article-treat-patch.el} but has
+been adapted to work with mu4e.")
+      (license license:gpl3+))))
+
 (define-public emacs-pretty-mode
   (package
     (name "emacs-pretty-mode")
