@@ -40,7 +40,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Alex Branham <alex.branham@gmail.com>
 ;;; Copyright © 2018 Thorsten Wilms <t_w_@freenet.de>
-;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Dimakakos Dimos <bendersteed@teknik.io>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
@@ -7304,6 +7304,34 @@ is, in effect, a (typically) noncontiguous set of text.")
 Additionally it can display the number of unread emails in the
 mode-line.")
     (license license:gpl3+)))
+
+(define-public emacs-mu4e-jump-to-list
+  (let ((commit "358bba003543b49ffa266e503e54aebd0ebe614b")
+        (revision "1"))
+    (package
+      (name "emacs-mu4e-jump-to-list")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/wavexx/mu4e-jump-to-list.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00y9nap61q1z2cdql4k9g7fgi2gdgd9iy5s5lzrd9a4agbx6r7sv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("mu" ,mu)))
+      (home-page "https://gitlab.com/wavexx/mu4e-jump-to-list.el")
+      (synopsis "Select and view mailing lists in mu4e")
+      (description
+        "@code{mu4e-jump-to-list} allows you to select and view mailing lists
+automatically using existing List-ID headers in your mu database.  Just press
+\"l\" in the headers view and any mailing list you've subscribed to will be
+automatically discovered and presented in recency order.")
+      (license license:gpl3+))))
 
 (define-public emacs-pretty-mode
   (package
