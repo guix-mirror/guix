@@ -250,6 +250,74 @@ using geiser.")
       (license license:bsd-3)
       (home-page "https://github.com/xiaohanyu/ac-geiser"))))
 
+(define-public emacs-hyperbole
+  (package
+    (name "emacs-hyperbole")
+    (version "7.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ftpmirror.gnu.org/hyperbole/"
+                    "hyperbole-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0znsjhm0lmzpmkgfni4qzx4l6dp604bmrzp3mwxxax2v96wpwmcx"))
+              (patches
+               (search-patches
+                "emacs-hyperbole-do-not-check-dir.patch"
+                "emacs-hyperbole-domainname.patch"
+                "emacs-hyperbole-toggle-messaging.patch"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include '("DEMO"
+                   "DEMO-ROLO.otl"
+                   "HY-ABOUT"
+                   "\\.el$"
+                   "\\.info$"
+                   "\\.kotl$")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'make-info
+           (lambda _
+             (invoke "make" "info"))))))
+    (propagated-inputs `(("inetutils" ,inetutils)))
+    (home-page "https://www.gnu.org/software/hyperbole/")
+    (synopsis "The Everyday Hypertextual Information Manager")
+    (description
+     "GNU Hyperbole, or just Hyperbole, is an easy-to-use, yet powerful and
+programmable hypertextual information management system implemented as a GNU
+Emacs package.  It offers rapid views and interlinking of all kinds of textual
+information, utilizing Emacs for editing.  It can dramatically increase your
+productivity and greatly reduce the number of keyboard/mouse keys you'll need
+to work efficiently.  Hyperbole lets you:
+
+@itemize
+@item Quickly create hyperlink buttons either from the keyboard or by dragging
+between a source and destination window with a mouse button depressed.  Later,
+activate buttons by pressing/clicking on them or by giving the name of the
+button.
+@item Activate many kinds of \"implicit buttons\" recognized by context within
+text buffers, e.g. URLs, grep output lines, and git commits.  A single key or
+mouse button automatically does the right thing in dozens of contexts; just
+press and go.
+@item Build outlines with multi-level numbered outline nodes, e.g. 1.4.8.6,
+that all renumber automatically as any node or tree is moved in the outline.
+Each node also has a permanent hyperlink anchor that you can reference from
+any other node.
+@item Manage all your contacts quickly with hierarchical categories and embed
+hyperlinks within each entry.  Or create an archive of documents with
+hierarchical entries and use the same search mechanism to quickly find any
+matching entry.
+@item Use single keys to easily manage your Emacs windows or frames and
+quickly retrieve saved window and frame configurations.
+@item Search for things in your current buffers, in a directory tree or across
+major web search engines with the touch of a few keys.
+@end itemize
+
+The common thread in all these features is making retrieval, management and
+display of information fast and easy.  That is Hyperbole's purpose.")
+    (license license:gpl3+)))
+
 (define-public emacs-paredit
   (package
     (name "emacs-paredit")

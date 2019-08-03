@@ -1,0 +1,24 @@
+From 3016fbd61e47978be73bbbaf7a8c2709bec42066 Mon Sep 17 00:00:00 2001
+From: Joseph LaFreniere <joseph@lafreniere.xyz>
+Date: Fri, 12 Jul 2019 13:12:40 -0500
+Subject: [PATCH] Do not run hyperb:check-dir-user during initialization
+
+---
+ hyperbole.el | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/hyperbole.el b/hyperbole.el
+index 872dbaf..6edb2a7 100644
+--- a/hyperbole.el
++++ b/hyperbole.el
+@@ -653,7 +653,6 @@ If FLAG is nil then text is shown, while if FLAG is t the text is hidden."
+   (interactive)
+   (message "Initializing Hyperbole...")
+   (run-hooks 'hyperbole-init-hook)
+-  (hyperb:check-dir-user)
+   (or (stringp hyperb:user-email)
+       (setq hyperb:user-email
+ 	    (or (and (boundp 'user-mail-address)
+-- 
+2.22.0
+
