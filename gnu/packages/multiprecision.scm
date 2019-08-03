@@ -104,7 +104,7 @@ It is aimed at use in, for example, cryptography and computational algebra.")
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary-precision floating-point arithmetic")
    (description
-    "GNU@tie{}@dfn{MPFR} (Multiple Precision Floating-Point Reliably) is a C
+    "GNU@tie{}@acronym{MPFR, Multiple Precision Floating-Point Reliably} is a C
 library for performing multiple-precision, floating-point computations with
 correct rounding.")
    (license lgpl3+)
