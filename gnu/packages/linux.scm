@@ -4628,9 +4628,10 @@ are exceeded.")
      `(("cmocka" ,cmocka)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("acl" ,acl) ; for XATTR
+     `(("acl" ,acl)                     ; extended attributes (xattr)
        ("libuuid" ,util-linux)
        ("lzo" ,lzo)
+       ("openssl" ,openssl)             ; optional crypto support
        ("zlib" ,zlib)
        ("zstd" ,zstd "lib")))
     (build-system gnu-build-system)
