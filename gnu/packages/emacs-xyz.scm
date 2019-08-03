@@ -10644,29 +10644,32 @@ as well as functions for navigating between these headings.")
     (license license:gpl3+)))
 
 (define-public emacs-org-super-agenda
-  (package
-   (name "emacs-org-super-agenda")
-   (version "1.1")
-   (source (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/alphapapa/org-super-agenda")
-                  (commit version)))
-            (file-name (git-file-name name version))
-            (sha256
-             (base32
-              "0vzf91lsxnhwf52kvm8ycpf0wb9c8l91689vyhwgv4wz8q6cvjwp"))))
-   (build-system emacs-build-system)
-   (propagated-inputs
-    `(("emacs-org" ,emacs-org)
-      ("emacs-dash" ,emacs-dash)
-      ("emacs-ht" ,emacs-ht)
-      ("emacs-s" ,emacs-s)))
-   (home-page "https://github.com/alphapapa/org-super-agenda")
-   (synopsis "Supercharged Org agenda")
-   (description "This package allows items in the Org agenda to be grouped
+  ;; emacs-org-sidebar depends on a newer commit than the latest release version.
+  (let ((commit "375bde4ca72494ac88a2a9738754f047fe45cc4e")
+        (revision "1"))
+    (package
+      (name "emacs-org-super-agenda")
+      (version (git-version "1.1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/org-super-agenda")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hrwf02fqjm0d9gj146ax67ib76093qpqh7066dcxj2gy20625yj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-ht" ,emacs-ht)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/org-super-agenda")
+      (synopsis "Supercharged Org agenda")
+      (description "This package allows items in the Org agenda to be grouped
 into sections while preserving the structure imposed by any timestamps.")
-   (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-make-toc
   (package
