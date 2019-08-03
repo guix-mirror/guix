@@ -64,12 +64,11 @@
                           (else '())))))
    (synopsis "Multiple-precision arithmetic library")
    (description
-    "@dfn{GMP} (the GNU Multiple Precision Arithmetic Library) is a library for
-arbitrary-precision arithmetic, operating on signed integers, rational numbers
-and floating point numbers.  The precision is only limited by the available
-memory.  The library is highly optimized, with a design focus on execution
-speed.  It is aimed at use in, for example, cryptography and computational
-algebra.")
+    "The @acronym{GMP, the GNU Multiple Precision Arithmetic} library performs
+arbitrary-precision arithmetic on signed integers, rational numbers and floating
+point numbers.  The precision is only limited by the available memory.
+The library is highly optimized, with a design focus on execution speed.
+It is aimed at use in, for example, cryptography and computational algebra.")
    (license lgpl3+)
    (home-page "https://gmplib.org/")))
 
