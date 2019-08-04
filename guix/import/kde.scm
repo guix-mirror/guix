@@ -117,15 +117,47 @@ CACHE."
     (close-port port)
     files))
 
+(define (uri->kde-path-pattern uri)
+  "Build a regexp from the package's URI suitable for matching the package
+path version-agnostic.
+
+Example:
+Input:
+   mirror://kde//stable/frameworks/5.55/portingAids/kross-5.55.0.zip
+Output:
+   //stable/frameworks/[^/]+/portingAids/
+"
+
+  (define version-regexp
+    ;; regexp for matching versions as used in the ld-lR file
+    (make-regexp
+     (string-join '("^([0-9]+\\.)+[0-9]+-?"   ;; 5.12.90, 4.2.0-preview
+                    "^[0-9]+$"                ;; 20031002
+                    ".*-([0-9]+\\.)+[0-9]+$") ;; kdepim-4.6.1
+                    "|")))
+
+  (define (version->pattern part)
+    ;; If a path element might be a version, replace it by a catch-all part
+    (if (regexp-exec version-regexp part)
+        "[^/]+"
+        part))
+
+  (let* ((path (uri-path uri))
+         (directory-parts (string-split (dirname path) #\/)))
+    (make-regexp
+     (string-append
+      (string-join (map version->pattern directory-parts) "/")
+      "/"))))
+
 (define (latest-kde-release package)
   "Return the latest release of PACKAGE, a KDE package, or #f if it could
 not be determined."
   (let* ((uri      (string->uri (origin-uri (package-source package))))
-         (directory  (dirname (dirname (uri-path uri))))
+         (path-rx  (uri->kde-path-pattern uri))
          (name     (package-upstream-name package))
          (files    (download.kde.org-files))
          (relevant (filter (lambda (file)
-                             (and (string-prefix? directory file)
+                             (and (regexp-exec path-rx file)
                                   (release-file? name (basename file))))
                            files)))
     (match (sort relevant (lambda (file1 file2)
