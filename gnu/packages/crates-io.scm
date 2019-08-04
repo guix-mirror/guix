@@ -253,6 +253,26 @@ featuring zero allocations, composability, and iterator-like interfaces.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-hex
+  (package
+    (name "rust-hex")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "hex" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0xsdcjiik5j750j67zk42qdnmm4ahirk3gmkmcqgq7qls2jjcl40"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/KokaKiwi/rust-hex")
+    (synopsis "Encode and decode data to/from hexadecimals")
+    (description "This crate allows for encoding and decoding data into/from
+hexadecimal representation.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
