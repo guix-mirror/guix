@@ -117,7 +117,6 @@ client.")
         ,python2-backport-ssl-match-hostname)
        ("python-cached-property"
         ,python-cached-property)
-       ("python-colorama" ,python-colorama)
        ("python-docker-py" ,python-docker-py)
        ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
