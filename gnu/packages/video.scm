@@ -478,8 +478,10 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.videolan.org/videolan/x265/"
-                            "x265_" version ".tar.gz"))
+        (uri (list (string-append "https://bitbucket.org/multicoreware/x265"
+                                  "/downloads/x265_" version ".tar.gz")
+                   (string-append "https://download.videolan.org/videolan/x265/"
+                                  "x265_" version ".tar.gz")))
         (sha256
          (base32
           "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
