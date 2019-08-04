@@ -452,6 +452,25 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pocket-resources
+  (package
+    (name "rust-pocket-resources")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pocket-resources" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1n2i5vmi8fdbw89wm5nz1ws1z9f1qax911p6ksg4scmdg23z6df1"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/tomaka/pocket-resources")
+    (synopsis "Include resources in your applications")
+    (description "This crate allows you to include resources in your
+applications.")
+    (license license:expat)))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
