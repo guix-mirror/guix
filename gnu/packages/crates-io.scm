@@ -759,6 +759,28 @@ and Jaro-Winkler.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-typenum
+  (package
+    (name "rust-typenum")
+    (version "1.10.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "typenum" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sc1jirllfhdi52z1xv9yqzxzpk6v7vadd13n7wvs1wnjipn6bb1"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/paholg/typenum")
+    (synopsis "Rust library for type-level numbers evaluated at compile time")
+    (description "Typenum is a Rust library for type-level numbers evaluated at
+compile time.  It currently supports bits, unsigned integers, and signed
+integers.  It also provides a type-level array of type-level numbers, but its
+implementation is incomplete.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
