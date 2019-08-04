@@ -1402,7 +1402,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.1")
+    (version "5.2")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
@@ -1410,7 +1410,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
                                  "/strace-" version ".tar.xz"))
              (sha256
               (base32
-               "12wsga1v3rab24gr0mpfip7j7gwr90m8f9h6fviqxa3xgnwl38zm"))))
+               "1li49i75wrdw91hchyyd8spnzfcmxcfyfb5g9zbaza89aq4bq4ym"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
