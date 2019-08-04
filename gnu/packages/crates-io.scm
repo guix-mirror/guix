@@ -371,6 +371,29 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-peeking-take-while
+  (package
+    (name "rust-peeking-take-while")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "peeking_take_while" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "16bhqr6rdyrp12zv381cxaaqqd0pwysvm1q8h2ygihvypvfprc8r"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/fitzgen/peeking_take_while")
+    (synopsis "Provides the peeking_take_while iterator adaptor method")
+    (description
+      "Like @code{Iterator::take_while}, but calls the predicate on a peeked
+value.  This allows you to use @code{Iterator::by_ref} and
+@code{Iterator::take_while} together, and still get the first value for which
+the @code{take_while} predicate returned false after dropping the @code{by_ref}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
