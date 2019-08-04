@@ -112,6 +112,26 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-discard
+  (package
+    (name "rust-discard")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "discard" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h67ni5bxvg95s91wgicily4ix7lcw7cq0a5gy9njrybaibhyb91"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/Pauan/rust-discard")
+    (synopsis "Allow for intentionally leaking memory")
+    (description "There are situations where you need to intentionally leak some
+memory but not other memory.  This package provides a discard trait which allows
+for intentionally leaking memory")
+    (license license:expat)))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
