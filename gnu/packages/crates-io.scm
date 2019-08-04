@@ -622,6 +622,25 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-semver-parser
+  (package
+    (name "rust-semver-parser")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "semver-parser" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ahqhvgpzhcsd28id7xnrjv4419i9yyalhm7d7zi430qx0hi2vml"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/steveklabnik/semver-parser")
+    (synopsis "Parsing of the semver spec")
+    (description "This package provides for parsing of the semver spec.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
