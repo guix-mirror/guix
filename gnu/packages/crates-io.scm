@@ -413,6 +413,25 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-pin-utils
+  (package
+    (name "rust-pin-utils")
+    (version "0.1.0-alpha.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pin-utils" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11xmyx00n4m37d546by2rxb8ryxs12v55cc172i3yak1rqccd52q"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang-nursery/pin-utils")
+    (synopsis "Utilities for pinning")
+    (description "This crate provides utilities for pinning values on the stack.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
