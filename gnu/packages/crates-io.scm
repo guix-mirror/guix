@@ -862,3 +862,23 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
 whitespace from a string.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-wasm-bindgen-shared
+  (package
+    (name "rust-wasm-bindgen-shared")
+    (version "0.2.48")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wasm-bindgen-shared" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "08rnfhjyk0f6liv8n4rdsvhx7r02glkhcbj2lp9lcbkbfpad9hnr"))))
+    (build-system cargo-build-system)
+    (home-page "https://rustwasm.github.io/wasm-bindgen/")
+    (synopsis "Shared support between wasm-bindgen and wasm-bindgen cli")
+    (description "This package provides shared support between
+@code{wasm-bindgen} and @code{wasm-bindgen} cli, an internal dependency.")
+    (license (list license:asl2.0
+                   license:expat))))
