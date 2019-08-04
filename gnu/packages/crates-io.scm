@@ -132,6 +132,25 @@ memory but not other memory.  This package provides a discard trait which allows
 for intentionally leaking memory")
     (license license:expat)))
 
+(define-public rust-doc-comment
+  (package
+    (name "rust-doc-comment")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "doc-comment" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15rsqxgarfpb1yim9sbp9yfgj7p2dq6v51c6bq1a62paii9ylgcj"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/GuillaumeGomez/doc-comment")
+    (synopsis "Macro to generate doc comments")
+    (description "This package provides a way to generate doc comments
+from macros.")
+    (license license:expat)))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
