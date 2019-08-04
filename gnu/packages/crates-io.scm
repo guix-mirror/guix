@@ -213,6 +213,26 @@ implementation that is more efficient for smaller hash keys.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fs-extra
+  (package
+    (name "rust-fs-extra")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fs_extra" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x6675wdhsx277k1k1235jwcv38naf20d8kwrk948ds26hh4lajz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/webdesus/fs_extra")
+    (synopsis "Extra filesystem methods")
+    (description "Expanding opportunities standard library @code{std::fs} and
+@code{std::io}.  Recursively copy folders with recept information about
+process and much more.")
+    (license license:expat)))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
