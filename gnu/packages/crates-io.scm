@@ -599,6 +599,29 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-scopeguard
+  (package
+    (name "rust-scopeguard")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scopeguard" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "03aay84r1f6w87ckbpj6cc4rnsxkxcfs13n5ynxjia0qkgjiabml"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/scopeguard")
+    (synopsis "Scope guard which will run a closure even out of scope")
+    (description "This package provides a RAII scope guard that will run a
+given closure when it goes out of scope, even if the code between panics
+(assuming unwinding panic).  Defines the macros @code{defer!},
+@code{defer_on_unwind!}, @code{defer_on_success!} as shorthands for guards
+with one of the implemented strategies.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
