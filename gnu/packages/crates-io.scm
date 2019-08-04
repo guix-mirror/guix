@@ -558,6 +558,26 @@ to write.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rustc-std-workspace-core
+  (package
+    (name "rust-rustc-std-workspace-core")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-std-workspace-core" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1309xhwyai9xpz128xrfjqkmnkvgjwddznmj7brbd8i8f58zamhr"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rustc-std-workspace-core")
+    (synopsis "Explicitly empty crate for rust-lang/rust integration")
+    (description "This crate provides an explicitly empty crate for
+rust-lang/rust integration.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
