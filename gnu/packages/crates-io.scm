@@ -641,6 +641,26 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-shlex
+  (package
+    (name "rust-shlex")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "shlex" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1lmv6san7g8dv6jdfp14m7bdczq9ss7j7bgsfqyqjc3jnjfippvz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/comex/rust-shlex")
+    (synopsis "Split a string into shell words, like Python's shlex")
+    (description "This crate provides a method to split a string into shell
+words, like Python's shlex.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
