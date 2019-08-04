@@ -394,6 +394,25 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-percent-encoding
+  (package
+    (name "rust-percent-encoding")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "percent-encoding" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0m6rkp3iy11la04p6z3492rns6n693pvmx585dvfmzzlzak2hkxs"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/rust-url/")
+    (synopsis "Percent encoding and decoding")
+    (description "This crate provides percent encoding and decoding.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
