@@ -352,6 +352,25 @@ friction with idiomatic Rust structs to ease interopability.")
 whether an expression matches a pattern.")
     (license license:expat)))
 
+(define-public rust-md5
+  (package
+    (name "rust-md5")
+    (version "0.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "md5" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17b2xm4h4cvxsdjsf3kdrzqv2za60kak961xzi5kmw6g6djcssvy"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/stainless-steel/md5")
+    (synopsis "MD5 hash function in Rust")
+    (description "The package provides the MD5 hash function.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
