@@ -586,6 +586,9 @@ provisioning etc.")
              ;; information, and the DWARF symbol table.
              (setenv "LDFLAGS" "-s -w")
 
+             ;; Make sure "docker -v" prints a usable version string.
+             (setenv "VERSION" ,%docker-version)
+
              ;; Make build reproducible.
              (setenv "BUILDTIME" "1970-01-01 00:00:01.000000000+00:00")
              (symlink "src/github.com/docker/cli/scripts" "./scripts")
