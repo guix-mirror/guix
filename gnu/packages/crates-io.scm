@@ -273,6 +273,26 @@ hexadecimal representation.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-itoa
+  (package
+    (name "rust-itoa")
+    (version "0.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "itoa" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zvg2d9qv3avhf3d8ggglh6fdyw8kkwqg3r4622ly5yhxnvnc4jh"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/itoa")
+    (synopsis "Fast functions for printing integer primitives")
+    (description "This crate provides fast functions for printing integer
+primitives to an @code{io::Write}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
