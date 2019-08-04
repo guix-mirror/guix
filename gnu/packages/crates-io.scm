@@ -22,27 +22,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
-(define-public rust-unicode-xid
-  (package
-    (name "rust-unicode-xid")
-    (version "0.1.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "unicode-xid" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))
-    (build-system cargo-build-system)
-    (home-page
-      "https://github.com/unicode-rs/unicode-xid")
-    (synopsis "Determine Unicode XID related properties")
-    (description "Determine whether characters have the XID_Start
-or XID_Continue properties according to Unicode Standard Annex #31.")
-    ;; Dual licensed.
-    (license (list license:asl2.0 license:expat))))
+;;;
+;;; Please: Try to add new module packages in alphabetic order.
+;;;
 
 (define-public rust-proc-macro2
   (package
@@ -88,5 +70,27 @@ in terms of the upstream unstable API.")
     (home-page "https://github.com/dtolnay/quote")
     (synopsis "Quasi-quoting macro quote!(...)")
     (description "Quasi-quoting macro quote!(...)")
+    ;; Dual licensed.
+    (license (list license:asl2.0 license:expat))))
+
+(define-public rust-unicode-xid
+  (package
+    (name "rust-unicode-xid")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicode-xid" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))
+    (build-system cargo-build-system)
+    (home-page
+      "https://github.com/unicode-rs/unicode-xid")
+    (synopsis "Determine Unicode XID related properties")
+    (description "Determine whether characters have the XID_Start
+or XID_Continue properties according to Unicode Standard Annex #31.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
