@@ -661,6 +661,25 @@ words, like Python's shlex.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-slab
+  (package
+    (name "rust-slab")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "slab" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1y59xsa27jk84sxzswjk60xcjf8b4fm5960jwpznrrcmasyva4f1"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/carllerche/slab")
+    (synopsis "Pre-allocated storage for a uniform data type")
+    (description "This create provides a pre-allocated storage for a uniform
+data type.")
+    (license license:expat)))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
