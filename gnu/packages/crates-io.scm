@@ -91,6 +91,27 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cfg-if
+  (package
+    (name "rust-cfg-if")
+    (version "0.1.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cfg-if" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0csygklgz3ybpr0670rkip49zh76m43ar3k7xgypkzbzrwycx1ml"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/cfg-if")
+    (synopsis "Define an item depending on parameters")
+    (description "This package provides a macro to ergonomically define an item
+depending on a large number of #[cfg] parameters.  Structured like an
+@code{if-else} chain, the first matching branch is the item that gets emitted.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
