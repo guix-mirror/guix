@@ -114,14 +114,11 @@ client.")
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python2-backport-ssl-match-hostname"
-        ,python2-backport-ssl-match-hostname)
-       ("python-cached-property"
+     `(("python-cached-property"
         ,python-cached-property)
        ("python-docker-py" ,python-docker-py)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
-       ("python-ipaddress" ,python-ipaddress)
        ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
        ("python-requests" ,python-requests-2.20)
