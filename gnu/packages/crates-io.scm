@@ -193,6 +193,26 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fnv
+  (package
+    (name "rust-fnv")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fnv" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ww56bi1r5b8id3ns9j3qxbi7w5h005rzhiryy0zi9h97raqbb9g"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/rust-fnv")
+    (synopsis "implementation of the Fowler-Noll-Vo hash function")
+    (description "The @code{fnv} hash function is a custom @code{Hasher}
+implementation that is more efficient for smaller hash keys.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
