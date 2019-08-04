@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,28 @@
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
+
+(define-public rust-autocfg
+  (package
+    (name "rust-autocfg")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "autocfg" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0asl6fnc35yk5l2rxwhp25v128jgm45dp754h9z8x51b6n90w4r2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/cuviper/autocfg")
+    (synopsis "Automatic cfg for Rust compiler features")
+    (description "Rust library for build scripts to automatically configure
+code based on compiler support.  Code snippets are dynamically tested to see
+if the @code{rustc} will accept them, rather than hard-coding specific version
+support.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-proc-macro2
   (package
