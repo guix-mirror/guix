@@ -63,12 +63,13 @@
     (arguments '(#:tests? #f))
     (inputs
      `(("python-requests" ,python-requests-2.20)
-       ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-ipaddress" ,python-ipaddress)
-       ("python-paramiko" ,python-paramiko)
        ("python-six" ,python-six)
        ("python-urllib3" ,python-urllib3-1.24)
        ("python-websocket-client" ,python-websocket-client)))
+    (propagated-inputs
+     `(("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-paramiko" ,python-paramiko))) ; adds SSH support
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
     (description "Docker-Py is a Python client for the Docker container
@@ -118,11 +119,9 @@ client.")
        ("python-cached-property"
         ,python-cached-property)
        ("python-docker-py" ,python-docker-py)
-       ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
        ("python-ipaddress" ,python-ipaddress)
-       ("python-paramiko" ,python-paramiko)
        ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
        ("python-requests" ,python-requests-2.20)
