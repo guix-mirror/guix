@@ -313,6 +313,26 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-maplit
+  (package
+    (name "rust-maplit")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "maplit" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hsczmvd6zkqgzqdjp5hfyg7f339n68w83n4pxvnsszrzssbdjq8"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/maplit")
+    (synopsis "Collection of Map macros")
+    (description "This crate provides a collection of @code{literal} macros for
+@code{HashMap}, @code{HashSet}, @code{BTreeMap}, and @code{BTreeSet.}")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
