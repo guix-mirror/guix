@@ -333,6 +333,25 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-matches
+  (package
+    (name "rust-matches")
+    (version "0.1.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "matches" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "020axl4q7rk9vz90phs7f8jas4imxal9y9kxl4z4v7a6719mrz3z"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/SimonSapin/rust-std-candidates")
+    (synopsis "Macro to evaluate whether an expression matches a pattern.")
+    (description "This package provides a macro to evaluate, as a boolean,
+whether an expression matches a pattern.")
+    (license license:expat)))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
