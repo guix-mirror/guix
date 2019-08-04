@@ -80,16 +80,14 @@
 (define-public blender
   (package
     (name "blender")
-    (version "v2.80-rc1")
+    (version "2.80")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://git.blender.org/blender.git")
-                     (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://download.blender.org/source/"
+                                  "blender-" version ".tar.gz"))
               (sha256
                (base32
-                "11dcf0rjq42mpphk8r8cy7gvhzzl1cj1vslp98ibh8sdjzaz2mdq"))))
+                "1h550jisdbis50hxwk5kxrvrk1a6sh2fsri3yyj66vhzbi87x7fd"))))
     (build-system cmake-build-system)
     (arguments
       (let ((python-version (version-major+minor (package-version python))))
@@ -162,9 +160,7 @@
      "Blender is a 3D graphics creation suite.  It supports the entirety of
 the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
-application can be customized via its API for Python scripting.
-
-WARNING: This is a release candidate build of Blender.")
+application can be customized via its API for Python scripting.")
     (license license:gpl2+)))
 
 (define-public blender-2.79

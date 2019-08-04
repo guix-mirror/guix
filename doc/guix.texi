@@ -5854,8 +5854,11 @@ should be added to the package definition via the
 
 In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
-parameters available to cargo.  The @code{install} phase installs any crate
-the binaries if they are defined by the crate.
+parameters available to cargo.  The @code{update-cargo-lock} phase will,
+when there is a @code{Cargo.lock} file, update the @code{Cargo.lock} file
+with the inputs and their versions available at build time.  The
+@code{install} phase installs any crate the binaries if they are defined by
+the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -7439,7 +7442,8 @@ This is the declarative counterpart of @code{gexp->derivation}.
 @end deffn
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp} @
-  [#:guile (default-guile)] [#:module-path %load-path]
+  [#:guile (default-guile)] [#:module-path %load-path] @
+  [#:system (%current-system)] [#:target #f]
 Return an executable script @var{name} that runs @var{exp} using
 @var{guile}, with @var{exp}'s imported modules in its search path.
 Look up @var{exp}'s modules in @var{module-path}.
@@ -8048,7 +8052,7 @@ guix build --with-branch=guile-sqlite3=master cuirass
 @item --with-commit=@var{package}=@var{commit}
 This is similar to @code{--with-branch}, except that it builds from
 @var{commit} rather than the tip of a branch.  @var{commit} must be a valid
-Git commit SHA1 identifier.
+Git commit SHA1 identifier or a tag.
 @end table
 
 @node Additional Build Options

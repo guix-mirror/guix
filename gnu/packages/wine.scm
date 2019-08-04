@@ -310,7 +310,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "4.12.1")
+    (version "4.13")
     (source
      (origin
        (method git-fetch)
@@ -320,7 +320,7 @@ integrate Windows applications into your desktop.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1bvpvj6vcw2p6vcjm6mw5maarbs4lfw1ix3pj020w4n3kg4nmmc4"))))
+         "0bbwsd2qpjilxpjscqbp78p0gl0awj1yj62g0wvybh4x89fzy8zj"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -366,7 +366,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "09yjfb2k14y11k19lm8dqmb8qwxyhh67d5q1gqv480y64mljvkx0"))))
+                "0rqx8g394aj5q913cd18zsi60sldvxarrp178w6ja0y4rd8l25vr"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("faudio" ,faudio)
               ("ffmpeg" ,ffmpeg)
@@ -407,10 +407,7 @@ integrate Windows applications into your desktop.")
                     (script (string-append (assoc-ref %build-inputs
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
-               ;; Exclude specific patches that conflict with FAudio.
-               (invoke script (string-append "DESTDIR=" ".") "--all" "-W"
-                       "xaudio2-revert" "-W" "xaudio2_CommitChanges" "-W"
-                       "xaudio2_7-WMA_support" "-W" "xaudio2_7-CreateFX-FXEcho")
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'configure 'patch-dlopen-paths
            ;; Hardcode dlopened sonames to absolute paths.
@@ -487,9 +484,7 @@ integrated into the main branch.")
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
                ;; Exclude specific patches that conflict with FAudio.
-               (invoke script (string-append "DESTDIR=" ".") "--all" "-W"
-                       "xaudio2-revert" "-W" "xaudio2_CommitChanges" "-W"
-                       "xaudio2_7-WMA_support" "-W" "xaudio2_7-CreateFX-FXEcho")
+               (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries
            (lambda* (#:key outputs #:allow-other-keys)

@@ -1,0 +1,34 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 25 Jul 2019 21:48:25 +0200
+Subject: [PATCH]: libvirt: remove ATTRIBUTE_UNUSED
+
+This should fix the error reported here[0].  Patch taken verbatim from
+upstream[1].
+
+[0]: https://debbugs.gnu.org/cgi/bugreport.cgi?bug=36634#28
+[1]: https://github.com/libvirt/libvirt/commit/759bf903a6c24a8efa25c7cf4b099d952eda9bd3
+
+From 759bf903a6c24a8efa25c7cf4b099d952eda9bd3 Mon Sep 17 00:00:00 2001
+From: Pavel Hrdina <phrdina@redhat.com>
+Date: Mon, 22 Jul 2019 14:46:34 +0200
+Subject: [PATCH] vircgroupv2: remove ATTRIBUTE_UNUSED for used attribute
+
+Signed-off-by: Pavel Hrdina <phrdina@redhat.com>
+Acked-by: Peter Krempa <pkrempa@redhat.com>
+---
+ src/util/vircgroupv2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/util/vircgroupv2.c b/src/util/vircgroupv2.c
+index af3192c99c..e36c36685b 100644
+--- a/src/util/vircgroupv2.c
++++ b/src/util/vircgroupv2.c
+@@ -399,7 +399,7 @@ virCgroupV2EnableController(virCgroupPtr group,
+ 
+ 
+ static int
+-virCgroupV2MakeGroup(virCgroupPtr parent ATTRIBUTE_UNUSED,
++virCgroupV2MakeGroup(virCgroupPtr parent,
+                      virCgroupPtr group,
+                      bool create,
+                      unsigned int flags)

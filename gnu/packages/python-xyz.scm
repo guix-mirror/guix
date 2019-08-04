@@ -10945,25 +10945,36 @@ command @command{natsort} that exposes this functionality in the command line.")
 (define-public python-glances
   (package
   (name "python-glances")
-  (version "3.0.2")
+  (version "3.1.1")
   (source
     (origin
       (method url-fetch)
       (uri (pypi-uri "Glances" version))
       (sha256
         (base32
-          "09fxysfp1n16csqvzvawy74qm6a94nvwjf3vcf5gkqp4i6k4vjjy"))))
+          "07j1ggzsqiskyz1i4mrnyr9i95v0dqi0i0hibnv1l188km8shmi8"))
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          ;; Glances phones PyPI for weekly update checks by default.
+          ;; Disable these.  The user can re-enable them if desired.
+          (substitute* "glances/outdated.py"
+            (("^(.*)self\\.load_config\\(config\\)\n" line indentation)
+             (string-append indentation
+                            "self.args.disable_check_update = True\n"
+                            line)))
+          #t))))
   (build-system python-build-system)
   (propagated-inputs
-   `(("python-psutil" ,python-psutil)))
+   `(("python-future" ,python-future)
+     ("python-psutil" ,python-psutil)))
   (home-page
     "https://github.com/nicolargo/glances")
-  (synopsis
-    "A cross-platform curses-based monitoring tool")
+  (synopsis "Cross-platform curses-based monitoring tool")
   (description
     "Glances is a curses-based monitoring tool for a wide variety of platforms.
-Glances uses the PsUtil library to get information from your system. It monitors
-CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
+Glances uses the PsUtil library to get information from your system.  It
+monitors CPU, load, memory, network bandwidth, disk I/O, disk use, and more.")
   (license license:lgpl3+)))
 
 (define-public python2-glances

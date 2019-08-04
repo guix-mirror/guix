@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -372,14 +373,14 @@ to result in system-wide compromise.")
 (define-public unbound
   (package
     (name "unbound")
-    (version "1.9.1")
+    (version "1.9.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.unbound.net/downloads/unbound-"
                            version ".tar.gz"))
        (sha256
-        (base32 "1iarvk0i92asvrkpla9z55aan20k6pklzpck9yk4rfnchsdvzh63"))))
+        (base32 "15bbrczibap30db8a1pmqhvjbmkxms39hwiivby7f4j5rz2wwykg"))))
     (build-system gnu-build-system)
     (outputs '("out" "python"))
     (native-inputs

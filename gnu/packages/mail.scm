@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2014, 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2018 Eric Bavier <bavier@member.fsf.org>
@@ -95,6 +95,7 @@
   #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages perl-check)
   #:use-module (gnu packages perl-web)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -116,6 +117,7 @@
   #:use-module (gnu packages w3m)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses)
@@ -1119,7 +1121,8 @@ compresses it.")
               ("libxml2" ,libxml2)
               ("perl" ,perl)
               ("python-2" ,python-2)
-              ("mime-info" ,shared-mime-info)))
+              ("mime-info" ,shared-mime-info)
+              ("startup-notification" ,startup-notification)))
     (arguments
       '(#:configure-flags
         '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant"
@@ -1195,7 +1198,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.92")
+    (version "4.92.1")
     (source
      (origin
        (method url-fetch)
@@ -1204,7 +1207,7 @@ delivery.")
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32 "127spqn009wa6irp6r1k7a24r8vdwb6mf0raamxn8lbxsnrwy7sl"))))
+        (base32 "132zmxgzz35xwi89g3crw6hd3y74rxj5zcpamakvrnlcn256amdp"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -1899,6 +1902,136 @@ Khard can also be used from within the email client @command{mutt}.")
     (description "Mail::SPF is the Sender Policy Framework implemented
 in Perl.")
     (license bsd-3)))
+
+(define-public perl-mail-authenticationresults
+  (package
+    (name "perl-mail-authenticationresults")
+    (version "1.20180923")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://cpan/authors/id/M/MB/MBRADSHAW/"
+                     "Mail-AuthenticationResults-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g1wym9vcbhldwvi4w5pl0fhd4jh2icj975awf4wr5xmkli9mxbz"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page "https://metacpan.org/release/Mail-AuthenticationResults")
+    (synopsis "Object Oriented Authentication-Results Headers")
+    (description "Mail::AuthenticationResults parses the message header field
+that indicates the message authentication status as per RFC7601.  This module
+is not fully compliant with the RFC but it tries to implement most styles of
+Authentication-Results header seen in the wild.")
+    (license perl-license)))
+
+(define-public perl-mail-dkim
+  (package
+    (name "perl-mail-dkim")
+    (version "0.55")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://cpan/authors/id/M/MB/MBRADSHAW/Mail-DKIM-"
+                     version
+                     ".tar.gz"))
+              (sha256
+               (base32
+                "18nsh1ff6fkns4xk3y2ixmzmadgggydj11qkzj6nlnq2hzqxsafz"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
+       ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
+       ("perl-mailtools" ,perl-mailtools)
+       ("perl-net-dns" ,perl-net-dns)))
+    (native-inputs
+     `(("perl-net-dns-resolver-mock" ,perl-net-dns-resolver-mock)
+       ("perl-test-requiresinternet" ,perl-test-requiresinternet)
+       ("perl-yaml-libyaml" ,perl-yaml-libyaml)))
+    (home-page "https://metacpan.org/release/Mail-DKIM")
+    (synopsis "Signs/verifies Internet mail with DKIM/DomainKey signatures")
+    (description "Mail::DKIM is a Perl module that implements the new Domain
+Keys Identified Mail (DKIM) standard, and the older Yahoo! DomainKeys standard,
+both of which sign and verify emails using digital signatures and DNS records.
+Mail-DKIM can be used by any Perl program that wants to provide support for
+DKIM and/or DomainKeys.")
+    (license gpl3+)))
+
+(define-public dkimproxy
+  (package
+    (name "dkimproxy")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://sourceforge/dkimproxy/dkimproxy/"
+                     version "/dkimproxy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gc5c7lg2qrlck7b0lvjfqr824ch6jkrzkpsn0gjvlzg7hfmld75"))
+              (patches
+               (search-patches "dkimproxy-add-ipv6-support.patch"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'make-wrapper
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (wrap.pl (lambda (scripts keys)
+                               (for-each
+                                (lambda (script)
+                                  (wrap-program (string-append out script)
+                                    `("PERL5LIB" ":" prefix
+                                      ,(map (λ (input)
+                                              (string-append
+                                               (assoc-ref inputs input)
+                                               "/lib/perl5/site_perl"))
+                                            keys))))
+                                scripts))))
+               (wrap.pl (list "/bin/dkimproxy.in"
+                              "/bin/dkimproxy.out")
+                        (list "perl-crypt-openssl-rsa"
+                              "perl-io-socket-inet6"
+                              "perl-mailtools"
+                              "perl-mail-authenticationresults"
+                              "perl-mail-dkim"
+                              "perl-net-dns"
+                              "perl-net-server"
+                              "perl-socket6"))
+               (wrap.pl (list "/bin/dkim_responder.pl")
+                        (list "perl-crypt-openssl-rsa"
+                              "perl-mail-dkim"
+                              "perl-mailtools"
+                              "perl-mime-tools"
+                              "perl-net-dns"
+                              "perl-timedate"))
+               #t))))))
+    (inputs
+     `(("perl" ,perl)
+       ("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
+       ("perl-io-socket-inet6" ,perl-io-socket-inet6)
+       ("perl-mailtools" ,perl-mailtools)
+       ("perl-mail-authenticationresults" ,perl-mail-authenticationresults)
+       ("perl-mail-dkim" ,perl-mail-dkim)
+       ("perl-mime-tools" ,perl-mime-tools)
+       ("perl-net-dns" ,perl-net-dns)
+       ("perl-net-server" ,perl-net-server)
+       ("perl-socket6" ,perl-socket6)
+       ("perl-timedate" ,perl-timedate)))
+    (home-page "http://dkimproxy.sourceforge.net/")
+    (synopsis "SMTP proxy to sign and verify Internet mail with DKIM headers")
+    (description
+     "DKIMproxy is an SMTP proxy that signs and verifies Internet mail using the
+@code{Mail::DKIM} Perl module.  It comprises two separate proxies: an outbound
+proxy for signing outgoing email, and an inbound proxy for verifying signatures
+of incoming messages.
+
+It was designed for Postfix, but can be used to add DKIM support to nearly any
+existing mail server.  With Postfix, the proxies can operate as either
+@code{Before-Queue} or @code{After-Queue} content filters.")
+    (license gpl2+)))
 
 (define-public mb2md
   (package

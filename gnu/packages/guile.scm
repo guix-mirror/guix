@@ -300,29 +300,27 @@ without requiring the source code to be rewritten.")
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
-  (let ((commit "6f3357b0df64c4be17e72079864c09a542f1c779")
-        (revision "1"))
-    (package
-      (inherit guile-2.2)
-      (name "guile-next")
-      (version "2.9.2")
-      (source (origin
-                (inherit (package-source guile-2.2))
-                (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
-                                    version ".tar.xz"))
-                (sha256
-                 (base32
-                  "1w358df2wmcyzk2ziqrj2zhwqisaqraqfa3008ay23nf1a7bw0z4"))))
-      (native-search-paths
-       (list (search-path-specification
-              (variable "GUILE_LOAD_PATH")
-              (files '("share/guile/site/3.0")))
-             (search-path-specification
-              (variable "GUILE_LOAD_COMPILED_PATH")
-              (files '("lib/guile/3.0/site-ccache"
-                       "share/guile/site/3.0")))))
-      (properties '((ftp-server . "alpha.gnu.org")
-                    (upstream-name . "guile"))))))
+  (package
+    (inherit guile-2.2)
+    (name "guile-next")
+    (version "2.9.3")
+    (source (origin
+              (inherit (package-source guile-2.2))
+              (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "14990wcpysgw58kij03wbgiggmi5z94jmy7wdcqnn6ny7cimkkgr"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_LOAD_PATH")
+            (files '("share/guile/site/3.0")))
+           (search-path-specification
+            (variable "GUILE_LOAD_COMPILED_PATH")
+            (files '("lib/guile/3.0/site-ccache"
+                     "share/guile/site/3.0")))))
+    (properties '((ftp-server . "alpha.gnu.org")
+                  (upstream-name . "guile")))))
 
 (define (make-guile-readline guile)
   (package

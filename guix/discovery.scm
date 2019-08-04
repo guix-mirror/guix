@@ -51,13 +51,15 @@ DIRECTORY is not accessible."
       ((? symbol? type)
        type)))
 
+  (define (dot-prefixed? file)
+    (string-prefix? "." file))
+
   ;; Use 'scandir*' so we can avoid an extra 'lstat' for each entry, as
   ;; opposed to Guile's 'scandir' or 'file-system-fold'.
   (fold-right (lambda (entry result)
                 (match entry
-                  (("." . _)
-                   result)
-                  ((".." . _)
+                  (((? dot-prefixed?) . _)
+                   ;; Exclude ".", "..", and hidden files such as backups.
                    result)
                   ((name . properties)
                    (let ((absolute (string-append directory "/" name)))

@@ -847,10 +847,10 @@ This package provides a library common to all Jami clients.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
 
-(define-public jami-client-gnome
+(define-public jami
   (package
     (inherit libring)
-    (name "jami-client-gnome")
+    (name "jami")
     (build-system cmake-build-system)
     (inputs
      `(("libringclient" ,libringclient)
@@ -906,3 +906,6 @@ IAX protocols, as well as decentralized calling using P2P-DHT.
 This package provides the Jami client for the GNOME desktop.")
     (home-page "https://jami.net")
     (license license:gpl3+)))
+
+(define-public jami-client-gnome
+  (deprecated-package "jami-client-gnome" jami))

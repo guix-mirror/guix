@@ -30,7 +30,7 @@
 (define-public re2
    (package
      (name "re2")
-     (version "2019-07-01")
+     (version "2019-08-01")
      (home-page "https://github.com/google/re2")
      (source (origin
                (method git-fetch)
@@ -38,7 +38,7 @@
                (file-name (git-file-name name version))
                (sha256
                 (base32
-                 "1ric6gdnf5mqj5iy5f81al49mr3mmjqj3nqi3mw2hjdbbgwkdn71"))))
+                 "11w9x16y26nfgliis28ivrh9b1x6pxawdwxfwxfjh34h57c0dkzg"))))
      (build-system gnu-build-system)
      (arguments
       `(#:modules ((guix build gnu-build-system)

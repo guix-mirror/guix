@@ -54,6 +54,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libevent)
@@ -753,6 +754,35 @@ programmer to write text-based user interfaces.")
 with terminals in Go.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
+
+(define-public go-github-com-junegunn-fzf
+  (package
+    (name "go-github-com-junegunn-fzf")
+    (version "0.18.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/junegunn/fzf")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0pwpr4fpw56yzzkcabzzgbgwraaxmp7xzzmap7w1xsrkbj7dl2xl"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/junegunn/fzf"))
+    (inputs
+     `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+       ("go-github-com-mattn-go-shellwords" ,go-github-com-mattn-go-shellwords)
+       ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
+       ("go-github-com-gdamore-tcell" ,go-github-com-gdamore-tcell)
+       ("go-golang-org-x-crypto-ssh-terminal" ,go-golang-org-x-crypto-ssh-terminal)))
+    (home-page "https://github.com/junegunn/fzf")
+    (synopsis "Command-line fuzzy-finder")
+    (description "This package provides an interactive command-line filter
+usable with any list--including files, command history, processes and more.")
+    (license license:expat)))
 
 (define-public go-github.com-howeyc-gopass
   (let ((commit "bf9dde6d0d2c004a008c27aaee91170c786f6db8")

@@ -709,18 +709,17 @@ interactive POSIX shell targeted at resource-constrained systems.")
 (define-public mksh
   (package
     (name "mksh")
-    (version "56")
+    (version "57")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.mirbsd.org/MirOS/dist/mir/mksh/mksh-R"
                            version ".tgz"))
        (sha256
-        (base32
-         "1x4zjj9259ijpf8jw0nyh1fnr1pbm5fwvylclpvcrlb45xrglf5d"))))
+        (base32 "0xdykm1z710wriwd6nc8s8lwk2dwjl63dq96xxaawlid31a1241x"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; tests require access to /dev/tty
+     `(#:tests? #f                      ; tests require access to /dev/tty
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
@@ -744,7 +743,7 @@ interactive POSIX shell targeted at resource-constrained systems.")
 Korn Shell programming language and a successor to the Public Domain Korn
 Shell (pdksh).")
     (license (list miros
-                   isc)))) ; strlcpy.c
+                   isc))))              ; strlcpy.c
 
 (define-public oil-shell
   (package

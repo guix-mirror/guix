@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -37,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 
 ;;; Annotations
@@ -2262,6 +2264,68 @@ differential expression analysis, clustering, visualization, and other useful
 tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
+
+(define-public r-monocle3
+  (package
+    (name "r-monocle3")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1cjxqfw3qvy269hsf5v80d4kshl932wrl949iayas02saj6f70ls"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-grr" ,r-grr)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-limma" ,r-limma)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-matrix-utils" ,r-matrix-utils)
+       ("r-pbapply" ,r-pbapply)
+       ("r-pbmcapply" ,r-pbmcapply)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plotly" ,r-plotly)
+       ("r-pryr" ,r-pryr)
+       ("r-proxy" ,r-proxy)
+       ("r-pscl" ,r-pscl)
+       ("r-purrr" ,r-purrr)
+       ("r-rann" ,r-rann)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-reshape2" ,r-reshape2)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-rtsne" ,r-rtsne)
+       ("r-shiny" ,r-shiny)
+       ("r-slam" ,r-slam)
+       ("r-spdep" ,r-spdep)
+       ("r-speedglm" ,r-speedglm)
+       ("r-stringr" ,r-stringr)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-uwot" ,r-uwot)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/cole-trapnell-lab/monocle3")
+    (synopsis "Analysis toolkit for single-cell RNA-Seq data")
+    (description
+     "Monocle 3 is an analysis toolkit for single-cell RNA-Seq experiments.")
+    (license license:expat)))
 
 (define-public r-noiseq
   (package
@@ -5024,3 +5088,66 @@ with separating information will be identified, and these clusters are defined
 by a sparse number of variables, this method can reduce the complexity of
 data, to only emphasize the data that actually matters.")
     (license license:expat)))
+
+(define-public r-cicero
+  (package
+    (name "r-cicero")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "cicero" version))
+       (sha256
+        (base32
+         "0f15l8zrh7l7nnvznb66116hvfk15djb9q240vbscm2w0y5fvkcr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glasso" ,r-glasso)
+       ("r-gviz" ,r-gviz)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-monocle" ,r-monocle)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://bioconductor.org/packages/cicero/")
+    (synopsis "Predict cis-co-accessibility from single-cell data")
+    (description
+     "Cicero computes putative cis-regulatory maps from single-cell chromatin
+accessibility data.  It also extends the monocle package for use in chromatin
+accessibility data.")
+    (license license:expat)))
+
+;; This is the latest commit on the "monocle3" branch.
+(define-public r-cicero-monocle3
+  (let ((commit "fa2fb6515857a8cfc88bc9af044f34de1bcd2b7b")
+        (revision "1"))
+    (package (inherit r-cicero)
+      (name "r-cicero-monocle3")
+      (version (git-version "1.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "077yza93wdhi08n40md20jwk55k9lw1f3y0063qkk90cpz60wi0c"))))
+      (propagated-inputs
+       `(("r-monocle3" ,r-monocle3)
+         ,@(alist-delete "r-monocle"
+                         (package-propagated-inputs r-cicero)))))))

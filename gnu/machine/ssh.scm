@@ -17,23 +17,21 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu machine ssh)
-  #:use-module (gnu bootloader)
   #:use-module (gnu machine)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
-  #:use-module (gnu services)
-  #:use-module (gnu services shepherd)
   #:use-module (gnu system)
-  #:use-module (guix derivations)
   #:use-module (guix gexp)
   #:use-module (guix i18n)
   #:use-module (guix modules)
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix remote)
+  #:use-module (guix scripts system reconfigure)
   #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-35)
   #:export (managed-host-environment-type
 
@@ -105,118 +103,6 @@ an environment type of 'managed-host."
 ;;; System deployment.
 ;;;
 
-(define (switch-to-system machine)
-  "Monadic procedure creating a new generation on MACHINE and execute the
-activation script for the new system configuration."
-  (define (remote-exp drv script)
-    (with-extensions (list guile-gcrypt)
-      (with-imported-modules (source-module-closure '((guix config)
-                                                      (guix profiles)
-                                                      (guix utils)))
-        #~(begin
-            (use-modules (guix config)
-                         (guix profiles)
-                         (guix utils))
-
-            (define %system-profile
-              (string-append %state-directory "/profiles/system"))
-
-            (let* ((system #$drv)
-                   (number (1+ (generation-number %system-profile)))
-                   (generation (generation-file-name %system-profile number)))
-              (switch-symlinks generation system)
-              (switch-symlinks %system-profile generation)
-              ;; The implementation of 'guix system reconfigure' saves the
-              ;; load path and environment here. This is unnecessary here
-              ;; because each invocation of 'remote-eval' runs in a distinct
-              ;; Guile REPL.
-              (setenv "GUIX_NEW_SYSTEM" system)
-              ;; The activation script may write to stdout, which confuses
-              ;; 'remote-eval' when it attempts to read a result from the
-              ;; remote REPL. We work around this by forcing the output to a
-              ;; string.
-              (with-output-to-string
-                (lambda ()
-                  (primitive-load #$script))))))))
-
-  (let* ((os (machine-system machine))
-         (script (operating-system-activation-script os)))
-    (mlet* %store-monad ((drv (operating-system-derivation os)))
-      (machine-remote-eval machine (remote-exp drv script)))))
-
-;; XXX: Currently, this does NOT attempt to restart running services. This is
-;; also the case with 'guix system reconfigure'.
-;;
-;; See <https://issues.guix.info/issue/33508>.
-(define (upgrade-shepherd-services machine)
-  "Monadic procedure unloading and starting services on the remote as needed
-to realize the MACHINE's system configuration."
-  (define target-services
-    ;; Monadic expression evaluating to a list of (name output-path) pairs for
-    ;; all of MACHINE's services.
-    (mapm %store-monad
-          (lambda (service)
-            (mlet %store-monad ((file ((compose lower-object
-                                                shepherd-service-file)
-                                       service)))
-              (return (list (shepherd-service-canonical-name service)
-                            (derivation->output-path file)))))
-          (service-value
-           (fold-services (operating-system-services (machine-system machine))
-                          #:target-type shepherd-root-service-type))))
-
-  (define (remote-exp target-services)
-    (with-imported-modules '((gnu services herd))
-      #~(begin
-          (use-modules (gnu services herd)
-                       (srfi srfi-1))
-
-          (define running
-            (filter live-service-running (current-services)))
-
-          (define (essential? service)
-            ;; Return #t if SERVICE is essential and should not be unloaded
-            ;; under any circumstance.
-            (memq (first (live-service-provision service))
-                  '(root shepherd)))
-
-          (define (obsolete? service)
-            ;; Return #t if SERVICE can be safely unloaded.
-            (and (not (essential? service))
-                 (every (lambda (requirements)
-                          (not (memq (first (live-service-provision service))
-                                     requirements)))
-                        (map live-service-requirement running))))
-
-          (define to-unload
-            (filter obsolete?
-                    (remove (lambda (service)
-                              (memq (first (live-service-provision service))
-                                    (map first '#$target-services)))
-                            running)))
-
-          (define to-start
-            (remove (lambda (service-pair)
-                      (memq (first service-pair)
-                            (map (compose first live-service-provision)
-                                 running)))
-                    '#$target-services))
-
-          ;; Unload obsolete services.
-          (for-each (lambda (service)
-                      (false-if-exception
-                       (unload-service service)))
-                    to-unload)
-
-          ;; Load the service files for any new services and start them.
-          (load-services/safe (map second to-start))
-          (for-each start-service (map first to-start))
-
-          #t)))
-
-  (mlet %store-monad ((target-services target-services))
-    (machine-remote-eval machine (remote-exp target-services))))
-
 (define (machine-boot-parameters machine)
   "Monadic procedure returning a list of 'boot-parameters' for the generations
 of MACHINE's system profile, ordered from most recent to oldest."
@@ -275,71 +161,20 @@ of MACHINE's system profile, ordered from most recent to oldest."
                            (boot-parameters-kernel-arguments params))))))))
           generations))))
 
-(define (install-bootloader machine)
-  "Create a bootloader entry for the new system generation on MACHINE, and
-configure the bootloader to boot that generation by default."
-  (define bootloader-installer-script
-    (@@ (guix scripts system) bootloader-installer-script))
-
-  (define (remote-exp installer bootcfg bootcfg-file)
-    (with-extensions (list guile-gcrypt)
-      (with-imported-modules (source-module-closure '((gnu build install)
-                                                      (guix store)
-                                                      (guix utils)))
-        #~(begin
-            (use-modules (gnu build install)
-                         (guix store)
-                         (guix utils))
-            (let* ((gc-root (string-append "/" %gc-roots-directory "/bootcfg"))
-                   (temp-gc-root (string-append gc-root ".new")))
-
-              (switch-symlinks temp-gc-root gc-root)
-
-              (unless (false-if-exception
-                       (begin
-                         ;; The implementation of 'guix system reconfigure'
-                         ;; saves the load path here. This is unnecessary here
-                         ;; because each invocation of 'remote-eval' runs in a
-                         ;; distinct Guile REPL.
-                         (install-boot-config #$bootcfg #$bootcfg-file "/")
-                         ;; The installation script may write to stdout, which
-                         ;; confuses 'remote-eval' when it attempts to read a
-                         ;; result from the remote REPL. We work around this
-                         ;; by forcing the output to a string.
-                         (with-output-to-string
-                           (lambda ()
-                             (primitive-load #$installer)))))
-                (delete-file temp-gc-root)
-                (error "failed to install bootloader"))
-
-              (rename-file temp-gc-root gc-root)
-              #t)))))
-
-  (mlet* %store-monad ((boot-parameters (machine-boot-parameters machine)))
-    (let* ((os (machine-system machine))
-           (bootloader ((compose bootloader-configuration-bootloader
-                                 operating-system-bootloader)
-                        os))
-           (bootloader-target (bootloader-configuration-target
-                               (operating-system-bootloader os)))
-           (installer (bootloader-installer-script
-                       (bootloader-installer bootloader)
-                       (bootloader-package bootloader)
-                       bootloader-target
-                       "/"))
-           (menu-entries (map boot-parameters->menu-entry boot-parameters))
-           (bootcfg (operating-system-bootcfg os menu-entries))
-           (bootcfg-file (bootloader-configuration-file bootloader)))
-      (machine-remote-eval machine (remote-exp installer bootcfg bootcfg-file)))))
-
 (define (deploy-managed-host machine)
   "Internal implementation of 'deploy-machine' for MACHINE instances with an
 environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (mbegin %store-monad
-    (switch-to-system machine)
-    (upgrade-shepherd-services machine)
-    (install-bootloader machine)))
+  (mlet %store-monad ((boot-parameters (machine-boot-parameters machine)))
+    (let* ((os (machine-system machine))
+           (eval (cut machine-remote-eval machine <>))
+           (menu-entries (map boot-parameters->menu-entry boot-parameters))
+           (bootloader-configuration (operating-system-bootloader os))
+           (bootcfg (operating-system-bootcfg os menu-entries)))
+      (mbegin %store-monad
+        (switch-to-system eval os)
+        (upgrade-shepherd-services eval os)
+        (install-bootloader eval bootloader-configuration bootcfg)))))
 
 
 ;;;

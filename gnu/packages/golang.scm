@@ -48,6 +48,8 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages textutils)
+  #:use-module (gnu packages tls)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1))
 
@@ -220,7 +222,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.11.10")
+    (version "1.11.12")
     (source
      (origin
        (method url-fetch)
@@ -228,7 +230,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "06rw962xigbrxblp942jbh7k133blpxg2xfrxi32qdhxkmmfj9yz"))))
+         "09k9zmq7hhgg0bf1y7rwa0kn7q1vkkr94cmg2iv9lq3najh5nykd"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -401,7 +403,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.12.1")
+    (version "1.12.7")
     (source
      (origin
        (method url-fetch)
@@ -409,7 +411,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "12l12mmgqvy3nbscy7sz83qj4m6iz5a322aq9sk45f7l9ml2gq8b"))))
+         "04rvwj69gmw3bz8pw5pf10r21ar0pgpnswp15nkddf04dxyl9s4m"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -582,7 +584,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
        ,@(package-native-inputs go-1.4)))
     (supported-systems %supported-systems)))
 
-(define-public go go-1.11)
+(define-public go go-1.12)
 
 (define-public go-github-com-alsm-ioprogress
   (let ((commit "063c3725f436e7fba0c8f588547bee21ffec7ac5")
@@ -768,6 +770,79 @@ expressing configuration which is easy for both humans and machines to read.")
       (home-page "https://github.com/hashicorp/hcl")
       (license license:mpl2.0))))
 
+(define-public go-golang-org-x-tools
+  (let ((commit "8b927904ee0dec805c89aaf9172f4459296ed6e8")
+        (revision "0"))
+    (package
+      (name "go-golang-org-x-tools")
+      (version (git-version "0.1.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/tools")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-tools-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "0iinb70xhcjsddgi42ia1n745lx2ibnjdm6m2v666qrk3876vpck"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/tools"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build))))
+      (synopsis "Tools that support the Go programming language")
+      (description "This package provides miscellaneous tools that support the
+Go programming language.")
+      (home-page "https://go.googlesource.com/tools/")
+      (license license:bsd-3))))
+
+(define-public go-golang-org-x-crypto
+  (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
+        (revision "3"))
+    (package
+      (name "go-golang-org-x-crypto")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/crypto")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-crypto-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "1jqfh81mhgwcc6b9l0bs6rb0707s01qpvn7896i5bsmig46lc7zm"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "golang.org/x/crypto"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build)
+           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               (map (lambda (file)
+                      (make-file-writable file))
+                    (find-files
+                      (string-append (assoc-ref outputs "out")
+                                     "/src/golang.org/x/crypto/ed25519/testdata")
+                      ".*\\.gz$"))
+               #t)))))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
+      (synopsis "Supplementary cryptographic libraries in Go")
+      (description "This package provides supplementary cryptographic libraries
+for the Go language.")
+      (home-page "https://go.googlesource.com/crypto/")
+      (license license:bsd-3))))
+
 (define-public go-golang-org-x-crypto-bcrypt
   (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
         (revision "3"))
@@ -933,8 +1008,8 @@ fixed-output-length hash functions and the SHAKE variable-output-length hash
 functions defined by FIPS-202.")))
 
 (define-public go-golang-org-x-net-ipv4
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-ipv4")
       (version (git-version "0.0.0" revision commit))
@@ -946,11 +1021,13 @@ functions defined by FIPS-202.")))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv4"
          #:unpack-path "golang.org/x/net"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "Go IPv4 support")
       (description "This package provides @code{ipv4}, which implements IP-level
 socket options for the Internet Protocol version 4.")
@@ -958,8 +1035,8 @@ socket options for the Internet Protocol version 4.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-bpf
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-bpf")
       (version (git-version "0.0.0" revision commit))
@@ -972,11 +1049,13 @@ socket options for the Internet Protocol version 4.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/bpf"
          #:unpack-path "golang.org/x/net"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "Berkeley Packet Filters (BPF) in Go")
       (description "This package provides a Go implementation of the Berkeley
 Packet Filter (BPF) virtual machine.")
@@ -984,8 +1063,8 @@ Packet Filter (BPF) virtual machine.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-context
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-context")
       (version (git-version "0.0.0" revision commit))
@@ -998,7 +1077,7 @@ Packet Filter (BPF) virtual machine.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/context"
@@ -1011,8 +1090,8 @@ request-scoped values across API boundaries and between processes.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-internal-socks
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-internal-socks")
       (version (git-version "0.0.0" revision commit))
@@ -1025,7 +1104,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/socks"
@@ -1036,8 +1115,8 @@ request-scoped values across API boundaries and between processes.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-internal-socket
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-internal-socket")
       (version (git-version "0.0.0" revision commit))
@@ -1050,19 +1129,21 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/socket"
          #:unpack-path "golang.org/x/net"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "")
       (description "")
       (home-page "https://go.googlesource.com/net/")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-internal-iana
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-internal-iana")
       (version (git-version "0.0.0" revision commit))
@@ -1075,7 +1156,7 @@ request-scoped values across API boundaries and between processes.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/internal/iana"
@@ -1087,8 +1168,8 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-ipv6
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-ipv6")
       (version (git-version "0.0.0" revision commit))
@@ -1101,11 +1182,13 @@ number resources managed by the Internet Assigned Numbers Authority (IANA).")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/ipv6"
          #:unpack-path "golang.org/x/net"))
+      (propagated-inputs
+       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
       (synopsis "Go IPv6 support")
       (description "This package provides @code{ipv6}, which implements
 IP-level socket options for the Internet Protocol version 6.")
@@ -1113,8 +1196,8 @@ IP-level socket options for the Internet Protocol version 6.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-net-proxy
-  (let ((commit "351d144fa1fc0bd934e2408202be0c29f25e35a0")
-        (revision "2"))
+  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
+        (revision "3"))
     (package
       (name "go-golang-org-x-net-proxy")
       (version (git-version "0.0.0" revision commit))
@@ -1127,7 +1210,7 @@ IP-level socket options for the Internet Protocol version 6.")
                                           version "-checkout"))
                 (sha256
                  (base32
-                  "1c5x25qjyz83y92bq0lll5kmznyi3m02wd4c54scgf0866gy938k"))))
+                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/net/proxy"
@@ -1139,8 +1222,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "4d1cda033e0619309c606fc686de3adcf599539e")
-        (revision "2"))
+  (let ((commit "5ed2794edfdc1c54dfb61d619c5944285f35d444")
+        (revision "3"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1152,7 +1235,7 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1wgaldbnkmh568v8kkgvnmkskaj96fqrbzhx23yji2kh1432q6gh"))))
+                  "1qy8hmv5nwpcywk7sh1pg0s32jwpd4ykh492xzl4mmxy8galwsr5"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
@@ -1174,59 +1257,55 @@ for low-level interaction with the operating system.")
     (description "Thi spackage provides @code{cpu}, which offers tools for CPU
 feature detection in Go.")))
 
+(define-public go-golang-org-x-text-encoding
+  (package
+    (name "go-golang-org-x-text-encoding")
+    (version "0.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://go.googlesource.com/text")
+                    (commit (string-append "v" version))))
+              (file-name (string-append "go.googlesource.com-text-"
+                                        version "-checkout"))
+              (sha256
+               (base32
+                "0flv9idw0jm5nm8lx25xqanbkqgfiym6619w575p7nrdh0riqwqh"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "golang.org/x/text/encoding"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Interface for character encodings for conversion to and from
+UTF-8")
+    (description "This package defines an interface for character encodings.
+Specific implementations of encoding for CJK text as well as simple character
+encodings are provided in subpackages.")
+    (home-page "https://go.googlesource.com/text")
+    (license license:bsd-3)))
+
 (define-public go-golang-org-x-text-transform
-  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
-        (revision "1"))
-    (package
-      (name "go-golang-org-x-text-transform")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/text")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-text-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/text/transform"
-         #:unpack-path "golang.org/x/text"))
-      (synopsis "Go text transformation")
-      (description "This package provides @code{transform}, which provides
+  (package
+    (inherit go-golang-org-x-text-encoding)
+    (name "go-golang-org-x-text-transform")
+    (arguments
+     `(#:import-path "golang.org/x/text/transform"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Go text transformation")
+    (description "This package provides @code{transform}, which provides
 reader and writer wrappers that transform the bytes passing through.  Example
 transformations provided by other packages include normalization and conversion
-between character sets.")
-      (home-page "https://go.googlesource.com/text")
-      (license license:bsd-3))))
+between character sets.")))
 
 (define-public go-golang-org-x-text-unicode-norm
-  (let ((commit "e19ae1496984b1c655b8044a65c0300a3c878dd3")
-        (revision "1"))
-    (package
-      (name "go-golang-org-x-text-unicode-norm")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/text")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-text-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1cvnnx8nwx5c7gr6ajs7sldhbqh52n7h6fsa3i21l2lhx6xrsh4w"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/text/unicode/norm"
-         #:unpack-path "golang.org/x/text"))
-      (synopsis "Unicode normalization in Go")
-      (description "This package provides @code{norm}, which contains types and
-functions for normalizing Unicode strings.")
-      (home-page "https://go.googlesource.com/text")
-      (license license:bsd-3))))
+  (package
+    (inherit go-golang-org-x-text-encoding)
+    (name "go-golang-org-x-text-unicode-norm")
+    (arguments
+     `(#:import-path "golang.org/x/text/unicode/norm"
+       #:unpack-path "golang.org/x/text"))
+    (synopsis "Unicode normalization in Go")
+    (description "This package provides @code{norm}, which contains types and
+functions for normalizing Unicode strings.")))
 
 (define-public go-golang-org-x-time-rate
   (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
@@ -1292,12 +1371,11 @@ is similar to Go's standard library @code{json} and @code{xml} package.")
     (license license:expat)))
 
 (define-public go-github-com-getsentry-raven-go
-  (let ((commit
-         "dffeb57df75d6a911f00232155194e43d79d38d7")
+  (let ((commit "5c24d5110e0e198d9ae16f1f3465366085001d92")
         (revision "0"))
     (package
       (name "go-github-com-getsentry-raven-go")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "0.2.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1307,14 +1385,16 @@ is similar to Go's standard library @code{json} and @code{xml} package.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "13sb9rvl3369m7fah3ss9g0hwky259snqfn8gmbr0h5zvp651lja"))))
+           "0lvc376sq8r8jhy2v1m6rf1wyld61pvbk0x6j9xpg56ivqy69xs7"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/getsentry/raven-go"))
-      (home-page
-       "https://github.com/getsentry/raven-go")
+      (propagated-inputs
+       `(("go-github-com-certifi-gocertifi" ,go-github-com-certifi-gocertifi)
+         ("go-github-com-pkg-errors" ,go-github-com-pkg-errors)))
+      (home-page "https://github.com/getsentry/raven-go")
       (synopsis "Sentry client in Go")
-      (description "This package is Go client API for the Sentry event/error
+      (description "This package is a Go client API for the Sentry event/error
 logging system.")
       (license license:bsd-3))))
 
@@ -1859,11 +1939,11 @@ which satisfies the cron expression.")
                      license:asl2.0)))))
 
 (define-public go-gopkg-in-check-v1
-  (let ((commit "20d25e2804050c1cd24a7eea1e7a6447dd0e74ec")
-        (revision "0"))
+  (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
+        (revision "1"))
     (package
       (name "go-gopkg-in-check-v1")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -1873,43 +1953,42 @@ which satisfies the cron expression.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0k1m83ji9l1a7ng8a7v40psbymxasmssbrrhpdv2wl4rhs0nc3np"))))
+           "0v3bim0j375z81zrpr5qv42knqs0y2qv2vkjiqi5axvb78slki1a"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "gopkg.in/check.v1"))
+      (propagated-inputs
+       `(("go-github-com-kr-pretty" ,go-github-com-kr-pretty)))
       (home-page "https://gopkg.in/check.v1")
       (synopsis "Test framework for the Go language")
-      (description
-       "This package provides a test library for the Go language.")
+      (description "This package provides a test library for the Go language.")
       (license license:asl2.0))))
 
 (define-public go-gopkg-in-yaml-v2
-  (let ((commit "14227de293ca979cf205cd88769fe71ed96a97e2")
-        (revision "0"))
-    (package
-      (name "go-gopkg-in-yaml-v2")
-      (version (git-version "0.0.0" revision commit))
-      (source
-        (origin
-          (method git-fetch)
-          (uri (git-reference
-                 (url "https://gopkg.in/yaml.v2.git")
-                 (commit commit)))
-          (file-name (git-file-name name version))
-          (sha256
-            (base32
-              "038hnrjcnjygyi3qidfrkpkakis82qg381sr495d2s40g2dwlzah"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "gopkg.in/yaml.v2"))
-      (native-inputs
-       `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
-      (home-page "https://gopkg.in/yaml.v2")
-      (synopsis "YAML reader and writer for the Go language")
-      (description
-       "This package provides a Go library for encode and decode YAML
+  (package
+    (name "go-gopkg-in-yaml-v2")
+    (version "2.2.2")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://gopkg.in/yaml.v2.git")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "01wj12jzsdqlnidpyjssmj0r4yavlqy7dwrg7adqd8dicjc4ncsa"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "gopkg.in/yaml.v2"))
+    (native-inputs
+     `(("go-gopkg-in-check-v1" ,go-gopkg-in-check-v1)))
+    (home-page "https://gopkg.in/yaml.v2")
+    (synopsis "YAML reader and writer for the Go language")
+    (description
+     "This package provides a Go library for encode and decode YAML
 values.")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public go-github-com-mattn-go-isatty
   (package
@@ -3238,6 +3317,171 @@ format in Go.")
     (home-page "https://github.com/kr/text")
     (license license:expat)))
 
+(define-public go-golang-org-sql-mock
+  (let ((commit "e98392b8111b45f8126e00af035a0dd95dc12e8b")
+        (version "1.3.3")
+        (revision "1"))
+    (package
+      (name "go-golang-org-sql-mock")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/DATA-DOG/go-sqlmock")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "033vv29g2wf6fd757ajfmha30bqin3b07377037zkl051mk6mghs"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/DATA-DOG/go-sqlmock"))
+      (synopsis "Mock library implementing @code{sql/driver}")
+      (description "This library simulates SQL-driver behavior in tests
+without requiring a real database connection.")
+      (home-page "https://github.com/DATA-DOG/go-sqlmock")
+      (license license:expat))))
+
+(define-public go-golang-org-colorful
+  (package
+    (name "go-golang-org-colorful")
+    (version "1.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/lucasb-eyer/go-colorful")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fig06880bvk1l92j4127v4x9sar4ds7ga8959gxxghb2w70b7l2"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/lucasb-eyer/go-colorful"))
+    (native-inputs
+     `(("go-golang-org-sql-mock" ,go-golang-org-sql-mock)))
+    (synopsis "Convert between colorspaces and generate colors")
+    (description "This package implements Go's @code{color.Color} interface
+and provides a means of converting colors stored as RGB to various
+colorspaces.")
+    (home-page "https://github.com/lucasb-eyer/go-colorful")
+    (license license:expat)))
+
+(define-public go-github-com-gdamore-encoding
+  (package
+    (name "go-github-com-gdamore-encoding")
+    (version "1.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gdamore/encoding")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1vmm5zll92i2fm4ajqx0gyx0p9j36496x5nabi3y0x7h0inv0pk9"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/gdamore/encoding"))
+    (inputs
+     `(("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
+       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)))
+    (home-page "https://github.com/gdamore/encoding")
+    (synopsis "Provide encodings missing from Go")
+    (description "This package provides useful encodings not included in the
+standard @code{Text} package, including some for dealing with I/O streams from
+non-UTF-friendly sources.")
+    (license license:expat)))
+
+(define-public go-github-com-gdamore-tcell
+  (let ((commit "aaadc574a6ed8dc3abe56036ca130dcee1ee6b6e")
+        (version "1.1.2")
+        (revision "1"))
+    (package
+      (name "go-github-com-gdamore-tcell")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gdamore/tcell")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0il2nnxp2cqiy73m49215dnf9in3vd25ji8qxbmq87c5qy7i1q9d"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/gdamore/tcell"
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'reset-gzip-timestamps 'make-files-writable
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Make sure .gz files are writable so that the
+               ;; 'reset-gzip-timestamps' phase can do its work.
+               (let ((out (assoc-ref outputs "out")))
+                 (for-each make-file-writable
+                           (find-files out "\\.gz$"))
+                 #t))))))
+      (inputs
+       `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
+         ("go-golang-org-colorful" ,go-golang-org-colorful)
+         ("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
+         ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+         ("go-github-com-gdamore-encoding" ,go-github-com-gdamore-encoding)))
+      (home-page "https://github.com/gdamore/tcell")
+      (synopsis "Provide a cell-based view for text terminals")
+      (description "This package includes a full parser and expander for
+terminfo capability strings to avoid hard-coding escape strings for
+formatting.  It also favors portability, and includes support for all POSIX
+systems.")
+      (license license:expat))))
+
+(define-public go-github-com-mattn-go-shellwords
+  (let ((commit "2444a32a19f450fabaa0bb3e96a703f15d9a97d2")
+        (version "1.0.5")
+        (revision "1"))
+    (package
+      (name "go-github-com-mattn-go-shellwords")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-shellwords")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "08zcgr1az1n8zaxzwdd205j86hczgyc52nxfnw5avpw7rrkf7v0d"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/mattn/go-shellwords"
+         ;; TODO: can't make homeless-shelter:
+         ;; go: disabling cache (/homeless-shelter/.cache/go-build) due to
+         ;; initialization failure: mkdir /homeless-shelter: permission denied
+
+         ;; This doesn't seem to work:
+
+         ;; #:phases
+         ;; (modify-phases %standard-phases
+         ;;   (replace 'check
+         ;;     (lambda* (#:key import-path #:allow-other-keys)
+         ;;       (setenv "HOME" "/tmp")
+         ;;       (invoke "go" "test" import-path))))
+
+         ;; TODO: There are also a couple of tests that have stymied Debian in
+         ;; the past.  They seem to work when run locally.
+
+         #:tests? #f
+         ))
+      (home-page "https://github.com/mattn/go-shellwords")
+      (synopsis "Parse lines into shell words")
+      (description "This package parses text into shell arguments.  Based on
+the @code{cpan} module @code{Parse::CommandLine}.")
+      (license license:expat))))
+
 (define-public go-github-com-burntsushi-locker
   (let ((commit "a6e239ea1c69bff1cfdb20c4b73dadf52f784b6a")
         (revision "0"))
@@ -3271,3 +3515,128 @@ test.
 All locks are implemented with read-write mutexes.  To use them like a regular
 mutex, simply ignore the RLock/RUnlock functions.")
       (license license:unlicense))))
+
+(define-public go-github-com-marten-seemann-qtls
+  (package
+    (name "go-github-com-marten-seemann-qtls")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/marten-seemann/qtls")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b9p7bwkm9hfg1mb565q4nw5k7xyks0z2xagz5fp95azy2psbnfg"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/marten-seemann/qtls"
+       ;; The test suite requires networking.
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
+    (synopsis "TLS 1.3 with QUIC in Go")
+    (description "This package provides @code{qtls}, a QUIC-capable variant of
+the Go standard library's TLS 1.3 implementation.")
+    (home-page "https://github.com/marten-seemann/qtls")
+    (license license:bsd-3)))
+
+(define-public go-github-com-cheekybits-genny
+  (package
+    (name "go-github-com-cheekybits-genny")
+    (version "1.0.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cheekybits/genny")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1pcir5ic86713aqa51581rfb67rgc3m0c72ddjfcp3yakv9vyq87"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/cheekybits/genny"))
+    (propagated-inputs
+     `(("go-golang-org-x-tools" ,go-golang-org-x-tools)))
+    (synopsis "Generics for Go")
+    (description "This package provides @code{genny}, a Go language
+implementation of generics.")
+    (home-page "https://github.com/cheekybits/genny/")
+    (license license:expat)))
+
+(define-public go-github-com-lucas-clemente-quic-go
+  (package
+    (name "go-github-com-lucas-clemente-quic-go")
+    (version "0.11.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/lucas-clemente/quic-go")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0gqm5mc8alg84ra7yxach34il1jvcij8f76qdqcahnd3d2nhjbia"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/lucas-clemente/quic-go"
+       ;; XXX More packages required...
+       #:tests? #f))
+    (propagated-inputs
+     `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
+       ("go-github-com-cheekybits-genny" ,go-github-com-cheekybits-genny)
+       ("go-github-com-marten-seemann-qtls" ,go-github-com-marten-seemann-qtls)))
+    (synopsis "QUIC in Go")
+    (description "This package provides a Go language implementation of the QUIC
+network protocol.")
+    (home-page "https://github.com/lucas-clemente/quic-go")
+    (license license:expat)))
+
+(define-public go-github-com-pkg-errors
+  (let ((commit "27936f6d90f9c8e1145f11ed52ffffbfdb9e0af7")
+        (revision "0"))
+    (package
+      (name "go-github-com-pkg-errors")
+      (version (git-version "0.8.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/pkg/errors.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0yzmgi6g4ak4q8y7w6x0n5cbinlcn8yc3gwgzy4yck00qdn25d6y"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "github.com/pkg/errors"))
+      (synopsis "Go error handling primitives")
+      (description "This package provides @code{error}, which offers simple
+error handling primitives in Go.")
+      (home-page "https://github.com/pkg/errors")
+      (license license:bsd-2))))
+
+(define-public go-github-com-maruel-panicparse
+  (package
+    (name "go-github-com-maruel-panicparse")
+    (version "1.2.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/maruel/panicparse")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "05hf68ifb7ww4rpmxyywbj9r0kyap45p1273ncq4qy2ydv042l8j"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/maruel/panicparse"))
+    (synopsis "Toolkit for parsing Go stack traces")
+    (description "This package provides a toolkit for parsing Go language panic
+stack traces.  It simplifies the traces to make salient information more visible
+and aid debugging.")
+    (home-page "https://github.com/maruel/panicparse")
+    (license license:asl2.0)))

@@ -50,6 +50,7 @@
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
+;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -947,6 +948,33 @@ regexps, including deprecated syntax and bad practice.  It also checks the
 regexp-like arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
+
+(define-public emacs-bug-hunter
+  (let ((commit "b88d981afa9154b236c5a3a83b50d5889d46c6a7")
+        (revision "1"))
+    (package
+      (name "emacs-bug-hunter")
+      (version (git-version "1.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Malabarba/elisp-bug-hunter.git")
+               (commit commit)))
+         (file-name (git-file-name name commit))
+         (sha256
+          (base32
+           "134fj493sdn93pyyac8rpz1fzahzmayvphsrmqp3wvgysmfqm38l"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-seq" ,emacs-seq)))
+      (home-page "https://github.com/Malabarba/elisp-bug-hunter")
+      (synopsis "Hunt down errors by bisecting elisp files")
+      (description
+       "The Bug Hunter is an Emacs library that finds the source of an error
+or unexpected behavior inside an elisp configuration file (typically
+@file{init.el} or @file{.emacs}).")
+      (license license:gpl3+))))
 
 
 ;;;
@@ -10454,30 +10482,27 @@ tables of contents.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ql
-  (let ((commit "0aec8ec60395197b2ef2b885c216cf84286efed9")
-        (version "0.1-pre")
-        (revision "1"))
-    (package
-      (name "emacs-org-ql")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/alphapapa/org-ql")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0bj85hxhym7rvkaddcxybxdm7g7w439wij9f2w5ljz1hmvp55991"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-s" ,emacs-s)
-         ("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/alphapapa/org-ql")
-      (synopsis "Query language for Org buffers")
-      (description "This package provides a Lispy query language for Org
+  (package
+    (name "emacs-org-ql")
+    (version "0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-ql")
+                    (commit version)))
+              (sha256
+               (base32
+                "1nvzirn1lmgmgl7irbsc1n391a2cw8gmvwm3pa228l2c1gcx8kd8"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/alphapapa/org-ql/")
+    (synopsis "Query language for Org buffers")
+    (description "This package provides a Lispy query language for Org
 files, allowing for actions to be performed based on search criteria.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-parsebib
   (package
@@ -16656,6 +16681,26 @@ Org-mode (the notes may have outlines, latex fragments, babel, etc...) while
 acting like notes that are made @emph{in} the document.")
     (license license:gpl3+)))
 
+(define-public emacs-org-redmine
+  (let ((commit "e77d013bc3784947c46a5c53f03cd7d3c68552fc"))
+    (package
+      (name "emacs-org-redmine")
+      (version (git-version "0.1" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/gongo/org-redmine.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06miv3mf2a39vkf6mmm5ssc47inqh7dq82khsyc03anz4d4lj822"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/gongo/org-redmine/")
+      (synopsis "Redmine tools using Emacs")
+      (description "This program provides an Emacs client for Redmine.")
+      (license license:gpl3+))))
+
 (define-public emacs-multi-term
   (let ((commit "0804b11e52b960c80f5cd0712ee1e53ae70d83a4"))
     (package
@@ -16746,4 +16791,138 @@ connections using TLS encryption.")
     (description
      "Zerodark is a dark theme inspired from One Dark and Niflheim.
 An optional mode-line format can be enabled with @code{zerodark-setup-modeline-format}.")
+    (license license:gpl3+)))
+
+(define-public emacs-gnus-alias
+  (package
+    (name "emacs-gnus-alias")
+    (version "20150316")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hexmode/gnus-alias.git")
+                    (commit "9447d3ccb4c0e75d0468899cccff7aa249657bac")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1i278npayv3kfxxd1ypi9n83q5l402sbc1zkm11pf8g006ifqsp4"))))
+    (build-system emacs-build-system)
+    (home-page "https://melpa.org/#/gnus-alias")
+    (synopsis "Alternative to @code{gnus-posting-styles}")
+    (description "This Emacs add-on provides a simple mechanism to switch
+Identities when using a @code{message-mode} or a @code{message-mode} derived
+mode.  Identities can include @code{From} and @code{Organisation} headers,
+extra headers, body and signature.  Other features include:
+
+@itemize
+@item Switch Identities in a message buffer.
+@item Access original message to help determine Identity of the followup/reply
+message.
+@item Act on a forwarded message as if it were a message being replied to.
+@item Start a new message with a given Identity pre-selected.
+@end itemize")
+    (license license:gpl2+)))
+
+(define-public emacs-ox-epub
+  (package
+    (name "emacs-ox-epub")
+    (version "0.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ofosos/ox-epub.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "057sqmvm8hwkhcg3yd4i8zz2xlqsqrpyiklyiw750s3i5mxdn0k7"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/ofosos/ox-epub")
+    (synopsis "Export org mode projects to EPUB")
+    (description "@code{ox-epub} extends the (X)HTML exporter to generate
+@code{.epub} files directly from OrgMode.  This will export EPUB version 2,
+which should give broad compatibility.  It should also be relatiely easy to
+convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
+zip utility (default is @code{zip}).")
+    (license license:gpl3+)))
+
+(define-public emacs-ox-pandoc
+  (package
+    (name "emacs-ox-pandoc")
+    (version "20180510")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/kawabata/ox-pandoc.git")
+                    (commit "aa37dc7e94213d4ebedb85c384c1ba35007da18e")))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0iibxplgdp34bpq1yll2gmqjd8d8lnqn4mqjvx6cdf0y438yr4jz"))))
+    (build-system emacs-build-system)
+    (inputs
+     `(("pandoc" ,ghc-pandoc)))
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-ht" ,emacs-ht)))
+    (home-page "https://github.com/kawabata/ox-pandoc")
+    (synopsis "Org exporter for Pandoc")
+    (description "@code{ox-pandoc} is an exporter for converting Org-mode
+files to numerous other formats via Pandoc.")
+    (license license:gpl3+)))
+
+(define-public emacs-wc-mode
+  (package
+    (name "emacs-wc-mode")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/bnbeckwith/wc-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0pjlxv46zzqdq6q131jb306vqlg4sfqls1x8vag7mmfw462hafqp"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/bnbeckwith/wc-mode")
+    (synopsis "Running word count with goals (minor mode)")
+    (description "@code{wc-mode} is a minor mode, providing a ‘wc’ function
+for Emacs buffers as well as a modeline addition with live word, line and
+character counts.  Additionally, a user can set specific goals for adding or
+deleting words.  These goals were partly inspired by 750words.com where the
+goal of the site is to encourage writing by setting a goal of 750 words at a
+time.")
+    (license license:gpl3+)))
+
+(define-public emacs-mastodon
+  (package
+    (name "emacs-mastodon")
+    (version "0.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jdenen/mastodon.el.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0hwax6y9dghqwsbnb6f1bnc7gh8xsh5cvcnayk2sn49x8b0zi5h1"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Move the source files to the top level, which is included in
+         ;; the EMACSLOADPATH.
+         (add-after 'unpack 'move-source-files
+           (lambda _
+             (let ((el-files (find-files "./lisp" ".*\\.el$")))
+               (for-each (lambda (f)
+                           (rename-file f (basename f)))
+                         el-files))
+             #t)))))
+    (home-page "https://github.com/jdenen/mastodon.el")
+    (synopsis "Emacs client for Mastodon")
+    (description "@code{mastodon.el} is an Emacs client for Mastodon, the
+federated microblogging social network.")
     (license license:gpl3+)))

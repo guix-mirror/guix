@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.1.4")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "0pkb9vdb10lnlk6sgg6hxgkdjnvxx90cfdf8vgrc5sljzm5qhr6l"))
+                "1l7crhggg2vq4y7pgzsj8wp7k4l9hw5yblflly5bzwywzxz8ff83"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -102,10 +102,14 @@
        ("go-github-com-vitrun-qart-coding" ,go-github-com-vitrun-qart-coding)
        ("go-github-com-vitrun-qart-gf256" ,go-github-com-vitrun-qart-gf256)
        ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
-       ("go-golang-org-x-crypto-bcrypt" ,go-golang-org-x-crypto-bcrypt)
-       ("go-golang-org-x-crypto-blowfish" ,go-golang-org-x-crypto-blowfish)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-flynn-archive-go-shlex"
         ,go-github-com-flynn-archive-go-shlex)
+       ("go-github-com-getsentry-raven-go" ,go-github-com-getsentry-raven-go)
+       ("go-github-com-maruel-panicparse" ,go-github-com-maruel-panicparse)
+       ("go-github-com-ccding-go-stun" ,go-github-com-ccding-go-stun)
+       ("go-github-com-audriusbutkevicius-pfilter" ,go-github-com-audriusbutkevicius-pfilter)
+       ("go-github-com-lucas-clemente-quic-go" ,go-github-com-lucas-clemente-quic-go)
 
        ;; For tests
        ("go-github-com-d4l3k-messagediff" ,go-github-com-d4l3k-messagediff)))
@@ -569,11 +573,11 @@ run-time in Go.")
     (license asl2.0)))
 
 (define-public go-github-com-syndtr-goleveldb
-  (let ((commit "34011bf325bce385408353a30b101fe5e923eb6e")
-        (revision "2"))
+  (let ((commit "c3a204f8e96543bb0cc090385c001078f184fc46")
+        (revision "3"))
     (package
       (name "go-github-com-syndtr-goleveldb")
-      (version (git-version "0.0.0" revision commit))
+      (version (git-version "1.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -582,7 +586,7 @@ run-time in Go.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "097ja0vyj6p27zrxha9nhk09fj977xsvhmd3bk2hbyvnbw4znnhd"))))
+                  "18cac90dim2z5g28vazzibxa058q2ynihsmf0vbscwzba6l5s5ms"))))
       (build-system go-build-system)
       (propagated-inputs
        `(("go-github-com-golang-snappy" ,go-github-com-golang-snappy)))
@@ -739,28 +743,6 @@ hashes.")
       (home-page "https://github.com/chmduquesne/rollinghash")
       (license expat))))
 
-(define-public go-github-com-pkg-errors
-  (package
-    (name "go-github-com-pkg-errors")
-    (version "0.8.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/pkg/errors.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0g5qcb4d4fd96midz0zdk8b9kz8xkzwfa8kr1cliqbg8sxsy5vd1"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "github.com/pkg/errors"))
-    (synopsis "Go error handling primitives")
-    (description "This package provides @code{error}, which offers simple
-error handling primitives in Go.")
-    (home-page "https://github.com/pkg/errors")
-    (license bsd-2)))
-
 (define-public go-github-com-petermattis-goid
   (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
         (revision "0"))
@@ -863,20 +845,18 @@ bounds.")
       (license expat))))
 
 (define-public go-github-com-golang-protobuf-proto
-  (let ((commit "1e59b77b52bf8e4b449a57e6f79f21226d571845")
-        (revision "0"))
     (package
       (name "go-github-com-golang-protobuf-proto")
-      (version (git-version "0.0.0" revision commit))
+      (version "1.3.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/golang/protobuf.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "19bkh81wnp6njg3931wky6hsnnl2d1ig20vfjxpv450sd3k6yys8"))))
+                  "15am4s4646qy6iv0g3kkqq52rzykqjhm4bf08dk0fy2r58knpsyl"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/golang/protobuf/proto"
@@ -887,11 +867,11 @@ bounds.")
       (description "This package provides Go support for the Protocol Buffers
 data serialization format.")
       (home-page "https://github.com/golang/protobuf")
-      (license bsd-3))))
+      (license bsd-3)))
 
 (define-public go-github-com-prometheus-client-model-go
-  (let ((commit "99fa1f4be8e564e8a6b613da7fa6f46c9edafc6c")
-        (revision "0"))
+  (let ((commit "fd36f4220a901265f90734c3183c5f0c91daa0b8")
+        (revision "1"))
     (package
       (name "go-github-com-prometheus-client-model-go")
       (version (git-version "0.0.2" revision commit))
@@ -903,7 +883,7 @@ data serialization format.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "19y4ywsivhpxj7ikf2j0gm9k3cmyw37qcbfi78n526jxcc7kw998"))))
+                  "1bs5d72k361llflgl94c22n0w53j30rsfh84smgk8mbjbcmjsaa5"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_model/go"
@@ -948,20 +928,18 @@ message streaming.")
       (license asl2.0))))
 
 (define-public go-github-com-prometheus-common-expfmt
-  (let ((commit "2e54d0b93cba2fd133edc32211dcc32c06ef72ca")
-        (revision "0"))
     (package
       (name "go-github-com-prometheus-common-expfmt")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.4.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/prometheus/common.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "14kn5w7imcxxlfdqxl21fsnlf1ms7200g3ldy29hwamldv8qlm7j"))))
+                  "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/common/expfmt"
@@ -995,23 +973,21 @@ message streaming.")
       (description "This package provides tools for reading and writing
 Prometheus metrics.")
       (home-page "https://github.com/prometheus/common")
-      (license asl2.0))))
+      (license asl2.0)))
 
 (define-public go-github-com-prometheus-common-model
-  (let ((commit "2e54d0b93cba2fd133edc32211dcc32c06ef72ca")
-        (revision "0"))
     (package
       (name "go-github-com-prometheus-common-model")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.4.1")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/prometheus/common.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "14kn5w7imcxxlfdqxl21fsnlf1ms7200g3ldy29hwamldv8qlm7j"))))
+                  "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/common/model"
@@ -1020,36 +996,37 @@ Prometheus metrics.")
       (description "This package provides a component of the Go Prometheus
 implementation.")
       (home-page "https://github.com/prometheus/common")
-      (license asl2.0))))
+      (license asl2.0)))
 
 (define-public go-github-com-prometheus-procfs
-  (let ((commit "b15cd069a83443be3154b719d0cc9fe8117f09fb")
-        (revision "0"))
     (package
       (name "go-github-com-prometheus-procfs")
-      (version (git-version "0.0.0" revision commit))
+      (version "0.0.3")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                        (url "https://github.com/prometheus/procfs.git")
-                       (commit commit)))
+                       (commit (string-append "v" version))))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1cr45wg2m40bj2za8f32mq09rjlcnk5kfam0h0hr8wcb015k4wxj"))))
+                  "18c4m795fwng8f8qa395f3crvamlbk5y5afk8b5rzyisnmjq774y"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/prometheus/procfs"))
+       '(#:import-path "github.com/prometheus/procfs"
+         ;; The tests require Go modules, which are not yet supported in Guix's
+         ;; Go build system.
+         #:tests? #f))
       (synopsis "Go library for reading @file{/proc}")
       (description "The @code{procfs} Go package provides functions to retrieve
 system, kernel, and process metrics from the @file{/proc} pseudo file system.")
       (home-page "https://github.com/prometheus/procfs")
-      (license asl2.0))))
+      (license asl2.0)))
 
 (define-public go-github-com-client-golang-prometheus-promhttp
     (package
       (name "go-github-com-client-golang-prometheus-promhttp")
-      (version "0.9.2")
+      (version "0.9.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1058,7 +1035,7 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02b4yg6rfag0m3j0i39sillcm5xczwv8h133vn12yr8qw04cnigs"))))
+                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
       (build-system go-build-system)
       (arguments
        '(#:tests? #f ; The tests require internet access
@@ -1087,7 +1064,7 @@ server tools for Prometheus metrics.")
 (define-public go-github-com-prometheus-client-golang-prometheus
     (package
       (name "go-github-com-prometheus-client-golang-prometheus")
-      (version "0.9.2")
+      (version "0.9.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -1096,7 +1073,7 @@ server tools for Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "02b4yg6rfag0m3j0i39sillcm5xczwv8h133vn12yr8qw04cnigs"))))
+                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/client_golang/prometheus"
@@ -1204,7 +1181,7 @@ quoting, commenting, and escaping.")
 (define-public go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg
   (package
     (name "go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg")
-    (version "0.2.0")
+    (version "0.4.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1213,7 +1190,7 @@ quoting, commenting, and escaping.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "02kym6lcfnlq23qbv277jr0q1n7jj0r14gqg93c7wn7gc44jv3vp"))))
+                "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg"
@@ -1222,3 +1199,53 @@ quoting, commenting, and escaping.")
     (description "This package is an internal component of Prometheus.")
     (home-page "https://github.com/prometheus/common")
     (license asl2.0)))
+
+(define-public go-github-com-audriusbutkevicius-pfilter
+  (let ((commit "c55ef6137fc6f075801eac099cc2687ede0f101d")
+        (revision "3"))
+    (package
+      (name "go-github-com-audriusbutkevicius-pfilter")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/AudriusButkevicius/pfilter.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "0xzhwyd0w21bhvzl5pinn22hp0y6h44rh3s2ppql69rafc6zd3c6"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/AudriusButkevicius/pfilter"))
+      (synopsis "Filter packets into mulitple virtual connections")
+      (description "Pfilter is a Go package for filtering packets into multiple
+virtual connections from a single physical connection.")
+      (home-page "https://github.com/AudriusButkevicius/pfilter")
+      (license expat))))
+
+(define-public go-github-com-ccding-go-stun
+  (let ((commit "be486d185f3dfcb2dbf8429332da50a0da7f95a6")
+        (revision "2"))
+    (package
+      (name "go-github-com-ccding-go-stun")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                 (url "https://github.com/ccding/go-stun.git")
+                 (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256
+           (base32
+            "1gr0rw1c1y7wh6913lyn5k4ig023by27i36bly6am8dwgrgp34ww"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ccding/go-stun"))
+      (synopsis "STUN client implementation")
+      (description "Go-stun is a go implementation of the STUN client (RFC 3489
+and RFC 5389).")
+      (home-page "https://github.com/ccding/go-stun")
+      (license asl2.0))))
