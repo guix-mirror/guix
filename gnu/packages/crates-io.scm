@@ -882,3 +882,24 @@ whitespace from a string.")
 @code{wasm-bindgen} and @code{wasm-bindgen} cli, an internal dependency.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-winapi-i686-pc-windows-gnu
+  (package
+    (name "rust-winapi-i686-pc-windows-gnu")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi-i686-pc-windows-gnu" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dmpa6mvcvzz16zg6d5vrfy4bxgg541wxrcip7cnshi06v38ffxc"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Import libraries for the i686-pc-windows-gnu target")
+    (description "This crate provides import libraries for the
+i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
+@code{winapi} instead.")
+    (license (list license:asl2.0
+                   license:expat))))
