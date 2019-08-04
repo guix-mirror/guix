@@ -578,6 +578,27 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-scoped-tls
+  (package
+    (name "rust-scoped-tls")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scoped-tls" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hj8lifzvivdb1z02lfnzkshpvk85nkgzxsy2hc0zky9wf894spa"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/scoped-tls")
+    (synopsis "Rust library providing the old standard library's scoped_thread_local")
+    (description "This crate provides a library implementation of the standard
+library's old @code{scoped_thread_local!} macro for providing scoped access to
+@dfn{thread local storage} (TLS) so any type can be stored into TLS.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
