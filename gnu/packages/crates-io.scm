@@ -781,6 +781,26 @@ implementation is incomplete.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ucd-util
+  (package
+    (name "rust-ucd-util")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ucd-util" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x088q5z0m09a2jqcfgsnq955y8syn1mgn35cl78qinkxm4kp6zs"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/BurntSushi/ucd-generate")
+    (synopsis "library for working with the Unicode character database")
+    (description "This package provides a small utility library for working
+with the Unicode character database.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
