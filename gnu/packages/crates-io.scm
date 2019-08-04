@@ -151,6 +151,26 @@ for intentionally leaking memory")
 from macros.")
     (license license:expat)))
 
+(define-public rust-dtoa
+  (package
+    (name "rust-dtoa")
+    (version "0.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dtoa" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0phbm7i0dpn44gzi07683zxaicjap5064w62pidci4fhhciv8mza"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/dtoa")
+    (synopsis "Fast functions for printing floating-point primitives")
+    (description "This crate provides fast functions for printing
+floating-point primitives to an @code{io::Write}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
