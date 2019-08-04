@@ -516,6 +516,26 @@ in terms of the upstream unstable API.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-quick-error
+  (package
+    (name "rust-quick-error")
+    (version "1.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quick-error" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1w6kgwwv7p7zr0yyg5rb315lkk24bimywklwx7fsvsbwi10bjx4j"))))
+    (build-system cargo-build-system)
+    (home-page "http://github.com/tailhook/quick-error")
+    (synopsis "Macro which makes error types pleasant to write")
+    (description "This crate provides a macro which makes error types pleasant
+to write.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-quote
   (package
     (name "rust-quote")
