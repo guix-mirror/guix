@@ -720,6 +720,26 @@ crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-strsim
+  (package
+    (name "rust-strsim")
+    (version "0.9.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "strsim" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xphwhf86yxxmcpvm4mikj8ls41f6nf7gqyjm98b74mfk81h6b03"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dguo/strsim-rs")
+    (synopsis "Rust implementations of string similarity metrics")
+    (description "This crate includes implementations of string similarity
+metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
+and Jaro-Winkler.")
+    (license license:expat)))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
