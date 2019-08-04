@@ -171,6 +171,28 @@ floating-point primitives to an @code{io::Write}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fallible-iterator
+  (package
+    (name "rust-fallible-iterator")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fallible-iterator" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xq759lsr8gqss7hva42azn3whgrbrs2sd9xpn92c5ickxm1fhs4"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/rust-fallible-iterator")
+    (synopsis "Fallible iterator traits")
+    (description "If the @code{std} or @code{alloc} features are enabled, this
+crate provides implementations for @code{Box}, @code{Vec}, @code{BTreeMap}, and
+@code{BTreeSet}.  If the @code{std} feature is enabled, this crate additionally
+provides implementations for @code{HashMap} and @code{HashSet}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
