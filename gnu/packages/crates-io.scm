@@ -842,3 +842,23 @@ with the Unicode character database.")
 or XID_Continue properties according to Unicode Standard Annex #31.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-unindent
+  (package
+    (name "rust-unindent")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unindent" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1x21ilf78aqcq9xzb9b7i628wm10rhk0jp0chlv06rkc690l8jw3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/indoc")
+    (synopsis "Remove a column of leading whitespace from a string")
+    (description "This crate allows you to remove a column of leading
+whitespace from a string.")
+    (license (list license:asl2.0
+                   license:expat))))
