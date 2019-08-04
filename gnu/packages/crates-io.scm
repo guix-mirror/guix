@@ -432,6 +432,26 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-plain
+  (package
+    (name "rust-plain")
+    (version "0.2.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "plain" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19n1xbxb4wa7w891268bzf6cbwq4qvdb86bik1z129qb0xnnnndl"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/randomites/plain")
+    (synopsis "Rust library that allows reinterpreting data safely")
+    (description "This package provides a small Rust library that allows users
+ to reinterpret data of certain types safely.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
