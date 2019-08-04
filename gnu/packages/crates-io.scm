@@ -233,6 +233,26 @@ implementation that is more efficient for smaller hash keys.")
 process and much more.")
     (license license:expat)))
 
+(define-public rust-futures
+  (package
+    (name "rust-futures")
+    (version "0.1.28")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "futures" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0saq8ffjw1pwf1pzhw3kq1z7dfq6wpd8x93dnni6vbkc799kkp25"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang-nursery/futures-rs")
+    (synopsis "Implementation of zero-cost futures in Rust")
+    (description "An implementation of @code{futures} and @code{streams}
+featuring zero allocations, composability, and iterator-like interfaces.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
