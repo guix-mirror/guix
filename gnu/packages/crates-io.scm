@@ -801,6 +801,26 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-unicode-width
+  (package
+    (name "rust-unicode-width")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicode-width" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09k5lipygardwy0660jhls08fsgknrazzivmn804gps53hiqc8w8"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/unicode-rs/unicode-width")
+    (synopsis "Determine displayed width according to Unicode rules")
+    (description "This crate allows you to determine displayed width of
+@code{char} and @code{str} types according to Unicode Standard Annex #11 rules.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
