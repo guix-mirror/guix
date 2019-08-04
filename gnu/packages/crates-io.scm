@@ -740,6 +740,25 @@ metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
 and Jaro-Winkler.")
     (license license:expat)))
 
+(define-public rust-synstructure-test-traits
+  (package
+    (name "rust-synstructure-test-traits")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "synstructure_test_traits" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1b3fs2b9kc1gy9dilaxqjbdl4z0mlrbbxjzkprdx953rif1c3q66"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/synstructure_test_traits")
+    (synopsis "Helper test traits for synstructure doctests")
+    (description
+     "This package provides helper test traits for synstructure doctests.")
+    (license license:expat)))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
