@@ -700,6 +700,26 @@ spinning.  They may contain data, are usable without @code{std},and static
 initializers are available.")
     (license license:expat)))
 
+(define-public rust-stdweb-internal-runtime
+  (package
+    (name "rust-stdweb-internal-runtime")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "stdweb-internal-runtime" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1nhpyra7glbwcpakhpj5a3d7h7kx1ynif473nzshmk226m91f8ym"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/koute/stdweb")
+    (synopsis "Internal runtime for the @code{stdweb} crate")
+    (description "This crate provides internal runtime for the @code{stdweb}
+crate.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
