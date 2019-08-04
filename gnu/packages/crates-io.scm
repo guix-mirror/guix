@@ -883,6 +883,32 @@ whitespace from a string.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-winapi
+  (package
+    (name "rust-winapi")
+    (version "0.3.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0w7pbhcl087lkggxdflfp2i92rq89ahsfdkjkv44fgmiy9m3h3pi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi-i686-pc-windows-gnu"
+         ,rust-winapi-i686-pc-windows-gnu)
+        ("rust-winapi-x86-64-pc-windows-gnu"
+         ,rust-winapi-x86-64-pc-windows-gnu))))
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Raw FFI bindings for all of Windows API.")
+    (description
+     "Raw FFI bindings for all of Windows API.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-winapi-i686-pc-windows-gnu
   (package
     (name "rust-winapi-i686-pc-windows-gnu")
