@@ -903,3 +903,24 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
 @code{winapi} instead.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-winapi-x86-64-pc-windows-gnu
+  (package
+    (name "rust-winapi-x86-64-pc-windows-gnu")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi-x86_64-pc-windows-gnu" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0gqq64czqb64kskjryj8isp62m2sgvx25yyj3kpc2myh85w24bki"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Import libraries for the x86_64-pc-windows-gnu target")
+    (description "This package provides import libraries for the
+x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
+@code{winapi} instead.")
+    (license (list license:asl2.0
+                   license:expat))))
