@@ -471,6 +471,26 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
 applications.")
     (license license:expat)))
 
+(define-public rust-ppv-lite86
+  (package
+    (name "rust-ppv-lite86")
+    (version "0.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ppv-lite86" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06snnv338w341nicfqba2jgln5dsla72ndkgrw7h1dfdb3vgkjz3"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/cryptocorrosion/cryptocorrosion")
+    (synopsis "Implementation of the crypto-simd API for x86")
+    (description "This crate provides an implementation of the crypto-simd API
+for x86.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-proc-macro2
   (package
     (name "rust-proc-macro2")
