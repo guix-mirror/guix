@@ -680,6 +680,26 @@ words, like Python's shlex.")
 data type.")
     (license license:expat)))
 
+(define-public rust-spin
+  (package
+    (name "rust-spin")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "spin" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0m9clchsj0rf13bggsgvbv9haiy0f6rhvnvkpvkk8720a5pkydj4"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mvdnes/spin-rs.git")
+    (synopsis "Synchronization primitives based on spinning")
+    (description "This crate provides synchronization primitives based on
+spinning.  They may contain data, are usable without @code{std},and static
+initializers are available.")
+    (license license:expat)))
+
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
