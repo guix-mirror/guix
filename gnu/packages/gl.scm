@@ -305,11 +305,8 @@ also known as DXTn or DXTC) for Mesa.")
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
-             ("x86_64-linux"
+             ((or "i686-linux" "x86_64-linux")
               '("-Dvulkan-drivers=intel,amd"))
-             ;; TODO: Fix intel driver on i686-linux.
-             ("i686-linux"
-              '("-Dvulkan-drivers=amd"))
              (_
               '("-Dvulkan-drivers=auto")))
 
