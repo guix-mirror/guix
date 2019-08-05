@@ -8153,15 +8153,18 @@ advanced image management tool")
     (inputs
      `(("cairo" ,cairo)
        ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("python2-pycairo" ,python2-pycairo)
        ("python2-pygobject" ,python2-pygobject)
        ("python2-psutil" ,python2-psutil)
        ("vte" ,vte)))
-    (propagated-inputs
-     ;; Terminator refuses to start when these are not present.
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
-     `(#:python ,python-2                          ;Python 3 not supported
+     `(#:python ,python-2                          ; Python 3 isn't supported
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -8172,7 +8175,9 @@ advanced image management tool")
               (wrap-program prog
                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-              #t))))))
+              #t)))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://gnometerminator.blogspot.com/")
     (synopsis "Store and run multiple GNOME terminals in one window")
     (description
