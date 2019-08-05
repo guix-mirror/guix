@@ -440,7 +440,7 @@ interactive environment for the functional language Haskell.")
 interactive environment for the functional language Haskell.")
     (license license:bsd-3)))
 
-(define-public ghc-8
+(define-public ghc-8.4
   (package (inherit ghc-8.0)
     (name "ghc")
     (version "8.4.3")
@@ -571,6 +571,8 @@ interactive environment for the functional language Haskell.")
                                         (string-append "lib/ghc-" version)))
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
+
+(define-public ghc-8 ghc-8.4)
 
 (define-public ghc ghc-8)
 
