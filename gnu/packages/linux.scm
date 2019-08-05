@@ -350,10 +350,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.5")
+(define-public linux-libre-5.2-version "5.2.6")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "15ndscsp3yqgas901g6inpmyvinz4cwr5y3md516j2pr8cl40if6")))
+        (hash (base32 "1whzgdz1wnjzkb78yqz4xs3mad02rv17ksmwaf4ykp4lfgxml45y")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
