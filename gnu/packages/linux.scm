@@ -1408,6 +1408,9 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
+             ;; XXX Remove the 'regenerate-tests' phase below when
+             ;; "strace-ipc-tests.patch" is no longer applied.
+             (patches (search-patches "strace-ipc-tests.patch"))
              (sha256
               (base32
                "1li49i75wrdw91hchyyd8spnzfcmxcfyfb5g9zbaza89aq4bq4ym"))))
@@ -1419,7 +1422,14 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
-             #t)))
+             #t))
+         (add-before 'configure 'regenerate-tests
+           ;; XXX Remove this phase when "strace-ipc-tests.patch" is no longer
+           ;; applied in the 'source' field above.  This phase is needed to
+           ;; regenerate many other files from tests/gen_tests.in, which is
+           ;; modified by the aforementioned patch.
+           (lambda _
+             (invoke "tests/gen_tests.sh"))))
        ;; Don't fail if the architecture doesn't support different personalities.
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.

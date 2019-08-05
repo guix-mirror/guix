@@ -1305,6 +1305,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/strace-ipc-tests.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
