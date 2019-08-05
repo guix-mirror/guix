@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Pierre-Moana Levesque <pierre.moana.levesque@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,16 +146,17 @@
          (replace 'configure
            (lambda* (#:key (configure-flags '()) #:allow-other-keys)
              (apply invoke "./configure" configure-flags))))))
-    (inputs
+    (native-inputs
      `(("bzip2" ,bzip2)
        ("curl" ,curl)
        ("expat" ,expat)
        ("file" ,file)
        ("libarchive" ,libarchive)
        ("libuv" ,libuv)
-       ("ncurses" ,ncurses) ; required for ccmake
        ("rhash" ,rhash)
        ("zlib" ,zlib)))
+    (inputs
+     `(("ncurses" ,ncurses))) ; required for ccmake
     (native-search-paths
      (list (search-path-specification
             (variable "CMAKE_PREFIX_PATH")
