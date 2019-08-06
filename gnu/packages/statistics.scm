@@ -2490,18 +2490,19 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.4.2")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "1g6hslk3z0xga38r71irxq802wskg6nv804mp8y9f7i2wfrj0y55"))))
+         "06snfqdczr0x0nbp7qnvwhlp2pw0wx9c2y3xb4gr1wrvbik74y58"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
-       ("r-pkgconfig" ,r-pkgconfig)))
+       ("r-pkgconfig" ,r-pkgconfig)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/rstats-db/hms")
     (synopsis "Pretty time of day")
     (description
