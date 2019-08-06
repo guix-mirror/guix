@@ -1497,13 +1497,13 @@ you to rapidly iterate while developing a package.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "015rmxns8mhmnd9wnz9bmma4iwx2sf4bcwkkp9hcgvdmblzf0vg7"))))
+        (base32 "170jlmjrs92z5qdv58badhxycjvfjpqwwpic7rm13pc9zkb3i4xd"))))
     (build-system r-build-system)
     (native-inputs
      `(("r-knitr" ,r-knitr))) ; for vignettes
