@@ -3076,14 +3076,14 @@ Laplace approximation and adaptive Gauss-Hermite quadrature.")
 (define-public r-jomo
   (package
     (name "r-jomo")
-    (version "2.6-8")
+    (version "2.6-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jomo" version))
        (sha256
         (base32
-         "097zfdcqc3a45ay8xxbraqh8xsfyivskkdmc2b4ca4n979lx8vyb"))))
+         "16ychdhhv8cii8zrdfdf5gzgnvmfaq573bmi00xqdf323q3lf3xr"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lme4" ,r-lme4)
