@@ -4082,7 +4082,7 @@ relic support.")
         (base32
          "0h3wfnpv5d4d3f9xzmwkchay6251nhzngdv3f6xia56mj4hxabs0"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-clone-choose" ,perl-clone-choose)))
     (home-page "https://metacpan.org/release/Hash-Merge")
     (synopsis "Merge arbitrarily deep hashes into a single hash")
