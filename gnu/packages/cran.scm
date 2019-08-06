@@ -14639,14 +14639,14 @@ and model output.")
 (define-public r-enrichr
   (package
     (name "r-enrichr")
-    (version "1.0")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "enrichR" version))
        (sha256
         (base32
-         "0lfdr45sdyqhvgz8q4qdbk12mpv86d6id665kq6aaslgr8jggfmn"))))
+         "056m6hksfss29fj7zvlk7pbh8g3gq84kjh3240isrsnhp9m1h9iz"))))
     (properties `((upstream-name . "enrichR")))
     (build-system r-build-system)
     (propagated-inputs
