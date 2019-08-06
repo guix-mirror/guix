@@ -8332,14 +8332,14 @@ terminals that do not support Unicode.")
 (define-public r-usethis
   (package
     (name "r-usethis")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "usethis" version))
        (sha256
         (base32
-         "0pn6ka3726psaqlx573g6nxi90apf0rn5m4k2lz1jr66xdc19sag"))))
+         "07an5wbikilg7cb3q6x5aykw8dfqnjrc3wpfb7gjmy0d9fh20fcy"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-clipr" ,r-clipr)
