@@ -25,7 +25,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages image))
 
 (define-public ocrad
@@ -131,3 +133,21 @@ that allows us to create any hand-written recognition systems with low-cost.")
                       "file://zinnia/aclocal.m4")
                      license:x11 ; 'install-sh'
                      license:public-domain))))) ; 'install-sh'
+
+;;; python 2 bindings, license under the same terms as zinnia
+(define-public python2-zinnia
+  (package
+    (inherit zinnia)
+    (name "python2-zinnia")
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; CObject API is used, it was removed in Python 3.2
+       #:tests? #f ; avoid circular dependency on tegaki-zinnia-japanese
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "zinnia/python")
+             #t)))))
+    (inputs
+     `(("zinnia" ,zinnia)))))
