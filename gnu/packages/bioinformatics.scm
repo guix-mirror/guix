@@ -9418,14 +9418,14 @@ of mass spectrometry based proteomics data.")
 (define-public r-msnid
   (package
     (name "r-msnid")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnID" version))
        (sha256
         (base32
-         "18mp8zacawhfapfwpq8czbswxix2ykvqhwjga54v0a99zg3k87h3"))))
+         "1n49l5mjdz7p4g2nwsbhm1jcj42sv6lsriq77n2imvacsvk0qfmb"))))
     (properties `((upstream-name . "MSnID")))
     (build-system r-build-system)
     (propagated-inputs
