@@ -792,17 +792,18 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.4")
+    (version "4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1qd7a10gs12ifcp31gramcgqjl77swskjfp7cijibgyg5yl4kw7i"))))
+               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fontconfig" ,fontconfig)
+     `(("dav1d" ,dav1d)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
@@ -901,6 +902,7 @@ operate properly.")
          "--enable-libbluray"
          "--enable-libcaca"
          "--enable-libcdio"
+         "--enable-libdav1d"
          "--enable-libfreetype"
          "--enable-libmp3lame"
          "--enable-libopus"
@@ -983,9 +985,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libaom" ,flags))))
-    (inputs (alist-delete "libaom"
-                          (package-inputs ffmpeg)))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom"
+                 ,flags)))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom"
+                          (package-inputs ffmpeg))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
