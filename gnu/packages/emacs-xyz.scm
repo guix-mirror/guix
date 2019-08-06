@@ -11971,7 +11971,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method git-fetch)
@@ -11980,7 +11980,7 @@ downloading manager for Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pzlx3galyryd3hd84hnd7r5s6yl9sdrfhy1s6dgz40glw41wmpr"))))
+        (base32 "0v2y0x9pwi08y2mgjjiw5brfb5haa7pbmy4540glw904ffxxcblj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)
