@@ -14613,14 +14613,14 @@ engine (Salmon et al., 2011) as provided by the package @code{sitmo}.")
 (define-public r-dalex
   (package
     (name "r-dalex")
-    (version "0.4")
+    (version "0.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "DALEX" version))
        (sha256
         (base32
-         "1mr8lqq8s4aacmh7xdhmkmv8vsjqjczlqlaw27xnsljgj2kgq87a"))))
+         "04i17ni8g595jj8dxdfwr9vsxmdn2kkam90ab68vlwws3ywqjl6r"))))
     (properties `((upstream-name . "DALEX")))
     (build-system r-build-system)
     (propagated-inputs `(("r-ggplot2" ,r-ggplot2)))
