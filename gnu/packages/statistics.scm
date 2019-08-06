@@ -4568,19 +4568,19 @@ Farebrother's algorithm or Liu et al.'s algorithm.")
 (define-public r-cowplot
   (package
     (name "r-cowplot")
-    (version "0.9.4")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cowplot" version))
        (sha256
         (base32
-         "0yvalwalvyddyqk0q66y8361nxlh2cvp3ssazax9g5q89lghjmzv"))))
+         "19cqdhgfyr1wj0fz0c5ly8f0aiy9sfgzq6lzb78hkx0hdp2agybh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
        ("r-gtable" ,r-gtable)
-       ("r-plyr" ,r-plyr)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)))
     (home-page "https://github.com/wilkelab/cowplot")
     (synopsis "Streamlined plot theme and plot annotations for ggplot2")
