@@ -65,7 +65,8 @@
               "14460zhacxhswnzb36qfpd1f2wbk10qvksvm6wyq5hpvdgnw7ymv"))
             (patches (search-patches "libmad-armv7-thumb-pt1.patch"
                                      "libmad-armv7-thumb-pt2.patch"
-                                     "libmad-frame-length.patch"
+                                     "libmad-md_size.patch"
+                                     "libmad-length-check.patch"
                                      "libmad-mips-newgcc.patch"))))
    (build-system gnu-build-system)
    (arguments
