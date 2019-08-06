@@ -8195,14 +8195,14 @@ results using @code{ggplot2}.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.6.3")
+    (version "2.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
         (base32
-         "0h1mkmp5mrkbf7y3zh6m4cnm737cpg1m5si0lrmal7j2ixqicwjy"))))
+         "1m0gy991fmxvqry91kkzdkdapyalhrwql25d0hg2a2naxgfw4zpk"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
@@ -8212,6 +8212,7 @@ results using @code{ggplot2}.")
        ("r-forcats" ,r-forcats)
        ("r-ggeffects" ,r-ggeffects)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
        ("r-glmmtmb" ,r-glmmtmb)
        ("r-insight" ,r-insight)
        ("r-knitr" ,r-knitr)
