@@ -51,6 +51,7 @@
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17215,3 +17216,28 @@ time.")
     (description "@code{mastodon.el} is an Emacs client for Mastodon, the
 federated microblogging social network.")
     (license license:gpl3+)))
+
+;; The last release tarball is for version 0.6.  We pick a commit close to
+;; version 0.6.10, which doesn't have a release tarball.
+(define-public emacs-ebdb
+  (let ((commit "2a87f5ed2a53e3a4e91e8c88ba5afc49f5e945df")
+        (revision "0"))
+    (package
+      (name "emacs-ebdb")
+      (version (git-version "0.6.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/girzel/ebdb.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fidy7z0c86dpqiss97sg5s92fd3fj4bdl8pqqdgg2m00jx4mrjz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/girzel/ebdb")
+      (synopsis "EIEIO port of BBDB, Emacs's contact-management package")
+      (description "EBDB is a contact management/addressbook package for
+Emacs.  It's a re-write of the Insidious Big Brother Database (BBDB) using
+Emacs Lisp's (relatively new) EIEIO object oriented libraries.")
+      (license license:gpl3+))))
