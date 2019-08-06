@@ -195,21 +195,31 @@ BOOTLOADER-PACKAGE."
                         (srfi srfi-34)
                         (srfi srfi-35))
            (let* ((gc-root (string-append #$target %gc-roots-directory "/bootcfg"))
-                  (temp-gc-root (string-append gc-root ".new")))
-             (switch-symlinks temp-gc-root gc-root)
-             (install-boot-config #$bootcfg #$bootcfg-file #$target)
+                  (new-gc-root (string-append gc-root ".new")))
+             ;; #$bootcfg has dependencies.
+             ;; The bootloader magically loads the configuration from
+             ;; (string-append #$target #$bootcfg-file) (for example
+             ;; "/boot/grub/grub.cfg").
+             ;; If we didn't do something special, the garbage collector
+             ;; would remove the dependencies of #$bootcfg.
+             ;; Register #$bootcfg as a GC root.
              ;; Preserve the previous activation's garbage collector root
              ;; until the bootloader installer has run, so that a failure in
              ;; the bootloader's installer script doesn't leave the user with
              ;; a broken installation.
+             (switch-symlinks new-gc-root #$bootcfg)
+             (install-boot-config #$bootcfg #$bootcfg-file #$target)
              (when #$installer
                (catch #t
                  (lambda ()
                    (#$installer #$bootloader-package #$device #$target))
                  (lambda args
-                   (delete-file temp-gc-root)
+                   (delete-file new-gc-root)
                    (apply throw args))))
-             (rename-file temp-gc-root gc-root)))))))
+             ;; We are sure that the installation of the bootloader
+             ;; succeeded, so we can replace the old GC root by the new
+             ;; GC root now.
+             (rename-file new-gc-root gc-root)))))))
 
 (define* (install-bootloader eval configuration bootcfg
                              #:key
