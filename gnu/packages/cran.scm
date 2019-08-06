@@ -10164,6 +10164,33 @@ library.")
 and manipulating sets of ontological terms.")
     (license license:gpl2+)))
 
+(define-public r-gargle
+  (package
+    (name "r-gargle")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gargle" version))
+       (sha256
+        (base32
+         "0vqgp4w03sdyj0q96gxkybqflzzbaw84zifsbi7pxk5y08fimj2v"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-fs" ,r-fs)
+       ("r-glue" ,r-glue)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rlang" ,r-rlang)
+       ("r-withr" ,r-withr)))
+    (home-page "https://gargle.r-lib.org")
+    (synopsis "Utilities for working with Google APIs")
+    (description
+     "This package provides utilities for working with Google APIs.  This
+includes functions and classes for handling common credential types and for
+preparing, executing, and processing HTTP requests.")
+    (license license:expat)))
+
 (define-public r-bigrquery
   (package
     (name "r-bigrquery")
