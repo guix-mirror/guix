@@ -9808,14 +9808,14 @@ used by other packages.")
 (define-public r-shades
   (package
     (name "r-shades")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shades" version))
        (sha256
         (base32
-         "0v0xp9l1zyq4iysmkrbdwk4r1rksjj8p5c1726yrcgyg55mj59nv"))))
+         "1zg95sjhrfvbdlfc387g9p0vnb8nb6agdk1mb3wq3kwkm2da0bqj"))))
     (build-system r-build-system)
     (home-page "https://github.com/jonclayden/shades")
     (synopsis "Simple color manipulation")
