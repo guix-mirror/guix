@@ -2892,14 +2892,14 @@ provides a one-row summary of model-level statistics.")
 (define-public r-recipes
   (package
     (name "r-recipes")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "recipes" version))
        (sha256
         (base32
-         "056zv4vhayyy8q9izcdknbb9hff2gxivg21g5mkssia78vw8g3mg"))))
+         "1ndz9h0zvdj141r63l8047wbhaj0x8fwzzyq7b8mh78pvrrdpq2i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -2911,7 +2911,6 @@ provides a one-row summary of model-level statistics.")
        ("r-magrittr" ,r-magrittr)
        ("r-matrix" ,r-matrix)
        ("r-purrr" ,r-purrr)
-       ("r-rcpproll" ,r-rcpproll)
        ("r-rlang" ,r-rlang)
        ("r-tibble" ,r-tibble)
        ("r-tidyr" ,r-tidyr)
