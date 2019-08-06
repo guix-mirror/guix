@@ -12242,14 +12242,14 @@ R, enabling interactive analysis and visualization of genome-scale data.")
 (define-public r-rematch2
   (package
     (name "r-rematch2")
-    (version "2.0.1")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rematch2" version))
        (sha256
         (base32
-         "16k0i5p7fa3qfxv59ijyn638wpz8n4jrkrnilqmh5g9l8f8bn4h6"))))
+         "00cznm6rk33b53w7zybkz7549bnydc66znpi5mb0xd24pmqp0rvq"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-tibble" ,r-tibble)))
