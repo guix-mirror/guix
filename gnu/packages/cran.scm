@@ -11287,14 +11287,14 @@ machine or distributed on a compute cluster.")
 (define-public r-rsvd
   (package
     (name "r-rsvd")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rsvd" version))
        (sha256
         (base32
-         "1faskhf5j2bj9f971qljsmh182g3rnyilj1wwijz530a6skxidzz"))))
+         "0fia77y5fxnhwkcxlgp98ygb8fdfraky75x80hkf7kvvpwc5rzn8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-matrix" ,r-matrix)))
