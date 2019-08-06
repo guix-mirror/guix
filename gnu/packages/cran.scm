@@ -5649,14 +5649,14 @@ clustering.")
 (define-public r-factominer
   (package
     (name "r-factominer")
-    (version "1.41")
+    (version "1.42")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "FactoMineR" version))
        (sha256
         (base32
-         "1h20hydav6l2b7bngqw1av4l5rrh0wk58nhailga1f4qw9lrv259"))))
+         "1yl16inb2m89l1czgaf0pgy9655dpr751hyx92yw6rqpd2ryznac"))))
     (properties `((upstream-name . "FactoMineR")))
     (build-system r-build-system)
     (propagated-inputs
