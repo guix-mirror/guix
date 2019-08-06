@@ -2436,13 +2436,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.0.2")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "028pppj39ng7q17k27531s8k00lmw982vz5krn74n9b8f2azm8lr"))))
+                "0393v7nr22gr5g9afgrhq4ab3lwbqy6fd3shnmlhdpqam5357xy1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -2455,9 +2455,11 @@ informative error messages when it's not available.")
        ("r-pkgbuild" ,r-pkgbuild)
        ("r-pkgload" ,r-pkgload)
        ("r-rcmdcheck" ,r-rcmdcheck)
+       ("r-roxygen2" ,r-roxygen2)
        ("r-remotes" ,r-remotes)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-sessioninfo" ,r-sessioninfo)
+       ("r-testthat" ,r-testthat)
        ("r-usethis" ,r-usethis)
        ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/devtools")
