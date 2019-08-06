@@ -9463,14 +9463,14 @@ giving it a description in the specific format.")
 (define-public r-sparsesvd
   (package
     (name "r-sparsesvd")
-    (version "0.1-4")
+    (version "0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sparsesvd" version))
        (sha256
         (base32
-         "1yf373552wvdnd65r7hfcqa3v29dqn7jd4cn431mqd2acnqjrsam"))))
+         "1xm969fjq3fv1p2sqza2apz8picibj4s2agpwf1sx9nwn3b587qs"))))
     (build-system r-build-system)
     (propagated-inputs `(("r-matrix" ,r-matrix)))
     (home-page "http://tedlab.mit.edu/~dr/SVDLIBC/")
