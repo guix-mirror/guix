@@ -34,7 +34,7 @@
   #:use-module (guix ui)
   #:use-module ((guix download) #:select (download-to-store url-fetch))
   #:use-module ((guix import utils) #:select (factorize-uri
-                                              flatten assoc-ref*))
+                                              flatten hash-ref*))
   #:use-module (guix import json)
   #:use-module (guix packages)
   #:use-module (guix upstream)
@@ -76,8 +76,8 @@
    ;; ssleay
    ;; sun
    ("zlib" 'zlib)
-   (#(x) (string->license x))
-   (#(lst ...) `(list ,@(map string->license lst)))
+   ((x) (string->license x))
+   ((lst ...) `(list ,@(map string->license lst)))
    (_ #f)))
 
 (define (module->name module)
@@ -88,11 +88,11 @@
   "Return the base distribution module for a given module.  E.g. the 'ok'
 module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
 return \"Test-Simple\""
-  (assoc-ref (json-fetch (string-append
-                          "https://fastapi.metacpan.org/v1/module/"
-                          module
-                          "?fields=distribution"))
-             "distribution"))
+  (hash-ref (json-fetch (string-append
+                         "https://fastapi.metacpan.org/v1/module/"
+                         module
+                         "?fields=distribution"))
+            "distribution"))
 
 (define (package->upstream-name package)
   "Return the CPAN name of PACKAGE."
@@ -122,12 +122,12 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
 (define (cpan-source-url meta)
   "Return the download URL for a module's source tarball."
   (regexp-substitute/global #f "http[s]?://cpan.metacpan.org"
-                            (assoc-ref meta "download_url")
+                            (hash-ref meta "download_url")
                             'pre "mirror://cpan" 'post))
 
 (define (cpan-version meta)
   "Return the version number from META."
-  (match (assoc-ref meta "version")
+  (match (hash-ref meta "version")
     ((? number? version)
      ;; version is sometimes not quoted in the module json, so it gets
      ;; imported into Guile as a number, so convert it to a string.
@@ -183,7 +183,7 @@ depend on (gnu packages perl)."
   "Return the `package' s-expression for a CPAN module from the metadata in
 META."
   (define name
-    (assoc-ref meta "distribution"))
+    (hash-ref meta "distribution"))
 
   (define (guix-name name)
     (if (string-prefix? "perl-" name)
@@ -198,7 +198,9 @@ META."
     (match (flatten
             (map (lambda (ph)
                    (filter-map (lambda (t)
-                                 (assoc-ref* meta "metadata" "prereqs" ph t))
+                                 (and=> (hash-ref* meta "metadata" "prereqs" ph t)
+                                        (lambda (h)
+                                          (hash-map->list cons h))))
                                '("requires" "recommends" "suggests")))
                  phases))
       (#f
@@ -251,9 +253,9 @@ META."
        ,@(maybe-inputs 'propagated-inputs
                        (convert-inputs '("runtime")))
        (home-page ,(cpan-home name))
-       (synopsis ,(assoc-ref meta "abstract"))
+       (synopsis ,(hash-ref meta "abstract"))
        (description fill-in-yourself!)
-       (license ,(string->license (assoc-ref meta "license"))))))
+       (license ,(string->license (hash-ref meta "license"))))))
 
 (define (cpan->guix-package module-name)
   "Fetch the metadata for PACKAGE-NAME from metacpan.org, and return the

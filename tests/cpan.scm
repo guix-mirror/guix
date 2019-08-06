@@ -24,7 +24,8 @@
   #:use-module (guix tests)
   #:use-module (guix grafts)
   #:use-module (srfi srfi-64)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 hash-table))
 
 ;; Globally disable grafts because they can trigger early builds.
 (%graft? #f)
@@ -109,14 +110,16 @@
 
 (test-equal "source-url-http"
   ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
+   (alist->hash-table
+    `(("download_url" .
+       "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))))
   "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
 
 (test-equal "source-url-https"
   ((@@ (guix import cpan) cpan-source-url)
-   `(("download_url" .
-      "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")))
+   (alist->hash-table
+    `(("download_url" .
+       "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz"))))
   "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
 
 (test-end "cpan")
