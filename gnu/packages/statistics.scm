@@ -75,6 +75,7 @@
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -2393,20 +2394,16 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.25.2")
+    (version "0.26.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "15kpvz6ry2r8ii5hzinjwkggc5kgmkbcpsdwzahsf8gha52w80p0"))))
+                "0dbl845sahv2i641ncaf06w06djravwc5wknp9syzx0ad8l0kmhk"))))
     (build-system r-build-system)
-    ;; This R package contains modified sources of libgit2.  This modified
-    ;; version of libgit2 is built as the package is built.  Hence libgit2 is
-    ;; not among the inputs of this package.
     (inputs
-     `(("libssh2" ,libssh2) ; for SSH transport
-       ("openssl" ,openssl)
+     `(("libgit2" ,libgit2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
