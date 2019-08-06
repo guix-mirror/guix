@@ -4642,14 +4642,14 @@ regression.")
 (define-public r-fastica
   (package
     (name "r-fastica")
-    (version "1.2-1")
+    (version "1.2-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fastICA" version))
        (sha256
         (base32
-         "108z2ymby5y4h8l4l2krqwm28rya93gq09yylgilnm3afvfrfabg"))))
+         "1zpijqcipm0aa3rxj0mys06lskqy4dbppjpxr1aby0j16y9ka8ij"))))
     (properties `((upstream-name . "fastICA")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/fastICA")
