@@ -11495,14 +11495,14 @@ identifying outliers.")
 (define-public r-bayesm
   (package
     (name "r-bayesm")
-    (version "3.1-1")
+    (version "3.1-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bayesm" version))
        (sha256
         (base32
-         "0y30cza92s6kgvmxjpr6f5g0qbcck7hslqp89ncprarhxiym2m28"))))
+         "041ach2f2vrqzd5kz17v7wmkjz6z8cjjihpk4qvczm4cr9z85r2i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
