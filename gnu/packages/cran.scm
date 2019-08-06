@@ -14749,18 +14749,17 @@ into R and converted to @code{BibEntry} objects.")
 (define-public r-citr
   (package
     (name "r-citr")
-    (version "0.3.0")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "citr" version))
        (sha256
         (base32
-         "0pik6s6xk5768s3kkppw2192dj455py53gsn6k2b7xgg96ircy0g"))))
+         "0p2sg0fl7cppxxmr20qyqzs2469kglmgpsvykynw4qx501as57rc"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
-       ("r-bibtex" ,r-bibtex)
        ("r-curl" ,r-curl)
        ("r-httr" ,r-httr)
        ("r-miniui" ,r-miniui)
