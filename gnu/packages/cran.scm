@@ -3859,18 +3859,19 @@ to variables on the left-hand side of the assignment.")
 (define-public r-vctrs
   (package
     (name "r-vctrs")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "vctrs" version))
        (sha256
         (base32
-         "13w1r8zpalirpfaz5sykpn0mj4jmhxi2qkdcfq081ixlfjyzwa6c"))))
+         "05h0y8qzwc899qj84gkhg4jwzscd065as00d4d8smv42h4i8zkjv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)
        ("r-digest" ,r-digest)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-glue" ,r-glue)
        ("r-rlang" ,r-rlang)
        ("r-zeallot" ,r-zeallot)))
