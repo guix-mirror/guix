@@ -47,6 +47,7 @@
 
             flatten
             assoc-ref*
+            hash-ref*
 
             url-fetch
             guix-hash-url
@@ -115,6 +116,15 @@ recursively apply the procedure to the sub-list."
   (if (null? rest)
       (assoc-ref alist key)
       (apply assoc-ref* (assoc-ref alist key) rest)))
+
+(define (hash-ref* hash-table key . rest)
+  "Return the value for KEY from HASH-TABLE.  For each additional key specified,
+recursively apply the procedure to the sub-hash-table."
+  (if (hash-table? hash-table)
+      (if (null? rest)
+          (hash-ref hash-table key)
+          (apply hash-ref* (hash-ref hash-table key) rest))
+      #f))                              ; For consistency with assoc-ref*
 
 (define (url-fetch url file-name)
   "Save the contents of URL to FILE-NAME.  Return #f on failure."
