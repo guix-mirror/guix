@@ -3264,26 +3264,19 @@ tactics.")
 (define-public starfighter
   (package
     (name "starfighter")
-    (version "2.0.0.2")
-    ;; As recommended by the upstream maintainer, use the git source code
-    ;; instead of the released source tarball until missing files in the tarball
-    ;; are added.  The 'url-fetch' method may be appropriate again after the
-    ;; next update.  See https://github.com/pr-starfighter/starfighter/issues/1
-    ;; for more details.
+    (version "2.0.0.3")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/pr-starfighter/starfighter")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/pr-starfighter/starfighter/releases"
+                    "/download/v" version "/starfighter-"
+                    (version-major+minor version) "-src.tar.gz"))
               (sha256
                (base32
-                "0p81ywgm2dxjbpmbsgx4f2d83sy6lv3hinrr1vzprkf9viidqnd2"))))
+                "13vi5kh9ahws4f52421cbyw0jn7pmbnld358lqfmr6flql7ilj3b"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("pango" ,pango)
        ("sdl2" ,sdl2)
@@ -6763,7 +6756,7 @@ fight each other on an arena-like map.")
 (define-public flare-engine
   (package
     (name "flare-engine")
-    (version "1.10")
+    (version "1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6772,7 +6765,7 @@ fight each other on an arena-like map.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19l83145ya1wk666acr91b6917a63ak7l77d10i5im8xfhv29ml4"))))
+                "1mqr1s72p5bdh4kq2a8hg72dk8lwnddicjnd2cdp1sbfa9lmjym8"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test
@@ -6791,7 +6784,7 @@ action RPGs.")
 (define-public flare-game
   (package
     (name "flare-game")
-    (version "1.10")
+    (version "1.11")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -6800,7 +6793,7 @@ action RPGs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0dx4f1j1n3p4q3h0r0fb89f0llvhg9lia0s247pacff3r88ljihk"))))
+                "0bd5g7sd89a9176ilr408hdqzdfv4j7wj0idd685c1n6s01c3h6p"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test

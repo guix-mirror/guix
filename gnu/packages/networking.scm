@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
+;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -593,14 +594,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.2")
+    (version "3.0.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0fz5lbyiw4a27fqc4ndi1w20bpcb6wi9k7vjv29l9fhd99kca7ky"))))
+        (base32 "0711jilp9sbgi46d105m3galw8n4wk5yncawi08031qxg2f754mg"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1080,6 +1081,29 @@ definitions and structure manipulators for Perl.")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
 offline emulation of DNS.")
   (license license:perl-license)))
+
+(define-public perl-net-dns-resolver-mock
+  (package
+    (name "perl-net-dns-resolver-mock")
+    (version "1.20171219")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                     "mirror://cpan/authors/id/M/MB/MBRADSHAW/"
+                     "Net-DNS-Resolver-Mock-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m3rxpkv1b9121srvbqkrgzg4m8mnydiydqv34in1i1ixwrl6jn9"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-net-dns" ,perl-net-dns)))
+    (home-page "https://metacpan.org/release/Net-DNS-Resolver-Mock")
+    (synopsis "Mock DNS Resolver object for testing")
+    (description
+     "Net::DNS::Resolver::Mock is a subclass of Net::DNS::Resolver, but returns
+static data from any provided DNS zone file instead of querying the network.
+It is intended primarily for use in testing.")
+    (license license:perl-license)))
 
 (define-public perl-netaddr-ip
  (package

@@ -821,8 +821,14 @@ computing environments.")
              (setenv "HOME" "/tmp")
 
              (invoke "pytest" "sklearn" "-m" "not network")))
-         ;; FIXME: This fails with permission denied
-         (delete 'reset-gzip-timestamps))))
+         (add-before 'reset-gzip-timestamps 'make-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure .gz files are writable so that the
+             ;; 'reset-gzip-timestamps' phase can do its work.
+             (let ((out (assoc-ref outputs "out")))
+               (for-each make-file-writable
+                         (find-files out "\\.gz$"))
+               #t))))))
     (inputs
      `(("openblas" ,openblas)))
     (native-inputs

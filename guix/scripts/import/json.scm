@@ -93,7 +93,7 @@ Import and convert the JSON package definition in PACKAGE-FILE.\n"))
            (let ((json (json-string->scm
                         (with-input-from-file file-name read-string))))
              ;; TODO: also print define-module boilerplate
-             (package->code (alist->package (hash-table->alist json)))))
+             (package->code (alist->package json))))
          (lambda _
            (leave (G_ "invalid JSON in file '~a'~%") file-name))))
       (()

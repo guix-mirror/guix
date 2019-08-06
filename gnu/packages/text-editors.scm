@@ -8,6 +8,7 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
@@ -50,6 +52,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages regex)
   #:use-module (gnu packages ruby)
@@ -397,15 +400,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.9")
+    (version "1.99.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32
-         "0i95sf9y8qpgxd8f39cprbp3s200nm9lml0xdpyn46n838acvw19"))
+        (base32 "12bp0f34izzqimz49lfpgf4lyz3h45s9xbmk8v6zsawdjki76alg"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -421,7 +423,7 @@ editors.")
        ("python" ,python-wrapper)
        ("qt" ,qt-4)))
     (arguments
-     `(#:tests? #f ;no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'gzip-flags
@@ -437,3 +439,131 @@ types of content.  It has robust support for mathematical formulas and plots.
 and Octave.  TeXmacs is completely extensible via Guile.")
     (license license:gpl3+)
     (home-page "https://www.texmacs.org/tmweb/home/welcome.en.html")))
+
+(define-public scintilla
+  (package
+    (name "scintilla")
+    (version "4.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((v (apply string-append (string-split version #\.))))
+                     (string-append
+                      "https://www.scintilla.org/scintilla" v ".tgz")))
+              (sha256
+               (base32
+                "02ymi86fpcypg6423vfr54lbkxbks046q02v3m3dypawcf3bqy42"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
+       #:tests? #f                      ;require un-packaged Pyside
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configure script
+         (add-after 'unpack 'build-shared-library
+           (lambda _
+             (substitute* "gtk/makefile"
+               (("scintilla\\.a") "libscintilla.so")
+               (("\\$\\(AR\\) \\$\\(ARFLAGS\\) \\$@ \\$\\^")
+                "$(CC) -shared $^ -o $@")
+               (("\\$\\(RANLIB\\) \\$@") ""))
+             #t))
+         (add-before 'build 'expand-C++-include-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Make <gcc>/include/c++/ext/string_conversions.h find
+             ;; <stdlib.h>.
+             (let* ((path "CPLUS_INCLUDE_PATH")
+                    (gcc  (assoc-ref inputs "gcc"))
+                    (c++  (string-append gcc "/include/c++")))
+               (setenv path (string-append c++ ":" (getenv path))))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (install-file "bin/libscintilla.so" lib)
+               (for-each (lambda (f) (install-file f include))
+                         (find-files "include/" "."))
+               #t))))))
+    (native-inputs
+     `(("gcc" ,gcc-7)                   ;require GCC 7.1+
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (home-page "https://www.scintilla.org/")
+    (synopsis "Code editor for GTK+")
+    (description "Scintilla is a source code editing component for
+GTK+.  It has the usual features found in text editing components, as
+well as some that are especially useful for editing and debugging
+source code; these include support for syntax styling, error
+indicators, code completion and call tips.  Styling choices are more
+open than with many editors: Scintilla lets you use proportional
+fonts, bold and italics, multiple foreground and background colours,
+and multiple fonts.")
+    (license license:hpnd)))
+
+(define-public geany
+  (package
+    (name "geany")
+    (version "1.35")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.geany.org/"
+                                  "geany-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "179xfnvhcxsv54v2mlrhykqv2j7klniln5sffvqqpjmdvwyivvim"))
+              (modules '((guix build utils)))
+              (snippet '(begin
+                          (delete-file-recursively "scintilla")
+                          #t))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("doxygen" ,doxygen)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)
+       ("python-docutils" ,python-docutils))) ;for rst2html
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("scintilla" ,scintilla)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-scintilla-shared-library
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure.ac"
+               (("scintilla/Makefile") "")
+               (("scintilla/include/Makefile") ""))
+             (substitute* "Makefile.am"
+               (("scintilla ") ""))
+             (substitute* "src/Makefile.am"
+               (("\\$\\(top_builddir\\)/scintilla/libscintilla.la") "")
+               (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
+             (substitute* "doc/Makefile.am"
+               (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
+             (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
+             #t)))))
+    (home-page "https://www.geany.org")
+    (synopsis "Fast and lightweight IDE")
+    (description "Geany is a small and fast Integrated Development
+Environment (IDE) that only has a few dependencies on other packages and is as
+independent as possible from special desktop environments like KDE or GNOME.
+
+The basic features of Geany are:
+@itemize
+@item syntax highlighting
+@item code completion
+@item auto completion of often constructed constructs like if, for and while
+@item auto completion of XML and HTML tags
+@item call tips
+@item folding
+@item many supported filetypes like C, Java, PHP, HTML, Python, Perl, Pascal
+@item symbol lists
+@item embedded terminal emulation
+@item extensibility through plugins
+@end itemize")
+    (license license:gpl2+)))

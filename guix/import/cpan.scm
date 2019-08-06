@@ -76,8 +76,8 @@
    ;; ssleay
    ;; sun
    ("zlib" 'zlib)
-   ((x) (string->license x))
-   ((lst ...) `(list ,@(map string->license lst)))
+   (#(x) (string->license x))
+   (#(lst ...) `(list ,@(map string->license lst)))
    (_ #f)))
 
 (define (module->name module)
@@ -88,10 +88,10 @@
   "Return the base distribution module for a given module.  E.g. the 'ok'
 module is distributed with 'Test::Simple', so (module->dist-name \"ok\") would
 return \"Test-Simple\""
-  (assoc-ref (json-fetch-alist (string-append
-                                "https://fastapi.metacpan.org/v1/module/"
-                                module
-                                "?fields=distribution"))
+  (assoc-ref (json-fetch (string-append
+                          "https://fastapi.metacpan.org/v1/module/"
+                          module
+                          "?fields=distribution"))
              "distribution"))
 
 (define (package->upstream-name package)
@@ -114,7 +114,7 @@ return \"Test-Simple\""
   "Return an alist representation of the CPAN metadata for the perl module MODULE,
 or #f on failure.  MODULE should be e.g. \"Test::Script\""
   ;; This API always returns the latest release of the module.
-  (json-fetch-alist (string-append "https://fastapi.metacpan.org/v1/release/" name)))
+  (json-fetch (string-append "https://fastapi.metacpan.org/v1/release/" name)))
 
 (define (cpan-home name)
   (string-append "https://metacpan.org/release/" name))

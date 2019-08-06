@@ -46,7 +46,30 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:export (system->llvm-target))
+
+(define* (system->llvm-target #:optional
+                              (system (or (and=> (%current-target-system)
+                                                 gnu-triplet->nix-system)
+                                          (%current-system))))
+  "Return the LLVM target name that corresponds to SYSTEM, a system type such
+as \"x86_64-linux\"."
+  ;; See the 'lib/Target' directory of LLVM for a list of supported targets.
+  (letrec-syntax ((matches (syntax-rules (=>)
+                             ((_ (system-prefix => target) rest ...)
+                              (if (string-prefix? system-prefix system)
+                                  target
+                                  (matches rest ...)))
+                             ((_)
+                              (error "LLVM target for system is unknown" system)))))
+    (matches ("aarch64"     => "AArch64")
+             ("armhf"       => "ARM")
+             ("mips64el"    => "Mips")
+             ("powerpc"     => "PowerPC")
+             ("riscv"       => "RISCV")
+             ("x86_64"      => "X86")
+             ("i686"        => "X86"))))
 
 (define-public llvm-8
   (package

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
@@ -115,23 +115,10 @@ which allows users to view a desktop computing environment.")
     (home-page "https://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
 
-(define-public spice-protocol-0.12
-  (package
-    (inherit spice-protocol)
-    (version "0.12.15")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://www.spice-space.org/download/releases/"
-                    "spice-protocol-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "06b461i4jv741in8617jjpfk28wk7zs9p7841njkf4sbm8xv4kcb"))))))
-
 (define-public spice-gtk
   (package
     (name "spice-gtk")
-    (version "0.36")
+    (version "0.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -139,7 +126,7 @@ which allows users to view a desktop computing environment.")
                 "spice-gtk-" version ".tar.bz2"))
               (sha256
                (base32
-                "1kfpixfdmxs9wn3id48gc9bvfrgxz935y3wpykf40bgi9mcc69ki"))))
+                "1drvj8y35gnxbnrxsipwi15yh0vs9ixzv4wslz6r3lra8w3bfa0z"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("gstreamer" ,gstreamer)
@@ -148,7 +135,7 @@ which allows users to view a desktop computing environment.")
         ("gst-plugins-good" ,gst-plugins-good)
         ("gst-plugins-bad" ,gst-plugins-bad)
         ("gst-plugins-ugly" ,gst-plugins-ugly)
-        ("spice-protocol" ,spice-protocol-0.12)
+        ("spice-protocol" ,spice-protocol)
 
         ;; These are required by the pkg-config files.
         ("gtk+" ,gtk+)

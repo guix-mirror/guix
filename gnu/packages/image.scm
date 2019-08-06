@@ -250,8 +250,8 @@ APNG patch provides APNG support to libpng.")
       ("zlib" , zlib)))
    (home-page "https://pmt.sourceforge.io/pngcrush")
    (synopsis "Utility to compress PNG files")
-   (description "pngcrusqh is an optimizer for PNG (Portable Network Graphics)
-files.  It can compress them as much as 40% losslessly.")
+   (description "Pngcrush optimizes @acronym{PNG, Portable Network Graphics}
+images.  It can further losslessly compress them by as much as 40%.")
    (license license:zlib)))
 
 (define-public pngcrunch
@@ -1108,14 +1108,14 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.1")
+    (version "0.27.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "109hbfk63dh14fz20ivq20gcclb9jj9jmh48w4lcn6zxh1ljh9gi"))))
+        (base32 "0gqminvj14xm3rgbnydbywf22608js80rp7nmxxk4497j5mzali6"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test suite
     (propagated-inputs

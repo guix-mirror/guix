@@ -427,7 +427,9 @@ This is the declarative counterpart of 'gexp->script'."
     (($ <program-file> name gexp guile module-path)
      (gexp->script name gexp
                    #:module-path module-path
-                   #:guile (or guile (default-guile))))))
+                   #:guile (or guile (default-guile))
+                   #:system system
+                   #:target target))))
 
 (define-record-type <scheme-file>
   (%scheme-file name gexp splice?)
@@ -1345,6 +1347,7 @@ last one is created from the given <scheme-file> object."
 (define* (compiled-modules modules
                            #:key (name "module-import-compiled")
                            (system (%current-system))
+                           target
                            (guile (%guile-for-build))
                            (module-path %load-path)
                            (extensions '())
@@ -1355,7 +1358,8 @@ last one is created from the given <scheme-file> object."
                            (pre-load-modules? #t))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
-they can refer to each other."
+they can refer to each other.  When TARGET is true, cross-compile MODULES for
+TARGET, a GNU triplet."
   (define total (length modules))
 
   (mlet %store-monad ((modules (imported-modules modules
@@ -1374,6 +1378,12 @@ they can refer to each other."
                       (srfi srfi-26)
                       (system base compile))
 
+         ;; TODO: Inline this on the next rebuild cycle.
+         (ungexp-splicing
+          (if target
+              (gexp ((use-modules (system base target))))
+              (gexp ())))
+
          (define (regular? file)
            (not (member file '("." ".."))))
 
@@ -1391,9 +1401,19 @@ they can refer to each other."
                                                    (gexp ()))))
                          (ungexp (* total (if pre-load-modules? 2 1)))
                          entry)
-                 (compile-file entry
-                               #:output-file output
-                               #:opts %auto-compilation-options)
+
+                 (ungexp-splicing
+                  (if target
+                      (gexp ((with-target (ungexp target)
+                               (lambda ()
+                                 (compile-file entry
+                                               #:output-file output
+                                               #:opts
+                                               %auto-compilation-options)))))
+                      (gexp ((compile-file entry
+                                           #:output-file output
+                                           #:opts %auto-compilation-options)))))
+
                  (+ 1 processed))))
 
          (define (process-directory directory output processed)
@@ -1494,7 +1514,7 @@ they can refer to each other."
               'guile-2.2))
 
 (define* (load-path-expression modules #:optional (path %load-path)
-                               #:key (extensions '()))
+                               #:key (extensions '()) system target)
   "Return as a monadic value a gexp that sets '%load-path' and
 '%load-compiled-path' to point to MODULES, a list of module names.  MODULES
 are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
@@ -1502,10 +1522,13 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
       (with-monad %store-monad
         (return #f))
       (mlet %store-monad ((modules  (imported-modules modules
-                                                      #:module-path path))
+                                                      #:module-path path
+                                                      #:system system))
                           (compiled (compiled-modules modules
                                                       #:extensions extensions
-                                                      #:module-path path)))
+                                                      #:module-path path
+                                                      #:system system
+                                                      #:target target)))
         (return (gexp (eval-when (expand load eval)
                         (set! %load-path
                           (cons (ungexp modules)
@@ -1527,14 +1550,18 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
-                       (module-path %load-path))
+                       (module-path %load-path)
+                       (system (%current-system))
+                       target)
   "Return an executable script NAME that runs EXP using GUILE, with EXP's
 imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
   (mlet %store-monad ((set-load-path
                        (load-path-expression (gexp-modules exp)
                                              module-path
                                              #:extensions
-                                             (gexp-extensions exp))))
+                                             (gexp-extensions exp)
+                                             #:system system
+                                             #:target target)))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)
@@ -1554,6 +1581,8 @@ imported modules in its search path.  Look up EXP's modules in MODULE-PATH."
 
                            (write '(ungexp exp) port)
                            (chmod port #o555))))
+                      #:system system
+                      #:target target
                       #:module-path module-path)))
 
 (define* (gexp->file name exp #:key

@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
@@ -127,6 +127,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages vim)
   #:use-module (gnu packages xml))
 
 (define-public httpd
@@ -205,14 +206,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.1")
+    (version "1.17.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0gp7cy2bbn8yi1wapjzssf4bhmn4d4vphdb0k1wiaq2fa6s2a63g"))))
+                "1v39gslwbvpfhqqv74q0lkfrhrwsp59xc8pwhvxns7af8s3kccsy"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -4239,15 +4240,15 @@ C.  It is developed as part of the NetSurf project.")
 (define-public hubbub
   (package
     (name "hubbub")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           "lib" name "-" version "-src.tar.gz"))
+                           "libhubbub-" version "-src.tar.gz"))
        (sha256
         (base32
-         "13yq1k96a7972x4r71i9bcsz9yiglj0yx7lj0ziq5r94w5my70ma"))
+         "1x3v7xvagx85v9h3pypzc86rcxs4mij87mmcqkp8pq50q6awfmnp"))
        (patches (search-patches "hubbub-sort-entities.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -4345,15 +4346,15 @@ commenting.")
 (define-public libwapcaplet
   (package
     (name "libwapcaplet")
-    (version "0.4.1")
+    (version "0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "libwapcaplet-" version "-src.tar.gz"))
        (sha256
         (base32
-         "134pljlm8kby1yy49826f0ixnpig8iqak6xpyl3aivagnsjnxzy8"))))
+         "1fjwzbn7j8bi1b9bvwxsy3i2cr6byq2s2d29866801pjnf528g86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4371,15 +4372,15 @@ developed as part of the Netsurf project.")
 (define-public libcss
   (package
     (name "libcss")
-    (version "0.8.0")
+    (version "0.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "libcss-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0pxdqbxn6brj03nv57bsvac5n70k4scn3r5msaw0jgn2k06lk81m"))))
+         "1vw9j3d2mr4wbvs8fyqmgslkbxknvac10456775hflxxcivbm3xr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4399,15 +4400,15 @@ written in C.  It is developed as part of the NetSurf project.")
 (define-public libdom
   (package
     (name "libdom")
-    (version "0.3.3")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "libdom-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1919757mdl3gii2pl6kzm8b1cal0h06r5nqd2y0kny6hc5yrhsp0"))))
+         "1ixkqsl3f7dl1kajksm0c231w1v5xy8z6hm3v67hgm9nh4qcvfcy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4509,6 +4510,34 @@ written in C.  It is developed as part of the NetSurf project.")
 C.  It is developed as part of the NetSurf project.")
     (license license:expat)))
 
+(define-public libnslog
+  (package
+    (name "libnslog")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
+                           "libnslog-" version "-src.tar.gz"))
+       (sha256
+        (base32
+         "1ggs6xvxp8fbg5w8pifalipm458ygr9ab6j2yvj8fnnmxwvdh4jd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("netsurf-buildsystem" ,netsurf-buildsystem)
+       ("pkg-config" ,pkg-config)
+       ("check" ,check)                 ;for tests
+       ("bison" ,bison)
+       ("flex" ,flex)))
+    (arguments netsurf-buildsystem-arguments)
+    (home-page "http://www.netsurf-browser.org/")
+    (synopsis "Logging library")
+    (description
+     "Libnslog provides a category-based logging library which supports
+complex logging filters, multiple log levels, and provides context through to
+client applications.  It is developed as part of the NetSurf project.")
+    (license license:expat)))
+
 (define-public libnsutils
   (package
     (name "libnsutils")
@@ -4535,15 +4564,15 @@ developed as part of the NetSurf project.")
 (define-public libnspsl
   (package
     (name "libnspsl")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "libnspsl-" version "-src.tar.gz"))
        (sha256
         (base32
-         "1rsk1k2a495axxgv8060s0p1phhhcxrv75252kllbkvr8id5kqld"))))
+         "0siq8zjfxv75i9fw6q5hkaijpdm1w3zskd5qk6vsvz8cqan4vifd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)))
@@ -4558,15 +4587,15 @@ Public Suffix List.  It is developed as part of the NetSurf project.")
 (define-public nsgenbind
   (package
     (name "nsgenbind")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://download.netsurf-browser.org/libs/releases/"
-                           name "-" version "-src.tar.gz"))
+                           "nsgenbind-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0v1cb1rz5fix9ql31nzmglj7sybya6d12b2fkaypm1avcca59xwj"))))
+         "0rplmky4afsjwiwh7grkmcdmzg86zksa55j93dvq92f91yljwqqq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("netsurf-buildsystem" ,netsurf-buildsystem)
@@ -4586,7 +4615,7 @@ w3c webidl files and a binding configuration file.")
 (define-public netsurf
   (package
     (name "netsurf")
-    (version "3.8")
+    (version "3.9")
     (source
      (origin
        (method url-fetch)
@@ -4594,7 +4623,7 @@ w3c webidl files and a binding configuration file.")
                            "releases/source/netsurf-" version "-src.tar.gz"))
        (sha256
         (base32
-         "0hjm1h4m1i913y4mhkl7yqdifn8k70fwi58zdh6faypawzryc3m0"))
+         "1hzcm2s2wh5sapgr000lg63hcdbj6hyajxl43xa1x80kc5piqbyp"))
        (patches (search-patches "netsurf-system-utf8proc.patch"
                                 "netsurf-y2038-tests.patch"
                                 "netsurf-longer-test-timeout.patch"
@@ -4607,7 +4636,8 @@ w3c webidl files and a binding configuration file.")
        ("check" ,check)
        ("perl" ,perl)
        ("perl-html-parser" ,perl-html-parser)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xxd" ,xxd)))
     (inputs
      `(("curl" ,curl)
        ("gtk+" ,gtk+-2)
@@ -4619,6 +4649,7 @@ w3c webidl files and a binding configuration file.")
        ("libdom" ,libdom)
        ("libnsbmp" ,libnsbmp)
        ("libnsgif" ,libnsgif)
+       ("libnslog" ,libnslog)
        ("libnspsl" ,libnspsl)
        ("libnsutils" ,libnsutils)
        ("libsvgtiny" ,libsvgtiny)
@@ -6436,8 +6467,8 @@ compressed JSON header blocks.
     (license license:expat)))
 
 (define-public hpcguix-web
-  (let ((commit "53e09ea59ec0380b41a4cbda32df8bdb9a10004d")
-        (revision "3"))
+  (let ((commit "f39c90b35e99e4122b0866ec4337020d61c81508")
+        (revision "4"))
     (package
       (name "hpcguix-web")
       (version (git-version "0.0.1" revision commit))
@@ -6449,7 +6480,7 @@ compressed JSON header blocks.
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ah4pn9697vazhbvd45n4b1rrkx2nbhnw384cr0b941q3sz1dfyc"))))
+                  "0idzzlwnaymk6hm5q9nh146h5m6vd8acp32vlmzp6qq08mimfkq7"))))
       (build-system gnu-build-system)
       (arguments
        `(#:modules ((guix build gnu-build-system)
@@ -6509,7 +6540,7 @@ compressed JSON header blocks.
       (propagated-inputs
        `(("guile" ,guile-2.2)
          ("guile-commonmark" ,guile-commonmark)
-         ("guile-json" ,guile-json)))
+         ("guile-json" ,guile-json-3)))
       (home-page "https://github.com/UMCUGenetics/hpcguix-web")
       (synopsis "Web interface for cluster deployments of Guix")
       (description "Hpcguix-web provides a web interface to the list of packages

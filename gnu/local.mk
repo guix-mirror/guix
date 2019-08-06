@@ -597,6 +597,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/mail.scm				\
   %D%/tests/messaging.scm			\
   %D%/tests/networking.scm			\
+  %D%/tests/reconfigure.scm			\
   %D%/tests/rsync.scm				\
   %D%/tests/security-token.scm			\
   %D%/tests/singularity.scm			\
@@ -756,6 +757,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/diffutils-getopt.patch			\
+  %D%/packages/patches/dkimproxy-add-ipv6-support.patch		\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
@@ -770,6 +772,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/einstein-build.patch			\
+  %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
@@ -1021,7 +1024,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
-  %D%/packages/patches/libmad-frame-length.patch		\
+  %D%/packages/patches/libmad-length-check.patch		\
+  %D%/packages/patches/libmad-md_size.patch			\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
@@ -1162,6 +1166,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
+  %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -1301,6 +1306,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/strace-ipc-tests.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\

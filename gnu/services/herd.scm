@@ -40,10 +40,12 @@
             unknown-shepherd-error?
             unknown-shepherd-error-sexp
 
+            live-service
             live-service?
             live-service-provision
             live-service-requirement
             live-service-running
+            live-service-canonical-name
 
             with-shepherd-action
             current-services
@@ -191,6 +193,10 @@ of pairs."
   (provision    live-service-provision)           ;list of symbols
   (requirement  live-service-requirement)         ;list of symbols
   (running      live-service-running))            ;#f | object
+
+(define (live-service-canonical-name service)
+  "Return the 'canonical name' of SERVICE."
+  (first (live-service-provision service)))
 
 (define (current-services)
   "Return the list of currently defined Shepherd services, represented as

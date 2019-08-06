@@ -107,7 +107,7 @@ joystick, and graphics hardware.")
 (define-public sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.9")
+    (version "2.0.10")
     (source (origin
              (method url-fetch)
              (uri
@@ -115,7 +115,7 @@ joystick, and graphics hardware.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1c94ndagzkdfqaa838yqg589p1nnqln8mv0hpwfhrkbfczf8cl95"))))
+               "0mqxp6w5jhbq6y1j690g9r3gpzwjxh4czaglw8x05l7hl49nqrdl"))))
     (arguments
      (substitute-keyword-arguments (package-arguments sdl)
        ((#:configure-flags flags)

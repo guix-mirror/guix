@@ -139,29 +139,44 @@ of SHA1 string."
   "Switch to REPOSITORY's branch, commit or tag specified by REF.  Return the
 OID (roughly the commit hash) corresponding to REF."
   (define obj
-    (match ref
-      (('branch . branch)
-       (let ((oid (reference-target
-                   (branch-lookup repository branch BRANCH-REMOTE))))
-         (object-lookup repository oid)))
-      (('commit . commit)
-       (let ((len (string-length commit)))
-         ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
-         ;; can't be sure it's available.  Furthermore, 'string->oid' used to
-         ;; read out-of-bounds when passed a string shorter than 40 chars,
-         ;; which is why we delay calls to it below.
-         (if (< len 40)
-             (if (module-defined? (resolve-interface '(git object))
-                                  'object-lookup-prefix)
-                 (object-lookup-prefix repository (string->oid commit) len)
-                 (raise (condition
-                         (&message
-                          (message "long Git object ID is required")))))
-             (object-lookup repository (string->oid commit)))))
-      (('tag    . tag)
-       (let ((oid (reference-name->oid repository
-                                       (string-append "refs/tags/" tag))))
-         (object-lookup repository oid)))))
+    (let resolve ((ref ref))
+      (match ref
+        (('branch . branch)
+         (let ((oid (reference-target
+                     (branch-lookup repository branch BRANCH-REMOTE))))
+           (object-lookup repository oid)))
+        (('commit . commit)
+         (let ((len (string-length commit)))
+           ;; 'object-lookup-prefix' appeared in Guile-Git in Mar. 2018, so we
+           ;; can't be sure it's available.  Furthermore, 'string->oid' used to
+           ;; read out-of-bounds when passed a string shorter than 40 chars,
+           ;; which is why we delay calls to it below.
+           (if (< len 40)
+               (if (module-defined? (resolve-interface '(git object))
+                                    'object-lookup-prefix)
+                   (object-lookup-prefix repository (string->oid commit) len)
+                   (raise (condition
+                           (&message
+                            (message "long Git object ID is required")))))
+               (object-lookup repository (string->oid commit)))))
+        (('tag-or-commit . str)
+         (if (or (> (string-length str) 40)
+                 (not (string-every char-set:hex-digit str)))
+             (resolve `(tag . ,str))              ;definitely a tag
+             (catch 'git-error
+               (lambda ()
+                 (resolve `(tag . ,str)))
+               (lambda _
+                 ;; There's no such tag, so it must be a commit ID.
+                 (resolve `(commit . ,str))))))
+        (('tag    . tag)
+         (let ((oid (reference-name->oid repository
+                                         (string-append "refs/tags/" tag))))
+           ;; Get the commit that the tag at OID refers to.  This is not
+           ;; strictly needed, but it's more consistent to always return the
+           ;; OID of a commit.
+           (object-lookup repository
+                          (tag-target-id (tag-lookup repository oid))))))))
 
   (reset repository obj RESET_HARD)
   (object-id obj))
@@ -218,8 +233,8 @@ please upgrade Guile-Git.~%"))))
 values: the cache directory name, and the SHA1 commit (a string) corresponding
 to REF.
 
-REF is pair whose key is [branch | commit | tag] and value the associated
-data, respectively [<branch name> | <sha1> | <tag name>].
+REF is pair whose key is [branch | commit | tag | tag-or-commit ] and value
+the associated data: [<branch name> | <sha1> | <tag name> | <string>].
 
 When RECURSIVE? is true, check out submodules as well, if any."
   (define canonical-ref
@@ -319,7 +334,7 @@ Log progress and checkout info to LOG-PORT."
   git-checkout?
   (url     git-checkout-url)
   (branch  git-checkout-branch (default "master"))
-  (commit  git-checkout-commit (default #f))
+  (commit  git-checkout-commit (default #f))      ;#f | tag | commit
   (recursive? git-checkout-recursive? (default #f)))
 
 (define* (latest-repository-commit* url #:key ref recursive? log-port)
@@ -358,7 +373,7 @@ Log progress and checkout info to LOG-PORT."
     (($ <git-checkout> url branch commit recursive?)
      (latest-repository-commit* url
                                 #:ref (if commit
-                                          `(commit . ,commit)
+                                          `(tag-or-commit . ,commit)
                                           `(branch . ,branch))
                                 #:recursive? recursive?
                                 #:log-port (current-error-port)))))

@@ -6563,7 +6563,90 @@ This system contains the CFFI foreign slot access extension.")))
        ("trivia.cffi" ,sbcl-trivia.cffi)
        ("optima" ,sbcl-optima)))
     (arguments
-     `(#:test-asd-file "trivia.test.asd"))
+     `(#:test-asd-file "trivia.test.asd"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'create-asd 'remove-component
+           ;; XXX: The original .asd has no components, but our build system
+           ;; creates an entry nonetheless.  We need to remove it for the
+           ;; generated .asd to load properly.  See trivia.trivial for a
+           ;; similar problem.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (asd (string-append out "/lib/" (%lisp-type) "/trivia.asd")))
+               (substitute* asd
+                 (("  :components
+")
+                  ""))
+               (substitute* asd
+                 ((" *\\(\\(:compiled-file \"trivia--system\"\\)\\)")
+                  ""))))))))
     (description "Trivia is a pattern matching compiler that is compatible
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
+
+(define-public sbcl-mk-string-metrics
+  (package
+    (name "sbcl-mk-string-metrics")
+    (version "0.1.2")
+    (home-page "https://github.com/cbaggers/mk-string-metrics/")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit version)))
+              (sha256
+               (base32 "0bg0bv2mfd4k0g3x72x563hvmrx18xavaffr6xk5rh4if5j7kcf6"))
+              (file-name (git-file-name name version))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Calculate various string metrics efficiently in Common Lisp")
+    (description "This library implements efficient algorithms that calculate
+various string metrics in Common Lisp:
+
+@itemize
+@item Damerau-Levenshtein distance
+@item Hamming distance
+@item Jaccard similarity coefficient
+@item Jaro distance
+@item Jaro-Winkler distance
+@item Levenshtein distance
+@item Normalized Damerau-Levenshtein distance
+@item Normalized Levenshtein distance
+@item Overlap coefficient
+@end itemize\n")
+    (license license:x11)))
+
+(define-public sbcl-cl-str
+  (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
+    (package
+      (name "sbcl-cl-str")
+      (version (git-version "0.8" "1" commit))
+      (home-page "https://github.com/vindarel/cl-str")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32 "0szzzbygw9h985yxz909vvqrp69pmpcpahn7hn350lnyjislk9ga"))
+                (file-name (git-file-name name version))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)))
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (arguments
+       `(#:asd-file "str.asd"
+         #:asd-system-name "str"
+         #:test-asd-file "str.test.asd"))
+      (synopsis "Modern, consistent and terse Common Lisp string manipulation library")
+      (description "A modern and consistent Common Lisp string manipulation
+library that focuses on modernity, simplicity and discoverability:
+@code{(str:trim s)} instead of @code{(string-trim '(#\\Space ...) s)}), or
+@code{str:concat strings} instead of an unusual format construct; one
+discoverable library instead of many; consistency and composability, where
+@code{s} is always the last argument, which makes it easier to feed pipes and
+arrows.")
+      (license license:expat))))

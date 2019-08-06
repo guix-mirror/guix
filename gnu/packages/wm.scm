@@ -131,20 +131,19 @@ the leaves of a full binary tree.")
 (define-public i3status
   (package
     (name "i3status")
-    (version "2.12")
+    (version "2.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/i3status/i3status-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "06krpbijv4yi33nypg6qcn4hilcrdyarsdpd9fmr2cq46qaqiikg"))))
+                "0rhlzb96mw64z2jnhwz9nibc7pxg549626lz5642xxk5hpzwk2ff"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure))
+     `(;; XXX: Do an "out of source" build to work around
+       ;; <https://github.com/i3/i3status/issues/339>.
+       #:out-of-source? #t
        #:tests? #f)) ; no test suite
     (inputs
      `(("openlibm" ,openlibm)
@@ -156,7 +155,10 @@ the leaves of a full binary tree.")
        ("libcap" ,libcap)
        ("asciidoc" ,asciidoc)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)             ;for XML_CATALOG_FILES
+       ("xmlto" ,xmlto)))
     (home-page "https://i3wm.org/i3status/")
     (synopsis "Status bar for i3bar, dzen2, xmobar or similar programs")
     (description "i3status is a small program for generating a status bar for
@@ -171,14 +173,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.16.1")
+    (version "4.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0xl56y196vxv001gvx35xwfr25zah8m3xwizp9ycdgdc0rfc4rdb"))))
+                "1z8qmkkq9dhqmqy8sjw3rnpnmnb8v7lr456bs0qzp23bgpj17gjf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

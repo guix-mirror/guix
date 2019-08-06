@@ -473,16 +473,18 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "3.1.1")
+    (version "3.1.2")
     (outputs '("out" "static"))
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.videolan.org/videolan/x265/"
-                            "x265_" version ".tar.gz"))
+        (uri (list (string-append "https://bitbucket.org/multicoreware/x265"
+                                  "/downloads/x265_" version ".tar.gz")
+                   (string-append "https://download.videolan.org/videolan/x265/"
+                                  "x265_" version ".tar.gz")))
         (sha256
          (base32
-          "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
+          "1ajr59gjj47gnczfb2qhmzclj746pdiq9a1d81b0mq22k8f5yy3g"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -753,6 +755,40 @@ entry-points (VLD, IDCT, Motion Compensation etc.) for prevailing coding
 standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (license license:expat)))
 
+(define-public libva-utils
+  (package
+    (name "libva-utils")
+    (version "2.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/intel/libva-utils/releases/download/"
+                           version "/libva-utils-" version ".tar.bz2"))
+       (sha256
+        (base32 "05rasyqnsg522zqxak1q8rrm1hys7wwbi41kd0szjq0d27awjf4j"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--enable-wayland"
+             "--enable-x11")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libva" ,libva)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)))
+    (home-page "https://01.org/linuxmedia/vaapi")
+    (synopsis "Collection of testing utilities for VA-API")
+    (description
+     "This is a collection of utilities  to query and test the @acronym{VA-API,
+Video Acceleration API} implemented by the libva library.
+
+These tools require a supported graphics chip, driver, and VA-API back end to
+operate properly.")
+    (license license:expat)))
+
 (define-public ffmpeg
   (package
     (name "ffmpeg")
@@ -1013,7 +1049,7 @@ videoformats depend on the configuration flags of ffmpeg.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "3.0.7")
+    (version "3.0.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1022,7 +1058,7 @@ videoformats depend on the configuration flags of ffmpeg.")
                    "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "05irswyg9acflxzy4vfyvgi643r72vsvagv118zawjqg1wagxdaw"))))
+               "1xb4c8n0hkwijzfdlbwadhxnx9z8rlhmrdq4c7q74rq9f51q0m86"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
@@ -1446,7 +1482,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.06.21")
+    (version "2019.08.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1454,7 +1490,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "03a729198zzhixbn7xixi9bprmk3qqh5dsyh3dqhji6lmlijx1w5"))))
+                "101b6jrf6ckbxrn76ppvgdyrb25p7d247kn8qgq7n476sfnkfg2p"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1585,7 +1621,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1302")
+    (version "0.4.1328")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1594,7 +1630,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fwwzslv1vpjr8q0fq10dbngr8zai1n3d6na700cgpky4j9y0y99"))))
+                "1r9qffwvxmp74byva12h2jsn3n33vyim052sx9lykv5dygibbp65"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2694,6 +2730,51 @@ of modern, widely supported codecs.")
     ;; Some under GPLv2+, some under LGPLv2.1+, and portions under BSD3.
     ;; Combination under GPLv2.  See LICENSE.
     (license license:gpl2)))
+
+(define-public intel-vaapi-driver
+  (package
+    (name "intel-vaapi-driver")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/intel/intel-vaapi-driver/"
+                           "releases/download/" version "/intel-vaapi-driver-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32 "1qyzxh3p8cw4fv8bz9zd4kc8hajlaps7xryzh6pad814n3m5sbjw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libva" ,libva)
+       ("libx11" ,libx11)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "LIBVA_DRIVERS_PATH" (string-append out "/lib/dri"))
+               #t))))))
+    ;; XXX Because of <https://issues.guix.gnu.org/issue/22138>, we need to add
+    ;; this to all VA-API back ends instead of once to libva.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "LIBVA_DRIVERS_PATH")
+            (files '("lib/dri")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page "https://01.org/linuxmedia/vaapi")
+    (synopsis "VA-API video acceleration driver for Intel GEN Graphics devices")
+    (description
+     "This is the @acronym{VA-API, Video Acceleration API} back end required for
+hardware-accelerated video processing on Intel GEN Graphics devices supported by
+the i915 driver, such as integrated Intel HD Graphics.  It provides access to
+both hardware and shader functionality for faster encoding, decoding, and
+post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
+    (license (list license:bsd-2        ; src/gen9_vp9_const_def.c
+                   license:expat))))    ; the rest, excluding the test suite
 
 (define-public openh264
   (package

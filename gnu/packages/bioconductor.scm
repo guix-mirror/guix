@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -37,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 
 ;;; Annotations
@@ -863,6 +865,34 @@ Between 49 and 77 cells were captured at each of four time points (0, 24, 48,
 RNA from each cell was isolated and used to construct mRNA-Seq libraries,
 which were then sequenced to a depth of ~4 million reads per library,
 resulting in a complete gene expression profile for each cell.")
+    (license license:artistic2.0)))
+
+(define-public r-all
+  (package
+    (name "r-all")
+    (version "1.26.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/experiment/" instead of "bioc/".
+              (uri (string-append "https://www.bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "ALL_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z7kpjw4ndj6fkxwvhqf3gawhrn26ksrlns7j2c78qzxqmjndik9"))))
+    (properties `((upstream-name . "ALL")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/ALL")
+    (synopsis "Acute Lymphoblastic Leukemia data from the Ritz laboratory")
+    (description
+     "The data consist of microarrays from 128 different individuals with
+@dfn{acute lymphoblastic leukemia} (ALL).  A number of additional covariates
+are available.  The data have been normalized (using rma) and it is the
+jointly normalized data that are available here.  The data are presented in
+the form of an @code{exprSet} object.")
     (license license:artistic2.0)))
 
 
@@ -2234,6 +2264,68 @@ differential expression analysis, clustering, visualization, and other useful
 tasks on single cell expression data.  It is designed to work with RNA-Seq and
 qPCR data, but could be used with other types as well.")
     (license license:artistic2.0)))
+
+(define-public r-monocle3
+  (package
+    (name "r-monocle3")
+    (version "0.1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cole-trapnell-lab/monocle3.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1cjxqfw3qvy269hsf5v80d4kshl932wrl949iayas02saj6f70ls"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-delayedmatrixstats" ,r-delayedmatrixstats)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-grr" ,r-grr)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-igraph" ,r-igraph)
+       ("r-irlba" ,r-irlba)
+       ("r-limma" ,r-limma)
+       ("r-lmtest" ,r-lmtest)
+       ("r-mass" ,r-mass)
+       ("r-matrix" ,r-matrix)
+       ("r-matrix-utils" ,r-matrix-utils)
+       ("r-pbapply" ,r-pbapply)
+       ("r-pbmcapply" ,r-pbmcapply)
+       ("r-pheatmap" ,r-pheatmap)
+       ("r-plotly" ,r-plotly)
+       ("r-pryr" ,r-pryr)
+       ("r-proxy" ,r-proxy)
+       ("r-pscl" ,r-pscl)
+       ("r-purrr" ,r-purrr)
+       ("r-rann" ,r-rann)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppparallel" ,r-rcppparallel)
+       ("r-reshape2" ,r-reshape2)
+       ("r-reticulate" ,r-reticulate)
+       ("r-rhpcblasctl" ,r-rhpcblasctl)
+       ("r-rtsne" ,r-rtsne)
+       ("r-shiny" ,r-shiny)
+       ("r-slam" ,r-slam)
+       ("r-spdep" ,r-spdep)
+       ("r-speedglm" ,r-speedglm)
+       ("r-stringr" ,r-stringr)
+       ("r-singlecellexperiment" ,r-singlecellexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-uwot" ,r-uwot)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/cole-trapnell-lab/monocle3")
+    (synopsis "Analysis toolkit for single-cell RNA-Seq data")
+    (description
+     "Monocle 3 is an analysis toolkit for single-cell RNA-Seq experiments.")
+    (license license:expat)))
 
 (define-public r-noiseq
   (package
@@ -4769,3 +4861,293 @@ read mapping, read counting, SNP calling, structural variant detection and
 gene fusion discovery.  It can be applied to all major sequencing techologies
 and to both short and long sequence reads.")
     (license license:gpl3)))
+
+(define-public r-flowutils
+  (package
+    (name "r-flowutils")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowUtils" version))
+       (sha256
+        (base32
+         "1r7b0rszdzjq7jphh65p5m4x5ps0zbbagxl26gn2mapbjdyb47rm"))))
+    (properties `((upstream-name . "flowUtils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-corpcor" ,r-corpcor)
+       ("r-flowcore" ,r-flowcore)
+       ("r-graph" ,r-graph)
+       ("r-runit" ,r-runit)
+       ("r-xml" ,r-xml)))
+    (home-page "https://github.com/jspidlen/flowUtils")
+    (synopsis "Utilities for flow cytometry")
+    (description
+     "This package provides utilities for flow cytometry data.")
+    (license license:artistic2.0)))
+
+(define-public r-consensusclusterplus
+  (package
+    (name "r-consensusclusterplus")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ConsensusClusterPlus" version))
+       (sha256
+        (base32
+         "1mlcm3wq5n8s0gxs35j0ph9576fhbrbrrsj2xy84fy20prcfs4w8"))))
+    (properties
+     `((upstream-name . "ConsensusClusterPlus")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-all" ,r-all)
+       ("r-biobase" ,r-biobase)
+       ("r-cluster" ,r-cluster)))
+    (home-page "https://bioconductor.org/packages/ConsensusClusterPlus")
+    (synopsis "Clustering algorithm")
+    (description
+     "This package provides an implementation of an algorithm for determining
+cluster count and membership by stability evidence in unsupervised analysis.")
+    (license license:gpl2)))
+
+(define-public r-flowcore
+  (package
+    (name "r-flowcore")
+    (version "1.50.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowCore" version))
+       (sha256
+        (base32
+         "0pvcyzycsmgc8iw60q9xnhllfan6ihwpz3gvk8h1n9jmhpxzylan"))))
+    (properties `((upstream-name . "flowCore")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-corpcor" ,r-corpcor)
+       ("r-graph" ,r-graph)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "https://bioconductor.org/packages/flowCore")
+    (synopsis "Basic structures for flow cytometry data")
+    (description
+     "This package provides S4 data structures and basic functions to deal
+with flow cytometry data.")
+    (license license:artistic2.0)))
+
+(define-public r-flowmeans
+  (package
+    (name "r-flowmeans")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "flowMeans" version))
+       (sha256
+        (base32
+         "0yp6y3mq5h4nf1d7ybqnriigwfmwanrqavpj3ry482sgiaip1hp2"))))
+    (properties `((upstream-name . "flowMeans")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-feature" ,r-feature)
+       ("r-flowcore" ,r-flowcore)
+       ("r-rrcov" ,r-rrcov)))
+    (home-page "https://bioconductor.org/packages/flowMeans")
+    (synopsis "Non-parametric flow cytometry data gating")
+    (description
+     "This package provides tools to identify cell populations in Flow
+Cytometry data using non-parametric clustering and segmented-regression-based
+change point detection.")
+    (license license:artistic2.0)))
+
+(define-public r-flowsom
+  (package
+    (name "r-flowsom")
+    (version "1.16.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "FlowSOM" version))
+       (sha256
+        (base32
+         "03wl3xk7g7vajc4kkrqa0gsbjfxlqr918qi849h5nir31963398l"))))
+    (properties `((upstream-name . "FlowSOM")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-consensusclusterplus" ,r-consensusclusterplus)
+       ("r-flowcore" ,r-flowcore)
+       ("r-flowutils" ,r-flowutils)
+       ("r-igraph" ,r-igraph)
+       ("r-tsne" ,r-tsne)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/FlowSOM/")
+    (synopsis "Visualize and interpret cytometry data")
+    (description
+     "FlowSOM offers visualization options for cytometry data, by using
+self-organizing map clustering and minimal spanning trees.")
+    (license license:gpl2+)))
+
+(define-public r-mixomics
+  (package
+    (name "r-mixomics")
+    (version "6.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "mixOmics" version))
+       (sha256
+        (base32
+         "1f08jx35amn3sfcmqb96mjxxsm6dnpzhff625z758x1992wj4zsk"))))
+    (properties `((upstream-name . "mixOmics")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-corpcor" ,r-corpcor)
+       ("r-dplyr" ,r-dplyr)
+       ("r-ellipse" ,r-ellipse)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)
+       ("r-igraph" ,r-igraph)
+       ("r-lattice" ,r-lattice)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-rarpack" ,r-rarpack)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-reshape2" ,r-reshape2)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "http://www.mixOmics.org")
+    (synopsis "Multivariate methods for exploration of biological datasets")
+    (description
+     "mixOmics offers a wide range of multivariate methods for the exploration
+and integration of biological datasets with a particular focus on variable
+selection.  The package proposes several sparse multivariate models we have
+developed to identify the key variables that are highly correlated, and/or
+explain the biological outcome of interest.  The data that can be analysed
+with mixOmics may come from high throughput sequencing technologies, such as
+omics data (transcriptomics, metabolomics, proteomics, metagenomics etc) but
+also beyond the realm of omics (e.g.  spectral imaging).  The methods
+implemented in mixOmics can also handle missing values without having to
+delete entire rows with missing data.")
+    (license license:gpl2+)))
+
+(define-public r-depecher
+  (package
+    (name "r-depecher")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "DepecheR" version))
+       (sha256
+        (base32
+         "0qj2h2a50fncppvi2phh0mbivxkn1mv702mqpi9mvvkf3bzq8m0h"))))
+    (properties `((upstream-name . "DepecheR")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-syntax-error
+           (lambda _
+             (substitute* "src/Makevars"
+               ((" & ") " && "))
+             #t)))))
+    (propagated-inputs
+     `(("r-beanplot" ,r-beanplot)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-dosnow" ,r-dosnow)
+       ("r-dplyr" ,r-dplyr)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-mass" ,r-mass)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-mixomics" ,r-mixomics)
+       ("r-moments" ,r-moments)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcppeigen" ,r-rcppeigen)
+       ("r-reshape2" ,r-reshape2)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://bioconductor.org/packages/DepecheR/")
+    (synopsis "Identify traits of clusters in high-dimensional entities")
+    (description
+     "The purpose of this package is to identify traits in a dataset that can
+separate groups.  This is done on two levels.  First, clustering is performed,
+using an implementation of sparse K-means.  Secondly, the generated clusters
+are used to predict outcomes of groups of individuals based on their
+distribution of observations in the different clusters.  As certain clusters
+with separating information will be identified, and these clusters are defined
+by a sparse number of variables, this method can reduce the complexity of
+data, to only emphasize the data that actually matters.")
+    (license license:expat)))
+
+(define-public r-cicero
+  (package
+    (name "r-cicero")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "cicero" version))
+       (sha256
+        (base32
+         "0f15l8zrh7l7nnvznb66116hvfk15djb9q240vbscm2w0y5fvkcr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-assertthat" ,r-assertthat)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-glasso" ,r-glasso)
+       ("r-gviz" ,r-gviz)
+       ("r-igraph" ,r-igraph)
+       ("r-iranges" ,r-iranges)
+       ("r-matrix" ,r-matrix)
+       ("r-monocle" ,r-monocle)
+       ("r-plyr" ,r-plyr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)
+       ("r-vgam" ,r-vgam)))
+    (home-page "https://bioconductor.org/packages/cicero/")
+    (synopsis "Predict cis-co-accessibility from single-cell data")
+    (description
+     "Cicero computes putative cis-regulatory maps from single-cell chromatin
+accessibility data.  It also extends the monocle package for use in chromatin
+accessibility data.")
+    (license license:expat)))
+
+;; This is the latest commit on the "monocle3" branch.
+(define-public r-cicero-monocle3
+  (let ((commit "fa2fb6515857a8cfc88bc9af044f34de1bcd2b7b")
+        (revision "1"))
+    (package (inherit r-cicero)
+      (name "r-cicero-monocle3")
+      (version (git-version "1.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "077yza93wdhi08n40md20jwk55k9lw1f3y0063qkk90cpz60wi0c"))))
+      (propagated-inputs
+       `(("r-monocle3" ,r-monocle3)
+         ,@(alist-delete "r-monocle"
+                         (package-propagated-inputs r-cicero)))))))
