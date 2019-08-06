@@ -5939,20 +5939,19 @@ to help insert or delete content at a specific location in the document.")
 (define-public r-abn
   (package
     (name "r-abn")
-    (version "1.3")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "abn" version))
        (sha256
         (base32
-         "1q9hzpxwg835711kxwygd0l2awal6f015f8s6fprwz7graz1wbbm"))))
+         "08jlvb6i5f7ry2dwm0jgrnn2w95vr0l67dpx13n9878lz9ld131b"))))
     (build-system r-build-system)
     (inputs
      `(("gsl" ,gsl)))
     (propagated-inputs
-     `(("r-cairo" ,r-cairo)
-       ("r-lme4" ,r-lme4)
+     `(("r-lme4" ,r-lme4)
        ("r-mass" ,r-mass)
        ("r-nnet" ,r-nnet)
        ("r-rcpp" ,r-rcpp)
