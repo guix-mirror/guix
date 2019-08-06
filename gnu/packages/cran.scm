@@ -2640,6 +2640,26 @@ to access PostgreSQL database systems.")
     ;; under the PostgreSQL license.
     (license license:gpl2)))
 
+(define-public r-linprog
+  (package
+    (name "r-linprog")
+    (version "0.9-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "linprog" version))
+       (sha256
+        (base32
+         "1ki14an0pmhs2mnmfjjvdzd76pshiyvi659zf7hqvqwj0viv4dw9"))))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-lpsolve" ,r-lpsolve)))
+    (home-page "http://linprog.r-forge.r-project.org/")
+    (synopsis "Linear programming and optimization")
+    (description
+     "This package can be used to solve Linear Programming / Linear
+Optimization problems by using the simplex algorithm.")
+    (license license:gpl2+)))
+
 (define-public r-geometry
   (package
     (name "r-geometry")
