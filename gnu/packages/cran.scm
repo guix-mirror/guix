@@ -78,14 +78,14 @@
 (define-public r-clipr
   (package
     (name "r-clipr")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "clipr" version))
        (sha256
         (base32
-         "0k9kimkmmj9k7290sxiqn4kd1vvm4w7q9a44wp0w30b7yjpavx2m"))))
+         "1qn2p13d0c1bpqss6mv9hk60980rzhznfqpyaf5x0fy65svy9903"))))
     (build-system r-build-system)
     (home-page "https://github.com/mdlincoln/clipr")
     (synopsis "Read and write from the system clipboard")
