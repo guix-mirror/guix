@@ -1980,13 +1980,13 @@ inference for statistical models.")
 (define-public r-coda
   (package
     (name "r-coda")
-    (version "0.19-2")
+    (version "0.19-3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "coda" version))
               (sha256
                (base32
-                "03fs3sdrrym3is92dgpa6ydk3m63gaihwy7bva4k0wm2hxm7x2k7"))))
+                "1mn50bshky968gn4nf6vnkaa768fnvm1xmhkms7szwdw9341zpyk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
