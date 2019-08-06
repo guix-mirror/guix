@@ -2789,17 +2789,18 @@ that package, other packages are unaffected.")
 (define-public r-blob
   (package
     (name "r-blob")
-    (version "1.1.1")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "blob" version))
               (sha256
                (base32
-                "0lsg91hk508dd95ivig2lwg62qafwnarjw68110kx63cfk4zkjxc"))))
+                "08z071jzac4gasgfgab0y5g3ilfmlw08ln813wphxg07hsiczw8s"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-prettyunits" ,r-prettyunits)
-       ("r-tibble" ,r-tibble)))
+       ("r-rlang" ,r-rlang)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/hadley/blob")
     (synopsis "Simple S3 Class for representing vectors of binary data")
     (description "Raw vectors in R are useful for storing a single binary
