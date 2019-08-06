@@ -1603,18 +1603,19 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "2.1.1")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "03jgr0hlr77yp0aib4v30yjyjrjsa8dczr02yk21m93vl25vqvkp"))))
+                "0y0bvggm4pzkzp6xn7b8cf3ybqp9ijxkhhyp3z49a9iipc90bvk7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cli" ,r-cli)
        ("r-crayon" ,r-crayon)
        ("r-digest" ,r-digest)
+       ("r-evaluate" ,r-evaluate)
        ("r-magrittr" ,r-magrittr)
        ("r-praise" ,r-praise)
        ("r-r6" ,r-r6)
