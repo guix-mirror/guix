@@ -13072,18 +13072,19 @@ inbred lines, F2 intercrosses, and association mapping populations.")
 (define-public r-ldheatmap
   (package
     (name "r-ldheatmap")
-    (version "0.99-5")
+    (version "0.99-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "LDheatmap" version))
        (sha256
         (base32
-         "0il3g3n3bzv74lz7dlhyiwc2x2417v6yhx2g47pahxdzqa09kf4s"))))
+         "1r0j8bihi5z1x0sgaf7dwzpsw9i0nc1vylvipvc0cia2ka1lr9dc"))))
     (properties `((upstream-name . "LDheatmap")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-genetics" ,r-genetics)
+       ("r-rcpp" ,r-rcpp)
        ("r-snpstats" ,r-snpstats)))
     (home-page "http://stat.sfu.ca/statgen/research/ldheatmap.html")
     (synopsis "Graphical display of pairwise linkage disequilibria between SNPs")
