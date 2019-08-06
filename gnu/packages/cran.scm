@@ -9395,14 +9395,14 @@ maps.")
 (define-public r-tidytree
   (package
     (name "r-tidytree")
-    (version "0.2.4")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidytree" version))
        (sha256
         (base32
-         "04bznlfs617plv258nmsyq2pywnijcnzy2pbn5b2fgjk2xqkp29w"))))
+         "0vfjv33352dmk9cr2qn0knzg761068rdk6jg32csd9vpmcma8awp"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
