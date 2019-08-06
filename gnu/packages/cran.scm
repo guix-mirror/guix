@@ -4649,14 +4649,14 @@ files.")
 (define-public r-shinyace
   (package
     (name "r-shinyace")
-    (version "0.3.3")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "shinyAce" version))
        (sha256
         (base32
-         "02q6wqw349nlyf3mbf18cxif1xv9cal5qzccrdlnv73szqn9jk7j"))))
+         "0hvih5g0pswlnz5rf3blx5yqw11ssxvm8w4klxddp1ap20ncbgl1"))))
     (properties `((upstream-name . "shinyAce")))
     (build-system r-build-system)
     (propagated-inputs
