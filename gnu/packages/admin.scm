@@ -1181,7 +1181,7 @@ commands and their arguments.")
 (define-public wpa-supplicant-minimal
   (package
     (name "wpa-supplicant-minimal")
-    (version "2.8")
+    (version "2.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1189,7 +1189,7 @@ commands and their arguments.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "15ixzm347n8w6gdvi3j3yks3i15qmp6by9ayvswm34d929m372d6"))
+                "05qzak1mssnxcgdrafifxh9w86a4ha69qabkg4bsigk499xyxggw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
