@@ -2606,7 +2606,7 @@ buffers.")
      `(#:tests? #f              ; many of the tests try to load kernel modules
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
+         (replace 'bootstrap
            (lambda _
              ;; Don't run configure in this phase.
              (setenv "NOCONFIGURE" "1")
