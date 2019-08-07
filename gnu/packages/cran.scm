@@ -11045,14 +11045,14 @@ model with finite state space using the Aalen-Johansen estimator.")
 (define-public r-epi
   (package
     (name "r-epi")
-    (version "2.37")
+    (version "2.38")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Epi" version))
        (sha256
         (base32
-         "1lanr9x0c6w22406p56j7cwk6wck8njq6pscb4gzc613d68zj1lk"))))
+         "0ald9fjynrlyah8nzwfs49a08j4myd3c5bm56zn61gg5pyyhi8hd"))))
     (properties `((upstream-name . "Epi")))
     (build-system r-build-system)
     (propagated-inputs
