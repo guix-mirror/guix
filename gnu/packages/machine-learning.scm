@@ -193,7 +193,7 @@ classification.")
                 (uri (svn-reference
                       (url "http://svn.code.sf.net/p/ghmm/code/trunk")
                       (revision svn-revision)))
-                (file-name (string-append name "-" version))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0qbq1rqp94l530f043qzp8aw5lj7dng9wq0miffd7spd1ff638wq"))))
