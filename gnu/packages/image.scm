@@ -595,9 +595,6 @@ collection of tools for doing simple manipulations of TIFF images.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
@@ -1240,12 +1237,6 @@ ISO/IEC 15444-1).")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables

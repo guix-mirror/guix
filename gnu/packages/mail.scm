@@ -1051,7 +1051,7 @@ useful features.")
     (arguments
       '(#:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'autogen
+          (replace 'bootstrap
             (lambda _
               (setenv "NOCONFIGURE" "true")
               (invoke "sh" "autogen.sh"))))
@@ -1365,12 +1365,7 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
      `(#:tests? #f ;No tests exist.
        #:configure-flags (list (string-append "--with-dovecot="
                                               (assoc-ref %build-inputs "dovecot")
-                                              "/lib/dovecot"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+                                              "/lib/dovecot"))))
     (home-page "https://0xacab.org/riseuplabs/trees")
     (synopsis "NaCL-based Dovecot email storage encryption plugin")
     (description
@@ -1421,12 +1416,7 @@ using libsodium sealed boxes.
        `(#:tests? #f ;No tests exist.
          #:configure-flags (list (string-append "--with-dovecot="
                                                 (assoc-ref %build-inputs "dovecot")
-                                                "/lib/dovecot"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh"))))))
+                                                "/lib/dovecot"))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description

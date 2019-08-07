@@ -792,17 +792,18 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.4")
+    (version "4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1qd7a10gs12ifcp31gramcgqjl77swskjfp7cijibgyg5yl4kw7i"))))
+               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fontconfig" ,fontconfig)
+     `(("dav1d" ,dav1d)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
@@ -901,6 +902,7 @@ operate properly.")
          "--enable-libbluray"
          "--enable-libcaca"
          "--enable-libcdio"
+         "--enable-libdav1d"
          "--enable-libfreetype"
          "--enable-libmp3lame"
          "--enable-libopus"
@@ -983,9 +985,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libaom" ,flags))))
-    (inputs (alist-delete "libaom"
-                          (package-inputs ffmpeg)))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom"
+                 ,flags)))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom"
+                          (package-inputs ffmpeg))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -2063,12 +2066,6 @@ capabilities.")
        ("libass" ,libass)
        ("tesseract-ocr" ,tesseract-ocr)
        ("zimg" ,zimg)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
@@ -2511,12 +2508,6 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2896,10 +2887,7 @@ practically any type of media.")
          (add-after 'unpack 'change-to-build-dir
            (lambda _
              (chdir "Project/GNU/Library")
-             #t))
-         (add-after 'change-to-build-dir 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             #t)))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical

@@ -7458,13 +7458,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.26.5")
+    (version "3.26.6")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "0iba4krz30dx5b0s89n5cfkwn64867s7vmvvfqms9lbcr4kj439m"))))
+                "17vadhamjv4x0l4qqq2p2fi6j2bkllz5zd8dq761vgd5ic23zizm"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7525,13 +7525,13 @@ coding changes and predict coding outcomes.")
 (define-public r-limma
   (package
     (name "r-limma")
-    (version "3.40.2")
+    (version "3.40.6")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "limma" version))
               (sha256
                (base32
-                "1d4ig2b7fa9mwja52isxrwmprfdjdk1mlcf2skhdp51l24z6wbk7"))))
+                "166z8cdh6w90rldqqaar7hyaskwiy4smawjfbn4sn58clv6q3mp8"))))
     (build-system r-build-system)
     (home-page "http://bioinf.wehi.edu.au/limma")
     (synopsis "Package for linear models for microarray and RNA-seq data")
@@ -7658,13 +7658,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.40.1")
+    (version "2.40.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "1abl0c4qbhfqf9ixdp74183phm7s8rszrr5ldczm59b8vyng8rhx"))))
+                "022m1r44s00c5k9bmv0lr22lcn662nhc91aazvv0yyysxjamyf60"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7819,13 +7819,13 @@ array-like objects like @code{DataFrame} objects (typically with Rle columns),
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.14.0")
+    (version "1.14.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "1ypk63pdml89y81pr41i2zq0fimsaxsa5lgpg6xs5cwikyaq0pci"))))
+                "0bhwgzrdipr0qjzc4j0qspqprx3v1rvshmx4j6506dv43pqlgp3f"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
@@ -7883,13 +7883,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.44.0")
+    (version "1.44.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "161gcks9b12993g9k27gf7wfh8lgd8m8rr7x2slgfqqssk0yrmpd"))))
+                "03b4rfsbzjjf5kxcsjv7kq8hrsgcvz9rfzcn2v7fx3nr818pbb8s"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -7930,13 +7930,13 @@ as well as query and modify the browser state, such as the current viewport.")
 (define-public r-genomicfeatures
   (package
     (name "r-genomicfeatures")
-    (version "1.36.3")
+    (version "1.36.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicFeatures" version))
               (sha256
                (base32
-                "0zkd57i5qjxsravv0gbyckc0wrnqzgxd61ibh3jmhmrccrr9ihn3"))))
+                "0mzqv8pyxx5nwchyx3radym9ws2f9hb50xc9abjsjs4w4pv91j3k"))))
     (properties
      `((upstream-name . "GenomicFeatures")))
     (build-system r-build-system)
@@ -8354,13 +8354,13 @@ paired-end data.")
 (define-public r-rcas
   (package
     (name "r-rcas")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "RCAS" version))
               (sha256
                (base32
-                "1h4vf5gzilqbdrd8m9l3zc2m4sca8cir8366a7njgd558k7ld5kl"))))
+                "06z5zmdi34jblw37z6ff8hb6lvvi0chwr37acwqfn8d27ax9lakz"))))
     (properties `((upstream-name . "RCAS")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9418,14 +9418,14 @@ of mass spectrometry based proteomics data.")
 (define-public r-msnid
   (package
     (name "r-msnid")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MSnID" version))
        (sha256
         (base32
-         "18mp8zacawhfapfwpq8czbswxix2ykvqhwjga54v0a99zg3k87h3"))))
+         "1n49l5mjdz7p4g2nwsbhm1jcj42sv6lsriq77n2imvacsvk0qfmb"))))
     (properties `((upstream-name . "MSnID")))
     (build-system r-build-system)
     (propagated-inputs

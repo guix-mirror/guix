@@ -193,7 +193,7 @@ classification.")
                 (uri (svn-reference
                       (url "http://svn.code.sf.net/p/ghmm/code/trunk")
                       (revision svn-revision)))
-                (file-name (string-append name "-" version))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0qbq1rqp94l530f043qzp8aw5lj7dng9wq0miffd7spd1ff638wq"))))
@@ -251,10 +251,7 @@ classification.")
                   (string-append indent
                                  "@unittest.skip(\"Disabled by Guix\")\n"
                                  line)))
-               #t))
-           (add-after 'disable-broken-tests 'autogen
-             (lambda _
-               (invoke "bash" "autogen.sh"))))))
+               #t)))))
       (inputs
        `(("python" ,python-2) ; only Python 2 is supported
          ("libxml2" ,libxml2)))

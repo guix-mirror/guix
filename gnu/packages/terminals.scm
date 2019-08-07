@@ -57,6 +57,7 @@
   #:use-module (gnu packages golang)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
@@ -954,7 +955,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.14.2")
+    (version "0.14.3")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -965,7 +966,7 @@ tmux.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "15iv3k7iryf10n8n67d37x24pzcarq97a3dr42lbld00k1lx19az"))
+         "0wi6b6b1nyp16rcpcghk6by62wy6qsamv1xdymyn0zbqgd8h9n6b"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -984,6 +985,7 @@ tmux.")
      `(("python" ,python)
        ("harfbuzz" ,harfbuzz)
        ("zlib" ,zlib)
+       ("libcanberra" ,libcanberra)
        ("libpng" ,libpng)
        ("freetype" ,freetype)
        ("fontconfig" ,fontconfig)
