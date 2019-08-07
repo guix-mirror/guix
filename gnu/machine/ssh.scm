@@ -44,6 +44,7 @@
             machine-ssh-configuration
 
             machine-ssh-configuration-host-name
+            machine-ssh-configuration-build-locally?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-session))
@@ -66,15 +67,17 @@
   make-machine-ssh-configuration
   machine-ssh-configuration?
   this-machine-ssh-configuration
-  (host-name machine-ssh-configuration-host-name) ; string
-  (port      machine-ssh-configuration-port       ; integer
-             (default 22))
-  (user      machine-ssh-configuration-user       ; string
-             (default "root"))
-  (identity  machine-ssh-configuration-identity   ; path to a private key
-             (default #f))
-  (session   machine-ssh-configuration-session    ; session
-             (default #f)))
+  (host-name      machine-ssh-configuration-host-name) ; string
+  (build-locally? machine-ssh-configuration-build-locally?
+                  (default #t))
+  (port           machine-ssh-configuration-port       ; integer
+                  (default 22))
+  (user           machine-ssh-configuration-user       ; string
+                  (default "root"))
+  (identity       machine-ssh-configuration-identity   ; path to a private key
+                  (default #f))
+  (session        machine-ssh-configuration-session    ; session
+                  (default #f)))
 
 (define (machine-ssh-session machine)
   "Return the SSH session that was given in MACHINE's configuration, or create
@@ -100,7 +103,10 @@ one from the configuration's parameters if one was not provided."
   "Internal implementation of 'machine-remote-eval' for MACHINE instances with
 an environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (remote-eval exp (machine-ssh-session machine)))
+  (remote-eval exp (machine-ssh-session machine)
+               #:build-locally?
+               (machine-ssh-configuration-build-locally?
+                (machine-configuration machine))))
 
 
 ;;;
