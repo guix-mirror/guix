@@ -290,8 +290,6 @@ Despite the name it should work with any X11 window manager.")
       (arguments
        `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
          #:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autogen
-                      (lambda _ (invoke "sh" "autogen.sh")))
                     (add-after 'install 'install-doc
                       (lambda* (#:key outputs #:allow-other-keys)
                         (let* ((out (assoc-ref outputs "out"))
