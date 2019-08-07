@@ -1416,12 +1416,7 @@ using libsodium sealed boxes.
        `(#:tests? #f ;No tests exist.
          #:configure-flags (list (string-append "--with-dovecot="
                                                 (assoc-ref %build-inputs "dovecot")
-                                                "/lib/dovecot"))
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'autogen
-             (lambda _
-               (invoke "sh" "autogen.sh"))))))
+                                                "/lib/dovecot"))))
       (home-page "https://github.com/LuckyFellow/dovecot-libsodium-plugin")
       (synopsis "Libsodium password hashing schemes plugin for Dovecot")
       (description
