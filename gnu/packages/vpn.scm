@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
@@ -252,11 +252,12 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
             (sha256 (base32
                      "1wlypi68kqqg2mdck8wvf6aanhrmf9i7z6lngyxvcrp23jdzz34h"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs
     `(("libxml2" ,libxml2)
       ("gnutls" ,gnutls)
-      ("vpnc-scripts" ,vpnc-scripts)
       ("zlib" ,zlib)))
+   (inputs
+    `(("vpnc-scripts" ,vpnc-scripts)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)))
