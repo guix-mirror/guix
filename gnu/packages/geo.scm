@@ -131,7 +131,12 @@ topology functions.")
                    (gi-typelib-path (getenv "GI_TYPELIB_PATH"))
                    (goa-path (string-append
                               (assoc-ref inputs "gnome-online-accounts")
+                              "/lib:"
+                              (assoc-ref inputs "gnome-online-accounts:lib")
                               "/lib"))
+                   (geocode-glib-path (string-append
+                                       (assoc-ref inputs "geocode-glib")
+                                       "/lib"))
                    (webkitgtk-path (string-append
                                     (assoc-ref inputs "webkitgtk")
                                     "/lib")))
@@ -141,7 +146,8 @@ topology functions.")
                  ;; There seems to be no way to embed the path of
                  ;; libgoa-1.0.so.0, libwebkit2gtk-4.0.so.37 and
                  ;; libjavascriptcoregtk-4.0.so.18.
-                 `("LD_LIBRARY_PATH" ":" prefix (,goa-path ,webkitgtk-path)))
+                 `("LD_LIBRARY_PATH" ":" prefix
+                   (,goa-path ,webkitgtk-path ,geocode-glib-path)))
                #t))))))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -163,6 +169,7 @@ topology functions.")
        ("gjs" ,gjs)
        ("glib" ,glib)
        ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-online-accounts:lib" ,gnome-online-accounts "lib")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("rest" ,rest)
        ("webkitgtk" ,webkitgtk)))
