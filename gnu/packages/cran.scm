@@ -5569,14 +5569,14 @@ and adds the annotation to the plot.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.2.1")
+    (version "0.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "0a4dv6a752hwvc7l31xs7bgqhfzfdy94xp6wgwaxf5dxm46na7k1"))))
+         "0r5knv3707pmpngmj60zn761y3bh8lj89dhh1b80ss083xnxr4qw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
@@ -5590,6 +5590,7 @@ and adds the annotation to the plot.")
        ("r-magrittr" ,r-magrittr)
        ("r-polynom" ,r-polynom)
        ("r-purrr" ,r-purrr)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
        ("r-tidyr" ,r-tidyr)))
     (home-page "http://www.sthda.com/english/rpkgs/ggpubr")
