@@ -5535,6 +5535,57 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
     (license license:gpl2+)
     (properties `((upstream-name . "NetworkManager-vpnc")))))
 
+(define-public network-manager-openconnect
+  (package
+    (name "network-manager-openconnect")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/NetworkManager-openconnect/"
+                    (version-major+minor version)
+                    "/NetworkManager-openconnect-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0nlp290nkawc4wqm978n4vhzg3xdqi8kpjjx19l855vab41rh44m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((openconnect (string-append (assoc-ref inputs "openconnect")
+                                         "/sbin/openconnect"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" openconnect "\"")))
+               (substitute* "src/nm-openconnect-service.c"
+                 (("\"/usr/local/sbin/openconnect\"") pretty-ovpn)
+                 (("\"/usr/sbin/openconnect\"") pretty-ovpn)
+                 (("/sbin/modprobe") modprobe)))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gcr" ,gcr)
+       ("gtk+" ,gtk+)
+       ("kmod" ,kmod)
+       ("libsecret" ,libsecret)
+       ("libxml2" ,libxml2)
+       ("network-manager" ,network-manager)
+       ("openconnect" ,openconnect)))
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
+    (synopsis "OpenConnect plug-in for NetworkManager")
+    (description
+     "This extension of NetworkManager allows it to take care of connections
+to @acronym{VPNs, virtual private networks} via OpenConnect, an open client for
+Cisco's AnyConnect SSL VPN.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "NetworkManager-openconnect")))))
+
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
