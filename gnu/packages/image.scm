@@ -595,9 +595,6 @@ collection of tools for doing simple manipulations of TIFF images.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
