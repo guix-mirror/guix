@@ -772,6 +772,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/einstein-build.patch			\
+  %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
@@ -1022,7 +1023,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
-  %D%/packages/patches/libmad-frame-length.patch		\
+  %D%/packages/patches/libmad-length-check.patch		\
+  %D%/packages/patches/libmad-md_size.patch			\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
@@ -1043,7 +1045,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-add-includes.patch		\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
-  %D%/packages/patches/libvirt-remove-ATTRIBUTE_UNUSED.patch	\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -1305,6 +1306,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/strace-ipc-tests.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\

@@ -473,16 +473,18 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "3.1.1")
+    (version "3.1.2")
     (outputs '("out" "static"))
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.videolan.org/videolan/x265/"
-                            "x265_" version ".tar.gz"))
+        (uri (list (string-append "https://bitbucket.org/multicoreware/x265"
+                                  "/downloads/x265_" version ".tar.gz")
+                   (string-append "https://download.videolan.org/videolan/x265/"
+                                  "x265_" version ".tar.gz")))
         (sha256
          (base32
-          "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
+          "1ajr59gjj47gnczfb2qhmzclj746pdiq9a1d81b0mq22k8f5yy3g"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -790,17 +792,18 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.4")
+    (version "4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1qd7a10gs12ifcp31gramcgqjl77swskjfp7cijibgyg5yl4kw7i"))))
+               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fontconfig" ,fontconfig)
+     `(("dav1d" ,dav1d)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
@@ -899,6 +902,7 @@ operate properly.")
          "--enable-libbluray"
          "--enable-libcaca"
          "--enable-libcdio"
+         "--enable-libdav1d"
          "--enable-libfreetype"
          "--enable-libmp3lame"
          "--enable-libopus"
@@ -981,9 +985,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libaom" ,flags))))
-    (inputs (alist-delete "libaom"
-                          (package-inputs ffmpeg)))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom"
+                 ,flags)))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom"
+                          (package-inputs ffmpeg))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -2061,12 +2066,6 @@ capabilities.")
        ("libass" ,libass)
        ("tesseract-ocr" ,tesseract-ocr)
        ("zimg" ,zimg)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
@@ -2509,12 +2508,6 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2894,10 +2887,7 @@ practically any type of media.")
          (add-after 'unpack 'change-to-build-dir
            (lambda _
              (chdir "Project/GNU/Library")
-             #t))
-         (add-after 'change-to-build-dir 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             #t)))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical

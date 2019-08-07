@@ -3500,12 +3500,11 @@ color scales, and color space conversion easy.  It has support for:
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-fonts-cm-super
+       ("texlive" ,(texlive-union (list texlive-fonts-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
-                                        texlive-latex-amsfonts
+                                        texlive-amsfonts
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
@@ -3904,7 +3903,7 @@ toolkits.")
        ("python-ipykernel" ,python-ipykernel)
        ("python-mock" ,python-mock)
        ("graphviz" ,graphviz)
-       ("texlive" ,(texlive-union (list texlive-latex-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         texlive-latex-enumitem
                                         texlive-latex-expdlist
@@ -3915,7 +3914,6 @@ toolkits.")
 
                                         texlive-generic-pdftex
 
-                                        texlive-fonts-amsfonts
                                         texlive-fonts-ec
                                         texlive-fonts-adobe-times
                                         texlive-fonts-txfonts)))
@@ -5472,11 +5470,10 @@ computing.")
      `(("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ;; FIXME: It's possible that a smaller union would work just as well.
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
-                                        texlive-latex-amsfonts
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ

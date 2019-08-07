@@ -20,6 +20,9 @@
   #:use-module (gnu machine)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu system)
+  #:use-module (gnu system file-systems)
+  #:use-module (gnu system uuid)
+  #:use-module (guix diagnostics)
   #:use-module (guix gexp)
   #:use-module (guix i18n)
   #:use-module (guix modules)
@@ -29,6 +32,7 @@
   #:use-module (guix scripts system reconfigure)
   #:use-module (guix ssh)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -40,6 +44,7 @@
             machine-ssh-configuration
 
             machine-ssh-configuration-host-name
+            machine-ssh-configuration-build-locally?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-session))
@@ -62,15 +67,17 @@
   make-machine-ssh-configuration
   machine-ssh-configuration?
   this-machine-ssh-configuration
-  (host-name machine-ssh-configuration-host-name) ; string
-  (port      machine-ssh-configuration-port       ; integer
-             (default 22))
-  (user      machine-ssh-configuration-user       ; string
-             (default "root"))
-  (identity  machine-ssh-configuration-identity   ; path to a private key
-             (default #f))
-  (session   machine-ssh-configuration-session    ; session
-             (default #f)))
+  (host-name      machine-ssh-configuration-host-name) ; string
+  (build-locally? machine-ssh-configuration-build-locally?
+                  (default #t))
+  (port           machine-ssh-configuration-port       ; integer
+                  (default 22))
+  (user           machine-ssh-configuration-user       ; string
+                  (default "root"))
+  (identity       machine-ssh-configuration-identity   ; path to a private key
+                  (default #f))
+  (session        machine-ssh-configuration-session    ; session
+                  (default #f)))
 
 (define (machine-ssh-session machine)
   "Return the SSH session that was given in MACHINE's configuration, or create
@@ -96,7 +103,149 @@ one from the configuration's parameters if one was not provided."
   "Internal implementation of 'machine-remote-eval' for MACHINE instances with
 an environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (remote-eval exp (machine-ssh-session machine)))
+  (remote-eval exp (machine-ssh-session machine)
+               #:build-locally?
+               (machine-ssh-configuration-build-locally?
+                (machine-configuration machine))))
+
+
+;;;
+;;; Safety checks.
+;;;
+
+(define (machine-check-file-system-availability machine)
+  "Raise a '&message' error condition if any of the file-systems specified in
+MACHINE's 'system' declaration do not exist on the machine."
+  (define file-systems
+    (filter (lambda (fs)
+              (and (file-system-mount? fs)
+                   (not (member (file-system-type fs)
+                                %pseudo-file-system-types))
+                   (not (memq 'bind-mount (file-system-flags fs)))))
+            (operating-system-file-systems (machine-operating-system machine))))
+
+  (define (check-literal-file-system fs)
+    (define remote-exp
+      #~(catch 'system-error
+          (lambda ()
+            (stat #$(file-system-device fs))
+            #t)
+          (lambda args
+            (system-error-errno args))))
+
+    (mlet %store-monad ((errno (machine-remote-eval machine remote-exp)))
+      (when (number? errno)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "device '~a' not found: ~a")
+                                  (file-system-device fs)
+                                  (strerror errno)))))))
+      (return #t)))
+
+  (define (check-labeled-file-system fs)
+    (define remote-exp
+      (with-imported-modules '((gnu build file-systems))
+        #~(begin
+            (use-modules (gnu build file-systems))
+            (find-partition-by-label #$(file-system-label->string
+                                        (file-system-device fs))))))
+
+    (mlet %store-monad ((result (machine-remote-eval machine remote-exp)))
+      (unless result
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "no file system with label '~a'")
+                                  (file-system-label->string
+                                   (file-system-device fs))))))))
+      (return #t)))
+
+  (define (check-uuid-file-system fs)
+    (define remote-exp
+      (with-imported-modules (source-module-closure
+                              '((gnu build file-systems)
+                                (gnu system uuid)))
+        #~(begin
+            (use-modules (gnu build file-systems)
+                         (gnu system uuid))
+
+            (define uuid
+              (string->uuid #$(uuid->string (file-system-device fs))))
+
+            (find-partition-by-uuid uuid))))
+
+    (mlet %store-monad ((result (machine-remote-eval machine remote-exp)))
+      (unless result
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "no file system with UUID '~a'")
+                                  (uuid->string (file-system-device fs))))))))
+      (return #t)))
+
+  (mbegin %store-monad
+    (mapm %store-monad check-literal-file-system
+          (filter (lambda (fs)
+                    (string? (file-system-device fs)))
+                  file-systems))
+    (mapm %store-monad check-labeled-file-system
+          (filter (lambda (fs)
+                    (file-system-label? (file-system-device fs)))
+                  file-systems))
+    (mapm %store-monad check-uuid-file-system
+          (filter (lambda (fs)
+              (uuid? (file-system-device fs)))
+                  file-systems))))
+
+(define (machine-check-initrd-modules machine)
+  "Raise a '&message' error condition if any of the modules needed by
+'needed-for-boot' file systems in MACHINE are not available in the initrd."
+  (define file-systems
+    (filter file-system-needed-for-boot?
+            (operating-system-file-systems (machine-operating-system machine))))
+
+  (define (missing-modules fs)
+    (define remote-exp
+      (let ((device (file-system-device fs)))
+        (with-imported-modules (source-module-closure
+                                '((gnu build file-systems)
+                                  (gnu build linux-modules)
+                                  (gnu system uuid)))
+          #~(begin
+              (use-modules (gnu build file-systems)
+                           (gnu build linux-modules)
+                           (gnu system uuid))
+
+              (define dev
+                #$(cond ((string? device) device)
+                        ((uuid? device) #~(find-partition-by-uuid
+                                           (string->uuid
+                                            #$(uuid->string device))))
+                        ((file-system-label? device)
+                         #~(find-partition-by-label
+                            (file-system-label->string #$device)))))
+
+              (missing-modules dev '#$(operating-system-initrd-modules
+                                       (machine-operating-system machine)))))))
+    (mlet %store-monad ((missing (machine-remote-eval machine remote-exp)))
+      (return (list fs missing))))
+
+  (mlet %store-monad ((device (mapm %store-monad missing-modules file-systems)))
+    (for-each (match-lambda
+                ((fs missing)
+                 (unless (null? missing)
+                   (raise (condition
+                           (&message
+                            (message (format #f (G_ "~a missing modules ~{ ~a~}~%")
+                                             (file-system-device fs)
+                                             missing))))))))
+              device)
+    (return #t)))
+
+(define (check-deployment-sanity machine)
+  "Raise a '&message' error condition if it is clear that deploying MACHINE's
+'system' declaration would fail."
+  (mbegin %store-monad
+    (machine-check-file-system-availability machine)
+    (machine-check-initrd-modules machine)))
 
 
 ;;;
@@ -165,8 +314,9 @@ of MACHINE's system profile, ordered from most recent to oldest."
   "Internal implementation of 'deploy-machine' for MACHINE instances with an
 environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (mlet %store-monad ((boot-parameters (machine-boot-parameters machine)))
-    (let* ((os (machine-system machine))
+  (mlet %store-monad ((_ (check-deployment-sanity machine))
+                      (boot-parameters (machine-boot-parameters machine)))
+    (let* ((os (machine-operating-system machine))
            (eval (cut machine-remote-eval machine <>))
            (menu-entries (map boot-parameters->menu-entry boot-parameters))
            (bootloader-configuration (operating-system-bootloader os))

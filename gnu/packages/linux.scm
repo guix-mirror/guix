@@ -350,42 +350,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.5")
+(define-public linux-libre-5.2-version "5.2.7")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "15ndscsp3yqgas901g6inpmyvinz4cwr5y3md516j2pr8cl40if6")))
+        (hash (base32 "1aazhf0v8bv4py0wnqkdmiy80fchnix431l0hda2fkwsdf9njgnv")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.63")
+(define-public linux-libre-4.19-version "4.19.65")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0pfjwpa6szvdr941y13806hlsgsbslfsvkrd5534p1iip5h8g63m")))
+        (hash (base32 "1pyyhr2airxzk4c6n7140yl723dc7yw7igy5i5i2ih0nd4c3k6g5")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.135")
+(define-public linux-libre-4.14-version "4.14.137")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0x2v0pj4hjb71qkxbqn4ymg6zmyabp91kylyzd270nbig7i234a2")))
+        (hash (base32 "0a72pab0zxy28i02glnzj6avzcf0a4gxxnadbdd343rh549yky4k")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.186")
+(define-public linux-libre-4.9-version "4.9.188")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0sjbp7m6d625rw06wv34a0805d1lgldii4pxiqfpja871m1q8914")))
+        (hash (base32 "08p2cfc9982b804vmkapfasgipf6969g625ih7z3062xn99rhlr7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.186")
+(define-public linux-libre-4.4-version "4.4.188")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "113rjf8842glzi23y1g1yrwncihv2saah6wz0r726r06bk9p64hb")))
+        (hash (base32 "1llxamm62kgqd7dig98n8m16qas8dd8rrkmwpfcdgyf8rag216ff")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1402,15 +1402,18 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.1")
+    (version "5.2")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
+             ;; XXX Remove the 'regenerate-tests' phase below when
+             ;; "strace-ipc-tests.patch" is no longer applied.
+             (patches (search-patches "strace-ipc-tests.patch"))
              (sha256
               (base32
-               "12wsga1v3rab24gr0mpfip7j7gwr90m8f9h6fviqxa3xgnwl38zm"))))
+               "1li49i75wrdw91hchyyd8spnzfcmxcfyfb5g9zbaza89aq4bq4ym"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1419,7 +1422,14 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
-             #t)))
+             #t))
+         (add-before 'configure 'regenerate-tests
+           ;; XXX Remove this phase when "strace-ipc-tests.patch" is no longer
+           ;; applied in the 'source' field above.  This phase is needed to
+           ;; regenerate many other files from tests/gen_tests.in, which is
+           ;; modified by the aforementioned patch.
+           (lambda _
+             (invoke "tests/gen_tests.sh"))))
        ;; Don't fail if the architecture doesn't support different personalities.
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.

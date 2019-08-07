@@ -36,7 +36,7 @@
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
 valid Subversion revision.  Return #t on success, #f otherwise."
   (apply invoke svn-command
-         "checkout" "--non-interactive"
+         "export" "--non-interactive"
          ;; Trust the server certificate.  This is OK as we
          ;; verify the checksum later.  This can be removed when
          ;; ca-certificates package is added.
@@ -46,13 +46,6 @@ valid Subversion revision.  Return #t on success, #f otherwise."
                        (string-append "--password=" password))
                  '())
            ,url ,directory))
-
-  ;; The contents of '.svn' vary as a function of the current status
-  ;; of the repo.  Since we want a fixed output, this directory needs
-  ;; to be taken out.
-  (with-directory-excursion directory
-    (for-each delete-file-recursively (find-files "." "^\\.svn$" #:directories? #t)))
-
   #t)
 
 ;;; svn.scm ends here

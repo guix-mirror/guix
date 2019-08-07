@@ -41,7 +41,7 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.1.10")
+    (version "2.1.11")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -49,7 +49,7 @@
                    version "-stable/libevent-" version "-stable.tar.gz"))
              (sha256
               (base32
-               "1c25928gdv495clxk2v1d4gkr5py7ack4gx2n7d13frnld0syr78"))))
+               "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
     (build-system gnu-build-system)
     (arguments
       ;; This skips some of the tests which fail on armhf and aarch64.

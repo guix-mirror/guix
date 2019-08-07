@@ -236,8 +236,7 @@ the real span of the lattice.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
-                    (list texlive-fonts-amsfonts
-                          texlive-latex-amsfonts)))))
+                    (list texlive-amsfonts)))))
     (inputs `(("gmp" ,gmp)
               ("libx11" ,libx11)
               ("perl" ,perl)
