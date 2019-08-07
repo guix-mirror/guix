@@ -2066,12 +2066,6 @@ capabilities.")
        ("libass" ,libass)
        ("tesseract-ocr" ,tesseract-ocr)
        ("zimg" ,zimg)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
