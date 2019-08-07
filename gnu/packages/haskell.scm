@@ -11869,7 +11869,7 @@ default)
 (define-public ghc-validation
   (package
     (name "ghc-validation")
-    (version "1.1")
+    (version "1")
     (source
      (origin
        (method url-fetch)
@@ -11879,8 +11879,11 @@ default)
              ".tar.gz"))
        (sha256
         (base32
-         "1acj7mh3581ks405xswxw6667z7y1y0slisg6jvp6chc191ji9l5"))))
+         "08drmdvyzg2frbb26icy1mlz52xv0l6gi3v8gb7xp0vrcci5libh"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "1x1g4nannz81j1h64l1m3ancc96zc57d1bjhj1wk7bwn1xxbi5h3")))
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
