@@ -250,12 +250,6 @@ turbo speed, networked multiplayer, and graphical enhancements.")
                (base32
                 "02i648i50dwicv1vaql15rccv4g8h5blf5g6inv67lrfxpbkvlf0"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autogen.sh
-                   (lambda _
-                     (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
