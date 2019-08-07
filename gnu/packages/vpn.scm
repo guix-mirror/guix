@@ -227,11 +227,6 @@ the entire VPN in a network namespace accessible only through SSH.")
        ("automake" ,automake)))
     (inputs
      `(("libevent" ,libevent)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _ (invoke "sh" "autogen.sh"))))))
     (home-page "https://github.com/cernekee/ocproxy")
     (synopsis "OpenConnect proxy")
     (description
