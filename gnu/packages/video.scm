@@ -2508,12 +2508,6 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
