@@ -11881,16 +11881,6 @@ default)
         (base32
          "1acj7mh3581ks405xswxw6667z7y1y0slisg6jvp6chc191ji9l5"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'add-setup-script
-           (lambda _
-             ;; The usual "Setup.hs" script is missing from the source.
-             (with-output-to-file "Setup.hs"
-               (lambda ()
-                 (format #t "import Distribution.Simple~%")
-                 (format #t "main = defaultMain~%"))))))))
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
