@@ -1051,7 +1051,7 @@ useful features.")
     (arguments
       '(#:phases
         (modify-phases %standard-phases
-          (add-after 'unpack 'autogen
+          (replace 'bootstrap
             (lambda _
               (setenv "NOCONFIGURE" "true")
               (invoke "sh" "autogen.sh"))))
