@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015, 2016, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
@@ -684,9 +684,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "4")
-         (bind-release-type "-P")         ; for patch release, use "-P"
-         (bind-release-version "2")      ; for patch release, e.g. "6"
+         (bind-patch-version "9")
+         (bind-release-type "")         ; for patch release, use "-P"
+         (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -710,7 +710,18 @@ connection alive.")
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
-             (lambda* (#:key inputs #:allow-other-keys)
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               ;; XXX TODO: Remove the following invocation of 'patch' when
+               ;; isc-dhcp is updated.  It should be needed only for 4.4.1.
+               (let ((patch (string-append (assoc-ref (or native-inputs inputs)
+                                                      "patch")
+                                           "/bin/patch"))
+                     (the-patch (assoc-ref (or native-inputs inputs)
+                                           "fixes-for-newer-bind.patch")))
+                 (format #t "applying '~a'...~%" the-patch)
+                 (invoke patch "--force" "--no-backup-if-mismatch"
+                         "-p1" "--input" the-patch))
+
                (delete-file "bind/bind.tar.gz")
                (copy-file (assoc-ref inputs "bind-source-tarball")
                           "bind/bind.tar.gz")
@@ -743,15 +754,18 @@ connection alive.")
                ;; shell is used.
                (with-directory-excursion "bind"
                  (substitute* "Makefile"
-                   (("\\./configure")
+                   (("\\./configure ")
                     (let ((sh (which "sh")))
                       (string-append "./configure CONFIG_SHELL="
-                                     sh " SHELL=" sh))))
+                                     sh " SHELL=" sh " "))))
 
                  (let ((bind-directory (string-append "bind-" ,bind-version)))
                    (invoke "tar" "xf" "bind.tar.gz")
                    (for-each patch-shebang
                              (find-files bind-directory ".*"))
+                   (substitute* (string-append bind-directory "/configure")
+                     (("/usr/bin/file")
+                      (which "file")))
                    (invoke "tar" "cf" "bind.tar.gz"
                            bind-directory
                            ;; avoid non-determinism in the archive
@@ -787,7 +801,15 @@ connection alive.")
                            (list inetutils net-tools coreutils sed))))
                  #t))))))
 
-      (native-inputs `(("perl" ,perl)))
+      (native-inputs
+       `(("perl" ,perl)
+         ("file" ,file)
+
+         ;; XXX TODO: Remove the following patch, and also the 'patch'
+         ;; program, when isc-dhcp is updated.
+         ("fixes-for-newer-bind.patch"
+          ,(search-patch "isc-dhcp-4.4.1-fixes-for-newer-bind.patch"))
+         ("patch" ,patch)))
 
       (inputs `(("inetutils" ,inetutils)
                 ("net-tools" ,net-tools)
@@ -803,7 +825,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "04fq17zksd2b3w6w6padps5n7b6s2lasxpksbhl4378h56vgfnm8"))))
+                      "03n57as73ygw6g3lqsmq2idkykajpbskzgixixdvi5a76m4g0fwn"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
