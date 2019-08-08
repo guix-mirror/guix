@@ -2054,6 +2054,99 @@ specifically designed for games.  It has a built in set of extendable GUI
 Widgets, and allows users to create more.")
     (license license:lgpl2.1+)))
 
+(define-public fifengine
+  (package
+    (name "fifengine")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/fifengine/"
+                                  "fifengine/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f            ; TODO The test running fails to run some tests.
+       #:modules ((srfi srfi-1)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:configure-flags
+       (list
+        (string-append "-DOPENALSOFT_INCLUDE_DIR="
+                       (assoc-ref %build-inputs "openal")
+                       "/include/AL")
+        (string-append "-DPYTHON_SITE_PACKAGES="
+                       (assoc-ref %outputs "out")
+                       "/lib/python3.7/site-packages"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-run_tests.py
+           (lambda _
+             ;; Patch the test runner to exit with a status of 1 if any test
+             ;; fails, to allow detecting failures.
+             (substitute* "run_tests.py"
+               (("ERROR\\. One or more tests failed!'\\)")
+                "ERROR. One or more tests failed!')
+\t\texit(1)"))
+             #t))
+         ;; Run tests after installation so that we can make use of the built
+         ;; python modules.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (define python-version
+               (let* ((version     (last (string-split
+                                          (assoc-ref inputs "python")
+                                          #\-)))
+                      (components  (string-split version #\.))
+                      (major+minor (take components 2)))
+                 (string-join major+minor ".")))
+
+             (when tests?
+               ;; Set PYTHONPATH so that python finds the installed modules.
+               (setenv "PYTHONPATH"
+                       (string-append (getenv "PYTHONPATH") ":"
+                                      (assoc-ref outputs "out")
+                                      "/lib/python"
+                                      python-version
+                                      "/site-packages"))
+               ;; The tests require an X server.
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               (setenv "XDG_RUNTIME_DIR" "/tmp")
+               ;; Run tests
+               (chdir ,(string-append "../" name "-" version))
+               (invoke "python3" "run_tests.py" "-a"))
+             #t)))))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("tinyxml" ,tinyxml)
+       ("openal" ,openal)
+       ("libogg" ,libogg)
+       ("glew" ,glew)
+       ("libvorbis" ,libvorbis)
+       ("boost" ,boost)
+       ("fifechan" ,fifechan)
+       ("swig" ,swig)
+       ("python" ,python)))
+    (native-inputs
+     `(("python" ,python)
+       ("swig" ,swig)
+       ("xvfb" ,xorg-server)))
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://www.fifengine.net/")
+    (synopsis "FIFE is a multi-platform isometric game engine written in C++")
+    (description
+     "@acronym{FIFE, Flexible Isometric Free Engine} is a multi-platform
+isometric game engine.  Python bindings are included allowing users to create
+games using Python as well as C++.")
+    (license license:lgpl2.1+)))
+
 (define-public fizmo
   (package
     (name "fizmo")
