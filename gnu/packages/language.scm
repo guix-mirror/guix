@@ -35,8 +35,10 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
-                #:select (bsd-3 gpl2 gpl2+ gpl3 gpl3+ perl-license zpl2.1))
+                #:select
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 perl-license zpl2.1))
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils))
 
 (define-public perl-lingua-en-findnumber
@@ -594,3 +596,55 @@ suitable for both the desktop and mobile devices.")
     ;; Files in gifenc/ are licensed under gpl3+ while other files are licensed
     ;; under gpl2+. Therefore, the combined work is licensed under gpl3+.
     (license gpl3+)))
+
+(define-public python2-tegaki-recognize
+  (let ((commit "eceec69fe651d0733c8c8752dae569d2283d0f3c")
+        (revision "1"))
+    (package
+      (inherit python2-tegaki-tools)
+      (name "python2-tegaki-recognize")
+      ;; version copied from <https://github.com/tegaki/tegaki/releases>
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         ;; We use GIT-FETCH because 'tegaki-recognize.desktop.in' and
+         ;; 'tegaki-recognize.in' are missing in the tarball.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tegaki/tegaki.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "09mw2if9p885phbgah5f95q3fwy7s5b46qlmpxqyzfcnj6g7afr5"))
+         (file-name (git-file-name name version))
+         (modules `((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-26)
+                    ,@remove-pre-compiled-files-modules))
+         (snippet
+          `(begin
+             ;; remove unnecessary files with potentially different license
+             (for-each delete-file-recursively
+                       (scandir "."
+                                (negate (cut member <> '("tegaki-recognize"
+                                                         "." "..")))))
+             ,(remove-pre-compiled-files "pyc")
+             #t))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments python2-tegaki-tools)
+         ((#:phases _)
+          `(modify-phases %standard-phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "tegaki-recognize")
+                 #t))
+             ;; 'setup.py' script does not support one of the Python build
+             ;; system's default flags, "--single-version-externally-managed"
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "python" "setup.py" "install"
+                         (string-append "--prefix=" (assoc-ref outputs "out"))
+                         "--root=/")
+                 #t))))))
+      (synopsis "Chinese and Japanese Handwriting Recognition (Main program)")
+      (license gpl2+)))) ; all files
