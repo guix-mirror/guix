@@ -736,7 +736,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)))
-    (home-page "https://wiki.freedesktop.org/libopenraw/Exempi")
+    (home-page "https://libopenraw.freedesktop.org/exempi/")
     (synopsis "XMP metadata handling library")
     (description "Exempi is an implementation of the Extensible Metadata
 Platform (@dfn{XMP}), which enables embedding metadata in PDF and image
