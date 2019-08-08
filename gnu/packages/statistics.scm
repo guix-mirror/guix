@@ -1404,13 +1404,13 @@ data derived from /etc/mime.types in UNIX-type systems.")
 (define-public r-markdown
   (package
     (name "r-markdown")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "markdown" version))
               (sha256
                (base32
-                "19nrz0ba1yd5kicd65crkkz2r3kialm2hm6zdkp495l2s5r80b8p"))))
+                "06zwbrp14bri3470anadd7dvgmw06xf8df6v2pk64wx3f9sd934d"))))
     (build-system r-build-system)
     ;; Skip check phase because the tests require the r-knitr package to be
     ;; installed. This prevents installation failures. Knitr normally
@@ -1418,7 +1418,8 @@ data derived from /etc/mime.types in UNIX-type systems.")
     ;; package.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("r-mime" ,r-mime)))
+     `(("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
     (home-page "https://github.com/rstudio/markdown")
     (synopsis "Markdown rendering for R")
     (description
