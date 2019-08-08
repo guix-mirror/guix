@@ -2306,6 +2306,78 @@ against each other or just trying to beat the computer; single-player mode is
 also available.")
     (license license:gpl3+)))
 
+(define-public unknown-horizons
+  (package
+    (name "unknown-horizons")
+    (version "2019.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/unknown-horizons/"
+                                  "unknown-horizons/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (add-after 'build 'build-extra
+           (lambda _
+             (invoke "python3" "./setup.py" "build_i18n")
+             (invoke "python3" "horizons/engine/generate_atlases.py" "2048")
+             #t))
+         (add-after 'install 'patch
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/bin/unknown-horizons")
+                 (("os\\.chdir\\(get\\_content\\_dir\\_parent_path\\(\\)\\)")
+                  (string-append "os.chdir(\""
+                                 (assoc-ref outputs "out")
+                                 "/share/unknown-horizons\")"))))
+             #t))
+         ;; TODO: Run GUI tests as well
+         (replace 'check
+           (lambda _
+             (substitute* "horizons/constants.py"
+               (("IS_DEV_VERSION = False")
+                "IS_DEV_VERSION = True"))
+             (invoke "pytest" "tests")
+             (substitute* "horizons/constants.py"
+               (("IS_DEV_VERSION = True")
+                "IS_DEV_VERSION = False"))
+             #t)))))
+    (inputs
+     `(("fifengine" ,fifengine)
+       ("python:tk" ,python "tk")
+       ("python-pillow" ,python-pillow)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("intltool" ,intltool)
+
+       ;; Required for tests
+       ("python-greenlet" ,python-greenlet)
+       ("python-polib" ,python-polib)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "http://unknown-horizons.org/")
+    (synopsis "Isometric realtime strategy, economy and city building simulation")
+    (description
+     "Unknown Horizons is a 2D realtime strategy simulation with an emphasis
+on economy and city building.  Expand your small settlement to a strong and
+wealthy colony, collect taxes and supply your inhabitants with valuable
+goods.  Increase your power with a well balanced economy and with strategic
+trade and diplomacy.")
+    (license (list
+              license:gpl2+        ; Covers code
+              license:expat        ; tests/dummy.py, ext/polib.py
+              license:cc-by-sa3.0  ; Covers some media content
+              license:cc-by3.0     ; Covers some media content
+              license:bsd-3))))    ; horizons/ext/speaklater.py
+
 (define-public gnujump
   (package
     (name "gnujump")
