@@ -2027,6 +2027,33 @@ some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using the Glk API.")
    (license license:expat)))
 
+(define-public fifechan
+  (package
+    (name "fifechan")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/fifengine/"
+                                  "fifechan/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wxs9vz5x9y8chghd8vp7vfk089lfb0qnzggi17zrqkrngs5zgi9"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("mesa" ,mesa)))
+    (arguments
+     '(#:tests? #f))                    ; No included tests
+    (home-page "https://fifengine.github.io/fifechan/")
+    (synopsis "Cross platform GUI library specifically for games")
+    (description
+     "Fifechan is a lightweight cross platform GUI library written in C++
+specifically designed for games.  It has a built in set of extendable GUI
+Widgets, and allows users to create more.")
+    (license license:lgpl2.1+)))
+
 (define-public fizmo
   (package
     (name "fizmo")
