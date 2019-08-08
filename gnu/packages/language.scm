@@ -830,3 +830,19 @@ suitable for both the desktop and mobile devices.")
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
     (license lgpl2.1))) ; all files
+
+(define-public tegaki-wagomu-japanese-joyo
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-wagomu-japanese-joyo")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0wk8shpr963zp328g991qs6abpnacq4242003m687z2d6yp7nph2"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
