@@ -22,6 +22,7 @@
 (define-module (gnu packages language)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -29,6 +30,7 @@
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
@@ -529,3 +531,39 @@ suitable for both the desktop and mobile devices.")
     (license (list gpl2+ ; all files except...
                    bsd-3 ; dictutils.py
                    zpl2.1)))) ; minjson.py
+
+(define-public python2-tegaki-pygtk
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-pygtk")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-pygtk" version))
+       (sha256
+        (base32
+         "1cip0azxhjdj2dg2z85cp1z3lz4qwx3w1j7z4xmcm7npapmsaqs2"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _)
+        `(modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "tegakigtk/fakekey.py"
+                 (("libX11.so.6" so)
+                  (string-append (assoc-ref inputs "libx11") "/lib/" so))
+                 (("libXtst.so.6" so)
+                  (string-append (assoc-ref inputs "libxtst") "/lib/" so)))
+               #t))))))
+    (inputs ; required for sending key strokes
+     `(("libx11" ,libx11)
+       ("libxtst" ,libxtst)))
+    (native-inputs '()) ; override inherited inputs
+    (propagated-inputs
+     `(("python2-pygtk" ,python2-pygtk)
+       ("python2-tegaki-python" ,python2-tegaki-python)))
+    (synopsis "Chinese and Japanese Handwriting Recognition (Base UI library)")
+    (license gpl2+))) ; all files
