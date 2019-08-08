@@ -35,7 +35,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
-                #:select (bsd-3 gpl2 gpl2+ gpl3 perl-license zpl2.1))
+                #:select (bsd-3 gpl2 gpl2+ gpl3 gpl3+ perl-license zpl2.1))
   #:use-module (guix download)
   #:use-module (guix utils))
 
@@ -567,3 +567,30 @@ suitable for both the desktop and mobile devices.")
        ("python2-tegaki-python" ,python2-tegaki-python)))
     (synopsis "Chinese and Japanese Handwriting Recognition (Base UI library)")
     (license gpl2+))) ; all files
+
+(define-public python2-tegaki-tools
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-tools")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-tools" version))
+       (sha256
+        (base32
+         "0xxv97ggh2jgldw3r7y59lv3fhz733r6l7mdn6nh4m0gvb0ja971"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _) '%standard-phases)))
+    (inputs
+     `(("python2-tegaki-pygtk" ,python2-tegaki-pygtk)))
+    ;; override inherited inputs
+    (native-inputs '())
+    (propagated-inputs '())
+    (synopsis "Chinese and Japanese Handwriting Recognition (Advanced tools)")
+    ;; Files in gifenc/ are licensed under gpl3+ while other files are licensed
+    ;; under gpl2+. Therefore, the combined work is licensed under gpl3+.
+    (license gpl3+)))
