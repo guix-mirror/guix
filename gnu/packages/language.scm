@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,12 +21,17 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
-  #:use-module ((guix licenses) #:select (gpl2 gpl3 perl-license))
+  #:use-module (guix build-system python)
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3 perl-license))
   #:use-module (guix download))
 
 (define-public perl-lingua-en-findnumber
@@ -406,3 +412,70 @@ string can be easily inferred by a human just by reading the identifier.")
     (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")
     (license perl-license)))
+
+(define* (tegaki-release-uri proj version
+                             #:optional (ext "tar.gz"))
+  (string-append "https://github.com/tegaki/tegaki/releases/download"
+                 "/v" version "/" proj "-" version "." ext))
+
+(define remove-pre-compiled-files
+  (lambda exts
+    "Return snippet for removing pre-compiled files matching one of the
+extensions in EXTS."
+    `(begin (for-each delete-file
+                      (find-files "."
+                                  (lambda (name _)
+                                    (any (cut string-suffix? <> name)
+                                         (map (cut string-append "." <>)
+                                              ',exts)))))
+            #t)))
+
+;;; modules required for the above snippet
+(define remove-pre-compiled-files-modules
+  '((guix build utils)
+    (srfi srfi-1)
+    (srfi srfi-26)))
+
+(define-public python2-tegaki-wagomu
+  (package
+    (name "python2-tegaki-wagomu")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-wagomu" version))
+       (sha256
+        (base32
+         "1pzdiq4zy1nyylaj9i6v2h4h0r05klahskzpafpp367p4rysi1x9"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-recognizer
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; fix missing module and function
+             (substitute* "tegakiwagomu.py"
+               (("import Results,")
+                "import ")
+               (("def _recognize")
+                "def recognize")
+               (("Results\\(candidates\\)")
+                "candidates"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (home-page "https://tegaki.github.io/")
+    (synopsis
+     "Chinese and Japanese Handwriting Recognition (Recognition engine)")
+    (description
+     "Tegaki is an ongoing project which aims to develop a free and open-source
+modern implementation of handwriting recognition software, specifically
+designed for Chinese (simplified and traditional) and Japanese, and that is
+suitable for both the desktop and mobile devices.")
+    (license gpl2+))) ; all files
