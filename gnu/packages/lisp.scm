@@ -7249,3 +7249,36 @@ system.")
 
 (define-public ecl-cl-ledger
   (sbcl-package->ecl-package sbcl-cl-ledger))
+
+(define-public sbcl-bst
+  (let ((commit "34f9c7e8e0a9f2c952fe310ab36cb630d5d9c15a")
+        (revision "1"))
+    (package
+      (name "sbcl-bst")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/bst.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1amxns7hvvh4arwbh8ciwfzplg127vh37dnbamv1m1kmmnmihfc8"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("fiveam" ,sbcl-fiveam)))
+      (synopsis "Binary search tree for Common Lisp")
+      (description
+       "BST is a Common Lisp library for working with binary search trees that
+can contain any kind of values.")
+      (home-page "https://github.com/glv2/bst")
+      (license license:gpl3))))
+
+(define-public cl-bst
+  (sbcl-package->cl-source-package sbcl-bst))
+
+(define-public ecl-bst
+  (sbcl-package->ecl-package sbcl-bst))
