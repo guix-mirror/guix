@@ -7204,3 +7204,48 @@ purpose of financial calculations."))))
 
 (define-public ecl-cambl
   (sbcl-package->ecl-package sbcl-cambl))
+
+(define-public sbcl-cl-ledger
+  (let ((commit "08e0be41795e804cd36142e51756ad0b1caa377b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-ledger")
+      (version (git-version "4.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ledger/cl-ledger.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1via0qf6wjcyxnfbmfxjvms0ik9j8rqbifgpmnhrzvkhrq9pv8h1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cambl" ,sbcl-cambl)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)
+         ("periods-series" ,sbcl-periods-series)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-system-definition
+             (lambda _
+               (substitute* "cl-ledger.asd"
+                 (("  :build-operation program-op") "")
+                 (("  :build-pathname \"cl-ledger\"") "")
+                 (("  :entry-point \"ledger::main\"") ""))
+               #t)))))
+      (synopsis "Common Lisp port of the Ledger accounting system")
+      (description
+       "CL-Ledger is a Common Lisp port of the Ledger double-entry accounting
+system.")
+      (home-page "https://github.com/ledger/cl-ledger")
+      (license license:bsd-3))))
+
+(define-public cl-ledger
+  (sbcl-package->cl-source-package sbcl-cl-ledger))
+
+(define-public ecl-cl-ledger
+  (sbcl-package->ecl-package sbcl-cl-ledger))
