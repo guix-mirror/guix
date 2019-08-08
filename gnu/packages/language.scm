@@ -32,6 +32,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages xorg)
   #:use-module (guix packages)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses)
@@ -648,3 +649,40 @@ suitable for both the desktop and mobile devices.")
                  #t))))))
       (synopsis "Chinese and Japanese Handwriting Recognition (Main program)")
       (license gpl2+)))) ; all files
+
+(define-public tegaki-zinnia-japanese
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "tegaki-zinnia-japanese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "1nmg9acxhcqly9gwkyb9m0hpy76fll91ywk4b1q4xms0ajxip1h7"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local")
+                (assoc-ref outputs "out")))
+             #t)))))
+    ;; override inherited inputs
+    (inputs '())
+    (native-inputs
+     `(("python2-tegaki-tools" ,python2-tegaki-tools)))
+    (propagated-inputs '())
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TEGAKI_MODEL_PATH")
+            (files '("share/tegaki/models")))))
+    (synopsis "Chinese and Japanese Handwriting Recognition (Model)")
+    (license lgpl2.1))) ; all files
