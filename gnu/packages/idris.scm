@@ -78,7 +78,6 @@
        ("ghc-safe" ,ghc-safe)
        ("ghc-split" ,ghc-split)
        ("ghc-terminal-size" ,ghc-terminal-size)
-       ("ghc-text" ,ghc-text)
        ("ghc-uniplate" ,ghc-uniplate)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-utf8-string" ,ghc-utf8-string)

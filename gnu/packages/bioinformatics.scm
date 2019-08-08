@@ -7691,13 +7691,13 @@ powerful online queries from gene annotation to database mining.")
 (define-public r-biocparallel
   (package
     (name "r-biocparallel")
-    (version "1.18.0")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "BiocParallel" version))
               (sha256
                (base32
-                "0v8rhf3hbgb3v32h2pmsv1y6q2x4airmpp50fk7z6ardcn4aza7x"))))
+                "1j6wbls4qgvi5gj99c51r00jhxrzxk3x3258wg7dcjzbfqypvyw3"))))
     (properties
      `((upstream-name . "BiocParallel")))
     (build-system r-build-system)
@@ -10425,14 +10425,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.12.1")
+    (version "1.12.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "0n8zc1x582vwb0zfhrjmnqbnpqky9zbhjc2j836i0a4yisklwdcp"))))
+         "0afradisrr5gn0lf2kxjw55vdm3lm9mlgx53qlr9r40c1hrydpf5"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -13964,13 +13964,11 @@ datasets.")
        ("ghc-intervalmap" ,ghc-intervalmap)
        ("ghc-missingh" ,ghc-missingh)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
-       ("ghc-parsec" ,ghc-parsec)
        ("ghc-regex" ,ghc-regex)
        ("ghc-safe" ,ghc-safe)
        ("ghc-safeio" ,ghc-safeio)
        ("ghc-strict" ,ghc-strict)
        ("ghc-tar" ,ghc-tar)
-       ("ghc-text" ,ghc-text)
        ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-unliftio-core" ,ghc-unliftio-core)
        ("ghc-vector" ,ghc-vector)
@@ -14829,3 +14827,171 @@ trees by inserting random mutations.  The tbsp package implements an
 alternative method to detect significant, cell type specific sequence
 mutations from scRNA-Seq data.")
       (license license:expat))))
+
+(define-public tabixpp
+  (package
+   (name "tabixpp")
+   (version "1.0.0")
+   (source (origin
+     (method git-fetch)
+     (uri (git-reference
+           (url "https://github.com/ekg/tabixpp")
+           (commit (string-append "v" version))))
+     (file-name (git-file-name name version))
+     (sha256
+      (base32 "08vx6nsipk971cyr8z53rnzwkvlld63kcn1fw0pwddynz91xfny8"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("htslib" ,htslib)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:tests? #f ; There are no tests to run.
+      #:phases
+      (modify-phases %standard-phases
+        (delete 'configure) ; There is no configure phase.
+        ;; The build phase needs overriding the location of htslib.
+        (replace 'build
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((htslib-ref (assoc-ref inputs "htslib")))
+              (invoke "make"
+                      (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
+                      "HTS_HEADERS="    ; No need to check for headers here.
+                      (string-append "LIBPATH=-L. -L" htslib-ref "/include")))))
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+              (install-file "tabix++" bin))
+            #t)))))
+   (home-page "https://github.com/ekg/tabixpp")
+   (synopsis "C++ wrapper around tabix project")
+   (description "This is a C++ wrapper around the Tabix project which abstracts
+some of the details of opening and jumping in tabix-indexed files.")
+   (license license:expat)))
+
+(define-public smithwaterman
+  ;; TODO: Upgrading smithwaterman breaks FreeBayes.
+  (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
+    (package
+      (name "smithwaterman")
+      (version (string-append "0-1." (string-take commit 7)))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/smithwaterman/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0z9xsmsv452kgdfbbwydyc6nymg3fwyv8zswls8qjin3r4ia4415"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests to run.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "smithwaterman" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/smithwaterman")
+      (synopsis "Implementation of the Smith-Waterman algorithm")
+      (description "Implementation of the Smith-Waterman algorithm.")
+      ;; The licensing terms are unclear: https://github.com/ekg/smithwaterman/issues/9.
+      (license (list license:gpl2 license:expat)))))
+
+(define-public multichoose
+  (package
+    (name "multichoose")
+    (version "1.0.3")
+    (source (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/ekg/multichoose/")
+            (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32 "0ci5fqvmpamwgxvmyd79ygj6n3bnbl3vc7b6h1sxz58186sm3pfs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require node.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               ;; TODO: There are Python modules for these programs too.
+               (install-file "multichoose" bin)
+               (install-file "multipermute" bin))
+             #t)))))
+    (home-page "https://github.com/ekg/multichoose")
+    (synopsis "Efficient loopless multiset combination generation algorithm")
+    (description "This library implements an efficient loopless multiset
+combination generation algorithm which is (approximately) described in
+\"Loopless algorithms for generating permutations, combinations, and other
+combinatorial configurations.\", G. Ehrlich - Journal of the ACM (JACM),
+1973. (Algorithm 7.)")
+    (license license:expat)))
+
+(define-public fsom
+  (let ((commit "a6ef318fbd347c53189384aef7f670c0e6ce89a3"))
+    (package
+      (name "fsom")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/fsom/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0gw1lpvr812pywg9y546x0h1hhj261xwls41r6kqhddjlrcjc0pi"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests to run.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "fsom" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/fsom")
+      (synopsis "Manage SOM (Self-Organizing Maps) neural networks")
+      (description "A tiny C library for managing SOM (Self-Organizing Maps)
+neural networks.")
+      (license license:gpl3))))
+
+(define-public fastahack
+  (let ((commit "c68cebb4f2e5d5d2b70cf08fbdf1944e9ab2c2dd"))
+    (package
+      (name "fastahack")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/ekg/fastahack/")
+              (commit commit)))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32 "0hfdv67l9g611i2ck4l92pd6ygmsp9g1ph4zx1ni7qkpsikf0l19"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; Unclear how to run tests: https://github.com/ekg/fastahack/issues/15
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "fastahack" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/fastahack")
+      (synopsis "Indexing and sequence extraction from FASTA files")
+      (description "Fastahack is a small application for indexing and
+extracting sequences and subsequences from FASTA files.  The included library
+provides a FASTA reader and indexer that can be embedded into applications
+which would benefit from directly reading subsequences from FASTA files.  The
+library automatically handles index file generation and use.")
+      (license (list license:expat license:gpl2)))))

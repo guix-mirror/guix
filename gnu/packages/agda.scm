@@ -64,9 +64,7 @@
        ("ghc-uri-encode" ,ghc-uri-encode)
        ("ghc-parallel" ,ghc-parallel)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
-       ("ghc-stm" ,ghc-stm)
        ("ghc-strict" ,ghc-strict)
-       ("ghc-text" ,ghc-text)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-zlib" ,ghc-zlib)))
     (arguments

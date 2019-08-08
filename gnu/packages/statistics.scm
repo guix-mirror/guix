@@ -1404,13 +1404,13 @@ data derived from /etc/mime.types in UNIX-type systems.")
 (define-public r-markdown
   (package
     (name "r-markdown")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "markdown" version))
               (sha256
                (base32
-                "19nrz0ba1yd5kicd65crkkz2r3kialm2hm6zdkp495l2s5r80b8p"))))
+                "06zwbrp14bri3470anadd7dvgmw06xf8df6v2pk64wx3f9sd934d"))))
     (build-system r-build-system)
     ;; Skip check phase because the tests require the r-knitr package to be
     ;; installed. This prevents installation failures. Knitr normally
@@ -1418,7 +1418,8 @@ data derived from /etc/mime.types in UNIX-type systems.")
     ;; package.
     (arguments `(#:tests? #f))
     (propagated-inputs
-     `(("r-mime" ,r-mime)))
+     `(("r-mime" ,r-mime)
+       ("r-xfun" ,r-xfun)))
     (home-page "https://github.com/rstudio/markdown")
     (synopsis "Markdown rendering for R")
     (description
@@ -1448,13 +1449,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.23")
+    (version "1.24")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "16ba4258c915xydhniw4cw7fvv1vp4cnwd1w49ykx7zw00rznfq6"))))
+                "12bvs9fd61m7k7bq321qzrh2ccl9rq653s1anrvfb9s5ni1j0378"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -5140,14 +5141,14 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.42.1")
+    (version "5.51")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
         (base32
-         "1aycnghci329yqw63kybv7sfjjx5whq3xs7xzic4wsaj7j4b1hjc"))))
+         "1cdx51a9g6fjq2g9arr6wp6ghkyl2m6bs2dj4kcycvpn8p9304yz"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))

@@ -4849,14 +4849,14 @@ alternative to Marshal for Object serialization. ")
 (define-public ruby-pg
   (package
     (name "ruby-pg")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "pg" version))
        (sha256
         (base32
-         "1pnjw3rspdfjssxyf42jnbsdlgri8ylysimp0s28wxb93k6ff2qb"))))
+         "0fmnyxcyrvgdbgq7m09whgn9i8rwfybk0w8aii1nc4g5kqw0k2jy"))))
     (build-system ruby-build-system)
     (arguments
      '(#:test-target "spec"))
@@ -4865,7 +4865,7 @@ alternative to Marshal for Object serialization. ")
        ("ruby-hoe" ,ruby-hoe)
        ("ruby-rspec" ,ruby-rspec)))
     (inputs
-     `(("postgresql" ,postgresql-9.6)))
+     `(("postgresql" ,postgresql)))
     (synopsis "Ruby interface to PostgreSQL")
     (description "Pg is the Ruby interface to the PostgreSQL RDBMS.  It works
 with PostgreSQL 9.0 and later.")
