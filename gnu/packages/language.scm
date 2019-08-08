@@ -766,3 +766,19 @@ suitable for both the desktop and mobile devices.")
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
     (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-traditional-chinese
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-traditional-chinese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "140nlp6hynrai2svs5670jjfw1za6ayflhyj2dl0bzsfgbk3447l"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
