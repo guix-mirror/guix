@@ -750,3 +750,19 @@ suitable for both the desktop and mobile devices.")
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
     (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-simplified-chinese-light
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-simplified-chinese-light")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0v24yf0w0p03lb7fyx128a75mwzad166bigvlbrzqnad789qg1sr"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
