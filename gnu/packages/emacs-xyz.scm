@@ -13985,12 +13985,13 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  (let ((commit "caeb37b8d6ab83f0eba353d6bbb29678190d4419")
-        (version "0.7")
+  ;; We prefer a newer commit (four commits newer than release) because of a
+  ;; bugfix for globbing.
+  (let ((commit "329119c65126f7917d3910bc584f4191ba8f21ac")
         (revision "1"))
     (package
       (name "emacs-deadgrep")
-      (version (git-version version revision commit))
+      (version (git-version "0.8" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14000,7 +14001,7 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "158fqha8nilwfzmw15lcsq8b099j8wclzq303md0j4mfr2q2gfvs"))))
+           "0fxf7gq9sjfkgpdfqx10w3l3nd4rwa8kv9plyxk1fqacb3s5m6ai"))))
       (build-system emacs-build-system)
       (inputs
        `(("emacs-dash" ,emacs-dash)
