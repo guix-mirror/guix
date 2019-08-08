@@ -686,3 +686,19 @@ suitable for both the desktop and mobile devices.")
             (files '("share/tegaki/models")))))
     (synopsis "Chinese and Japanese Handwriting Recognition (Model)")
     (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-japanese-light
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-japanese-light")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0x0fs29ylqzxd6xvg51h7rigpbisd7q8v11df425ib2j792yfyf8"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
