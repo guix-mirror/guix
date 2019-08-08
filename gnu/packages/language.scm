@@ -702,3 +702,19 @@ suitable for both the desktop and mobile devices.")
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
     (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-japanese-kyoiku
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-japanese-kyoiku")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0am94bcpmbzplxdnwn9gk15sgaizvcfhmv13mk14jjvx3419cvvx"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
