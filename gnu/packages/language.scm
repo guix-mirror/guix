@@ -22,6 +22,7 @@
 (define-module (gnu packages language)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -31,8 +32,10 @@
   #:use-module (guix packages)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ gpl3 perl-license))
-  #:use-module (guix download))
+  #:use-module ((guix licenses)
+                #:select (bsd-3 gpl2 gpl2+ gpl3 perl-license zpl2.1))
+  #:use-module (guix download)
+  #:use-module (guix utils))
 
 (define-public perl-lingua-en-findnumber
   (package
@@ -479,3 +482,50 @@ modern implementation of handwriting recognition software, specifically
 designed for Chinese (simplified and traditional) and Japanese, and that is
 suitable for both the desktop and mobile devices.")
     (license gpl2+))) ; all files
+
+(define-public python2-tegaki-python
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-python")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-python" version))
+       (sha256
+        (base32
+         "0x93k7pw9nh0ywd97pr8pm7jv3f94nw044i5k0zvzhdpsjqvak7p"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _)
+        `(modify-phases %standard-phases
+           (add-after 'unpack 'pre-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Always convert string to unicode to avoid the following error
+               ;; when running "tegaki-build" in python2-tegaki-tools:
+               ;;
+               ;; sqlite3.ProgrammingError: You must not use 8-bit bytestrings
+               ;; unless you use a text_factory that can interpret 8-bit
+               ;; bytestrings (like text_factory = str).
+               ;; It is highly recommended that you instead just switch your
+               ;; application to Unicode strings.
+               (substitute* "tegaki/charcol.py"
+                 (("sqlite3.OptimizedUnicode")
+                  "lambda s: unicode(s, 'utf-8')"))
+               (substitute* "tegaki/engine.py"
+                 (("/usr(/local)?")
+                  (assoc-ref inputs "python2-tegaki-wagomu")))
+               #t))))))
+    ;; override inherited inputs
+    (inputs '())
+    (native-inputs '())
+    (propagated-inputs
+     `(("python2-tegaki-wagomu" ,python2-tegaki-wagomu)
+       ("python2-zinnia" ,python2-zinnia)))
+    (synopsis
+     "Chinese and Japanese Handwriting Recognition (Base python library)")
+    (license (list gpl2+ ; all files except...
+                   bsd-3 ; dictutils.py
+                   zpl2.1)))) ; minjson.py
