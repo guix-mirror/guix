@@ -718,7 +718,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -726,7 +726,7 @@ multiplexer to the KMS/DRM Linux kernel devices.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "06vi7dc2gappwqm3xpfyy5ihxq14bmvj3bd47yk482jlq0jgr0nw"))))
+               "1j4vx054l1c2cggw4aka4iw48jkcf68qk5y064pbqw1k3ddks2qh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
