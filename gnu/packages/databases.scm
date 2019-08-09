@@ -161,12 +161,6 @@
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("util-linux" ,util-linux)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'generate-configure
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
