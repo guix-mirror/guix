@@ -15159,11 +15159,20 @@ manipulations on VCF files.")
              (sha256
               (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
       (arguments
-       `(#:tests? #f    ; TODO: Re-enable when we have grep with perl support.
+       `(#:make-flags
+         (list "CC=gcc"
+               (string-append "BAMTOOLS_ROOT="
+                              (assoc-ref %build-inputs "bamtools")))
          #:test-target "test"
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "test/t/01_call_variants.t"
+                 (("grep -P \"\\(\\\\t500\\$\\|\\\\t11000\\$\\|\\\\t1000\\$\\)\"")
+                  "grep -E '	(500|11000|1000)$'"))
+               #t))
            (add-after 'unpack 'unpack-submodule-sources
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((unpack (lambda (source target)
@@ -15184,32 +15193,29 @@ manipulations on VCF files.")
                   (unpack "tabixpp-src" "vcflib/tabixpp")
                   (unpack "test-simple-bash-src" "test/test-simple-bash")
                   (unpack "bash-tap-src" "test/bash-tap")))))
-           (add-after 'unpack-submodule-sources 'fix-makefile
-             (lambda* (#:key inputs #:allow-other-keys)
+           (add-after 'unpack-submodule-sources 'fix-makefiles
+             (lambda _
                ;; We don't have the .git folder to get the version tag from.
-               (substitute* '("vcflib/Makefile")
-                 (("^GIT_VERSION.*") (string-append "GIT_VERSION = v" ,version)))))
-           (replace 'build
+               (substitute* "vcflib/Makefile"
+                 (("^GIT_VERSION.*")
+                  (string-append "GIT_VERSION = v" ,version)))
+               (substitute* "src/Makefile"
+                 (("-I\\$\\(BAMTOOLS_ROOT\\)/src")
+                  "-I$(BAMTOOLS_ROOT)/include/bamtools"))
+               #t))
+           (add-before 'build 'build-tabixpp-and-vcflib
              (lambda* (#:key inputs make-flags #:allow-other-keys)
                (with-directory-excursion "vcflib"
                  (with-directory-excursion "tabixpp"
-                   (pk "Compile tabixpp before compiling the main project.")
-                   (let ((htslib-ref (assoc-ref inputs "htslib")))
-                     (invoke "make" "HTS_HEADERS="
-                             (string-append "HTS_LIB=" htslib-ref "/lib/libhts.a")
-                             (string-append "LIBPATH=-L. -L" htslib-ref "/include"))))
-                 (pk "Compile vcflib before compiling the main project.")
-                 (invoke "make" "CC=gcc"
-                         (string-append "CFLAGS=\"" "-Itabixpp "
-                                        "-I" (assoc-ref inputs "htslib") "/include " "\"")
-                         "all"))
-               (pk "Compile the main project.")
-               (with-directory-excursion "src"
-                 (substitute* "Makefile"
-                   (("-I\\$\\(BAMTOOLS_ROOT\\)/src") "-I$(BAMTOOLS_ROOT)/include/bamtools"))
-                 (invoke "make"
-                         (string-append "BAMTOOLS_ROOT="
-                                        (assoc-ref inputs "bamtools"))))))
+                   (apply invoke "make"
+                          (string-append "HTS_LIB="
+                                         (assoc-ref inputs "htslib")
+                                         "/lib/libhts.a")
+                          make-flags))
+                 (apply invoke "make"
+                        (string-append "CFLAGS=-Itabixpp")
+                        "all"
+                        make-flags))))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
