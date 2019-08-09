@@ -132,12 +132,13 @@
     (name "4store")
     (version "1.1.6")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/4store/4store/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/4store/4store.git")
+             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
+       (base32 "1kzdfmwpzy64cgqlkcz5v4klwx99w0jk7afckyf7yqbqb4rydmpk"))
       (patches (search-patches "4store-unset-preprocessor-directive.patch"
                                "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
