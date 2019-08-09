@@ -907,27 +907,30 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
 (define-public guile-email
   (package
     (name "guile-email")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://git.systemreboot.net/guile-email/snapshot/guile-email-"
-             version ".tar.xz"))
+             "https://guile-email.systemreboot.net/releases/guile-email-"
+             version ".tar.lz"))
        (sha256
         (base32
-         "0p2v8q2kkz8m6vf2rsjvz3dj1mvnx7dxakjf72dwkndbgk3rp79f"))))
+         "05pm0rwdxhjdlpmvhn0kyfslph6j5m1gv76givs0hshb30nirl2x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)))
+       ("lzip" ,lzip)))
     (inputs
      `(("guile" ,guile-2.2)))
-    (home-page "https://git.systemreboot.net/guile-email")
+    (arguments
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+    (home-page "https://guile-email.systemreboot.net")
     (synopsis "Guile email parser")
-    (description "This package provides an email parser written in pure
-Guile.")
+    (description "guile-email is a collection of email utilities implemented
+in pure guile.  It supports parsing MIME (Multipurpose Internet Mail
+Extensions) compliant email messages and reading emails from the mbox
+format.")
     (license license:agpl3+)))
 
 (define-public guile-debbugs-next
