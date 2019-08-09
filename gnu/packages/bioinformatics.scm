@@ -15119,8 +15119,9 @@ manipulations on VCF files.")
                  (base32 "1sbzwmcbn78ybymjnhwk7qc5r912azy5vqz2y7y81616yc3ba2a2"))))
       (build-system gnu-build-system)
       (inputs
-       `(("zlib" ,zlib)
-         ("htslib" ,htslib)))
+       `(("bamtools" ,bamtools)
+         ("htslib" ,htslib)
+         ("zlib" ,zlib)))
       (native-inputs
        `(("bc" ,bc)                     ; Needed for running tests.
          ("samtools" ,samtools)         ; Needed for running tests.
@@ -15128,7 +15129,6 @@ manipulations on VCF files.")
          ("perl" ,perl)                 ; Needed for running tests.
          ("procps" ,procps)             ; Needed for running tests.
          ("python" ,python-2)           ; Needed for running tests.
-         ("bamtools" ,bamtools)
          ("vcflib-src" ,(package-source vcflib))
          ;; These are submodules for the vcflib version used in freebayes.
          ;; This package builds against the .o files so we need to extract the source.
