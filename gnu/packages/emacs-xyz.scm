@@ -7302,7 +7302,7 @@ above over the network.")
 (define-public emacs-helm-org-rifle
   (package
     (name "emacs-helm-org-rifle")
-    (version "1.6.1")
+    (version "1.7.0")
     (source
      (origin
        (method git-fetch)
@@ -7312,12 +7312,13 @@ above over the network.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1r38xhwvgbv6kn5x159phz3xgss7f1rc7icq27rnr4d8aj91wm6k"))))
+         "058zvh7cdall7dl3xay9ibcjvs13fbqp8fli3lz980pinmsds3r2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-helm" ,emacs-helm)
+       ("emacs-org" ,emacs-org)
        ("emacs-s" ,emacs-s)))
     (home-page "https://github.com/alphapapa/helm-org-rifle")
     (synopsis "Rifle through Org files")
