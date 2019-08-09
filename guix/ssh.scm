@@ -39,6 +39,7 @@
             remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
+            remote-system
             send-files
             retrieve-files
             retrieve-files*
@@ -281,6 +282,12 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
                            `("guile" "-c"
                              ,(object->string
                                (object->string export))))))
+
+(define (remote-system session)
+  "Return the system type as expected by Nix, usually ARCHITECTURE-KERNEL, of
+the machine on the other end of SESSION."
+  (inferior-remote-eval '(begin (use-modules (guix utils)) (%current-system))
+                        session))
 
 (define* (send-files local files remote
                      #:key

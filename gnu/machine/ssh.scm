@@ -36,6 +36,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (managed-host-environment-type
 
@@ -68,6 +69,7 @@
   machine-ssh-configuration?
   this-machine-ssh-configuration
   (host-name      machine-ssh-configuration-host-name) ; string
+  (system         machine-ssh-configuration-system)    ; string
   (build-locally? machine-ssh-configuration-build-locally?
                   (default #t))
   (port           machine-ssh-configuration-port       ; integer
@@ -103,10 +105,12 @@ one from the configuration's parameters if one was not provided."
   "Internal implementation of 'machine-remote-eval' for MACHINE instances with
 an environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (remote-eval exp (machine-ssh-session machine)
-               #:build-locally?
-               (machine-ssh-configuration-build-locally?
-                (machine-configuration machine))))
+  (let ((config (machine-configuration machine)))
+    (remote-eval exp (machine-ssh-session machine)
+                 #:build-locally?
+                 (machine-ssh-configuration-build-locally? config)
+                 #:system
+                 (machine-ssh-configuration-system config))))
 
 
 ;;;
@@ -240,10 +244,29 @@ MACHINE's 'system' declaration do not exist on the machine."
               device)
     (return #t)))
 
+(define (machine-check-building-for-appropriate-system machine)
+  "Raise a '&message' error condition if MACHINE is configured to be built
+locally and the 'system' field does not match the '%current-system' reported
+by MACHINE."
+  (let ((config (machine-configuration machine))
+        (system (remote-system (machine-ssh-session machine))))
+    (when (and (machine-ssh-configuration-build-locally? config)
+               (not (string= system (machine-ssh-configuration-system config))))
+      (raise (condition
+              (&message
+               (message (format #f (G_ "incorrect target system \
+('~a' was given, while the system reports that it is '~a')~%")
+                                (machine-ssh-configuration-system config)
+                                system)))))))
+  (with-monad %store-monad (return #t)))
+
 (define (check-deployment-sanity machine)
   "Raise a '&message' error condition if it is clear that deploying MACHINE's
 'system' declaration would fail."
+  ;; Order is important here -- an incorrect value for 'system' will cause
+  ;; invocations of 'remote-eval' to fail.
   (mbegin %store-monad
+    (machine-check-building-for-appropriate-system machine)
     (machine-check-file-system-availability machine)
     (machine-check-initrd-modules machine)))
 

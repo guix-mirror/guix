@@ -24,6 +24,7 @@
   #:use-module (guix monads)
   #:use-module (guix modules)
   #:use-module (guix derivations)
+  #:use-module (guix utils)
   #:use-module (ssh popen)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
@@ -71,7 +72,7 @@ prerequisites of EXP are already available on the host at SESSION."
   "Return a \"trampoline\" gexp that evaluates EXP and writes the evaluation
 result to the current output port using the (guix repl) protocol."
   (define program
-    (scheme-file "remote-exp.scm" exp))
+    (program-file "remote-exp.scm" exp))
 
   (with-imported-modules (source-module-closure '((guix repl)))
     #~(begin
@@ -89,6 +90,7 @@ result to the current output port using the (guix repl) protocol."
 (define* (remote-eval exp session
                       #:key
                       (build-locally? #t)
+                      (system (%current-system))
                       (module-path %load-path)
                       (socket-name "/var/guix/daemon-socket/socket"))
   "Evaluate EXP, a gexp, on the host at SESSION, an SSH session.  Ensure that
@@ -96,10 +98,12 @@ all the elements EXP refers to are built and deployed to SESSION beforehand.
 When BUILD-LOCALLY? is true, said dependencies are built locally and sent to
 the remote store afterwards; otherwise, dependencies are built directly on the
 remote store."
-  (mlet %store-monad ((lowered (lower-gexp (trampoline exp)
-                                           #:module-path %load-path))
-                      (remote -> (connect-to-remote-daemon session
-                                                           socket-name)))
+  (mlet* %store-monad ((lowered (lower-gexp (trampoline exp)
+                                            #:system system
+                                            #:guile-for-build #f
+                                            #:module-path %load-path))
+                       (remote -> (connect-to-remote-daemon session
+                                                            socket-name)))
     (define inputs
       (cons (lowered-gexp-guile lowered)
             (lowered-gexp-inputs lowered)))
