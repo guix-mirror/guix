@@ -20302,7 +20302,9 @@ all domains will be Subject Alternative Names on the certificate.
 The challenge type that has to be run by certbot.  If @code{#f} is specified,
 default to the HTTP challenge.  If a value is specified, defaults to the
 manual plugin (see @code{authentication-hook}, @code{cleanup-hook} and
-the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}).
+the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}),
+and gives Let's Encrypt permission to log the public IP address of the
+requesting machine.
 
 @item @code{authentication-hook} (default: @code{#f})
 Command to be run in a shell once for each certificate challenge to be
