@@ -17295,6 +17295,85 @@ command\", but because it always involves at least two commands (a prefix and
 a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
+(define-public emacs-forge
+  (let ((commit "a6721c071226ae8da6852e9330f2bdcba92a4577"))
+    (package
+      (name "emacs-forge")
+      (version (git-version "0.1.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/magit/forge.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gzr1di29a9szkzm6kjznq7c8md71cm5761pznf08nmmk63dl3zm"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("texinfo" ,texinfo)
+         ("emacs" ,emacs-minimal)))
+      (propagated-inputs
+       `(("emacs-closql" ,emacs-closql)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-emacsql-sqlite" ,emacs-emacsql)
+         ("emacs-ghub" ,emacs-ghub)
+         ("emacs-let-alist" ,emacs-let-alist)
+         ("emacs-magit" ,emacs-magit)
+         ("emacs-markdown-mode" ,emacs-markdown-mode)
+         ("emacs-transient" ,emacs-transient)))
+      (arguments
+       `(#:tests? #f ;no tests
+         #:modules ((srfi srfi-26)
+                    (guix build gnu-build-system)
+                    ((guix build emacs-build-system) #:prefix emacs:)
+                    (guix build utils)
+                    (guix build emacs-utils))
+         #:imported-modules (,@%gnu-build-system-modules
+                             (guix build emacs-build-system)
+                             (guix build emacs-utils))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'install)
+           (add-after 'unpack 'delete-doc-targets
+             (lambda _
+               (substitute* "./Makefile"
+                 (("lisp docs") "lisp"))))
+           (add-after 'delete-doc-targets 'emacs-set-emacs-load-path
+             (assoc-ref emacs:%standard-phases 'set-emacs-load-path))
+           (add-after 'emacs-set-emacs-load-path 'chdir-lisp
+             (lambda _
+               (chdir "lisp")))
+           (add-after 'chdir-lisp 'emacs-install
+             (assoc-ref emacs:%standard-phases 'install))
+           (add-after 'emacs-install 'emacs-make-autoloads
+             (assoc-ref emacs:%standard-phases 'make-autoloads))
+           (add-after 'build 'install-elc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (el-dir (string-append
+                               out "/share/emacs/site-lisp/guix.d/forge-"
+                               ,version)))
+                 (for-each (cut install-file <> el-dir)
+                           (find-files "." "\\.elc"))
+                 #t)))
+           (add-after 'install-elc 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (info (string-append out "/share/info")))
+                 (with-directory-excursion "../docs"
+                   (invoke "makeinfo" "forge.texi")
+                   (install-file "forge.info" info)
+                   #t)))))))
+      (home-page "https://github.com/magit/ghub/")
+      (synopsis "Access Git forges from Magit")
+      (description
+       "Work with Git forges, such as Github and Gitlab, from the comfort of
+Magit and the rest of Emacs.")
+      (license license:gpl3+))))
+
 (define-public emacs-matcha
   (let ((commit "c7df5cf5cdac9ae369e241342389ccda0205eab9"))
     (package
