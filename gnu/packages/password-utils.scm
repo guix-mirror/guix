@@ -236,28 +236,40 @@ platforms.")
 (define-public shroud
   (package
     (name "shroud")
-    (version "0.1.1")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dthompson.us/shroud/shroud-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1y43yhgy2zbrk5bqj3qyx9rkcz2bma9sinlrg7dip3jqms9gq4lr"))))
+                "1l2shrhvcwfzkar9qiwb75nhcqmx25iz55lzmz0c187nbjhqzi9p"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 popen)
+                    (ice-9 rdelim))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-shroud
-           (lambda* (#:key outputs #:allow-other-keys)
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out       (assoc-ref outputs "out"))
-                    (ccachedir (string-append out "/lib/guile/2.0/ccache"))
+                    (guile (assoc-ref inputs "guile"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            (string-append guile "/bin/guile")
+                                            "-c" "(display (effective-version))")))
+                    (ccachedir (string-append out
+                                             "/lib/guile/" effective "/site-ccache"))
                     (prog      (string-append out "/bin/shroud")))
                (wrap-program prog
                  `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,ccachedir)))
                #t))))))
     (inputs
-     `(("guile" ,guile-2.0)
+     `(("guile" ,guile-2.2)
        ("gnupg" ,gnupg)
        ("xclip" ,xclip)))
     (synopsis "GnuPG-based secret manager")
