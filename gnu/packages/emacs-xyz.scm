@@ -14905,20 +14905,28 @@ RPC channels with users and other software.")
 (define-public emacs-sesman
   (package
     (name "emacs-sesman")
-    (version "0.3.3")
+    (version "0.3.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/vspinu/sesman.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r32f8ma9ddczxrrdz0nadp14j3zmk10q1ch02gb82synkx3xdra"))))
+         "0z5jb4vpbjsi63w3wjy6d2lgz33qdfvrgfb3bszv4hcf6a96y7fc"))))
     (build-system emacs-build-system)
     (arguments
-     `(#:tests? #t
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell
+           ;; Setting the SHELL environment variable is required for the tests
+           ;; to find sh.
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             #t)))
+       #:tests? #t
        #:test-command '("make" "test")))
     (home-page "https://github.com/vspinu/sesman")
     (synopsis "Session manager for Emacs based IDEs")
