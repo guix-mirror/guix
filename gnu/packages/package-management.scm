@@ -563,16 +563,16 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "116")
+    (version "120")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                    (commit "116")))
+                    (commit "120")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1anz2c112y0w21mh7xp6bs6z7v10dcy1i25nypkvqy3j929m0g28"))))
+                "07z9yclvfkw4326739l2ywzzihax5vdijiaqqpfix9rz1rb923aa"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
