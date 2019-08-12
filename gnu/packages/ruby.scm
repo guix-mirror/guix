@@ -8767,3 +8767,43 @@ support for JSON Schema Draft 3, JSON Schema Draft 2, and JSON Schema Draft 1
 is also included.")
     (home-page "https://github.com/ruby-json-schema/json-schema")
     (license license:expat)))
+
+(define-public swagger-diff
+  (package
+    (name "swagger-diff")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "swagger-diff" version))
+       (sha256
+        (base32
+         "1hxx50nga1bqn254iqjcdwkc9c72364ks9lyjyw10ajz0l0ly7sn"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't run or require rubocop, the code linting tool, as this is a
+         ;; bit unnecessary.
+         (add-after 'unpack 'dont-run-rubocop
+           (lambda _
+             (substitute* "Rakefile"
+               ((".*rubocop.*") "")
+               ((".*RuboCop.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-json-schema" ,ruby-json-schema)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis
+     "Compare Open API Initiative specification files")
+    (description
+     "Swagger::Diff is a utility for comparing two different Open API
+Initiative (OAI) specifications (formerly known as Swagger specifications).
+It is intended to determine whether a newer API specification is
+backwards-compatible with an older API specification.")
+    (home-page "https://github.com/civisanalytics/swagger-diff")
+    (license license:bsd-3)))
