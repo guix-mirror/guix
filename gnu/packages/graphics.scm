@@ -105,6 +105,7 @@
                "-DWITH_INSTALL_PORTABLE=OFF"
                "-DWITH_JACK=ON"
                "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
                (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
                (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
@@ -140,6 +141,7 @@
        ("libx11" ,libx11)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
+       ("opensubdiv" ,opensubdiv)
        ("ilmbase" ,ilmbase)
        ("openjpeg" ,openjpeg)
        ("libjpeg" ,libjpeg)
