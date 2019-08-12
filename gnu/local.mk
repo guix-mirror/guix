@@ -21,6 +21,7 @@
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+# Copyright © 2019 John Soo <jsoo1@asu.edu>
 #
 # This file is part of GNU Guix.
 #
@@ -99,6 +100,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/calcurse.scm			\
   %D%/packages/ccache.scm			\
   %D%/packages/cdrom.scm			\
+  %D%/packages/cedille.scm			\
   %D%/packages/certs.scm			\
   %D%/packages/check.scm			\
   %D%/packages/chemistry.scm			\
