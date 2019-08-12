@@ -753,6 +753,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                      ((#:tests? _ #f)
                       ;; There are uses of `dynamic-link' in
                       ;; {foreign,coverage}.test that don't fly here.
+                      #f)
+                     ((#:parallel-build? _ #f)
+                      ;; Work around the fact that the Guile build system is
+                      ;; not deterministic when parallel-build is enabled.
                       #f))))))
     (package-with-relocatable-glibc (static-package guile))))
 
