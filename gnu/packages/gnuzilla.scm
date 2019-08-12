@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
@@ -743,7 +743,7 @@ from forcing GEXP-PROMISE."
                            ;; "--with-system-png"
                            )
 
-       #:imported-modules ,%cargo-utils-modules ;for `generate-checksums'
+       #:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
 
        #:modules ((ice-9 ftw)
                   (ice-9 rdelim)
@@ -843,15 +843,7 @@ from forcing GEXP-PROMISE."
                (substitute* '("Cargo.lock" "servo/Cargo.lock")
                  (("(\"checksum .* = )\".*\"" all name)
                   (string-append name "\"" null-hash "\"")))
-               (for-each
-                (lambda (filename)
-                  (delete-file filename)
-                  (let ((dir (dirname filename)))
-                    (display (string-append
-                              "patch-cargo-checksums: generate-checksums for "
-                              dir "\n"))
-                    (generate-checksums dir)))
-                (find-files "third_party/rust" ".cargo-checksum.json")))
+               (generate-all-checksums "third_party/rust"))
              #t))
          (add-before 'configure 'augment-CPLUS_INCLUDE_PATH
            (lambda* (#:key build inputs #:allow-other-keys)
