@@ -2,6 +2,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,8 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 rdelim)
-  #:export (generate-checksums))
+  #:export (generate-checksums
+            generate-all-checksums))
 
 ;; Commentary:
 ;;
@@ -66,3 +68,15 @@ the same directory."
         (display "},\"package\":" port)
         (write (file-sha256 "/dev/null") port)
         (display "}" port)))))
+
+(define (generate-all-checksums dir-name)
+  (for-each
+    (lambda (filename)
+      (let* ((dir (dirname filename))
+             (checksum-file (string-append dir "/.cargo-checksum.json")))
+        (when (file-exists? checksum-file) (delete-file checksum-file))
+        (display (string-append
+                   "patch-cargo-checksums: generate-checksums for "
+                   dir "\n"))
+        (generate-checksums dir)))
+    (find-files dir-name "Cargo.toml$")))
