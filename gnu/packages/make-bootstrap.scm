@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -125,6 +125,15 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (current-source-location)
                                 #:native-inputs native-inputs))
 
+(define static-bash-for-bootstrap
+  (package
+    (inherit static-bash)
+    (source (origin
+              (inherit (package-source static-bash))
+              (patches
+               (cons (search-patch "bash-4.4-linux-pgrp-pipe.patch")
+                     (origin-patches (package-source static-bash))))))))
+
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
   (let ((coreutils (package (inherit coreutils)
@@ -192,7 +201,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                  (("-Wl,-export-dynamic") ""))
                                #t)))))))
                 (inputs (if (%current-target-system)
-                            `(("bash" ,static-bash))
+                            `(("bash" ,static-bash-for-bootstrap))
                             '()))))
 	(tar (package (inherit tar)
 	       (arguments
@@ -233,7 +242,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("sed" ,sed)
                ("grep" ,grep)
                ("gawk" ,gawk)))
-      ("bash" ,static-bash))))
+      ("bash" ,static-bash-for-bootstrap))))
 
 (define %static-binaries
   (package
