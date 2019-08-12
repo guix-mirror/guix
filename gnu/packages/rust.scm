@@ -4,7 +4,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Nikolai Merinov <nikolai.merinov@member.fsf.org>
-;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
@@ -196,7 +196,7 @@ safety and thread safety guarantees.")
     (properties '((timeout . 72000)               ;20 hours
                   (max-silent-time . 18000)))     ;5 hours (for armel)
     (arguments
-     `(#:imported-modules ,%cargo-utils-modules ;for `generate-checksums'
+     `(#:imported-modules ,%cargo-utils-modules ;for `generate-all-checksums'
        #:modules ((guix build utils) (ice-9 match) (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
@@ -273,16 +273,7 @@ test = { path = \"../libtest\" }
              (substitute* "src/Cargo.lock"
                (("(\"checksum .* = )\".*\"" all name)
                 (string-append name "\"" ,%cargo-reference-hash "\"")))
-             (for-each
-              (lambda (filename)
-                (use-modules (guix build cargo-utils))
-                (delete-file filename)
-                (let* ((dir (dirname filename)))
-                  (display (string-append
-                            "patch-cargo-checksums: generate-checksums for "
-                            dir "\n"))
-                  (generate-checksums dir)))
-              (find-files "src/vendor" ".cargo-checksum.json"))
+             (generate-all-checksums "src/vendor")
              #t))
          ;; This phase is overridden by newer versions.
          (replace 'configure
@@ -978,16 +969,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                  (substitute* "Cargo.lock"
                    (("(\"checksum .* = )\".*\"" all name)
                     (string-append name "\"" ,%cargo-reference-hash "\"")))
-                 (for-each
-                  (lambda (filename)
-                    (use-modules (guix build cargo-utils))
-                    (delete-file filename)
-                    (let* ((dir (dirname filename)))
-                      (display (string-append
-                                "patch-cargo-checksums: generate-checksums for "
-                                dir "\n"))
-                      (generate-checksums dir)))
-                  (find-files "vendor" ".cargo-checksum.json"))
+                 (generate-all-checksums "vendor")
                  #t))
              (add-after 'enable-codegen-tests 'override-jemalloc
                (lambda* (#:key inputs #:allow-other-keys)
