@@ -8871,3 +8871,56 @@ application.")
     (home-page "https://github.com/xijo/reverse_markdown")
     (license license:wtfpl2)))
 
+(define-public ruby-solargraph
+  (package
+    (name "ruby-solargraph")
+    (version "0.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "solargraph" version))
+       (sha256
+        (base32
+         "0b93xzkgd1h06da9gdnwivj1mzbil8lc072y2838dy6i7bxgpy9i"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-backport" ,ruby-backport)
+       ("bundler" ,bundler)
+       ("ruby-htmlentities" ,ruby-htmlentities)
+       ("ruby-jaro-winkler" ,ruby-jaro-winkler)
+       ("ruby-maruku" ,ruby-maruku)
+       ("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-parser" ,ruby-parser)
+       ("ruby-reverse-markdown" ,ruby-reverse-markdown)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-thor" ,ruby-thor)
+       ("ruby-tilt" ,ruby-tilt)
+       ("ruby-yard" ,ruby-yard)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-webmock" ,ruby-webmock-2)))
+    ;; FIXME: can't figure out how to run the tests properly:
+
+    ;; An error occurred while loading spec_helper.
+    ;; Failure/Error: return gem_original_require(path)
+    ;; LoadError:
+    ;; cannot load such file -- spec_helper
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (synopsis
+     "IDE tools for code completion, inline documentation, and static analysis")
+    (description
+     "Solargraph provides a comprehensive suite of tools for Ruby
+programming: intellisense, diagnostics, inline documentation, and type
+checking.")
+    (home-page "https://solargraph.org/")
+    (license license:expat)))
