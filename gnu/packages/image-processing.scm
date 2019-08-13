@@ -691,3 +691,14 @@ combine the information contained in both.")
          "-DITK_USE_SYSTEM_LIBRARIES=ON"
          "-DITK_USE_SYSTEM_GOOGLETEST=ON"
          "-DITK_USE_SYSTEM_VXL=ON")))))
+
+(define-public insight-toolkit-4.12
+  (package (inherit insight-toolkit-4)
+    (version "4.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/itk/itk/4.12/"
+                           "InsightToolkit-" version ".tar.xz"))
+       (sha256
+        (base32 "1qw9mxbh083siljygahl4gdfv91xvfd8hfl7ghwii19f60xrvn2w"))))))
