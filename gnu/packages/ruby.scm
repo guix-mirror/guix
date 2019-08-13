@@ -2035,13 +2035,13 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
 (define-public ruby-simplecov
   (package
     (name "ruby-simplecov")
-    (version "0.12.0")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "simplecov" version))
               (sha256
                (base32
-                "0ffhyrfnq2zm2mc1742a4hqy475g3qa1zf6yfldwg1ldh5sn3qbx"))))
+                "0dq0nkaxvbsnl70hkimy35g4yjfs3blx4s7nbpzbvgqx72hxgv5v"))))
     (build-system ruby-build-system)
     ;; Simplecov depends on rubocop for code style checking at build time.
     ;; Rubocop needs simplecov at build time.
