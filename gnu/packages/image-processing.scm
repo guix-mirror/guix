@@ -671,3 +671,23 @@ task of aligning or developing correspondences between data.  For example, in
 the medical environment, a CT scan may be aligned with a MRI scan in order to
 combine the information contained in both.")
     (license license:asl2.0)))
+
+(define-public insight-toolkit-4
+  (package (inherit insight-toolkit)
+    (version "4.13.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/InsightSoftwareConsortium/ITK/"
+                           "releases/download/v" version "/InsightToolkit-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "19cgfpd63gqrvc3m27m394gy2d7w79g5y6lvznb5qqr49lihbgns"))))
+    (arguments
+     `(#:tests? #f            ; tests require network access and external data
+       #:configure-flags
+       '("-DITKV3_COMPATIBILITY=ON"     ; needed for itk-snap
+         "-DITK_USE_GPU=ON"
+         "-DITK_USE_SYSTEM_LIBRARIES=ON"
+         "-DITK_USE_SYSTEM_GOOGLETEST=ON"
+         "-DITK_USE_SYSTEM_VXL=ON")))))
