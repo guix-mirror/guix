@@ -10951,6 +10951,31 @@ tables of contents.")
 files, allowing for actions to be performed based on search criteria.")
     (license license:gpl3+)))
 
+(define-public emacs-org-auto-expand
+  (let ((commit "4938d5f6460e2f8f051ba9ac000b291bfa43ef62")
+        (revision "1"))
+    (package
+      (name "emacs-org-auto-expand")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/org-auto-expand")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1my0c6xmkh37lwi6l472lz9d86lf20h6xcllzlxm1lxa24rhva6v"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/alphapapa/org-auto-expand")
+      (synopsis "Automatically expand certain Org headings")
+      (description "This package allows a customizable set of headings in Org
+files to be expanded upon opening them.")
+      (license license:gpl3+))))
+
 (define-public emacs-parsebib
   (package
     (name "emacs-parsebib")
