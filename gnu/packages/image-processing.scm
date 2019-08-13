@@ -577,3 +577,34 @@ recalculates.")
     (description "VXL (the Vision-something-Libraries) is a collection of C++
 libraries designed for computer vision research and implementation.")
     (license license:bsd-3)))
+
+(define-public vxl-1
+  (package (inherit vxl)
+    (name "vxl")
+    (version "1.18.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vxl/vxl.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g4mr2cc58jwm0vasscbd4y5380wj3ahkvq121z4gs83fhavvxgz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     '("v3p/bzlib/"
+                       "v3p/geotiff/"
+                       "v3p/png/"
+                       "v3p/tiff/"
+                       "v3p/zlib/"))
+           (substitute* "v3p/CMakeLists.txt"
+             (("add_subdirectory\\((tiff|png|jpeg|zlib|bzlib|geotiff)\\)")
+              ""))
+           #t))))
+    (arguments
+     `(#:configure-flags
+       ;; Needed for itk-snap
+       (list "-DVNL_CONFIG_LEGACY_METHODS=ON")))))
