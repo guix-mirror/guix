@@ -64,7 +64,7 @@
 (define-public ccid
   (package
     (name "ccid")
-    (version "1.4.30")
+    (version "1.4.31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -72,7 +72,7 @@
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0z7zafdg75fr1adlv2x0zz34s07gljcjg2lsz76s1048w1xhh5xc"))))
+                "1xz8ikr6vk73w3xnwb931yq8lqc1zrj8c3v34n6h63irwjvdfj3b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output
