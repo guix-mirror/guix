@@ -604,7 +604,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.15.0")
+    (version "1.16.1")
     (source
       (origin
         (method url-fetch)
@@ -612,7 +612,7 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "0kmcz3ivxmqmks8vg50ri1zar18q5svk829z0g1kj08lgz7kcl2n"))
+          "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))
         (modules '((guix build utils)))
         (snippet
          ;; We keep lcms2 since it is different than our lcms.
