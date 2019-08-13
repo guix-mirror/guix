@@ -19,8 +19,10 @@
 (define-module (gnu tests reconfigure)
   #:use-module (gnu bootloader)
   #:use-module (gnu services shepherd)
-  #:use-module (gnu system vm)
   #:use-module (gnu system)
+  #:use-module (gnu system accounts)
+  #:use-module (gnu system shadow)
+  #:use-module (gnu system vm)
   #:use-module (gnu tests)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
@@ -43,7 +45,13 @@
 generation of the system profile."
   (define os
     (marionette-operating-system
-     (simple-operating-system)
+     (operating-system
+       (inherit (simple-operating-system))
+       (users (cons (user-account
+                     (name "jakob")
+                     (group "users")
+                     (home-directory "/home/jakob"))
+                    %base-user-accounts)))
      #:imported-modules '((gnu services herd)
                           (guix combinators))))
 
@@ -84,7 +92,25 @@ generation of the system profile."
 
             (test-equal "script created new generation"
               (length (system-generations marionette))
-              (1+ (length generations-prior))))
+              (1+ (length generations-prior)))
+
+            (test-assert "script activated the new generation"
+              (and (eqv? 'symlink
+                         (marionette-eval
+                          '(stat:type (lstat "/run/current-system"))
+                          marionette))
+                   (string= #$os
+                            (marionette-eval
+                             '(readlink "/run/current-system")
+                             marionette))))
+
+            (test-assert "script activated user accounts"
+              (marionette-eval
+               '(string-contains (call-with-input-file "/etc/passwd"
+                                   (lambda (port)
+                                     (get-string-all port)))
+                                 "jakob")
+               marionette)))
 
           (test-end)
           (exit (= (test-runner-fail-count (test-runner-current)) 0)))))

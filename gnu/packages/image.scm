@@ -577,9 +577,6 @@ collection of tools for doing simple manipulations of TIFF images.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autobuild")))
          (add-after 'unpack 'patch-reg-wrapper
            (lambda _
              (substitute* "prog/reg_wrapper.sh"
@@ -1004,7 +1001,7 @@ language bindings to VIGRA.")
 (define-public libwebp
   (package
     (name "libwebp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
      (origin
        ;; No tarballs are provided for >0.6.1.
@@ -1015,7 +1012,7 @@ language bindings to VIGRA.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1ay0sai7f74dyk2gi975qfllmq534vnsx456npf16583mqb6ib2q"))))
+         "1l8h9d3z3kla567ilmymrgg8vc2n763g8qss1hah8dg832hbqkxf"))))
     (build-system gnu-build-system)
     (inputs
      `(("freeglut" ,freeglut)
@@ -1074,14 +1071,14 @@ channels.")
 (define-public exiv2
   (package
     (name "exiv2")
-    (version "0.27.1")
+    (version "0.27.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.exiv2.org/builds/exiv2-" version
                            "-Source.tar.gz"))
        (sha256
-        (base32 "109hbfk63dh14fz20ivq20gcclb9jj9jmh48w4lcn6zxh1ljh9gi"))))
+        (base32 "0gqminvj14xm3rgbnydbywf22608js80rp7nmxxk4497j5mzali6"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f))          ; no test suite
     (propagated-inputs
@@ -1206,12 +1203,6 @@ ISO/IEC 15444-1).")
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("libtool" ,libtool)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (synopsis "Scaling, colorspace conversion, and dithering library")
     (description "Zimg implements the commonly required image processing basics
 of scaling, colorspace conversion, and depth conversion.  A simple API enables

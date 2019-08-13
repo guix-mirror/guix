@@ -814,7 +814,7 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.10")
+    (version "0.10.1")
     (source
       (origin
         (method url-fetch)
@@ -825,35 +825,35 @@ refactor Vim in order to:
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "1f380xcyjnm4xmcdazs6dj064bwddhywvn3mgm36k7r7b2gnjnp0"))))
+          "0fyhxh7ndjn8fyjhj14ymkr3pjcs3k1xbs43g7xvvq85vdb6y04r"))))
     (build-system gnu-build-system)
     (arguments
-    '(#:configure-flags '("--disable-build-timestamp")
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'patch-source-shebangs 'patch-test-shebangs
-          (lambda _
-            (substitute* (cons* "src/background.c"
-                                "src/cfg/config.c"
-                                (find-files "tests" "\\.c$"))
-              (("/bin/sh") (which "sh"))
-              (("/bin/bash") (which "bash")))
-            ;; This test segfaults
-            (substitute* "tests/Makefile"
-              (("misc") ""))
-            #t))
-         (add-after 'install 'install-vim-plugin-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vifm (string-append out "/share/vifm"))
-                    (vimfiles (string-append out "/share/vim/vimfiles")))
-               (copy-recursively (string-append vifm "/colors")
-                                 (string-append vimfiles "/colors"))
-               (copy-recursively (string-append vifm "/vim")
-                                 vimfiles)
-               (delete-file-recursively (string-append vifm "/colors"))
-               (delete-file-recursively (string-append vifm "/vim")))
-             #t)))))
+     '(#:configure-flags '("--disable-build-timestamp")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-test-shebangs
+           (lambda _
+             (substitute* (cons* "src/background.c"
+                                 "src/cfg/config.c"
+                                 (find-files "tests" "\\.c$"))
+               (("/bin/sh") (which "sh"))
+               (("/bin/bash") (which "bash")))
+             ;; This test segfaults
+             (substitute* "tests/Makefile"
+               (("misc") ""))
+             #t))
+          (add-after 'install 'install-vim-plugin-files
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (vifm (string-append out "/share/vifm"))
+                     (vimfiles (string-append out "/share/vim/vimfiles")))
+                (copy-recursively (string-append vifm "/colors")
+                                  (string-append vimfiles "/colors"))
+                (copy-recursively (string-append vifm "/vim")
+                                  vimfiles)
+                (delete-file-recursively (string-append vifm "/colors"))
+                (delete-file-recursively (string-append vifm "/vim")))
+              #t)))))
     (native-inputs
      `(("groff" ,groff))) ; for the documentation
     (inputs

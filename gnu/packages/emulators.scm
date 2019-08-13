@@ -119,8 +119,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "2c57e709d0f9e4010a4415de4192de887e37f187")
-        (revision "5"))
+  (let ((commit "24718c1a389e4f51db974575cd15c372485b92e2")
+        (revision "6"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -146,7 +146,7 @@
              #t))
          (sha256
           (base32
-           "0aszfdfvs7yg4bmrd3qxwsiz7hx3mrj29f4aw86bz7h9j7hkh57f"))))
+           "1d92rhnw307j3m6swk6bycb8fyc7vw2hfgakd5hpsc4qw65vxfq8"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -244,12 +244,6 @@ turbo speed, networked multiplayer, and graphical enhancements.")
                (base32
                 "02i648i50dwicv1vaql15rccv4g8h5blf5g6inv67lrfxpbkvlf0"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-after
-                   'unpack 'autogen.sh
-                   (lambda _
-                     (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -1185,7 +1179,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.211")
+    (version "0.212")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1189,11 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0gbxgncbzmmplijg0c1ibwsb87fbmfvs1kjflh002yyx8yvfw83z"))
+         "0p3zcb9l624dsy2gyv23ppp1k1iwd1vrg8cbn5v4fx1s44mx7f5c"))
+       (patches
+       ;; FIXME: Remove once 0.213 is out.  Applied upstream as
+       ;; 0b5b13cf1e28550b49c387dec93f9801f029e313.
+        (search-patches "mame-rapidjson-fix.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

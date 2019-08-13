@@ -561,16 +561,16 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "116")
+    (version "120")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                    (commit "116")))
+                    (commit "120")))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1anz2c112y0w21mh7xp6bs6z7v10dcy1i25nypkvqy3j929m0g28"))))
+                "07z9yclvfkw4326739l2ywzzihax5vdijiaqqpfix9rz1rb923aa"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -1023,7 +1023,7 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.2.4")
+   (version "1.4.2")
    (source
     (origin
      (method url-fetch)
@@ -1031,7 +1031,7 @@ the boot loader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "1qf3ys84fzv11z6f6li59rxjdjbyrv7cyi9539k73r9i9pckjr8v"))))
+       "08nmpp26mgv0vp3mlwk97rnp0j7i108h4hr9nllja19sjxnrlygj"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
@@ -1059,6 +1059,7 @@ the boot loader configuration.")
    (inputs `(("appstream-glib" ,appstream-glib)
              ("bubblewrap" ,bubblewrap)
              ("dconf" ,dconf)
+             ("fuse" ,fuse)
              ("gdk-pixbuf" ,gdk-pixbuf)
              ("gpgme" ,gpgme)
              ("json-glib" ,json-glib)

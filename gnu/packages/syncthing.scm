@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1l7crhggg2vq4y7pgzsj8wp7k4l9hw5yblflly5bzwywzxz8ff83"))
+                "1b6fidpkwfa2bm6hlv4p0bzxa1ha6s88vajczhryhqi5vjfxafri"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -422,7 +422,7 @@ address of the default LAN gateway.")
 (define-public go-github-com-lib-pq
   (package
     (name "go-github-com-lib-pq")
-    (version "1.1.1")
+    (version "1.2.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -431,7 +431,7 @@ address of the default LAN gateway.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g64wlg1l1ybq4x44idksl4pgm055s58jxc6r6x4qhqm5q76h0km"))))
+                "08j1smm6rassdssdks4yh9aspa1dv1g5nvwimmknspvhx8a7waqz"))))
     (build-system go-build-system)
     (arguments
      `(#:import-path "github.com/lib/pq"
@@ -793,8 +793,8 @@ using sh's word-splitting rules.")
       (license expat))))
 
 (define-public go-github-com-syncthing-notify
-  (let ((commit "4e389ea6c0d84e6195eb585ffaf62c8c143306ae")
-        (revision "4"))
+  (let ((commit "69c7a957d3e261f9744f46b3dd4d608d8480ad90")
+        (revision "5"))
     (package
       (name "go-github-com-syncthing-notify")
       (version (git-version "0.0.0" revision commit))
@@ -806,7 +806,7 @@ using sh's word-splitting rules.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "19gvl14s1l9m82f8c2xsjcr8lmbqrvw1mxkayvfcpimvxfz0j61i"))))
+                  "1mmdzyfnmjabyhbipl4bggw4w5nlxyyjp0d93qd824kj07kmsr1f"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/syncthing/notify"))

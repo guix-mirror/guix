@@ -400,15 +400,14 @@ editors.")
 (define-public texmacs
   (package
     (name "texmacs")
-    (version "1.99.9")
+    (version "1.99.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.texmacs.org/Download/ftp/tmftp/"
                            "source/TeXmacs-" version "-src.tar.gz"))
        (sha256
-        (base32
-         "0i95sf9y8qpgxd8f39cprbp3s200nm9lml0xdpyn46n838acvw19"))
+        (base32 "12bp0f34izzqimz49lfpgf4lyz3h45s9xbmk8v6zsawdjki76alg"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -424,7 +423,7 @@ editors.")
        ("python" ,python-wrapper)
        ("qt" ,qt-4)))
     (arguments
-     `(#:tests? #f ;no check target
+     `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'gzip-flags

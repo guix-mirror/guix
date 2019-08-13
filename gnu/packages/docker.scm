@@ -63,12 +63,13 @@
     (arguments '(#:tests? #f))
     (inputs
      `(("python-requests" ,python-requests-2.20)
-       ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-ipaddress" ,python-ipaddress)
-       ("python-paramiko" ,python-paramiko)
        ("python-six" ,python-six)
        ("python-urllib3" ,python-urllib3-1.24)
        ("python-websocket-client" ,python-websocket-client)))
+    (propagated-inputs
+     `(("python-docker-pycreds" ,python-docker-pycreds)
+       ("python-paramiko" ,python-paramiko))) ; adds SSH support
     (home-page "https://github.com/docker/docker-py/")
     (synopsis "Python client for Docker")
     (description "Docker-Py is a Python client for the Docker container
@@ -113,17 +114,11 @@ client.")
     ;; TODO: Tests require running Docker daemon.
     (arguments '(#:tests? #f))
     (inputs
-     `(("python2-backport-ssl-match-hostname"
-        ,python2-backport-ssl-match-hostname)
-       ("python-cached-property"
+     `(("python-cached-property"
         ,python-cached-property)
-       ("python-colorama" ,python-colorama)
        ("python-docker-py" ,python-docker-py)
-       ("python-docker-pycreds" ,python-docker-pycreds)
        ("python-dockerpty" ,python-dockerpty)
        ("python-docopt" ,python-docopt)
-       ("python-ipaddress" ,python-ipaddress)
-       ("python-paramiko" ,python-paramiko)
        ("python-jsonschema" ,python-jsonschema-2.6)
        ("python-pyyaml" ,python-pyyaml)
        ("python-requests" ,python-requests-2.20)
@@ -585,6 +580,9 @@ provisioning etc.")
              ;; Respectively, strip the symbol table and debug
              ;; information, and the DWARF symbol table.
              (setenv "LDFLAGS" "-s -w")
+
+             ;; Make sure "docker -v" prints a usable version string.
+             (setenv "VERSION" ,%docker-version)
 
              ;; Make build reproducible.
              (setenv "BUILDTIME" "1970-01-01 00:00:01.000000000+00:00")

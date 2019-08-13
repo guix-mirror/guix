@@ -1136,7 +1136,7 @@ themselves.")
 (define-public libpciaccess
   (package
     (name "libpciaccess")
-    (version "0.14")
+    (version "0.16")
     (source
       (origin
         (method url-fetch)
@@ -1146,7 +1146,7 @@ themselves.")
                ".tar.bz2"))
         (sha256
           (base32
-            "197jbcpvp4z4x6j705mq2y4fsnnypy6f85y8xalgwhgx5bhl7x9x"))))
+            "12glp4w1kgvmqn89lk19cgr6jccd3awxra4dxisp7pagi06rsk11"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Make sure libpciaccess can read compressed 'pci.ids' files as
@@ -2921,8 +2921,8 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "6afed33b2d673d88674f0c76efe500ae414e8e1b")
-        (revision "13"))
+  (let ((commit "6f4972d5c368c30e971a23c1dc370d3e43761282")
+        (revision "14"))
     (package
       (name "xf86-video-intel")
       (version (git-version "2.99.917" revision commit))
@@ -2935,7 +2935,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1s3fqlqzmql7s15m7qy21vai93n6q9f0ccpv0p353rwfx16mmf35"))
+           "0bc46qqglzfm4g9q4c2vgynvps2ng0xvlxnjpm9d6z4q6scdhz59"))
          (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)

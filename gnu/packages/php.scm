@@ -58,15 +58,15 @@
 (define-public php
   (package
     (name "php")
-    (version "7.3.6")
+    (version "7.3.8")
     (home-page "https://secure.php.net/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "distributions/"
-                                  name "-" version ".tar.xz"))
+                                  "php-" version ".tar.xz"))
               (sha256
                (base32
-                "0r51aiff2abbr3d2swhvja0wm56sjxzqbciabcvvq3m3v9kqkz7y"))
+                "19fm990yl97fq538lkp0m1imbp30qrx7785x211w1n15wqm6n17n"))
               (modules '((guix build utils)))
               (snippet
                '(with-directory-excursion "ext"
@@ -76,7 +76,7 @@
                             ;;"mbstring/libmbfl"
                             ;;"date/lib"
                             ;;"bcmath/libbcmath"
-                            ;;"fileinfo/libmagic" ; This is a patched version of libmagic.
+                            ;;"fileinfo/libmagic" ; a patched version of libmagic
                             '("gd/libgd"
                               "mbstring/oniguruma"
                               "pcre/pcre2lib"
@@ -378,7 +378,7 @@
      `(("pkg-config" ,pkg-config)
        ("bison" ,bison)
        ("intltool" ,intltool)
-       ("procps" ,procps)))         ; For tests.
+       ("procps" ,procps)))             ; for tests
     (synopsis "PHP programming language")
     (description
       "PHP (PHP Hypertext Processor) is a server-side (CGI) scripting

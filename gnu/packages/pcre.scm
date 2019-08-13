@@ -94,7 +94,7 @@ POSIX regular expression API.")
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
                                   version "/pcre2-" version ".tar.bz2"))
-
+              (patches (search-patches "pcre2-fix-jit_match-crash.patch"))
               (sha256
                (base32
                 "1anqi7vpbfzag7imccrc6di1zl5rl63ab7rfpmajpw6d1kzlsl9m"))))

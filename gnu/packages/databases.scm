@@ -132,12 +132,13 @@
     (name "4store")
     (version "1.1.6")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/4store/4store/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/4store/4store.git")
+             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
+       (base32 "1kzdfmwpzy64cgqlkcz5v4klwx99w0jk7afckyf7yqbqb4rydmpk"))
       (patches (search-patches "4store-unset-preprocessor-directive.patch"
                                "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
@@ -160,12 +161,6 @@
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("util-linux" ,util-linux)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'generate-configure
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -616,15 +611,15 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.40")
+    (version "10.1.41")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://downloads.mariadb.org/f/"
-                                  name "-" version "/source/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://downloads.mariadb.com/MariaDB"
+                                  "/mariadb-" version "/source/mariadb-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "19375bnq0yg52kqh6cy00s5rglcxdrs5bb2hy7dqv2xqa9z7lxci"))
+                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -806,14 +801,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.9")
+    (version "10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m0gbf7nwgag6a1z5f9xszwzgf2xhx0ncakyxwxlzs87n1zk32wm"))
+                "0lzj46dwd9cw94gnqm36bxd7jlhfdyqjrfzr3c4xd3prfn2rnkxd"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -853,27 +848,27 @@ pictures, sounds, or video.")
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "11.4")
+    (version "11.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "12ycjlqncijgmd5z078ybwda8ilas96lc7nxxmdq140mzpgjv002"))))))
+                "106ikalvrilihlvhq7xj7snq98hgbgq6qsgjrd252wgw1c327pvz"))))))
 
 (define-public postgresql-9.6
   (package
     (inherit postgresql)
     (name "postgresql")
-    (version "9.6.14")
+    (version "9.6.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "08hsqczy1ixkjyf2vr3s9x69agfz9yr8lh31fir4z0dfr5jw421z"))))))
+                "02hp69h2p02asfblkaahblzdz2zmawd2r11h6237y5j7yadgxn9w"))))))
 
 (define-public python-pymysql
   (package

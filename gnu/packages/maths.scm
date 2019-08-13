@@ -325,7 +325,7 @@ enough to be used effectively as a scientific calculator.")
 (define-public double-conversion
   (package
     (name "double-conversion")
-    (version "3.1.4")
+    (version "3.1.5")
     (home-page "https://github.com/google/double-conversion")
     (source (origin
               (method git-fetch)
@@ -334,7 +334,7 @@ enough to be used effectively as a scientific calculator.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "13xwcqk2c0q8c1siw566clxcpvp0xrxvb72mra42wa3nvq9wlsv6"))))
+                "0csy4pjw1p8rp6g5qxi2h0ychhhp1fldv7gb761627fs2mclw9gv"))))
     (build-system cmake-build-system)
     (arguments
      '(#:test-target "test"
@@ -4333,14 +4333,14 @@ are noisy or are discontinuous at the solution.")
 (define-public r-desolve
   (package
     (name "r-desolve")
-    (version "1.21")
+    (version "1.24")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "deSolve" version))
         (sha256
          (base32
-          "0qqc4mknw1jblzcmph1dg3k1p6w42yal0k1xjh8pqk7yb3a75hs5"))))
+          "0hkvspq0fp8j64l9zayab2l2nazazhwfgfym0jllh0xv5a12r99s"))))
     (properties `((upstream-name . "deSolve")))
     (build-system r-build-system)
     (native-inputs

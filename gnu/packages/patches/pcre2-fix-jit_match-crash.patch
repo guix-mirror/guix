@@ -1,0 +1,25 @@
+From: Tobias Geerinckx-Rice <me@tobias.gr>
+Date: Thu, 01 Aug 2019 21:12:52 +0200
+Subject: [PATCH] gnu: pcre2: Fix jit_match crash.
+
+Fixes <https://bugs.exim.org/show_bug.cgi?id=2421>, reported as a ‘secrity
+problem’.
+
+Copied verbatim from upstream[0].
+
+[0]: https://vcs.pcre.org/pcre2/code/trunk/src/pcre2_jit_compile.c?view=patch&r1=1089&r2=1092&pathrev=1092
+
+--- trunk/src/pcre2_jit_compile.c	2019/05/10 13:15:20	1089
++++ trunk/src/pcre2_jit_compile.c	2019/05/13 16:38:18	1092
+@@ -8571,7 +8571,10 @@
+ PCRE2_SPTR bptr;
+ uint32_t c;
+ 
+-GETCHARINC(c, cc);
++/* Patch by PH */
++/* GETCHARINC(c, cc); */
++
++c = *cc++;
+ #if PCRE2_CODE_UNIT_WIDTH == 32
+ if (c >= 0x110000)
+   return NULL;

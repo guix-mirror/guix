@@ -38,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages web))
+  #:use-module (gnu packages web)
+  #:use-module (srfi srfi-1))
 
 
 ;;; Annotations
@@ -1211,14 +1212,14 @@ determining dependencies between variables, code improvement suggestions.")
 (define-public r-chippeakanno
   (package
     (name "r-chippeakanno")
-    (version "3.18.1")
+    (version "3.18.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ChIPpeakAnno" version))
        (sha256
         (base32
-         "1mwi5s600c3jxy8f1azfrndc3g06qvhbmrp9wqac9nwjbfx1kfji"))))
+         "0wzwdxvvr7wknz5jnan0wsp81c1gv4d2qx0mrb1yybqf4z068779"))))
     (properties `((upstream-name . "ChIPpeakAnno")))
     (build-system r-build-system)
     (propagated-inputs
@@ -1520,14 +1521,14 @@ experiments.")
 (define-public r-genomicinteractions
   (package
     (name "r-genomicinteractions")
-    (version "1.18.0")
+    (version "1.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "GenomicInteractions" version))
        (sha256
         (base32
-         "0ipvm3c1cqd46n60lsrqzf6fx4b3lwia57jyfx9wcqqg205qj73b"))))
+         "0hq2n5yfr9h2ayn10dy9lz08gd2q0awrm5cy2kqdmz4d8ss4r94p"))))
     (properties
      `((upstream-name . "GenomicInteractions")))
     (build-system r-build-system)
@@ -3528,14 +3529,14 @@ position-specific scores within R and Bioconductor.")
 (define-public r-atacseqqc
   (package
     (name "r-atacseqqc")
-    (version "1.8.1")
+    (version "1.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ATACseqQC" version))
        (sha256
         (base32
-         "0h5j3724hnd86w22vy3whqx6gkf0nf2dxd2clgzdvjzblbcd5s69"))))
+         "1i8f0vs0z4jbc2yvj1diay7jhcmb1a82zv96xllk771f25nvmmxp"))))
     (properties `((upstream-name . "ATACseqQC")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3620,14 +3621,14 @@ annotations and ontologies.")
 (define-public r-abaenrichment
   (package
     (name "r-abaenrichment")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ABAEnrichment" version))
        (sha256
         (base32
-         "0av1dysk7qa8c4a0pp7yq89k8c4y40d2gyvsb8f27slvv2i3aad2"))))
+         "1w322wsp6bd3gyfwzgdf088cvfmpq774knr57d0dj420ljf4xn48"))))
     (properties `((upstream-name . "ABAEnrichment")))
     (build-system r-build-system)
     (propagated-inputs
@@ -4840,14 +4841,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "1.34.4")
+    (version "1.34.6")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "1230p8nsakifmpsqfiaj8rpm7npa8ab903mfjmayfa71n6yzvcbs"))))
+         "0nnfh4hnrs5kd72m8c50cidbsxjz12szw2vynpmg8q0wpd99q550"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -5128,3 +5129,25 @@ data, to only emphasize the data that actually matters.")
 accessibility data.  It also extends the monocle package for use in chromatin
 accessibility data.")
     (license license:expat)))
+
+;; This is the latest commit on the "monocle3" branch.
+(define-public r-cicero-monocle3
+  (let ((commit "fa2fb6515857a8cfc88bc9af044f34de1bcd2b7b")
+        (revision "1"))
+    (package (inherit r-cicero)
+      (name "r-cicero-monocle3")
+      (version (git-version "1.3.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/cole-trapnell-lab/cicero-release.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "077yza93wdhi08n40md20jwk55k9lw1f3y0063qkk90cpz60wi0c"))))
+      (propagated-inputs
+       `(("r-monocle3" ,r-monocle3)
+         ,@(alist-delete "r-monocle"
+                         (package-propagated-inputs r-cicero)))))))

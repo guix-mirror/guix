@@ -473,16 +473,18 @@ and creating Matroska files from other media files (@code{mkvmerge}).")
 (define-public x265
   (package
     (name "x265")
-    (version "3.1.1")
+    (version "3.1.2")
     (outputs '("out" "static"))
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "https://download.videolan.org/videolan/x265/"
-                            "x265_" version ".tar.gz"))
+        (uri (list (string-append "https://bitbucket.org/multicoreware/x265"
+                                  "/downloads/x265_" version ".tar.gz")
+                   (string-append "https://download.videolan.org/videolan/x265/"
+                                  "x265_" version ".tar.gz")))
         (sha256
          (base32
-          "1l68lgdbsi4wjz5vad98ggx7mf92rnvzlq34m6w0a08ark3h0yc2"))
+          "1ajr59gjj47gnczfb2qhmzclj746pdiq9a1d81b0mq22k8f5yy3g"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -700,7 +702,7 @@ libebml is a C++ library to read and write EBML files.")
 (define-public libva
   (package
     (name "libva")
-    (version "2.4.1")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
@@ -712,7 +714,7 @@ libebml is a C++ library to read and write EBML files.")
              (string-append "https://www.freedesktop.org/software/vaapi/releases/"
                             "libva/libva-" version "/libva-" version ".tar.bz2")))
        (sha256
-        (base32 "0w7fkkrnfizzglviybxiyhxcvd3mfsiqlpda7rwj3ccihn857q79"))))
+        (base32 "0y38mw1ggxm15zq06r4qpwhd5wx4bppw1rsxpr6sq1m5d79rra1s"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -790,17 +792,18 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.1.4")
+    (version "4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1qd7a10gs12ifcp31gramcgqjl77swskjfp7cijibgyg5yl4kw7i"))))
+               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
     (build-system gnu-build-system)
     (inputs
-     `(("fontconfig" ,fontconfig)
+     `(("dav1d" ,dav1d)
+       ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("frei0r-plugins" ,frei0r-plugins)
        ("gnutls" ,gnutls)
@@ -899,6 +902,7 @@ operate properly.")
          "--enable-libbluray"
          "--enable-libcaca"
          "--enable-libcdio"
+         "--enable-libdav1d"
          "--enable-libfreetype"
          "--enable-libmp3lame"
          "--enable-libopus"
@@ -981,9 +985,10 @@ audio/video codec library.")
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
-        `(delete "--enable-libaom" ,flags))))
-    (inputs (alist-delete "libaom"
-                          (package-inputs ffmpeg)))))
+        `(delete "--enable-libdav1d" (delete "--enable-libaom"
+                 ,flags)))))
+    (inputs (alist-delete "dav1d" (alist-delete "libaom"
+                          (package-inputs ffmpeg))))))
 
 (define-public ffmpeg-for-stepmania
   (hidden-package
@@ -1480,7 +1485,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.07.30")
+    (version "2019.08.02")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1488,7 +1493,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nb5xvq4aq0az8y5wb54zp5q4qzfhs7rcb39yp6j5q8jyjp9kzwy"))))
+                "101b6jrf6ckbxrn76ppvgdyrb25p7d247kn8qgq7n476sfnkfg2p"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1619,7 +1624,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1302")
+    (version "0.4.1328")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1628,7 +1633,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1fwwzslv1vpjr8q0fq10dbngr8zai1n3d6na700cgpky4j9y0y99"))))
+                "1r9qffwvxmp74byva12h2jsn3n33vyim052sx9lykv5dygibbp65"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2061,12 +2066,6 @@ capabilities.")
        ("libass" ,libass)
        ("tesseract-ocr" ,tesseract-ocr)
        ("zimg" ,zimg)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (home-page "http://www.vapoursynth.com/")
     (synopsis "Video processing framework")
     (description "VapourSynth is a C++ library and Python module for video
@@ -2509,12 +2508,6 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen.sh
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2766,6 +2759,7 @@ of modern, widely supported codecs.")
      (list (search-path-specification
             (variable "LIBVA_DRIVERS_PATH")
             (files '("lib/dri")))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://01.org/linuxmedia/vaapi")
     (synopsis "VA-API video acceleration driver for Intel GEN Graphics devices")
     (description
@@ -2898,10 +2892,7 @@ practically any type of media.")
          (add-after 'unpack 'change-to-build-dir
            (lambda _
              (chdir "Project/GNU/Library")
-             #t))
-         (add-after 'change-to-build-dir 'autogen
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
+             #t)))))
     (home-page "https://mediaarea.net/en/MediaInfo")
     (synopsis "Library for retrieving media metadata")
     (description "MediaInfo is a library used for retrieving technical
@@ -3538,7 +3529,7 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.2.2")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
@@ -3550,7 +3541,8 @@ transitions, and effects and then export your film to many common formats.")
                    (string-append "https://code.videolan.org/videolan/dav1d/-/"
                                   "archive/" version "/dav1d-" version ".tar.bz2")))
         (sha256
-         (base32 "1llf4v486avj83d31670vdd5nshbq10qrx9vwrm1j078dh4ax4q0"))))
+         (base32
+          "08yqml01lbcpflrshdpvn88jv3xd8gm559qikiwyrh41a3kb4lr5"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

@@ -28,6 +28,7 @@
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -1294,3 +1295,171 @@ derivations of regular expressions.")
      "The Haskell XML Toolbox bases on the ideas of HaXml and HXML, but
 introduces a more general approach for processing XML with Haskell.")
     (license license:expat)))
+
+(define-public ghc-http-common
+  (package
+    (name "ghc-http-common")
+    (version "0.8.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-common/http-common-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14s5a178sb2vm5k00rs21760mds5dz2gs10k9iyn22h01mxyf599"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network" ,ghc-network)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/afcowie/http-streams/")
+    (synopsis "Common types for HTTP clients and servers")
+    (description "Base types used by a variety of HTTP clients and
+servers.  See http-streams @code{Network.Http.Client} or pipes-http
+@code{Pipes.Http.Client} for full documentation.  You can import
+@code{Network.Http.Types} if you like, but both http-streams and
+pipes-http re-export this package's types and functions.")
+    (license license:bsd-3)))
+
+(define-public ghc-http-streams
+  (package
+    (name "ghc-http-streams")
+    (version "0.8.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "http-streams/http-streams-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18vxd35n7s3z4gjvad94bknc8z1w9d7ccgphnhsxlz5cackizmxq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-hsopenssl" ,ghc-hsopenssl)
+       ("ghc-openssl-streams" ,ghc-openssl-streams)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-http-common" ,ghc-http-common)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (arguments
+     `(#:tests? #f)) ; tests rely on an outdated version of snap-server
+    (home-page "https://github.com/afcowie/http-streams/")
+    (synopsis "HTTP client using io-streams")
+    (description "An HTTP client using the Snap Framework's io-streams
+library to handle the streaming IO.  The API is optimized for ease of
+use for the rather common case of code needing to query web services and
+deal with the result.")
+    (license license:bsd-3)))
+
+(define-public ghc-snap-core
+  (package
+    (name "ghc-snap-core")
+    (version "1.0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "snap-core/snap-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "136q7l4hd5yn5hb507q1ziqx124ma1lkzh5dx0n150p8dx3rhhsc"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-random" ,ghc-random)
+       ("ghc-readable" ,ghc-readable)
+       ("ghc-regex-posix" ,ghc-regex-posix)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-parallel" ,ghc-parallel)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-zlib" ,ghc-zlib)))
+    (arguments
+     `(#:cabal-revision
+       ("3" "0wlhn33r7c9g7j23y006ddq9d87lkmianvvfrbl8jd8mvjvj2gfa")))
+    (home-page "http://snapframework.com/")
+    (synopsis "Haskell Web Framework (core interfaces and types)")
+    (description "Snap is a simple and fast web development framework
+and server written in Haskell.  For more information, you can visit the
+Snap project website at @uref{http://snapframework.com/}.  This library
+contains the core definitions and types for the Snap framework.")
+    (license license:bsd-3)))
+
+(define-public ghc-snap-server
+  (package
+    (name "ghc-snap-server")
+    (version "1.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "snap-server/snap-server-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0vvw9n8xs272qdlrf3dxhnva41zh3awi7pf022rrjj75lj8a77i4"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-clock" ,ghc-clock)
+       ("ghc-io-streams" ,ghc-io-streams)
+       ("ghc-io-streams-haproxy" ,ghc-io-streams-haproxy)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-network" ,ghc-network)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-snap-core" ,ghc-snap-core)
+       ("ghc-unix-compat" ,ghc-unix-compat)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-random" ,ghc-random)
+       ("ghc-threads" ,ghc-threads)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-http-streams" ,ghc-http-streams)
+       ("ghc-http-common" ,ghc-http-common)
+       ("ghc-parallel" ,ghc-parallel)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (arguments
+     `(#:cabal-revision
+       ("3" "0a9d3nqb5rvgm25nak68lp6yj9m6cwhbgdbg5l7ib5i2czcg7yjh")))
+    (home-page "http://snapframework.com/")
+    (synopsis "Web server for the Snap Framework")
+    (description "Snap is a simple and fast web development framework
+and server written in Haskell.  For more information, you can visit the
+Snap project website at @uref{http://snapframework.com/}.  The Snap HTTP
+server is a high performance web server library written in Haskell.
+Together with the snap-core library upon which it depends, it provides a
+clean and efficient Haskell programming interface to the HTTP
+protocol.")
+    (license license:bsd-3)))

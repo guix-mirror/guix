@@ -51,6 +51,7 @@
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -876,7 +877,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
 (define-public emacs-xr
   (package
     (name "emacs-xr")
-    (version "1.12")
+    (version "1.13")
     (source
      (origin
        (method url-fetch)
@@ -884,7 +885,7 @@ in certain cases.  It also enables recursion for anonymous functions.")
              "https://elpa.gnu.org/packages/xr-" version ".tar"))
        (sha256
         (base32
-         "1vv87h0h8ldc1mbsn45w5z1m6jq8j2js4xz23a9ixdby06g60y3g"))))
+         "1km4x92pii8c4bcimks4xzhmwpypdf183z0zh7raj062jz4jb74r"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/xr.html")
     (synopsis "Convert string regexp to rx notation")
@@ -929,7 +930,7 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.8")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
@@ -937,7 +938,7 @@ optional minor mode which can apply this command automatically on save.")
              "https://elpa.gnu.org/packages/relint-" version ".el"))
        (sha256
         (base32
-         "1bl6m2h7131acbmr0kqfnjjpv2syiv2mxfnm61g874ynnvkmmkm3"))))
+         "1l0lh4pkksw7brmhhbaikwzs4zkgd2962ks1zy7m262dvkhxjfv8"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -2473,7 +2474,7 @@ column by drawing a thin line down the length of the editing window.")
 (define-public emacs-inf-ruby
   (package
     (name "emacs-inf-ruby")
-    (version "2.5.1")
+    (version "2.5.2")
     (source
      (origin
        (method git-fetch)
@@ -2482,7 +2483,7 @@ column by drawing a thin line down the length of the editing window.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1r452h6cyypqlc59q8dx5smkwhck4qjcg1pf9qdw539cpva5q77z"))))
+        (base32 "0a1hhvfbl6mq8rjsi77fg9fh5a91hi5scjrg9rjqc5ffbql67y0v"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/nonsequitur/inf-ruby")
     (synopsis "Provides a REPL buffer connected to a Ruby subprocess in Emacs")
@@ -3389,6 +3390,76 @@ for the current function or variable in the minibuffer.")
 completion candidate when using the Company text completion framework.")
     (license license:gpl3+)))
 
+(define-public emacs-math-symbol-lists
+  (let ((commit "dc7531cff0c845d5470a50c24d5d7309b2ced7eb")
+        (revision "1"))
+    (package
+      (name "emacs-math-symbol-lists")
+      (version (git-version "1.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vspinu/math-symbol-lists.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "094m21i9rns6m59cmhxcivxxafbg52w8f8na4y3v47aq67zmhhqm"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/vspinu/math-symbol-lists")
+      (synopsis "Lists of Unicode math symbols and @code{LaTeX} commands")
+      (description "This is a storage package used by completion engines like
+@code{company-math}.")
+      (license license:gpl3+))))
+
+(define-public emacs-company-math
+  (let ((commit "600e49449644f6835f9dc3501bc58461999e8ab9")
+        (revision "1"))
+    (package
+      (name "emacs-company-math")
+      (version (git-version "1.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vspinu/company-math.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1ps2lpkzn8mjbpcbvvy1qz3xbgrh6951x8y9bsd1fm32drdph9lh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-math-symbol-lists" ,emacs-math-symbol-lists)
+         ("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/vspinu/company-math")
+      (synopsis "Completion backends for Unicode math symbols and @code{LaTeX} tags")
+      (description "This package provides a backend for use with
+@code{company-mode} allowing for completion of common math symbols.")
+      (license license:gpl3+))))
+
+(define-public emacs-nswbuff
+  (let ((commit "362da7f3687e2eb5bb11667347de85f4a9d002bc")
+        (revision "1"))
+    (package
+      (name "emacs-nswbuff")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/joostkremers/nswbuff.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l2xfz8z5qd4hz3kv6zn7h6qq3narkilri8a071y1n8j31jps4ma"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/joostkremers/nswbuff")
+      (synopsis "Quickly switch between buffers")
+      (description "This package allows for navigating between buffers within
+a customizable list.")
+      (license license:gpl3+))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
@@ -3409,6 +3480,32 @@ completion candidate when using the Company text completion framework.")
      "This package adds support to Emacs for editing text with multiple
 simultaneous cursors.")
     (license license:gpl3+)))
+
+(define-public emacs-mc-extras
+  (let ((commit "053abc52181b8718559d7361a587bbb795faf164")
+        (revision "1"))
+    (package
+      (name "emacs-mc-extras")
+      (version (git-version "1.2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/knu/mc-extras.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "16y48qrd20m20vypvys5jp4v4gc1qrqlkm75s1pk1r68i9zrw481"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-multiple-cursors" ,emacs-multiple-cursors)))
+      (home-page "https://github.com/knu/mc-extras.el")
+      (synopsis "Extra functions for manipulating multiple cursors")
+      (description
+       "This package provides additional functions for
+@code{multiple-cursors}, including functions for marking s-expressions,
+comparing characters, removing cursors, and more.")
+      (license license:bsd-2))))
 
 (define-public emacs-typo
   (package
@@ -4011,6 +4108,38 @@ minutes is started automatically.  Every 4 breaks a long break is
 started with 20 minutes.  All values are customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-org-sidebar
+  (let ((commit "74ca98b9920f3de3f13d49866581435e1ec63ec5")
+        (revision "1"))
+    (package
+      (name "emacs-org-sidebar")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/org-sidebar.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03p1ndyw2qp2skib5hszc4xyh84w7p2mhkd4a9dy6qv8q47xpsqn"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+         ("emacs-org" ,emacs-org)
+         ("emacs-org-ql" ,emacs-org-ql)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/org-sidebar")
+      (synopsis "Helpful sidebar for Org buffers")
+      (description "This package provides a sidebar for Org buffers.  At the
+top is a chronological list of scheduled and deadlined tasks in the current
+buffer (similar to the Org agenda ,but without all its features), and below
+that is a list of all other non-done to-do items.  If the buffer is narrowed,
+the sidebar only shows items in the narrowed portion; this allows seeing an
+overview of tasks in a subtree.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-trello
   (package
     (name "emacs-org-trello")
@@ -4604,45 +4733,50 @@ automatically.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy
-  (package
-    (name "emacs-ivy")
-    (version "0.12.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/abo-abo/swiper.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "0xgngn3jhmyn6mlkk9kmgfgh0w5i50b27syr4cgfgarg6p77j05w"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (info (string-append out "/share/info")))
-               (with-directory-excursion "doc"
-                 (invoke "makeinfo" "ivy.texi")
-                 (install-file "ivy.info" info)
-                 #t)))))))
-    (propagated-inputs
-     `(("emacs-hydra" ,emacs-hydra)))
-    (native-inputs
-     `(("texinfo" ,texinfo)))
-    (home-page "http://oremacs.com/swiper/")
-    (synopsis "Incremental vertical completion for Emacs")
-    (description
-     "This package provides @code{ivy-read} as an alternative to
+  ;; The latest release version introduced a new feature, swiper-isearch, that
+  ;; generally works well but had some noticeable bugs; this later commit
+  ;; includes fixes for several of them.
+  (let ((commit "d3e4514fd72f217c704ae18afdf711bb9036a04d")
+        (revision "1"))
+    (package
+      (name "emacs-ivy")
+      (version (git-version "0.12.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/swiper.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "142axxc6vsl14cfyvzj9csiykxdn7vhw88fy955hzx7av4qfqg4x"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (info (string-append out "/share/info")))
+                 (with-directory-excursion "doc"
+                   (invoke "makeinfo" "ivy.texi")
+                   (install-file "ivy.info" info)
+                   #t)))))))
+      (propagated-inputs
+       `(("emacs-hydra" ,emacs-hydra)))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
+      (home-page "http://oremacs.com/swiper/")
+      (synopsis "Incremental vertical completion for Emacs")
+      (description
+       "This package provides @code{ivy-read} as an alternative to
 @code{completing-read} and similar functions.  No attempt is made to determine
 the best candidate.  Instead, the user can navigate candidates with
 @code{ivy-next-line} and @code{ivy-previous-line}.  The matching is done by
 splitting the input text by spaces and re-building it into a regular
 expression.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-ivy-pass
   (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
@@ -5228,7 +5362,7 @@ strings, and code folding.")
 (define-public emacs-nodejs-repl
   (package
     (name "emacs-nodejs-repl")
-    (version "0.2.1")
+    (version "0.2.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5237,7 +5371,7 @@ strings, and code folding.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05ccv87rnw7fss3lib8m9sywjrj6n92fnd7mmhmjh27g2klqc83z"))))
+                "1kkj888k9x5n0i7xkia177gzsa84my3g8n0n7v65281cc4f1yhk5"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/abicky/nodejs-repl.el")
     (synopsis "Node.js REPL inside Emacs")
@@ -5580,28 +5714,35 @@ environments (virtualenv) inside Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-highlight-indentation
-  (package
-    (name "emacs-highlight-indentation")
-    (version "0.7.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/antonj/Highlight-Indentation-for-Emacs.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "00l54k75qk24a0znzl4ij3s3nrnr2wy9ha3za8apphzlm98m907k"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/antonj/Highlight-Indentation-for-Emacs/")
-    (synopsis "Highlighting indentation for Emacs")
-    (description "Provides two minor modes to highlight indentation guides in Emacs:
+  ;; Last release version is from 2015.
+  (let ((commit "d03803f2c06749c430443a3d24e039cbafc9c58f")
+        (revision "1"))
+    (package
+      (name "emacs-highlight-indentation")
+      (version (git-version "0.7.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/antonj/Highlight-Indentation-for-Emacs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1jq0gf4kcx9hvrw40rnw5c2qynjpjw1vsjbi2i4lqjbsnfnxn4wz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/antonj/Highlight-Indentation-for-Emacs/")
+      (synopsis "Highlighting indentation for Emacs")
+      (description "This package provides two minor modes to highlight
+indentation guides in Emacs:
+
 @enumerate
 @item @code{highlight-indentation-mode}, which displays guidelines
-indentation (space indentation only).
-@item @code{highlight-indentation-current-column-mode}, which displays guidelines for the current-point indentation (space indentation only).
+  indentation (space indentation only).
+@item @code{highlight-indentation-current-column-mode}, which displays
+  guidelines for the current-point indentation (space indentation only).
 @end enumerate")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public emacs-elpy
   (package
@@ -5931,7 +6072,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.2")
+    (version "3.3")
     (source
      (origin
        (method git-fetch)
@@ -5940,7 +6081,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "12yyprpgh2by2pd41i4z9gz55fxg0f90x03bfrsf791xwbhf6931"))))
+        (base32 "0fqhw7r9fcsja5d3pgbipw7pkw9nj534faav6hi45413hc3gyv92"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -6119,21 +6260,21 @@ xref, etc...) are still available, but with better integration.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
-  (let ((commit "652e299cb967fccca827dda381d61a9c144d97de")
-        (revision "1"))
+  (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
+        (revision "2"))
     (package
       (name "emacs-lua-mode")
-      (version (string-append "20151025." revision "-" (string-take commit 9)))
+      (version (git-version "20151025" revision commit))
       (home-page "https://github.com/immerrr/lua-mode/")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url home-page)
                       (commit commit)))
-                (file-name (string-append name "-" version ".checkout"))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "053025k930wh0lak6rc1973ynfrmm8zsyzfqhhd39x7abkl41hc9"))))
+                  "1mra4db25ds64526dsj8m5yv0kfq3lgggjh1x6xmqypdaryddbcp"))))
       (build-system emacs-build-system)
       (synopsis "Major mode for lua")
       (description
@@ -6399,12 +6540,11 @@ aligning text objects based on separators.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-expat
-  (let ((commit "4c344ea19b789002d759a202ffbf594730d2c59a")
-        (version "0.0.1")
+  (let ((commit "f4fcd0aa3edc359adb5c986b5dd9188d220d84e2")
         (revision "1"))
     (package
       (name "emacs-evil-expat")
-      (version (git-version version revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -6414,7 +6554,7 @@ aligning text objects based on separators.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "16v7fnldxag6l1lsnrnhdjkga9qi78lbdfbb82k6pmv04991mbkr"))))
+           "0872ix682hkdz0k8pn6sb54rqkx00rz5fxpd5j2snx406yagpaxz"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
       (home-page "https://github.com/edkolev/evil-expat")
@@ -6587,14 +6727,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.2.3")
+    (version "9.2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://elpa.gnu.org/packages/org-"
+              (uri (string-append "https://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "0hqy4lns9q5p0l1ylgmlckqprn9sbasszhznanmv0rsh0gzhsbyw"))))
+                "1pid1sykgz83i4ry5n8f270finag6sm7ckqxn5lkikyya43wlzx1"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -6608,14 +6748,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20190715")
+    (version "20190805")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
                                   version ".tar"))
               (sha256
                (base32
-                "0yxxkcaxhp5bmjsfdd9pz79rj9s7nb4gj5ci51sh4pf8mimk9542"))))
+                "1mw91hwbqyjq5pyz9hzdhvjlc2bphqpi23yqd3sdk1crpc87s40c"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -7158,6 +7298,56 @@ uninstall, display packages details (in Org Mode) or insert details at point,
 find files owned by packages...  And much more, including performing all the
 above over the network.")
       (license license:gpl3+))))
+
+(define-public emacs-helm-org-rifle
+  (package
+    (name "emacs-helm-org-rifle")
+    (version "1.6.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/helm-org-rifle")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1r38xhwvgbv6kn5x159phz3xgss7f1rc7icq27rnr4d8aj91wm6k"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/alphapapa/helm-org-rifle")
+    (synopsis "Rifle through Org files")
+    (description "This package searches both headings and contents of entries
+in Org buffers and displays matching entries.")
+    (license license:gpl3+)))
+
+(define-public emacs-dired-toggle-sudo
+  (package
+    (name "emacs-dired-toggle-sudo")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/renard/dired-toggle-sudo")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ajj8d6k5in2hclcrqckinfh80ylddplva0ryfbkzsjkfq167cv2"))
+       (patches
+        (search-patches
+         "emacs-dired-toggle-sudo-emacs-26.patch"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/renard/dired-toggle-sudo")
+    (synopsis "Browse directory with @code{sudo} privileges")
+    (description "This package allows for the use of @code{dired} with
+@code{sudo} privileges.")
+    (license license:wtfpl2)))
 
 (define-public emacs-memoize
   (package
@@ -8528,12 +8718,11 @@ the actual transformations.")
       (license license:gpl2+))))
 
 (define-public emacs-dired-hacks
-  (let ((commit "2c1234592aee91dcd9401bcd67213e6a4a464fd9")
-        (revision "1"))
+  (let ((commit "886befe113fae397407c804f72c45613d1d43535")
+        (revision "2"))
     (package
       (name "emacs-dired-hacks")
-      (version (string-append "0.0.1-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -8542,7 +8731,7 @@ the actual transformations.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1g7mky41cahpryzj6frdgzdymknpqq7pidzfjj9304887kijmhj3"))))
+                  "1cvibg90ggyrivpjmcfprpi2fx7dpa68f8kzg08s88gw5ib75djl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
@@ -8553,7 +8742,9 @@ the actual transformations.")
       (synopsis
        "Collection of useful dired additions")
       (description
-       "Collection of Emacs dired mode additions:
+       "This package provides the following collection of Emacs dired mode
+additions:
+
 @itemize
 @item dired-avfs
 @item dired-columns
@@ -8622,6 +8813,32 @@ for the default of 1 second, the minibuffer will expand with all of the
 available key bindings that follow C-x (or as many as space allows given your
 settings).")
     (license license:gpl3+)))
+
+(define-public emacs-hercules
+  (let ((commit "3345904a0dab4c7a4d4478f0766f1d9f5d1bb501")
+        (revision "1"))
+    (package
+      (name "emacs-hercules")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jjzmajic/hercules.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0cpq8h6l47nqhzch6snax5yrhxl8p4wn35q13ci35lj3iq8kmlk8"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-which-key" ,emacs-which-key)))
+      (home-page "https://gitlab.com/jjzmajic/hercules.el")
+      (synopsis "Call a chain of related commands without repeated prefix keys")
+      (description
+       "This package provides sticky-key-like functionality to obviate the
+need for repeated prefix-key sequences, and can reuse existing keymaps. The
+list of commands is displayed in a handy popup.")
+      (license license:gpl3+))))
 
 (define-public emacs-ws-butler
   (package
@@ -10433,29 +10650,32 @@ as well as functions for navigating between these headings.")
     (license license:gpl3+)))
 
 (define-public emacs-org-super-agenda
-  (package
-   (name "emacs-org-super-agenda")
-   (version "1.1")
-   (source (origin
-            (method git-fetch)
-            (uri (git-reference
-                  (url "https://github.com/alphapapa/org-super-agenda")
-                  (commit version)))
-            (file-name (git-file-name name version))
-            (sha256
-             (base32
-              "0vzf91lsxnhwf52kvm8ycpf0wb9c8l91689vyhwgv4wz8q6cvjwp"))))
-   (build-system emacs-build-system)
-   (propagated-inputs
-    `(("emacs-org" ,emacs-org)
-      ("emacs-dash" ,emacs-dash)
-      ("emacs-ht" ,emacs-ht)
-      ("emacs-s" ,emacs-s)))
-   (home-page "https://github.com/alphapapa/org-super-agenda")
-   (synopsis "Supercharged Org agenda")
-   (description "This package allows items in the Org agenda to be grouped
+  ;; emacs-org-sidebar depends on a newer commit than the latest release version.
+  (let ((commit "375bde4ca72494ac88a2a9738754f047fe45cc4e")
+        (revision "1"))
+    (package
+      (name "emacs-org-super-agenda")
+      (version (git-version "1.1.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/org-super-agenda")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hrwf02fqjm0d9gj146ax67ib76093qpqh7066dcxj2gy20625yj"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-ht" ,emacs-ht)
+         ("emacs-s" ,emacs-s)))
+      (home-page "https://github.com/alphapapa/org-super-agenda")
+      (synopsis "Supercharged Org agenda")
+      (description "This package allows items in the Org agenda to be grouped
 into sections while preserving the structure imposed by any timestamps.")
-   (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-make-toc
   (package
@@ -11752,7 +11972,7 @@ downloading manager for Emacs.")
 (define-public emacs-helpful
   (package
     (name "emacs-helpful")
-    (version "0.16")
+    (version "0.17")
     (source
      (origin
        (method git-fetch)
@@ -11761,7 +11981,7 @@ downloading manager for Emacs.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1pzlx3galyryd3hd84hnd7r5s6yl9sdrfhy1s6dgz40glw41wmpr"))))
+        (base32 "0v2y0x9pwi08y2mgjjiw5brfb5haa7pbmy4540glw904ffxxcblj"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-elisp-refs" ,emacs-elisp-refs)
@@ -12675,6 +12895,29 @@ tries to commit changes to a file after every save.
 When @code{gac-automatically-push-p} is non-nil, it also tries to push to
 the current upstream.")
     (license license:gpl3+)))
+
+(define-public emacs-scroll-on-drag
+  (let ((commit "888abd04c34753b1fc4b2fe541bc004ebec5c996")
+        (revision "1"))
+    (package
+      (name "emacs-scroll-on-drag")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/ideasman42/emacs-scroll-on-drag.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1si4hdqa3jw1inbyh3wb3i5i9grbms1nwky3vyk9zg7iznwm8a9p"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/ideasman42/emacs-scroll-on-drag")
+      (synopsis "Interactive scrolling")
+      (description "This package permits scrolling at increasing speeds based
+on drag distance.")
+      (license license:gpl3+))))
 
 (define-public emacs-company-restclient
   (package
@@ -13692,12 +13935,11 @@ server with @code{M-x pinentry-start}.")
       (license license:gpl3+))))
 
 (define-public emacs-so-long
-  (let ((commit "3ebe97decdb5cbbfba82ca686e0ad2c7d2722b4a")
-        (version "1.0")
-        (revision "1"))
+  (let ((commit "cfae473b1bf65f78ddb015159e667ec0103d881c")
+        (revision "2"))
     (package
       (name "emacs-so-long")
-      (version (git-version version revision commit))
+      (version (git-version "1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13707,7 +13949,7 @@ server with @code{M-x pinentry-start}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0fi71g5rsdsi978jz8406k8hvzgnssm9wxar8yqfhs97178r9s5m"))))
+           "0g943n5cl9lz5s7hszg6yvp10xd1xvd8mfgxyg0yckmp8fqkswin"))))
       (build-system emacs-build-system)
       (home-page "https://www.emacswiki.org/emacs/SoLong")
       (synopsis "Improve performance in files with long lines")
@@ -13744,12 +13986,13 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  (let ((commit "caeb37b8d6ab83f0eba353d6bbb29678190d4419")
-        (version "0.7")
+  ;; We prefer a newer commit (four commits newer than release) because of a
+  ;; bugfix for globbing.
+  (let ((commit "329119c65126f7917d3910bc584f4191ba8f21ac")
         (revision "1"))
     (package
       (name "emacs-deadgrep")
-      (version (git-version version revision commit))
+      (version (git-version "0.8" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13759,7 +14002,7 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "158fqha8nilwfzmw15lcsq8b099j8wclzq303md0j4mfr2q2gfvs"))))
+           "0fxf7gq9sjfkgpdfqx10w3l3nd4rwa8kv9plyxk1fqacb3s5m6ai"))))
       (build-system emacs-build-system)
       (inputs
        `(("emacs-dash" ,emacs-dash)
@@ -14142,7 +14385,7 @@ buffers – other modes on the TODO list).
 (define-public emacs-magit-todos
   (package
     (name "emacs-magit-todos")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method git-fetch)
@@ -14152,7 +14395,7 @@ buffers – other modes on the TODO list).
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "17a18gszbypz82bj36xbfyykc4s9rz83vwmpxvlf65svhd51c0nh"))))
+         "0gfm6wn2a4v5i9lfsvvin0kwpr9n96ddm3z4yf50jd3kg2igzry1"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -16189,7 +16432,7 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 (define-public emacs-counsel-etags
   (package
     (name "emacs-counsel-etags")
-    (version "1.8.4")
+    (version "1.8.7")
     (source
      (origin
        (method git-fetch)
@@ -16199,7 +16442,7 @@ previewed by scrolling up and down within a @code{dired} buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "14my9jvxl26a5yn381h5pi5481y9d9gyk7wnxxd0s4sjc964c5h5"))))
+         "0vjcjspfrz1csnmfi6r7p7f070a496adxkqnsxwx1gx8cpylwp1g"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
@@ -16632,6 +16875,30 @@ provided.  Those alternative commands are and bound by default to their
 corresponding Evil keys.")
       (license license:expat))))
 
+(define-public emacs-evil-traces
+  (let ((commit "b41b7432b8110378c199a3d25af464083777f453")
+        (revision "1"))
+    (package
+      (name "emacs-evil-traces")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mamapanda/evil-traces.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0a15f2saynz9fws1h5s7py3cshsk4xs1kwgwj1m5rsin36g0j6hc"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/mamapanda/evil-traces")
+      (synopsis "Visual hints for @code{evil-ex}")
+      (description "This package adds visual hints to certain @code{ex}
+commands in @code{evil-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-xterm-color
   (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
         (version "1.8")
@@ -16846,6 +17113,29 @@ convert the resulting @code{.epub} to a @code{.mobi} file.  Needs a working
 zip utility (default is @code{zip}).")
     (license license:gpl3+)))
 
+(define-public emacs-ox-hugo
+  (package
+    (name "emacs-ox-hugo")
+    (version "0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/kaushalmodi/ox-hugo.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "11h464cyc28ld0b0zridgm4drydc1qjxbm1y24zrwlkyqqjk6yr7"))))
+    (build-system emacs-build-system)
+    (home-page "https://ox-hugo.scripter.co")
+    (synopsis "Hugo markdown back-end for Org export engine")
+    (description
+     "Ox-hugo is an Org exporter backend that exports Org to Hugo-compatible
+Markdown, Blackfriday, and also generates the front-matter in TOML or YAML
+format.")
+    (license license:gpl3+)))
+
 (define-public emacs-ox-pandoc
   (package
     (name "emacs-ox-pandoc")
@@ -16926,3 +17216,28 @@ time.")
     (description "@code{mastodon.el} is an Emacs client for Mastodon, the
 federated microblogging social network.")
     (license license:gpl3+)))
+
+;; The last release tarball is for version 0.6.  We pick a commit close to
+;; version 0.6.10, which doesn't have a release tarball.
+(define-public emacs-ebdb
+  (let ((commit "2a87f5ed2a53e3a4e91e8c88ba5afc49f5e945df")
+        (revision "0"))
+    (package
+      (name "emacs-ebdb")
+      (version (git-version "0.6.10" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/girzel/ebdb.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0fidy7z0c86dpqiss97sg5s92fd3fj4bdl8pqqdgg2m00jx4mrjz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/girzel/ebdb")
+      (synopsis "EIEIO port of BBDB, Emacs's contact-management package")
+      (description "EBDB is a contact management/addressbook package for
+Emacs.  It's a re-write of the Insidious Big Brother Database (BBDB) using
+Emacs Lisp's (relatively new) EIEIO object oriented libraries.")
+      (license license:gpl3+))))

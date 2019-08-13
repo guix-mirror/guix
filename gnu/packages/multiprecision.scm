@@ -64,12 +64,11 @@
                           (else '())))))
    (synopsis "Multiple-precision arithmetic library")
    (description
-    "@dfn{GMP} (the GNU Multiple Precision Arithmetic Library) is a library for
-arbitrary-precision arithmetic, operating on signed integers, rational numbers
-and floating point numbers.  The precision is only limited by the available
-memory.  The library is highly optimized, with a design focus on execution
-speed.  It is aimed at use in, for example, cryptography and computational
-algebra.")
+    "The @acronym{GMP, the GNU Multiple Precision Arithmetic} library performs
+arbitrary-precision arithmetic on signed integers, rational numbers and floating
+point numbers.  The precision is only limited by the available memory.
+The library is highly optimized, with a design focus on execution speed.
+It is aimed at use in, for example, cryptography and computational algebra.")
    (license lgpl3+)
    (home-page "https://gmplib.org/")))
 
@@ -105,7 +104,7 @@ algebra.")
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary-precision floating-point arithmetic")
    (description
-    "GNU@tie{}@dfn{MPFR} (Multiple Precision Floating-Point Reliably) is a C
+    "GNU@tie{}@acronym{MPFR, Multiple Precision Floating-Point Reliably} is a C
 library for performing multiple-precision, floating-point computations with
 correct rounding.")
    (license lgpl3+)
@@ -128,8 +127,8 @@ correct rounding.")
                         ("mpfr" ,mpfr)))
    (synopsis "C library for arbitrary-precision complex arithmetic")
    (description
-    "GNU@tie{}@dfn{MPC} (Multiple Precision Complex library) is a C library for
-performing arithmetic on complex numbers.  It supports arbitrarily high
+    "GNU@tie{}@acronym{MPC, Multiple Precision Complex library} is a C library
+for performing arithmetic on complex numbers.  It supports arbitrarily high
 precision and correctly rounds the results.")
    (license lgpl3+)
    (home-page "http://multiprecision.org/mpc/")))
@@ -150,11 +149,11 @@ precision and correctly rounds the results.")
                          ("mpfr" ,mpfr)))
     (synopsis "C library for arbitrary-precision interval arithmetic")
     (description
-     "@dfn{MPFI} (Multiple Precision Floating-point Interval) is a portable C
+     "@acronym{MPFI, Multiple Precision Floating-point Interval} is a portable C
 library for arbitrary-precision interval arithmetic, with intervals represented
-using MPFR reliable floating-point numbers.  It's based on the @dfn{GMP} (GNU
-Multiple Precision Arithmetic) and GNU@tie{}@dfn{MPFR} (Multiple Precision
-Floating-Point Reliably) libraries.
+using MPFR reliable floating-point numbers.  It's based on the @acronym{GMP, GNU
+Multiple Precision Arithmetic} and GNU@tie{}@acronym{MPFR, Multiple Precision
+Floating-Point Reliably} libraries.
 
 The purpose of arbitrary-precision interval arithmetic is to get results that
 are both guaranteed, thanks to interval computation, and accurate, thanks to

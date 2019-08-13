@@ -419,7 +419,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -427,7 +427,7 @@ using the DjVuLibre library.")
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
               (sha256
                (base32
-                "166d5nz47ixzwj4pixsd5fd9qvjf5v34cdqi3p72vr23pswk2hyn"))))
+                "1pjwsb7zwclxsvz229fl7y2saf1pv3ifwv3ay8viqxgrp9x3z9hq"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -604,7 +604,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.15.0")
+    (version "1.16.1")
     (source
       (origin
         (method url-fetch)
@@ -612,7 +612,7 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "0kmcz3ivxmqmks8vg50ri1zar18q5svk829z0g1kj08lgz7kcl2n"))
+          "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))
         (modules '((guix build utils)))
         (snippet
          ;; We keep lcms2 since it is different than our lcms.

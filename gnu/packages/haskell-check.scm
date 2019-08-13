@@ -811,7 +811,7 @@ implementations of cryptographic ciphers.")
          "0xz10ycdm5vk9nrcym1fi83k19frfwqz18bz8bnpzwvaj0j41yfj"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
        ("ghc-concurrent-output" ,ghc-concurrent-output)
        ("ghc-exceptions" ,ghc-exceptions)

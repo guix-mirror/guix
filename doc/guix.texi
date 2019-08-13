@@ -5854,8 +5854,11 @@ should be added to the package definition via the
 
 In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
-parameters available to cargo.  The @code{install} phase installs any crate
-the binaries if they are defined by the crate.
+parameters available to cargo.  The @code{update-cargo-lock} phase will,
+when there is a @code{Cargo.lock} file, update the @code{Cargo.lock} file
+with the inputs and their versions available at build time.  The
+@code{install} phase installs any crate the binaries if they are defined by
+the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -25507,7 +25510,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
             %base-services))))
 
 (list (machine
-       (system %system)
+       (operating-system %system)
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
@@ -25527,12 +25530,28 @@ complex deployment may involve, for example, starting virtual machines through
 a Virtual Private Server (VPS) provider.  In such a case, a different
 @var{environment} type would be used.
 
+Do note that you first need to generate a key pair on the coordinator machine
+to allow the daemon to export signed archives of files from the store
+(@pxref{Invoking guix archive}).
+
+@example
+# guix archive --generate-key
+@end example
+
+@noindent
+Each target machine must authorize the key of the master machine so that it
+accepts store items it receives from the coordinator:
+
+@example
+# guix archive --authorize < coordinator-public-key.txt
+@end example
+
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix
 deployment.
 
 @table @asis
-@item @code{system}
+@item @code{operating-system}
 The object of the operating system configuration to deploy.
 
 @item @code{environment}

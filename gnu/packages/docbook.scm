@@ -195,7 +195,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (build-system python-build-system)
     ;; TODO: Add xfig/transfig for fig2dev utility
     (inputs
-     `(("texlive" ,(texlive-union (list texlive-latex-amsfonts
+     `(("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-latex-anysize
                                         texlive-latex-appendix
                                         texlive-latex-changebar
@@ -219,7 +219,6 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                         texlive-latex-url
                                         texlive-latex-wasysym
 
-                                        texlive-fonts-amsfonts
                                         texlive-fonts-ec
                                         texlive-fonts-rsfs
                                         texlive-fonts-stmaryrd

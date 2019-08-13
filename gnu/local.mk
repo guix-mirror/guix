@@ -238,6 +238,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/haskell-check.scm		\
   %D%/packages/haskell-crypto.scm		\
   %D%/packages/haskell-web.scm			\
+  %D%/packages/haskell-xyz.scm			\
   %D%/packages/ham-radio.scm			\
   %D%/packages/hexedit.scm			\
   %D%/packages/hugs.scm				\
@@ -771,6 +772,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/elixir-path-length.patch			\
   %D%/packages/patches/einstein-build.patch			\
+  %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
@@ -806,7 +808,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/findutils-localstatedir.patch		\
   %D%/packages/patches/findutils-makedev.patch			\
   %D%/packages/patches/findutils-test-xargs.patch		\
-  %D%/packages/patches/flac-CVE-2017-6888.patch		\
   %D%/packages/patches/flann-cmake-3.11.patch			\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
@@ -961,6 +962,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
+  %D%/packages/patches/isc-dhcp-4.4.1-fixes-for-newer-bind.patch	\
   %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jacal-fix-texinfo.patch			\
   %D%/packages/patches/jamvm-arm.patch				\
@@ -1026,7 +1028,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt1.patch		\
   %D%/packages/patches/libmad-armv7-thumb-pt2.patch		\
-  %D%/packages/patches/libmad-frame-length.patch		\
+  %D%/packages/patches/libmad-length-check.patch		\
+  %D%/packages/patches/libmad-md_size.patch			\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libmp4v2-c++11.patch			\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
@@ -1047,7 +1050,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libutils-add-includes.patch		\
   %D%/packages/patches/libutils-remove-damaging-includes.patch	\
   %D%/packages/patches/libvdpau-va-gl-unbundle.patch		\
-  %D%/packages/patches/libvirt-remove-ATTRIBUTE_UNUSED.patch	\
   %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libvpx-use-after-free-in-postproc.patch	\
   %D%/packages/patches/libxslt-generated-ids.patch		\
@@ -1078,6 +1080,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
+  %D%/packages/patches/mame-rapidjson-fix.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -1124,6 +1127,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nfs-utils-missing-headers.patch		\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/nm-plugin-path.patch			\
+  %D%/packages/patches/nss-freebl-stubs.patch			\
   %D%/packages/patches/nss-increase-test-timeout.patch		\
   %D%/packages/patches/nss-pkgconfig.patch			\
   %D%/packages/patches/ntfs-3g-CVE-2019-9755.patch		\
@@ -1169,6 +1173,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
+  %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
   %D%/packages/patches/perl-autosplit-default-time.patch	\
   %D%/packages/patches/perl-deterministic-ordering.patch	\
   %D%/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -1291,8 +1296,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
-  %D%/packages/patches/scribus-poppler.patch			\
-  %D%/packages/patches/scribus-poppler-0.73.patch		\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
@@ -1308,6 +1311,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/soundconverter-remove-gconf-dependency.patch	\
   %D%/packages/patches/sssd-curl-compat.patch			\
   %D%/packages/patches/steghide-fixes.patch			\
+  %D%/packages/patches/strace-ipc-tests.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\

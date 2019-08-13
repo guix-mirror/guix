@@ -637,7 +637,7 @@ definitions.")
 opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
    (license license:gpl3+)
-   (home-page "https://fontforge.github.io/en-US/")))
+   (home-page "https://fontforge.github.io")))
 
 (define-public python2-ufolib
   (package

@@ -6,6 +6,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,7 +143,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "6.20180926")
+    (version "7.20190708")
     (source
      (origin
        (method url-fetch)
@@ -150,15 +151,20 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "1251rj8h63y30sfqk0zh670yhz14p256y59n3590pg015pf3575d"))))
+         "18s563swrp8mx479995pdhhmn40y3xwlbm1z3w63qsnjqmj7zlij"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
        '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'patch-shell
+         (add-before 'configure 'patch-shell-for-tests
            (lambda _
+             ;; Shell.hs defines "/bin/sh" that is used in Git hooks.  We
+             ;; shouldn't patch hooks with Guix's current bash because the
+             ;; hooks can exist after that bash is garbage collected, but
+             ;; let's temporarily patch it so that we can run the tests.
+             (copy-file "Utility/Shell.hs" "/tmp/Shell.hs")
              (substitute* "Utility/Shell.hs"
                (("/bin/sh") (which "sh")))
              #t))
@@ -192,6 +198,11 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
                (symlink "git-annex" "git-annex-shell"))
              (invoke "git-annex" "test")
              #t))
+         (add-after 'check 'unpatch-shell-and-rebuild
+           (lambda args
+             ;; Undo `patch-shell-for-tests'.
+             (copy-file "/tmp/Shell.hs" "Utility/Shell.hs")
+             (apply (assoc-ref %standard-phases 'build) args)))
          (add-after 'install 'install-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -208,6 +219,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
        ("ghc-bloomfilter" ,ghc-bloomfilter)
        ("ghc-byteable" ,ghc-byteable)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-concurrent-output" ,ghc-concurrent-output)
        ("ghc-crypto-api" ,ghc-crypto-api)
        ("ghc-cryptonite" ,ghc-cryptonite)
        ("ghc-data-default" ,ghc-data-default)

@@ -30,6 +30,7 @@
             texlive-build
             texlive-build-system
             texlive-ref
+            texlive-origin
             %texlive-tag
             %texlive-revision))
 
@@ -43,6 +44,20 @@
 ;; are taken from https://www.tug.org/svn/texlive/tags/
 (define %texlive-tag "texlive-2018.2")
 (define %texlive-revision 49435)
+
+(define (texlive-origin name version locations hash)
+  "Return an <origin> object for a TeX Live package consisting of multiple
+LOCATIONS with a provided HASH.  Use NAME and VERSION to compute a prettier
+name for the checkout directory."
+  (origin
+    (method svn-multi-fetch)
+    (uri (svn-multi-reference
+          (url (string-append "svn://www.tug.org/texlive/tags/"
+                              %texlive-tag "/Master/texmf-dist/"))
+          (locations locations)
+          (revision %texlive-revision)))
+    (file-name (string-append name "-" version "-checkout"))
+    (sha256 hash)))
 
 (define (texlive-ref component id)
   "Return a <svn-reference> object for the package ID, which is part of the

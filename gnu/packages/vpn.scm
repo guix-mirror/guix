@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Pierre Langlois <pierre.langlois@gmx.com>
@@ -227,11 +227,6 @@ the entire VPN in a network namespace accessible only through SSH.")
        ("automake" ,automake)))
     (inputs
      `(("libevent" ,libevent)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda _ (invoke "sh" "autogen.sh"))))))
     (home-page "https://github.com/cernekee/ocproxy")
     (synopsis "OpenConnect proxy")
     (description
@@ -244,19 +239,20 @@ the user specifically asks to proxy, so the @dfn{VPN} interface no longer
 (define-public openconnect
   (package
    (name "openconnect")
-   (version "8.03")
+   (version "8.04")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
                                 "openconnect-" version ".tar.gz"))
-            (sha256 (base32
-                     "1wlypi68kqqg2mdck8wvf6aanhrmf9i7z6lngyxvcrp23jdzz34h"))))
+            (sha256
+             (base32 "07zqcl2ykdc4mgix9sbv4jgpg7cybifxfgrycvf99ckq7xp9r5wq"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs
     `(("libxml2" ,libxml2)
       ("gnutls" ,gnutls)
-      ("vpnc-scripts" ,vpnc-scripts)
       ("zlib" ,zlib)))
+   (inputs
+    `(("vpnc-scripts" ,vpnc-scripts)))
    (native-inputs
     `(("gettext" ,gettext-minimal)
       ("pkg-config" ,pkg-config)))

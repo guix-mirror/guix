@@ -160,9 +160,7 @@
      "Blender is a 3D graphics creation suite.  It supports the entirety of
 the 3D pipeline—modeling, rigging, animation, simulation, rendering,
 compositing and motion tracking, even video editing and game creation.  The
-application can be customized via its API for Python scripting.
-
-WARNING: This is a release candidate build of Blender.")
+application can be customized via its API for Python scripting.")
     (license license:gpl2+)))
 
 (define-public blender-2.79

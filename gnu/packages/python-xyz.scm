@@ -3211,14 +3211,14 @@ provides additional functionality on the produced Mallard documents.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.29.11")
+    (version "0.29.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "1866m01ggl2h3rky4hac3m5p048gg4a0jb09ljkknryiqln54fkn"))))
+         "13k37lrcgagwwnzr5bzririsscb793vndj234d475x1h9ad0d7f2"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3548,12 +3548,11 @@ color scales, and color space conversion easy.  It has support for:
        ("pkg-config" ,pkg-config)
        ("python-sphinx" ,python-sphinx)
        ("python-numpydoc" ,python-numpydoc)
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
-                                        texlive-fonts-cm-super
+       ("texlive" ,(texlive-union (list texlive-fonts-cm-super
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
-                                        texlive-latex-amsfonts
+                                        texlive-amsfonts
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
@@ -3952,7 +3951,7 @@ toolkits.")
        ("python-ipykernel" ,python-ipykernel)
        ("python-mock" ,python-mock)
        ("graphviz" ,graphviz)
-       ("texlive" ,(texlive-union (list texlive-latex-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-latex-amsmath
                                         texlive-latex-enumitem
                                         texlive-latex-expdlist
@@ -3963,7 +3962,6 @@ toolkits.")
 
                                         texlive-generic-pdftex
 
-                                        texlive-fonts-amsfonts
                                         texlive-fonts-ec
                                         texlive-fonts-adobe-times
                                         texlive-fonts-txfonts)))
@@ -5520,11 +5518,10 @@ computing.")
      `(("python-sphinx" ,python-sphinx)
        ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
        ;; FIXME: It's possible that a smaller union would work just as well.
-       ("texlive" ,(texlive-union (list texlive-fonts-amsfonts
+       ("texlive" ,(texlive-union (list texlive-amsfonts
                                         texlive-fonts-ec
                                         texlive-generic-ifxetex
                                         texlive-generic-pdftex
-                                        texlive-latex-amsfonts
                                         texlive-latex-capt-of
                                         texlive-latex-cmap
                                         texlive-latex-environ
@@ -8805,20 +8802,24 @@ python-xdo for newer bindings.)")
 (define-public python-mako
   (package
     (name "python-mako")
-    (version "1.0.13")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Mako" version))
        (sha256
         (base32
-         "0h95n0g0k1jwxiqarr09navpfajarvbmpm8mhmw66c25qc675vlm"))))
+         "0jqa3qfpykyn4fmkn0kh6043sfls7br8i2bsdbccazcvk9cijsd3"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "pytest" "-vv"))))))
     (propagated-inputs
      `(("python-markupsafe" ,python-markupsafe)))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
        ("python-pytest" ,python-pytest)))
     (home-page "https://www.makotemplates.org/")
     (synopsis "Templating language for Python")

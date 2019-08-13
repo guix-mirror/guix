@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system go)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -357,7 +359,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.6")
+    (version "3.3.8")
     (source
      (origin
        (method url-fetch)
@@ -365,7 +367,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0am5ki3z0yvhrz16vp2jjy5fkxxqph0mj9qqpbw3kpql65shykwz"))
+        (base32 "1g00cj1pmckd4xis8r032wmraiv3vd3zc803hnyxa2bnhj8z3bg2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -715,9 +717,6 @@ the Monero GUI client.")
 Ledger Nano as a hardware SSH/GPG agent.")
     (license license:lgpl3)))
 
-(define-public python2-trezor-agent
-  (package-with-python2 python-trezor-agent))
-
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
@@ -812,9 +811,6 @@ Ledger Blue/Nano S.")
     (description "@code{trezor} is a Python library for communicating with
 TREZOR Hardware Wallet.")
     (license license:lgpl3)))
-
-(define-public python2-trezor
-  (package-with-python2 python-trezor))
 
 (define-public python-keepkey
   (package
@@ -965,7 +961,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
 (define-public python-duniterpy
   (package
     (name "python-duniterpy")
-    (version "0.54.3")
+    (version "0.55.1")
     (source
      (origin
        (method git-fetch)
@@ -976,7 +972,7 @@ Luhn and family of ISO/IEC 7064 check digit algorithms. ")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1k3rpfc9zxj9z50cr4zjfyzdla9ap5mj1v1rlcriqmflgb5cmiba"))))
+         "07zsbbkzmnvyv5v0vw2d42vw3ar4iqhlidy9376ysk4ldlj1igf7"))))
     (build-system python-build-system)
     (arguments
      ;; Tests fail with "AttributeError: module 'attr' has no attribute 's'".
@@ -1023,7 +1019,7 @@ main features are:
 (define-public silkaj
   (package
     (name "silkaj")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method git-fetch)
@@ -1033,7 +1029,7 @@ main features are:
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "059k2kil2l8jcm4wp86w1z7y8p26rww7d3l5fzds0qq2dzvkvzgs"))))
+         "0yk2574yb0d0k0rg7qf0pkmjidblsad04x8hhqpy9k80rvgjcr5w"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f))                    ;no test
@@ -1095,3 +1091,26 @@ financial years, budget estimates, bankcard management and other
 information.")
     (home-page "http://grisbi.org")
     (license license:gpl2+)))
+
+(define-public trezord
+  (package
+    (name "trezord")
+    (version "2.0.17")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/trezor/trezord-go.git")
+              (commit (string-append "v" version))))
+       (sha256
+        (base32
+         "0nqzpq0i3crh0i4r1cppja5sn3rwi1fv9afxzwzv63096x5l30a7"))
+       (file-name (git-file-name name version))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/trezor/trezord-go"))
+    (home-page "https://trezor.io")
+    (synopsis "Trezor Communication Daemon aka Trezor Bridge (written in Go)")
+    (description "This allows a Trezor hardware wallet to communicate to the
+Trezor wallet.")
+    (license license:lgpl3+)))

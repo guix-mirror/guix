@@ -19,6 +19,7 @@
 
 (define-module (guix scripts deploy)
   #:use-module (gnu machine)
+  #:use-module (guix discovery)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (guix store)
@@ -74,7 +75,10 @@ Perform the deployment specified by FILE.\n"))
 
 (define (load-source-file file)
   "Load FILE as a user module."
-  (let ((module (make-user-module '((gnu) (gnu machine) (gnu machine ssh)))))
+  (let* ((guix-path (dirname (search-path %load-path "guix.scm")))
+         (environment-modules (scheme-modules* guix-path "gnu/machine"))
+         (module (make-user-module (append '((gnu) (gnu machine))
+                                           environment-modules))))
     (load* file module)))
 
 (define (guix-deploy . args)

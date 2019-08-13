@@ -1218,8 +1218,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "5ed2794edfdc1c54dfb61d619c5944285f35d444")
-        (revision "3"))
+  (let ((commit "04f50cda93cbb67f2afa353c52f342100e80e625")
+        (revision "4"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1231,7 +1231,7 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qy8hmv5nwpcywk7sh1pg0s32jwpd4ykh492xzl4mmxy8galwsr5"))))
+                  "0hmfsz9y1ingwsn482hlzzmzs7kr3cklm0ana0mbdk70isw2bxnw"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
@@ -3617,7 +3617,7 @@ error handling primitives in Go.")
 (define-public go-github-com-maruel-panicparse
   (package
     (name "go-github-com-maruel-panicparse")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3626,7 +3626,7 @@ error handling primitives in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05hf68ifb7ww4rpmxyywbj9r0kyap45p1273ncq4qy2ydv042l8j"))))
+                "13qkn7f64yln8jdmma37h6ra4c7anxkp3vfgvfyb6lb07dpr1ibq"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/maruel/panicparse"))

@@ -4974,6 +4974,10 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
        ("luajit" ,luajit)))
     (arguments
      `(#:make-flags '("CC=gcc" "config=release")
+       ;; XXX: Building in parallel occasionally causes this build failure:
+       ;;   ../src/luajit2/src/host/buildvm.c:73:10: fatal error: buildvm_arch.h:
+       ;;   No such file or directory
+       #:parallel-build? #f
        #:phases (modify-phases %standard-phases
                   (delete 'bootstrap)
                   (replace 'configure

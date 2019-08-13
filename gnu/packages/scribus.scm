@@ -48,7 +48,7 @@
 (define-public scribus
   (package
     (name "scribus")
-    (version "1.5.4")
+    (version "1.5.5")
     (source
      (origin
        (method url-fetch)
@@ -56,86 +56,7 @@
                            version "/scribus-" version ".tar.xz"))
        (sha256
         (base32
-         "00ys0p6h3iq77kh72dkl0qrf7qvznq18qdrgiq10gfxja1995034"))
-       (patches (append
-                 ;; Scribus relies heavily on Poppler internals, which have
-                 ;; changed a lot since the latest Scribus release (2018-04).
-                 ;; Thus, we require a bunch of patches to stay compatible.
-                 (search-patches "scribus-poppler.patch")
-                 (list (origin
-                         (method url-fetch)
-                         (uri (string-append
-                               "https://github.com/scribusproject/scribus/commit/"
-                               "7d4ceeb5cac32287769e3c0238699e0b3e56c24d.patch"))
-                         (file-name "scribus-poppler-0.64.patch")
-                         (sha256
-                          (base32
-                           "1kr27bfzkpabrh42nsrrvlqyycdg9isbavpaa5spgmrhidcg02xj")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append
-                               "https://github.com/scribusproject/scribus/commit/"
-                               "76561c1a55cd07c268f8f2b2fea888532933700b.patch"))
-                         (file-name "scribus-poppler-config.patch")
-                         (sha256
-                          (base32
-                           "01k18xjj82c3ndzp89dlpfhhdccc8z0acf8b04r592jyr5y9rc19")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append
-                               "https://github.com/scribusproject/scribus/commit/"
-                               "8e05d26c19097ac2ad5b4ebbf40a3771ee6faf9c.patch"))
-                         (file-name "scribus-poppler-0.69.patch")
-                         (sha256
-                          (base32
-                           "1avdmsj5l543j0irq18nxgiw99n395jj56ih5dsal59fn0wbqk42")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://git.archlinux.org/svntogit/"
-                                             "community.git/plain/trunk/scribus-"
-                                             "poppler-0.70.patch?h=packages/scribus&id="
-                                             "8ef43ee2fceb0753ed5a76bb0a11c84775898ffc"))
-                         (file-name "scribus-poppler-0.70.patch")
-                         (sha256
-                          (base32
-                           "0dw7ix3jaj0y1q97cmmqwb2qgdx760yhxx86wa8rnx0xhfi5x6qr")))
-                       ;; This and the preceding patch are taken from Arch Linux
-                       ;; because they are adjusted for the Scribus release tarball
-                       ;; rather than the upstream master branch.
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append "https://git.archlinux.org/svntogit/"
-                                             "community.git/plain/trunk/scribus-"
-                                             "poppler-0.75.patch?h=packages/scribus&id="
-                                             "4d35c4ad4869c1dcce9243c4786ff303bdd5c601"))
-                         (file-name "scribus-poppler-0.75.patch")
-                         (sha256
-                          (base32
-                           "1lhf2srp7iv44zzdbr3kqa0lfjmm77nalxnx80jqaixhr5yq2s8f")))
-                       (origin
-                         (method url-fetch)
-                         (uri (string-append
-                               "https://github.com/scribusproject/scribus/commit/"
-                               "9449265592a5195153d72c2a511d2010b0cf5b0b.patch"))
-                         (file-name "scribus-poppler-0.76.patch")
-                         (sha256
-                          (base32
-                           "0zghiqra9s6f6v06fdr97gdhiw41zr8r6vqh4ar4yw7rqn2771jd"))))
-                 (search-patches "scribus-poppler-0.73.patch")))
-       ;; The --binary flag is required for 'scribus-poppler-0.75.patch', because
-       ;; we need to retain the CRLF line endings.
-       (patch-flags '("-p1" "--binary"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (for-each (lambda (file)
-                       (substitute* file
-                         ;; These are required for compatibility with Poppler 0.71.
-                         (("GBool") "bool") (("gTrue") "true") (("gFalse") "false")
-                         ;; ...and this for Poppler 0.72.
-                         (("getCString") "c_str")))
-                     (find-files "scribus/plugins/import/pdf"))
-           #t))))
+         "0w9zzsiaq3f7vpxybk01c9z2b4qqg67mzpyfb2gjchz8dhdb423r"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no test target
@@ -145,9 +66,9 @@
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             ;; Fix "ImportError: No module named _sysconfigdata_nd" where
-             ;; Scribus checks PATH and eventually runs system's Python
-             ;; instead of package's.
+             ;; Fix "ImportError: No module named _sysconfigdata_nd"
+             ;; runtime error where Scribus checks PATH and eventually
+             ;; runs system's Python instead of package's.
              (let* ((out (assoc-ref outputs "out"))
                     (py2 (assoc-ref inputs "python")))
                (wrap-program (string-append out "/bin/scribus")
@@ -188,12 +109,13 @@
     (home-page "https://www.scribus.net")
     (synopsis "Desktop publishing and page layout program")
     (description
-     "Scribus is a @dfn{desktop publishing} (DTP) application and can be used
-for many tasks; from brochure design to newspapers, magazines, newsletters and
-posters to technical documentation.  Scribus supports professional DTP
-features, such as CMYK color and a color management system to soft proof
-images for high quality color printing, flexible PDF creation options,
-Encapsulated PostScript import/export and creation of four color separations,
-import of EPS/PS and SVG as native vector graphics, Unicode text including
-right to left scripts such as Arabic and Hebrew via freetype.")
+     "Scribus is a @dfn{desktop publishing} (DTP) application and can
+be used for many tasks; from brochure design to newspapers, magazines,
+newsletters and posters to technical documentation.  Scribus supports
+professional DTP features, such as CMYK color and a color management
+system to soft proof images for high quality color printing, flexible
+PDF creation options, Encapsulated PostScript import/export and
+creation of four color separations, import of EPS/PS and SVG as native
+vector graphics, Unicode text including right to left scripts such as
+Arabic and Hebrew via FreeType.")
     (license license:gpl2+)))

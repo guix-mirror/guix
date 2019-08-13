@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.22.0")
+   (version "2.22.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "17zj6jwx3s6bybd290f1mj5iym1r64560rmnf0p63x4akxclp7hm"))))
+              "093qjgagha937w96izkpsjkhxf5drsa7rvk5snlyjivqnwxgkqac"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0fpfqw0h4g4v478fscic8z714i0ls5w7946vzhmq31lf7nizsb2f"))))
+            "17vpqv9g8li58njx7z5124b3c2zb2n63z4dalh5gw9iys7qb8446"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -1301,7 +1301,7 @@ following features:
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.10.4")
+    (version "1.10.6")
     (source (origin
              (method url-fetch)
              (uri
@@ -1312,7 +1312,7 @@ following features:
                                 "subversion-" version ".tar.bz2")))
              (sha256
               (base32
-               "18c1vdq32nil76w678lxmp73jsbqha3dmzgmfrj76nc0xjmywql2"))))
+               "19zc215mhpnm92mlyl5jbv57r5zqp6cavr3s2g9yglp6j4kfgj0q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

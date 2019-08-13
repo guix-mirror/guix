@@ -236,8 +236,7 @@ the real span of the lattice.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,(texlive-union
-                    (list texlive-fonts-amsfonts
-                          texlive-latex-amsfonts)))))
+                    (list texlive-amsfonts)))))
     (inputs `(("gmp" ,gmp)
               ("libx11" ,libx11)
               ("perl" ,perl)
@@ -345,7 +344,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-61")
+    (version "1.5.0-63")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -357,7 +356,7 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "050vzpqq77fhky32sbisc0ysimgp60xjv39q7y45jkaabdkmclwh"))))
+                "1jp7awyp8j8w6fhn802z8ddbq1fxhkyk9xdf0mq0mm0chpkylwqk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)

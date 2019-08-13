@@ -38,6 +38,7 @@
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5538,6 +5539,57 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
     (license license:gpl2+)
     (properties `((upstream-name . "NetworkManager-vpnc")))))
 
+(define-public network-manager-openconnect
+  (package
+    (name "network-manager-openconnect")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/NetworkManager-openconnect/"
+                    (version-major+minor version)
+                    "/NetworkManager-openconnect-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0nlp290nkawc4wqm978n4vhzg3xdqi8kpjjx19l855vab41rh44m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-path
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((openconnect (string-append (assoc-ref inputs "openconnect")
+                                         "/sbin/openconnect"))
+                    (modprobe (string-append (assoc-ref inputs "kmod")
+                                             "/bin/modprobe"))
+                    (pretty-ovpn (string-append "\"" openconnect "\"")))
+               (substitute* "src/nm-openconnect-service.c"
+                 (("\"/usr/local/sbin/openconnect\"") pretty-ovpn)
+                 (("\"/usr/sbin/openconnect\"") pretty-ovpn)
+                 (("/sbin/modprobe") modprobe)))
+             #t)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("network-manager-applet" ,network-manager-applet) ;for libnma
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gcr" ,gcr)
+       ("gtk+" ,gtk+)
+       ("kmod" ,kmod)
+       ("libsecret" ,libsecret)
+       ("libxml2" ,libxml2)
+       ("network-manager" ,network-manager)
+       ("openconnect" ,openconnect)))
+    (home-page "https://wiki.gnome.org/Projects/NetworkManager/VPN")
+    (synopsis "OpenConnect plug-in for NetworkManager")
+    (description
+     "This extension of NetworkManager allows it to take care of connections
+to @acronym{VPNs, virtual private networks} via OpenConnect, an open client for
+Cisco's AnyConnect SSL VPN.")
+    (license license:gpl2+)
+    (properties `((upstream-name . "NetworkManager-openconnect")))))
+
 (define-public mobile-broadband-provider-info
   (package
     (name "mobile-broadband-provider-info")
@@ -8175,15 +8227,18 @@ advanced image management tool")
     (inputs
      `(("cairo" ,cairo)
        ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("python2-pycairo" ,python2-pycairo)
        ("python2-pygobject" ,python2-pygobject)
        ("python2-psutil" ,python2-psutil)
        ("vte" ,vte)))
-    (propagated-inputs
-     ;; Terminator refuses to start when these are not present.
-     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
-     `(#:python ,python-2                          ;Python 3 not supported
+     `(#:python ,python-2                          ; Python 3 isn't supported
+       #:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -8194,10 +8249,60 @@ advanced image management tool")
               (wrap-program prog
                 `("PYTHONPATH" = (,(getenv "PYTHONPATH")))
                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
-              #t))))))
+              #t)))
+         (add-after 'wrap-program 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (home-page "https://gnometerminator.blogspot.com/")
     (synopsis "Store and run multiple GNOME terminals in one window")
     (description
      "Terminator allows you to run multiple GNOME terminals in a grid and
 +tabs, and it supports drag and drop re-ordering of terminals.")
     (license license:gpl2)))
+
+(define-public libhandy
+  (package
+    (name "libhandy")
+    (version "0.0.10")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://source.puri.sm/Librem5/libhandy")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1702hbdqhfpgw0c4vj2ag08vgl83byiryrbngbq11b9azmj3jhzs"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       '("-Dglade_catalog=disabled"
+         "-Dgtk_doc=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             ;; This test fails for unknown reasons
+             (substitute* "tests/meson.build"
+               (("'test-dialog',") ""))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; Tests require a running X server.
+             (system "Xvfb :1 &")
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection) ; for g-ir-scanner
+       ("vala" ,vala)
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("gettext" ,gettext-minimal)
+       ("xorg-server" ,xorg-server)))
+    (home-page "https://source.puri.sm/Librem5/libhandy")
+    (synopsis "Library full of GTK+ widgets for mobile phones")
+    (description "The aim of the handy library is to help with developing user
+intefaces for mobile devices using GTK+.")
+    (license license:lgpl2.1+)))

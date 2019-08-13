@@ -73,6 +73,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module ((srfi srfi-1) #:select (alist-delete)))
 
@@ -440,7 +441,7 @@ interactive environment for the functional language Haskell.")
 interactive environment for the functional language Haskell.")
     (license license:bsd-3)))
 
-(define-public ghc-8
+(define-public ghc-8.4
   (package (inherit ghc-8.0)
     (name "ghc")
     (version "8.4.3")
@@ -571,6 +572,53 @@ interactive environment for the functional language Haskell.")
                                         (string-append "lib/ghc-" version)))
                                 (file-pattern ".*\\.conf\\.d$")
                                 (file-type 'directory))))))
+
+(define-public ghc-8.6
+  (package (inherit ghc-8.4)
+    (name "ghc")
+    (version "8.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.haskell.org/ghc/dist/"
+                           version "/" name "-" version "-src.tar.xz"))
+       (sha256
+        (base32 "0qg3zsmbk4rkwkc3jpas3zs74qaxmw4sp4v1mhsbj0a0dzls2jjd"))))
+    (native-inputs
+     `(;; GHC 8.6.5 must be built with GHC >= 8.2.
+       ("ghc-bootstrap" ,ghc-8.4)
+       ("ghc-testsuite"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://www.haskell.org/ghc/dist/"
+                 version "/" name "-" version "-testsuite.tar.xz"))
+           (sha256
+            (base32
+             "0pw9r91g2np3i806g2f4f8z4jfdd7mx226cmdizk4swa7av1qf91"))))
+       ,@(filter (match-lambda
+                   (("ghc-bootstrap" . _) #f)
+                   (("ghc-testsuite" . _) #f)
+                   (_ #t))
+                 (package-native-inputs ghc-8.4))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ghc-8.4)
+       ((#:make-flags make-flags ''())
+        `(cons "EXTRA_RUNTEST_OPTS=--skip-perf-tests"
+               ,make-flags))
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           ;; These two tests refer to the root user, which doesn't exist
+           ;; (see <https://bugs.gnu.org/36692>).
+           (add-after 'unpack-testsuite 'skip-tests
+             (lambda _
+               (substitute* "libraries/unix/tests/all.T"
+                 (("^test\\('T8108'") "# guix skipped: test('T8108'"))
+               (substitute* "libraries/unix/tests/libposix/all.T"
+                 (("^test\\('posix010'") "# guix skipped: test('posix010'"))
+               #t))))))))
+
+(define-public ghc-8 ghc-8.4)
 
 (define-public ghc ghc-8)
 
@@ -1052,28 +1100,6 @@ the ‘haddock’ package.")
     (synopsis "API for documentation-generation tool Haddock")
     (description "This package provides an API to Haddock, the
 documentation-generation tool for Haskell libraries.")
-    (license license:bsd-3)))
-
-(define-public ghc-haddock-test
-  (package
-    (name "ghc-haddock-test")
-    (version "0.0.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hackage.haskell.org/package/"
-                           "haddock-test/haddock-test-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1ax8fnfrwx66csj952f3virxzapipan9da7z5l1zc12nqkifbs7w"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-xml" ,ghc-xml)
-       ("ghc-syb" ,ghc-syb)))
-    (home-page "http://www.haskell.org/haddock/")
-    (synopsis "Test utilities for Haddock")
-    (description "This package provides test utilities for Haddock.")
     (license license:bsd-3)))
 
 (define-public ghc-haddock
@@ -2903,30 +2929,6 @@ Haskell library @code{regex-base}.")
 @code{regex-posix} to replace @code{Text.Regex}.")
     (license license:bsd-3)))
 
-(define-public ghc-regex-tdfa-rc
-  (package
-    (name "ghc-regex-tdfa-rc")
-    (version "1.1.8.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://hackage.haskell.org/package/regex-tdfa-rc/regex-tdfa-rc-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "1vi11i23gkkjg6193ak90g55akj69bhahy542frkwb68haky4pp3"))))
-    (build-system haskell-build-system)
-    (inputs
-     `(("ghc-regex-base" ,ghc-regex-base)))
-    (home-page
-     "https://hackage.haskell.org/package/regex-tdfa")
-    (synopsis "Tagged DFA regex engine for Haskell")
-    (description "A new all-Haskell \"tagged\" DFA regex engine, inspired by
-@code{libtre} (fork by Roman Cheplyaka).")
-    (license license:bsd-3)))
-
 (define-public ghc-regex-tdfa-text
   (package
     (name "ghc-regex-tdfa-text")
@@ -3041,6 +3043,7 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
                (base32
                 "0hznd8i65s81xy13i2qc7cvipw3lfb2yhkv53apbdsh6sbljz5sk"))))
     (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; doctest suite fails to build on i686
     (inputs
      `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
@@ -3990,7 +3993,7 @@ instances of the @code{Pretty} class.")
          "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-ansi-terminal" ,ghc-ansi-terminal-0.8)))
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
     (home-page "https://github.com/ekmett/ansi-wl-pprint")
     (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
     (description "This is a pretty printing library based on Wadler's paper
@@ -4235,7 +4238,7 @@ interface.")
 (define-public ghc-ansi-terminal
   (package
     (name "ghc-ansi-terminal")
-    (version "0.9.1")
+    (version "0.8.0.4")
     (source
      (origin
        (method url-fetch)
@@ -4245,7 +4248,7 @@ interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "1yr0ld0kqns3w3j9gl62bdwshvyazidx4dv1qkvq19ivnf08w23l"))))
+         "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-colour" ,ghc-colour)))
@@ -4255,21 +4258,6 @@ interface.")
 allows cursor movement, screen clearing, color output showing or hiding the
 cursor, and changing the title.")
     (license license:bsd-3)))
-
-(define-public ghc-ansi-terminal-0.8
-  (package (inherit ghc-ansi-terminal)
-           (name "ghc-ansi-terminal")
-           (version "0.8.0.4")
-           (source
-            (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://hackage.haskell.org/package/ansi-terminal/ansi-terminal-"
-                    version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))))
 
 (define-public ghc-vault
   (package
@@ -5909,35 +5897,6 @@ within an enclosed computation, while remaining responsive to (external)
 asynchronous exceptions.")
     (license license:expat)))
 
-(define-public ghc-packedstring
-  (package
-    (name "ghc-packedstring")
-    (version "0.1.0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://hackage.haskell.org/package/"
-                                  "packedstring/packedstring-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1x78pzzdlnpcmh9p37rlf8m5cxf3yqm2alf3whl4zpr9w25r0qj8"))))
-    (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'enable-extension
-          (lambda _
-            ;; This package won't compile without the StandaloneDeriving
-            ;; extension.
-            (substitute* "packedstring.cabal"
-              (("CPP") "CPP, StandaloneDeriving"))
-            #t)))))
-    (home-page "https://hackage.haskell.org/package/packedstring")
-    (synopsis "Library for packed strings")
-    (description
-     "This deprecated library provides an implementation of packed strings.")
-    (license license:bsd-3)))
-
 (define-public ghc-th-abstraction
   (package
     (name "ghc-th-abstraction")
@@ -6252,6 +6211,9 @@ back-ends.")
                (base32
                 "0cbsyh4ilvjzq1q7pxls43k6pdqxg1l85xzibcwpbvmlvrizh86w"))))
     (build-system haskell-build-system)
+    ;; The tests are broken on i686.  They are fixed in 0.10.3.0.
+    ;; See https://github.com/snoyberg/yaml/issues/158
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
@@ -11278,6 +11240,9 @@ imported with the correct Haskell types.")
         (base32
          "1931m23iqb4wddpdidm4ph746zpaw41kkjzmb074j7yyfpk7x1jv"))))
     (build-system haskell-build-system)
+    ;; Tests fail on i686.
+    ;; See https://github.com/vimus/libmpd-haskell/issues/112
+    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
        ("ghc-old-locale" ,ghc-old-locale)
@@ -11821,7 +11786,7 @@ default)
 (define-public ghc-validation
   (package
     (name "ghc-validation")
-    (version "1.1")
+    (version "1")
     (source
      (origin
        (method url-fetch)
@@ -11831,18 +11796,11 @@ default)
              ".tar.gz"))
        (sha256
         (base32
-         "1acj7mh3581ks405xswxw6667z7y1y0slisg6jvp6chc191ji9l5"))))
+         "08drmdvyzg2frbb26icy1mlz52xv0l6gi3v8gb7xp0vrcci5libh"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'add-setup-script
-           (lambda _
-             ;; The usual "Setup.hs" script is missing from the source.
-             (with-output-to-file "Setup.hs"
-               (lambda ()
-                 (format #t "import Distribution.Simple~%")
-                 (format #t "main = defaultMain~%"))))))))
+     `(#:cabal-revision
+       ("1" "1x1g4nannz81j1h64l1m3ancc96zc57d1bjhj1wk7bwn1xxbi5h3")))
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
        ("ghc-semigroupoids" ,ghc-semigroupoids)
@@ -11875,7 +11833,7 @@ example of, \"An applicative functor that is not a monad.\"")
 (define-public ghc-concurrent-output
   (package
     (name "ghc-concurrent-output")
-    (version "1.10.10")
+    (version "1.10.9")
     (source
      (origin
        (method url-fetch)
@@ -11885,7 +11843,7 @@ example of, \"An applicative functor that is not a monad.\"")
              ".tar.gz"))
        (sha256
         (base32
-         "1wnjxnwbc3l853kiiijagzjyb6fmhz3lmkwls24plbximl1qrr22"))))
+         "0mwf155w89nbbkjln7hhbn8k3f8p0ylcvgrg31cm7ijpx4499i4c"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)

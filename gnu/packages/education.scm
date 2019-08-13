@@ -251,7 +251,7 @@ easy.")
 (define-public snap
   (package
     (name "snap")
-    (version "5.0.4")
+    (version "5.0.8")
     (source
      (origin
        (method git-fetch)
@@ -261,7 +261,7 @@ easy.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zdypxifvxjkzhi4n9mkck8l419wc0pg103339yzhsbb9kkd3jlr"))))
+         "0fwfssdgv3mfzyv8hw1a1z5ky1yn0p59kyl6l9fxsm4w2ckgyizd"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
