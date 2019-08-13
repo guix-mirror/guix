@@ -8572,6 +8572,33 @@ characteristics.")
     (home-page "https://github.com/sinatra/mustermann")
     (license license:expat)))
 
+(define-public ruby-htmlentities
+  (package
+    (name "ruby-htmlentities")
+    (version "4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "htmlentities" version))
+       (sha256
+        (base32
+         "1nkklqsn8ir8wizzlakncfv42i32wc0w9hxp00hvdlgjr7376nhj"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (map (lambda (file)
+                    (invoke "ruby" "-Itest" file))
+                  (find-files "./test" ".*_test\\.rb")))))))
+    (synopsis "Encode and decode (X)HTML entities")
+    (description
+     "This package provides a module for encoding and decoding (X)HTML
+entities.")
+    (home-page "https://github.com/threedaymonk/htmlentities")
+    (license license:expat)))
+
 (define-public ruby-sinatra
   (package
     (name "ruby-sinatra")
