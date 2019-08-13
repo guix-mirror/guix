@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Mikhail Kirillov <w96k.ru@gmail.com>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8807,3 +8808,39 @@ It is intended to determine whether a newer API specification is
 backwards-compatible with an older API specification.")
     (home-page "https://github.com/civisanalytics/swagger-diff")
     (license license:bsd-3)))
+
+(define-public ruby-reverse-markdown
+  (package
+    (name "ruby-reverse-markdown")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "reverse_markdown" version))
+       (sha256
+        (base32
+         "0w7y5n74daajvl9gixr91nh8670d7mkgspkk3ql71m8azq3nffbg"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (synopsis "Convert HTML into Markdown")
+    (description
+     "This Ruby module allows you to map simple HTML back into
+Markdown---e.g., if you want to import existing HTML data in your
+application.")
+    (home-page "https://github.com/xijo/reverse_markdown")
+    (license license:wtfpl2)))
+
