@@ -2228,7 +2228,7 @@ development server with Starman.")
 (define-public perl-cgi
   (package
     (name "perl-cgi")
-    (version "4.38")
+    (version "4.44")
     (source
      (origin
        (method url-fetch)
@@ -2236,7 +2236,7 @@ development server with Starman.")
                            "CGI-" version ".tar.gz"))
        (sha256
         (base32
-         "1m779315rzj4mpgscw209a2wk18iwg2n8zibn8aak4mv56jz8n4c"))))
+         "020jrygslqixrxd2nzc2l8ac39ynqzsy83nnnr3mqn6kxfvmyhqj"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-deep" ,perl-test-deep)
@@ -2871,7 +2871,7 @@ used by the HTTP protocol (and then some more).")
 (define-public perl-http-message
   (package
     (name "perl-http-message")
-    (version "6.15")
+    (version "6.18")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2879,7 +2879,7 @@ used by the HTTP protocol (and then some more).")
                    version ".tar.gz"))
              (sha256
               (base32
-               "11fbvisyvi6bw8z9iq9fm9mraf69qyds09fblhl9gyvg7ccll93v"))))
+               "04lih0fn89jpyk74c4aq1rzq18h8v4zd3x0lik2r9dl8sdqd2q6h"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-try-tiny" ,perl-try-tiny)))

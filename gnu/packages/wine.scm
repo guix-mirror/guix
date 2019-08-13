@@ -164,10 +164,14 @@
                       (copy-file (string-append (assoc-ref inputs "mesa")
                                  "/share/vulkan/icd.d/radeon_icd.i686.json")
                                  (string-append icd "/radeon_icd.i686.json"))
+                      (copy-file (string-append (assoc-ref inputs "mesa")
+                                 "/share/vulkan/icd.d/intel_icd.i686.json")
+                                 (string-append icd "/intel_icd.i686.json"))
                       (wrap-program (string-append out "/bin/wine-preloader")
                                     `("VK_ICD_FILENAMES" ":" =
                                       (,(string-append icd
-                                        "/radeon_icd.i686.json"))))
+                                        "/radeon_icd.i686.json" ":"
+                                        icd "/intel_icd.i686.json"))))
                       #t)))))
              (_
               `())
@@ -224,7 +228,9 @@ integrate Windows applications into your desktop.")
                                      (assoc-ref inputs "mesa")
                                      "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
                                      (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json" ":"
+                                     (assoc-ref inputs "wine")
+                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
                    (wrap-program (string-append out "/bin/wine64-preloader")
                                  `("VK_ICD_FILENAMES" ":" =
                                    (,(string-append (assoc-ref inputs "mesa")
@@ -232,7 +238,9 @@ integrate Windows applications into your desktop.")
                                      ":" (assoc-ref inputs "mesa")
                                      "/share/vulkan/icd.d/intel_icd.x86_64.json"
                                      ":" (assoc-ref inputs "wine")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"
+                                     ":" (assoc-ref inputs "wine")
+                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
                    #t)))))
            (_
             `())
@@ -393,10 +401,14 @@ integrate Windows applications into your desktop.")
                       (copy-file (string-append (assoc-ref inputs "mesa")
                                  "/share/vulkan/icd.d/radeon_icd.i686.json")
                                  (string-append icd "/radeon_icd.i686.json"))
+                      (copy-file (string-append (assoc-ref inputs "mesa")
+                                 "/share/vulkan/icd.d/intel_icd.i686.json")
+                                 (string-append icd "/intel_icd.i686.json"))
                       (wrap-program (string-append out "/bin/wine-preloader")
                                     `("VK_ICD_FILENAMES" ":" =
                                       (,(string-append icd
-                                        "/radeon_icd.i686.json"))))
+                                        "/radeon_icd.i686.json" ":"
+                                        icd "/intel_icd.i686.json"))))
                       #t)))))
              (_
               `())
@@ -464,7 +476,9 @@ integrated into the main branch.")
                                      (assoc-ref inputs "mesa")
                                      "/share/vulkan/icd.d/intel_icd.x86_64.json" ":"
                                      (assoc-ref inputs "wine-staging")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json" ":"
+                                     (assoc-ref inputs "wine-staging")
+                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
                    (wrap-program (string-append out "/bin/wine64-preloader")
                                  `("VK_ICD_FILENAMES" ":" =
                                    (,(string-append (assoc-ref inputs "mesa")
@@ -472,7 +486,9 @@ integrated into the main branch.")
                                      ":" (assoc-ref inputs "mesa")
                                      "/share/vulkan/icd.d/intel_icd.x86_64.json"
                                      ":" (assoc-ref inputs "wine-staging")
-                                     "/share/vulkan/icd.d/radeon_icd.i686.json"))))
+                                     "/share/vulkan/icd.d/radeon_icd.i686.json"
+                                     ":" (assoc-ref inputs "wine-staging")
+                                     "/share/vulkan/icd.d/intel_icd.i686.json"))))
                    #t)))))
            (_
             `())

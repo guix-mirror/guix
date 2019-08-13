@@ -64,14 +64,14 @@
 (define-public glu
   (package
     (name "glu")
-    (version "9.0.0")
+    (version "9.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/glu/glu-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
+                "1xqhk9bn10nbvffw3r4p4rjslwz1l7gaycc0x2pqkr2irp7q9x7n"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa))) ; according to glu.pc
@@ -224,7 +224,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "19.1.1")
+    (version "19.1.4")
     (source
       (origin
         (method url-fetch)
@@ -236,7 +236,7 @@ also known as DXTn or DXTC) for Mesa.")
                                   version "/mesa-" version ".tar.xz")))
         (sha256
          (base32
-          "10amy5sdmpjbskr3xazgk0jyli8xpgi0y1nsmjr76hx8nhb4n4bj"))
+          "1yvb7ja09i36zjifpyrf8jmbm9z0wqs2w3x8dlmxkkzdv6knilm6"))
         (patches
          (search-patches "mesa-skip-disk-cache-test.patch"))))
     (build-system meson-build-system)
@@ -288,7 +288,7 @@ also known as DXTn or DXTC) for Mesa.")
               ;; TODO: Fix svga driver for aarch64 and armhf.
               '("-Dgallium-drivers=etnaviv,freedreno,nouveau,r300,r600,swrast,tegra,v3d,vc4,virgl"))
              (_
-              '("-Dgallium-drivers=nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
+              '("-Dgallium-drivers=iris,nouveau,r300,r600,radeonsi,svga,swrast,virgl")))
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "-Dplatforms=x11,drm,surfaceless,wayland"
@@ -305,11 +305,8 @@ also known as DXTn or DXTC) for Mesa.")
 
          ;; Enable Vulkan on i686-linux and x86-64-linux.
          ,@(match (%current-system)
-             ("x86_64-linux"
+             ((or "i686-linux" "x86_64-linux")
               '("-Dvulkan-drivers=intel,amd"))
-             ;; TODO: Fix intel driver on i686-linux.
-             ("i686-linux"
-              '("-Dvulkan-drivers=amd"))
              (_
               '("-Dvulkan-drivers=auto")))
 

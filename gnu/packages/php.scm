@@ -367,7 +367,7 @@
        ("oniguruma" ,oniguruma-5)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
-       ("pcre" ,pcre2/fixed)            ; must be /fixed for tests
+       ("pcre" ,pcre2)
        ("postgresql" ,postgresql)
        ("readline" ,readline)
        ("sqlite" ,sqlite)

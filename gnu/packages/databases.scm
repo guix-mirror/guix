@@ -611,15 +611,15 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.40")
+    (version "10.1.41")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://downloads.mariadb.org/f/"
-                                  name "-" version "/source/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "https://downloads.mariadb.com/MariaDB"
+                                  "/mariadb-" version "/source/mariadb-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "19375bnq0yg52kqh6cy00s5rglcxdrs5bb2hy7dqv2xqa9z7lxci"))
+                "1wh0073lqw3d9xs150bf2q3qvjwa6886mfi9khmsn7p8vapw6irb"))
               (patches (search-patches "mariadb-client-test-32bit.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -653,6 +653,10 @@ Language.")
 
          ;; For now, disable the features that that use libarchive (xtrabackup).
          "-DWITH_LIBARCHIVE=OFF"
+
+         ;; Disable the TokuDB engine, because its test suite frequently fails,
+         ;; and loading it crashes the server: <https://bugs.gnu.org/35521>.
+         "-DTOKUDB_OK=OFF"
 
          ;; Ensure the system libraries are used.
          "-DWITH_JEMALLOC=yes"
@@ -700,9 +704,6 @@ Language.")
                       ;; This file contains a time bomb which makes it fail after
                       ;; 2030-12-31.  See <https://bugs.gnu.org/34351> for details.
                       "main.mysqldump"
-
-                      ;; XXX: Fails sporadically.
-                      "innodb_fts.crash_recovery"
 
                       ;; FIXME: This test fails on i686:
                       ;; -myisampack: Can't create/write to file (Errcode: 17 "File exists")
@@ -781,7 +782,6 @@ Language.")
        ("libxml2" ,libxml2)
        ("ncurses" ,ncurses)
        ("pcre" ,pcre)
-       ("snappy" ,snappy)
        ("xz" ,xz)
        ("zlib" ,zlib)))
     (propagated-inputs
@@ -801,14 +801,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "10.9")
+    (version "10.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0m0gbf7nwgag6a1z5f9xszwzgf2xhx0ncakyxwxlzs87n1zk32wm"))
+                "0lzj46dwd9cw94gnqm36bxd7jlhfdyqjrfzr3c4xd3prfn2rnkxd"))
               (patches (search-patches "postgresql-disable-resolve_symlinks.patch"))))
     (build-system gnu-build-system)
     (arguments

@@ -235,15 +235,14 @@ It currently supports:
 (define flac
   (package
    (name "flac")
-   (version "1.3.2")
+   (version "1.3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://downloads.xiph.org/releases/flac/flac-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0gymm2j3276kr9nz6vmgfwsdfrq6c449n40a0mzz8h6wc7nw7kwi"))
-            (patches (search-patches "flac-CVE-2017-6888.patch"))))
+              "0j0p9sf56a2fm2hkjnf7x3py5ir49jyavg4q5zdyd7bcf6yq4gi1"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f))

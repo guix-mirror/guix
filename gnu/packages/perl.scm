@@ -9010,15 +9010,15 @@ Tree::Simple::Visitor::* objects.")
 (define-public perl-try-tiny
   (package
     (name "perl-try-tiny")
-    (version "0.22")
+    (version "0.30")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/D/DO/DOY/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Try-Tiny-" version ".tar.gz"))
        (sha256
         (base32
-         "068vdbpacfawc3lkfs0b82xxl27h3l0gj14iada3vlwk8rps9yv0"))))
+         "0szgvlz19yz3mq1lbzmwh8w5dh6agg5s16xv22zrnl83r7ax0nys"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Try-Tiny")
     (synopsis "Minimal try/catch with proper preservation of $@@")
