@@ -36,6 +36,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
@@ -608,3 +610,64 @@ libraries designed for computer vision research and implementation.")
      `(#:configure-flags
        ;; Needed for itk-snap
        (list "-DVNL_CONFIG_LEGACY_METHODS=ON")))))
+
+(define-public insight-toolkit
+  (package
+    (name "insight-toolkit")
+    (version "5.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/InsightSoftwareConsortium/ITK/"
+                           "releases/download/v" version "/InsightToolkit-"
+                           version ".tar.xz"))
+       (sha256
+        (base32 "0bs63mk4q8jmx38f031jy5w5n9yy5ng9x8ijwinvjyvas8cichqi"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f            ; tests require network access and external data
+       #:configure-flags
+       '("-DITK_USE_GPU=ON"
+         "-DITK_USE_SYSTEM_LIBRARIES=ON"
+         "-DITK_USE_SYSTEM_GOOGLETEST=ON"
+         "-DITK_BUILD_SHARED=ON"
+         ;; This prevents "GTest::GTest" from being added to the ITK_LIBRARIES
+         ;; variable in the installed CMake files.  This is necessary as other
+         ;; packages using insight-toolkit could not be configured otherwise.
+         "-DGTEST_ROOT=gtest")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-tune
+           (lambda _
+             (substitute* "CMake/ITKSetStandardCompilerFlags.cmake"
+               (("-mute=native") ""))
+             #t)))))
+    (inputs
+     `(("eigen" ,eigen)
+       ("expat" ,expat)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("hdf5" ,hdf5)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("mesa" ,mesa-opencl)
+       ("perl" ,perl)
+       ("python" ,python)
+       ("tbb" ,tbb)
+       ("vxl" ,vxl-1)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/InsightSoftwareConsortium/ITK/")
+    (synopsis "Scientific image processing, segmentation and registration")
+    (description "The Insight Toolkit (ITK) is a toolkit for N-dimensional
+scientific image processing, segmentation, and registration.  Segmentation is
+the process of identifying and classifying data found in a digitally sampled
+representation.  Typically the sampled representation is an image acquired
+from such medical instrumentation as CT or MRI scanners.  Registration is the
+task of aligning or developing correspondences between data.  For example, in
+the medical environment, a CT scan may be aligned with a MRI scan in order to
+combine the information contained in both.")
+    (license license:asl2.0)))
