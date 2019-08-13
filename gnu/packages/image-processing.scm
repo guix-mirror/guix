@@ -40,6 +40,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages geo)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -534,3 +535,45 @@ the VIPS image processing library.  It's a little like a spreadsheet: you
 create a set of formula connecting your objects together, and on a change nip2
 recalculates.")
     (license license:gpl2+)))
+
+(define-public vxl
+  (package
+    (name "vxl")
+    (version "2.0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/vxl/vxl.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0949hw57szq8943f1whwqaz591xjmb19kj803hcv74hdai2b0ycg"))
+       (modules '((guix build utils)))
+       ;; TODO: vxl includes an old version of dcmtk.  It won't build with
+       ;; version 3.6.x.
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     '("v3p/bzlib/"
+                       "v3p/geotiff/"
+                       "v3p/jpeg/"
+                       "v3p/png/"
+                       "v3p/tiff/"
+                       "v3p/zlib/"))
+           (substitute* "v3p/CMakeLists.txt"
+             (("add_subdirectory\\((tiff|png|jpeg|zlib|bzlib|geotiff)\\)")
+              ""))
+           #t))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("libgeotiff" ,libgeotiff)
+       ("libtiff" ,libtiff)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/vxl/vxl/")
+    (synopsis "Collection of C++ libraries for computer vision")
+    (description "VXL (the Vision-something-Libraries) is a collection of C++
+libraries designed for computer vision research and implementation.")
+    (license license:bsd-3)))
