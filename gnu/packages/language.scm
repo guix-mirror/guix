@@ -862,3 +862,24 @@ suitable for both the desktop and mobile devices.")
        (modules remove-pre-compiled-files-modules)
        (snippet (remove-pre-compiled-files "model"))))
     (license lgpl2.1))) ; all files
+
+;;; Upstream does not provide the source for tegaki-wagomu-traditional-chinese.
+;;; Therefore, we use the source for tegaki-zinnia-traditional-chinese and
+;;; patch the Makefile accordingly.
+(define-public tegaki-wagomu-traditional-chinese
+  (package
+    (inherit tegaki-zinnia-traditional-chinese)
+    (name "tegaki-wagomu-traditional-chinese")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments tegaki-zinnia-traditional-chinese)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda args
+               (let ((configure (assq-ref ,phases 'configure)))
+                 (apply configure args))
+               (substitute* "Makefile"
+                 (("zinnia") "wagomu"))
+               #t))))))
+    (license lgpl2.1))) ; all files
