@@ -265,21 +265,28 @@ on stdout instead of using a socket as the Emacsclient does.")
     (license license:gpl3+)))
 
 (define-public emacs-magit
-  ;; Version 2.90.1 has trouble loading the transient library,
-  ;; so we use a more recent commit that fixes it.
-  (let ((commit "b4aec016b5577afa8d889f258b499814d1bb1d94"))
+  ;; `magit-setup-buffer' macro introduced in c761d28d and required in
+  ;; `emacs-forge'.
+  (let ((commit "c761d28d49e5238037512b898db0ec9b40d85770"))
     (package
       (name "emacs-magit")
-      (version (git-version "2.90.1" "1" commit))
+      (version (git-version "2.90.1" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/magit/magit")
+                      (url "https://github.com/magit/magit.git")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0zl7v6z0y50pcgqsf2r8c1k3r5nwjad9ba7r6sgrnf4rc62br7jv"))))
+                  "16qx0404l05q1m6w7y5j8ck1z5nfmpinm00w0p2yh1hn5zzwy6dd"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; Fix syntax error
+                    (substitute* "lisp/magit-extras.el"
+                      (("rev\\)\\)\\)\\)\\)\\)") "rev)))))"))
+                    #t))))
       (build-system gnu-build-system)
       (native-inputs `(("texinfo" ,texinfo)
                        ("emacs" ,emacs-minimal)))
@@ -318,6 +325,39 @@ on stdout instead of using a socket as the Emacsclient does.")
 
          #:phases
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda _
+               (chmod "lisp/magit-extras.el" #o644)
+               (emacs-batch-edit-file "lisp/magit-extras.el"
+                 `(progn (progn
+                          (goto-char (point-min))
+                          (re-search-forward "(defun magit-copy-buffer-revision ()")
+                          (forward-sexp 2)
+                          (kill-sexp)
+                          (insert ,(format #f "~S"
+                                           '(if (use-region-p)
+                                                (copy-region-as-kill nil nil 'region)
+                                                (when-let ((rev (cl-case major-mode
+                                                                         ((magit-cherry-mode
+                                                                           magit-log-select-mode
+                                                                           magit-reflog-mode
+                                                                           magit-refs-mode
+                                                                           magit-revision-mode
+                                                                           magit-stash-mode
+                                                                           magit-stashes-mode)
+                                                                          (car magit-refresh-args))
+                                                                         ((magit-diff-mode magit-log-mode)
+                                                                          (let ((r (caar magit-refresh-args)))
+                                                                            (if (string-match "\\.\\.\\.?\\(.+\\)" r)
+                                                                                (match-string 1 r)
+                                                                                r)))
+                                                                         (magit-status-mode "HEAD"))))
+                                                          (when (magit-commit-p rev)
+                                                            (setq rev (magit-rev-parse rev))
+                                                            (push (list rev default-directory) magit-revision-stack)
+                                                            (kill-new (message "%s" rev))))))))
+                         (basic-save-buffer)))
+               #t))
            (delete 'configure)
            (add-before
                'build 'patch-exec-paths
