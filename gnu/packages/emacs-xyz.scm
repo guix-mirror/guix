@@ -3460,6 +3460,28 @@ completion candidate when using the Company text completion framework.")
 a customizable list.")
       (license license:gpl3+))))
 
+(define-public emacs-phi-search
+  (let ((commit "9a089b8271cb1cff9640848850298c9ec855286c")
+        (revision "1"))
+    (package
+      (name "emacs-phi-search")
+      (version (git-version "20160630" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zk-phi/phi-search.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gr5plcbrfdc4pglfj905s89hf8x0kc083h30wcnd81bnw9jwz1x"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/zk-phi/phi-search")
+      (synopsis "Interactive search compatible with @code{multiple-cursors}")
+      (description "This package can be used with @code{multiple-cursors} to
+provide an incremental search that moves all fake cursors in sync.")
+      (license license:gpl2+))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
