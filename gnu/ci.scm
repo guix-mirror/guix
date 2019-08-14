@@ -130,7 +130,8 @@ SYSTEM."
     "aarch64-linux-gnu"
     "powerpc-linux-gnu"
     "i586-pc-gnu"                                 ;aka. GNU/Hurd
-    "i686-w64-mingw32"))
+    "i686-w64-mingw32"
+    "x86_64-w64-mingw32"))
 
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux" "armhf-linux"))

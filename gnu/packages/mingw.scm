@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,56 +32,56 @@
   #:use-module (guix utils)
   #:use-module (ice-9 match))
 
-(define %mingw-triplet
-  "i686-w64-mingw32")
-
-(define-public mingw-w64
-  (package
-    (name "mingw-w64")
-    (version "5.0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
-                    "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
-              (sha256
-               (base32 "00zq3z1hbzd5yzmskskjg79xrzwsqx7ihyprfaxy4hb897vf29sm"))
-              (patches (search-patches "mingw-w64-5.0rc2-gcc-4.9.3.patch"))))
-    (native-inputs `(("xgcc-core" ,(cross-gcc %mingw-triplet))
-                     ("xbinutils" ,(cross-binutils %mingw-triplet))))
-    (build-system gnu-build-system)
-    (search-paths
-     (list (search-path-specification
-            (variable "CROSS_C_INCLUDE_PATH")
-            (files '("include" "i686-w64-mingw32/include")))
-           (search-path-specification
-            (variable "CROSS_LIBRARY_PATH")
-            (files
-             '("lib" "lib64" "i686-w64-mingw32/lib" "i686-w64-mingw32/lib64")))))
-    (arguments
-     `(#:configure-flags '("--host=i686-w64-mingw32")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'setenv
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((xgcc-core (assoc-ref inputs "xgcc-core"))
-                   (mingw-headers (string-append (getcwd) "/mingw-w64-headers")))
-               (setenv "CPP"
-                       (string-append xgcc-core "/bin/i686-w64-mingw32-cpp"))
-               (setenv "CROSS_C_INCLUDE_PATH"
-                       (string-append
-                        mingw-headers
-                        ":" mingw-headers "/include"
-                        ":" mingw-headers "/crt"
-                        ":" mingw-headers "/defaults/include"
-                        ":" mingw-headers "/direct-x/include"))))))
-       #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
-       #:tests? #f ; compiles and includes glibc headers
-       #:strip-binaries? #f))
-    (home-page "https://mingw-w64.org")
-    (synopsis "Minimalist GNU for Windows")
-    (description
-     "Minimalist GNU for Windows (@dfn{MinGW}) is a complete software
+(define-public (make-mingw-w64 machine)
+  (let ((triplet (string-append machine "-" "w64-mingw32")))
+    (package
+      (name (string-append "mingw-w64" "-" machine))
+      (version "5.0.4")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://sourceforge.net/projects/mingw-w64/files/mingw-w64/"
+                      "mingw-w64-release/mingw-w64-v" version ".tar.bz2"))
+                (sha256
+                 (base32 "00zq3z1hbzd5yzmskskjg79xrzwsqx7ihyprfaxy4hb897vf29sm"))
+                (patches (search-patches "mingw-w64-5.0rc2-gcc-4.9.3.patch"))))
+      (native-inputs `(("xgcc-core" ,(cross-gcc triplet))
+                       ("xbinutils" ,(cross-binutils triplet))))
+      (build-system gnu-build-system)
+      (search-paths
+       (list (search-path-specification
+              (variable "CROSS_C_INCLUDE_PATH")
+              (files `("include" ,(string-append triplet "/include"))))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files
+               `("lib" "lib64"
+                 ,(string-append triplet "/lib")
+                 ,(string-append triplet "/lib64"))))))
+      (arguments
+       `(#:configure-flags '(,(string-append "--host=" triplet))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'setenv
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((xgcc-core (assoc-ref inputs "xgcc-core"))
+                     (mingw-headers (string-append (getcwd) "/mingw-w64-headers")))
+                 (setenv "CPP"
+                         (string-append xgcc-core ,(string-append "/bin/" triplet "-cpp")))
+                 (setenv "CROSS_C_INCLUDE_PATH"
+                         (string-append
+                          mingw-headers
+                          ":" mingw-headers "/include"
+                          ":" mingw-headers "/crt"
+                          ":" mingw-headers "/defaults/include"
+                          ":" mingw-headers "/direct-x/include"))))))
+         #:make-flags (list "DEFS=-DHAVE_CONFIG_H -D__MINGW_HAS_DXSDK=1")
+         #:tests? #f ; compiles and includes glibc headers
+         #:strip-binaries? #f))
+      (home-page "https://mingw-w64.org")
+      (synopsis "Minimalist GNU for Windows")
+      (description
+       "Minimalist GNU for Windows (@dfn{MinGW}) is a complete software
 development environment for creating native Microsoft Windows applications.
 
 It includes a set of Windows-specific header files and static import libraries
@@ -89,4 +90,12 @@ runtime dynamic-link libraries (@dfn{DLL}s).
 
 Mingw-w64 is an advancement of the original mingw.org project and provides
 several new APIs such as DirectX and DDK, and 64-bit support.")
-    (license license:fdl1.3+)))
+      (license license:fdl1.3+))))
+
+(define-public mingw-w64-i686
+  (make-mingw-w64 "i686"))
+
+(define-public mingw-w64-x86_64
+  (make-mingw-w64 "x86_64"))
+
+(define-public mingw-w64 mingw-w64-i686)

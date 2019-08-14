@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,6 +188,7 @@ return value is ignored."
         ((string=? system "avr") "no-ld.so")
         ((string=? system "propeller-elf") "no-ld.so")
         ((string=? system "i686-mingw") "no-ld.so")
+        ((string=? system "x86_64-mingw") "no-ld.so")
         ((string=? system "vc4-elf") "no-ld.so")
 
         (else (error "dynamic linker name not known for this system"
