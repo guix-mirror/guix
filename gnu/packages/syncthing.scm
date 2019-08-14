@@ -74,7 +74,7 @@
        ("go-github-com-syncthing-notify" ,go-github-com-syncthing-notify)
        ("go-github-com-syndtr-goleveldb" ,go-github-com-syndtr-goleveldb)
        ("go-github-com-thejerf-suture" ,go-github-com-thejerf-suture)
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)
+       ("go-golang-org-x-time" ,go-golang-org-x-time)
        ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
        ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
        ("go-github-com-gogo-protobuf-gogoproto"
@@ -84,17 +84,8 @@
        ("go-github-com-prometheus-client-golang-prometheus"
         ,go-github-com-prometheus-client-golang-prometheus)
        ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
-       ("go-golang-org-x-net-bpf" ,go-golang-org-x-net-bpf)
-       ("go-golang-org-x-net-internal-iana" ,go-golang-org-x-net-internal-iana)
-       ("go-golang-org-x-net-internal-socket"
-        ,go-golang-org-x-net-internal-socket)
-       ("go-golang-org-x-net-internal-socks"
-        ,go-golang-org-x-net-internal-socks)
-       ("go-golang-org-x-net-ipv4" ,go-golang-org-x-net-ipv4)
-       ("go-golang-org-x-net-ipv6" ,go-golang-org-x-net-ipv6)
-       ("go-golang-org-x-net-proxy" ,go-golang-org-x-net-proxy)
-       ("go-golang-org-x-text-unicode-norm" ,go-golang-org-x-text-unicode-norm)
-       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+       ("go-golang-org-x-net" ,go-golang-org-x-net)
+       ("go-golang-org-x-text" ,go-golang-org-x-text)
        ("go-github-com-audriusbutkevicius-recli"
         ,go-github-com-audriusbutkevicius-recli)
        ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
@@ -461,7 +452,7 @@ database/sql package.")
     (propagated-inputs
      `(("go-github-com-oschwald-maxminddb-golang"
         ,go-github-com-oschwald-maxminddb-golang)
-       ("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
      `(#:import-path "github.com/oschwald/geoip2-golang"
        #:tests? #f)) ; Requires some unpackaged software and test data
@@ -488,7 +479,7 @@ GeoLite2 and GeoIP2 databases in Go.")
                   "1i6d935f3cv9djpjvc2ibh8aps8jqvg454b9pkwg2h98al759ggk"))))
       (build-system go-build-system)
       (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
       (arguments
        `(#:import-path "github.com/oschwald/maxminddb-golang"
          #:tests? #f)) ; Requires some unpackaged software and test data
@@ -811,7 +802,7 @@ using sh's word-splitting rules.")
       (arguments
        '(#:import-path "github.com/syncthing/notify"))
       (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
       (synopsis "File system event notification library")
       (description "This package provides @code{notify}, a file system event
 notification library in Go.")

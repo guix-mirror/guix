@@ -6775,7 +6775,7 @@ Anonip can also be uses as a Python module in your own Python application.")
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)))
+       ("go-golang-org-x-time" ,go-golang-org-x-time)))
     (arguments
      `(#:import-path "github.com/tsileo/poussetaches"))
     (home-page "https://github.com/tsileo/poussetaches")

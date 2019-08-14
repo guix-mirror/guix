@@ -5855,7 +5855,7 @@ management tools in userspace.")
     (arguments
      `(#:import-path "github.com/vishvananda/netlink"))
     (native-inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
        ("go-netns" ,go-netns)))
     (home-page "https://github.com/vishvananda/netlink")
     (synopsis "Simple netlink library for Go")

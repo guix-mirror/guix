@@ -660,182 +660,18 @@ Go programming language.")
                       ".*\\.gz$"))
                #t)))))
       (propagated-inputs
-       `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
       (synopsis "Supplementary cryptographic libraries in Go")
       (description "This package provides supplementary cryptographic libraries
 for the Go language.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-crypto-bcrypt")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1jqfh81mhgwcc6b9l0bs6rb0707s01qpvn7896i5bsmig46lc7zm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/bcrypt"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Bcrypt in Go")
-      (description "This package provides a Go implementation of the bcrypt
-password hashing function.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-crypto-blowfish
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-blowfish")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/blowfish"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Blowfish in Go")
-    (description "This package provides a Go implementation of the Blowfish
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-pbkdf2
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-pbkdf2")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/pbkdf2"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "PBKDF2 in Go")
-    (description "This package provides a Go implementation of the PBKDF2 key
-derivation function.")))
-
-(define-public go-golang-org-x-crypto-tea
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-tea")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/tea"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Tiny Encryption Algorithm (TEA) in Go")
-    (description "This package provides a Go implementation of the Tiny Encryption
-Algorithm (TEA) block cipher.")))
-
-(define-public go-golang-org-x-crypto-salsa20
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-salsa20")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/salsa20"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Salsa20 in Go")
-    (description "This package provides a Go implementation of the Salsa20
-stream cipher.")))
-
-(define-public go-golang-org-x-crypto-cast5
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-cast5")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/cast5"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Cast5 in Go")
-    (description "This package provides a Go implementation of the Cast5
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-twofish
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-twofish")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/twofish"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Twofish in Go")
-    (description "This package provides a Go implementation of the Twofish
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-xtea
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-xtea")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/xtea"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
-    (description "This package provides a Go implementation of the eXtended
-Tiny Encryption Algorithm (XTEA) block cipher.")))
-
-(define-public go-golang-org-x-crypto-ed25519
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ed25519")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/ed25519"
-       #:unpack-path "golang.org/x/crypto"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (map (lambda (file)
-                    (make-file-writable file))
-                  (find-files
-                    (string-append (assoc-ref outputs "out")
-                                   "/src/golang.org/x/crypto/ed25519/testdata")
-                    ".*\\.gz$"))
-             #t)))))
-    (synopsis "ED25519 in Go")
-    (description "This package provides a Go implementation of the ED25519
-signature algorithm.")))
-
-(define-public go-golang-org-x-crypto-ripemd160
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ripemd160")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/ripemd160")))
-    (synopsis "RIPEMD-160 in Go")
-    (description "This package provides a Go implementation of the RIPEMD-160
-hash algorithm.")))
-
-(define-public go-golang-org-x-crypto-blake2s
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-blake2s")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/blake2s")))
-    (propagated-inputs
-     `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
-    (synopsis "BLAKE2s in Go")
-    (description "This package provides a Go implementation of the BLAKE2s
-hash algorithm.")))
-
-(define-public go-golang-org-x-crypto-sha3
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-sha3")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/sha3")))
-    (synopsis "SHA-3 in Go")
-    (description "This package provides a Go implementation of the SHA-3
-fixed-output-length hash functions and the SHAKE variable-output-length hash
-functions defined by FIPS-202.")))
-
-(define-public go-golang-org-x-net-ipv4
+(define-public go-golang-org-x-net
   (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
         (revision "3"))
     (package
-      (name "go-golang-org-x-net-ipv4")
+      (name "go-golang-org-x-net")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -848,208 +684,22 @@ functions defined by FIPS-202.")))
                   "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/net/ipv4"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Go IPv4 support")
-      (description "This package provides @code{ipv4}, which implements IP-level
-socket options for the Internet Protocol version 4.")
+       `(#:import-path "golang.org/x/net"
+         ; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+      (synopsis "Go supplemental networking libraries")
+      (description "This package provides supplemental Go networking libraries.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-net-bpf
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-bpf")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/bpf"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Berkeley Packet Filters (BPF) in Go")
-      (description "This package provides a Go implementation of the Berkeley
-Packet Filter (BPF) virtual machine.")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-context
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-context")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/context"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "Golang Context type")
-      (description "This package provides @code{context}, which defines the
-Context type, which carries deadlines, cancellation signals, and other
-request-scoped values across API boundaries and between processes.")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-socks
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-socks")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/socks"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "")
-      (description "")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-socket
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-socket")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/socket"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "")
-      (description "")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-iana
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-iana")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/iana"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "Go support for assigned numbers (IANA)")
-      (description "This package provides @code{iana}, which provides protocol
-number resources managed by the Internet Assigned Numbers Authority (IANA).")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-ipv6
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-ipv6")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/ipv6"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Go IPv6 support")
-      (description "This package provides @code{ipv6}, which implements
-IP-level socket options for the Internet Protocol version 6.")
-      (home-page "https://go.googlesource.com/net")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-proxy
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-proxy")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/proxy"
-         #:unpack-path "golang.org/x/net/"))
-      (synopsis "Go support for network proxies")
-      (description "This package provides @code{proxy}, which provides support
-for a variety of protocols to proxy network data.")
-      (home-page "https://go.googlesource.com/net")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-sys-unix
+(define-public go-golang-org-x-sys
   (let ((commit "04f50cda93cbb67f2afa353c52f342100e80e625")
         (revision "4"))
     (package
-      (name "go-golang-org-x-sys-unix")
+      (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -1062,28 +712,21 @@ for a variety of protocols to proxy network data.")
                   "0hmfsz9y1ingwsn482hlzzmzs7kr3cklm0ana0mbdk70isw2bxnw"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/sys/unix"
-         #:unpack-path "golang.org/x/sys"))
+       `(#:import-path "golang.org/x/sys"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
       (synopsis "Go support for low-level system interaction")
-      (description "This package provides @code{unix}, which offers Go support
-for low-level interaction with the operating system.")
+      (description "This package provides supplemental libraries offering Go
+support for low-level interaction with the operating system.")
       (home-page "https://go.googlesource.com/sys")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-sys-cpu
+(define-public go-golang-org-x-text
   (package
-    (inherit go-golang-org-x-sys-unix)
-    (name "go-golang-org-x-sys-cpu")
-    (arguments
-     '(#:import-path "golang.org/x/sys/cpu"
-       #:unpack-path "golang.org/x/sys"))
-    (synopsis "CPU feature detection")
-    (description "Thi spackage provides @code{cpu}, which offers tools for CPU
-feature detection in Go.")))
-
-(define-public go-golang-org-x-text-encoding
-  (package
-    (name "go-golang-org-x-text-encoding")
+    (name "go-golang-org-x-text")
     (version "0.3.2")
     (source (origin
               (method git-fetch)
@@ -1097,45 +740,23 @@ feature detection in Go.")))
                 "0flv9idw0jm5nm8lx25xqanbkqgfiym6619w575p7nrdh0riqwqh"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "golang.org/x/text/encoding"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Interface for character encodings for conversion to and from
-UTF-8")
-    (description "This package defines an interface for character encodings.
-Specific implementations of encoding for CJK text as well as simple character
-encodings are provided in subpackages.")
+     `(#:import-path "golang.org/x/text"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (synopsis "Supplemental Go text processing libraries")
+    (description "This package provides supplemental Go libraries for text
+    processing.")
     (home-page "https://go.googlesource.com/text")
     (license license:bsd-3)))
 
-(define-public go-golang-org-x-text-transform
-  (package
-    (inherit go-golang-org-x-text-encoding)
-    (name "go-golang-org-x-text-transform")
-    (arguments
-     `(#:import-path "golang.org/x/text/transform"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Go text transformation")
-    (description "This package provides @code{transform}, which provides
-reader and writer wrappers that transform the bytes passing through.  Example
-transformations provided by other packages include normalization and conversion
-between character sets.")))
-
-(define-public go-golang-org-x-text-unicode-norm
-  (package
-    (inherit go-golang-org-x-text-encoding)
-    (name "go-golang-org-x-text-unicode-norm")
-    (arguments
-     `(#:import-path "golang.org/x/text/unicode/norm"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Unicode normalization in Go")
-    (description "This package provides @code{norm}, which contains types and
-functions for normalizing Unicode strings.")))
-
-(define-public go-golang-org-x-time-rate
+(define-public go-golang-org-x-time
   (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
         (revision "1"))
     (package
-      (name "go-golang-org-x-time-rate")
+      (name "go-golang-org-x-time")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -1148,28 +769,19 @@ functions for normalizing Unicode strings.")))
                   "1fx4cf5fpdz00g3c7vxzy92hdcg0vh4yqw00qp5s52j72qixynbk"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/time/rate"
-         #:unpack-path "golang.org/x/time"))
-      (propagated-inputs
-       `(("go-golang-org-x-net-context" ,go-golang-org-x-net-context)))
-      (synopsis "Rate limiting in Go")
-      (description "This package provides @{rate}, which implements rate
-limiting in Go.")
+       `(#:import-path "golang.org/x/time"
+         ; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+;      (propagated-inputs
+;       `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (synopsis "Supplemental Go time libraries")
+      (description "This package provides supplemental Go libraries related to
+time.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
       (license license:bsd-3))))
-
-(define-public go-golang-org-x-crypto-ssh-terminal
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ssh-terminal")
-    (inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-    (arguments
-     `(#:import-path "golang.org/x/crypto/ssh/terminal"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Terminal functions for Go")
-    (description "This package provides @{terminal}, which implements support
-functions for dealing with terminals, as commonly found on UNIX systems.")))
 
 (define-public go-github-com-burntsushi-toml
   (package
@@ -1559,12 +1171,11 @@ GNU extensions} to the POSIX recommendations for command-line options.")
          "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
     (build-system go-build-system)
     (native-inputs
-     `(("go-golang-org-x-crypto-ssh-terminal"
-        ,go-golang-org-x-crypto-ssh-terminal)
+     `(("go-golang-org-x-crypto"
+        ,go-golang-org-x-crypto)
        ("go-github-com-stretchr-testify"
         ,go-github-com-stretchr-testify)
-       ("go-golang-org-x-sys-unix"
-        ,go-golang-org-x-sys-unix)))
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
      '(#:tests? #f                    ;FIXME missing dependencies
        #:import-path "github.com/sirupsen/logrus"))
@@ -1653,12 +1264,11 @@ SysVinit, and more.")
            "1yg2zrikn3vkvkx5mn51p6bfjk840qdkn7ahhhvvcsc8mpigrjc6"))))
       (build-system go-build-system)
       (native-inputs
-       `(("go-golang-org-x-sys-unix"
-          ,go-golang-org-x-sys-unix)
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
          ("go-github-com-sirupsen-logrus"
           ,go-github-com-sirupsen-logrus)
-         ("go-golang-org-x-crypto-ssh-terminal"
-          ,go-golang-org-x-crypto-ssh-terminal)))
+         ("go-golang-org-x-crypto"
+          ,go-golang-org-x-crypto)))
       (arguments
        '(#:import-path "github.com/docker/distribution"
          #:phases
@@ -1830,7 +1440,7 @@ values.")
          "1i77aq4gf9as03m8fpfh8fq49n4z9j7548blrcsidm1xhslzk5xd"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
      '(#:import-path "github.com/mattn/go-isatty"))
     (home-page "https://github.com/mattn/go-isatty")
@@ -2482,7 +2092,7 @@ Architecture Processors\" by J. Guilford et al.")
       (arguments
        '(#:import-path "github.com/libp2p/go-libp2p-crypto"))
       (native-inputs
-       `(("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+       `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
          ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)))
@@ -2630,8 +2240,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multihash")
       (synopsis "Multihash implementation in Go")
       (description "Multihash implementation in Go.")
@@ -2666,9 +2275,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
-         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/libp2p/go-libp2p-peer")
       (synopsis "PKI based identities for use in go-libp2p")
       (description "PKI based identities for use in @command{go-libp2p}.")
@@ -2731,9 +2338,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/libp2p/go-libp2p-metrics")
       (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
       (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
@@ -2806,8 +2411,7 @@ cross-compilation.")
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multiaddr")
       (synopsis "Composable and future-proof network addresses")
       (description "Multiaddr is a standard way to represent addresses that
@@ -2851,8 +2455,7 @@ does the following:
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multiaddr-net")
       (synopsis "Multiaddress net tools")
       (description "This package provides Multiaddr specific versions of
@@ -3207,8 +2810,7 @@ colorspaces.")
     (arguments
      '(#:import-path "github.com/gdamore/encoding"))
     (inputs
-     `(("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
-       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)))
+     `(("go-golang-org-x-text" ,go-golang-org-x-text)))
     (home-page "https://github.com/gdamore/encoding")
     (synopsis "Provide encodings missing from Go")
     (description "This package provides useful encodings not included in the
@@ -3249,8 +2851,7 @@ non-UTF-friendly sources.")
       (inputs
        `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
          ("go-golang-org-colorful" ,go-golang-org-colorful)
-         ("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
-         ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+         ("go-golang-org-x-text" ,go-golang-org-x-text)
          ("go-github-com-gdamore-encoding" ,go-github-com-gdamore-encoding)))
       (home-page "https://github.com/gdamore/tcell")
       (synopsis "Provide a cell-based view for text terminals")
