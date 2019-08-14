@@ -270,6 +270,7 @@ test = { path = \"../libtest\" }
              #t))
          (add-after 'patch-source-shebangs 'patch-cargo-checksums
            (lambda* _
+             (use-modules (guix build cargo-utils))
              (substitute* "src/Cargo.lock"
                (("(\"checksum .* = )\".*\"" all name)
                 (string-append name "\"" ,%cargo-reference-hash "\"")))
@@ -966,6 +967,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
              ;; root of the rust tarball
              (replace 'patch-cargo-checksums
                (lambda* _
+                 (use-modules (guix build cargo-utils))
                  (substitute* "Cargo.lock"
                    (("(\"checksum .* = )\".*\"" all name)
                     (string-append name "\"" ,%cargo-reference-hash "\"")))
