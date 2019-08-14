@@ -3482,6 +3482,33 @@ a customizable list.")
 provide an incremental search that moves all fake cursors in sync.")
       (license license:gpl2+))))
 
+(define-public emacs-phi-search-mc
+  (let ((commit "7aa671910f766437089aec26c3aa7814222d1356")
+        (revision "1"))
+    (package
+      (name "emacs-phi-search-mc")
+      (version (git-version "2.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/knu/phi-search-mc.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0wr86ad0yl52im6b9z0b9pzmhcn39qg5m9878yfv1nbxliw40lcd"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-phi-search" ,emacs-phi-search)
+         ("emacs-multiple-cursors" ,emacs-multiple-cursors)))
+      (home-page "https://github.com/knu/phi-search-mc.el")
+      (synopsis "Extend @code{phi-search} with additional
+@code{multiple-cursors} functionality")
+      (description "This package provides further integration between
+@code{multiple-cursors} and @code{phi-search}, a package that allows for
+interactive searches to move multiple fake cursors.")
+      (license license:bsd-2))))
+
 (define-public emacs-multiple-cursors
   (package
     (name "emacs-multiple-cursors")
