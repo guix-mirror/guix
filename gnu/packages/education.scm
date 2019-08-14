@@ -480,3 +480,43 @@ use the computer and at the same time teach them a little math,
 letters of the alphabet, spelling, eye-hand coordination, etc.")
     (home-page "http://www.schoolsplay.org")
     (license license:gpl3+)))
+
+(define-public fet
+  (package
+    (name "fet")
+    (version "5.39.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.lalescu.ro/liviu/fet/download/"
+                                  "fet-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "100bmggkychqs2cavqxy7015lr4icw6k99qb03im0v4jasqqmyix"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hardcoded-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* (list "fet.pro"
+                                "src/src.pro"
+                                "src/src-cl.pro"
+                                "src/interface/fet.cpp")
+               (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (replace 'configure
+           (lambda _ (invoke "qmake" "fet.pro"))))))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://www.lalescu.ro/liviu/fet/")
+    (synopsis "Timetabling software")
+    (description "FET is a program for automatically scheduling the
+timetable of a school, high-school or university.  It uses a fast and
+efficient timetabling algorithm.
+
+Usually, FET is able to solve a complicated timetable in maximum 5-20
+minutes.  For simpler timetables, it may take a shorter time, under
+5 minutes (in some cases, a matter of seconds).  For extremely
+difficult timetables, it may take a longer time, a matter of hours.")
+    (license license:agpl3+)))
+
