@@ -8453,14 +8453,14 @@ interface over different adapters.")
 (define-public ruby-nio4r
   (package
    (name "ruby-nio4r")
-   (version "2.3.1")
+   (version "2.4.0")
    (source
     (origin
      (method url-fetch)
      (uri (rubygems-uri "nio4r" version))
      (sha256
       (base32
-       "1a41ca1kpdmrypjp9xbgvckpy8g26zxphkja9vk7j5wl4n8yvlyr"))))
+       "0v2cpqmw6dmysa91ffzl736kgjjzmnf4xlgz6g16fk4yqhn71340"))))
    (build-system ruby-build-system)
    (arguments
     '(#:phases
