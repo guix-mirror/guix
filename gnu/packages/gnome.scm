@@ -8283,3 +8283,35 @@ advanced image management tool")
     (description "The aim of the handy library is to help with developing user
 intefaces for mobile devices using GTK+.")
     (license license:lgpl2.1+)))
+
+(define-public libgit2-glib
+  (package
+    (name "libgit2-glib")
+    (version "0.28.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0a0g7aw66rfgnqr4z7fgbk5zzcjq66m4rp8v4val3a212941h0g7"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ;; For glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("libssh2" ,libssh2)
+       ("pkg-config" ,pkg-config)
+       ("python-pygobject" ,python-pygobject)
+       ("python-wrapper" ,python-wrapper)
+       ("vala" ,vala)))
+    (inputs
+     `(("glib" ,glib)
+       ("libgit2" ,libgit2)))
+    (synopsis "GLib wrapper around the libgit2 Git access library")
+    (description "libgit2-glib is a GLib wrapper library around the libgit2 Git
+access library.  It only implements the core plumbing functions, not really the
+higher level porcelain stuff.")
+    (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
+    (license license:gpl2+)))
