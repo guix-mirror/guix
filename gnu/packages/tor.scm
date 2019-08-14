@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -39,6 +39,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
@@ -157,7 +158,7 @@ networks.")
 (define-public onionshare
   (package
     (name "onionshare")
-    (version "1.3.2")
+    (version "2.1")
     (source
       (origin
         (method git-fetch)
@@ -166,7 +167,7 @@ networks.")
               (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "19zrz9kh7k4pdk4lh3cm0kv02ngdqkrggwma1xdskrrmp2rjkgz7"))))
+         (base32 "1lx21p12888qnbhsyin4lrnn4xizb39ldk77r71y53hn8mfxi54z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -184,20 +185,21 @@ networks.")
                  (("/usr") out))
                #t)))
          (delete 'check)
-         (add-before 'strip 'tests
+         (add-before 'strip 'check
            ;; After all the patching we run the tests after installing.
-           ;; This is also a known issue:
-           ;; https://github.com/micahflee/onionshare/issues/284
            (lambda _
-             (invoke "pytest" "test")
+             (setenv "HOME" "/tmp")     ; Some tests need a writable homedir
+             (invoke "pytest" "tests/")
              #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (inputs
-     `(("python-flask" ,python-flask)
+     `(("python-pycrypto" ,python-pycrypto)
+       ("python-flask" ,python-flask)
        ("python-nautilus" ,python-nautilus)
        ("python-sip" ,python-sip)
        ("python-stem" ,python-stem)
+       ("python-pysocks" ,python-pysocks)
        ("python-pyqt" ,python-pyqt)))
     (home-page "https://onionshare.org/")
     (synopsis "Securely and anonymously share files")
@@ -209,8 +211,7 @@ using a third party filesharing service.  You host the file on your own computer
 and use a Tor hidden service to make it temporarily accessible over the
 internet.  The other user just needs to use Tor Browser to download the file
 from you.")
-    (license (list license:gpl3+
-                   license:bsd-3))))    ; onionshare/socks.py
+    (license license:gpl3+)))
 
 (define-public nyx
   (package
