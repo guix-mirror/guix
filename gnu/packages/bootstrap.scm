@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
@@ -494,7 +494,7 @@ $out/bin/guile --version~%"
      (origin
        (method url-fetch)
        (uri (map (cute string-append <>
-                       "/i686-linux/20181020/"
+                       "/i686-linux/20190815/"
                        "linux-libre-headers-stripped-4.14.67-i686-linux.tar.xz")
                  %bootstrap-base-urls))
        (sha256
@@ -739,12 +739,12 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
             (method url-fetch)
             (uri (map
                   (cute string-append <>
-                        "/i686-linux/20181020/"
-                        "mescc-tools-static-0.5.2-0.bb062b0-i686-linux.tar.xz")
+                        "/i686-linux/20190815/"
+                        "mescc-tools-static-stripped-0.5.2-i686-linux.tar.xz")
                   %bootstrap-base-urls))
             (sha256
              (base32
-              "11lniw0vg61kmyhvnwkmcnkci9ym6hbmiksiqggd0hkipbq7hvlz")))))))
+              "0c3kklgghzh4q2dbpl6asb74cimp7hp6jscdwqwmzxbapgcl6582")))))))
     (synopsis "Bootstrap binaries of MesCC Tools")
     (description synopsis)
     (home-page #f)
@@ -788,12 +788,12 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
             (method url-fetch)
             (uri (map
                   (cute string-append <>
-                        "/i686-linux/20181020/"
+                        "/i686-linux/20190815/"
                         "mes-minimal-stripped-0.19-i686-linux.tar.xz")
                   %bootstrap-base-urls))
             (sha256
              (base32
-              "0k7kkl68a6xaadv47ij0nr9jm5ca1ffj38n7f2lg80y72wdkwr9h")))))))
+              "1q4xjpx6nbn44kxnilpgl12bhpmwy2bblzwszc2ci7xkf400jcpv")))))))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (synopsis "Bootstrap binaries of Mes")
     (description synopsis)
