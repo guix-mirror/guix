@@ -77,10 +77,6 @@
        ("go-golang-org-x-time" ,go-golang-org-x-time)
        ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
        ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-       ("go-github-com-gogo-protobuf-gogoproto"
-        ,go-github-com-gogo-protobuf-gogoproto)
-       ("go-github-com-gogo-protobuf-protoc-gen-gogo"
-        ,go-github-com-gogo-protobuf-protoc-gen-gogo)
        ("go-github-com-prometheus-client-golang-prometheus"
         ,go-github-com-prometheus-client-golang-prometheus)
        ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)

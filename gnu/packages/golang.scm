@@ -1808,8 +1808,12 @@ and lookup requests.  Browse requests are not supported yet.")
                 "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/gogo/protobuf/proto"
-       #:unpack-path "github.com/gogo/protobuf"))
+     `(#:import-path "github.com/gogo/protobuf"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
     (synopsis "Protocol Buffers for Go with Gadgets")
     (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
@@ -1822,86 +1826,6 @@ generation features.  This code generation is used to achieve:
 @item other serialization formats
 @end itemize")
     (home-page "https://github.com/gogo/protobuf")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (package
-    (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-    (version "1.2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/gogo/protobuf")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-       #:unpack-path "github.com/gogo/protobuf"
-       #:tests? #f)) ; Requires the unpackaged 'protoc-min-version'
-    (synopsis "Protocol Buffers for Go with Gadgets")
-    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-    (home-page "https://github.com/gogo/protobuf")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-gogoproto
-  (package
-    (name "go-github-com-gogo-protobuf-gogoproto")
-    (version "1.2.1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/gogo/protobuf.git")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:unpack-path "github.com/gogo/protobuf"
-       #:import-path "github.com/gogo/protobuf/gogoproto"))
-    (home-page "https://github.com/gogo/protobuf")
-    (synopsis "Extensions to protocol buffers")
-    (description "This package provides extensions to the Gogo protocol buffers
-implementation.")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-proto
-  (package
-    (name "go-github-com-gogo-protobuf-proto")
-    (version "1.2.1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/gogo/protobuf.git")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:unpack-path "github.com/gogo/protobuf"
-       #:import-path "github.com/gogo/protobuf/proto"))
-    (home-page "https://github.com/gogo/protobuf")
-    (synopsis "Protocol buffers component")
-    (description "This is a component of the Gogo protocol buffers
-implementation.")
     (license license:bsd-3)))
 
 (define-public go-github-com-libp2p-go-flow-metrics
@@ -2094,7 +2018,7 @@ Architecture Processors\" by J. Guilford et al.")
       (native-inputs
        `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)))
       (home-page
        "https://github.com/libp2p/go-libp2p-crypto")
@@ -2267,7 +2191,7 @@ required by Go's standard Hash interface.")
        '(#:import-path "github.com/libp2p/go-libp2p-peer"))
       (native-inputs
        `(("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
@@ -2333,7 +2257,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
