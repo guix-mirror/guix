@@ -19,6 +19,7 @@
 (define-module (guix remote)
   #:use-module (guix ssh)
   #:use-module (guix gexp)
+  #:use-module (guix i18n)
   #:use-module (guix inferior)
   #:use-module (guix store)
   #:use-module (guix monads)
