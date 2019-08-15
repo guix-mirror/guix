@@ -5359,13 +5359,7 @@ command-line arguments or read from stdin.")
     (description "@code{ia} is a command-line tool for using
 @url{archive.org} from the command-line.  It also emplements the
 internetarchive python module for programmatic access to archive.org.")
-    (properties
-     `((python2-variant . ,(delay python2-internetarchive))))
     (license license:agpl3+)))
-
-(define-public python2-internetarchive
-  (package-with-python2
-   (strip-python2-variant python-internetarchive)))
 
 (define-public python-clf
   (let ((commit-test-clf "d01d25923c599d3261910f79fb948825b4270d07")) ; 0.5.7
