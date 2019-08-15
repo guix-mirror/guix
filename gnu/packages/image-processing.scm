@@ -38,6 +38,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
@@ -60,6 +61,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tls)
@@ -702,3 +704,140 @@ combine the information contained in both.")
                            "InsightToolkit-" version ".tar.xz"))
        (sha256
         (base32 "1qw9mxbh083siljygahl4gdfv91xvfd8hfl7ghwii19f60xrvn2w"))))))
+
+(define-public itk-snap
+  (package
+    (name "itk-snap")
+    (version "3.8.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.code.sf.net/p/itk-snap/src")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "15i5ixpryfrbf3vrrb5rici8fb585f25k0v1ljds16bp1f1msr4q"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-DSNAP_VERSION_GIT_SHA1=release"
+             "-DSNAP_VERSION_GIT_BRANCH=release"
+             "-DSNAP_VERSION_GIT_TIMESTAMP=0"
+             "-DSNAP_PACKAGE_QT_PLUGINS=OFF"
+             "-DCMAKE_POSITION_INDEPENDENT_CODE=ON"
+             "-DCMAKE_CXX_FLAGS=-std=gnu++11 -fpermissive")
+       #:phases
+       (modify-phases %standard-phases
+         ;; During the installation phase all libraries provided by all
+         ;; dependencies will be copied to the lib directory.  That's insane,
+         ;; so we disable this.
+         (add-after 'unpack 'do-not-copy-dependencies
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("install_qt5_executable\
+\\(\\$\\{SNAP_MAIN_INSTALL_DIR\\}/\\$\\{SNAP_EXE\\}\\)")
+                ""))
+             #t))
+         (add-after 'unpack 'disable-gui-tests
+           (lambda _
+             ;; The GUI tests just time out.
+             (substitute* "CMakeLists.txt"
+               (("  (Workspace|DiffSpace|ProbeIntensity|RegionCompetition\
+|RandomForest|RandomForestBailOut)")
+                ""))
+             #t))
+         (add-after 'unpack 'make-reproducible
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("TODAY\\(SNAP_VERSION_COMPILE_DATE\\)")
+                "SET(SNAP_VERSION_COMPILE_DATE \"(removed for reproducibility)\")"))
+             #t))
+         (add-after 'unpack 'prepare-submodules
+           (lambda* (#:key inputs #:allow-other-keys)
+             (rmdir "Submodules/c3d")
+             (copy-recursively (assoc-ref inputs "c3d-src")
+                               "Submodules/c3d")
+             (substitute* '("Submodules/c3d/adapters/BiasFieldCorrectionN4.cxx"
+                            "Submodules/c3d/adapters/ApplyMetric.cxx")
+               (("vcl_") "std::"))
+             (rmdir "Submodules/greedy")
+             (symlink (assoc-ref inputs "greedy-src")
+                      "Submodules/greedy")
+             #t))
+         (add-after 'unpack 'fix-includes
+           (lambda _
+             (substitute* "GUI/Model/RegistrationModel.cxx"
+               (("<vnl_symmetric_eigensystem.h>")
+                "<vnl/algo/vnl_symmetric_eigensystem.h>"))
+             #t))
+         (add-before 'check 'prepare-tests
+           (lambda _
+             ;; Needed by at least one test.
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/itksnap")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtdeclarative"))))
+               #t))))))
+    (inputs
+     `(("curl" ,curl)
+       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
+       ("glu" ,glu)
+       ("hdf5" ,hdf5)
+       ("mesa" ,mesa-opencl)
+       ;; This package does not build with either insight-toolkit 5.0.0 and
+       ;; not with 4.13.  It really needs to be 4.12.
+       ("itk" ,insight-toolkit-4.12)
+       ("vtk" ,vtk-6)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qttools" ,qttools)
+       ("vxl" ,vxl-1)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("pkg-config" ,pkg-config)
+       ("c3d-src"
+        ,(let* ((commit "f521358db26e00002c911cc47bf463b043942ad3")
+                (revision "1")
+                (version (git-version "0" revision commit)))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/pyushkevich/c3d.git")
+                   (commit commit)))
+             (file-name (git-file-name "c3d" version))
+             (sha256
+              (base32
+               "0kyv3rxrxwr8c3sa9zv01lsnhk95b27gx1s870k3yi8qp52h7bx3")))))
+       ;; We are using an arbitrary commit from 2017 because the latest
+       ;; version breaks the build...
+       ("greedy-src"
+        ,(let* ((commit "97e340f7e8e66597599144947775e6039e79a0d3")
+                (revision "1")
+                (version (git-version "0" revision commit)))
+           (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/pyushkevich/greedy.git")
+                   (commit commit)))
+             (file-name (git-file-name "greedy" version))
+             (sha256
+              (base32
+               "0k5bc9za4jrc8z9dj08z1rkcp5xf0gnd1d2jmi1w9ny4vxh2q2ab")))))))
+    (home-page "https://sourceforge.net/p/itk-snap/")
+    (synopsis "Medical image segmentation")
+    (description "ITK-SNAP is a tool for segmenting anatomical structures in
+medical images.  It provides an automatic active contour segmentation
+pipeline, along with supporting a manual segmentation toolbox.  ITK-SNAP has a
+full-featured UI aimed at clinical researchers.")
+    ;; This includes the submodules greedy and c3d.
+    (license license:gpl3+)))
