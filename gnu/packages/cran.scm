@@ -14999,3 +14999,77 @@ plots.  Patchwork is a package that expands the API to allow for arbitrarily
 complex composition of plots by providing mathmatical operators for combining
 multiple plots.")
       (license license:expat))))
+
+(define-public r-liger
+  (package
+    (name "r-liger")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MacoskoLab/liger.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16dzwwcpw6n78pxlc5w3kraigki35ix7zhd2cbx5f3y60bbkhlmx"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file "inst/java/ModularityOptimizer.jar")
+           #t))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-java-part
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "unzip" (assoc-ref inputs "optimizer-src"))
+             (for-each (lambda (file) (invoke "javac" file))
+                       (find-files "." "\\.java$"))
+             (apply invoke "jar" "cf" "inst/java/ModularityOptimizer.jar"
+                    (find-files "." "\\.class$"))
+             #t)))))
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-dosnow" ,r-dosnow)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-hmisc" ,r-hmisc)
+       ("r-ica" ,r-ica)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-mclust" ,r-mclust)
+       ("r-patchwork" ,r-patchwork)
+       ("r-plyr" ,r-plyr)
+       ("r-rann-l1" ,r-rann-l1)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-riverplot" ,r-riverplot)
+       ("r-rtsne" ,r-rtsne)
+       ("r-snow" ,r-snow)))
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")
+       ;; See https://github.com/MacoskoLab/liger/issues/96
+       ;; The optimizer is released under the Expat license.
+       ("optimizer-src"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.ludowaltman.nl/slm/modularity_optimizer_source.zip")
+           (sha256
+            (base32
+             "01hmm6sapcmldvayknqx2w4cav3qv71mwwkdkwj4qgq6dss09g18"))))
+       ("unzip" ,unzip)
+       ("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://github.com/MacoskoLab/liger")
+    (synopsis "Integrate and analyze multiple single-cell datasets")
+    (description
+     "LIGER is a package for integrating and analyzing multiple single-cell
+datasets, developed and maintained by the Macosko lab.  It relies on
+integrative non-negative matrix factorization to identify shared and
+dataset-specific factors.")
+    (license license:gpl3)))
