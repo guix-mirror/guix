@@ -14968,3 +14968,34 @@ library.  There is support for approximate as well as exact searches, fixed
 radius searches and @code{bd} as well as @code{kd} trees.  The distance is
 computed using the L1 (Manhattan, taxicab) metric.")
     (license license:gpl3+)))
+
+(define-public r-patchwork
+  ;; There has been no public release yet.
+  (let ((commit "fd7958bae3e7a1e30237c751952e412a0a1d1242")
+        (revision "1"))
+    (package
+      (name "r-patchwork")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thomasp85/patchwork.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00fq520xwy1ysg4k8x48x9b0yy9wyi8y8zj6dvxjg4bwx0yyp6s4"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-ggplot2" ,r-ggplot2)
+         ("r-gtable" ,r-gtable)))
+      (home-page "https://github.com/thomasp85/patchwork")
+      (synopsis "Compose ggplot2 plots")
+      (description
+       "The @code{ggplot2} package provides a strong API for sequentially
+building up a plot, but does not concern itself with composition of multiple
+plots.  Patchwork is a package that expands the API to allow for arbitrarily
+complex composition of plots by providing mathmatical operators for combining
+multiple plots.")
+      (license license:expat))))
