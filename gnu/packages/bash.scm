@@ -115,7 +115,8 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                (base32
                 "0kgvfwqdcd90waczf4gx39xnrxzijhjrzyzv7s8v4w31qqm0za5l"))
               (patch-flags '("-p0"))
-              (patches %patch-series-5.0)))
+              (patches (cons (search-patch "bash-linux-pgrp-pipe.patch")
+                             %patch-series-5.0))))
      (version (string-append version "." (number->string (length %patch-series-5.0))))
      (build-system gnu-build-system)
 

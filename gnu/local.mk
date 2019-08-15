@@ -703,6 +703,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/azr3.patch				\
   %D%/packages/patches/bash-4.4-linux-pgrp-pipe.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
+  %D%/packages/patches/bash-linux-pgrp-pipe.patch		\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/beets-python-3.7-fix.patch		\
