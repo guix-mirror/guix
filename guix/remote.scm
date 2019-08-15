@@ -27,6 +27,8 @@
   #:use-module (guix utils)
   #:use-module (ssh popen)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (remote-eval))
 
@@ -41,29 +43,41 @@
 ;;;
 ;;; Code:
 
-(define (remote-pipe-for-gexp lowered session)
-  "Return a remote pipe for the given SESSION to evaluate LOWERED."
+(define* (remote-pipe-for-gexp lowered session #:optional become-command)
+  "Return a remote pipe for the given SESSION to evaluate LOWERED.  If
+BECOME-COMMAND is given, use that to invoke the remote Guile REPL."
   (define shell-quote
     (compose object->string object->string))
 
-  (apply open-remote-pipe* session OPEN_READ
-         (string-append (derivation-input-output-path
-                         (lowered-gexp-guile lowered))
-                        "/bin/guile")
-         "--no-auto-compile"
-         (append (append-map (lambda (directory)
-                               `("-L" ,directory))
-                             (lowered-gexp-load-path lowered))
-                 (append-map (lambda (directory)
-                               `("-C" ,directory))
-                             (lowered-gexp-load-path lowered))
-                 `("-c"
-                   ,(shell-quote (lowered-gexp-sexp lowered))))))
+  (define repl-command
+    (append (or become-command '())
+            (list
+             (string-append (derivation-input-output-path
+                             (lowered-gexp-guile lowered))
+                            "/bin/guile")
+             "--no-auto-compile")
+            (append-map (lambda (directory)
+                          `("-L" ,directory))
+                        (lowered-gexp-load-path lowered))
+            (append-map (lambda (directory)
+                          `("-C" ,directory))
+                        (lowered-gexp-load-path lowered))
+            `("-c"
+              ,(shell-quote (lowered-gexp-sexp lowered)))))
 
-(define (%remote-eval lowered session)
+  (let ((pipe (apply open-remote-pipe* session OPEN_READ repl-command)))
+    (when (eof-object? (peek-char pipe))
+      (raise (condition
+              (&message
+               (message (format #f (G_ "failed to run '~{~a~^ ~}'")
+                                repl-command))))))
+    pipe))
+
+(define* (%remote-eval lowered session #:optional become-command)
   "Evaluate LOWERED, a lowered gexp, in SESSION.  This assumes that all the
-prerequisites of EXP are already available on the host at SESSION."
-  (let* ((pipe   (remote-pipe-for-gexp lowered session))
+prerequisites of EXP are already available on the host at SESSION.  If
+BECOME-COMMAND is given, use that to invoke the remote Guile REPL."
+  (let* ((pipe   (remote-pipe-for-gexp lowered session become-command))
          (result (read-repl-response pipe)))
     (close-port pipe)
     result))
@@ -92,7 +106,8 @@ result to the current output port using the (guix repl) protocol."
                       (build-locally? #t)
                       (system (%current-system))
                       (module-path %load-path)
-                      (socket-name "/var/guix/daemon-socket/socket"))
+                      (socket-name "/var/guix/daemon-socket/socket")
+                      (become-command #f))
   "Evaluate EXP, a gexp, on the host at SESSION, an SSH session.  Ensure that
 all the elements EXP refers to are built and deployed to SESSION beforehand.
 When BUILD-LOCALLY? is true, said dependencies are built locally and sent to
@@ -119,7 +134,7 @@ remote store."
             (built-derivations inputs)
             ((store-lift send-files) to-send remote #:recursive? #t)
             (return (close-connection remote))
-            (return (%remote-eval lowered session))))
+            (return (%remote-eval lowered session become-command))))
         (let ((to-send (append (map (compose derivation-file-name
                                              derivation-input-derivation)
                                     inputs)
@@ -128,4 +143,4 @@ remote store."
             ((store-lift send-files) to-send remote #:recursive? #t)
             (return (build-derivations remote inputs))
             (return (close-connection remote))
-            (return (%remote-eval lowered session)))))))
+            (return (%remote-eval lowered session become-command)))))))

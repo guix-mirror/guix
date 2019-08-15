@@ -25514,6 +25514,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
+                       (user "alice")
                        (identity "./id_rsa")
                        (port 2222)))))
 @end example
@@ -25545,6 +25546,15 @@ accepts store items it receives from the coordinator:
 @example
 # guix archive --authorize < coordinator-public-key.txt
 @end example
+
+@code{user}, in this example, specifies the name of the user account to log in
+as to perform the deployment.  Its default value is @code{root}, but root
+login over SSH may be forbidden in some cases.  To work around this,
+@command{guix deploy} can log in as an unprivileged user and employ
+@code{sudo} to escalate privileges.  This will only work if @code{sudo} is
+currently installed on the remote and can be invoked non-interactively as
+@code{user}.  That is: the line in @code{sudoers} granting @code{user} the
+ability to use @code{sudo} must contain the @code{NOPASSWD} tag.
 
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix

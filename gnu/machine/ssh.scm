@@ -101,6 +101,14 @@ one from the configuration's parameters if one was not provided."
 ;;; Remote evaluation.
 ;;;
 
+(define (machine-become-command machine)
+  "Return as a list of strings the program and arguments necessary to run a
+shell command with escalated privileges for MACHINE's configuration."
+  (if (string= "root" (machine-ssh-configuration-user
+                       (machine-configuration machine)))
+      '()
+      '("/run/setuid-programs/sudo" "-n" "--")))
+
 (define (managed-host-remote-eval machine exp)
   "Internal implementation of 'machine-remote-eval' for MACHINE instances with
 an environment type of 'managed-host."

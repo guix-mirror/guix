@@ -98,16 +98,27 @@ specifies; otherwise use them.  Throw an error on failure."
                 (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
 
-(define (remote-inferior session)
-  "Return a remote inferior for the given SESSION."
-  (let ((pipe (open-remote-pipe* session OPEN_BOTH
-                                 "guix" "repl" "-t" "machine")))
+(define* (remote-inferior session #:optional become-command)
+  "Return a remote inferior for the given SESSION.  If BECOME-COMMAND is
+given, use that to invoke the remote Guile REPL."
+  (let* ((repl-command (append (or become-command '())
+                               '("guix" "repl" "-t" "machine")))
+         (pipe (apply open-remote-pipe* session OPEN_BOTH repl-command)))
+    ;; XXX: 'channel-get-exit-status' would be better here, but hangs if the
+    ;; process does succeed. This doesn't reflect the documentation, so it's
+    ;; possible that it's a bug in guile-ssh.
+    (when (eof-object? (peek-char pipe))
+      (raise (condition
+              (&message
+               (message (format #f (G_ "failed to run '~{~a~^ ~}'")
+                                repl-command))))))
     (port->inferior pipe)))
 
-(define (inferior-remote-eval exp session)
+(define* (inferior-remote-eval exp session #:optional become-command)
   "Evaluate EXP in a new inferior running in SESSION, and close the inferior
-right away."
-  (let ((inferior (remote-inferior session)))
+right away.  If BECOME-COMMAND is given, use that to invoke the remote Guile
+REPL."
+  (let ((inferior (remote-inferior session become-command)))
     (dynamic-wind
       (const #t)
       (lambda ()
