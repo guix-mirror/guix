@@ -798,6 +798,41 @@ C, yielding parse times that can be a thirtieth of the html5lib parse times.")
 (define-public python2-html5-parser
   (package-with-python2 python-html5-parser))
 
+(define-public python-minio
+  (package
+    (name "python-minio")
+    (version "6.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "minio" version))
+              (sha256
+               (base32
+                "1cxpa0m7mdvpdbc1g6wlihq6ja4g4paxkl6f3q84bbnx07zpbllp"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-failing-tests
+                    (lambda _
+                      ;; This test requires network access.
+                      (delete-file "tests/unit/credentials_test.py")
+                      #t)))))
+    (native-inputs
+     `(("python-faker" ,python-faker)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-certifi" ,python-certifi)
+       ("python-configparser" ,python-configparser)
+       ("python-dateutil" ,python-dateutil)
+       ("python-pytz" ,python-pytz)
+       ("python-urllib3" ,python-urllib3)))
+    (home-page "https://github.com/minio/minio-py")
+    (synopsis "Programmatically access Amazon S3 from Python")
+    (description
+     "This package provides a Python library for interacting with any
+Amazon S3 compatible object storage server.")
+    (license license:asl2.0)))
+
 (define-public python-pycurl
   (package
     (name "python-pycurl")
