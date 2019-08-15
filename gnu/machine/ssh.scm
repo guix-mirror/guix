@@ -28,13 +28,16 @@
   #:use-module (guix i18n)
   #:use-module (guix modules)
   #:use-module (guix monads)
+  #:use-module (guix pki)
   #:use-module (guix records)
   #:use-module (guix remote)
   #:use-module (guix scripts system reconfigure)
   #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 textual-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -48,6 +51,7 @@
 
             machine-ssh-configuration-host-name
             machine-ssh-configuration-build-locally?
+            machine-ssh-configuration-authorize?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-session))
@@ -70,17 +74,19 @@
   make-machine-ssh-configuration
   machine-ssh-configuration?
   this-machine-ssh-configuration
-  (host-name      machine-ssh-configuration-host-name) ; string
-  (system         machine-ssh-configuration-system)    ; string
-  (build-locally? machine-ssh-configuration-build-locally?
+  (host-name      machine-ssh-configuration-host-name)     ; string
+  (system         machine-ssh-configuration-system)        ; string
+  (build-locally? machine-ssh-configuration-build-locally? ; boolean
                   (default #t))
-  (port           machine-ssh-configuration-port       ; integer
+  (authorize?     machine-ssh-configuration-authorize?     ; boolean
+                  (default #t))
+  (port           machine-ssh-configuration-port           ; integer
                   (default 22))
-  (user           machine-ssh-configuration-user       ; string
+  (user           machine-ssh-configuration-user           ; string
                   (default "root"))
-  (identity       machine-ssh-configuration-identity   ; path to a private key
+  (identity       machine-ssh-configuration-identity       ; path to a private key
                   (default #f))
-  (session        machine-ssh-configuration-session    ; session
+  (session        machine-ssh-configuration-session        ; session
                   (default #f)))
 
 (define (machine-ssh-session machine)
@@ -359,6 +365,19 @@ the 'should-roll-back' field set to SHOULD-ROLL-BACK?"
   "Internal implementation of 'deploy-machine' for MACHINE instances with an
 environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
+  (when (machine-ssh-configuration-authorize?
+         (machine-configuration machine))
+    (unless (file-exists? %public-key-file)
+      (raise (condition
+              (&message
+               (message (format #f (G_ "no signing key '~a'. \
+have you run 'guix archive --generate-key?'")
+                                %public-key-file))))))
+    (remote-authorize-signing-key (call-with-input-file %public-key-file
+                                    (lambda (port)
+                                      (string->canonical-sexp
+                                       (get-string-all port))))
+                                  (machine-ssh-session machine)))
   (mlet %store-monad ((_ (check-deployment-sanity machine))
                       (boot-parameters (machine-boot-parameters machine)))
     (let* ((os (machine-operating-system machine))

@@ -21,6 +21,7 @@
   #:use-module (guix inferior)
   #:use-module (guix i18n)
   #:use-module ((guix utils) #:select (&fix-hint))
+  #:use-module (gcrypt pk-crypto)
   #:use-module (ssh session)
   #:use-module (ssh auth)
   #:use-module (ssh key)
@@ -40,6 +41,7 @@
             remote-daemon-channel
             connect-to-remote-daemon
             remote-system
+            remote-authorize-signing-key
             send-files
             retrieve-files
             retrieve-files*
@@ -299,6 +301,27 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
 the machine on the other end of SESSION."
   (inferior-remote-eval '(begin (use-modules (guix utils)) (%current-system))
                         session))
+
+(define (remote-authorize-signing-key key session)
+  "Send KEY, a canonical sexp containing a public key, over SESSION and add it
+to the system ACL file if it has not yet been authorized."
+  (inferior-remote-eval
+   `(begin
+      (use-modules (guix build utils)
+                   (guix pki)
+                   (guix utils)
+                   (gcrypt pk-crypto)
+                   (srfi srfi-26))
+
+      (define acl (current-acl))
+      (define key (string->canonical-sexp ,(canonical-sexp->string key)))
+
+      (unless (authorized-key? key)
+        (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
+          (mkdir-p (dirname %acl-file))
+          (with-atomic-file-output %acl-file
+            (cut write-acl acl <>)))))
+   session))
 
 (define* (send-files local files remote
                      #:key
