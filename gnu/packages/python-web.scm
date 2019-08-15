@@ -4,7 +4,7 @@
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2016, 2017 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2013, 2014, 2015, 2016, 2020 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2016, 2017, 2020 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2019, 2020 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019, 2020 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016, 2017, 2020 Julien Lepiller <julien@lepiller.eu>
@@ -1022,6 +1022,49 @@ another XPath engine to find the matching elements in an XML or HTML document.")
 
 (define-public python2-cssselect
   (package-with-python2 python-cssselect))
+
+(define-public python-databricks-cli
+  (package
+    (name "python-databricks-cli")
+    (version "0.14.0")
+    (home-page "https://github.com/databricks/databricks-cli")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0imwpfda2pxix1rx0nlqs48v58icfw065nsv53rpg0dw4bw9x2wi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "tests" "-vv"
+                              ;; XXX: This fails with newer Pytest
+                              ;; (upstream uses Pytest 3..).
+                              "-k" "not test_get_request_with_list"))))))
+    (native-inputs
+     `(;; For tests.
+       ("python-decorator" ,python-decorator)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)
+       ("python-requests-mock" ,python-requests-mock)))
+    (propagated-inputs
+     `(("python-click" ,python-click)
+       ("python-configparser" ,python-configparser)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-tabulate" ,python-tabulate)))
+    (synopsis "Command line interface for Databricks")
+    (description
+     "The Databricks Command Line Interface is a tool which provides an easy
+to use interface to the Databricks platform.  The CLI is built on top of the
+Databricks REST APIs.")
+    (license license:asl2.0)))
 
 (define-public python-openid-cla
   (package
