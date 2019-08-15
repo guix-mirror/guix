@@ -2430,14 +2430,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "1dwl0264r6ri2jyrjr68am04x538ab26xwy4crqjnnhm4alwm3c2"))))
+         "1k5hag0vahd5vrf9abx8fdj2whrwaw2iq2yp736mmxnbsn5xkdyd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2448,8 +2448,7 @@ You might also want to install the following optional dependencies:
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
     (home-page "https://bitbucket.org/zzzeek/alembic")
-    (synopsis
-     "Database migration tool for SQLAlchemy")
+    (synopsis "Database migration tool for SQLAlchemy")
     (description
      "Alembic is a lightweight database migration tool for usage with the
 SQLAlchemy Database Toolkit for Python.")
