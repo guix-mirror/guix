@@ -14946,6 +14946,30 @@ library uses.  It is also possible to control the number of threads in
 OpenMP.")
     (license license:agpl3+)))
 
+(define-public r-lda
+  (package
+    (name "r-lda")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lda" version))
+       (sha256
+        (base32
+         "03r4h5kgr8mfy44p66mfj5bp4k00g8zh4a1mhn46jw14pkhs21jn"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/lda/")
+    (synopsis "Collapsed Gibbs sampling methods for topic models")
+    (description
+     "This package implements @dfn{latent Dirichlet allocation} (LDA) and
+related models.  This includes (but is not limited to) sLDA, corrLDA, and the
+mixed-membership stochastic blockmodel.  Inference for all of these models is
+implemented via a fast collapsed Gibbs sampler written in C.  Utility
+functions for reading/writing data typically used in topic models, as well as
+tools for examining posterior distributions are also included.")
+    ;; Any version of the LGPL
+    (license license:lgpl3+)))
+
 (define-public r-rann-l1
   (package
     (name "r-rann-l1")
