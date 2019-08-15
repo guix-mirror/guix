@@ -2830,7 +2830,7 @@ players.")
     (version "2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://http.debian.net/debian/pool/main/e/"
+              (uri (string-append "mirror://debian/pool/main/e/"
                                   "einstein/einstein_2.0.dfsg.2.orig.tar.gz"))
               (sha256
                (base32
