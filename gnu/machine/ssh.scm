@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu machine ssh)
+  #:use-module (gnu bootloader)
   #:use-module (gnu machine)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu system)
@@ -34,6 +35,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -341,6 +343,18 @@ of MACHINE's system profile, ordered from most recent to oldest."
                            (boot-parameters-kernel-arguments params))))))))
           generations))))
 
+(define-syntax-rule (with-roll-back should-roll-back? mbody ...)
+  "Catch exceptions that arise when binding MBODY, a monadic expression in
+%STORE-MONAD, and collect their arguments in a &deploy-error condition, with
+the 'should-roll-back' field set to SHOULD-ROLL-BACK?"
+  (catch #t
+    (lambda ()
+      mbody ...)
+    (lambda args
+      (raise (condition (&deploy-error
+                         (should-roll-back should-roll-back?)
+                         (captured-args args)))))))
+
 (define (deploy-managed-host machine)
   "Internal implementation of 'deploy-machine' for MACHINE instances with an
 environment type of 'managed-host."
@@ -353,9 +367,60 @@ environment type of 'managed-host."
            (bootloader-configuration (operating-system-bootloader os))
            (bootcfg (operating-system-bootcfg os menu-entries)))
       (mbegin %store-monad
-        (switch-to-system eval os)
-        (upgrade-shepherd-services eval os)
-        (install-bootloader eval bootloader-configuration bootcfg)))))
+        (with-roll-back #f
+          (switch-to-system eval os))
+        (with-roll-back #t
+          (mbegin %store-monad
+            (upgrade-shepherd-services eval os)
+            (install-bootloader eval bootloader-configuration bootcfg)))))))
+
+
+;;;
+;;; Roll-back.
+;;;
+
+(define (roll-back-managed-host machine)
+  "Internal implementation of 'roll-back-machine' for MACHINE instances with
+an environment type of 'managed-host."
+  (define remote-exp
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules (source-module-closure '((guix config)
+                                                      (guix profiles)))
+        #~(begin
+            (use-modules (guix config)
+                         (guix profiles))
+
+            (define %system-profile
+              (string-append %state-directory "/profiles/system"))
+
+            (define target-generation
+              (relative-generation %system-profile -1))
+
+            (if target-generation
+                (switch-to-generation %system-profile target-generation)
+                'error)))))
+
+  (define roll-back-failure
+    (condition (&message (message (G_ "could not roll-back machine")))))
+
+  (mlet* %store-monad ((boot-parameters (machine-boot-parameters machine))
+                       (_ -> (if (< (length boot-parameters) 2)
+                                 (raise roll-back-failure)))
+                       (entries -> (map boot-parameters->menu-entry
+                                        (list (second boot-parameters))))
+                       (old-entries -> (map boot-parameters->menu-entry
+                                            (drop boot-parameters 2)))
+                       (bootloader -> (operating-system-bootloader
+                                       (machine-operating-system machine)))
+                       (bootcfg (lower-object
+                                 ((bootloader-configuration-file-generator
+                                   (bootloader-configuration-bootloader
+                                    bootloader))
+                                  bootloader entries
+                                  #:old-entries old-entries)))
+                       (remote-result (machine-remote-eval machine remote-exp)))
+    (when (eqv? 'error remote-result)
+      (raise roll-back-failure))))
 
 
 ;;;
@@ -366,6 +431,7 @@ environment type of 'managed-host."
   (environment-type
    (machine-remote-eval managed-host-remote-eval)
    (deploy-machine      deploy-managed-host)
+   (roll-back-machine   roll-back-managed-host)
    (name                'managed-host-environment-type)
    (description         "Provisioning for machines that are accessible over SSH
 and have a known host-name. This entails little more than maintaining an SSH

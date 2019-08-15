@@ -24,6 +24,7 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module ((guix utils) #:select (source-properties->location))
+  #:use-module (srfi srfi-35)
   #:export (environment-type
             environment-type?
             environment-type-name
@@ -40,7 +41,13 @@
             machine-display-name
 
             deploy-machine
-            machine-remote-eval))
+            roll-back-machine
+            machine-remote-eval
+
+            &deploy-error
+            deploy-error?
+            deploy-error-should-roll-back
+            deploy-error-captured-args))
 
 ;;; Commentary:
 ;;;
@@ -66,6 +73,7 @@
   ;; of the form '(machine-remote-eval machine exp)'.
   (machine-remote-eval environment-type-machine-remote-eval) ; procedure
   (deploy-machine      environment-type-deploy-machine)      ; procedure
+  (roll-back-machine   environment-type-roll-back-machine)   ; procedure
 
   ;; Metadata.
   (name        environment-type-name)       ; symbol
@@ -105,3 +113,20 @@ are built and deployed to MACHINE beforehand."
 MACHINE, activating it on MACHINE and switching MACHINE to the new generation."
   (let ((environment (machine-environment machine)))
     ((environment-type-deploy-machine environment) machine)))
+
+(define (roll-back-machine machine)
+  "Monadic procedure rolling back to the previous system generation on
+MACHINE. Return the number of the generation that was current before switching
+and the new generation number."
+  (let ((environment (machine-environment machine)))
+    ((environment-type-roll-back-machine environment) machine)))
+
+
+;;;
+;;; Error types.
+;;;
+
+(define-condition-type &deploy-error &error
+  deploy-error?
+  (should-roll-back deploy-error-should-roll-back)
+  (captured-args deploy-error-captured-args))
