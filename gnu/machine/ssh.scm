@@ -126,7 +126,9 @@ an environment type of 'managed-host."
                  #:build-locally?
                  (machine-ssh-configuration-build-locally? config)
                  #:system
-                 (machine-ssh-configuration-system config))))
+                 (machine-ssh-configuration-system config)
+                 #:become-command
+                 (machine-become-command machine))))
 
 
 ;;;
@@ -377,7 +379,8 @@ have you run 'guix archive --generate-key?'")
                                     (lambda (port)
                                       (string->canonical-sexp
                                        (get-string-all port))))
-                                  (machine-ssh-session machine)))
+                                  (machine-ssh-session machine)
+                                  (machine-become-command machine)))
   (mlet %store-monad ((_ (check-deployment-sanity machine))
                       (boot-parameters (machine-boot-parameters machine)))
     (let* ((os (machine-operating-system machine))

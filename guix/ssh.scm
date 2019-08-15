@@ -302,7 +302,7 @@ the machine on the other end of SESSION."
   (inferior-remote-eval '(begin (use-modules (guix utils)) (%current-system))
                         session))
 
-(define (remote-authorize-signing-key key session)
+(define* (remote-authorize-signing-key key session #:optional become-command)
   "Send KEY, a canonical sexp containing a public key, over SESSION and add it
 to the system ACL file if it has not yet been authorized."
   (inferior-remote-eval
@@ -321,7 +321,8 @@ to the system ACL file if it has not yet been authorized."
           (mkdir-p (dirname %acl-file))
           (with-atomic-file-output %acl-file
             (cut write-acl acl <>)))))
-   session))
+   session
+   become-command))
 
 (define* (send-files local files remote
                      #:key
