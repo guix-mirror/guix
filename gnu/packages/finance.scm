@@ -445,7 +445,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.14.1.0")
+    (version "0.14.1.2")
     (source
      (origin
        (method git-fetch)
@@ -466,7 +466,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "1asa197fad81jfv12qgaa7y7pdr1r1pda96m9pvivkh4v30cx0nh"))))
+         "00zl883c7lcd9z7g4y3vv7rxmr7ppzrxdblnhk32r9l3qzyw55r6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -508,6 +508,11 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                (("return \\(")
                 "return ((std::string(getenv(\"HOME\"))) / "))
              #t))
+         (add-after 'change-log-path 'fix-file-permissions-for-tests
+           (lambda _
+             (for-each make-file-writable
+                       (find-files "tests/data/" "wallet_9svHk1.*"))
+             #t))
          ;; Only try tests that don't need access to network or system
          (replace 'check
            (lambda _
@@ -522,11 +527,6 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                        "DNSResolver.DNSSECSuccess"
                        "DNSResolver.DNSSECFailure"
                        "DNSResolver.GetTXTRecord"
-                       ;; TODO: Find why portability_wallet test fails
-                       ;; Maybe the Boost version used to create the test
-                       ;; wallet and the current Boost version are not
-                       ;; completely compatible?
-                       "Serialization.portability_wallet"
                        "is_hdd.linux_os_root")
                      ":")))
                (invoke "tests/unit_tests/unit_tests"
