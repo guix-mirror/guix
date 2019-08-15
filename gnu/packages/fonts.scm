@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
+;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,7 +64,7 @@
 (define-public font-ibm-plex
   (package
     (name "font-ibm-plex")
-    (version "1.0.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -71,7 +72,7 @@
                     "v" version "/OpenType.zip"))
               (sha256
                (base32
-                "0nzxw9z6waixslam248yr26ci3fbk83c7jf6m90hncnaj6zxx795"))))
+                "1lv65z3qnqgh2w36daf5wyz0ma9rg1qj9s9lzlnva8l7q3h8c9b8"))))
     (build-system font-build-system)
     (home-page "https://github.com/IBM/plex")
     (synopsis "IBM Plex typeface")
