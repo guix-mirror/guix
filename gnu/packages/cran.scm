@@ -14945,3 +14945,26 @@ path of values for the regularization parameter.")
 library uses.  It is also possible to control the number of threads in
 OpenMP.")
     (license license:agpl3+)))
+
+(define-public r-rann-l1
+  (package
+    (name "r-rann-l1")
+    (version "2.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RANN.L1" version))
+       (sha256
+        (base32
+         "1hanh3my84mdr5wy6b89fawqzfc184vff1y65wy4l5ld9qza1n44"))))
+    (properties `((upstream-name . "RANN.L1")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jefferis/RANN/tree/master-L1")
+    (synopsis "Fast nearest neighbour search using L1 metric")
+    (description
+     "This package provides tools to find the k nearest neighbours for every
+point in a given dataset in O(N log N) time using Arya and Mount's ANN
+library.  There is support for approximate as well as exact searches, fixed
+radius searches and @code{bd} as well as @code{kd} trees.  The distance is
+computed using the L1 (Manhattan, taxicab) metric.")
+    (license license:gpl3+)))
