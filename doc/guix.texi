@@ -25583,6 +25583,8 @@ with an @code{environment} of @code{managed-host-environment-type}.
 
 @table @asis
 @item @code{host-name}
+@item @code{build-locally?} (default: @code{#t})
+If false, system derivations will be built on the machine being deployed to.
 @item @code{system}
 The Nix system type describing the architecture of the machine being deployed
 to. This should look something like ``x86_64-linux''.
