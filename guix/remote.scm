@@ -106,7 +106,7 @@ result to the current output port using the (guix repl) protocol."
                       (build-locally? #t)
                       (system (%current-system))
                       (module-path %load-path)
-                      (socket-name "/var/guix/daemon-socket/socket")
+                      (socket-name (%daemon-socket-uri))
                       (become-command #f))
   "Evaluate EXP, a gexp, on the host at SESSION, an SSH session.  Ensure that
 all the elements EXP refers to are built and deployed to SESSION beforehand.
