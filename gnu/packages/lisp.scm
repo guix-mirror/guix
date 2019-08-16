@@ -5319,7 +5319,7 @@ port within a range.")
 (define-public txr
   (package
     (name "txr")
-    (version "216")
+    (version "223")
     (source
      (origin
        (method url-fetch)
@@ -5329,7 +5329,7 @@ port within a range.")
        (patches (search-patches "txr-shell.patch"))
        (sha256
         (base32
-         "07cxdpc9zsqd0c2668g00dqjpd6zc4mfdn74aarr6d2hpzdhh937"))))
+         "0109q8idqggba3kx58dpm5ccfpdrki68npkcxm18p5ga24611fcv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("cc=gcc")
@@ -5343,7 +5343,7 @@ port within a range.")
                       #t))
                   (replace 'check
                     (lambda _
-                      (zero? (system* "make" "tests")))))))
+                      (invoke "make" "tests"))))))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)))
