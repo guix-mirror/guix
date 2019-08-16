@@ -91,6 +91,7 @@
 ;;; Copyright © 2020 Ekaitz Zarraga <ekaitz@elenq.tech>
 ;;; Copyright © 2020 Diego N. Barbato <dnbarbato@posteo.de>
 ;;; Copyright © 2020 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 Kristian Trandem <kristian@devup.no>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -11027,6 +11028,40 @@ interface to the Amazon Web Services (AWS) API.")
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
+
+(define-public python-boto3
+  (package
+    (name "python-boto3")
+    (version "1.16.22")
+    (home-page "https://github.com/boto/boto3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0h20hgl4yfl58g75qhb6ibrdmzn47md3srgar7hask14cjmfhfy3"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-network-tests
+           ;; Deleting integration tests because they are trying to connect to AWS.
+	   (lambda _
+	     (delete-file-recursively "tests/integration")
+	     #t)))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-botocore" ,python-botocore)
+       ("python-jmespath" ,python-jmespath)
+       ("python-s3transfer" ,python-s3transfer)))
+    (synopsis "AWS SDK for Python")
+    (description
+     "Boto3 is a Python library for writing programs that interact with
+@acronym{AWS,Amazon Web Services}.")
+    (license license:asl2.0)))
 
 (define-public python-pyfiglet
   (package
