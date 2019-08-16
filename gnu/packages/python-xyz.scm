@@ -6990,14 +6990,14 @@ Supported netlink families and protocols include:
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.11.1")
+    (version "1.11.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "wrapt" version))
-        (sha256
-          (base32
-            "0cqmysny1pz01jw26q48q5zasvns6507rwhgm6wcw743f0r01sja"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wrapt" version))
+       (sha256
+        (base32
+         "1q81762dgsgrd12f8qc39zk8s5wll3m5xc32jdmlf6cls4gh4njn"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
@@ -7006,7 +7006,7 @@ Supported netlink families and protocols include:
     (home-page "https://github.com/GrahamDumpleton/wrapt")
     (synopsis "Module for decorators, wrappers and monkey patching")
     (description
-      "The aim of the wrapt module is to provide a transparent object proxy for
+     "The aim of the wrapt module is to provide a transparent object proxy for
   Python, which can be used as the basis for the construction of function
   wrappers and decorator functions.")
     (license license:bsd-2)))
