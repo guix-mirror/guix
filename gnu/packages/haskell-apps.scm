@@ -513,3 +513,38 @@ that cause a shell to behave strangely and counter-intuitively.
 advanced user's otherwise working script to fail under future circumstances.
 @end enumerate")
     (license license:gpl3+)))
+
+(define-public stylish-haskell
+  (package
+    (name "stylish-haskell")
+    (version "0.9.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "mirror://hackage/package/stylish-haskell/"
+         "stylish-haskell-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zs624xqp6j8vrl6pfv18dm8vz8hvz25grri65ximxhcizgwhnax"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-strict" ,ghc-strict)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+    (home-page "https://github.com/jaspervdj/stylish-haskell")
+    (synopsis "Haskell code prettifier")
+    (description
+     "A simple Haskell code prettifier.  The goal is not to format all of the
+code in a file, just clean up import statements and a few other tedious
+items.  This tool tries to help where necessary without getting in the way.")
+    (license license:bsd-3)))
