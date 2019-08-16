@@ -3923,6 +3923,30 @@ augment the changelog, but it can be used for other documents, too.")
 (define-public python2-rst.linker
   (package-with-python2 python-rst.linker))
 
+(define-public python-sshpubkeys
+  (package
+    (name "python-sshpubkeys")
+    (version "3.1.0")
+    (home-page "https://github.com/ojarva/python-sshpubkeys")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h4gwmcfn84kkqh83km1vfz8sc5kr2g4gzgzmr8gz704jmqiv7nq"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-ecdsa" ,python-ecdsa)))
+    (synopsis "OpenSSH public key parser")
+    (description
+     "This package provides a library for parsing and validating OpenSSH
+public key files.")
+    (license license:bsd-3)))
+
 (define-public python-feedgenerator
   (package
     (name "python-feedgenerator")
