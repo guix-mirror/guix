@@ -1240,9 +1240,10 @@ commands and their arguments.")
       CONFIG_READLINE=y\n" port)
                (close-port port))
              #t))
-         (add-after 'install 'install-man-pages
+         (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
+                    (doc  (string-append out "/share/doc/wpa-supplicant"))
                     (man  (string-append out "/share/man"))
                     (man5 (string-append man "/man5"))
                     (man8 (string-append man "/man8")))
@@ -1255,6 +1256,15 @@ commands and their arguments.")
                          (find-files "doc/docbook" "\\.5"))
                (for-each (copy-man-page man8)
                          (find-files "doc/docbook" "\\.8"))
+
+               ;; wpa_supplicant.conf(5) does not explain all configuration
+               ;; options but refers to the example config file, so install it
+               ;; along with READMEs.
+               (for-each (lambda (file)
+                           (install-file file doc))
+                         '("README" "README-DPP" "README-HS20"
+                           "README-P2P" "README-WPS"
+                           "wpa_supplicant.conf"))
                #t))))
 
       #:make-flags (list "CC=gcc"
@@ -1303,7 +1313,7 @@ command.")
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
                  (close-port port))
                #t))
-          (add-after 'install-man-pages 'install-dbus-conf
+          (add-after 'install-documentation 'install-dbus-conf
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (dir (string-append out "/etc/dbus-1/system.d")))
