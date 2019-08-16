@@ -132,14 +132,19 @@ package definition."
 ;; updated together.
 (define %bioconductor-version "3.9")
 
-(define %bioconductor-packages-list-url
+(define* (bioconductor-packages-list-url #:optional type)
   (string-append "https://bioconductor.org/packages/"
-                 %bioconductor-version "/bioc/src/contrib/PACKAGES"))
+                 %bioconductor-version
+                 (match type
+                   ('annotation "/data/annotation")
+                   ('experiment "/data/experiment")
+                   (_ "/bioc"))
+                 "/src/contrib/PACKAGES"))
 
-(define (bioconductor-packages-list)
+(define* (bioconductor-packages-list #:optional type)
   "Return the latest version of package NAME for the current bioconductor
 release."
-  (let ((url (string->uri %bioconductor-packages-list-url)))
+  (let ((url (string->uri (bioconductor-packages-list-url type))))
     (guard (c ((http-get-error? c)
                (format (current-error-port)
                        "error: failed to retrieve list of packages from ~s: ~a (~s)~%"
@@ -153,12 +158,12 @@ release."
              (description->alist (string-join chunk "\n")))
            (chunk-lines (read-lines (http-fetch/cached url)))))))
 
-(define (latest-bioconductor-package-version name)
+(define* (latest-bioconductor-package-version name #:optional type)
   "Return the version string corresponding to the latest release of the
 bioconductor package NAME, or #F if the package is unknown."
   (and=> (find (lambda (meta)
                  (string=? (assoc-ref meta "Package") name))
-               (bioconductor-packages-list))
+               (bioconductor-packages-list type))
          (cut assoc-ref <> "Version")))
 
 ;; Little helper to download URLs only once.
@@ -187,8 +192,12 @@ from ~s: ~a (~s)~%"
      ;; Currently, the bioconductor project does not offer a way to access a
      ;; package's DESCRIPTION file over HTTP, so we determine the version,
      ;; download the source tarball, and then extract the DESCRIPTION file.
-     (and-let* ((version (latest-bioconductor-package-version name))
-                (url     (car (bioconductor-uri name version)))
+     (and-let* ((type    (or
+                          (and (latest-bioconductor-package-version name) #t)
+                          (and (latest-bioconductor-package-version name 'annotation) 'annotation)
+                          (and (latest-bioconductor-package-version name 'experiment) 'experiment)))
+                (version (latest-bioconductor-package-version name type))
+                (url     (car (bioconductor-uri name version type)))
                 (tarball (download url)))
        (call-with-temporary-directory
         (lambda (dir)
@@ -198,8 +207,11 @@ from ~s: ~a (~s)~%"
                                  "--strip-components=1"
                                  "-C" dir
                                  "-f" tarball "*/DESCRIPTION"))
-                 (description->alist (with-input-from-file
-                                         (string-append dir "/DESCRIPTION") read-string))))))))))
+                 (and=> (description->alist (with-input-from-file
+                                                (string-append dir "/DESCRIPTION") read-string))
+                        (lambda (meta)
+                          (if (boolean? type) meta
+                              (cons `(bioconductor-type . ,type) meta))))))))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
@@ -306,7 +318,11 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
          (home-page  (match (listify meta "URL")
                        ((url rest ...) url)
                        (_ (string-append base-url name))))
-         (source-url (match (uri-helper name version)
+         (source-url (match (apply uri-helper name version
+                                   (case repository
+                                     ((bioconductor)
+                                      (list (assoc-ref meta 'bioconductor-type)))
+                                     (else '())))
                        ((url rest ...) url)
                        ((? string? url) url)
                        (_ #f)))
@@ -330,7 +346,11 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
         (version ,version)
         (source (origin
                   (method url-fetch)
-                  (uri (,(procedure-name uri-helper) ,name version))
+                  (uri (,(procedure-name uri-helper) ,name version
+                        ,@(or (and=> (assoc-ref meta 'bioconductor-type)
+                                     (lambda (type)
+                                       (list (list 'quote type))))
+                              '())))
                   (sha256
                    (base32
                     ,(bytevector->nix-base32-string (file-sha256 tarball))))))
