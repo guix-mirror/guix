@@ -65,7 +65,9 @@
             latest-channel-derivation
             channel-instances->manifest
             %channel-profile-hooks
-            channel-instances->derivation))
+            channel-instances->derivation
+
+            profile-channels))
 
 ;;; Commentary:
 ;;;
@@ -534,3 +536,27 @@ channel instances."
 latest instances of CHANNELS."
   (mlet %store-monad ((instances (latest-channel-instances* channels)))
     (channel-instances->derivation instances)))
+
+(define (profile-channels profile)
+  "Return the list of channels corresponding to entries in PROFILE.  If
+PROFILE is not a profile created by 'guix pull', return the empty list."
+  (filter-map (lambda (entry)
+                (match (assq 'source (manifest-entry-properties entry))
+                  (('source ('repository ('version 0)
+                                         ('url url)
+                                         ('branch branch)
+                                         ('commit commit)
+                                         _ ...))
+                   (channel (name (string->symbol
+                                   (manifest-entry-name entry)))
+                            (url url)
+                            (commit commit)))
+
+                  ;; No channel information for this manifest entry.
+                  ;; XXX: Pre-0.15.0 Guix did not provide that information,
+                  ;; but there's not much we can do in that case.
+                  (_ #f)))
+
+              ;; Show most recently installed packages last.
+              (reverse
+               (manifest-entries (profile-manifest profile)))))
