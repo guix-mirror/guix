@@ -685,7 +685,7 @@ name of each input with that input's hash."
                              (make-derivation-input hash sub-drvs))))
                         inputs)))
        (make-derivation outputs
-                        (sort inputs
+                        (sort (delete-duplicates inputs)
                               (lambda (drv1 drv2)
                                 (string<? (derivation-input-derivation drv1)
                                           (derivation-input-derivation drv2))))
