@@ -76,6 +76,7 @@
   #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-compression)
   #:use-module (gnu packages python-crypto)
+  #:use-module (gnu packages python-science)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages sphinx)
@@ -496,6 +497,43 @@ Swartz.")
                 (sha256
                  (base32
                   "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm")))))))
+
+(define-public python-jsonpickle
+  (package
+    (name "python-jsonpickle")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jsonpickle" version))
+              (sha256
+               (base32
+                "1fn86z468hamw8njh2grw2xdhsm7g48dyxs3lw0n10nn1g6vgm78"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH"
+                              (string-append "./build/lib:"
+                                             (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv"
+                              ;; Prevent running the flake8 and black
+                              ;; pytest plugins, which only tests style
+                              ;; and frequently causes harmless failures.
+                              "-o" "addopts=''"))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-toml" ,python-toml)  ;XXX: for setuptools_scm[toml]
+       ;; For tests.
+       ("python-numpy" ,python-numpy)
+       ("python-pandas" ,python-pandas)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://jsonpickle.github.io/")
+    (synopsis "Serialize object graphs into JSON")
+    (description
+     "This package provides a Python library for serializing any arbitrary
+object graph to and from JSON.")
+    (license license:bsd-3)))
 
 (define-public python-mechanicalsoup
   (package
