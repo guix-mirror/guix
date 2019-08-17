@@ -1805,7 +1805,7 @@ used with other display managers such as gdm or kdm.")
 (define-public setxkbmap
   (package
     (name "setxkbmap")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -1815,7 +1815,7 @@ used with other display managers such as gdm or kdm.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qfk097vjysqb72pq89h0la3462kbb2dh1d11qzs2fr67ybb7pd9"))))
+            "1xdrxs65v7d0rw1yaz0vsz55w4hxym99216p085ya9978j379wlg"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
