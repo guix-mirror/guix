@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +46,7 @@ source for metadata."
       (package name)
       (version version)
       (urls (filter-map (lambda (extension)
-                          (match (hash-ref dictionary extension)
+                          (match (assoc-ref dictionary extension)
                             (#f
                              #f)
                             ((? string? relative-url)
@@ -86,21 +86,22 @@ not be determined."
            (json (json->scm port)))
       (close-port port)
       (match json
-        ((4 (? hash-table? releases) _ ...)
-         (let* ((releases (hash-ref releases upstream-name))
-                (latest   (hash-fold (lambda (key value result)
-                                       (cond ((even-minor-version? key)
-                                              (match result
-                                                (#f
-                                                 (cons key value))
-                                                ((newest . _)
-                                                 (if (version>? key newest)
-                                                     (cons key value)
-                                                     result))))
-                                             (else
-                                              result)))
-                                     #f
-                                     releases)))
+        (#(4 releases _ ...)
+         (let* ((releases (assoc-ref releases upstream-name))
+                (latest   (fold (match-lambda*
+                                  (((key . value) result)
+                                   (cond ((even-minor-version? key)
+                                          (match result
+                                            (#f
+                                             (cons key value))
+                                            ((newest . _)
+                                             (if (version>? key newest)
+                                                 (cons key value)
+                                                 result))))
+                                         (else
+                                          result))))
+                                #f
+                                releases)))
            (and latest
                 (jsonish->upstream-source upstream-name latest))))))))
 
