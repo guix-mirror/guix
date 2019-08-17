@@ -2752,6 +2752,29 @@ tables.")
 been copied from an Emacs major mode.")
     (license license:gpl2+)))
 
+(define-public emacs-ob-restclient
+  (let ((commit "53376667eeddb1388fd6c6976f3222e7c8adcd46"))
+    (package
+      (name "emacs-ob-restclient")
+      (version (git-version "0.02" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alf/ob-restclient.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1djg53cp7y83gic2v71y6r5z76kwrbkp0r69hl25rs99dx6p89dy"))))
+      (propagated-inputs
+       `(("emacs-restclient" ,emacs-restclient)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alf/ob-restclient.el")
+      (synopsis "Org-babel functionality for @code{restclient-mode}")
+      (description
+       "This package integrates @code{restclient-mode} with Org.")
+      (license license:gpl3+))))
+
 (define-public emacs-rich-minority
   (package
     (name "emacs-rich-minority")
