@@ -4608,6 +4608,29 @@ regardless of @code{highlight-symbol-idle-delay}.
 @code{highlight-symbol-query-replace} can be used to replace the symbol. ")
       (license license:gpl2+))))
 
+(define-public emacs-symbol-overlay
+  (let ((commit "e40a7c407f24158c45eaa5f54ed41f5e416a51dc")
+        (revision "1"))
+    (package
+      (name "emacs-symbol-overlay")
+      (version (git-version "4.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wolray/symbol-overlay.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ibz3392d3jw1l8006h9kf8s7bg6vl7jc92bmqc031a433009ic7"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/wolray/symbol-overlay")
+      (synopsis "Highlight symbols and perform various search operations on them")
+      (description
+       "This package provides functions for highlighting and navigating
+between symbols.")
+      (license license:gpl3+))))
+
 (define-public emacs-hl-todo
   (package
     (name "emacs-hl-todo")
