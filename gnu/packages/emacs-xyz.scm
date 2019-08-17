@@ -2775,6 +2775,32 @@ been copied from an Emacs major mode.")
        "This package integrates @code{restclient-mode} with Org.")
       (license license:gpl3+))))
 
+(define-public emacs-org-now
+  (let ((commit "8f6b277a73f1c66e58ccb4b7f40d406851befc91"))
+    (package
+      (name "emacs-org-now")
+      (version (git-version "0.1-pre" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alphapapa/org-now.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "117zzkryznznk6h4i1jqzdn888nl019xrgxm2gza0lndx8dxsg2c"))))
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/alphapapa/org-now")
+      (synopsis "Show current Org tasks in a sidebar")
+      (description
+       "This package provides commands to show Org headings in a sidebar
+window while working on them.  After defining one heading as the \"now\"
+heading, other headings can be refiled to it with one command, and back to
+their original location with another.")
+      (license license:gpl3+))))
+
 (define-public emacs-rich-minority
   (package
     (name "emacs-rich-minority")
