@@ -111,8 +111,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "4a54ed774913480c0f8dad3caf0cd627e4fa8ebf")
-        (revision 3))
+        (commit "c902458863d1d341ffd74970b75e69c2bb848183")
+        (revision 4))
     (package
       (name "guix")
 
@@ -128,7 +128,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "14m4a4bn0d5hav6mrks5d7r223knx9dpswgbsc875wgr2921na2h"))
+                  "0w93qjgy9n0qqyij12s7hm7fl4wb6h99bmfril4cqf4ynckpdvbb"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -293,7 +293,7 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-1)
+         ("guile-json" ,guile-json-3)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
@@ -325,7 +325,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
-       ("guile-json" ,guile-json-1)
+       ("guile-json" ,guile-json-3)
        ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))
