@@ -2729,6 +2729,29 @@ naming style of a symbol.  It supports different naming conventions such as:
 tables.")
     (license license:gpl2+)))
 
+(define-public emacs-org-rich-yank
+  (package
+    (name "emacs-org-rich-yank")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/unhammer/org-rich-yank.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0gxb0fnh5gxjmld0hnk5hli0cvdd8gjd27m30bk2b80kwldxlq1z"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/unhammer/org-rich-yank")
+    (synopsis "Automatically surround source code pasted into Org with
+@code{#+BEGIN_SRC} blocks")
+    (description
+     "This package provides a utility function for Org buffers that makes a
+@code{_SRC} block with the appropriate language annotation for code that has
+been copied from an Emacs major mode.")
+    (license license:gpl2+)))
+
 (define-public emacs-rich-minority
   (package
     (name "emacs-rich-minority")
