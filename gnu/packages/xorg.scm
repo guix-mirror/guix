@@ -4155,16 +4155,16 @@ an X server.")
 (define-public xrandr
   (package
     (name "xrandr")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/xrandr-"
-               version ".tar.bz2"))
+               version ".tar.xz"))
         (sha256
           (base32
-            "1kaih7rmzxr1vp5a5zzjhm5x7dn9mckya088sqqw026pskhx9ky1"))))
+            "0ql75s1n3dm2m3g1ilb9l6hqh15r0v709bgghpwazy3jknpnvivv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
