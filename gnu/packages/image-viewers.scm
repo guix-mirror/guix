@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -130,6 +130,11 @@ actions.")
       (arguments
        `( ;; Enable support for a "map" pane using GPS data.
          #:configure-flags '("--enable-map")
+
+         ;; Parallel builds fail with something like:
+         ;;   image-load.c:143:9: error: ‘gq_marshal_VOID__INT_INT_INT_INT’ undeclared
+         ;; due to unexpressed makefile dependencies.
+         #:parallel-build? #f
 
          #:phases
          (modify-phases %standard-phases
