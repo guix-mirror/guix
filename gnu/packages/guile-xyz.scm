@@ -916,7 +916,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
              version ".tar.lz"))
        (sha256
         (base32
-         "05pm0rwdxhjdlpmvhn0kyfslph6j5m1gv76givs0hshb30nirl2x"))))
+         "0zgvh2329zrclxfb1lh7dnqrq46jj77l0lx7j9y6y3xgbhd2d9l0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
