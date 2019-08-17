@@ -144,6 +144,13 @@ HOME="$tmpdir" guix environment --bootstrap --container --user=foognu \
      --share="$tmpdir/umock" \
      -- guile -c "$usertest"
 
+# if not sharing CWD, chdir home
+(
+  cd "$tmpdir" \
+    && guix environment --bootstrap --container --no-cwd --user=foo  \
+            --ad-hoc guile-bootstrap --pure \
+            -- /bin/sh -c 'test $(pwd) == "/home/foo" -a ! -d '"$tmpdir"
+)
 
 # Check the exit code.
 
