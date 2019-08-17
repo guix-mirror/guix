@@ -166,7 +166,8 @@ MACHINE's 'system' declaration do not exist on the machine."
 
   (define (check-labeled-file-system fs)
     (define remote-exp
-      (with-imported-modules '((gnu build file-systems))
+      (with-imported-modules (source-module-closure
+                              '((gnu build file-systems)))
         #~(begin
             (use-modules (gnu build file-systems))
             (find-partition-by-label #$(file-system-label->string
@@ -243,7 +244,7 @@ MACHINE's 'system' declaration do not exist on the machine."
                                             #$(uuid->string device))))
                         ((file-system-label? device)
                          #~(find-partition-by-label
-                            (file-system-label->string #$device)))))
+                            #$(file-system-label->string device)))))
 
               (missing-modules dev '#$(operating-system-initrd-modules
                                        (machine-operating-system machine)))))))
