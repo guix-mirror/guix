@@ -376,8 +376,8 @@ of SUBSTITUTABLES."
                                  (substitution-oracle
                                   store inputs #:mode mode)))
   "Given INPUTS, a list of derivation-inputs, return two values: the list of
-derivation to build, and the list of substitutable items that, together,
-allows INPUTS to be realized.
+derivations to build, and the list of substitutable items that, together,
+allow INPUTS to be realized.
 
 SUBSTITUTABLE-INFO must be a one-argument procedure similar to that returned
 by 'substitution-oracle'."
