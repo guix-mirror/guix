@@ -318,7 +318,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
        (method git-fetch)
@@ -328,7 +328,7 @@ integrate Windows applications into your desktop.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bbwsd2qpjilxpjscqbp78p0gl0awj1yj62g0wvybh4x89fzy8zj"))))
+         "1s17hcrp1aa0v99y5iav2s0lxdx2rzgm7z0c4zhxyydqxj399f5j"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -374,7 +374,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rqx8g394aj5q913cd18zsi60sldvxarrp178w6ja0y4rd8l25vr"))))
+                "1rl1a3k5sr0hyxc61d68kwandhxcnxwv6b77vh7x2rkl1h4nxmfs"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("faudio" ,faudio)
               ("ffmpeg" ,ffmpeg)
@@ -499,7 +499,6 @@ integrated into the main branch.")
                     (script (string-append (assoc-ref %build-inputs
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
-               ;; Exclude specific patches that conflict with FAudio.
                (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries
