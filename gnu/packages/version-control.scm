@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.22.1")
+   (version "2.23.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "093qjgagha937w96izkpsjkhxf5drsa7rvk5snlyjivqnwxgkqac"))))
+              "0rv0y45gcd3h191isppn77acih695v4pipdj031jvs9rd1ds0kr3"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "17vpqv9g8li58njx7z5124b3c2zb2n63z4dalh5gw9iys7qb8446"))))
+            "0sllhyl0w29v4n303hqfmcc3apafnwk4sk78anyjjhpzd0zl6n4m"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
