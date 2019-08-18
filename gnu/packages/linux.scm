@@ -3928,6 +3928,49 @@ repair and easy administration.")
 from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
 
+(define-public compsize
+  (package
+    (name "compsize")
+    (version "1.3")
+    (home-page "https://github.com/kilobyte/compsize")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1c69whla844nwis30jxbj00zkpiw3ccndhkmzjii8av5358mjn43"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)))
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "compsize" (string-append out "/bin"))
+               (install-file "compsize.8" (string-append out "/share/man/man8"))))))))
+    (synopsis "Find compression type/ratio on Btrfs files")
+    (description "@command{compsize} takes a list of files (given as
+arguments) on a Btrfs file system and measures used compression types and
+effective compression ratio, producing a report.
+
+A directory has no extents but has a (recursive) list of files.  A non-regular
+file is silently ignored.
+
+As it makes no sense to talk about compression ratio of a partial extent,
+every referenced extent is counted whole, exactly once -- no matter if you use
+only a few bytes of a 1GB extent or reflink it a thousand times.  Thus, the
+uncompressed size will not match the number given by @command{tar} or
+@command{du}.  On the other hand, the space used should be accurate (although
+obviously it can be shared with files outside our set).")
+    (license license:gpl2+)))
+
 (define-public f2fs-tools-1.7
   (package
     (name "f2fs-tools")
