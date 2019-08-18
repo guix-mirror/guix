@@ -14911,7 +14911,7 @@ RPC channels with users and other software.")
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/vspinu/sesman.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
