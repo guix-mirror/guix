@@ -283,6 +283,7 @@ merging features essential for loading menus modified with menu editors.")
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
        ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libgsf" ,libgsf)
