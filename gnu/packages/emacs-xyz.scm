@@ -6553,6 +6553,33 @@ used for reverse direction.")
 end of a line and increment or decrement it.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-owl
+  (let ((commit "36a5fe057f44d48e377e3ef4f04b4eb30e1af309")
+        (revision "1"))
+    (package
+      (name "emacs-evil-owl")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mamapanda/evil-owl")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07a6n0gqss1qx9a50dqzqqq0gj6n7a4ykbcv1a0c9qd4fnfnm90m"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-posframe" ,emacs-posframe)))
+      (home-page "https://github.com/mamapanda/evil-owl")
+      (synopsis "Preview candidates when using Evil registers and marks")
+      (description
+       "This package supplements Evil's register- and mark-based commands with
+a popup window for previewing candidates.")
+      (license license:gpl3+))))
+
 (define-public emacs-evil-exchange
   (let ((commit "47691537815150715e64e6f6ec79be7746c96120")
         (version "0.41")
