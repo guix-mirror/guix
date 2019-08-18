@@ -54,6 +54,7 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pcre)
@@ -86,7 +87,7 @@
 (define-public libxfce4util
   (package
     (name "libxfce4util")
-    (version "4.12.1")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -94,7 +95,7 @@
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "07c8r3xwx5is298zk77m3r784gmr5y4mh8bbca5zdjqk5vxdwsw7"))))
+                "093338faqqsrlc8dkmzr7qv411ysxczg1wlg7s3gvhrfk6vpkb9j"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -110,7 +111,7 @@ Xfce Desktop Environment.")
 (define-public xfconf
   (package
     (name "xfconf")
-    (version "4.12.1")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -118,7 +119,7 @@ Xfce Desktop Environment.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0dns190bwb615wy9ma2654sw4vz1d0rcv061zmaalkv9wmj8bx1m"))))
+                "0n8d55c98ff7wgwv3qa4g369sv4iasgm1w62zq10kq5f56iy14xq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -136,12 +137,12 @@ Xfce Desktop Environment.")
          (delete 'check))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")         ;; for gdbus-codegen
+       ))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
-     `(("glib" ,glib)
-       ("dbus" ,dbus)
-       ("dbus-glib" ,dbus-glib)))
+     `(("glib" ,glib)))
     (inputs
      `(("libxfce4util" ,libxfce4util)))
     (home-page "https://www.xfce.org/")
@@ -154,7 +155,7 @@ storage system.")
 (define-public libxfce4ui
   (package
     (name "libxfce4ui")
-    (version "4.12.1")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -162,7 +163,7 @@ storage system.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hzzhiiwmqsrbv17nninhs2x1b8ck0ym85jck2xphx5ypw8rhq9x"))))
+                "1npjhznmnckhnylsv3l7p1zvhckhmp9d7vifs8w12kdfmrg0fjf4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -188,7 +189,7 @@ to share commonly used Xfce widgets among the Xfce applications.")
 (define-public exo
   (package
     (name "exo")
-    (version "0.12.6")
+    (version "0.12.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -196,17 +197,19 @@ to share commonly used Xfce widgets among the Xfce applications.")
                                   "exo-" version ".tar.bz2"))
               (sha256
                (base32
-                "00qh8ihrf09jvd26kilybihkgvv6rvi0l1bvlldxc99jb7ygy5ql"))))
+                "1ppwi6n40aphh0dqsnfrk234zsp7pl4lkjnspqjxw7m49bka401l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
-     ;; exo-1.pc refers to all these.
-     `(("gtk+" ,gtk+-2)
+     ;; exo-2.pc refers to all these.
+     `(("gtk+-3" ,gtk+)
        ("libxfce4util" ,libxfce4util)))
     (inputs
-     `(("libxfce4ui" ,libxfce4ui)
+     `(;; FIXME Refered to in exo-1.pc but conflict with gtk+-3
+       ("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
        ("perl-uri" ,perl-uri)))
     (home-page "https://www.xfce.org/")
     (synopsis "Extension library for Xfce")
@@ -220,7 +223,7 @@ development.")
 (define-public garcon
   (package
     (name "garcon")
-    (version "0.6.3")
+    (version "0.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -228,16 +231,17 @@ development.")
                                   "garcon-" version ".tar.bz2"))
               (sha256
                (base32
-                "00c4g4gmbr8710k0yv1zybnm9s2gkc1rj63zfrg9qgin66jzxcbn"))))
+                "0bbngb4bn1m325j7y40gky36kn2nlsvqs6xp0wy76x3s0d9lfpnp"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin")))
     (inputs
-     `(("gtk+" ,gtk+-2)))
+     `(("gtk+-2" ,gtk+-2))); required by garcon-gtk2-1.pc
     (propagated-inputs
-     `(("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk2-1.pc
+     `(("gtk+-3" ,gtk+)                 ; required by garcon-gtk3-1.pc
+       ("libxfce4ui" ,libxfce4ui))) ; required by garcon-gtk3-1.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Implementation of the freedesktop.org menu specification")
     (description
@@ -250,7 +254,7 @@ merging features essential for loading menus modified with menu editors.")
 (define-public tumbler
   (package
     (name "tumbler")
-    (version "0.2.5")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -258,7 +262,7 @@ merging features essential for loading menus modified with menu editors.")
                                   "tumbler-" version ".tar.bz2"))
               (sha256
                (base32
-                "0nfld1lvrdpsjfvm08y5487km45pm1mdr928hgqm8j0shrx6jiv4"))))
+                "1r0l0ghcrj71ax7yil1m4p7yjrfqm3icx0s8r7ivwv3i2rgw617p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -286,7 +290,7 @@ management D-Bus specification.")
 (define-public xfce4-panel
   (package
     (name "xfce4-panel")
-    (version "4.12.2")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -294,20 +298,22 @@ management D-Bus specification.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1s8cvsrgmkmmm84g6mghpj2k4777gm22g5lrsf8pdy5qh6xql1a2"))
+                "1x3flv86jh9vqah7mr5mmfx2991mc6icsqjygsc3j88lgsyz7y6m"))
               (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--enable-gtk3")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")))
     (propagated-inputs
-     `(("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-1.0.pc
+     `(("gtk+-3" ,gtk+)                 ; required by libxfce4panel-2.0.pc
+       ("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-2.0.pc
     (inputs
      `(("exo" ,exo)
+       ("gtk+-2" ,gtk+-2)
+       ("xfconf" ,xfconf)
        ("garcon" ,garcon)
-       ("libwnck" ,libwnck-2)
+       ("libwnck" ,libwnck)
        ("libxfce4ui" ,libxfce4ui)))
     (native-search-paths
      (list (search-path-specification
@@ -486,7 +492,7 @@ per window.")
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
-    (version "4.12.0")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/xfce/"
@@ -494,14 +500,14 @@ per window.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ry5hin8xhgnkmm9vs7jq8blk1cnbyr0s18nm1j6nsm7360abm1a"))))
+                "162dibl6ipp72x0s35yhk7kkzxd4qimagg5zdkkv5kjgjpa7bhby"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("garcon" ,garcon)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libxfce4ui" ,libxfce4ui)))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce application finder")
@@ -513,7 +519,7 @@ your system in categories, so you can quickly find and launch them.")
 (define-public xfce4-session
   (package
     (name "xfce4-session")
-    (version "4.12.1")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -521,10 +527,7 @@ your system in categories, so you can quickly find and launch them.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1z88klls3j161n5snpamz4l3p4823q4h87wdnqikczxgs2ig5mwp"))
-              (patches
-               ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
-               (search-patches "xfce4-session-fix-xflock4.patch"))
+                "0gq4a8yiw58hb4d5dhvprxvzamqfg8qblmiqcw0b97mn9svnvyql"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -549,7 +552,7 @@ your system in categories, so you can quickly find and launch them.")
        ("upower" ,upower)
        ("polkit" ,polkit)
        ("libsm" ,libsm)
-       ("libwnck" ,libwnck-2)
+       ("libwnck" ,libwnck)
        ("libxfce4ui" ,libxfce4ui)))
     (home-page "https://www.xfce.org/")
     (synopsis "Xfce session manager")
@@ -561,7 +564,7 @@ allows you to shutdown the computer from Xfce.")
 (define-public xfce4-settings
   (package
     (name "xfce4-settings")
-    (version "4.12.4")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -569,9 +572,13 @@ allows you to shutdown the computer from Xfce.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "16vgidhhc19dz0p0i6fp5iiwxd53ky143j6h14a9b7mz92nlr872"))
+                "0g0ipkg2fyg8r1z95ynx0xjr78bp49c2dwh4mli05nmb4gb40c70"))
               (patches (search-patches "xfce4-settings-defaults.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-pluggable-dialogs"
+                           "--enable-sound-settings"
+                           "--enable-xrandr")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
@@ -659,7 +666,7 @@ and import the new pictures from your camera.")
 (define-public xfwm4
   (package
     (name "xfwm4")
-    (version "4.12.5")
+    (version "4.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -667,14 +674,14 @@ and import the new pictures from your camera.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jnav0wcqlswl2v7nh61big9czg5hmnyvrvm6812sv362qic0xbp"))))
+                "05dn4a1i0nm6wm3nyj7qli5bvfalxghcl7x543qr5l33vkw2n65l"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
      `(("libdrm" ,libdrm)
-       ("libwnck" ,libwnck-2)
+       ("libwnck" ,libwnck)
        ("libxcomposite" ,libxcomposite)
        ("libxdamage" ,libxdamage)
        ("libxfce4ui" ,libxfce4ui)
@@ -689,7 +696,7 @@ on the screen.")
 (define-public xfdesktop
   (package
     (name "xfdesktop")
-    (version "4.12.4")
+    (version "4.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -697,7 +704,7 @@ on the screen.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1jzi851arljq5lza9inyq4ss513l62lbzbfm64a7x4320m8kb2h9"))
+                "10pqxgpj7b57wpcsh2k98sj4aavcgxbs1lc8qsq4mibf4hba01gp"))
               (modules '((guix build utils)))
               (snippet
                #~(begin
@@ -735,7 +742,7 @@ on the screen.")
      `(("exo" ,exo)
        ("garcon" ,garcon)
        ("libnotify" ,libnotify)
-       ("libwnck" ,libwnck-2)
+       ("libwnck" ,libwnck)
        ("libxfce4ui" ,libxfce4ui)
        ("thunar" ,thunar)))
     (home-page "https://www.xfce.org/")
@@ -831,7 +838,7 @@ system resources, while still being visually appealing and user friendly.")
 (define-public xfce4-power-manager
   (package
     (name "xfce4-power-manager")
-    (version "1.6.1")
+    (version "1.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/xfce/"
@@ -839,16 +846,14 @@ system resources, while still being visually appealing and user friendly.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0sv5927q8jxvdfx7b06f8s7qyq3qa1nqn0b8c1b9bf234d2jba0y"))))
+                "0x3s2bdwfhp65dz5yn3k43j99ywqlsvrpz3pqmgwm0dik5wbdb8h"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--enable-gtk3")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
-     `(("lbxrandr" ,libxrandr)
-       ("gtk+" ,gtk+-2)
+     `(("libxrandr" ,libxrandr)
+       ("gtk+" ,gtk+)
        ("upower" ,upower)
        ("libnotify" ,libnotify)
        ("libxfce4ui" ,libxfce4ui)))
