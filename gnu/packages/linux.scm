@@ -3503,8 +3503,9 @@ MPEG-2 and audio over Linux IEEE 1394.")
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-program-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((coreutils (assoc-ref inputs "coreutils")))
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
+             (let ((coreutils (assoc-ref (or native-inputs inputs)
+                                         "coreutils")))
                (substitute* "udev-md-raid-arrays.rules"
                  (("/usr/bin/(readlink|basename)" all program)
                   (string-append coreutils "/bin/" program))))
