@@ -141,7 +141,8 @@ Xfce Desktop Environment.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ;; for gdbus-codegen
-       ("gobject-introspection" ,gobject-introspection)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
      `(("glib" ,glib)))
