@@ -131,7 +131,7 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public libtorrent
   (package
     (name "libtorrent")
-    (version "0.13.6")
+    (version "0.13.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -139,7 +139,7 @@ DHT, µTP, PEX and Magnet Links.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18"))))
+                "10z9i1rc41cmmi7nx8k7k1agsx6afv09g9cl7g9zr35fyhl5l4gd"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
