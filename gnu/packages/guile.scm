@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018 Amirouche <amirouche@hypermove.net>
 ;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
@@ -536,11 +536,14 @@ Guile's foreign function interface.")
               (sha256
                (base32
                 "1nv8j7wk6b5n4p22szyi8lv8fs31rrzxhzz16gyj8r38c1fyp9qp"))
-              (file-name (string-append name "-" version "-checkout"))))
+              (file-name (string-append name "-" version "-checkout"))
+              (patches
+               (search-patches "guile-sqlite3-fix-cross-compilation.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
+       ("guile" ,guile-2.2)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.2)
