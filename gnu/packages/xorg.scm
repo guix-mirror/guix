@@ -6412,25 +6412,28 @@ output.")
                                " ")))
              #t))
          (add-before 'build 'make-doubled-bdfs
-           (lambda* (#:key inputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs #:allow-other-keys)
              (invoke "make" "-C" "Fonts"
                      "doubled_bdfs"
                      (string-append "SHELL="
-                                    (assoc-ref inputs "bash")
+                                    (assoc-ref (or native-inputs inputs)
+                                               "bash")
                                     "/bin/bash"))))
          (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key native-inputs inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref %outputs "out")))
                (invoke "make" "install-linux"
                        (string-append "prefix=" out)
                        (string-append "SHELL="
-                                      (assoc-ref inputs "bash")
+                                      (assoc-ref (or native-inputs inputs)
+                                                 "bash")
                                       "/bin/bash"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("bdftopcf" ,bdftopcf)
        ("bdfresize" ,bdfresize)
-       ("sharutils" ,sharutils)))                 ;for 'uuencode'
+       ("sharutils" ,sharutils)                   ;for 'uuencode'
+       ("perl" ,perl)))
     (inputs
      `(("perl" ,perl)))                           ;used by 'ckbcomp'
     (synopsis "Set up the Linux console font and keyboard")
