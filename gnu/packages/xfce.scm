@@ -140,8 +140,8 @@ Xfce Desktop Environment.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin")         ;; for gdbus-codegen
-       ))
+       ("glib:bin" ,glib "bin") ;; for gdbus-codegen
+       ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
      `(("glib" ,glib)))
