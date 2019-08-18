@@ -169,6 +169,9 @@ storage system.")
                (base32
                 "1npjhznmnckhnylsv3l7p1zvhckhmp9d7vifs8w12kdfmrg0fjf4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-vendor-info=GNU Guix")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
