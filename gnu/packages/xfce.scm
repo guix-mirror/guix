@@ -99,6 +99,7 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
     (propagated-inputs `(("glib" ,glib))) ; required by libxfce4util-1.0.pc
     (home-page "https://www.xfce.org/")
