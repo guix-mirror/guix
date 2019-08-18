@@ -288,7 +288,9 @@ merging features essential for loading menus modified with menu editors.")
        ("libjpeg" ,libjpeg)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
-       ("gstreamer" ,gstreamer)))
+       ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails
+       ;; ("gstreamer" ,gstreamer)
+       ))
     (home-page "https://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
