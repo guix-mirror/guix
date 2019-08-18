@@ -171,7 +171,8 @@ storage system.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
      `(("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
        ;; libxfce4kbd-private-2.pc refers to all these.
