@@ -10250,6 +10250,34 @@ the same values you get in a terminal.")
 candidates on which user-defined dispatch actions can act.")
       (license license:gpl3+))))
 
+(define-public emacs-frog-jump-buffer
+  (let ((commit "2d7b342785ae27d45f5d252272df6eb773c78e20")
+        (revision "1"))
+    (package
+      (name "emacs-frog-jump-buffer")
+      (version (git-version "0.1.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/waymondo/frog-jump-buffer")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1z00by8hiss1r2lwmzrl8pnz6jykia2849dqqm4l3z5rf6lwvc0f"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)
+         ("emacs-frog-menu" ,emacs-frog-menu)
+         ("emacs-avy" ,emacs-avy)))
+      (home-page "https://github.com/waymondo/frog-jump-buffer")
+      (synopsis "Jump to any Emacs buffer with minimal keystrokes")
+      (description
+       "This package provides a preview window of buffers that can be switched
+to with quicklink-style selections.")
+      (license license:gpl3+))))
+
 (define-public emacs-deft
   (package
     (name "emacs-deft")
