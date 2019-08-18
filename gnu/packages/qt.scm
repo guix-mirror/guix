@@ -2209,6 +2209,9 @@ content")
     (description "QtWebKit provides a Web browser engine that makes it easy to
 embed content from the World Wide Web into your Qt application.  At the same
 time Web content can be enhanced with native controls.")
+    ;; Building QtWebKit takes around 13 hours on an AArch64 machine.  Give some
+    ;; room for slower or busy hardware.
+    (properties '((timeout . 64800)))   ;18 hours
     (license license:lgpl2.1+)))
 
 (define-public dotherside
