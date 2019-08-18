@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1602,7 +1603,8 @@ glass artworks done by Venicians glass blowers.")
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("gtk+" ,gtk+)
