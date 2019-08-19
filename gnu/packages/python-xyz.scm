@@ -10999,13 +10999,6 @@ manipulation library.")
      `(("python-dateutil" ,python-dateutil)
        ("python-docutils" ,python-docutils)
        ("python-jmespath" ,python-jmespath)))
-    (native-inputs
-     `(("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)
-       ("behave" ,behave)
-       ("python-tox" ,python-tox)
-       ("python-urllib3" ,python-urllib3)
-       ("python-wheel" ,python-wheel)))
     (home-page "https://github.com/boto/botocore")
     (synopsis "Low-level interface to AWS")
     (description "Botocore is a Python library that provides a low-level
