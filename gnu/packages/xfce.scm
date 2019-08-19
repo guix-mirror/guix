@@ -390,7 +390,7 @@ matching them against regular expressions.")
 (define-public xfce4-pulseaudio-plugin
   (package
     (name "xfce4-pulseaudio-plugin")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -398,11 +398,26 @@ matching them against regular expressions.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1w29y0a066y8as12xrkbfqcn7dpdsvx97idzw7028gmcvca87a3c"))))
+                "0851b0vs5xmy3cq899khcghmkqwvh9rnzwavi17msrsq4jyaxs2a"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       ;; For dbus/dbus-glib.h in pulseaudio-config.h
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'augment-cflags
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "C_INCLUDE_PATH"
+                     (string-append (assoc-ref inputs "dbus-glib")
+                                    "/include/dbus-1.0" ":"
+                                    (assoc-ref inputs "dbus")
+                                    "/include/dbus-1.0" ":"
+                                    (getenv "C_INCLUDE_PATH")))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("dbus-glib" ,dbus-glib)
+       ("dbus" ,dbus)))
     (inputs
      `(("exo" ,exo)
        ("libnotify" ,libnotify)
