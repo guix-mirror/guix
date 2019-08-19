@@ -11023,6 +11023,34 @@ document.")
 manipulation library.")
     (license license:expat)))
 
+(define-public python-boto
+  (package
+    (name "python-boto")
+    (version "2.49.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "boto" version))
+              (sha256
+               (base32
+                "0njy09c4wjx7ipxhwi6vv404nflyiasl78vwwxxpclnql903n3ga"))))
+    (build-system python-build-system)
+    (arguments
+     ;; XXX: This package is unmaintained and has problems with newer versions
+     ;; of Python 3 as well as test libraries.  'python-moto' still uses a
+     ;; subset of this library, so keep it around for now, but disable tests.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-paramiko" ,python-paramiko)
+       ("python-requests" ,python-requests)))
+    (home-page "https://github.com/boto/boto")
+    (synopsis "Python interfaces for Amazon Web Services")
+    (description
+     "This package provides various facilities for interacting with Amazon
+Web Services through Python.
+
+This software is unmaintained, and new projects should use @code{boto3} instead.")
+    (license license:expat)))
+
 (define-public python-botocore
   ;; Note: When updating botocore, also make sure that boto3 and awscli
   ;; are compatible.
