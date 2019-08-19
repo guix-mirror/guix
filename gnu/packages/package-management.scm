@@ -561,75 +561,83 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public diffoscope
-  (package
-    (name "diffoscope")
-    (version "120")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                    (commit "120")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "07z9yclvfkw4326739l2ywzzihax5vdijiaqqpfix9rz1rb923aa"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ;; setup.py mistakenly requires python-magic from PyPi, even
-                  ;; though the Python bindings of `file` are sufficient.
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                  (add-after 'unpack 'dependency-on-python-magic
-                    (lambda _
-                      (substitute* "setup.py"
-                        (("'python-magic',") ""))))
-                  ;; This test is broken because our `file` package has a
-                  ;; bug in berkeley-db file type detection.
-                  (add-after 'unpack 'remove-berkeley-test
-                    (lambda _
-                      (delete-file "tests/comparators/test_berkeley_db.py")
-                      #t))
-                  (add-after 'unpack 'embed-tool-references
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "diffoscope/comparators/utils/compare.py"
-                        (("\\['xxd',")
-                         (string-append "['" (which "xxd") "',")))
-                      (substitute* "diffoscope/comparators/elf.py"
-                        (("@tool_required\\('readelf'\\)") "")
-                        (("get_tool_name\\('readelf'\\)")
-                         (string-append "'" (which "readelf") "'")))
-                      (substitute* "diffoscope/comparators/directory.py"
-                        (("@tool_required\\('stat'\\)") "")
-                        (("@tool_required\\('getfacl'\\)") "")
-                        (("\\['stat',")
-                         (string-append "['" (which "stat") "',"))
-                        (("\\['getfacl',")
-                         (string-append "['" (which "getfacl") "',")))
-                      #t))
-                  (add-before 'check 'delete-failing-test
-                    (lambda _
-                      ;; this requires /sbin to be on the path
-                      (delete-file "tests/test_tools.py")
-                      #t)))))
-    (inputs `(("rpm" ,rpm)                        ;for rpm-python
-              ("python-file" ,python-file)
-              ("python-debian" ,python-debian)
-              ("python-libarchive-c" ,python-libarchive-c)
-              ("python-tlsh" ,python-tlsh)
-              ("acl" ,acl)                        ;for getfacl
-              ("colordiff" ,colordiff)
-              ("xxd" ,xxd)))
-    ;; Below are modules used for tests.
-    (native-inputs `(("python-pytest" ,python-pytest)
-                     ("python-chardet" ,python-chardet)))
-    (home-page "https://diffoscope.org/")
-    (synopsis "Compare files, archives, and directories in depth")
-    (description
-     "Diffoscope tries to get to the bottom of what makes files or directories
+  (let ((version "121"))
+    (package
+      (name "diffoscope")
+      (version version)
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
+                      (commit version)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1bw7s8qs1vnr93vhifl6pj6h6w6r6nrpc5anzhh9wx2gcaipkb3m"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    ;; setup.py mistakenly requires python-magic from PyPi, even
+                    ;; though the Python bindings of `file` are sufficient.
+                    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
+                    (add-after 'unpack 'dependency-on-python-magic
+                      (lambda _
+                        (substitute* "setup.py"
+                          (("'python-magic',") ""))))
+                    ;; This test is broken because our `file` package has a
+                    ;; bug in berkeley-db file type detection.
+                    (add-after 'unpack 'remove-berkeley-test
+                      (lambda _
+                        (delete-file "tests/comparators/test_berkeley_db.py")
+                        #t))
+                    (add-after 'unpack 'embed-tool-references
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "diffoscope/comparators/utils/compare.py"
+                          (("\\['xxd',")
+                           (string-append "['" (which "xxd") "',")))
+                        (substitute* "diffoscope/comparators/elf.py"
+                          (("@tool_required\\('readelf'\\)") "")
+                          (("get_tool_name\\('readelf'\\)")
+                           (string-append "'" (which "readelf") "'")))
+                        (substitute* "diffoscope/comparators/directory.py"
+                          (("@tool_required\\('stat'\\)") "")
+                          (("@tool_required\\('getfacl'\\)") "")
+                          (("\\['stat',")
+                           (string-append "['" (which "stat") "',"))
+                          (("\\['getfacl',")
+                           (string-append "['" (which "getfacl") "',")))
+                        #t))
+                    (add-before 'check 'writable-test-data
+                      (lambda _
+                        ;; tests/comparators/test_elf.py needs write access to
+                        ;; test data
+                        (make-file-writable
+                         "tests/data/ignore_readelf_errors_expected_diff")
+                        #t))
+                    (add-before 'check 'delete-failing-test
+                      (lambda _
+                        ;; this requires /sbin to be on the path
+                        (delete-file "tests/test_tools.py")
+                        #t)))))
+      (inputs `(("rpm" ,rpm)                        ;for rpm-python
+                ("python-file" ,python-file)
+                ("python-debian" ,python-debian)
+                ("python-libarchive-c" ,python-libarchive-c)
+                ("python-tlsh" ,python-tlsh)
+                ("acl" ,acl)                        ;for getfacl
+                ("colordiff" ,colordiff)
+                ("xxd" ,xxd)))
+      ;; Below are modules used for tests.
+      (native-inputs `(("python-pytest" ,python-pytest)
+                       ("python-chardet" ,python-chardet)))
+      (home-page "https://diffoscope.org/")
+      (synopsis "Compare files, archives, and directories in depth")
+      (description
+       "Diffoscope tries to get to the bottom of what makes files or directories
 different.  It recursively unpacks archives of many kinds and transforms
 various binary formats into more human readable forms to compare them.  It can
 compare two tarballs, ISO images, or PDFs just as easily.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public trydiffoscope
  (package
