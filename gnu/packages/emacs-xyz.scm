@@ -16666,7 +16666,7 @@ previewed by scrolling up and down within a @code{dired} buffer.")
 (define-public emacs-counsel-etags
   (package
     (name "emacs-counsel-etags")
-    (version "1.8.7")
+    (version "1.8.9")
     (source
      (origin
        (method git-fetch)
@@ -16676,7 +16676,7 @@ previewed by scrolling up and down within a @code{dired} buffer.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0vjcjspfrz1csnmfi6r7p7f070a496adxkqnsxwx1gx8cpylwp1g"))))
+         "0rmdl93kgyydwa96yclds9vwly41bpk8v18cbqc1x266w6v77dr9"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
