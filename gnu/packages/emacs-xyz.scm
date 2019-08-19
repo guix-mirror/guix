@@ -17475,3 +17475,30 @@ federated microblogging social network.")
 Emacs.  It's a re-write of the Insidious Big Brother Database (BBDB) using
 Emacs Lisp's (relatively new) EIEIO object oriented libraries.")
       (license license:gpl3+))))
+
+(define-public emacs-refactor
+  (package
+    (name "emacs-refactor")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Wilfred/emacs-refactor.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1yky7vlv91501xb43xk19rr8mxlvrsxhawsc98jivf64nad5dqay"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-s" ,emacs-s)
+       ("emacs-popup" ,emacs-popup)
+       ("emacs-list-utils" ,emacs-list-utils)
+       ("emacs-iedit" ,emacs-iedit)))
+    (home-page "https://github.com/Wilfred/emacs-refactor/")
+    (synopsis "Language-specific refactoring in Emacs")
+    (description "Emacs Refactor (EMR) is a framework for providing
+language-specific refactoring in Emacs.  It includes refactoring commands for
+a variety of languages, including elisp itself.")
+    (license license:gpl3+)))
