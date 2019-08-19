@@ -123,6 +123,7 @@
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages docker)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
@@ -10867,6 +10868,73 @@ text.")
 
 (define-public python2-colorama
   (package-with-python2 python-colorama))
+
+(define-public python-moto
+  (package
+    (name "python-moto")
+    ;; XXX: Use a pre-release for compatibility with latest botocore & friends.
+    (version "1.3.16.dev134")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "moto" version))
+              (sha256
+               (base32
+                "1pix0c7zszjwzfy88n1rpih9vkdm25nqcvz93z850xvgwb4v81bd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'patch-hardcoded-executable-names
+                    (lambda _
+                      (substitute* "moto/batch/models.py"
+                        (("/bin/sh")
+                         (which "sh")))
+                      (substitute* (find-files "tests" "\\.py$")
+                        (("#!/bin/bash")
+                         (string-append "#!" (which "bash"))))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      (setenv "PYTHONPATH" (string-append "./build/lib:"
+                                                          (getenv "PYTHONPATH")))
+                      (invoke "pytest" "-vv" "-m" "not network"
+                              ;; These tests require Docker.
+                              "-k" "not test_terminate_job \
+and not test_invoke_function_from_sqs_exception"))))))
+    (native-inputs
+     `(("python-flask" ,python-flask)
+       ("python-flask-cors" ,python-flask-cors)
+       ("python-freezegun" ,python-freezegun)
+       ("python-parameterized" ,python-parameterized)
+       ("python-pytest" ,python-pytest)
+       ("python-sure" ,python-sure)))
+    (propagated-inputs
+     `(("python-aws-xray-sdk" ,python-aws-xray-sdk)
+       ("python-boto" ,python-boto)
+       ("python-boto3" ,python-boto3)
+       ("python-botocore" ,python-botocore)
+       ("python-cfn-lint" ,python-cfn-lint)
+       ("python-cryptography" ,python-cryptography)
+       ("python-dateutil" ,python-dateutil)
+       ("python-docker" ,python-docker)
+       ("python-idna" ,python-idna)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jose" ,python-jose)
+       ("python-jsondiff" ,python-jsondiff)
+       ("python-mock" ,python-mock)
+       ("python-pytz" ,python-pytz)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests)
+       ("python-responses" ,python-responses)
+       ("python-six" ,python-six)
+       ("python-sshpubkeys" ,python-sshpubkeys)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-xmltodict" ,python-xmltodict)))
+    (home-page "https://github.com/spulec/moto")
+    (synopsis "Mock out the boto library")
+    (description
+     "@code{moto} is a library designed to easily mock out the
+@code{boto} library.")
+    (license license:asl2.0)))
 
 (define-public python-rsa
   (package
