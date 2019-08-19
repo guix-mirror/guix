@@ -470,7 +470,7 @@ applications, and includes a search bar to search for applications.")
 (define-public xfce4-xkb-plugin
   (package
     (name "xfce4-xkb-plugin")
-    (version "0.7.1")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
@@ -478,7 +478,7 @@ applications, and includes a search bar to search for applications.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "10g65j5ia389ahhn3b9hr52ghpp0817fk0m60rfrv4wrzqrjxzk1"))))
+                "18b7cnaf3zxm598p2i47vim3kbbi8w923ia1hwabdph1c89cz7n1"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -486,7 +486,7 @@ applications, and includes a search bar to search for applications.")
     (inputs
      `(("garcon" ,garcon)
        ("librsvg" ,librsvg)
-       ("libwnck" ,libwnck-2)
+       ("libwnck" ,libwnck)
        ("libx11" ,libx11)
        ("libxfce4ui" ,libxfce4ui)
        ("libxklavier" ,libxklavier)
