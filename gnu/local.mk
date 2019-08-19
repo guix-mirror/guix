@@ -1253,8 +1253,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-unittest2-remove-argparse.patch	\
   %D%/packages/patches/python-waitress-fix-tests.patch		\
   %D%/packages/patches/qemu-glibc-2.27.patch 			\
-  %D%/packages/patches/qemu-CVE-2018-16872.patch 		\
-  %D%/packages/patches/qemu-CVE-2019-6778.patch 		\
   %D%/packages/patches/qt4-ldflags.patch			\
   %D%/packages/patches/qtbase-old-kernel.patch			\
   %D%/packages/patches/qtbase-use-TZDIR.patch			\
