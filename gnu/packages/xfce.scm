@@ -421,7 +421,7 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.3.1")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
@@ -429,7 +429,7 @@ keys for controlling the audio volume.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1cnas2x7xi53v6ylq44040narhzd828dc0ysz8yk3qn2mmvp5yr2"))))
+                "0j0qmk372130avq8n07lfqrcm2al7n07l8gc06bbr1g6q57wrip0"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -438,7 +438,8 @@ keys for controlling the audio volume.")
      `(("xfce4-panel" ,xfce4-panel)
        ("garcon" ,garcon)
        ("exo" ,exo)
-       ("gtk+" ,gtk+-2)))
+       ("gtk+" ,gtk+)
+       ("libxfce4ui" ,libxfce4ui)))
     (arguments
       `(#:tests? #f)) ; no tests
     (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-whiskermenu-plugin")
