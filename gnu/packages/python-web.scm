@@ -68,6 +68,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages django)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
@@ -379,6 +380,55 @@ Model} (SAM) templates into AWS CloudFormation templates.")
      "The AWS X-Ray SDK for Python enables Python developers to record and
 emit information from within their applications to the AWS X-Ray service.")
     (license license:asl2.0)))
+
+(define-public python-cfn-lint
+  (package
+    (name "python-cfn-lint")
+    (version "0.41.0")
+    (home-page "https://github.com/aws-cloudformation/cfn-python-lint")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0nqs0fmj3hd7pnd9hkb4z57jvi2iv82hh6n3xxba6i6p8zgx75q4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        ;; Remove test for the documentation update scripts
+                        ;; to avoid a dependency on 'git'.
+                        (delete-file
+                         "test/unit/module/maintenance/test_update_documentation.py")
+                        (setenv "PYTHONPATH"
+                                (string-append "./build/lib:"
+                                               (getenv "PYTHONPATH")))
+                        (setenv "PATH" (string-append out "/bin:"
+                                                      (getenv "PATH")))
+                        (invoke "python" "-m" "unittest" "discover"
+                                "-s" "test")))))))
+    (native-inputs
+     `(("python-pydot" ,python-pydot)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-aws-sam-translator" ,python-aws-sam-translator)
+       ("python-jsonpatch" ,python-jsonpatch)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-junit-xml" ,python-junit-xml)
+       ("python-networkx" ,python-networkx)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-six" ,python-six)))
+    (synopsis "Validate CloudFormation templates")
+    (description
+     "This package lets you validate CloudFormation YAML/JSON templates against
+the CloudFormation spec and additional checks.  Includes checking valid values
+for resource properties and best practices.")
+    (license license:expat)))
 
 (define-public python-falcon
   (package
