@@ -566,6 +566,46 @@ Swartz.")
                  (base32
                   "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm")))))))
 
+(define-public python-jose
+  (package
+    (name "python-jose")
+    (version "3.2.0")
+    (home-page "http://github.com/mpdavis/python-jose")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1xmnf8whzv2gnkkdv0fqcn9qwmcc7y647p4kw9fi3lvcp9kch8vi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (if tests?
+                 (invoke "pytest" "-vv")
+                 (format #t "test suite not run~%"))
+             #t)))))
+    (native-inputs
+     `(;; All native inputs are for tests.
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (propagated-inputs
+     `(("python-cryptography" ,python-cryptography)
+       ("python-rsa" ,python-rsa)
+       ("python-six" ,python-six)))
+    (synopsis "JOSE implementation in Python")
+    (description
+     "The @dfn{JavaScript Object Signing and Encryption} (JOSE) technologies
+- JSON Web Signature (JWS), JSON Web Encryption (JWE), JSON Web Key (JWK), and
+JSON Web Algorithms (JWA) - collectively can be used to encrypt and/or sign
+content using a variety of algorithms.")
+    (license license:expat)))
+
 (define-public python-jsonpickle
   (package
     (name "python-jsonpickle")
