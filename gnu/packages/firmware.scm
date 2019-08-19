@@ -466,6 +466,9 @@ such as:
       (inherit base)
       (name "arm-trusted-firmware-sun50i-a64"))))
 
+(define-public arm-trusted-firmware-rk3328
+  (make-arm-trusted-firmware "rk3328"))
+
 (define-public arm-trusted-firmware-puma-rk3399
   (let ((base (make-arm-trusted-firmware "rk3399"))
         ;; Vendor's arm trusted firmware branch hasn't been upstreamed yet.
