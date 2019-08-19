@@ -16058,3 +16058,34 @@ one-off scripts.")
 time-or-computationally-expensive properties quick and easy and works in Python
 2 or 3.")
     (license license:bsd-3)))
+
+(define-public python-folium
+  (package
+    (name "python-folium")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "folium" version))
+       (sha256
+        (base32
+         "18fzxijsgrb95r0a8anc9ba5ijyw3nlnv3rpavfbkqa5v878x84f"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-branca" ,python-branca)
+       ("python-jinja2" ,python-jinja2)
+       ("python-numpy" ,python-numpy)
+       ("python-requests" ,python-requests)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-visualization/folium")
+    (synopsis "Make beautiful maps with Leaflet.js & Python")
+    (description "@code{folium} makes it easy to visualize data that’s been
+manipulated in Python on an interactive leaflet map.  It enables both the
+binding of data to a map for @code{choropleth} visualizations as well as
+passing rich vector/raster/HTML visualizations as markers on the map.
+
+The library has a number of built-in tilesets from OpenStreetMap, Mapbox, and
+Stamen, and supports custom tilesets with Mapbox or Cloudmade API keys.  It
+supports Image, Video, GeoJSON and TopoJSON overlays.")
+    (license license:expat)))
