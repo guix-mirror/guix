@@ -934,7 +934,7 @@ the desktop wallpaper.")
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("libwnck" ,libwnck-2)
+     `(("libwnck" ,libwnck)
        ("libxmu" ,libxmu)
        ("gtk+" ,gtk+)
        ;; FIXME: Remove libxext and libxt when libxmu propagates them.
