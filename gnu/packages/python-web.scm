@@ -277,6 +277,41 @@ WSGI.  This package includes libraries for implementing ASGI servers.")
     ;; looks like the user can choose a license.
     (license (list license:gpl3+ license:lgpl3+ license:expat))))
 
+(define-public python-aws-sam-translator
+  (package
+    (name "python-aws-sam-translator")
+    (version "1.30.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "aws-sam-translator" version))
+              (sha256
+               (base32
+                "0d9ppd94x2kw404m49ajswmmxgdngbs4p5ajyrdvnlivfzqbv7dx"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; XXX: Tests are not distributed with the PyPI archive, and would
+       ;; introduce a circular dependency on python-cfn-lint.
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'loosen-requirements
+                    (lambda _
+                      ;; The package needlessly specifies exact versions
+                      ;; of dependencies, when it works fine with others.
+                      (substitute* "requirements/base.txt"
+                        (("(.*)(~=[0-9\\.]+)" all package version)
+                         package))
+                      #t)))))
+    (propagated-inputs
+     `(("python-boto3" ,python-boto3)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/awslabs/serverless-application-model")
+    (synopsis "Transform AWS SAM templates into AWS CloudFormation templates")
+    (description
+     "AWS SAM Translator is a library that transform @dfn{Serverless Application
+Model} (SAM) templates into AWS CloudFormation templates.")
+    (license license:asl2.0)))
+
 (define-public python-aws-xray-sdk
   (package
     (name "python-aws-xray-sdk")
