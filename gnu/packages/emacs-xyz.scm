@@ -2255,7 +2255,7 @@ display and behaviour is easily customisable.")
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
-    (version "4.10")
+    (version "4.11")
     (source
      (origin
        (method git-fetch)
@@ -2265,7 +2265,7 @@ display and behaviour is easily customisable.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08zsn3lsnnf01wkv5ls38jga02s5dnf0j3gigy4qd6im3j3d04m1"))))
+         "1pz4l1xnq6s67w5yq9107vm8dg7rqf8n9dmbn90jys97c722g70n"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-transient" ,emacs-transient)))
