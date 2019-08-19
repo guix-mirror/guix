@@ -64,6 +64,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16133,3 +16134,28 @@ for manual interpretation.")
     (synopsis "Library for simple routing on OSM data")
     (description "Library for simple routing on OSM data")
     (license license:gpl3+)))
+
+(define-public python-elementpath
+  (package
+    (name "python-elementpath")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "elementpath" version))
+       (sha256
+        (base32
+         "1syn2z543brab23dskh3fjd9pqvz6npqbcicrs2d88dbg26xl08p"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sissaschool/elementpath")
+    (synopsis
+     "XPath 1.0/2.0 parsers and selectors for ElementTree and lxml")
+    (description
+     "The proposal of this package is to provide XPath 1.0 and 2.0 selectors
+for Python's ElementTree XML data structures, both for the standard
+ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
+
+For lxml.etree this package can be useful for providing XPath 2.0 selectors,
+because lxml.etree already has it's own implementation of XPath 1.0.")
+    (license license:expat)))
