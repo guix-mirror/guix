@@ -642,7 +642,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.7")
+    (version "1.8.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -650,7 +650,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0afkp528mwwa2m18m39mvw53qgaijyynrw9wwwiyxgjiczq3l0ry"))))
+                "1fah2d7v3a7fp28xa5wv896rap1iad9q9y04qchca09mq1x8wxbs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
