@@ -68,6 +68,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system ant)
   #:use-module (guix build-system scons)
+  #:use-module (guix build-system go)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
@@ -92,6 +93,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnu-doc)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -6597,3 +6599,35 @@ It's also possible to rewrite existing log files.
 
 Anonip can also be uses as a Python module in your own Python application.")
     (license license:bsd-3)))
+
+(define-public poussetaches
+  (package
+    (name "poussetaches")
+    (version "0.0.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tsileo/poussetaches")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "07106kfcz3a39jvrv3mlqqxlihsmdhgkrjnqznyjsij9absgvdv6"))))
+    (build-system go-build-system)
+    (propagated-inputs
+     `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)
+       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)))
+    (arguments
+     `(#:import-path "github.com/tsileo/poussetaches"))
+    (home-page "https://github.com/tsileo/poussetaches")
+    (synopsis "Lightweight asynchronous task execution service")
+    (description "Poussetaches (which literally means \"push tasks\" in
+French) is a lightweight asynchronous task execution service that aims to
+replace Celery and RabbitMQ for small Python applications.
+
+The app posts base64-encoded payload to poussetaches and specifies the
+endpoint that will be used to trigger the task.  Poussetaches makes HTTP
+requests with the registered payload until the right status code is
+returned.")
+    (license license:isc)))
