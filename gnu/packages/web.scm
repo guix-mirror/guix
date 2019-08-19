@@ -5417,7 +5417,7 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2019-01-13")
+    (version "2019-07-06")
     (source
      (origin
        (method git-fetch)
@@ -5427,7 +5427,7 @@ snippets on @url{https://commandlinefu.com}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m0dq491954f0d7k4508ddlywk09whcz9j21rc4yk3lbwpf0nd4c"))))
+         "0zd0c9xzvpx55mvj8xrafakfkvafnwkkvhw9b1j0bf897xdkfsyb"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
