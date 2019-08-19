@@ -330,7 +330,7 @@ applications menu, workspace switcher and more.")
 (define-public xfce4-battery-plugin
   (package
     (name "xfce4-battery-plugin")
-    (version "1.1.2")
+    (version "1.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
@@ -338,12 +338,12 @@ applications menu, workspace switcher and more.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1nypi0zazrcrbbm5vb221yw64zxrk56v4fffkblxlyd9m6gk80fn"))))
+                "18s0s004nidii8cc3ldp5n3jajc18vwn9vhkhmhy3lbbs520mghj"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
     (inputs `(("glib" ,glib)
-              ("gtk+" ,gtk+-2)
+              ("gtk+" ,gtk+)
               ("libxfce4util" ,libxfce4util)
               ("libxfce4ui" ,libxfce4ui)
               ("xfce4-panel" ,xfce4-panel)))
