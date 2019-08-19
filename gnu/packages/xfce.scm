@@ -756,7 +756,7 @@ devices and folders.")
 (define-public xfce4-terminal
   (package
     (name "xfce4-terminal")
-    (version "0.8.7.4")
+    (version "0.8.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://archive.xfce.org/src/apps/" name "/"
@@ -764,7 +764,7 @@ devices and folders.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1as2dh5ccmv3hdvsbxm4b0xhmv2ky2q18zxxrzr988x79npri3x8"))))
+                "1zc7hkq77ajia099wxgh4wdvwifcg2zkcz5d2xsf1zm0sdh6mflg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
