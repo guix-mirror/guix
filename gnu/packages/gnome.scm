@@ -8051,7 +8051,7 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
 (define-public libdazzle
   (package
     (name "libdazzle")
-    (version "3.28.5")
+    (version "3.33.90")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libdazzle/"
@@ -8059,17 +8059,11 @@ hexadecimal or ASCII.  It is useful for editing binary files in general.")
                                   "libdazzle-" version ".tar.xz"))
               (sha256
                (base32
-                "08qdwv2flywnh6kibkyv0pnm67pk8xlmjh4yqx6hf13hyhkxkqgg"))))
+                "189m7q88d1a7bq0yyal9f3yhm9kz46lb61379nn4wsnnhpa1d0qs"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-failing-test
-           (lambda _
-             ;; Disable failing test.
-             (substitute* "tests/meson.build"
-               (("test\\('test-application") "#"))
-             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
