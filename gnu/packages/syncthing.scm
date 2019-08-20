@@ -642,9 +642,6 @@ inherent errors.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
 
-;; XXX Syncthing actually imports 'github.com/chmduquesne/rollinghash/adler32'.
-;; Normally we'd package this module indpendenctly but the adler32 module itself
-;; imports 'github.com/chmduquesne/rollinghash/', so this is the easy way out.
 (define-public go-github-com-chmduquesne-rollinghash
   (let ((commit "a60f8e7142b536ea61bb5d84014171189eeaaa81")
         (revision "0"))
