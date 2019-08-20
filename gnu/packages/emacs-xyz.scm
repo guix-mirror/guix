@@ -905,6 +905,35 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-ample-regexps
+  (let ((commit "cbe91e148cac1ee8e223874dc956ed4cf607f046")
+        (revision "1"))
+    (package
+      (name "emacs-ample-regexps")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/immerrr/ample-regexps.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mm4icrwx4mscp7kbbmlc34995r164dhrfczn5ybkyxjzzf76jn1"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner" "-l" "ample-regexps")))
+      (home-page "https://github.com/immerrr/ample-regexps.el")
+      (synopsis "Compose and reuse Emacs regexps")
+      (description
+       "This package allows common parts of regexps to be easily picked out
+and reused.")
+      (license license:gpl3+))))
+
 (define-public emacs-reformatter
   (package
     (name "emacs-reformatter")
