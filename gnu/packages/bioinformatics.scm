@@ -2749,7 +2749,7 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "10.2.20181018")
+    (version "12.1.20190819")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
@@ -2757,7 +2757,7 @@ quantitative phenotypes.")
                                   "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "091f4aigzpbqih6h82nq566gkp3y07i72yqndmqskfgar1vwgci7"))))
+                "1i9s9mppcfqd60pfywpm8vdyz5vpnyslw22nd7dv0bhykrdnkz9g"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
