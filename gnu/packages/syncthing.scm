@@ -85,9 +85,7 @@
        ("go-github-com-audriusbutkevicius-recli"
         ,go-github-com-audriusbutkevicius-recli)
        ("go-github-com-urfave-cli" ,go-github-com-urfave-cli)
-       ("go-github-com-vitrun-qart-qr" ,go-github-com-vitrun-qart-qr)
-       ("go-github-com-vitrun-qart-coding" ,go-github-com-vitrun-qart-coding)
-       ("go-github-com-vitrun-qart-gf256" ,go-github-com-vitrun-qart-gf256)
+       ("go-github-com-vitrun-qart" ,go-github-com-vitrun-qart)
        ("go-github-com-mattn-go-isatty" ,go-github-com-mattn-go-isatty)
        ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-github-com-flynn-archive-go-shlex"
@@ -616,11 +614,11 @@ environment")
     (home-page "https://github.com/thejerf/suture")
     (license expat)))
 
-(define-public go-github-com-vitrun-qart-coding
+(define-public go-github-com-vitrun-qart
   (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
         (revision "0"))
     (package
-      (name "go-github-com-vitrun-qart-coding")
+      (name "go-github-com-vitrun-qart")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -634,71 +632,13 @@ environment")
                   "1xk7qki703xmay9ghi3kq2bjf1iw9dz8wik55739d6i7sn77vvkc"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "github.com/vitrun/qart/coding"
-         #:unpack-path "github.com/vitrun/qart"))
-      (synopsis "Low-level QR coding library")
+       `(#:import-path "github.com/vitrun/qart"))
+      (synopsis "Create QR codes with an embedded image")
       (description "This package provides a library for embedding
 human-meaningful graphics in QR codes.  However, instead of scribbling on
 redundant pieces and relying on error correction to preserve the meaning,
 @code{qart} engineers the encoded values to create the picture in a code with no
-inherent errors.  This @code{qart} component, @code{coding}, implements
-low-level QR coding details.")
-      (home-page "https://github.com/vitrun/qart/")
-      (license bsd-3))))
-
-(define-public go-github-com-vitrun-qart-gf256
-  (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
-        (revision "0"))
-    (package
-      (name "go-github-com-vitrun-qart-gf256")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vitrun/qart")
-                      (commit commit)))
-                (file-name (string-append "go-github-com-vitrun-qart-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1xk7qki703xmay9ghi3kq2bjf1iw9dz8wik55739d6i7sn77vvkc"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/vitrun/qart/gf256"
-         #:unpack-path "github.com/vitrun/qart"))
-      (synopsis "Qart library for Galois Field GF(256) math")
-      (description "This package, a component of @code{qart}, provides @code{gf256},
-implements arithmetic over the Galois Field GF(256).")
-      (home-page "https://github.com/vitrun/qart")
-      (license bsd-3))))
-
-(define-public go-github-com-vitrun-qart-qr
-  (let ((commit "bf64b92db6b05651d6c25a3dabf2d543b360c0aa")
-        (revision "0"))
-    (package
-      (name "go-github-com-vitrun-qart-qr")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vitrun/qart")
-                      (commit commit)))
-                (file-name (string-append "go-github-com-vitrun-qart-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1xk7qki703xmay9ghi3kq2bjf1iw9dz8wik55739d6i7sn77vvkc"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/vitrun/qart/qr"
-         #:unpack-path "github.com/vitrun/qart"))
-      (synopsis "Qart component for generating QR codes")
-      (description "This package provides a library for embedding
-human-meaningful graphics in QR codes.  However, instead of scribbling on
-redundant pieces and relying on error correction to preserve the meaning,
-@code{qart} engineers the encoded values to create the picture in a code with no
-inherent errors.  This @code{qart} component, @code{qr}, provides QR code
-generation.")
+inherent errors.")
       (home-page "https://github.com/vitrun/qart")
       (license bsd-3))))
 
