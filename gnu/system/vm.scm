@@ -235,10 +235,12 @@ made available under the /xchg CIFS share."
                                   #:memory-size #$memory-size
                                   #:make-disk-image? #$make-disk-image?
                                   #:single-file-output? #$single-file-output?
-                                  ;; FIXME: ‘target-arm32?’ may not operate on
-                                  ;; the right system/target values.  Rewrite
+                                  ;; FIXME: ‘target-arm32?’ and
+                                  ;; ‘target-aarch64?’ may not operate on the
+                                  ;; right system/target values.  Rewrite
                                   ;; using ‘let-system’ when available.
                                   #:target-arm32? #$(target-arm32?)
+                                  #:target-aarch64? #$(target-aarch64?)
                                   #:disk-image-format #$disk-image-format
                                   #:disk-image-size size
                                   #:references-graphs graphs))))))
@@ -452,10 +454,10 @@ system."
                       ;; bootloaders if we are not targeting ARM because UEFI
                       ;; support in U-Boot is experimental.
                       ;;
-                      ;; FIXME: ‘target-arm32?’ may be not operate on the right
+                      ;; FIXME: ‘target-arm?’ may be not operate on the right
                       ;; system/target values.  Rewrite using ‘let-system’ when
                       ;; available.
-                      (if #$(target-arm32?)
+                      (if #$(target-arm?)
                           '()
                           (list (partition
                                  ;; The standalone grub image is about 10MiB, but
@@ -466,10 +468,11 @@ system."
                                  ;; when mounting. The actual FAT-ness is based
                                  ;; on file system size (16 in this case).
                                  (file-system "vfat")
-                                 (flags '(esp))))))))
+                                 (flags '(esp)))))))
+                    (grub-efi #$(and (not (target-arm?)) grub-efi)))
                (initialize-hard-disk "/dev/vda"
                                      #:partitions partitions
-                                     #:grub-efi #$grub-efi
+                                     #:grub-efi grub-efi
                                      #:bootloader-package
                                      #$(bootloader-package bootloader)
                                      #:bootcfg #$bootcfg-drv
