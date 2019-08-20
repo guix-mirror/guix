@@ -100,7 +100,8 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("vala" ,vala)))
     (propagated-inputs `(("glib" ,glib))) ; required by libxfce4util-1.0.pc
     (home-page "https://www.xfce.org/")
     (synopsis "Basic utility library for Xfce")
