@@ -2341,7 +2341,7 @@ on the screen and keyboard to display letters.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://repo.manaplus.org/manaplus/download/"
+                    "https://repo.manaplus.org/manaplus/download/"
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
@@ -2360,7 +2360,7 @@ on the screen and keyboard to display letters.")
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
        ("sdl-union" ,(sdl-union))))
-    (home-page "http://manaplus.org")
+    (home-page "https://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
     (description
      "ManaPlus is a 2D MMORPG client for game servers.  It is the only
