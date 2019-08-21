@@ -714,7 +714,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.12.2")
+    (version "6.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -723,7 +723,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01krxcf0alw9k7p5sv0s707600an4sl7lhw3bymbwgqrj0v2p9z2"))))
+                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
