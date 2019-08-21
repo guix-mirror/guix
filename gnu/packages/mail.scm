@@ -998,18 +998,17 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.6")
+    (version "5.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
                            "getmail-" version ".tar.gz"))
        (sha256
-        (base32
-         "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
+        (base32 "1hcrd9h4g12f5gvl1djsbchcjry02ghq4icdr897s8v48pkrzagk"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:python ,python-2))
     (home-page "http://pyropus.ca/software/getmail/")
     (synopsis "Mail retriever")
