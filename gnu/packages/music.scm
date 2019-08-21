@@ -1790,7 +1790,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.49-0")
+    (version "0.50-0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1798,10 +1798,10 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "18rzqbpgnnvyslap7k0ly87aw1bbxkb0rk5agpr423ibs9slxq6j"))))
+                "0hg4n5b55f650qsc0mjx559072dp7vfza7w0pvk6rk2l831cvsps"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:configure-flags
        (list
         "--enable-jack"
