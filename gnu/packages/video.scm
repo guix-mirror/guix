@@ -3373,30 +3373,32 @@ online.")
     (license license:expat)))
 
 (define-public vidstab
-  (package
-    (name "vidstab")
-    (version "1.1.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/georgmartius/vid.stab.git")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0a3frpm2kdbx7vszhg64p3alisag73bcspl7fp3a2f1kgq7rbh38"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f)) ; tests are not run as part of standard build process
-    (home-page "http://public.hronopik.de/vid.stab/")
-    (synopsis "Video stabilization library")
-    (description "Vidstab is a video stabilization library which can be used
+  (let ((commit "aeabc8daa7904f9edf7441a11f293965a5ef53b8")
+        (revision "0"))
+    (package
+      (name "vidstab")
+      (version (git-version "1.1.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/georgmartius/vid.stab.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "042iy0f3khwzr68djzvqgn301sy21ljvkf52rnc2c73q7ircnzzn"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:tests? #f)) ; tests are not run as part of standard build process
+      (home-page "http://public.hronopik.de/vid.stab/")
+      (synopsis "Video stabilization library")
+      (description "Vidstab is a video stabilization library which can be used
 with FFmpeg.  A video acquired using a hand-held camera or a camera mounted on a
 vehicle typically suffers from undesirable shakes and jitters.  Activities such
 as surfing, skiing, riding and walking while shooting videos are especially
 prone to erratic camera shakes.  Vidstab targets these video contents to help
 create smoother and stable videos.")
-    (license license:gpl2+)))
+      (license license:gpl2+))))
 
 (define-public libopenshot
   (package
