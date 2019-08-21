@@ -51,7 +51,7 @@
     (inputs
      `(("libevent" ,libevent)
        ("ncurses" ,ncurses)))
-    (home-page "http://tmux.github.io/")
+    (home-page "https://tmux.github.io/")
     (synopsis "Terminal multiplexer")
     (description
      "tmux is a terminal multiplexer: it enables a number of terminals (or
