@@ -720,11 +720,11 @@ shows it again when the mouse cursor moves or a mouse button is pressed.")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://sillycycle.com/xlock/"
-                                       name "-" version ".tar.xz")
+                                       "xlockmore-" version ".tar.xz")
                         ;; Previous releases are moved to a subdirectory.
                         (string-append "http://sillycycle.com/xlock/"
                                        "recent-releases/"
-                                       name "-" version ".tar.xz")))
+                                       "xlockmore-" version ".tar.xz")))
              (sha256
               (base32
                "1va11sbv5lbkxkp0i0msz5md3n2n82nzppk27rzdrw7y79vq37zw"))))
