@@ -2337,7 +2337,7 @@ on the screen and keyboard to display letters.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.6.10")
+    (version "1.9.3.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2345,7 +2345,7 @@ on the screen and keyboard to display letters.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7swvpzq20am4w2rsjpp6fsvbjv07il6wbfy45a7h9zsdihmqhl"))))
+                "1ky182p4svwdqm6cf7jbns85hidkhkhq4s17cs2p381f0klapfjz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
