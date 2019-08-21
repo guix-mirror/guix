@@ -13646,6 +13646,32 @@ integrating @code{iedit-mode} into Evil mode with an attempt at sensible
 defaults.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-mc
+  (let ((commit "5205fe671803465149e578849bbbe803c23a8e4e")
+        (revision "1"))
+    (package
+      (name "emacs-evil-mc")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gabesoft/evil-mc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03pxpjjxbai4dwp84bgxh52ahh0f6ac58xi2mds1kl4v93nm7v42"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (native-inputs
+       `(("emacs-espuds" ,emacs-espuds)))
+      (home-page "https://github.com/gabesoft/evil-mc")
+      (synopsis "Interactive search compatible with @code{multiple-cursors}")
+      (description "This package can be used with @code{multiple-cursors} to
+provide an incremental search that moves all fake cursors in sync.")
+      (license license:expat))))
+
 (define-public emacs-evil-org
   (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
     (package
