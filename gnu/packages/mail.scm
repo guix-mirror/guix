@@ -1003,7 +1003,7 @@ and search library.")
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
-                           name "-" version ".tar.gz"))
+                           "getmail-" version ".tar.gz"))
        (sha256
         (base32
          "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
