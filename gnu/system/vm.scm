@@ -143,7 +143,7 @@
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
-                                             (system (%current-system))
+                                             (system (%current-system)) target
                                              (linux linux-libre)
                                              initrd
                                              (qemu qemu-minimal)
@@ -214,7 +214,8 @@ made available under the /xchg CIFS share."
               (use-modules (guix build utils)
                            (gnu build vm))
 
-              (let* ((inputs  '#$(list qemu (canonical-package coreutils)))
+              (let* ((native-inputs
+                      '#+(list qemu (canonical-package coreutils)))
                      (linux   (string-append #$linux "/"
                                              #$(system-linux-image-file-name)))
                      (initrd  #$initrd)
@@ -222,16 +223,18 @@ made available under the /xchg CIFS share."
                      (graphs  '#$(match references-graphs
                                    (((graph-files . _) ...) graph-files)
                                    (_ #f)))
+                     (target  #$(or (%current-target-system) (%current-system)))
                      (size    #$(if (eq? 'guess disk-image-size)
                                     #~(+ (* 70 (expt 2 20)) ;ESP
                                          (estimated-partition-size graphs))
                                     disk-image-size)))
 
-                (set-path-environment-variable "PATH" '("bin") inputs)
+                (set-path-environment-variable "PATH" '("bin") native-inputs)
 
                 (load-in-linux-vm loader
                                   #:output #$output
                                   #:linux linux #:initrd initrd
+                                  #:qemu (qemu-command target)
                                   #:memory-size #$memory-size
                                   #:make-disk-image? #$make-disk-image?
                                   #:single-file-output? #$single-file-output?
@@ -248,6 +251,7 @@ made available under the /xchg CIFS share."
     (gexp->derivation name builder
                       ;; TODO: Require the "kvm" feature.
                       #:system system
+                      #:target target
                       #:env-vars env-vars
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs)))
@@ -263,6 +267,7 @@ made available under the /xchg CIFS share."
                         file-system-label
                         file-system-uuid
                         (system (%current-system))
+                        (target (%current-target-system))
                         (qemu qemu-minimal)
                         os
                         bootcfg-drv
@@ -299,7 +304,7 @@ INPUTS is a list of inputs (as for packages)."
            (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
-                  '#$(append (list qemu parted e2fsprogs dosfstools xorriso)
+                  '#$(append (list parted e2fsprogs dosfstools xorriso)
                              (map canonical-package
                                   (list sed grep coreutils findutils gawk))))
 
@@ -328,6 +333,7 @@ INPUTS is a list of inputs (as for packages)."
                                  #:volume-uuid #$(and=> file-system-uuid
                                                         uuid-bytevector))))))
    #:system system
+   #:target target
 
    ;; Keep a local file system for /tmp so that we can populate it directly as
    ;; root and have files owned by root.  See <https://bugs.gnu.org/31752>.
@@ -346,6 +352,7 @@ INPUTS is a list of inputs (as for packages)."
 (define* (qemu-image #:key
                      (name "qemu-image")
                      (system (%current-system))
+                     (target (%current-target-system))
                      (qemu qemu-minimal)
                      (disk-image-size 'guess)
                      (disk-image-format "qcow2")
@@ -404,7 +411,7 @@ system."
            (setlocale LC_ALL "en_US.utf8")
 
            (let ((inputs
-                  '#$(append (list qemu parted e2fsprogs dosfstools)
+                  '#$(append (list parted e2fsprogs dosfstools)
                              (map canonical-package
                                   (list sed grep coreutils findutils gawk))))
 
@@ -481,6 +488,7 @@ system."
                                      #:bootloader-installer
                                      #$(bootloader-installer bootloader)))))))
    #:system system
+   #:target target
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:disk-image-format disk-image-format
