@@ -335,8 +335,8 @@ as Alfresco or Nuxeo.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://dev-www.libreoffice.org/src/" name "/"
-                          name "-" version ".tar.xz"))
+      (uri (string-append "https://dev-www.libreoffice.org/src/libabw/"
+                          "libabw-" version ".tar.xz"))
       (sha256 (base32
                "11949iscdb99f2jplxjd39282jxcrf2fw0sqbh5dl7gqb96r8whb"))))
     (build-system gnu-build-system)
