@@ -1111,7 +1111,7 @@ follower.")
               (uri (git-reference
                     (url "https://github.com/FluidSynth/fluidsynth.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0rv0apxbj0cgm8f8sqf5xr6kdi4q58ph92ip6cg716ha0ca5lr8y"))))
