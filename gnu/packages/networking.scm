@@ -556,7 +556,7 @@ and up to 1 Mbit/s downstream.")
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           name "_" version ".tar.xz"))
+                           "whois_" version ".tar.xz"))
        (sha256
         (base32
          "0gbg9fis05zf2fl4264jplbphy75l50k3g92cz6mkmbsklrn7v34"))))
