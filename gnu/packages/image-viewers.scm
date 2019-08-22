@@ -501,14 +501,14 @@ preloading.")
 (define-public chafa
   (package
     (name "chafa")
-    (version "1.0.1")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "00cf2z52az0z6bzc3hfm4l8infipy5ck410wqmbaybd2csjr3m29"))))
+                "1hj4vdyczby8h52ff23qxl8ng18p5jy549idngpiddwszf5s4drz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
