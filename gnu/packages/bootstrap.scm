@@ -290,7 +290,9 @@ or false to signal an error."
 
 (define %bootstrap-base-urls
   ;; This is where the initial binaries come from.
-  '("https://alpha.gnu.org/gnu/guix/bootstrap"
+  '("https://ftp.gnu.org/gnu/guix/bootstrap"
+    "https://alpha.gnu.org/gnu/guix/bootstrap"
+    "http://ftp.gnu.org/gnu/guix/bootstrap"
     "http://alpha.gnu.org/gnu/guix/bootstrap"
     "ftp://alpha.gnu.org/gnu/guix/bootstrap"
     "http://www.fdn.fr/~lcourtes/software/guix/packages"
