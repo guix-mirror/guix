@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Mikhail Kirillov <w96k.ru@gmail.com>
+;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8737,3 +8738,72 @@ then check out http://127.0.0.1:1080 to see the mail.")
      "This package provides a pure Ruby library for event-driven IO.")
     (home-page "https://github.com/castwide/backport")
     (license license:expat)))
+
+(define-public ruby-json-schema
+  (package
+    (name "ruby-json-schema")
+    (version "2.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "json-schema" version))
+       (sha256
+        (base32
+         "1yv5lfmr2nzd14af498xqd5p89f3g080q8wk0klr3vxgypsikkb5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (invoke "gem" "build" ".gemspec"))))))
+    (propagated-inputs
+     `(("ruby-addressable" ,ruby-addressable)))
+    (synopsis "Ruby JSON Schema Validator")
+    (description "This library provides Ruby with an interface for validating
+JSON objects against a JSON schema conforming to JSON Schema Draft 4.  Legacy
+support for JSON Schema Draft 3, JSON Schema Draft 2, and JSON Schema Draft 1
+is also included.")
+    (home-page "https://github.com/ruby-json-schema/json-schema")
+    (license license:expat)))
+
+(define-public swagger-diff
+  (package
+    (name "swagger-diff")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "swagger-diff" version))
+       (sha256
+        (base32
+         "1hxx50nga1bqn254iqjcdwkc9c72364ks9lyjyw10ajz0l0ly7sn"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Don't run or require rubocop, the code linting tool, as this is a
+         ;; bit unnecessary.
+         (add-after 'unpack 'dont-run-rubocop
+           (lambda _
+             (substitute* "Rakefile"
+               ((".*rubocop.*") "")
+               ((".*RuboCop.*") ""))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-json-schema" ,ruby-json-schema)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec-core" ,ruby-rspec-core)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations)))
+    (synopsis
+     "Compare Open API Initiative specification files")
+    (description
+     "Swagger::Diff is a utility for comparing two different Open API
+Initiative (OAI) specifications (formerly known as Swagger specifications).
+It is intended to determine whether a newer API specification is
+backwards-compatible with an older API specification.")
+    (home-page "https://github.com/civisanalytics/swagger-diff")
+    (license license:bsd-3)))

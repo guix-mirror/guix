@@ -5089,6 +5089,41 @@ by a sparse number of variables, this method can reduce the complexity of
 data, to only emphasize the data that actually matters.")
     (license license:expat)))
 
+(define-public r-rcistarget
+  (package
+    (name "r-rcistarget")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RcisTarget" version))
+       (sha256
+        (base32
+         "133x2vr86ifbk82q08x1c8q19zsk5za7b6qrzz77dhsyf4bhcvpd"))))
+    (properties `((upstream-name . "RcisTarget")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aucell" ,r-aucell)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-feather" ,r-feather)
+       ("r-gseabase" ,r-gseabase)
+       ("r-r-utils" ,r-r-utils)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://aertslab.org/#scenic")
+    (synopsis "Identify transcription factor binding motifs enriched on a gene list")
+    (description
+     "RcisTarget identifies @dfn{transcription factor binding motifs} (TFBS)
+over-represented on a gene list.  In a first step, RcisTarget selects DNA
+motifs that are significantly over-represented in the surroundings of the
+@dfn{transcription start site} (TSS) of the genes in the gene-set.  This is
+achieved by using a database that contains genome-wide cross-species rankings
+for each motif.  The motifs that are then annotated to TFs and those that have
+a high @dfn{Normalized Enrichment Score} (NES) are retained.  Finally, for
+each motif and gene-set, RcisTarget predicts the candidate target genes (i.e.
+genes in the gene-set that are ranked above the leading edge).")
+    (license license:gpl3)))
+
 (define-public r-cicero
   (package
     (name "r-cicero")
@@ -5151,3 +5186,47 @@ accessibility data.")
        `(("r-monocle3" ,r-monocle3)
          ,@(alist-delete "r-monocle"
                          (package-propagated-inputs r-cicero)))))))
+
+(define-public r-cistopic
+  (let ((commit "29abd8df9afb60ff27ac3f0a590930debe926950")
+        (revision "0"))
+    (package
+      (name "r-cistopic")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aertslab/cisTopic.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0s8irpsv5d2zcv4ihanvsf1vrpignzliscxnvs4519af3jmx78h8"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-aucell" ,r-aucell)
+         ("r-data-table" ,r-data-table)
+         ("r-dplyr" ,r-dplyr)
+         ("r-dosnow" ,r-dosnow)
+         ("r-dt" ,r-dt)
+         ("r-feather" ,r-feather)
+         ("r-fitdistrplus" ,r-fitdistrplus)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-lda" ,r-lda)
+         ("r-matrix" ,r-matrix)
+         ("r-plyr" ,r-plyr)
+         ("r-rcistarget" ,r-rcistarget)
+         ("r-rtracklayer" ,r-rtracklayer)
+         ("r-s4vectors" ,r-s4vectors)))
+      (home-page "https://github.com/aertslab/cisTopic")
+      (synopsis "Modelling of cis-regulatory topics from single cell epigenomics data")
+      (description
+       "The sparse nature of single cell epigenomics data can be overruled using
+probabilistic modelling methods such as @dfn{Latent Dirichlet
+Allocation} (LDA).  This package allows the probabilistic modelling of
+cis-regulatory topics (cisTopics) from single cell epigenomics data, and
+includes functionalities to identify cell states based on the contribution of
+cisTopics and explore the nature and regulatory proteins driving them.")
+      (license license:gpl3))))

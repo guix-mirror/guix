@@ -684,7 +684,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "9")
+         (bind-patch-version "10")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -825,7 +825,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "03n57as73ygw6g3lqsmq2idkykajpbskzgixixdvi5a76m4g0fwn"))))
+                      "1hvhdaar9swh5087kzkbmav1nbn19rxh0m60x0d7gri0v8689fxj"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1240,9 +1240,10 @@ commands and their arguments.")
       CONFIG_READLINE=y\n" port)
                (close-port port))
              #t))
-         (add-after 'install 'install-man-pages
+         (add-after 'install 'install-documentation
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
+                    (doc  (string-append out "/share/doc/wpa-supplicant"))
                     (man  (string-append out "/share/man"))
                     (man5 (string-append man "/man5"))
                     (man8 (string-append man "/man8")))
@@ -1255,6 +1256,15 @@ commands and their arguments.")
                          (find-files "doc/docbook" "\\.5"))
                (for-each (copy-man-page man8)
                          (find-files "doc/docbook" "\\.8"))
+
+               ;; wpa_supplicant.conf(5) does not explain all configuration
+               ;; options but refers to the example config file, so install it
+               ;; along with READMEs.
+               (for-each (lambda (file)
+                           (install-file file doc))
+                         '("README" "README-DPP" "README-HS20"
+                           "README-P2P" "README-WPS"
+                           "wpa_supplicant.conf"))
                #t))))
 
       #:make-flags (list "CC=gcc"
@@ -1303,7 +1313,7 @@ command.")
       CONFIG_CTRL_IFACE_DBUS_INTRO=y\n" port)
                  (close-port port))
                #t))
-          (add-after 'install-man-pages 'install-dbus-conf
+          (add-after 'install-documentation 'install-dbus-conf
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
                      (dir (string-append out "/etc/dbus-1/system.d")))
@@ -2124,14 +2134,14 @@ done with the @code{auditctl} utility.")
 (define-public nmap
   (package
     (name "nmap")
-    (version "7.70")
+    (version "7.80")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nmap.org/dist/nmap-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "063fg8adx23l4irrh5kn57hsmi1xvjkar4vm4k6g94ppan4hcyw4"))
+                "1aizfys6l9f9grm82bk878w56mg0zpkfns3spzj157h98875mypw"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -2744,14 +2754,14 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.9")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
+        (base32 "0xb6crd9vig3xgjwl8m4bmgcs4azfmfdpx3g8pdpzs28jdg7i3rr"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

@@ -74,6 +74,12 @@
     (((and (? lint-warning?) warning))
      (lint-warning-message warning))))
 
+(define (warning-contains? str warnings)
+  "Return true if WARNINGS is a singleton with a warning that contains STR."
+  (match warnings
+    (((? lint-warning? warning))
+     (string-contains (lint-warning-message warning) str))))
+
 
 (test-begin "lint")
 
@@ -366,13 +372,11 @@
     (single-lint-warning-message
      (check-home-page pkg))))
 
-(test-equal "home-page: host not found"
-  "URI http://does-not-exist domain not found: Name or service not known"
+(test-assert "home-page: host not found"
   (let ((pkg (package
                (inherit (dummy-package "x"))
                (home-page "http://does-not-exist"))))
-    (single-lint-warning-message
-     (check-home-page pkg))))
+    (warning-contains? "domain not found" (check-home-page pkg))))
 
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: Connection refused"

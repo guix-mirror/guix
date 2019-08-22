@@ -409,6 +409,38 @@
          (equal? (derivation->output-path final1)
                  (derivation->output-path final2)))))
 
+(test-assert "derivation with duplicate fixed-output inputs"
+  ;; Here we create a derivation that has two inputs, both of which are
+  ;; fixed-output leading to the same result.  This test ensures the hash of
+  ;; that derivation is correctly computed, namely that duplicate inputs are
+  ;; coalesced.  See <https://bugs.gnu.org/36777>.
+  (let* ((builder1   (add-text-to-store %store "fixed-builder1.sh"
+                                        "echo -n hello > $out" '()))
+         (builder2   (add-text-to-store %store "fixed-builder2.sh"
+                                        "echo hey; echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (fixed1     (derivation %store "fixed"
+                                 %bash `(,builder1)
+                                 #:hash hash #:hash-algo 'sha256))
+         (fixed2     (derivation %store "fixed"
+                                 %bash `(,builder2)
+                                 #:hash hash #:hash-algo 'sha256))
+         (builder3   (add-text-to-store %store "builder.sh"
+                                        "echo fake builder"))
+         (final      (derivation %store "final"
+                                 %bash `(,builder3)
+                                 #:sources (list %bash builder3)
+                                 #:inputs (list (derivation-input fixed1)
+                                                (derivation-input fixed2)))))
+    (and (derivation? final)
+         (match (derivation-inputs final)
+           (((= derivation-input-derivation one)
+             (= derivation-input-derivation two))
+            (and (not (string=? (derivation-file-name one)
+                                (derivation-file-name two)))
+                 (string=? (derivation->output-path one)
+                           (derivation->output-path two))))))))
+
 (test-assert "multiple-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo one > $out ; echo two > $second"

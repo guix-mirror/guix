@@ -183,8 +183,20 @@ their folder.
        #:test-target "tests"
        #:phases
        (modify-phases %standard-phases
-         ;; No install target.
+         (add-after 'unpack 'search-$PATH-for-binaries
+           ;; lsyncd requires and hard-codes absolute file names to binaries.
+           ;; Make it fall back to searching $PATH for relative file names.
+           (lambda _
+             (substitute* "lsyncd.c"
+               (("execv\\(") "execvp("))
+             (substitute* (list "lsyncd.lua"
+                                "default-direct.lua"
+                                "default-rsync.lua"
+                                "default-rsyncssh.lua")
+               (("(|/usr)/bin/") ""))
+             #t))
          (replace 'install
+           ;; No install target.
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bin (string-append out "/bin"))

@@ -349,26 +349,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.8")
+(define-public linux-libre-5.2-version "5.2.9")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "0dv91zfjkil29lp2l35lswkrhrqbc4kjh965ciaqwih1rh3cs9x1")))
+        (hash (base32 "1rnlnphw9rih4qhdld9ic5lnj5jh4vy5nqbj9lqwv9bc615jmw5n")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.66")
+(define-public linux-libre-4.19-version "4.19.67")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0r6vzarmi77fhivd1n6f667sgcw8zd54ykmhmp6rd52bbkhsp0f9")))
+        (hash (base32 "00m5k0nfcvgff70686rbhn3w8c9wc3jxqvyddw40lylaqdh3s72s")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.138")
+(define-public linux-libre-4.14-version "4.14.139")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0yw39cqpk6g42q0xcv2aq8yyzsi0kzx9nvlfbw0iyg58wcfvsl7j")))
+        (hash (base32 "0hkhwcbxg6bry13w9kspx48b10274w6pgv200wh91fjd8jax8qlc")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
@@ -3927,6 +3927,49 @@ repair and easy administration.")
     (description "This package provides the statically-linked @command{btrfs}
 from the btrfs-progs package.  It is meant to be used in initrds.")
     (license (package-license btrfs-progs))))
+
+(define-public compsize
+  (package
+    (name "compsize")
+    (version "1.3")
+    (home-page "https://github.com/kilobyte/compsize")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32 "1c69whla844nwis30jxbj00zkpiw3ccndhkmzjii8av5358mjn43"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("btrfs-progs" ,btrfs-progs)))
+    (arguments
+     `(#:tests? #f                      ; No tests.
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "compsize" (string-append out "/bin"))
+               (install-file "compsize.8" (string-append out "/share/man/man8"))))))))
+    (synopsis "Find compression type/ratio on Btrfs files")
+    (description "@command{compsize} takes a list of files (given as
+arguments) on a Btrfs file system and measures used compression types and
+effective compression ratio, producing a report.
+
+A directory has no extents but has a (recursive) list of files.  A non-regular
+file is silently ignored.
+
+As it makes no sense to talk about compression ratio of a partial extent,
+every referenced extent is counted whole, exactly once -- no matter if you use
+only a few bytes of a 1GB extent or reflink it a thousand times.  Thus, the
+uncompressed size will not match the number given by @command{tar} or
+@command{du}.  On the other hand, the space used should be accurate (although
+obviously it can be shared with files outside our set).")
+    (license license:gpl2+)))
 
 (define-public f2fs-tools-1.7
   (package

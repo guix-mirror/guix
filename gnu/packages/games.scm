@@ -1386,7 +1386,7 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.1.3")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1395,7 +1395,7 @@ that beneath its ruins lay buried an ancient evil.")
                            "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0vs0314lbdc6rzxn4jnb7zp6n1p1cdb8r53savadn7k9vbwc80ll"))
+         "0vdm1ymm28wawp94nl1p5q3lhc0k7cnn2kkvvrkfx962gif4kqfk"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -1409,7 +1409,7 @@ that beneath its ruins lay buried an ancient evil.")
                          (delete-file-recursively lib-subdir)))
                      '("fonts" "icons" "sounds" "tiles"))
            (substitute* "lib/Makefile"
-             ;; And don't try to invoke makefiles in the directories we removed
+             ;; And don't try to invoke makefiles in the directories we removed.
              (("gamedata customize help screens fonts tiles sounds icons user")
               "gamedata customize help screens user"))
            #t))))
@@ -2340,15 +2340,15 @@ on the screen and keyboard to display letters.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.6.10")
+    (version "1.9.3.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://repo.manaplus.org/manaplus/download/"
+                    "https://repo.manaplus.org/manaplus/download/"
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7swvpzq20am4w2rsjpp6fsvbjv07il6wbfy45a7h9zsdihmqhl"))))
+                "1ky182p4svwdqm6cf7jbns85hidkhkhq4s17cs2p381f0klapfjz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2363,7 +2363,7 @@ on the screen and keyboard to display letters.")
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
        ("sdl-union" ,(sdl-union))))
-    (home-page "http://manaplus.org")
+    (home-page "https://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
     (description
      "ManaPlus is a 2D MMORPG client for game servers.  It is the only
@@ -2828,7 +2828,7 @@ players.")
     (version "2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://http.debian.net/debian/pool/main/e/"
+              (uri (string-append "mirror://debian/pool/main/e/"
                                   "einstein/einstein_2.0.dfsg.2.orig.tar.gz"))
               (sha256
                (base32

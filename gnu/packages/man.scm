@@ -224,6 +224,18 @@ Linux kernel and C library interfaces employed by user-space programs.")
 automatically.")
     (license gpl3+)))
 
+(define-public help2man/latest
+  (package
+    (inherit help2man)
+    (version "1.47.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/help2man/help2man-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "123vsimgx8zq1h077sbyh3bd0hbmlc3wih2231wwh133z1bv51ar"))))))
+
 (define-public scdoc
   (package
    (name "scdoc")

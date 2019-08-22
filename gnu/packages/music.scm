@@ -1535,7 +1535,7 @@ reverb effects.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.8")
+    (version "0.8.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1544,7 +1544,7 @@ reverb effects.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15dr1nyj69wc9jnjq5z8ril90a3c0mcrii4zjyz0z3h7dhia3382"))))
+                "1lpsa64xvwa9xbbp8zcwxy5w0daffc7fziny2pizabqh7m9xqjl2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no "check" target
@@ -1782,7 +1782,7 @@ export.")
 (define-public pd
   (package
     (name "pd")
-    (version "0.49-0")
+    (version "0.50-0")
     (source (origin
               (method url-fetch)
               (uri
@@ -1790,10 +1790,10 @@ export.")
                               version ".src.tar.gz"))
               (sha256
                (base32
-                "18rzqbpgnnvyslap7k0ly87aw1bbxkb0rk5agpr423ibs9slxq6j"))))
+                "0hg4n5b55f650qsc0mjx559072dp7vfza7w0pvk6rk2l831cvsps"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no "check" target
+     `(#:tests? #f                      ; no "check" target
        #:configure-flags
        (list
         "--enable-jack"

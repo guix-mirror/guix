@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -801,10 +802,14 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                 (description
                  "Install the given fonts on the specified ttys (fonts are per
 virtual console on GNU/Linux).  The value of this service is a list of
-tty/font pairs like:
+tty/font pairs.  The font can be the name of a font provided by the @code{kbd}
+package or any valid argument to @command{setfont}, as in this example:
 
 @example
-'((\"tty1\" . \"LatGrkCyr-8x16\"))
+'((\"tty1\" . \"LatGrkCyr-8x16\")
+  (\"tty2\" . (file-append
+                font-tamzen
+                \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\")))
 @end example\n")))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))

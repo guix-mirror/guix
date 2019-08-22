@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -267,7 +268,7 @@ target that libc."
            (cond
             ((target-mingw? target)
              (if libc
-                 `(("libc" ,mingw-w64)
+                 `(("libc" ,libc)
                    ,@inputs)
                  `(("mingw-source" ,(package-source mingw-w64))
                    ,@inputs)))
@@ -508,7 +509,8 @@ and the cross tool chain."
                      #:optional
                      (libc glibc))
   (if (target-mingw? target)
-      mingw-w64
+      (let ((machine (substring target 0 (string-index target #\-))))
+        (make-mingw-w64 machine))
       libc))
 
 (define* (cross-newlib? target

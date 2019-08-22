@@ -184,9 +184,8 @@ AC_DEFUN([GUIX_CHECK_GUILE_JSON], [
     [guix_cv_have_recent_guile_json],
     [GUILE_CHECK([retval],
       [(use-modules (json) (ice-9 match))
-       (match (json-string->scm \"[[] { \\\"a\\\": 42 } []]\")
-         (#(("a" . 42)) #t)
-	 (_ #f))])
+       (match (json-string->scm \"[[ { \\\"a\\\": 42 } ]]\")
+         (#((("a" . 42))) #t))])
      if test "$retval" = 0; then
        guix_cv_have_recent_guile_json="yes"
      else

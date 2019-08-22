@@ -2230,14 +2230,14 @@ topics for ecologists (ISBN 978-0-691-12522-0).")
 (define-public r-lpsolve
   (package
     (name "r-lpsolve")
-    (version "5.6.13.2")
+    (version "5.6.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "lpSolve" version))
        (sha256
         (base32
-         "0fc5m259ayc880f5hvnq59ih6nb2rlp394n756n1khmxbjpw1w3m"))))
+         "1xazby8amb47vw5n12k13awv7x3bjci3q8vdd3vk1ms0ii16ahg6"))))
     (properties `((upstream-name . "lpSolve")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/lpSolve")
@@ -5851,14 +5851,14 @@ functions.")
 (define-public r-rjags
   (package
     (name "r-rjags")
-    (version "4-8")
+    (version "4-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rjags" version))
        (sha256
         (base32
-         "17xmjksj69f9wk4x71jxk4cgiqhaf2fj6bjm0mgzp4qln5x84a8m"))))
+         "1vrmxxfnia2mkmfkp5yaq5qrlh4xg3ggab6fnj14mrp1231wb91a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-coda" ,r-coda)))
@@ -6823,13 +6823,13 @@ and coverage methods to tune the choice of threshold.")
 (define-public r-ggstance
   (package
     (name "r-ggstance")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggstance" version))
        (sha256
-        (base32 "078ih9s5b0xzf582qg0vjnxvg5qad5ms1v2vdd062ckahi8zz1r8"))))
+        (base32 "0kdksay61hyb6612b07r84chh7a9aibjyclk3qcypvr9aang8hkh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -14752,14 +14752,14 @@ into R and converted to @code{BibEntry} objects.")
 (define-public r-citr
   (package
     (name "r-citr")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "citr" version))
        (sha256
         (base32
-         "0p2sg0fl7cppxxmr20qyqzs2469kglmgpsvykynw4qx501as57rc"))))
+         "1qbarvafjb8jgkrnrhh6jw7mcglmjwf7dpdiibxf39jkmlhf7las"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
@@ -14945,3 +14945,155 @@ path of values for the regularization parameter.")
 library uses.  It is also possible to control the number of threads in
 OpenMP.")
     (license license:agpl3+)))
+
+(define-public r-lda
+  (package
+    (name "r-lda")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lda" version))
+       (sha256
+        (base32
+         "03r4h5kgr8mfy44p66mfj5bp4k00g8zh4a1mhn46jw14pkhs21jn"))))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/lda/")
+    (synopsis "Collapsed Gibbs sampling methods for topic models")
+    (description
+     "This package implements @dfn{latent Dirichlet allocation} (LDA) and
+related models.  This includes (but is not limited to) sLDA, corrLDA, and the
+mixed-membership stochastic blockmodel.  Inference for all of these models is
+implemented via a fast collapsed Gibbs sampler written in C.  Utility
+functions for reading/writing data typically used in topic models, as well as
+tools for examining posterior distributions are also included.")
+    ;; Any version of the LGPL
+    (license license:lgpl3+)))
+
+(define-public r-rann-l1
+  (package
+    (name "r-rann-l1")
+    (version "2.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RANN.L1" version))
+       (sha256
+        (base32
+         "1hanh3my84mdr5wy6b89fawqzfc184vff1y65wy4l5ld9qza1n44"))))
+    (properties `((upstream-name . "RANN.L1")))
+    (build-system r-build-system)
+    (home-page "https://github.com/jefferis/RANN/tree/master-L1")
+    (synopsis "Fast nearest neighbour search using L1 metric")
+    (description
+     "This package provides tools to find the k nearest neighbours for every
+point in a given dataset in O(N log N) time using Arya and Mount's ANN
+library.  There is support for approximate as well as exact searches, fixed
+radius searches and @code{bd} as well as @code{kd} trees.  The distance is
+computed using the L1 (Manhattan, taxicab) metric.")
+    (license license:gpl3+)))
+
+(define-public r-patchwork
+  ;; There has been no public release yet.
+  (let ((commit "fd7958bae3e7a1e30237c751952e412a0a1d1242")
+        (revision "1"))
+    (package
+      (name "r-patchwork")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/thomasp85/patchwork.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00fq520xwy1ysg4k8x48x9b0yy9wyi8y8zj6dvxjg4bwx0yyp6s4"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-ggplot2" ,r-ggplot2)
+         ("r-gtable" ,r-gtable)))
+      (home-page "https://github.com/thomasp85/patchwork")
+      (synopsis "Compose ggplot2 plots")
+      (description
+       "The @code{ggplot2} package provides a strong API for sequentially
+building up a plot, but does not concern itself with composition of multiple
+plots.  Patchwork is a package that expands the API to allow for arbitrarily
+complex composition of plots by providing mathmatical operators for combining
+multiple plots.")
+      (license license:expat))))
+
+(define-public r-liger
+  (package
+    (name "r-liger")
+    (version "0.4.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MacoskoLab/liger.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "16dzwwcpw6n78pxlc5w3kraigki35ix7zhd2cbx5f3y60bbkhlmx"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file "inst/java/ModularityOptimizer.jar")
+           #t))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'build-java-part
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "unzip" (assoc-ref inputs "optimizer-src"))
+             (for-each (lambda (file) (invoke "javac" file))
+                       (find-files "." "\\.java$"))
+             (apply invoke "jar" "cf" "inst/java/ModularityOptimizer.jar"
+                    (find-files "." "\\.class$"))
+             #t)))))
+    (propagated-inputs
+     `(("r-cowplot" ,r-cowplot)
+       ("r-dosnow" ,r-dosnow)
+       ("r-dplyr" ,r-dplyr)
+       ("r-fnn" ,r-fnn)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-ggrepel" ,r-ggrepel)
+       ("r-hmisc" ,r-hmisc)
+       ("r-ica" ,r-ica)
+       ("r-irlba" ,r-irlba)
+       ("r-matrix" ,r-matrix)
+       ("r-mclust" ,r-mclust)
+       ("r-patchwork" ,r-patchwork)
+       ("r-plyr" ,r-plyr)
+       ("r-rann-l1" ,r-rann-l1)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)
+       ("r-riverplot" ,r-riverplot)
+       ("r-rtsne" ,r-rtsne)
+       ("r-snow" ,r-snow)))
+    (native-inputs
+     `(("jdk" ,icedtea "jdk")
+       ;; See https://github.com/MacoskoLab/liger/issues/96
+       ;; The optimizer is released under the Expat license.
+       ("optimizer-src"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.ludowaltman.nl/slm/modularity_optimizer_source.zip")
+           (sha256
+            (base32
+             "01hmm6sapcmldvayknqx2w4cav3qv71mwwkdkwj4qgq6dss09g18"))))
+       ("unzip" ,unzip)
+       ("r-knitr" ,r-knitr))) ; for vignettes
+    (home-page "https://github.com/MacoskoLab/liger")
+    (synopsis "Integrate and analyze multiple single-cell datasets")
+    (description
+     "LIGER is a package for integrating and analyzing multiple single-cell
+datasets, developed and maintained by the Macosko lab.  It relies on
+integrative non-negative matrix factorization to identify shared and
+dataset-specific factors.")
+    (license license:gpl3)))

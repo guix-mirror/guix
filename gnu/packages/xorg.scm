@@ -1805,7 +1805,7 @@ used with other display managers such as gdm or kdm.")
 (define-public setxkbmap
   (package
     (name "setxkbmap")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -1815,7 +1815,7 @@ used with other display managers such as gdm or kdm.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qfk097vjysqb72pq89h0la3462kbb2dh1d11qzs2fr67ybb7pd9"))))
+            "1xdrxs65v7d0rw1yaz0vsz55w4hxym99216p085ya9978j379wlg"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
@@ -4167,16 +4167,16 @@ an X server.")
 (define-public xrandr
   (package
     (name "xrandr")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/xrandr-"
-               version ".tar.bz2"))
+               version ".tar.xz"))
         (sha256
           (base32
-            "1kaih7rmzxr1vp5a5zzjhm5x7dn9mckya088sqqw026pskhx9ky1"))))
+            "0ql75s1n3dm2m3g1ilb9l6hqh15r0v709bgghpwazy3jknpnvivv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)

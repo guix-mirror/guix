@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
@@ -130,6 +130,11 @@ actions.")
       (arguments
        `( ;; Enable support for a "map" pane using GPS data.
          #:configure-flags '("--enable-map")
+
+         ;; Parallel builds fail with something like:
+         ;;   image-load.c:143:9: error: ‘gq_marshal_VOID__INT_INT_INT_INT’ undeclared
+         ;; due to unexpressed makefile dependencies.
+         #:parallel-build? #f
 
          #:phases
          (modify-phases %standard-phases
@@ -496,14 +501,14 @@ preloading.")
 (define-public chafa
   (package
     (name "chafa")
-    (version "1.0.1")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hpjansson.org/chafa/releases/chafa-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "00cf2z52az0z6bzc3hfm4l8infipy5ck410wqmbaybd2csjr3m29"))))
+                "1hj4vdyczby8h52ff23qxl8ng18p5jy549idngpiddwszf5s4drz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

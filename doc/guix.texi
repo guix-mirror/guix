@@ -25514,6 +25514,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
+                       (user "alice")
                        (identity "./id_rsa")
                        (port 2222)))))
 @end example
@@ -25546,6 +25547,15 @@ accepts store items it receives from the coordinator:
 # guix archive --authorize < coordinator-public-key.txt
 @end example
 
+@code{user}, in this example, specifies the name of the user account to log in
+as to perform the deployment.  Its default value is @code{root}, but root
+login over SSH may be forbidden in some cases.  To work around this,
+@command{guix deploy} can log in as an unprivileged user and employ
+@code{sudo} to escalate privileges.  This will only work if @code{sudo} is
+currently installed on the remote and can be invoked non-interactively as
+@code{user}.  That is: the line in @code{sudoers} granting @code{user} the
+ability to use @code{sudo} must contain the @code{NOPASSWD} tag.
+
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix
 deployment.
@@ -25573,6 +25583,14 @@ with an @code{environment} of @code{managed-host-environment-type}.
 
 @table @asis
 @item @code{host-name}
+@item @code{build-locally?} (default: @code{#t})
+If false, system derivations will be built on the machine being deployed to.
+@item @code{system}
+The Nix system type describing the architecture of the machine being deployed
+to. This should look something like ``x86_64-linux''.
+@item @code{authorize?} (default: @code{#t})
+If true, the coordinator's signing key will be added to the remote's ACL
+keyring.
 @item @code{port} (default: @code{22})
 @item @code{user} (default: @code{"root"})
 @item @code{identity} (default: @code{#f})

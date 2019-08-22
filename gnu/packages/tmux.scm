@@ -38,7 +38,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "2.9")
+    (version "2.9a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -46,12 +46,12 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "10195hp5ydkwwmpcr7188fgx9daqwrslb1lylgrrkzc6yhr1541l"))))
+               "099vn8mg2nnizbqqc87a5mxm8c46kadfhx30dgxbz9hp8mx1d7c3"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
        ("ncurses" ,ncurses)))
-    (home-page "http://tmux.github.io/")
+    (home-page "https://tmux.github.io/")
     (synopsis "Terminal multiplexer")
     (description
      "tmux is a terminal multiplexer: it enables a number of terminals (or

@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -104,6 +105,7 @@
                "-DWITH_INSTALL_PORTABLE=OFF"
                "-DWITH_JACK=ON"
                "-DWITH_MOD_OCEANSIM=ON"
+               "-DWITH_OPENSUBDIV=ON"
                "-DWITH_PYTHON_INSTALL=OFF"
                (string-append "-DPYTHON_LIBRARY=python" ,python-version "m")
                (string-append "-DPYTHON_LIBPATH=" (assoc-ref %build-inputs "python")
@@ -139,6 +141,7 @@
        ("libx11" ,libx11)
        ("openimageio" ,openimageio)
        ("openexr" ,openexr)
+       ("opensubdiv" ,opensubdiv)
        ("ilmbase" ,ilmbase)
        ("openjpeg" ,openjpeg)
        ("libjpeg" ,libjpeg)
@@ -972,3 +975,47 @@ your terminal.  It comes bundled with predefined styles:
 look.  The result can be uploaded on any web server without additional
 requirements.")
     (license license:gpl2+)))
+
+(define-public opensubdiv
+  (package
+    (name "opensubdiv")
+    (version "3_4_0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/PixarAnimationStudios/OpenSubdiv")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0cippg6aqc5dlya1cmh3908pwssrg52fwgyylnvz5343yrxmgk12"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-glew-location
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "GLEW_LOCATION" (assoc-ref inputs "glew"))
+                      #t))
+                  (add-before 'check 'start-xorg-server
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; The test suite requires a running X server.
+                      (system (string-append (assoc-ref inputs "xorg-server")
+                                             "/bin/Xvfb :1 &"))
+                      (setenv "DISPLAY" ":1")
+                      #t)))))
+    (native-inputs
+     `(("xorg-server" ,xorg-server)))
+    (inputs
+     `(("glew" ,glew)
+       ("libxrandr" ,libxrandr)
+       ("libxcursor" ,libxcursor)
+       ("libxinerama" ,libxinerama)
+       ("libxi" ,libxi)
+       ("zlib" ,zlib)
+       ("glfw" ,glfw)))
+    (home-page "http://graphics.pixar.com/opensubdiv/")
+    (synopsis "High performance subdivision surface evaluation")
+    (description "OpenSubdiv is a set of libraries that implement high
+performance subdivision surface (subdiv) evaluation on massively parallel CPU
+and GPU architectures.")
+    (license license:asl2.0)))

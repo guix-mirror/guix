@@ -29,6 +29,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -549,15 +550,14 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.0")
+    (version "5.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           name "_" version ".tar.xz"))
+                           "whois_" version ".tar.xz"))
        (sha256
-        (base32
-         "0gbg9fis05zf2fl4264jplbphy75l50k3g92cz6mkmbsklrn7v34"))))
+        (base32 "10mc7iqhdnvd1kk8gnnhihd5ga2rw3sz69n3nd6x8fb65qpq13gf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -944,6 +944,82 @@ security.  It focuses on different areas of WiFi security: monitoring,
 attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
+
+(define-public pixiewps
+  (package
+    (name "pixiewps")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wiire-a/pixiewps/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "07nym6bqml0k9v29vnj003nrgnwrywgjvnljb7cdpsvnwilhbp64"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)) ; no configure script
+       #:tests? #f)) ; there are no tests
+    (home-page "https://github.com/wiire-a/pixiewps/")
+    (synopsis "Offline brute-force tool for Wi-Fi Protected Setup")
+    (description "Pixiewps implements the pixie-dust attack to brute
+force the Wi-Fi Protected Setup (WPS) PIN by exploiting the low or
+non-existing entropy of some access points.")
+    (license license:gpl3+)))
+
+(define-public reaver
+  (package
+    (name "reaver")
+    (version "1.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/t6x/reaver-wps-fork-t6x/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sva3g0kwgv143n9l3lg4qp5iiqz7nk76nr0hwivsnglbhk9sbil"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; Save session files to current directory instead of /var.
+       (list "--enable-savetocurrent"
+             "--localstatedir=/tmp/dummy") ; prevent creating /var during install
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'change-directory
+           (lambda _
+             (chdir "src")
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "../docs")
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (man1 (string-append out "/share/man/man1")))
+               (for-each (lambda (file) (install-file file doc))
+                         (find-files "." "README.*"))
+               (install-file "reaver.1" man1)
+               #t))))
+       #:tests? #f)) ; there are no tests
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (propagated-inputs
+     `(("aircrack-ng" ,aircrack-ng)
+       ("pixiewps" ,pixiewps)))
+    (home-page "https://github.com/t6x/reaver-wps-fork-t6x/")
+    (synopsis "Attack tool for Wi-Fi Protected Setup")
+    (description "Reaver performs a brute force attack against an access
+point's Wi-Fi Protected Setup (WPS) PIN.  Once the PIN is found, the WPA
+passphrase can be recovered and the AP's wireless settings can be
+reconfigured.")
+    (license license:gpl2+)))
 
 (define-public perl-danga-socket
   (package
@@ -2287,7 +2363,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
 (define-public hcxtools
   (package
     (name "hcxtools")
-    (version "5.1.6")
+    (version "5.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2295,7 +2371,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
              (url "https://github.com/ZerBea/hcxtools.git")
              (commit version)))
        (sha256
-        (base32 "05sjbmv2wq3nlmammrwxqc62c4sagjjgczzddr1jcqkf6kywzkl8"))
+        (base32 "0k2qlq9hz5zc21nyc6yrnfqzga7hydn5mm0x3rpl2fhkwl81lxcn"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -2329,7 +2405,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.1.5")
+    (version "5.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2337,7 +2413,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0xkzdvwpi6dq9wsrn882f2ljb7d5v2bvarq8gs6jm8znfx3y8hi2"))
+        (base32 "0pg1pvg029gm4rj0fj5kcsjb32hixgn4cxsgiir7spkmacf1qm4q"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments

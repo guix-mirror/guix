@@ -24,7 +24,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
@@ -1808,13 +1808,13 @@ Python.")
 (define-public python-responses
   (package
     (name "python-responses")
-    (version "0.5.1")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "responses" version))
               (sha256
                (base32
-                "1spcfxixyk9k7pk82jm6zqkwk031s95lh8q0mz7539jrb7269bcc"))))
+                "147pacwkkqy3qf3hr33fnl1xbzgw0zsm3qppvvy9qhq8h069qbah"))))
     (build-system python-build-system)
     (arguments
      `(;; Test suite is not distributed:
@@ -3248,3 +3248,26 @@ Python.")
     (description "This package provides a @command{slufigy} command and
 library to create slugs from unicode strings while keeping it DRY.")
     (license license:expat)))
+
+(define-public python-branca
+  (package
+    (name "python-branca")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "branca" version))
+       (sha256
+        (base32
+         "0pmigd521j2228xf8x34vbx0niwvms7xl7za0lymywj0vydjqxiy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-visualization/branca")
+    (synopsis "Generate complex HTML+JS pages with Python")
+    (description "Generate complex HTML+JS pages with Python")
+    (license license:expat)))
+

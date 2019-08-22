@@ -153,30 +153,9 @@ in the format specified by FMT."
     (generation-number profile))
 
   (define channels
-    (map (lambda (entry)
-           (match (assq 'source (manifest-entry-properties entry))
-             (('source ('repository ('version 0)
-                                    ('url url)
-                                    ('branch branch)
-                                    ('commit commit)
-                                    _ ...))
-              (channel (name (string->symbol (manifest-entry-name entry)))
-                       (url url)
-                       (commit commit)))
-
-             ;; Pre-0.15.0 Guix does not provide that information,
-             ;; so there's not much we can do in that case.
-             (_ (channel (name 'guix)
-                         (url "?")
-                         (commit "?")))))
-
-         ;; Show most recently installed packages last.
-         (reverse
-          (manifest-entries
-           (profile-manifest
-            (if (zero? number)
-                profile
-                (generation-file-name profile number)))))))
+    (profile-channels (if (zero? number)
+                          profile
+                          (generation-file-name profile number))))
 
   (match fmt
     ('human

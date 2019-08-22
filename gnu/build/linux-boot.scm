@@ -471,10 +471,6 @@ upon error."
              mounts)
         "ext4"))
 
-  (define (lookup-module name)
-    (string-append linux-module-directory "/"
-                   (ensure-dot-ko name)))
-
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
 
@@ -489,9 +485,8 @@ upon error."
          (start-repl))
 
        (display "loading kernel modules...\n")
-       (for-each (cut load-linux-module* <>
-                      #:lookup-module lookup-module)
-                 (map lookup-module linux-modules))
+       (load-linux-modules-from-directory linux-modules
+                                          linux-module-directory)
 
        (when keymap-file
          (let ((status (system* "loadkeys" keymap-file)))

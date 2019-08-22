@@ -8361,7 +8361,7 @@ generated SQL and optimize it for your backend.")
 (define-public shellcheck
   (package
     (name "shellcheck")
-    (version "0.5.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
@@ -8369,12 +8369,12 @@ generated SQL and optimize it for your backend.")
              "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "0z1hscbr11hwkq8k1v0vaa947hb9m6k4cm831jk1gpj8dxrk151b"))
+        (base32 "1vx895cp5k5h0680xfwj74lk97m9y627n965x6srds0gfnbkzy9s"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-diff" ,ghc-diff)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
     (home-page "https://github.com/koalaman/shellcheck")

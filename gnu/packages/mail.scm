@@ -998,18 +998,17 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.6")
+    (version "5.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
-                           name "-" version ".tar.gz"))
+                           "getmail-" version ".tar.gz"))
        (sha256
-        (base32
-         "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
+        (base32 "1hcrd9h4g12f5gvl1djsbchcjry02ghq4icdr897s8v48pkrzagk"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:python ,python-2))
     (home-page "http://pyropus.ca/software/getmail/")
     (synopsis "Mail retriever")
@@ -2270,14 +2269,14 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.4.1p2")
+    (version "6.4.2p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "0cppqlx4fk6l8rbim5symh2fm1kzshf421256g596j6c9f9q96xn"))))
+        (base32 "0pgv080ai7d98l9340jadp9wjiaqj2qvgpqhilcz0kps2mdiawbd"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

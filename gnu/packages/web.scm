@@ -133,14 +133,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.39")
+    (version "2.4.41")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "18ngvsjq65qxk3biggnkhkq8jlll9dsg9n3csra9p99sfw2rvjml"))))
+               "0h7a31yxwyh7h521frnmlppl0h7sh9icc3ka6vlmlcg5iwllhg8k"))))
     (build-system gnu-build-system)
     (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
@@ -5362,13 +5362,7 @@ command-line arguments or read from stdin.")
     (description "@code{ia} is a command-line tool for using
 @url{archive.org} from the command-line.  It also emplements the
 internetarchive python module for programmatic access to archive.org.")
-    (properties
-     `((python2-variant . ,(delay python2-internetarchive))))
     (license license:agpl3+)))
-
-(define-public python2-internetarchive
-  (package-with-python2
-   (strip-python2-variant python-internetarchive)))
 
 (define-public python-clf
   (let ((commit-test-clf "d01d25923c599d3261910f79fb948825b4270d07")) ; 0.5.7
@@ -5426,7 +5420,7 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2019-01-13")
+    (version "2019-07-06")
     (source
      (origin
        (method git-fetch)
@@ -5436,7 +5430,7 @@ snippets on @url{https://commandlinefu.com}.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1m0dq491954f0d7k4508ddlywk09whcz9j21rc4yk3lbwpf0nd4c"))))
+         "0zd0c9xzvpx55mvj8xrafakfkvafnwkkvhw9b1j0bf897xdkfsyb"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))

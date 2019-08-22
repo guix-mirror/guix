@@ -716,7 +716,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.12.2")
+    (version "6.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -725,7 +725,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01krxcf0alw9k7p5sv0s707600an4sl7lhw3bymbwgqrj0v2p9z2"))))
+                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1107,16 +1107,16 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.5")
+    (version "2.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/FluidSynth/fluidsynth.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rv0apxbj0cgm8f8sqf5xr6kdi4q58ph92ip6cg716ha0ca5lr8y"))))
+                "0nas9pp9r8rnziznxm65x2yzf1ryg98zr3946g0br3s38sjf8l3a"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
