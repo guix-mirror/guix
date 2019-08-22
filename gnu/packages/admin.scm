@@ -2754,14 +2754,14 @@ you are running, what theme or icon set you are using, etc.")
 (define-public nnn
   (package
     (name "nnn")
-    (version "1.9")
+    (version "2.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jarun/nnn/releases/download/v"
                            version "/nnn-v" version ".tar.gz"))
        (sha256
-        (base32 "1d6z12y4rlg4dzhpm30irpq2ak8hjh5zykkp2n7vxnz5m4ki89zp"))))
+        (base32 "0xb6crd9vig3xgjwl8m4bmgcs4azfmfdpx3g8pdpzs28jdg7i3rr"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
