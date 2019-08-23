@@ -643,6 +643,81 @@ work.")
     (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
 
+(define-public jbigkit
+  (package
+    (name "jbigkit")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.cl.cam.ac.uk/~mgk25/jbigkit/"
+                           "download/jbigkit-" version ".tar.gz"))
+       (sha256
+        (base32 "0cnrcdr1dwp7h7m0a56qw09bv08krb37mpf7cml5sjdgpyv0cwfy"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove files without clear licence information.
+           (for-each delete-file-recursively
+                     (list "contrib" "examples"))
+           #t))))
+    (build-system gnu-build-system)
+    (outputs (list "out" "pbmtools"))
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install              ; no ‘make install’ target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (with-directory-excursion "libjbig"
+                 (for-each (cut install-file <> include)
+                           (find-files "." "\\.h$"))
+                 (for-each (cut install-file <> lib)
+                           (find-files "." "\\.a$")))
+               #t)))
+         (add-after 'install 'install-pbmtools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "pbmtools"))
+                    (bin (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1"))
+                    (man5 (string-append out "/share/man/man5")))
+               (with-directory-excursion "pbmtools"
+                 (for-each (cut install-file <> bin)
+                           (list "jbgtopbm" "jbgtopbm85"
+                                 "pbmtojbg" "pbmtojbg85"))
+
+                 (for-each (cut install-file <> man1)
+                           (find-files "." "\\.1$"))
+                 (for-each (cut install-file <> man5)
+                           (find-files "." "\\.5$"))
+                 #t)))))
+       #:test-target "test"
+       #:tests? #f))                    ; tests depend on examples/
+    (home-page "https://www.cl.cam.ac.uk/~mgk25/jbigkit/")
+    (synopsis "Lossless compression for bi-level high-resolution images")
+    (description
+     "JBIG-KIT implements the JBIG1 data compression standard (ITU-T T.82 and
+ISO/IEC 11544:1993), designed for bi-level (one bit per pixel) images such as
+black-and-white scanned documents.  It is widely used in fax products, printer
+firmware and drivers, document management systems, and imaging software.
+
+This package provides a static C library of (de)compression functions and some
+simple command-line converters similar to those provided by netpbm.
+
+Two JBIG1 variants are available.  One (@file{jbig.c}) implements nearly all
+options of the standard but has to keep the full uncompressed image in memory.
+The other (@file{jbig85.c}) implements just the ITU-T T.85 profile, with
+memory management optimized for embedded and fax applications.  It buffers
+only a few lines of the uncompressed image in memory and is able to stream
+images of initially unknown height.")
+    (license (list license:isc          ; pbmtools/p?m.5
+                   license:gpl2+))))    ; the rest
+
 (define-public openjpeg
   (package
     (name "openjpeg")
