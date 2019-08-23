@@ -16113,4 +16113,4 @@ benchmarked application, benchmark data is stored in a format that allows JUBE
 to deduct the desired information.  This data can be parsed by automatic pre-
 and post-processing scripts that draw information and store it more densely
 for manual interpretation.")
-    (license license:expat)))
+    (license license:gpl3+)))
