@@ -353,7 +353,7 @@ retrieve a YubiKey's serial number, and so forth.")
 (define-public python-pyscard
   (package
     (name "python-pyscard")
-    (version "1.9.8")
+    (version "1.9.9")
     (source (origin
               (method url-fetch)
               ;; The maintainer publishes releases on various sites, but
@@ -363,7 +363,7 @@ retrieve a YubiKey's serial number, and so forth.")
                     version "/pyscard-" version ".tar.gz"))
               (sha256
                (base32
-                "15fh00z1an6r5j7hrz3jlq0rb3jygwf3x4jcwsa008bv8vpcg7gm"))))
+                "082cjkbxadaz2jb4rbhr0mkrirzlqyqhcf3r823qb0q1k50ybgg6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
