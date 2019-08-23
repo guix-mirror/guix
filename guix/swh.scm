@@ -547,19 +547,22 @@ wait until it becomes available, which could take several minutes."
     ((? revision? revision)
      (call-with-temporary-directory
       (lambda (directory)
-        (let ((input (vault-fetch (revision-directory revision) 'directory))
-              (tar   (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
-          (dump-port input tar)
-          (close-port input)
-          (let ((status (close-pipe tar)))
-            (unless (zero? status)
-              (error "tar extraction failure" status)))
+        (match (vault-fetch (revision-directory revision) 'directory)
+          (#f
+           #f)
+          ((? port? input)
+           (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
+             (dump-port input tar)
+             (close-port input)
+             (let ((status (close-pipe tar)))
+               (unless (zero? status)
+                 (error "tar extraction failure" status)))
 
-          (match (scandir directory)
-            (("." ".." sub-directory)
-             (copy-recursively (string-append directory "/" sub-directory)
-                               output
-                               #:log (%make-void-port "w"))
-             #t))))))
+             (match (scandir directory)
+               (("." ".." sub-directory)
+                (copy-recursively (string-append directory "/" sub-directory)
+                                  output
+                                  #:log (%make-void-port "w"))
+                #t))))))))
     (#f
      #f)))
