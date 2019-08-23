@@ -6275,20 +6275,20 @@ not tied in the trap of backward compatibility.")
 (define-public emacs-helm-swoop
   (package
     (name "emacs-helm-swoop")
-    (version "1.7.4")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ShingoFukuyama/helm-swoop.git")
+             (url "https://github.com/emacsorphanage/helm-swoop.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b23j1bkpg4pm310hqdhgnl4mxsj05gpl08b6kb2ja4fzrg6adsk"))))
+        (base32 "0k0ns92g45x8dbymqpl6ylk5mj3wiw2h03f48q5cy1z8in0c4rjd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
-    (home-page "https://github.com/ShingoFukuyama/helm-swoop")
+    (home-page "https://github.com/emacsorphanage/helm-swoop")
     (synopsis "Filter and jump to lines in an Emacs buffer using Helm")
     (description
      "This package builds on the Helm interface to provide several commands
