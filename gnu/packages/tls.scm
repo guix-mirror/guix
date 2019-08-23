@@ -586,7 +586,7 @@ netcat implementation that supports TLS.")
     (version (package-version python-acme))
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri name version))
+              (uri (pypi-uri "certbot" version))
               (sha256
                (base32
                 "1xbfv4fwkgfp9qqzlk8wxbhchc61349m26q9fg35j9fnm253cm74"))))
