@@ -12,6 +12,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
+;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2109,3 +2110,38 @@ while keeping the user experience at mind.  Cutter is created by reverse
 engineers for reverse engineers.")
     (license (list license:cc-by-sa3.0  ;the "Iconic" icon set
                    license:gpl3+))))    ;everything else
+
+(define-public lib3mf
+  (package
+    (name "lib3mf")
+    (version "1.8.1")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference (url "https://github.com/3MFConsortium/lib3mf.git")
+                          (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "11wpk6n9ga2p57h1dcrp37w77mii0r7r6mlrgmykf7rvii1rzgqd"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("googletest-source" ,(package-source googletest))))
+    (inputs
+     `(("libuuid" ,util-linux)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-googletest
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "googletest-source")
+                               "UnitTests/googletest")
+             #t)))))
+    (synopsis "Implementation of the 3D Manufacturing Format (3MF) file standard")
+    (description
+     "Lib3MF is a C++ implementation of the 3D Manufacturing Format (3MF) file
+standard.  It offers a way to integrate 3MF reading and writing capabilities, as
+well as conversion and validation tools for input and output data.  The
+specification can be downloaded at @url{http://3mf.io/specification/}.")
+    (home-page "https://3mf.io/")
+    (license license:bsd-2)))
