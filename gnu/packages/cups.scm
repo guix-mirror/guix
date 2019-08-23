@@ -594,7 +594,7 @@ should only be used as part of the Guix cups-pk-helper service.")
               (method url-fetch)
               (uri (string-append
                     "http://www.openprinting.org/download/foomatic/"
-                    name "-" version ".tar.gz"))
+                    "foomatic-filters-" version ".tar.gz"))
               (sha256
                (base32
                 "1qrkgbm5jay2r7sh9qbyf0aiyrsl1mdc844hxf7fhw95a0zfbqm2"))
