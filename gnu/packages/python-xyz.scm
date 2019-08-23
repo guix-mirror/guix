@@ -16089,3 +16089,28 @@ The library has a number of built-in tilesets from OpenStreetMap, Mapbox, and
 Stamen, and supports custom tilesets with Mapbox or Cloudmade API keys.  It
 supports Image, Video, GeoJSON and TopoJSON overlays.")
     (license license:expat)))
+
+(define-public jube
+  (package
+    ;; This is a command-line tool, so no "python-" prefix.
+    (name "jube")
+    (version "2.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version="
+                    version))
+              (sha256
+               (base32
+                "0xq4k1q63s1p6swgyp61vahlrd1fqmgbm0gm5kpj8ikwy0yc0nqk"))
+              (file-name (string-append "jube-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (home-page "https://apps.fz-juelich.de/jsc/jube/jube2/docu/index.html")
+    (synopsis "Benchmarking environment")
+    (description
+     "JUBE helps perform and analyze benchmarks in a systematic way.  For each
+benchmarked application, benchmark data is stored in a format that allows JUBE
+to deduct the desired information.  This data can be parsed by automatic pre-
+and post-processing scripts that draw information and store it more densely
+for manual interpretation.")
+    (license license:expat)))
