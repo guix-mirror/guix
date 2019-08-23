@@ -2101,20 +2101,19 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.26")
+    (version "4.0.27")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32 "1qrxnf7ji5hml7z4y669k4wmk3iz2pcsr05bnn1n912asash09z5"))
+        (base32 "1kd2i7hc1330cli72vawzby17c3039cqn1aba4i0zrjnpghjhmib"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
      `(("unixodbc" ,unixodbc)))
     (arguments
-     `(;; No unit tests exist.
-       #:tests? #f))
+     `(#:tests? #f))                    ; no unit tests exist
     (home-page "https://github.com/mkleehammer/pyodbc")
     (synopsis "Python ODBC Library")
     (description "@code{python-pyodbc} provides a Python DB-API driver
