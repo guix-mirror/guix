@@ -102,6 +102,14 @@ the #:references-graphs parameter of 'derivation'."
       ;; hardware limits imposed by other machines.
       ,@(if target-arm32? '("-M" "virt") '())
 
+      ;; On ARM32, if the kernel is built without LPAE support, ECAM conflicts
+      ;; with VIRT_PCIE_MMIO causing PCI devices not to show up.  Disable
+      ;; explicitely highmem to fix it.
+      ;; See: https://bugs.launchpad.net/qemu/+bug/1790975.
+      ,@(if target-arm32?
+            '("-machine" "highmem=off")
+            '())
+
       ;; Only enable kvm if we see /dev/kvm exists.  This allows users without
       ;; hardware virtualization to still use these commands.  KVM support is
       ;; still buggy on some ARM32 boards. Do not use it even if available.
