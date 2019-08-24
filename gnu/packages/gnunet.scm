@@ -75,7 +75,8 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1zz2zvikvfibxnk1va3kgzs7djsmiqy7bmk8y01vbsf54ryjb3zh"))))
+              "1zz2zvikvfibxnk1va3kgzs7djsmiqy7bmk8y01vbsf54ryjb3zh"))
+            (patches (search-patches "libextractor-exiv2.patch"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
