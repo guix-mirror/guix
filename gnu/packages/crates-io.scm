@@ -946,6 +946,26 @@ whitespace from a string.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wasi
+  (package
+    (name "rust-wasi")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "wasi" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1ir3pd4phdfml0cbziw9bqp7mnk0vfp9biy8bh25lln6raml4m7x"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/CraneStation/rust-wasi")
+    (synopsis "Experimental WASI API bindings for Rust")
+    (description "This package contains experimental WASI API bindings
+in Rust.")
+    (license license:asl2.0)))
+
 (define-public rust-wasm-bindgen-shared
   (package
     (name "rust-wasm-bindgen-shared")
