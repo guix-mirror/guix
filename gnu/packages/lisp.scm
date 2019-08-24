@@ -364,7 +364,8 @@ an interpreter, a compiler, a debugger, and much more.")
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
        ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("zlib" ,zlib)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -422,6 +423,8 @@ an interpreter, a compiler, a debugger, and much more.")
          ;; them in HOME, so it needs to be writeable.
          (add-before 'build 'set-HOME
            (lambda _ (setenv "HOME" "/tmp") #t))
+         ;; TODO: We need to install the source as well (`src/code' directory)
+         ;; so that "go do definition" can work.
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
@@ -431,7 +434,9 @@ an interpreter, a compiler, a debugger, and much more.")
                                         (_
                                          `("clisp")))
                      (string-append "--prefix="
-                                    (assoc-ref outputs "out")))))
+                                    (assoc-ref outputs "out"))
+                     "--with-sb-core-compression"
+                     "--with-sb-xref-for-internals")))
          (replace 'install
            (lambda _
              (invoke "sh" "install.sh")))
