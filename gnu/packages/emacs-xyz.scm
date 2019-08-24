@@ -16184,12 +16184,11 @@ packages with a consistent way to use them.")
       (license license:gpl3+))))
 
 (define-public emacs-undo-propose-el
-  (let ((commit "5f1fa99a04369a959aad01b476fe4f34229f28cd")
-        (version "1.0.0")
+  (let ((commit "21a5cdc8ebfe8113f7039867c4abb0197c0fe71c")
         (revision "1"))
     (package
       (name "emacs-undo-propose-el")
-      (version (git-version version revision commit))
+      (version (git-version "3.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16199,7 +16198,7 @@ packages with a consistent way to use them.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1p9h1fqmva07mcs46rqrg9vqn537b615as84s9b7xh76k1r8h1c0"))))
+           "035hav4lfxwgikg3zpb4cz1nf08qfp27awl87dqbm2ly6d74lpny"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/jackkamm/undo-propose-el")
       (synopsis "Simple and safe navigation of @code{undo} history")
