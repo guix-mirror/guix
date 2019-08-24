@@ -9978,13 +9978,13 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "19.2.1")
+    (version "19.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "0liymyd4pzphizjlpwkncxjpm9akyr3lkfkm77yfg6wasv108b7s"))))
+                "17d3hnxv9qndagzz63mdpyk99xj63p9gq586vjn0rxk8cl197nym"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))                    ; FIXME: some tests fail
