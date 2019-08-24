@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -312,6 +313,38 @@ primitives to an @code{io::Write}.")
 friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-libc
+  (package
+    (name "rust-libc")
+    (version "0.2.62")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libc" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fh69kpjg8hqff36kdczx7sax98gk4qs4ws1dwvjz0rgip0d5z1l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rustc-std-workspace-core" ,rust-rustc-std-workspace-core))))
+    (home-page "https://github.com/rust-lang/libc")
+    (synopsis "Raw FFI bindings to platform libraries like libc")
+    (description
+     "libc provides all of the definitions necessary to easily
+interoperate with C code (or \"C-like\" code) on each of the platforms
+that Rust supports. This includes type definitions (e.g., c_int),
+constants (e.g., EINVAL) as well as function headers (e.g., malloc).
+
+This crate exports all underlying platform types, functions, and
+constants under the crate root, so all items are accessible as
+@samp{libc::foo}.  The types and values of all the exported APIs match
+the platform that libc is compiled for.")
+    (license (list license:expat
+                   license:asl2.0))))
 
 (define-public rust-maplit
   (package
@@ -950,3 +983,4 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
 @code{winapi} instead.")
     (license (list license:asl2.0
                    license:expat))))
+
