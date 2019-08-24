@@ -404,6 +404,30 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-traits
+  (package
+    (name "rust-num-traits")
+    (version "0.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-traits" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0clvrm34rrqc8p6gq5ps5fcgws3kgq5knh7nlqxf2ayarwks9abb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg))))
+    (home-page "https://github.com/rust-num/num-traits")
+    (synopsis "Numeric traits for generic mathematics")
+    (description "Numeric traits for generic mathematics.")
+    ;; Dual licensed.
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-peeking-take-while
   (package
     (name "rust-peeking-take-while")
