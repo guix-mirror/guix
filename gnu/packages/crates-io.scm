@@ -404,6 +404,32 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-integer
+  (package
+    (name "rust-num-integer")
+    (version "0.1.41")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "num-integer" version))
+       (file-name
+        (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02dwjjpfbi16c71fq689s4sw3ih52cvfzr5z5gs6qpr5z0g58pmq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg))))
+    (home-page "https://github.com/rust-num/num-integer")
+    (synopsis "Integer traits and functions")
+    (description "Integer traits and functions.")
+    ;; Dual licensed.
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-traits
   (package
     (name "rust-num-traits")
