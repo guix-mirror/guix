@@ -423,8 +423,6 @@ an interpreter, a compiler, a debugger, and much more.")
          ;; them in HOME, so it needs to be writeable.
          (add-before 'build 'set-HOME
            (lambda _ (setenv "HOME" "/tmp") #t))
-         ;; TODO: We need to install the source as well (`src/code' directory)
-         ;; so that "go do definition" can work.
          (replace 'build
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "CC" "gcc")
@@ -445,6 +443,21 @@ an interpreter, a compiler, a debugger, and much more.")
              (with-directory-excursion "doc/manual"
                (and  (invoke "make" "info")
                      (invoke "make" "dist")))))
+         (add-after 'build 'build-source
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (rc (string-append out "/lib/sbcl/sbclrc"))
+                    (source-dir (string-append out "/share/sbcl")))
+               (for-each (lambda (p)
+                           (copy-recursively p (string-append source-dir "/" p)))
+                         '("src" "contrib"))
+               (mkdir-p (dirname rc))
+               (with-output-to-file rc
+                 (lambda ()
+                   (display
+                    (string-append "(sb-ext:set-sbcl-source-location \""
+                                   source-dir "\")") )))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
