@@ -6495,19 +6495,18 @@ Perl (back to 5.6.0).")
 (define-public perl-namespace-autoclean
   (package
     (name "perl-namespace-autoclean")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "namespace-autoclean-" version ".tar.gz"))
        (sha256
-        (base32
-         "0fbcq99yaix1aa99jl3v811dbw24il9jxnh5i2i23mddh4b0lhfd"))))
+        (base32 "012qqs561xyyhm082znmzsl8lz4n299fa6p0v246za2l9bkdiss5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)))
     (propagated-inputs
      `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
        ("perl-namespace-clean" ,perl-namespace-clean)
