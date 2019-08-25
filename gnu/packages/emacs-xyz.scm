@@ -18766,6 +18766,34 @@ JIRA issue servers.")
 keybindings for skipping from host section to host section.")
       (license license:gpl3+))))
 
+(define-public emacs-ssh-agency
+  (package
+    (name "emacs-ssh-agency")
+    (version "0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/magit/ssh-agency.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0895n7bss4wdydic1gflr03f2cwdyqywl16gvb599lpn288jhwvz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("dash" ,emacs-dash)))
+    (home-page "https://github.com/magit/ssh-agency")
+    (synopsis "Manage @code{ssh-agent} from Emacs")
+    (description
+     "This package provides functions to startup @code{ssh-agent}, set the
+needed environment variables in Emacs, and prompt for passphrases from within
+Emacs so that pushes and pulls from @code{magit} will not require entering any
+passphrase.
+
+It can also be useful on Unix-like platforms to delay having to enter your
+passphrase until the first time you push to a remote.")
+    (license license:gpl3+)))
+
 (define-public emacs-tao-theme
   (let ((commit "c5107fbe7e752f4e58c2d2147ff18a1ebb12937c")
         (revision "0"))
