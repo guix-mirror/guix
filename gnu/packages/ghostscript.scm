@@ -145,6 +145,12 @@ printing, and psresize, for adjusting page sizes.")
   (package
     (name "ghostscript")
     (version "9.26")
+
+    ;; The problems addressed by GHOSTSCRIPT/FIXED are not security-related,
+    ;; but they have a significant impact on usability, hence this graft.
+    ;; TODO: Ungraft on next update cycle.
+    (replacement ghostscript/fixed)
+
     (source
       (origin
         (method url-fetch)
@@ -274,7 +280,6 @@ output file formats and printers.")
   ;; rendering issues described in <https://issues.guix.gnu.org/issue/34877>.
   (package/inherit
    ghostscript
-   (version (string-append (package-version ghostscript) "-1"))
    (arguments
     (substitute-keyword-arguments (package-arguments ghostscript)
       ((#:configure-flags flags ''())
