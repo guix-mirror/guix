@@ -113,7 +113,7 @@
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
-         #:tests? #f  ; There does not seem to be make check or anything similar.
+         #:test-target "ansi-tests/test_results"
          #:configure-flags '("--enable-ansi") ; required for use by the maxima package
          #:make-flags (list
                        (string-append "GCL_CC=" (assoc-ref %build-inputs "gcc")
