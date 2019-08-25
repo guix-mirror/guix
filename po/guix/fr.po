@@ -19,7 +19,7 @@ msgstr ""
 "Project-Id-Version: guix 1.0.1-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-05-10 20:54+0200\n"
-"PO-Revision-Date: 2019-05-12 17:38+0200\n"
+"PO-Revision-Date: 2019-07-27 09:07+0200\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -28,7 +28,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Offlate 0.1\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: gnu.scm:83
 #, scheme-format
@@ -1393,7 +1393,7 @@ msgid ""
 "  -v, --verbosity=LEVEL  use the given verbosity LEVEL"
 msgstr ""
 "\n"
-"      --verbosity=NIVEAU utiliser le NIVEAU de verbosité donné"
+"  -v, --verbosity=NIVEAU utiliser le NIVEAU de verbosité donné"
 
 #: guix/scripts/build.scm:676
 msgid ""
