@@ -9658,6 +9658,49 @@ subsequent invocations can be readily customized.  Several recipes are
 included by default, and more can be readily added.")
       (license license:gpl3+))))
 
+(define-public emacs-unidecode
+  (let ((commit "5502ada9287b4012eabb879f12f5b0a9df52c5b7")
+        (revision "1"))
+    (package
+      (name "emacs-unidecode")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sindikat/unidecode")
+               (commit commit)))
+         (sha256
+          (base32
+           "03x3nakbhmakwm977mwrf8jifvjnfwzpjv6wrwpizbqjnkgfchmn"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^tools/" "^data/" %default-include)
+         #:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "unidecode-test.el"
+                          "-f" "ert-run-tests-batch-and-exit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "unidecode-test.el")
+               #t))
+           (add-before 'check 'add-require
+             (lambda _
+               (emacs-batch-edit-file "unidecode-test.el"
+                 `(progn (progn (goto-char (point-min))
+                                (re-search-forward
+                                 "ert-deftest")
+                                (forward-line -1)
+                                (insert "(require 'unidecode)"))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/sindikat/unidecode")
+      (synopsis "Transliterate Unicode text to ASCII")
+      (description "This package provides functions for converting Unicode to ASCII.")
+      (license license:gpl2+))))
+
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
