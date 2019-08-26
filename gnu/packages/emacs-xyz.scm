@@ -17418,7 +17418,8 @@ connections using TLS encryption.")
          "0nnlxzsmhsbszqigcyxak9i1a0digrd13gv6v18ck4h760mihh1m"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-all-the-icons" ,emacs-all-the-icons)))
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)))
     (home-page
      "https://gitlab.petton.fr/nico/zerodark-theme")
     (synopsis
