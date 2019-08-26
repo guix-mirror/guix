@@ -362,7 +362,7 @@ H.264 (MPEG-4 AVC) video streams.")
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
-                           name "-" version ".tar.xz"))
+                           "mkvtoolnix-" version ".tar.xz"))
        (sha256
         (base32
          "0d8va2iamzc7y3wi71z8mk2vnqvnkgwb2p7casdfp37400x8r2pr"))
