@@ -3077,30 +3077,27 @@ for Flow files.")
       (license license:gpl3+))))
 
 (define-public emacs-elisp-demos
-  (let ((commit "4c1fbc392668662890b685ab297e950259227e06")
-        (version "0.1")
-        (revision "1"))
-    (package
-      (name "emacs-elisp-demos")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/xuchunyang/elisp-demos")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "01cbkmjgmzxdf02w9xgbf4bhnx1mh53vvpkri13yxfksym5zizp4"))))
-      (build-system emacs-build-system)
-      (arguments '(#:include '("\\.el$" "\\.org$")))
-      (home-page "https://github.com/xuchunyang/elisp-demos/")
-      (synopsis "Enhance @code{*Help*} buffers with additional examples")
-      (description
-       "This package injects example uses of Elisp functions into their
+  (package
+    (name "emacs-elisp-demos")
+    (version "2019.08.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xuchunyang/elisp-demos")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.org$")))
+    (home-page "https://github.com/xuchunyang/elisp-demos/")
+    (synopsis "Enhance @code{*Help*} buffers with additional examples")
+    (description
+     "This package injects example uses of Elisp functions into their
 respective @code{*Help*} buffers.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-docker-compose-mode
   (package
