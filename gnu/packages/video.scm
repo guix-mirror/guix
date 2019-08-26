@@ -465,8 +465,9 @@ H.264 (MPEG-4 AVC) video streams.")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
      "MKVToolNix provides tools for getting information about Matroska files
-(@code{mkvinfo}), extracting tracks/data from Matroska files (@code{mkvextract})
-and creating Matroska files from other media files (@code{mkvmerge}).")
+(@command{mkvinfo}), extracting tracks/data from Matroska files
+(@command{mkvextract}), and creating Matroska files from other media files
+(@command{mkvmerge}).")
     (license license:gpl2)))
 
 (define-public x265
