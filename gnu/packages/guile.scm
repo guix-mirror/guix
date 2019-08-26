@@ -580,7 +580,7 @@ Guile's foreign function interface.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -588,7 +588,7 @@ Guile's foreign function interface.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "0ibk7fjwpb450lnrva4bx45sgln3pbyb645az4ansvh1spgani43"))))
+                "07dffrmc6cnw9mmw0pdrqlkbhzzpz0hm8p26z738l2j5i84dypnk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
