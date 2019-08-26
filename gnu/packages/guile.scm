@@ -602,7 +602,8 @@ of the C programming language, to be used on bytevectors.  C's type
 system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "bytestructures")))))
 
 (define-public guile2.0-bytestructures
   (package-for-guile-2.0 guile-bytestructures))
