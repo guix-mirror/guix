@@ -3410,7 +3410,7 @@ on the ALSA software PCM plugin.")
                (for-each
                 (lambda (f)
                   (install-file f doc))
-                (find-files "." "\\.html$|COPYING"))
+                (find-files "." "\\.html$"))
                (copy-recursively "pix" (string-append doc "/pix"))
                #t))))))
     (native-inputs
