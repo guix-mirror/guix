@@ -106,8 +106,6 @@
                             #$(scheme-file "cuirass-specs.scm" specs)
                             "--database" #$database
                             "--ttl" #$(string-append (number->string ttl) "s")
-                            "--port" #$(number->string port)
-                            "--listen" #$host
                             "--interval" #$(number->string interval)
                             #$@(if use-substitutes? '("--use-substitutes") '())
                             #$@(if one-shot? '("--one-shot") '())
@@ -117,6 +115,28 @@
                       (list "GIT_SSL_CAINFO=/etc/ssl/certs/ca-certificates.crt"
                             (string-append "GIT_EXEC_PATH=" #$git
                                            "/libexec/git-core"))
+
+                      #:user #$user
+                      #:group #$group
+                      #:log-file #$log-file))
+            (stop #~(make-kill-destructor)))
+           (shepherd-service
+            (documentation "Run Cuirass web interface.")
+            (provision '(cuirass-web))
+            (requirement '(guix-daemon networking))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$cuirass "/bin/cuirass")
+                            "--cache-directory" #$cache-directory
+                            "--specifications"
+                            #$(scheme-file "cuirass-specs.scm" specs)
+                            "--database" #$database
+                            "--ttl" #$(string-append (number->string ttl) "s")
+                            "--web"
+                            "--port" #$(number->string port)
+                            "--listen" #$host
+                            "--interval" #$(number->string interval)
+                            #$@(if use-substitutes? '("--use-substitutes") '())
+                            #$@(if fallback? '("--fallback") '()))
 
                       #:user #$user
                       #:group #$group
