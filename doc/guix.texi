@@ -6112,7 +6112,7 @@ interpreter version.
 By default guix calls @code{setup.py} under control of
 @code{setuptools}, much like @command{pip} does.  Some packages are not
 compatible with setuptools (and pip), thus you can disable this by
-setting the @code{#:use-setuptools} parameter to @code{#f}.
+setting the @code{#:use-setuptools?} parameter to @code{#f}.
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
