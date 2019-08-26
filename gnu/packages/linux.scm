@@ -4845,7 +4845,7 @@ running boot option, and more.")
     (version "12.1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://perso.orange.fr/sebastien.godard/"
+              (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                                   "sysstat-" version ".tar.xz"))
               (sha256
                (base32
