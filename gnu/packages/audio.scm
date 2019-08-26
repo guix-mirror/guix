@@ -3396,7 +3396,8 @@ on the ALSA software PCM plugin.")
        #:out-of-source? #f              ; for the 'install-doc' phase
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
-              (docdir (string-append out "/share/doc/snd")))
+              (docdir (string-append out "/share/doc/"
+                                     ,name "-" ,version)))
          (list "--with-alsa" "--with-jack" "--with-gmp"
                (string-append "--with-doc-dir=" docdir)))
        #:phases
