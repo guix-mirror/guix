@@ -418,6 +418,13 @@ H.264 (MPEG-4 AVC) video streams.")
              "--enable-precompiled-headers=no")
         #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-relative-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+             (substitute* "src/mkvtoolnix-gui/util/settings.cpp"
+               (("mkvmerge" match)
+                (string-append out "/bin/" match)))
+             #t)))
          (add-before 'configure 'add-googletest
            (lambda* (#:key inputs #:allow-other-keys)
              (symlink
