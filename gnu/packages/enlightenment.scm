@@ -242,7 +242,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -251,7 +251,7 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "0gfzdd4jg78bkmj61yg49w7bzspl5m1nh6agqgs8k7qrq9q26xqy"))))
+                "04fdk23bbgvni212zrfy4ndg7vmshbsjgicrhckdvhay87pk9i75"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
