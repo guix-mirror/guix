@@ -1049,7 +1049,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
      (origin
        (method git-fetch)
@@ -1058,7 +1058,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "026720z0vpiwr4da7l2x2yinns09fmg6yxsib203xwnixj399azi"))))
+        (base32 "0xxd9nhqiclpkdd9crymvba37fl0xs5mikwhya68nfzcgar7w480"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1080,8 +1080,7 @@ emulation community.  It provides highly accurate emulation.")
                  (("/bin/true") (which "true")))
                ;; Use shared zlib.
                (substitute* '("libretro-common/file/archive_file_zlib.c"
-                              "libretro-common/streams/trans_stream_zlib.c"
-                              "network/httpserver/httpserver.c")
+                              "libretro-common/streams/trans_stream_zlib.c")
                  (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
