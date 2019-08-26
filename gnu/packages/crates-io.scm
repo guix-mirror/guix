@@ -420,9 +420,8 @@ whether an expression matches a pattern.")
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
-       (("rust-num-traits" ,rust-num-traits))
-       #:cargo-development-inputs
-       (("rust-autocfg" ,rust-autocfg))))
+       (("rust-autocfg" ,rust-autocfg)
+        ("rust-num-traits" ,rust-num-traits))))
     (home-page "https://github.com/rust-num/num-integer")
     (synopsis "Integer traits and functions")
     (description "Integer traits and functions.")
