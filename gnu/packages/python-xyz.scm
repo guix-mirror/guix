@@ -16114,3 +16114,22 @@ to deduct the desired information.  This data can be parsed by automatic pre-
 and post-processing scripts that draw information and store it more densely
 for manual interpretation.")
     (license license:gpl3+)))
+
+(define-public python-pyroutelib3
+  (package
+    (name "python-pyroutelib3")
+    (version "1.3.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyroutelib3" version))
+       (sha256
+        (base32
+         "1hpbydpn2alyswiajfbvhzq4c7f36vdmvxy91hgv8l1lb2g2vfrj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)))
+    (home-page "https://github.com/MKuranowski/pyroutelib3")
+    (synopsis "Library for simple routing on OSM data")
+    (description "Library for simple routing on OSM data")
+    (license license:gpl3+)))
