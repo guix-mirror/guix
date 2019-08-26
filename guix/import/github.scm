@@ -49,7 +49,7 @@ false if none is recognized"
   (define (updated-url url)
     (if (string-prefix? "https://github.com/" url)
         (let ((ext     (or (find-extension url) ""))
-              (name    (package-name old-package))
+              (name    (package-upstream-name old-package))
               (version (package-version old-package))
               (prefix  (string-append "https://github.com/"
                                       (github-user-slash-repository url)))
