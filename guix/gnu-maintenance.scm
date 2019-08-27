@@ -230,12 +230,6 @@ network to check in GNU's database."
             (or (assoc-ref (package-properties package) 'ftp-directory)
                 (string-append "/gnu/" name)))))
 
-(define (sans-extension tarball)
-  "Return TARBALL without its .tar.* or .zip extension."
-  (let ((end (or (string-contains tarball ".tar")
-                 (string-contains tarball ".zip"))))
-    (substring tarball 0 end)))
-
 (define %tarball-rx
   ;; The .zip extensions is notably used for freefont-ttf.
   ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
@@ -261,14 +255,15 @@ true."
                                           (string-append project
                                                          "-src")))))))
        (not (regexp-exec %alpha-tarball-rx file))
-       (let ((s (sans-extension file)))
+       (let ((s (tarball-sans-extension file)))
          (regexp-exec %package-name-rx s))))
 
 (define (tarball->version tarball)
   "Return the version TARBALL corresponds to.  TARBALL is a file name like
 \"coreutils-8.23.tar.xz\"."
   (let-values (((name version)
-                (gnu-package-name->name+version (sans-extension tarball))))
+                (gnu-package-name->name+version
+                 (tarball-sans-extension tarball))))
     version))
 
 (define* (releases project
@@ -492,8 +487,9 @@ return the corresponding signature URL, or #f it signatures are unavailable."
       (and (string=? url (basename url))          ;relative reference?
            (release-file? package url)
            (let-values (((name version)
-                         (package-name->name+version (sans-extension url)
-                                                     #\-)))
+                         (package-name->name+version
+                          (tarball-sans-extension url)
+                          #\-)))
              (upstream-source
               (package name)
               (version version)
@@ -565,14 +561,16 @@ list available from %GNU-FILE-LIST-URI over HTTP(S)."
                                     (release-file? name (basename file))))
                              files)))
       (match (sort relevant (lambda (file1 file2)
-                              (version>? (sans-extension (basename file1))
-                                         (sans-extension (basename file2)))))
+                              (version>? (tarball-sans-extension
+                                          (basename file1))
+                                         (tarball-sans-extension
+                                          (basename file2)))))
         ((and tarballs (reference _ ...))
          (let* ((version  (tarball->version reference))
                 (tarballs (filter (lambda (file)
-                                    (string=? (sans-extension
+                                    (string=? (tarball-sans-extension
                                                (basename file))
-                                              (sans-extension
+                                              (tarball-sans-extension
                                                (basename reference))))
                                   tarballs)))
            (upstream-source
