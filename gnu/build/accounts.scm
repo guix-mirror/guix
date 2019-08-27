@@ -238,7 +238,7 @@ to it atomically and set the appropriate permissions."
       (for-each (lambda (entry)
                   (display (entry->string entry) port)
                   (newline port))
-                entries))
+                (delete-duplicates entries)))
 
     (if (port? file-or-port)
         (write-entries file-or-port)
