@@ -458,7 +458,10 @@ or state files.")
   (user
    (string "lp")
    "Specifies the user name or ID that is used when running external
-programs."))
+programs.")
+  (set-env
+   (string "variable value")
+   "Set the specified environment variable to be passed to child processes."))
 
 (define (serialize-files-configuration field-name val)
   #f)
@@ -811,9 +814,6 @@ reports @code{CUPS 2.0}.  @code{Minimal} reports @code{CUPS 2.0.0}.  @code{OS}
 reports @code{CUPS 2.0.0 (@var{uname})} where @var{uname} is the output of the
 @code{uname} command.  @code{Full} reports @code{CUPS 2.0.0 (@var{uname})
 IPP/2.0}.")
-  (set-env
-   (string "variable value")
-   "Set the specified environment variable to be passed to child processes.")
   (ssl-listen
    (multiline-string-list '())
    "Listens on the specified interfaces for encrypted connections.  Valid

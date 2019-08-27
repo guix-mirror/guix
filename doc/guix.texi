@@ -14228,6 +14228,12 @@ programs.
 
 Defaults to @samp{"lp"}.
 @end deftypevr
+
+@deftypevr {@code{files-configuration} parameter} string set-env
+Set the specified environment variable to be passed to child processes.
+
+Defaults to @samp{"variable value"}.
+@end deftypevr
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} access-log-level access-log-level
@@ -14753,12 +14759,6 @@ the output of the @code{uname} command.  @code{Full} reports @code{CUPS
 2.0.0 (@var{uname}) IPP/2.0}.
 
 Defaults to @samp{Minimal}.
-@end deftypevr
-
-@deftypevr {@code{cups-configuration} parameter} string set-env
-Set the specified environment variable to be passed to child processes.
-
-Defaults to @samp{"variable value"}.
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} multiline-string-list ssl-listen
