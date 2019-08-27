@@ -490,7 +490,8 @@ the image."
         #~(begin
             (use-modules (guix docker) (guix build store-copy)
                          (guix profiles) (guix search-paths)
-                         (srfi srfi-19) (ice-9 match))
+                         (srfi srfi-1) (srfi srfi-19)
+                         (ice-9 match))
 
             (define environment
               (map (match-lambda
@@ -498,6 +499,21 @@ the image."
                       (cons (search-path-specification-variable spec)
                             value)))
                    (profile-search-paths #$profile)))
+
+            (define symlink->directives
+              ;; Return "populate directives" to make the given symlink and its
+              ;; parent directories.
+              (match-lambda
+                ((source '-> target)
+                 (let ((target (string-append #$profile "/" target))
+                       (parent (dirname source)))
+                   `((directory ,parent)
+                     (,source -> ,target))))))
+
+            (define directives
+              ;; Fully-qualified symlinks.
+              (append-map symlink->directives '#$symlinks))
+
 
             (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -513,7 +529,7 @@ the image."
                                 #$(and entry-point
                                        #~(list (string-append #$profile "/"
                                                               #$entry-point)))
-                                #:symlinks '#$symlinks
+                                #:extra-files directives
                                 #:compressor '#$(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
 

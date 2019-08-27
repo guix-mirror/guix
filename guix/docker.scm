@@ -28,11 +28,13 @@
                           invoke))
   #:use-module (gnu build install)
   #:use-module (json)                             ;guile-json
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module ((texinfo string-utils)
                 #:select (escape-special-chars))
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:export (build-docker-image))
 
@@ -99,21 +101,18 @@
   '("--sort=name" "--mtime=@1"
     "--owner=root:0" "--group=root:0"))
 
-(define symlink-source
+(define directive-file
+  ;; Return the file or directory created by a 'evaluate-populate-directive'
+  ;; directive.
   (match-lambda
     ((source '-> target)
-     (string-trim source #\/))))
-
-(define (topmost-component file)
-  "Return the topmost component of FILE.  For instance, if FILE is \"/a/b/c\",
-return \"a\"."
-  (match (string-tokenize file (char-set-complement (char-set #\/)))
-    ((first rest ...)
-     first)))
+     (string-trim source #\/))
+    (('directory name _ ...)
+     (string-trim name #\/))))
 
 (define* (build-docker-image image paths prefix
                              #:key
-                             (symlinks '())
+                             (extra-files '())
                              (transformations '())
                              (system (utsname:machine (uname)))
                              database
@@ -133,8 +132,9 @@ entry point in the Docker image JSON structure.
 ENVIRONMENT must be a list of name/value pairs.  It specifies the environment
 variables that must be defined in the resulting image.
 
-SYMLINKS must be a list of (SOURCE -> TARGET) tuples describing symlinks to be
-created in the image, where each TARGET is relative to PREFIX.
+EXTRA-FILES must be a list of directives for 'evaluate-populate-directive'
+describing non-store files that must be created in the image.
+
 TRANSFORMATIONS must be a list of (OLD -> NEW) tuples describing how to
 transform the PATHS.  Any path in PATHS that begins with OLD will be rewritten
 in the Docker image so that it begins with NEW instead.  If a path is a
@@ -199,25 +199,27 @@ SRFI-19 time-utc object, as the creation time in metadata."
         (with-output-to-file "json"
           (lambda () (scm->json (image-description id time))))
 
-        ;; Create SYMLINKS.
-        (for-each (match-lambda
-                    ((source '-> target)
-                     (let ((source (string-trim source #\/)))
-                       (mkdir-p (dirname source))
-                       (symlink (string-append prefix "/" target)
-                                source))))
-                  symlinks)
+        ;; Create a directory for the non-store files that need to go into the
+        ;; archive.
+        (mkdir "extra")
 
-        (when database
-          ;; Initialize /var/guix, assuming PREFIX points to a profile.
-          (install-database-and-gc-roots "." database prefix))
+        (with-directory-excursion "extra"
+          ;; Create non-store files.
+          (for-each (cut evaluate-populate-directive <> "./")
+                    extra-files)
 
-        (apply invoke "tar" "-cf" "layer.tar"
-               `(,@transformation-options
-                 ,@%tar-determinism-options
-                 ,@paths
-                 ,@(if database '("var") '())
-                 ,@(map symlink-source symlinks)))
+          (when database
+            ;; Initialize /var/guix, assuming PREFIX points to a profile.
+            (install-database-and-gc-roots "." database prefix))
+
+          (apply invoke "tar" "-cf" "../layer.tar"
+                 `(,@transformation-options
+                   ,@%tar-determinism-options
+                   ,@paths
+                   ,@(scandir "."
+                              (lambda (file)
+                                (not (member file '("." ".."))))))))
+
         ;; It is possible for "/" to show up in the archive, especially when
         ;; applying transformations.  For example, the transformation
         ;; "s,^/a,," will (perhaps surprisingly) cause GNU tar to transform
@@ -231,13 +233,7 @@ SRFI-19 time-utc object, as the creation time in metadata."
           (lambda ()
             (system* "tar" "--delete" "/" "-f" "layer.tar")))
 
-        (for-each delete-file-recursively
-                  (map (compose topmost-component symlink-source)
-                       symlinks))
-
-        ;; Delete /var/guix.
-        (when database
-          (delete-file-recursively "var")))
+        (delete-file-recursively "extra"))
 
       (with-output-to-file "config.json"
         (lambda ()
