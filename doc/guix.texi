@@ -12443,10 +12443,10 @@ gexps to introduce job definitions that are passed to mcron
 @end lisp
 
 For more complex jobs defined in Scheme where you need control over the top
-level, for instance to introduce a @code{use-modules} form that defines syntax
-(macros), you can move your code to a separate program using the
-@code{program-file} procedure of the @code{(guix gexp)} module
-(@pxref{G-Expressions}).  The example below illustrates that.
+level, for instance to introduce a @code{use-modules} form, you can move your
+code to a separate program using the @code{program-file} procedure of the
+@code{(guix gexp)} module (@pxref{G-Expressions}).  The example below
+illustrates that.
 
 @lisp
 (define %battery-alert-job
