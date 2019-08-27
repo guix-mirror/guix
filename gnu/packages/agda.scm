@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -161,16 +163,15 @@ Agda.  It also aids the input of Unicode characters.")))
   (package
     (name "agda-ial")
     (version "1.5.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/cedille/ial/archive/v"
-             version ".tar.gz"))
-       (file-name (string-append name "-" version))
-       (sha256
-        (base32
-         "0ilgalmx3kljy6j9i8d7w6r7ky4bq0xzxanwfr6kyx56mf2sf0zh"))))
+    (home-page "https://github.com/cedille/ial")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dlis6v6nzbscf713cmwlx8h9n2gxghci8y21qak3hp18gkxdp0g"))))
     (build-system gnu-build-system)
     (inputs
      `(("agda" ,agda)))
@@ -184,17 +185,14 @@ Agda.  It also aids the input of Unicode characters.")))
          (delete 'check)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
-             (for-each
-              (lambda (file)
-                (install-file
-                 file
-                 (string-append
-                  (assoc-ref outputs "out") "/include/agda/ial")))
-              (find-files "." ".*agda.*"))
-             #t)))))
-    (home-page "https://github.com/cedille/ial")
-    (synopsis
-     "The Iowa Agda Library")
+             (let* ((out     (assoc-ref outputs "out"))
+                    (include (string-append out "/include/agda/ial")))
+               (for-each (lambda (file)
+                           (make-file-writable file)
+                           (install-file file include))
+                         (find-files "." "\\.agda$"))
+               #t))))))
+    (synopsis "The Iowa Agda Library")
     (description
      "The goal is to provide a concrete library focused on verification
 examples, as opposed to mathematics.  The library has a good number
