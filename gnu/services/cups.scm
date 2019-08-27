@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,7 +171,10 @@
 
 (define (ssl-options? x)
   (and (list? x)
-       (and-map (lambda (elt) (memq elt '(AllowRC4 AllowSSL3))) x)))
+       (and-map (lambda (elt) (memq elt '(AllowRC4
+                                          AllowSSL3
+                                          DenyCBC
+                                          DenyTLS1.0))) x)))
 (define (serialize-ssl-options field-name val)
   (serialize-field field-name
                    (match val
