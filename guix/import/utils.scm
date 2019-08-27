@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
@@ -251,6 +251,9 @@ package definition."
 (define (package->definition guix-package)
   (match guix-package
     (('package ('name (? string? name)) _ ...)
+     `(define-public ,(string->symbol name)
+        ,guix-package))
+    (('let anything ('package ('name (? string? name)) _ ...))
      `(define-public ,(string->symbol name)
         ,guix-package))))
 

@@ -8638,6 +8638,14 @@ R package:
 guix import cran --archive=bioconductor GenomicRanges
 @end example
 
+Finally, you can also import R packages that have not yet been published on
+CRAN or Bioconductor as long as they are in a git repository.  Use
+@code{--archive=git} followed by the URL of the git repository:
+
+@example
+guix import cran --archive=git https://github.com/immunogenomics/harmony
+@end example
+
 @item texlive
 @cindex TeX Live
 @cindex CTAN
