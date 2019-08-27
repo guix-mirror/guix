@@ -511,8 +511,10 @@ the image."
                      (,source -> ,target))))))
 
             (define directives
-              ;; Fully-qualified symlinks.
-              (append-map symlink->directives '#$symlinks))
+              ;; Create a /tmp directory, as some programs expect it, and
+              ;; create SYMLINKS.
+              `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
+                ,@(append-map symlink->directives '#$symlinks)))
 
 
             (setenv "PATH" (string-append #$archiver "/bin"))
