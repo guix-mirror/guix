@@ -278,7 +278,7 @@ Libraries with some extra bells and whistles.")
               (method url-fetch)
               (uri
                (string-append "https://download.enlightenment.org/rel/apps/"
-                              name "/" name "-" version ".tar.xz"))
+                              "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
                 "0ygy891rrw5c7lhk539nhif77j88phvz2h0fhx172iaridy9kx2r"))
