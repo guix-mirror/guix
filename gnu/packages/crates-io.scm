@@ -1005,6 +1005,27 @@ to write.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rawpointer
+  (package
+    (name "rust-rawpointer")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rawpointer" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06ghpm9y7gacks78s3maakha07kbnwrxif5q37r2l7z1sali3b7b"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/rawpointer/")
+    (synopsis "Extra methods for raw pointers")
+    (description "Extra methods for raw pointers.  For example
+@code{.post_inc()} and @code{.pre_dec()} (c.f. @code{ptr++} and @code{--ptr})
+and @code{ptrdistance}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-std-workspace-core
   (package
     (name "rust-rustc-std-workspace-core")
