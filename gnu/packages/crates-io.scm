@@ -1687,6 +1687,24 @@ fixed set of worker threads.")
      "This package provides a lightweight atomic lock.")
     (license license:expat)))
 
+(define-public rust-typeable
+  (package
+    (name "rust-typeable")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "typeable" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11w8dywgnm32hb291izjvh4zjd037ccnkk77ahk63l913zwzc40l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/reem/rust-typeable")
+    (synopsis "Exposes Typeable, for getting TypeIds at runtime")
+    (description "Exposes Typeable, for getting TypeIds at runtime.")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
