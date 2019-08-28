@@ -1560,6 +1560,30 @@ return values to @code{std::io::Result} to indicate success or failure.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-threadpool
+  (package
+    (name "rust-threadpool")
+    (version "1.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "threadpool" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rd89n1q7vy47w4c32cnynibffv9kj3jy3dwr0536n9lbw5ckw72"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-cpus" ,rust-num-cpus))))
+    (home-page "https://github.com/rust-threadpool/rust-threadpool")
+    (synopsis "Thread pool for running jobs on a fixed set of worker threads")
+    (description
+     "This package provides a thread pool for running a number of jobs on a
+fixed set of worker threads.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
