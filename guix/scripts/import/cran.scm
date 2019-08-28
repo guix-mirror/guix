@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix scripts)
   #:use-module (guix import cran)
+  #:use-module (guix import utils)
   #:use-module (guix scripts import)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -96,11 +97,7 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
       ((package-name)
        (if (assoc-ref opts 'recursive)
            ;; Recursive import
-           (map (match-lambda
-                  ((and ('package ('name name) . rest) pkg)
-                   `(define-public ,(string->symbol name)
-                      ,pkg))
-                  (_ #f))
+           (map package->definition
                 (reverse
                  (stream->list
                   (cran-recursive-import package-name
