@@ -1187,6 +1187,31 @@ x86_64-pc-windows-gnu target.  Please don't use this crate directly, depend on
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wincolor
+  (package
+    (name "rust-wincolor")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wincolor" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1agaf3hcav113i86912ajnw6jxcy4rvkrgyf8gdj8kc031mh3xcn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi)
+        ("rust-winapi-util" ,rust-winapi-util))))
+    (home-page "https://github.com/BurntSushi/termcolor/tree/master/wincolor")
+    (synopsis "Windows API for controlling text color in a Windows console")
+    (description
+     "This package provides a simple Windows specific API for controlling text
+color in a Windows console.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-xdg
   (package
     (name "rust-xdg")
