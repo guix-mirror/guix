@@ -533,7 +533,8 @@ delete it when leaving the dynamic extent of this call."
       (lambda ()
         (false-if-exception (delete-file-recursively tmp-dir))))))
 
-(define (swh-download url reference output)
+(define* (swh-download url reference output
+                       #:key (log-port (current-error-port)))
   "Download from Software Heritage a checkout of the Git tag or commit
 REFERENCE originating from URL, and unpack it in OUTPUT.  Return #t on success
 and #f on failure.
@@ -545,10 +546,17 @@ wait until it becomes available, which could take several minutes."
              (lookup-revision reference)
              (lookup-origin-revision url reference))
     ((? revision? revision)
+     (format log-port "SWH: found revision ~a with directory at '~a'~%"
+             (revision-id revision)
+             (swh-url (revision-directory-url revision)))
      (call-with-temporary-directory
       (lambda (directory)
-        (match (vault-fetch (revision-directory revision) 'directory)
+        (match (vault-fetch (revision-directory revision) 'directory
+                            #:log-port log-port)
           (#f
+           (format log-port
+                   "SWH: directory ~a could not be fetched from the vault~%"
+                   (revision-directory revision))
            #f)
           ((? port? input)
            (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))

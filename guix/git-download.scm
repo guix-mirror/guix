@@ -139,8 +139,11 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                 ;; As a last resort, attempt to download from Software Heritage.
                 ;; XXX: Currently recursive checkouts are not supported.
                 (and (not recursive?)
-                     (swh-download (getenv "git url") (getenv "git commit")
-                                   #$output)))))))
+                     (begin
+                       (format (current-error-port)
+                               "Trying to download from Software Heritage...~%")
+                       (swh-download (getenv "git url") (getenv "git commit")
+                                     #$output))))))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "git-checkout") build
