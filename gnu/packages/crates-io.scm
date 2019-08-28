@@ -335,6 +335,32 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-lazy-static
+  (package
+    (name "rust-lazy-static")
+    (version "1.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lazy_static" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "052ac27w189hrf1j3hz7sga46rp84zl2hqnzyihxv78mgzr2jmxw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-spin" ,rust-spin))))
+    (home-page  "https://github.com/rust-lang-nursery/lazy-static.rs")
+    (synopsis "Macro for declaring lazily evaluated statics in Rust")
+    (description
+     "This package provides a macro for declaring lazily evaluated statics in
+Rust.  Using this macro, it is possible to have @code{static}s that require code
+to be executed at runtime in order to be initialized.  This includes anything
+requiring heap allocations, like vectors or hash maps, as well as anything that
+requires non-const function calls to be computed.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-libc
   (package
     (name "rust-libc")
