@@ -1207,6 +1207,20 @@ library's old @code{scoped_thread_local!} macro for providing scoped access to
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-scoped-tls-0.1
+  (package
+    (inherit rust-scoped-tls)
+    (name "rust-scoped-tls")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scoped-tls" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0a2bn9d2mb07c6l16sadijy4p540g498zddfxyiq4rsqpwrglbrk"))))))
+
 (define-public rust-scopeguard
   (package
     (name "rust-scopeguard")
