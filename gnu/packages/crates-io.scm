@@ -744,6 +744,31 @@ types as proposed in RFC 1158.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-cpus
+  (package
+    (name "rust-num-cpus")
+    (version "1.10.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num_cpus" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0wrj3zvj6h3q26sqj9zxpd59frjb54n7jhjwf307clq31ic47vxw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment))))
+    (home-page "https://github.com/seanmonstar/num_cpus")
+    (synopsis "Get the number of CPUs on a machine")
+    (description
+     "Get the number of CPUs on a machine.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-integer
   (package
     (name "rust-num-integer")
