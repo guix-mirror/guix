@@ -1080,6 +1080,31 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-widestring
+  (package
+    (name "rust-widestring")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "widestring" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1dhx6dndjsz1y7c9w06922412kdxyrrkqblvggm76mh8z17hxz7g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/starkat99/widestring-rs")
+    (synopsis "Wide string Rust FFI library")
+    (description
+     "A wide string Rust FFI library for converting to and from wide strings,
+such as those often used in Windows API or other FFI libaries.  Both UTF-16 and
+UTF-32 types are provided, including support for malformed encoding.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-winapi
   (package
     (name "rust-winapi")
