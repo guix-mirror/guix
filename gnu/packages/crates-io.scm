@@ -1832,6 +1832,26 @@ whitespace from a string.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-untrusted
+  (package
+    (name "rust-untrusted")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "untrusted" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1kmfykcwif6ashkwg54gcnhxj03kpba2i9vc7z5rpr0xlgvrwdk0"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/briansmith/untrusted")
+    (synopsis "Zero-allocation parsing of untrusted inputs in Rust")
+    (description
+     "Safe, fast, zero-panic, zero-crashing, zero-allocation parsing of
+untrusted inputs in Rust.")
+    (license license:isc)))
+
 (define-public rust-wasi
   (package
     (name "rust-wasi")
