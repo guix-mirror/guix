@@ -1876,6 +1876,25 @@ If that fails, no determination is made, and calls return None.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-void
+  (package
+    (name "rust-void")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "void" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zc8f0ksxvmhvgx4fdg0zyn6vdnbxd2xv9hfx4nhzg6kbs4f80ka"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/reem/rust-void.git")
+    (synopsis "Void type for use in statically impossible cases")
+    (description
+     "The uninhabited void type for use in statically impossible cases.")
+    (license license:expat)))
+
 (define-public rust-wasi
   (package
     (name "rust-wasi")
