@@ -1429,6 +1429,29 @@ crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-streaming-stats
+  (package
+    (name "rust-streaming-stats")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "streaming-stats" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0l7xz4g6709s80zqpvlhrg0qhgz64r94cwhmfsg8xhabgznbp2px"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits))))
+    (home-page "https://github.com/BurntSushi/rust-stats")
+    (synopsis "Compute basic statistics on streams")
+    (description
+     "Experimental crate for computing basic statistics on streams.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-strsim
   (package
     (name "rust-strsim")
