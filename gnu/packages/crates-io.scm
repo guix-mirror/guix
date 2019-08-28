@@ -810,7 +810,7 @@ types as proposed in RFC 1158.")
          "0clvrm34rrqc8p6gq5ps5fcgws3kgq5knh7nlqxf2ayarwks9abb"))))
     (build-system cargo-build-system)
     (arguments
-     `(#:cargo-development-inputs
+     `(#:cargo-inputs
        (("rust-autocfg" ,rust-autocfg))))
     (home-page "https://github.com/rust-num/num-traits")
     (synopsis "Numeric traits for generic mathematics")
