@@ -113,6 +113,28 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-blas-sys
+  (package
+    (name "rust-blas-sys")
+    (version "0.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "blas-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0h14zjycwc76v15h8qll9z1xiryvmpvsb5gam97pqpdjrrwv5c8k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc))))
+    (home-page "https://github.com/blas-lapack-rs/blas-sys")
+    (synopsis "Bindings to BLAS (Fortran)")
+    (description
+     "Ths package provides bindings to BLAS (Fortran).")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-cfg-if
   (package
     (name "rust-cfg-if")
