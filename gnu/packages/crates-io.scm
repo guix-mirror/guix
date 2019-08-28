@@ -1075,6 +1075,29 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-regex-syntax
+  (package
+    (name "rust-regex-syntax")
+    (version "0.6.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "regex-syntax" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0p47lf38yj2g2fnmvnraccqlxwk35zr76hlnqi8yva932nzqam6d"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-ucd-util" ,rust-ucd-util))))
+    (home-page "https://github.com/rust-lang/regex")
+    (synopsis "Regular expression parser")
+    (description
+     "This package provides a regular expression parser.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-std-workspace-core
   (package
     (name "rust-rustc-std-workspace-core")
