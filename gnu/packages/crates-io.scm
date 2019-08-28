@@ -1405,6 +1405,30 @@ crate.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-stdweb-internal-test-macro
+  (package
+    (name "rust-stdweb-internal-test-macro")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "stdweb-internal-test-macro" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "12rrm7p77xnm3xacgn3rgniiyyjb4gq7902wpbljsvbx045z69l2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2)
+        ("rust-quote" ,rust-quote))))
+    (home-page "https://github.com/koute/stdweb")
+    (synopsis "Internal crate of the `stdweb` crate")
+    (description
+     "Internal crate of the @code{stdweb} crate.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-strsim
   (package
     (name "rust-strsim")
