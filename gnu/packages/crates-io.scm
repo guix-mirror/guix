@@ -200,6 +200,26 @@ depending on a large number of #[cfg] parameters.  Structured like an
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
     (license license:bsd-2)))
 
+(define-public rust-core-foundation-sys
+  (package
+    (name "rust-core-foundation-sys")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "core-foundation-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0fzsw1j9g1x598yhwklg59l15hwzc0pyvs01w9fg2kin4598mjp7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/servo/core-foundation-rs")
+    (synopsis "Bindings to Core Foundation for OS X")
+    (description
+     "Bindings to Core Foundation for OS X.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
