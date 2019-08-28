@@ -1719,6 +1719,17 @@ exec " gcc "/bin/" program
                   (arguments
                    `(#:tests? #f                  ;... and thus disable tests
 
+                     ;; XXX: These flags should be unconditional, but for now
+                     ;; we just add them on x86 to avoid a full rebuild.
+                     ;; TODO: On the next core-updates, use
+                     ;; 'substitute-keyword-arguments' to inherit them from
+                     ;; BISON.
+                     ,@(if (member (%current-system)
+                                   '("x86_64-linux" "i686-linux"))
+                           '(#:parallel-build? #f
+                             #:parallel-tests? #f)
+                           '())
+
                      ;; Zero timestamps in liby.a; this must be done
                      ;; explicitly here because the bootstrap Binutils don't
                      ;; do that (default is "cru".)
