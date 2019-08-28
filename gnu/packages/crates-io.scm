@@ -1103,6 +1103,25 @@ in Rust.")
        (modify-phases %standard-phases
          (delete 'build))))))
 
+(define-public rust-winapi-build
+  (package
+    (name "rust-winapi-build")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi-build" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1g4rqsgjky0a7530qajn2bbfcrl2v0zb39idgdws9b1l7gp5wc9d"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Common code for build.rs in WinAPI -sys crates")
+    (description
+     "Common code for build.rs in WinAPI -sys crates.")
+    (license license:expat)))
+
 (define-public rust-winapi-i686-pc-windows-gnu
   (package
     (name "rust-winapi-i686-pc-windows-gnu")
