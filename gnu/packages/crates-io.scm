@@ -1895,6 +1895,32 @@ If that fails, no determination is made, and calls return None.")
      "The uninhabited void type for use in statically impossible cases.")
     (license license:expat)))
 
+(define-public rust-walkdir
+  (package
+    (name "rust-walkdir")
+    (version "2.2.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "walkdir" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "07ppalpvxkf8cnqr64np422792y4z5bs9m8b4nrflh5rm17wjn4n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-same-file" ,rust-same-file)
+        ("rust-winapi" ,rust-winapi)
+        ("rust-winapi-util" ,rust-winapi-util))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment))))
+    (home-page  "https://github.com/BurntSushi/walkdir")
+    (synopsis "Recursively walk a directory")
+    (description "Recursively walk a directory.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-wasi
   (package
     (name "rust-wasi")
