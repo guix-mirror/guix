@@ -718,6 +718,32 @@ whether an expression matches a pattern.")
       "Chaining APIs for both self -> Self and &mut self methods.")
     (license license:expat)))
 
+(define-public rust-net2
+  (package
+    (name "rust-net2")
+    (version "0.2.33")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "net2" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "126g3fgfxp06zimc1l9iyxnn9cif1hjsg7sd81nlls5nnyghsma2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if)
+        ("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/rust-lang-nursery/net2-rs")
+    (synopsis "Extensions to the standard library's networking types")
+    (description
+     "This library contains extensions to the standard library's networking
+types as proposed in RFC 1158.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-integer
   (package
     (name "rust-num-integer")
