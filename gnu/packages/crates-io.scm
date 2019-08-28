@@ -1162,6 +1162,30 @@ paths point to the same file.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-schannel
+  (package
+    (name "rust-schannel")
+    (version "0.1.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "schannel" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0f9k4pm8yc3z0n1n8hazvnrvg52f0sfxjc91bhf3r76rb3rapxpj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/steffengy/schannel-rs")
+    (synopsis "Rust bindings to the Windows SChannel APIs")
+    (description
+     "Rust bindings to the Windows SChannel APIs providing TLS client and
+server functionality.")
+    (license license:expat)))
+
 (define-public rust-scoped-tls
   (package
     (name "rust-scoped-tls")
