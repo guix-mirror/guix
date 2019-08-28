@@ -1491,6 +1491,29 @@ and Jaro-Winkler.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-termcolor
+  (package
+    (name "rust-termcolor")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "termcolor" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vjfsn1a8zvqhnrbygrz1id6yckwv1dncw3w4zj65qdx0f00kmln"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-wincolor" ,rust-wincolor))))
+    (home-page "https://github.com/BurntSushi/termcolor")
+    (synopsis "Library for writing colored text to a terminal")
+    (description "This package provides a simple cross platform library for
+writing colored text to a terminal.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-termios
   (package
     (name "rust-termios")
