@@ -1244,6 +1244,21 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-scopeguard-0.3
+  (package
+    (inherit rust-scopeguard)
+    (name "rust-scopeguard")
+    (version "0.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "scopeguard" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
+
 (define-public rust-semver-parser
   (package
     (name "rust-semver-parser")
