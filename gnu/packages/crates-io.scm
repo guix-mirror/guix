@@ -379,6 +379,25 @@ cross platform API.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-fixedbitset
+  (package
+    (name "rust-fixedbitset")
+    (version "0.1.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fixedbitset" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/fixedbitset")
+    (synopsis "FixedBitSet is a simple bitset collection")
+    (description "FixedBitSet is a simple bitset collection.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-fnv
   (package
     (name "rust-fnv")
