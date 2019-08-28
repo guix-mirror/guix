@@ -1852,6 +1852,30 @@ whitespace from a string.")
 untrusted inputs in Rust.")
     (license license:isc)))
 
+(define-public rust-version-check
+  (package
+    (name "rust-version-check")
+    (version "0.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "version_check" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1kikqlnggii1rvnxrbls55sc46lxvinz5k3giscgncjj4p87b1q7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/SergioBenitez/version_check")
+    (synopsis "Check that the installed rustc meets some version requirements")
+    (description
+     "This tiny crate checks that the running or installed rustc meets some
+version requirements.  The version is queried by calling the Rust compiler with
+@code{--version}.  The path to the compiler is determined first via the
+@code{RUSTC} environment variable.  If it is not set, then @code{rustc} is used.
+If that fails, no determination is made, and calls return None.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-wasi
   (package
     (name "rust-wasi")
