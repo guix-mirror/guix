@@ -1584,6 +1584,26 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tokio-mock-task
+  (package
+    (name "rust-tokio-mock-task")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tokio-mock-task" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1y7q83qfk9ljjfvs82b453pmz9x1v3d6kr4x55j8mal01s6790dw"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-futures" ,rust-futures))))
+    (home-page  "https://github.com/carllerche/tokio-mock-task")
+    (synopsis "Mock a Tokio task")
+    (description "Mock a Tokio task")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
