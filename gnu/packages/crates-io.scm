@@ -240,6 +240,25 @@ depending on a large number of #[cfg] parameters.  Structured like an
 hexadecimal, bas32, and base64.")
     (license license:expat)))
 
+(define-public rust-defmac
+  (package
+    (name "rust-defmac")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "defmac" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "01ff3jdmcc5waffkwllndnx5hsn414r7x1rq4ib73n7awsyzxkxv"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/defmac")
+    (synopsis "Macro to define lambda-like macros inline")
+    (description "A macro to define lambda-like macros inline.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
