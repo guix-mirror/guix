@@ -22,7 +22,8 @@
   #:use-module (guix build-system cargo)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (gnu packages pkg-config))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -898,6 +899,32 @@ algorithm.")
     (home-page "https://github.com/rust-lang-nursery/pin-utils")
     (synopsis "Utilities for pinning")
     (description "This crate provides utilities for pinning values on the stack.")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-pkg-config
+  (package
+    (name "rust-pkg-config")
+    (version "0.3.14")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "pkg-config" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "135ia995lqzr0gxpk85h0bjxf82kj6hbxdx924sh9jdln6r8wvk7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static))))
+    (inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/alexcrichton/pkg-config-rs")
+    (synopsis "Library to run the pkg-config system tool")
+    (description
+     "A library to run the pkg-config system tool at build time in order to be
+used in Cargo build scripts.")
     (license (list license:asl2.0
                    license:expat))))
 
