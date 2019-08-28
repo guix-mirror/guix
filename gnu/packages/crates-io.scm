@@ -1082,6 +1082,27 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-winapi-0.2
+  (package
+    (inherit rust-winapi)
+    (name "rust-winapi")
+    (version "0.2.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))
+    ;; We do not want to package 48 -sys crates for a package we do not want.
+    ;; They are all dev dependencies, so we skip building and testing.
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))))
+
 (define-public rust-winapi-i686-pc-windows-gnu
   (package
     (name "rust-winapi-i686-pc-windows-gnu")
