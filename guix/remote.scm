@@ -27,6 +27,7 @@
   #:use-module (guix derivations)
   #:use-module (guix utils)
   #:use-module (ssh popen)
+  #:use-module (ssh channel)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -68,10 +69,13 @@ BECOME-COMMAND is given, use that to invoke the remote Guile REPL."
 
   (let ((pipe (apply open-remote-pipe* session OPEN_READ repl-command)))
     (when (eof-object? (peek-char pipe))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "failed to run '~{~a~^ ~}'")
-                                repl-command))))))
+      (let ((status (channel-get-exit-status pipe)))
+        (close-port pipe)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "remote command '~{~a~^ ~}' failed \
+with status ~a")
+                                  repl-command status)))))))
     pipe))
 
 (define* (%remote-eval lowered session #:optional become-command)
