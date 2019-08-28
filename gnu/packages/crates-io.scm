@@ -1143,6 +1143,29 @@ i686-pc-windows-gnu target.  Please don't use this crate directly, depend on
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-winapi-util
+  (package
+    (name "rust-winapi-util")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi-util" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1j839dc6y8vszvrsb7yk0qvs0w6asnahxzbyans37vnsw6vbls3i"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/BurntSushi/winapi-util")
+    (synopsis "Dumping ground for high level safe wrappers over winapi")
+    (description
+     "This package provides a dumping ground for high level safe wrappers over
+winapi.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-winapi-x86-64-pc-windows-gnu
   (package
     (name "rust-winapi-x86-64-pc-windows-gnu")
