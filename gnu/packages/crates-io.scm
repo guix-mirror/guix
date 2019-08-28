@@ -178,6 +178,28 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cloudabi
+  (package
+    (name "rust-cloudabi")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cloudabi" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags))))
+    (home-page "https://nuxi.nl/cloudabi/")
+    (synopsis "Low level interface to CloudABI")
+    (description
+     "Low level interface to CloudABI.  Contains all syscalls and related types.")
+    (license license:bsd-2)))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
