@@ -1727,6 +1727,29 @@ implementation is incomplete.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-ucd-trie
+  (package
+    (name "rust-ucd-trie")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ucd-trie" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hh6kyzh5xygwy96wfmsf8v8czlzhps2lgbcyhj1xzy1w1xys04g"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+      (("rust-lazy-static" ,rust-lazy-static))))
+    (home-page "https://github.com/BurntSushi/ucd-generate")
+    (synopsis "Trie for storing Unicode codepoint sets and maps")
+    (description
+     "This package provides a trie for storing Unicode codepoint sets and maps.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-ucd-util
   (package
     (name "rust-ucd-util")
