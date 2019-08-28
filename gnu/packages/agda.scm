@@ -190,7 +190,7 @@ Agda.  It also aids the input of Unicode characters.")))
                (for-each (lambda (file)
                            (make-file-writable file)
                            (install-file file include))
-                         (find-files "." "\\.agda$"))
+                         (find-files "." "\\.agdai?(-lib)?$"))
                #t))))))
     (synopsis "The Iowa Agda Library")
     (description
