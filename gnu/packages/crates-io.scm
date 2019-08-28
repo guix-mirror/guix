@@ -259,6 +259,20 @@ hexadecimal, bas32, and base64.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-defmac-0.1
+  (package
+    (inherit rust-defmac)
+    (name "rust-defmac")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "defmac" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
