@@ -1259,6 +1259,30 @@ with one of the implemented strategies.")
          (base32
           "09sy9wbqp409pkwmqni40qmwa99ldqpl48pp95m1xw8sc19qy9cl"))))))
 
+(define-public rust-security-framework-sys
+  (package
+    (name "rust-security-framework-sys")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "security-framework-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0mlsakq9kmqyc0fg2hcbgm6rjk55mb0rhjw2wid3hqdzkjcghdln"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-core-foundation-sys"
+         ,rust-core-foundation-sys))))
+    (home-page "https://lib.rs/crates/security-framework-sys")
+    (synopsis "Apple `Security.framework` low-level FFI bindings")
+    (description
+     "Apple `Security.framework` low-level FFI bindings.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-semver-parser
   (package
     (name "rust-semver-parser")
