@@ -135,6 +135,28 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cblas-sys
+  (package
+    (name "rust-cblas-sys")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cblas-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0rgsn3klhhh09d8qf3b87zl4rwk93l2g0qzh9hhb0lff5kcfrzmn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc))))
+    (home-page "https://github.com/blas-lapack-rs/cblas-sys")
+    (synopsis "Bindings to CBLAS (C)")
+    (description
+     "The package provides bindings to CBLAS (C).")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-cfg-if
   (package
     (name "rust-cfg-if")
