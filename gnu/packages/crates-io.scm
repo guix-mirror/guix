@@ -220,6 +220,26 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-data-encoding
+  (package
+    (name "rust-data-encoding")
+    (version "2.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "data-encoding" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15xd6afhsjl08285piwczrafmckpp8i29padj8v12xhahshprx7l"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/ia0/data-encoding")
+    (synopsis "Efficient and customizable data-encoding functions")
+    (description
+     "This library provides encodings for many different common cases, including
+hexadecimal, bas32, and base64.")
+    (license license:expat)))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
