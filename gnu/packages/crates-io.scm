@@ -698,6 +698,26 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-modifier
+  (package
+    (name "rust-modifier")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "modifier" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0n3fmgli1nsskl0whrfzm1gk0rmwwl6pw1q4nb9sqqmn5h8wkxa1"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/reem/rust-modifier")
+    (synopsis
+      "Chaining APIs for both self -> Self and &mut self methods.")
+    (description
+      "Chaining APIs for both self -> Self and &mut self methods.")
+    (license license:expat)))
+
 (define-public rust-num-integer
   (package
     (name "rust-num-integer")
