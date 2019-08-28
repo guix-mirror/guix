@@ -1361,6 +1361,30 @@ spinning.  They may contain data, are usable without @code{std},and static
 initializers are available.")
     (license license:expat)))
 
+(define-public rust-stable-deref-trait
+  (package
+    (name "rust-stable-deref-trait")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "stable_deref_trait" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1j2lkgakksmz4vc5hfawcch2ipiskrhjs1sih0f3br7s7rys58fv"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/storyyeller/stable_deref_trait0")
+    (synopsis "Defines an unsafe marker trait, StableDeref")
+    (description
+      "This crate defines an unsafe marker trait, StableDeref, for container
+types which deref to a fixed address which is valid even when the containing
+type is moved.  For example, Box, Vec, Rc, Arc and String implement this trait.
+Additionally, it defines CloneStableDeref for types like Rc where clones deref
+to the same address.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-stdweb-internal-runtime
   (package
     (name "rust-stdweb-internal-runtime")
