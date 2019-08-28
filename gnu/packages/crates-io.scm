@@ -1646,6 +1646,28 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-try-from
+  (package
+    (name "rust-try-from")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "try_from" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "12wdd4ja7047sd3rx70hv2056hyc8gcdllcx3a41g1rnw64kng98"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+      (("rust-cfg-if" ,rust-cfg-if))))
+    (home-page "https://github.com/derekjw/try_from")
+    (synopsis "TryFrom and TryInto traits for failable conversions")
+    (description
+      "TryFrom and TryInto traits for failable conversions that return a Result.")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
