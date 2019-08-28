@@ -190,6 +190,12 @@ Software Heritage."
                                  (ref 10))))))
       str))                                       ;oops!
 
+(define string*
+  ;; Converts "string or #nil" coming from JSON to "string or #f".
+  (match-lambda
+    ((? string? str) str)
+    ((? null?) #f)))
+
 (define* (call url decode #:optional (method http-get)
                #:key (false-if-404? #t))
   "Invoke the endpoint at URL using METHOD.  Decode the resulting JSON body
@@ -239,8 +245,8 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (date visit-date "date" string->date*)
   (origin visit-origin)
   (url visit-url "origin_visit_url")
-  (snapshot-url visit-snapshot-url "snapshot_url")
-  (status visit-status)
+  (snapshot-url visit-snapshot-url "snapshot_url" string*) ;string | #f
+  (status visit-status "status" string->symbol)   ;'full | 'partial | 'ongoing
   (number visit-number "visit"))
 
 ;; <https://archive.softwareheritage.org/api/1/snapshot/4334c3ed4bb208604ed780d8687fe523837f1bd1/>
@@ -378,9 +384,11 @@ FALSE-IF-404? is true, return #f upon 404 responses."
           (map json->visit (vector->list (json->scm port))))))
 
 (define (visit-snapshot visit)
-  "Return the snapshot corresponding to VISIT."
-  (call (swh-url (visit-snapshot-url visit))
-        json->snapshot))
+  "Return the snapshot corresponding to VISIT or #f if no snapshot is
+available."
+  (and (visit-snapshot-url visit)
+       (call (swh-url (visit-snapshot-url visit))
+             json->snapshot)))
 
 (define (branch-target branch)
   "Return the target of BRANCH, either a <revision> or a <release>."
@@ -396,7 +404,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   "Return a <revision> corresponding to the given TAG for the repository
 coming from URL.  Example:
 
-  (lookup-origin-release \"https://github.com/guix-mirror/guix/\" \"v0.8\")
+  (lookup-origin-revision \"https://github.com/guix-mirror/guix/\" \"v0.8\")
   => #<<revision> id: \"44941…\" …>
 
 The information is based on the latest visit of URL available.  Return #f if
@@ -404,7 +412,7 @@ URL could not be found."
   (match (lookup-origin url)
     (#f #f)
     (origin
-      (match (origin-visits origin)
+      (match (filter visit-snapshot-url (origin-visits origin))
         ((visit . _)
          (let ((snapshot (visit-snapshot visit)))
            (match (and=> (find (lambda (branch)
