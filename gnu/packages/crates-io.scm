@@ -1538,6 +1538,28 @@ bindings are a small wrapper around the raw C functions, which converts integer
 return values to @code{std::io::Result} to indicate success or failure.")
     (license license:expat)))
 
+(define-public rust-thread-local
+  (package
+    (name "rust-thread-local")
+    (version "0.3.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "thread_local" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06rzik99p8c5js8238yhc8rk6np543ylb1dy9nrw5v80j0r3xdf6"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+      (("rust-lazy-static" ,rust-lazy-static))))
+    (home-page "https://github.com/Amanieu/thread_local-rs")
+    (synopsis "Per-object thread-local storage")
+    (description "Per-object thread-local storage")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
