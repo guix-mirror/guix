@@ -1627,6 +1627,25 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-traitobject
+  (package
+    (name "rust-traitobject")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "traitobject" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0yb0n8822mr59j200fyr2fxgzzgqljyxflx9y8bdy3rlaqngilgg"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/reem/rust-traitobject.git")
+    (synopsis "Unsafe helpers for dealing with raw trait objects")
+    (description "Unsafe helpers for dealing with raw trait objects.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
