@@ -478,6 +478,26 @@ featuring zero allocations, composability, and iterator-like interfaces.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-io-preview
+  (package
+    (name "rust-futures-io-preview")
+    (version "0.3.0-alpha.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "futures-io-preview" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0fhvwhdb8ywjjbfng0ra1r8yyc9yzpyxg9sv3spb3f7w0lk40bh8"))))
+    (build-system cargo-build-system)
+    (home-page "https://rust-lang-nursery.github.io/futures-rs/")
+    (synopsis "Async read and write traits for the futures library")
+    (description "This crate provides the @code{AsyncRead} and
+@code{AsyncWrite} traits for the @code{futures-rs} library.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-hex
   (package
     (name "rust-hex")
