@@ -384,12 +384,14 @@ STORE is an open connection to the store."
                              (bootloader bootloader)))
 
          ;; Make the specified system generation the default entry.
-         (params (profile-boot-parameters %system-profile (list number)))
+         (params (first (profile-boot-parameters %system-profile
+                                                 (list number))))
          (old-generations
           (delv number (reverse (generation-numbers %system-profile))))
          (old-params (profile-boot-parameters
                        %system-profile old-generations))
-         (entries (map boot-parameters->menu-entry params))
+         (entries (cons (boot-parameters->menu-entry params)
+                        (boot-parameters-bootloader-menu-entries params)))
          (old-entries (map boot-parameters->menu-entry old-params)))
     (run-with-store store
       (mlet* %store-monad
