@@ -11931,12 +11931,11 @@ key again.")
     (license license:gpl3+)))
 
 (define-public emacs-mbsync
-  (let ((commit "42077e83ae2db778ce0f8e22f8357b40355526b3")
-        (revision "1"))
+  (let ((commit "f549eccde6033449d24cd5b6148599484850c403")
+        (revision "2"))
     (package
       (name "emacs-mbsync")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.1.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -11946,7 +11945,7 @@ key again.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0yj93y2mpxlir8x73znlg1slxlv4blm1vjv5h2w3j8lxg8bxvmn6"))))
+           "1pdj41rq3pq4jdb5pma5j495xj7w7jgn8pnz1z1zwg75pn7ydfp0"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
