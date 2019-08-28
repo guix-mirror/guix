@@ -418,6 +418,26 @@ implementation that is more efficient for smaller hash keys.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-foreign-types-shared
+  (package
+    (name "rust-foreign-types-shared")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "foreign-types-shared" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0kanxlif1vp0ffh2r9l610jqbkmb3183yqykxq1z5w1vay2rn7y6"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/sfackler/foreign-types")
+    (synopsis "An internal crate used by foreign-types")
+    (description
+     "An internal crate used by foreign-types.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-fs-extra
   (package
     (name "rust-fs-extra")
