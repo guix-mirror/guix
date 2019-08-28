@@ -1138,6 +1138,30 @@ rust-lang/rust integration.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-same-file
+  (package
+    (name "rust-same-file")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "same-file" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "08a4zy10pjindf2rah320s6shgswk13mqw7s61m8i1y1xpf8spjq"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+      (("rust-winapi-util" ,rust-winapi-util))))
+    (home-page "https://github.com/BurntSushi/same-file")
+    (synopsis "Determine whether two file paths point to the same file")
+    (description
+     "This package provides a simple crate for determining whether two file
+paths point to the same file.")
+    (license (list license:unlicense
+                   license:expat))))
+
 (define-public rust-scoped-tls
   (package
     (name "rust-scoped-tls")
