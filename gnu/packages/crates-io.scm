@@ -518,6 +518,30 @@ hexadecimal representation.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-iovec
+  (package
+    (name "rust-iovec")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "iovec" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "025vi072m22299z3fg73qid188z2iip7k41ba6v5v5yhwwby9rnv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi-0.2))))
+    (home-page "https://github.com/carllerche/iovec")
+    (synopsis "Portable buffer type for scatter/gather I/O operations")
+    (description
+     "Portable buffer type for scatter/gather I/O operations.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-itoa
   (package
     (name "rust-itoa")
