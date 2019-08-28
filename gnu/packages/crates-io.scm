@@ -888,6 +888,30 @@ and Jaro-Winkler.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-termios
+  (package
+    (name "rust-termios")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "termios" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09any1p4jp4bphvb5ikagnvwjc3xn2djchy96nkpa782xb2j1dkj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-libc" ,rust-libc))))
+    (home-page  "https://github.com/dcuddeback/termios-rs")
+    (synopsis "Safe bindings for the termios library")
+    (description
+     "The termios crate provides safe bindings for the Rust programming language
+to the terminal I/O interface implemented by Unix operating systems.  The safe
+bindings are a small wrapper around the raw C functions, which converts integer
+return values to @code{std::io::Result} to indicate success or failure.")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
