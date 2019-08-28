@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015, 2016, 2017, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
@@ -168,14 +168,14 @@ HTML/CSS applications to full-fledged web browsers.")
 (define-public webkitgtk-2.24
   (package/inherit webkitgtk
     (name "webkitgtk")
-    (version "2.24.3")
+    (version "2.24.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lbcrw5axwrbrajxq7fqywfyh0djqi23ynzb5wi5ghw2grnp83cl"))))
+                "1n3x5g1z6rg9n1ssna7wi0z6zlprjm4wzk544v14wqi6q0lv2s46"))))
     (native-inputs
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
