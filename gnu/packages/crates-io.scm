@@ -1056,6 +1056,30 @@ in Rust.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-wasm-bindgen-test-macro
+  (package
+    (name "rust-wasm-bindgen-test-macro")
+    (version "0.2.48")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "wasm-bindgen-test-macro" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0n28mr6vncf1k1qr2b5bvfxq4jvqkjdzq0z0ab6w2f5d6v8q3q3l"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-proc-macro2" ,rust-proc-macro2)
+        ("rust-quote" ,rust-quote))))
+    (home-page "https://github.com/rustwasm/wasm-bindgen")
+    (synopsis "Internal testing macro for wasm-bindgen")
+    (description
+     "This library contains the internal testing macro for wasm-bindgen.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-winapi
   (package
     (name "rust-winapi")
