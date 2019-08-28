@@ -1668,6 +1668,25 @@ fixed set of worker threads.")
       "TryFrom and TryInto traits for failable conversions that return a Result.")
     (license license:expat)))
 
+(define-public rust-try-lock
+  (package
+    (name "rust-try-lock")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "try-lock" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10p36rx6pqi9d0zr876xa8vksx2m66ha45myakl50rn08dxyn176"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/seanmonstar/try-lock")
+    (synopsis "Lightweight atomic lock")
+    (description
+     "This package provides a lightweight atomic lock.")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
