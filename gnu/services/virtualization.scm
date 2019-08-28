@@ -442,8 +442,10 @@ potential infinite waits blocking libvirt."))
                   (service-extension polkit-service-type
                                      (compose list libvirt-configuration-libvirt))
                   (service-extension profile-service-type
-                                     (compose list
-                                              libvirt-configuration-libvirt))
+                                     (lambda (config)
+                                       (list
+                                        (libvirt-configuration-libvirt config)
+                                        qemu)))
                   (service-extension activation-service-type
                                      %libvirt-activation)
                   (service-extension shepherd-root-service-type
