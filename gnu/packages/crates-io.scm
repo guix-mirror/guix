@@ -1604,6 +1604,29 @@ fixed set of worker threads.")
     (description "Mock a Tokio task")
     (license license:expat)))
 
+(define-public rust-tracing-core
+  (package
+    (name "rust-tracing-core")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tracing-core" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "01fa73wzw2m5ybi3kkd52dgrw97mgc3i6inmhwys46ab28giwnxi"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-lazy-static" ,rust-lazy-static))))
+    (home-page "https://tokio.rs")
+    (synopsis "Core primitives for application-level tracing")
+    (description
+     "Core primitives for application-level tracing.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
