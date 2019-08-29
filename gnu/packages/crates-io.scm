@@ -1908,6 +1908,20 @@ If that fails, no determination is made, and calls return None.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-version-check-0.1
+  (package
+    (inherit rust-version-check)
+    (name "rust-version-check")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "version_check" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1pf91pvj8n6akh7w6j5ypka6aqz08b3qpzgs0ak2kjf4frkiljwi"))))))
+
 (define-public rust-void
   (package
     (name "rust-void")
