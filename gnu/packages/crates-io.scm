@@ -986,6 +986,53 @@ types as proposed in RFC 1158.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-nodrop
+  (package
+    (name "rust-nodrop")
+    (version "0.1.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nodrop" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0if9ifn6rvar5jirx4b3qh4sl5kjkmcifycvzhxa9j3crkfng5ig"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-nodrop-union" ,rust-nodrop-union))))
+    (home-page "https://github.com/bluss/arrayvec")
+    (synopsis "Wrapper type to inhibit drop (destructor)")
+    (description "This package provides a wrapper type to inhibit drop
+(destructor).  Use @code{std::mem::ManuallyDrop} instead!")
+    (license (list license:asl2.0
+                   license:expat))))
+
+;; This package requires features which are unavailable
+;; on the stable releases of Rust.
+(define-public rust-nodrop-union
+  (package
+    (name "rust-nodrop-union")
+    (version "0.1.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "nodrop-union" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0jsnkdn9l8jlmb9h4wssi76sxnyxwnyi00p6y1p2gdq7c1gdw2b7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/bluss/arrayvec")
+    (synopsis "Wrapper type to inhibit drop (destructor)")
+    (description "This package provides a wrapper type to inhibit drop
+(destructor).  Implementation crate for nodrop, the untagged unions
+implementation (which is unstable / requires nightly).")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-cpus
   (package
     (name "rust-num-cpus")
