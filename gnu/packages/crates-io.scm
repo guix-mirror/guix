@@ -971,6 +971,30 @@ used in Cargo build scripts.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-plugin
+  (package
+    (name "rust-plugin")
+    (version "0.2.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "plugin" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1q7nghkpvxxr168y2jnzh3w7qc9vfrby9n7ygy3xpj0bj71hsshs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-typemap" ,rust-typemap))
+       #:cargo-development-inputs
+       (("rust-void" ,rust-void))))
+    (home-page "https://github.com/reem/rust-plugin")
+    (synopsis "Lazily evaluated, order-independent plugins for extensible types")
+    (description
+     "Lazily evaluated, order-independent plugins for extensible types.")
+    (license license:expat)))
+
 (define-public rust-pocket-resources
   (package
     (name "rust-pocket-resources")
