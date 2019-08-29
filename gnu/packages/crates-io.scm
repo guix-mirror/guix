@@ -203,6 +203,32 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-clicolors-control
+  (package
+    (name "rust-clicolors-control")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clicolors-control" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1y80cgarxhrd1bz5yjm81r444v6flvy36aaxrrsac0yhfd6gvavk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-atty" ,rust-atty)
+        ("rust-lazy-static" ,rust-lazy-static)
+        ("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/mitsuhiko/clicolors-control")
+    (synopsis "Common utility library to control CLI colorization")
+    (description
+     "This package provides a common utility library to control CLI
+colorization.")
+    (license license:expat)))
+
 (define-public rust-cloudabi
   (package
     (name "rust-cloudabi")
