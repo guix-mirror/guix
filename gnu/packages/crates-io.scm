@@ -509,6 +509,29 @@ implementation that is more efficient for smaller hash keys.")
 process and much more.")
     (license license:expat)))
 
+(define-public rust-fuchsia-zircon
+  (package
+    (name "rust-fuchsia-zircon")
+    (version "0.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fuchsia-zircon" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10jxc5ks1x06gpd0xg51kcjrxr35nj6qhx2zlc5n7bmskv3675rf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-bitflags" ,rust-bitflags)
+        ("rust-fuchsia-zircon-sys" ,rust-fuchsia-zircon-sys))
+       #:tests? #f)) ; tests require zircon
+    (home-page "https://fuchsia.googlesource.com/garnet/")
+    (synopsis "Rust bindings for the Zircon kernel")
+    (description "Rust bindings for the Zircon kernel.")
+    (license license:bsd-3)))
+
 (define-public rust-fuchsia-zircon-sys
   (package
     (name "rust-fuchsia-zircon-sys")
