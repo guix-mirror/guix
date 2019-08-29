@@ -1036,6 +1036,32 @@ types as proposed in RFC 1158.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-iter
+  (package
+    (name "rust-num-iter")
+    (version "0.1.39")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-iter" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bhk2qbr3261r6zvfc58lz4spfqjhvdripxgz5mks5rd85r55gbn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-integer" ,rust-num-integer)
+        ("rust-num-traits" ,rust-num-traits))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg))))
+    (home-page "https://github.com/rust-num/num-iter")
+    (synopsis "External iterators for generic mathematics")
+    (description
+     "This crate provides external iterators for generic mathematics.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-num-traits
   (package
     (name "rust-num-traits")
