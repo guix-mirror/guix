@@ -499,6 +499,32 @@ featuring zero allocations, composability, and iterator-like interfaces.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-heapsize
+  (package
+    (name "rust-heapsize")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "heapsize" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0q94q9ppqjgrw71swiyia4hgby2cz6dldp7ij57nkvhd6zmfcy8n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-winapi" ,rust-winapi))
+       ;; Tests assume rust is built with jemalloc.
+       ;; https://github.com/servo/heapsize/issues/74
+       #:cargo-test-flags '("--features" "flexible-tests")))
+    (home-page "https://github.com/servo/heapsize")
+    (synopsis "Measure the total runtime size of an object on the heap")
+    (description
+     "Infrastructure for measuring the total runtime size of an object on the
+heap.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-hex
   (package
     (name "rust-hex")
