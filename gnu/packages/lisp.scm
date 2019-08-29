@@ -6668,3 +6668,35 @@ discoverable library instead of many; consistency and composability, where
 @code{s} is always the last argument, which makes it easier to feed pipes and
 arrows.")
       (license license:expat))))
+
+(define-public sbcl-cl-xmlspam
+  (let ((commit "ea06abcca2a73a9779bcfb09081e56665f94e22a"))
+    (package
+      (name "sbcl-cl-xmlspam")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/rogpeppe/cl-xmlspam")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "0w4rqvrgdgk3fwfq3kx4r7wwdr2bv3b6n3bdqwsiriw9psqzpz2s"))))
+      (inputs
+       `(("cxml" ,sbcl-cxml)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Concise, regexp-like pattern matching on streaming XML for Common Lisp")
+      (description "CXML does an excellent job at parsing XML elements, but what
+do you do when you have a XML file that's larger than you want to fit in
+memory, and you want to extract some information from it?  Writing code to deal
+with SAX events, or even using Klacks, quickly becomes tedious.
+@code{cl-xmlspam} (for XML Stream PAttern Matcher) is designed to make it easy
+to write code that mirrors the structure of the XML that it's parsing.  It
+also makes it easy to shift paradigms when necessary - the usual Lisp control
+constructs can be used interchangeably with pattern matching, and the full
+power of CXML is available when necessary.")
+      (license license:bsd-3))))
