@@ -6341,6 +6341,32 @@ as well as features for editing search results.")
      "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
 
+(define-public emacs-taskrunner
+  (let ((commit "3afd4a546d42339543d3d4e51b175fc3e82b3358")
+        (revision "1"))
+    (package
+      (name "emacs-taskrunner")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/emacs-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1lkdvmjn3alhqxq2i64sdr977sbw3g0b2670d9bwyzi67qh0jxrv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/emacs-taskrunner")
+      (synopsis "Retrieve tasks from various build systems and task-runners")
+      (description "This package parses Makefiles and build-system files for
+multiple project types.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-make
   (let ((commit "feae8df22bc4b20705ea08ac9adfc2b43bb348d0")
         (revision "1"))
