@@ -466,32 +466,17 @@ sub-directory.")
 (define-public stow
   (package
     (name "stow")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/stow/stow-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h8qr2rxsrkg6d8jxjk68r23jgn1dxdxyp4bnzzinpa8sjhfl905"))))
+                "0jrxy12ywn7smdzdnvwzjw77l6knx6jkj2rckgykg1dpf6bdkm89"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-stow
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/stow")
-                 `("PERL5LIB" ":" prefix
-                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
-                                                    "/lib/perl5/site_perl"))
-                         '("perl-clone-choose" "perl-clone" "perl-hash-merge"))))
-               #t))))))
     (inputs
-     `(("perl" ,perl)
-       ("perl-clone" ,perl-clone)
-       ("perl-clone-choose" ,perl-clone-choose)
-       ("perl-hash-merge" ,perl-hash-merge)))
+     `(("perl" ,perl)))
     (native-inputs
      `(("perl-test-simple" ,perl-test-simple)
        ("perl-test-output" ,perl-test-output)
