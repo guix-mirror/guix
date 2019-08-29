@@ -1802,6 +1802,28 @@ with the Unicode character database.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-unicase
+  (package
+    (name "rust-unicase")
+    (version "2.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicase" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xmpmkakhhblq7dzab1kwyv925kv7fqjkjsxjspg6ix9n88makm8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-version-check" ,rust-version-check-0.1))))
+    (home-page "https://github.com/seanmonstar/unicase")
+    (synopsis "Case-insensitive wrapper around strings")
+    (description
+     "A case-insensitive wrapper around strings.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-unicode-width
   (package
     (name "rust-unicode-width")
