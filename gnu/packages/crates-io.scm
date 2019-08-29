@@ -699,6 +699,29 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-mime
+  (package
+    (name "rust-mime")
+    (version "0.3.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "mime" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "09clbyvdkwflp8anwjhqdib0sw8191gphcchdp80nc8ayhhwl9ry"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unicase" ,rust-unicase))))
+    (home-page "https://github.com/hyperium/mime")
+    (synopsis "Strongly Typed Mimes")
+    (description
+     "Support MIME (HTTP Media Types) as strong types in Rust.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-modifier
   (package
     (name "rust-modifier")
