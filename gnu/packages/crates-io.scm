@@ -1760,6 +1760,28 @@ fixed set of worker threads.")
     (description "Exposes Typeable, for getting TypeIds at runtime.")
     (license license:expat)))
 
+(define-public rust-typemap
+  (package
+    (name "rust-typemap")
+    (version "0.3.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "typemap" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1xm1gbvz9qisj1l6d36hrl9pw8imr8ngs6qyanjnsad3h0yfcfv5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-unsafe-any" ,rust-unsafe-any))))
+    (home-page "https://github.com/reem/rust-typemap")
+    (synopsis "Typesafe store for many value types")
+    (description
+     "A typesafe store for many value types.")
+    (license license:expat)))
+
 (define-public rust-typenum
   (package
     (name "rust-typenum")
