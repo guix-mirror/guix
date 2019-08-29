@@ -2456,6 +2456,36 @@ color in a Windows console.")
      "A simple library wrapping a handful of useful winapi functions.")
     (license license:expat)))
 
+(define-public rust-ws2-32-sys
+  (package
+    (name "rust-ws2-32-sys")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ws2_32-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ppscg5qfqaw0gzwv2a4nhn5bn01ff9iwn6ysqnzm4n8s3myz76m"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.2)
+        ("rust-winapi-build" ,rust-winapi-build))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-Cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.* }") "}\n"))
+             #t)))))
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Function definitions for the Windows API library ws2_32")
+    (description
+     "Contains function definitions for the Windows API library ws2_32.")
+    (license license:expat)))
+
 (define-public rust-xdg
   (package
     (name "rust-xdg")
