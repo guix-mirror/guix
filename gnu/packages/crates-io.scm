@@ -1098,6 +1098,38 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-remove-dir-all
+  (package
+    (name "rust-remove-dir-all")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "remove_dir_all" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bkrlyg26mgizpiy1yb2hhpgscxcag8r5fnckqsvk25608vzm0sa"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-doc-comment" ,rust-doc-comment))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-source
+           ;; The test phase expects there to be a README.md in the root directory.
+           (lambda _
+             (invoke "touch" "README.md"))))))
+    (home-page "https://github.com/XAMPPRocky/remove_dir_all.git")
+    (synopsis "Implementation of remove_dir_all for Windows")
+    (description
+     "This package provides a safe, reliable implementation of
+@code{remove_dir_all} for Windows")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-std-workspace-core
   (package
     (name "rust-rustc-std-workspace-core")
