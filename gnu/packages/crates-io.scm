@@ -2325,6 +2325,33 @@ color in a Windows console.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-winutil
+  (package
+    (name "rust-winutil")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winutil" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0vkyl3fbbf05n5ph5yz8sfaccrk9x3qsr25560w6w68ldf5i7bvx"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi))
+       ;; This unmaintained crate cannot find winapi when built directly.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (home-page "https://bitbucket.org/DaveLancaster/winutil")
+    (synopsis "Library wrapping a handful of useful winapi functions")
+    (description
+     "A simple library wrapping a handful of useful winapi functions.")
+    (license license:expat)))
+
 (define-public rust-xdg
   (package
     (name "rust-xdg")
