@@ -2335,17 +2335,18 @@ and JACK.")
 (define-public libvdpau
   (package
     (name "libvdpau")
-    (version "1.2")
+    (version "1.3")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://gitlab.freedesktop.org/vdpau/libvdpau"
-                            "/uploads/14b620084c027d546fa0b3f083b800c6/"
-                            "libvdpau-" version ".tar.bz2"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://gitlab.freedesktop.org/vdpau/libvdpau.git")
+              (commit version)))
+        (file-name (git-file-name name version))
         (sha256
          (base32
-          "01ps6g6p6q7j2mjm9vn44pmzq3g75mm7mdgmnhb1qkjjdwc9njba"))))
-    (build-system gnu-build-system)
+          "1fb1nh5apr9kzx9bm2lysjwpyva1s60b2l2p230nqgvb11q25hd2"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
