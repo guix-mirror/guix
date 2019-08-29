@@ -6394,6 +6394,33 @@ multiple project types.")
 Makefile targets.")
       (license license:gpl3+))))
 
+(define-public emacs-helm-taskrunner
+  (let ((commit "1910dac19cbc7bd4fd08b0faf9affd455339fbea")
+        (revision "1"))
+    (package
+      (name "emacs-helm-taskrunner")
+      (version (git-version "0.9" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/helm-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "182lmr858fx6rdhp1fy7kv8dvrhzcnxzwfck1q22s6xs8x85d5q7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-taskrunner" ,emacs-taskrunner)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/helm-taskrunner")
+      (synopsis "Retrieve build-system tasks using Helm")
+      (description "This package provides a Helm interface for selecting
+Makefile targets.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-make
   (let ((commit "feae8df22bc4b20705ea08ac9adfc2b43bb348d0")
         (revision "1"))
