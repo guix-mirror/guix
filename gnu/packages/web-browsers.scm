@@ -365,10 +365,10 @@ vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
-(define-public next-gtk-webkit
+(define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.2.2")
+    (version "1.3.0")
     (source
      (origin
        (method git-fetch)
@@ -377,7 +377,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "1bif1k738knhifxhkn0d2x1m521zkx40pri44vyjqncp9r95hkbk"))
+         "0ibq30xrf871pkpasi8p9krn0pmd86rsdzb3jqvz3wnp4wa3hl9d"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -399,7 +399,7 @@ driven and does not detract you from your daily work.")
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk-2.24)))
     (native-inputs
-     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 and above are compiled with gcc-7
+     `(("gcc-7" ,gcc-7)   ; needed because webkitgtk-2.24 and above are compiled with gcc-7
        ("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
