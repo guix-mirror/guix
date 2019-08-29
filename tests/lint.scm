@@ -35,6 +35,7 @@
   #:use-module (guix packages)
   #:use-module (guix lint)
   #:use-module (guix ui)
+  #:use-module (guix swh)
   #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
@@ -47,6 +48,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 getopt-long)
   #:use-module (ice-9 pretty-print)
+  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
@@ -858,6 +860,85 @@
 (test-equal "formatting: alright"
   '()
   (check-formatting (dummy-package "x")))
+
+(test-assert "archival: missing content"
+  (let* ((origin   (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo.tgz")
+                     (sha256 (make-bytevector 32))))
+         (warnings (with-http-server '((404 "Not archived."))
+                     (parameterize ((%swh-base-url (%local-url)))
+                       (check-archival (dummy-package "x"
+                                                      (source origin)))))))
+    (warning-contains? "not archived" warnings)))
+
+(test-equal "archival: content available"
+  '()
+  (let* ((origin   (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo.tgz")
+                     (sha256 (make-bytevector 32))))
+         ;; https://archive.softwareheritage.org/api/1/content/
+         (content  "{ \"checksums\": {}, \"data_url\": \"xyz\",
+                      \"length\": 42 }"))
+    (with-http-server `((200 ,content))
+      (parameterize ((%swh-base-url (%local-url)))
+        (check-archival (dummy-package "x" (source origin)))))))
+
+(test-assert "archival: missing revision"
+  (let* ((origin   (origin
+                     (method git-fetch)
+                     (uri (git-reference
+                           (url "http://example.org/foo.git")
+                           (commit "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")))
+                     (sha256 (make-bytevector 32))))
+         ;; https://archive.softwareheritage.org/api/1/origin/save/
+         (save     "{ \"origin_url\": \"http://example.org/foo.git\",
+                      \"save_request_date\": \"2014-11-17T22:09:38+01:00\",
+                      \"save_request_status\": \"accepted\",
+                      \"save_task_status\": \"scheduled\" }")
+         (warnings (with-http-server `((404 "No revision.") ;lookup-revision
+                                       (404 "No origin.")   ;lookup-origin
+                                       (200 ,save))         ;save-origin
+                     (parameterize ((%swh-base-url (%local-url)))
+                       (check-archival (dummy-package "x" (source origin)))))))
+    (warning-contains? "scheduled" warnings)))
+
+(test-equal "archival: revision available"
+  '()
+  (let* ((origin   (origin
+                     (method git-fetch)
+                     (uri (git-reference
+                           (url "http://example.org/foo.git")
+                           (commit "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")))
+                     (sha256 (make-bytevector 32))))
+         ;; https://archive.softwareheritage.org/api/1/revision/
+         (revision "{ \"author\": {}, \"parents\": [],
+                      \"date\": \"2014-11-17T22:09:38+01:00\" }"))
+    (with-http-server `((200 ,revision))
+      (parameterize ((%swh-base-url (%local-url)))
+        (check-archival (dummy-package "x" (source origin)))))))
+
+(test-assert "archival: rate limit reached"
+  ;; We should get a single warning stating that the rate limit was reached,
+  ;; and nothing more, in particular no other HTTP requests.
+  (let* ((origin   (origin
+                     (method url-fetch)
+                     (uri "http://example.org/foo.tgz")
+                     (sha256 (make-bytevector 32))))
+         (too-many (build-response
+                    #:code 429
+                    #:reason-phrase "Too many requests"
+                    #:headers '((x-ratelimit-remaining . "0")
+                                (x-ratelimit-reset . "3000000000"))))
+         (warnings (with-http-server `((,too-many "Rate limit reached."))
+                     (parameterize ((%swh-base-url (%local-url)))
+                       (append-map (lambda (name)
+                                     (check-archival
+                                      (dummy-package name (source origin))))
+                                   '("x" "y" "z"))))))
+    (string-contains (single-lint-warning-message warnings)
+                     "rate limit reached")))
 
 (test-end "lint")
 

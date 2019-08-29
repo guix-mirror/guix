@@ -44,6 +44,8 @@
   #:use-module ((guix ui) #:select (texi->plain-text fill-paragraph))
   #:use-module (guix gnu-maintenance)
   #:use-module (guix cve)
+  #:use-module ((guix swh) #:hide (origin?))
+  #:autoload   (guix git-download) (git-reference?)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -80,6 +82,7 @@
             check-vulnerabilities
             check-for-updates
             check-formatting
+            check-archival
 
             lint-warning
             lint-warning?
@@ -1033,6 +1036,93 @@ the NIST server non-fatal."
          '()))
     (#f '()))) ; cannot find newer upstream release
 
+
+(define (check-archival package)
+  "Check whether PACKAGE's source code is archived on Software Heritage.  If
+it's not, and if its source code is a VCS snapshot, then send a \"save\"
+request to Software Heritage.
+
+Software Heritage imposes limits on the request rate per client IP address.
+This checker prints a notice and stops doing anything once that limit has been
+reached."
+  (define (response->warning url method response)
+    (if (request-rate-limit-reached? url method)
+        (list (make-warning package
+                            (G_ "Software Heritage rate limit reached; \
+try again later")
+                            #:field 'source))
+        (list (make-warning package
+                            (G_ "'~a' returned ~a")
+                            (list url (response-code response))
+                            #:field 'source))))
+
+  (define skip-key (gensym "skip-archival-check"))
+
+  (define (skip-when-limit-reached url method)
+    (or (not (request-rate-limit-reached? url method))
+        (throw skip-key #t)))
+
+  (parameterize ((%allow-request? skip-when-limit-reached))
+    (catch #t
+      (lambda ()
+        (match (and (origin? (package-source package))
+                    (package-source package))
+          (#f                                     ;no source
+           '())
+          ((= origin-uri (? git-reference? reference))
+           (define url
+             (git-reference-url reference))
+           (define commit
+             (git-reference-commit reference))
+
+           (match (if (commit-id? commit)
+                      (or (lookup-revision commit)
+                          (lookup-origin-revision url commit))
+                      (lookup-origin-revision url commit))
+             ((? revision? revision)
+              '())
+             (#f
+              ;; Revision is missing from the archive, attempt to save it.
+              (catch 'swh-error
+                (lambda ()
+                  (save-origin (git-reference-url reference) "git")
+                  (list (make-warning
+                         package
+                         ;; TRANSLATORS: "Software Heritage" is a proper noun
+                         ;; that must remain untranslated.  See
+                         ;; <https://www.softwareheritage.org>.
+                         (G_ "scheduled Software Heritage archival")
+                         #:field 'source)))
+                (lambda (key url method response . _)
+                  (cond ((= 429 (response-code response))
+                         (list (make-warning
+                                package
+                                (G_ "archival rate limit exceeded; \
+try again later")
+                                #:field 'source)))
+                        (else
+                         (response->warning url method response))))))))
+          ((? origin? origin)
+           ;; Since "save" origins are not supported for non-VCS source, all
+           ;; we can do is tell whether a given tarball is available or not.
+           (if (origin-sha256 origin)             ;XXX: for ungoogled-chromium
+               (match (lookup-content (origin-sha256 origin) "sha256")
+                 (#f
+                  (list (make-warning package
+                                      (G_ "source not archived on Software \
+Heritage")
+                                      #:field 'source)))
+                 ((? content?)
+                  '()))
+               '()))))
+      (match-lambda*
+        ((key url method response)
+         (response->warning url method response))
+        ((key . args)
+         (if (eq? key skip-key)
+             '()
+             (apply throw key args)))))))
+
 
 ;;;
 ;;; Source code formatting.
@@ -1237,7 +1327,11 @@ or a list thereof")
    (lint-checker
      (name        'refresh)
      (description "Check the package for new upstream releases")
-     (check       check-for-updates))))
+     (check       check-for-updates))
+   (lint-checker
+     (name        'archival)
+     (description "Ensure source code archival on Software Heritage")
+     (check       check-archival))))
 
 (define %all-checkers
   (append %local-checkers
