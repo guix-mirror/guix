@@ -632,6 +632,36 @@ friction with idiomatic Rust structs to ease interopability.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-kernel32-sys
+  (package
+    (name "rust-kernel32-sys")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "kernel32-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1389av0601a9yz8dvx5zha9vmkd6ik7ax0idpb032d28555n41vm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi-0.2)
+        ("rust-winapi-build" ,rust-winapi-build))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-Cargo-toml
+           (lambda _
+             (substitute* "Cargo.toml"
+               ((", path =.* }") "}\n"))
+             #t)))))
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Function definitions for the Windows API library kernel32")
+    (description "Contains function definitions for the Windows API library
+kernel32.")
+    (license license:expat)))
+
 (define-public rust-lazy-static
   (package
     (name "rust-lazy-static")
