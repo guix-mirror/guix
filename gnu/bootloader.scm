@@ -108,7 +108,7 @@
   (bootloader         bootloader-configuration-bootloader) ;<bootloader>
   (target             bootloader-configuration-target      ;string
                       (default #f))
-  (menu-entries       bootloader-configuration-menu-entries ;list of <boot-parameters>
+  (menu-entries       bootloader-configuration-menu-entries ;list of <menu-entry>
                       (default '()))
   (default-entry      bootloader-configuration-default-entry ;integer
                       (default 0))
