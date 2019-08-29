@@ -1909,6 +1909,28 @@ whitespace from a string.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-unsafe-any
+  (package
+    (name "rust-unsafe-any")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unsafe-any" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zwwphsqkw5qaiqmjwngnfpv9ym85qcsyj7adip9qplzjzbn00zk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-traitobject" ,rust-traitobject))))
+    (home-page "https://tokio.rs")
+    (synopsis "Traits and implementations for unchecked downcasting")
+    (description
+     "Traits and implementations for unchecked downcasting.")
+    (license license:expat)))
+
 (define-public rust-untrusted
   (package
     (name "rust-untrusted")
