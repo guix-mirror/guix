@@ -6367,6 +6367,33 @@ as well as features for editing search results.")
 multiple project types.")
       (license license:gpl3+))))
 
+(define-public emacs-ivy-taskrunner
+  (let ((commit "75d8d67cfe3c29663fe0f5508a887adf40ed5162")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-taskrunner")
+      (version (git-version "0.9" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/ivy-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wf4s4k0ap21f7g5w6128an8nsvbja7f5n889vcml5b6gjz058db"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-taskrunner" ,emacs-taskrunner)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/ivy-taskrunner")
+      (synopsis "Retrieve build-system tasks using Ivy")
+      (description "This package provides an Ivy interface for selecting
+Makefile targets.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-make
   (let ((commit "feae8df22bc4b20705ea08ac9adfc2b43bb348d0")
         (revision "1"))
