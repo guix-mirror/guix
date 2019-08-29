@@ -390,7 +390,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200"
   '()
-  (with-http-server 200 %long-string
+  (with-http-server `((200 ,%long-string))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
@@ -399,7 +399,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 200 but short length"
   "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
-  (with-http-server 200 "This is too small."
+  (with-http-server `((200 "This is too small."))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
@@ -410,7 +410,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 404"
   "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server 404 %long-string
+  (with-http-server `((404 ,%long-string))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
@@ -420,7 +420,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 301, invalid"
   "invalid permanent redirect from http://localhost:9999/foo/bar"
-  (with-http-server 301 %long-string
+  (with-http-server `((301 ,%long-string))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (home-page (%local-url)))))
@@ -430,12 +430,14 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 301 -> 200"
   "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
-  (with-http-server 200 %long-string
-    (let ((initial-url (%local-url)))
+  (with-http-server `((200 ,%long-string))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
       (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server (301 `((location
-                                  . ,(string->uri initial-url))))
-            ""
+        (with-http-server `((,redirect ""))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (home-page (%local-url)))))
@@ -445,12 +447,14 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "home-page: 301 -> 404"
   "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server 404 "booh!"
-    (let ((initial-url (%local-url)))
+  (with-http-server '((404 "booh!"))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
       (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server (301 `((location
-                                  . ,(string->uri initial-url))))
-            ""
+        (with-http-server `((,redirect ""))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (home-page (%local-url)))))
@@ -583,7 +587,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200"
   '()
-  (with-http-server 200 %long-string
+  (with-http-server `((200 ,%long-string))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (source (origin
@@ -595,7 +599,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 200 but short length"
   "URI http://localhost:9999/foo/bar returned suspiciously small file (18 bytes)"
-  (with-http-server 200 "This is too small."
+  (with-http-server '((200 "This is too small."))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (source (origin
@@ -610,7 +614,7 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 404"
   "URI http://localhost:9999/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server 404 %long-string
+  (with-http-server `((404 ,%long-string))
     (let ((pkg (package
                  (inherit (dummy-package "x"))
                  (source (origin
@@ -625,10 +629,10 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 404 and 200"
   '()
-  (with-http-server 404 %long-string
+  (with-http-server `((404 ,%long-string))
     (let ((bad-url (%local-url)))
       (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server 200 %long-string
+        (with-http-server `((200 ,%long-string))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (source (origin
@@ -642,11 +646,14 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 200"
   "permanent redirect from http://localhost:10000/foo/bar to http://localhost:9999/foo/bar"
-  (with-http-server 200 %long-string
-    (let ((initial-url (%local-url)))
+  (with-http-server `((200 ,%long-string))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
       (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server (301 `((location . ,(string->uri initial-url))))
-            ""
+        (with-http-server `((,redirect ""))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (source (origin
@@ -661,11 +668,14 @@
 (test-skip (if (http-server-can-listen?) 0 1))
 (test-equal "source: 301 -> 404"
   "URI http://localhost:10000/foo/bar not reachable: 404 (\"Such is life\")"
-  (with-http-server 404 "booh!"
-    (let ((initial-url (%local-url)))
+  (with-http-server '((404 "booh!"))
+    (let* ((initial-url (%local-url))
+           (redirect    (build-response #:code 301
+                                        #:headers
+                                        `((location
+                                           . ,(string->uri initial-url))))))
       (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-        (with-http-server (301 `((location . ,(string->uri initial-url))))
-            ""
+        (with-http-server `((,redirect ""))
           (let ((pkg (package
                        (inherit (dummy-package "x"))
                        (source (origin
@@ -697,7 +707,7 @@
 
 (test-equal "github-url"
   '()
-  (with-http-server 200 %long-string
+  (with-http-server `((200 ,%long-string))
     (check-github-url
      (dummy-package "x" (source
                          (origin
@@ -709,17 +719,25 @@
   (test-equal "github-url: one suggestion"
     (string-append
      "URL should be '" github-url "'")
-    (with-http-server (301 `((location . ,(string->uri github-url)))) ""
-      (let ((initial-uri (%local-url)))
-        (parameterize ((%http-server-port (+ 1 (%http-server-port))))
-          (with-http-server (302 `((location . ,(string->uri initial-uri)))) ""
-            (single-lint-warning-message
-             (check-github-url
-              (dummy-package "x" (source
-                                  (origin
-                                    (method url-fetch)
-                                    (uri (%local-url))
-                                    (sha256 %null-sha256)))))))))))
+    (let ((redirect (build-response #:code 301
+                                    #:headers
+                                    `((location
+                                       . ,(string->uri github-url))))))
+      (with-http-server `((,redirect ""))
+        (let* ((initial-url (%local-url))
+               (redirect    (build-response #:code 302
+                                            #:headers
+                                            `((location
+                                               . ,(string->uri initial-url))))))
+          (parameterize ((%http-server-port (+ 1 (%http-server-port))))
+            (with-http-server `((,redirect ""))
+              (single-lint-warning-message
+               (check-github-url
+                (dummy-package "x" (source
+                                    (origin
+                                      (method url-fetch)
+                                      (uri (%local-url))
+                                      (sha256 %null-sha256))))))))))))
   (test-equal "github-url: already the correct github url"
     '()
     (check-github-url
@@ -844,6 +862,6 @@
 (test-end "lint")
 
 ;; Local Variables:
-;; eval: (put 'with-http-server 'scheme-indent-function 2)
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; eval: (put 'with-warnings 'scheme-indent-function 0)
 ;; End:

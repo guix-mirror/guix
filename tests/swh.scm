@@ -40,7 +40,7 @@
        \"dir_id\": 2 } ]")
 
 (define-syntax-rule (with-json-result str exp ...)
-  (with-http-server 200 str
+  (with-http-server `((200 ,str))
     (parameterize ((%swh-base-url (%local-url)))
       exp ...)))
 
@@ -56,7 +56,7 @@
 
 (test-equal "lookup-origin, not found"
   #f
-  (with-http-server 404 "Nope."
+  (with-http-server `((404 "Nope."))
     (parameterize ((%swh-base-url (%local-url)))
       (lookup-origin "http://example.org/whatever"))))
 
@@ -72,5 +72,6 @@
 
 ;; Local Variables:
 ;; eval: (put 'with-json-result 'scheme-indent-function 1)
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; End:
 
