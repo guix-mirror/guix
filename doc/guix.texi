@@ -14248,6 +14248,14 @@ longer required for quotas.
 Defaults to @samp{#f}.
 @end deftypevr
 
+@deftypevr {@code{cups-configuration} parameter} comma-separated-string-list browse-dns-sd-sub-types
+Specifies a list of DNS-SD sub-types to advertise for each shared printer.
+For example, @samp{"_cups" "_print"} will tell network clients that both
+CUPS sharing and IPP Everywhere are supported.
+
+Defaults to @samp{"_cups"}.
+@end deftypevr
+
 @deftypevr {@code{cups-configuration} parameter} browse-local-protocols browse-local-protocols
 Specifies which protocols to use for local printer sharing.
 

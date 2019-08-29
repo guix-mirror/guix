@@ -83,6 +83,14 @@
 (define (serialize-multiline-string-list field-name val)
   (for-each (lambda (str) (serialize-field field-name str)) val))
 
+(define (comma-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\,))))
+                val)))
+(define (serialize-comma-separated-string-list field-name val)
+  (serialize-field field-name (string-join val ",")))
+
 (define (space-separated-string-list? val)
   (and (list? val)
        (and-map (lambda (x)
@@ -489,6 +497,11 @@ requests.")
    (boolean #f)
    "Specifies whether to purge job history data automatically when it is no
 longer required for quotas.")
+  (browse-dns-sd-sub-types
+   (comma-separated-string-list (list "_cups"))
+   "Specifies a list of DNS-SD sub-types to advertise for each shared printer.
+For example, @samp{\"_cups\" \"_print\"} will tell network clients that both
+CUPS sharing and IPP Everywhere are supported.")
   (browse-local-protocols
    (browse-local-protocols 'dnssd)
    "Specifies which protocols to use for local printer sharing.")
