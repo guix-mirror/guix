@@ -10,7 +10,7 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -45,6 +45,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
@@ -320,6 +321,112 @@ input bits thoroughly but are not suitable for cryptography.")
     ;; problems for everyone that trying to make something public domain
     ;; entails."
     (license license:public-domain)))
+
+(define-public ascii2binary
+  (package
+    (name "ascii2binary")
+    (version "2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://billposer.org/Software/Downloads/"
+                           "ascii2binary-" version ".tar.bz2"))
+       (sha256
+        (base32 "0dc9fxcdmppbs9s06jvq61zbk552laxps0xyk098gj41697ihd96"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://billposer.org/Software/a2b.html")
+    (synopsis "Convert between ASCII, hexadecimal and binary representations")
+    (description "The two programs are useful for generating test data, for
+inspecting binary files, and for interfacing programs that generate textual
+output to programs that require binary input and conversely.  They can also be
+useful when it is desired to reformat numbers.
+
+@itemize
+
+@item @command{ascii2binary} reads input consisting of ascii or hexadecimal
+   representation numbers separated by whitespace and produces as output
+   the binary equivalents.  The type and precision of the binary output
+   is selected using command line flags.
+
+@item @command{binary2ascii} reads input consisting of binary numbers
+   and converts them to their ascii or hexadecimal representation.
+   Command line flags specify the type and size of the binary numbers
+   and provide control over the format of the output.
+   Unsigned integers may be written out in binary, octal, decimal,
+   or hexadecimal.
+
+   Signed integers may be written out only in binary or decimal.  Floating
+   point numbers may be written out only decimal, either in standard or
+   scientific notation.  (If you want to examine the binary representation
+   of floating point numbers, just treat the input as a sequence of unsigned
+   characters.)
+
+@end itemize")
+    (license license:gpl3)))
+
+(define-public uniutils
+  (package
+    (name "uniutils")
+    (version "2.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://billposer.org/Software/Downloads/"
+                           "uniutils-" version ".tar.bz2"))
+       (sha256
+        (base32 "19w1510w87gx7n4qy3zsb0m467a4rn5scvh4ajajg7jh6x5xri08"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-dependency-tracking")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'fix-paths
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (a2b (assoc-ref inputs "ascii2binary"))
+                   (iconv (assoc-ref inputs "libiconv")))
+               (substitute* "utf8lookup"
+                 (("^ascii2binary ") (string-append a2b "/bin/ascii2binary "))
+                 (("^uniname ") (string-append out "/bin/uniname "))
+                 (("^iconv ") (string-append iconv "/bin/iconv ")))
+             #t))))))
+    (inputs
+     `(("ascii2binary" ,ascii2binary)
+       ("libiconv" ,libiconv)))
+    (home-page "https://billposer.org/Software/unidesc.html")
+    (synopsis "Find out what is in a Unicode file")
+    (description "Useful tools when working with Unicode files when one
+doesn't know the writing system, doesn't have the necessary font, needs to
+inspect invisible characters, needs to find out whether characters have been
+combined or in what order they occur, or needs statistics on which characters
+occur.
+
+@itemize
+
+@item @command{uniname} defaults to printing the character offset of each
+character, its byte offset, its hex code value, its encoding, the glyph
+itself, and its name.  It may also be used to validate UTF-8 input.
+
+@item @command{unidesc} reports the character ranges to which different
+portions of the text belong.   It can also be used to identify Unicode encodings
+(e.g. UTF-16be) flagged by magic numbers.
+
+@item @command{unihist} generates a histogram of the characters in its input.
+
+@item @command{ExplicateUTF8} is intended for debugging or for learning about
+Unicode.  It determines and explains the validity of a sequence of bytes as a
+UTF8 encoding.
+
+@item @command{utf8lookup} provides a handy way to look up Unicode characters
+from the command line.
+
+@item @command{unireverse} reverse each line of UTF-8 input
+character-by-character.
+
+@end itemize")
+    (license license:gpl3)))
 
 (define-public libconfig
   (package

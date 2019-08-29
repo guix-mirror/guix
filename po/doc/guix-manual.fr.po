@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: guix-manual 1.0.1-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2019-05-10 20:53+0200\n"
-"PO-Revision-Date: 2019-05-12 11:55+0200\n"
+"PO-Revision-Date: 2019-07-20 11:50+0200\n"
 "Last-Translator: Julien Lepiller <julien@lepiller.eu>\n"
 "Language-Team: French <traduc@traduc.org>\n"
 "Language: fr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Offlate 0.1\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #. #-#-#-#-#  contributing.pot (guix 1.0.1-pre1)  #-#-#-#-#
 #. type: chapter
@@ -1432,6 +1432,8 @@ msgstr "version-fr.texi"
 
 #. type: copying
 #: doc/guix.texi:66
+#, fuzzy
+#| msgid "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 ng0@* Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@* Copyright @copyright{} 2016 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018 Clément Lassieur@* Copyright @copyright{} 2017, 2018 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018 Marius Bakke@* Copyright @copyright{} 2017 Hartmut Goebel@* Copyright @copyright{} 2017 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018 Gábor Boskovits@* Copyright @copyright{} 2018, 2019 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@* Copyright @copyright{} 2019 Diego Nicola Barbato@*"
 msgid "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès@* Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@* Copyright @copyright{} 2013 Nikita Karetnikov@* Copyright @copyright{} 2014, 2015, 2016 Alex Kost@* Copyright @copyright{} 2015, 2016 Mathieu Lirzin@* Copyright @copyright{} 2014 Pierre-Antoine Rault@* Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@* Copyright @copyright{} 2015, 2016, 2017 Leo Famulari@* Copyright @copyright{} 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus@* Copyright @copyright{} 2016 Ben Woodcroft@* Copyright @copyright{} 2016, 2017, 2018 Chris Marusich@* Copyright @copyright{} 2016, 2017, 2018, 2019 Efraim Flashner@* Copyright @copyright{} 2016 John Darrington@* Copyright @copyright{} 2016, 2017 ng0@* Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@* Copyright @copyright{} 2016 Julien Lepiller@* Copyright @copyright{} 2016 Alex ter Weele@* Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@* Copyright @copyright{} 2017, 2018 Clément Lassieur@* Copyright @copyright{} 2017, 2018 Mathieu Othacehe@* Copyright @copyright{} 2017 Federico Beffa@* Copyright @copyright{} 2017, 2018 Carlo Zancanaro@* Copyright @copyright{} 2017 Thomas Danckaert@* Copyright @copyright{} 2017 humanitiesNerd@* Copyright @copyright{} 2017 Christopher Allan Webber@* Copyright @copyright{} 2017, 2018 Marius Bakke@* Copyright @copyright{} 2017 Hartmut Goebel@* Copyright @copyright{} 2017 Maxim Cournoyer@* Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@* Copyright @copyright{} 2017 George Clemmer@* Copyright @copyright{} 2017 Andy Wingo@* Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@* Copyright @copyright{} 2017 nee@* Copyright @copyright{} 2018 Rutger Helling@* Copyright @copyright{} 2018 Oleg Pykhalov@* Copyright @copyright{} 2018 Mike Gerwitz@* Copyright @copyright{} 2018 Pierre-Antoine Rouby@* Copyright @copyright{} 2018 Gábor Boskovits@* Copyright @copyright{} 2018 Florian Pelz@* Copyright @copyright{} 2018 Laura Lazzati@* Copyright @copyright{} 2018 Alex Vong@* Copyright @copyright{} 2019 Josh Holland@*"
 msgstr ""
 "Copyright @copyright{} 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès@*\n"
@@ -1449,7 +1451,7 @@ msgstr ""
 "Copyright @copyright{} 2016 John Darrington@*\n"
 "Copyright @copyright{} 2016, 2017 ng0@*\n"
 "Copyright @copyright{} 2016, 2017, 2018, 2019 Jan Nieuwenhuizen@*\n"
-"Copyright @copyright{} 2016, 2018, 2019 Julien Lepiller@*\n"
+"Copyright @copyright{} 2016 Julien Lepiller@*\n"
 "Copyright @copyright{} 2016 Alex ter Weele@*\n"
 "Copyright @copyright{} 2016, 2017, 2018, 2019 Christopher Baines@*\n"
 "Copyright @copyright{} 2017, 2018 Clément Lassieur@*\n"
@@ -1472,10 +1474,11 @@ msgstr ""
 "Copyright @copyright{} 2018 Mike Gerwitz@*\n"
 "Copyright @copyright{} 2018 Pierre-Antoine Rouby@*\n"
 "Copyright @copyright{} 2018 Gábor Boskovits@*\n"
-"Copyright @copyright{} 2018 Florian Pelz@*\n"
+"Copyright @copyright{} 2018, 2019 Florian Pelz@*\n"
 "Copyright @copyright{} 2018 Laura Lazzati@*\n"
 "Copyright @copyright{} 2018 Alex Vong@*\n"
-"Copyright @copyright{} 2019 Josh Holland@*"
+"Copyright @copyright{} 2019 Josh Holland@*\n"
+"Copyright @copyright{} 2019 Diego Nicola Barbato@*"
 
 #. type: copying
 #: doc/guix.texi:73
@@ -1610,8 +1613,10 @@ msgstr "Cette documentation décrit GNU Guix version @value{VERSION}, un outil d
 
 #. type: Plain text
 #: doc/guix.texi:123
+#, fuzzy
+#| msgid "This manual is also available in Simplified Chinese (@pxref{Top,,, guix.zh_CN, GNU Guix参考手册}), French (@pxref{Top,,, guix.fr, Manuel de référence de GNU Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}), and Russian (@pxref{Top,,, guix.ru, Руководство GNU Guix}).  If you would like to translate it in your native language, consider joining the @uref{https://translationproject.org/domain/guix-manual.html, Translation Project}."
 msgid "This manual is also available in Simplified Chinese (@pxref{Top,,, guix.zh_CN, GNU Guix参考手册}), French (@pxref{Top,,, guix.fr, Manuel de référence de GNU Guix}), German (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), and Spanish (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}).  If you would like to translate it in your native language, consider joining the @uref{https://translationproject.org/domain/guix-manual.html, Translation Project}."
-msgstr "Ce manuel est aussi disponible en anglais (@pxref{Top,,, guix, GNU Guix Reference Manual}), en allemand (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), en chinois simplifié (@pxref{Top,,, guix.zh_CN, GNU Guix参考手册}) et en espagnol (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}).  Si vous souhaitez nous aider à traduire ce manuel en français, vous pouvez nous rejoindre sur le @uref{https://translationproject.org/domain/guix-manual.html, projet de traduction} et sur la liste de diffusion @uref{https://listes.traduc.org/mailman/listinfo/traduc/, traduc@@traduc.org}."
+msgstr "Ce manuel est aussi disponible en anglais (@pxref{Top,,, guix, GNU Guix Reference Manual}), en allemand (@pxref{Top,,, guix.de, Referenzhandbuch zu GNU Guix}), en chinois simplifié (@pxref{Top,,, guix.zh_CN, GNU Guix参考手册}), en espagnol (@pxref{Top,,, guix.es, Manual de referencia de GNU Guix}) et en russe (@pxref{Top,,, guix.ru, Руководство GNU Guix}).  Si vous souhaitez nous aider à traduire ce manuel en français, vous pouvez nous rejoindre sur le @uref{https://translationproject.org/domain/guix-manual.html, projet de traduction} et sur la liste de diffusion @uref{https://listes.traduc.org/mailman/listinfo/traduc/, traduc@@traduc.org}."
 
 #. type: chapter
 #: doc/guix.texi:139 doc/guix.texi:149 doc/guix.texi:312 doc/guix.texi:313
@@ -3280,7 +3285,7 @@ msgstr "i686-linux"
 #. type: table
 #: doc/guix.texi:434
 msgid "Intel 32-bit architecture (IA32), Linux-Libre kernel;"
-msgstr "l'architecture Intel 32-bits (IA32) avec le noyau Linux-libre ;"
+msgstr "l'architecture Intel 32 bits (IA32) avec le noyau Linux-libre ;"
 
 #. type: item
 #: doc/guix.texi:435
@@ -3312,8 +3317,10 @@ msgstr "mips64el-linux"
 
 #. type: table
 #: doc/guix.texi:448
+#, fuzzy
+#| msgid "little-endian 64-bit ARMv8-A processors, Linux-Libre kernel."
 msgid "little-endian 64-bit MIPS processors, specifically the Loongson series, n32 ABI, and Linux-Libre kernel."
-msgstr "les processeurs MIPS 64-bits little-endian, spécifiquement la série Loongson, ABI n32, avec le noyau Linux-libre."
+msgstr "les processeurs 64 bits ARMv8-A en little-endian, avec le noyau Linux-libre."
 
 #. type: Plain text
 #: doc/guix.texi:458
@@ -4086,7 +4093,7 @@ msgstr "crochet de construction"
 #. type: Plain text
 #: doc/guix.texi:1020
 msgid "When desired, the build daemon can @dfn{offload} derivation builds to other machines running Guix, using the @code{offload} @dfn{build hook}@footnote{This feature is available only when @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} is present.}.  When that feature is enabled, a list of user-specified build machines is read from @file{/etc/guix/machines.scm}; every time a build is requested, for instance via @code{guix build}, the daemon attempts to offload it to one of the machines that satisfy the constraints of the derivation, in particular its system type---e.g., @file{x86_64-linux}.  Missing prerequisites for the build are copied over SSH to the target machine, which then proceeds with the build; upon success the output(s) of the build are copied back to the initial machine."
-msgstr "Si vous le souhaitez, le démon de construction peut @dfn{décharger} des constructions de dérivations sur d'autres machines Guix avec le @dfn{crochet de construction} @code{offload}@footnote{Cette fonctionnalité n'est disponible que si @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} est présent.}.  Lorsque cette fonctionnalité est activée, Guix lit une liste de machines de constructions spécifiée par l'utilisateur dans @file{/etc/guix/machines.scm} ; à chaque fois qu'une construction est demandée, par exemple par @code{guix build}, le démon essaie de la décharger sur une des machines qui satisfont les contraintes de la dérivation, en particulier le type de système, p.@: ex.@: @file{x86_64-linux}.  Les prérequis manquants pour la construction sont copiés par SSH sur la machine de construction qui procède ensuite à la construction ; si elle réussi, les sorties de la construction sont copiés vers la machine de départ."
+msgstr "Si vous le souhaitez, le démon de construction peut @dfn{décharger} des constructions de dérivations sur d'autres machines Guix avec le @dfn{crochet de construction} @code{offload}@footnote{Cette fonctionnalité n'est disponible que si @uref{https://github.com/artyom-poptsov/guile-ssh, Guile-SSH} est présent.}.  Lorsque cette fonctionnalité est activée, Guix lit une liste de machines de constructions spécifiée par l'utilisateur dans @file{/etc/guix/machines.scm} ; à chaque fois qu'une construction est demandée, par exemple par @code{guix build}, le démon essaie de la décharger sur une des machines qui satisfont les contraintes de la dérivation, en particulier le type de système, p.@: ex.@: @file{x86_64-linux}.  Les prérequis manquants pour la construction sont copiés par SSH sur la machine de construction qui procède ensuite à la construction ; si elle réussit, les sorties de la construction sont copiés vers la machine de départ."
 
 #. type: Plain text
 #: doc/guix.texi:1022
@@ -6289,7 +6296,7 @@ msgstr "transactions"
 #. type: Plain text
 #: doc/guix.texi:2544
 msgid "The command provides the obvious install, remove, and upgrade operations.  Each invocation is actually a @emph{transaction}: either the specified operation succeeds, or nothing happens.  Thus, if the @command{guix package} process is terminated during the transaction, or if a power outage occurs during the transaction, then the user's profile remains in its previous state, and remains usable."
-msgstr "La commande fournit les opérations évidentes d'installation, de suppression et de mise à jour.  Chaque invocation est en fait une @emph{transaction} : soit l'opération demandée réussi, soit rien ne se passe.  Ainsi, si le processus @command{guix package} est terminé pendant la transaction ou si une panne de courant arrive pendant la transaction, le profil de l'utilisateur reste dans son état précédent et reste utilisable."
+msgstr "La commande fournit les opérations évidentes d'installation, de suppression et de mise à jour.  Chaque invocation est en fait une @emph{transaction} : soit l'opération demandée réussit, soit rien ne se passe.  Ainsi, si le processus @command{guix package} est terminé pendant la transaction ou si une panne de courant arrive pendant la transaction, le profil de l'utilisateur reste dans son état précédent et reste utilisable."
 
 #. type: Plain text
 #: doc/guix.texi:2552
@@ -6299,7 +6306,7 @@ msgstr "En plus, il est possible @emph{d'annuler} toute transaction sur les paqu
 #. type: Plain text
 #: doc/guix.texi:2559
 msgid "All packages in the package store may be @emph{garbage-collected}.  Guix can determine which packages are still referenced by user profiles, and remove those that are provably no longer referenced (@pxref{Invoking guix gc}).  Users may also explicitly remove old generations of their profile so that the packages they refer to can be collected."
-msgstr "Tous les paquets du dépôt des paquets peut être @emph{glané}.  Guix peut déterminer quels paquets sont toujours référencés par les profils des utilisateurs et supprimer ceux qui ne sont plus référencés de manière prouvable (@pxref{Invoking guix gc}).  Les utilisateurs peuvent toujours explicitement supprimer les anciennes générations de leur profil pour que les paquets auxquels elles faisaient référence puissent être glanés."
+msgstr "Tout paquet du dépôt des paquets peut être @emph{glané}.  Guix peut déterminer quels paquets sont toujours référencés par les profils des utilisateurs et supprimer ceux qui ne sont plus référencés de manière prouvable (@pxref{Invoking guix gc}).  Les utilisateurs peuvent toujours explicitement supprimer les anciennes générations de leur profil pour que les paquets auxquels elles faisaient référence puissent être glanés."
 
 #. type: cindex
 #: doc/guix.texi:2560 doc/guix.texi:4087
@@ -6310,7 +6317,7 @@ msgstr "reproductibilité"
 #. type: Plain text
 #: doc/guix.texi:2572
 msgid "Guix takes a @dfn{purely functional} approach to package management, as described in the introduction (@pxref{Introduction}).  Each @file{/gnu/store} package directory name contains a hash of all the inputs that were used to build that package---compiler, libraries, build scripts, etc.  This direct correspondence allows users to make sure a given package installation matches the current state of their distribution.  It also helps maximize @dfn{build reproducibility}: thanks to the isolated build environments that are used, a given build is likely to yield bit-identical files when performed on different machines (@pxref{Invoking guix-daemon, container})."
-msgstr "Guix prend une approche @dfn{purement fonctionnelle} de la gestion de paquets, telle que décrite dans l'introduction (@pxref{Introduction}).  Chaque nom de répertoire de paquet dans @file{/gnu/store} contient un hash de toutes les entrées qui ont été utilisées pendant la construction de ce paquet — le compilateur, les bibliothèques, les scripts de construction, etc.  Cette correspondance directe permet aux utilisateurs de s'assurer que l'installation d'un paquet donné correspond à l'état actuel de leur distribution.  Elle aide aussi à maximiser la @dfn{reproductibilité} : grâce aux environnements de construction utilisés, une construction donnée à de forte chances de donner des fichiers identiques bit-à-bit lorsqu'elle est effectuée sur des machines différents (@pxref{Invoking guix-daemon, container})."
+msgstr "Guix prend une approche @dfn{purement fonctionnelle} de la gestion de paquets, telle que décrite dans l'introduction (@pxref{Introduction}).  Chaque nom de répertoire de paquet dans @file{/gnu/store} contient un hash de toutes les entrées qui ont été utilisées pendant la construction de ce paquet — le compilateur, les bibliothèques, les scripts de construction, etc.  Cette correspondance directe permet aux utilisateurs de s'assurer que l'installation d'un paquet donné correspond à l'état actuel de leur distribution.  Elle aide aussi à maximiser la @dfn{reproductibilité} : grâce aux environnements de construction utilisés, une construction donnée a de forte chances de donner des fichiers identiques bit-à-bit lorsqu'elle est effectuée sur des machines différentes (@pxref{Invoking guix-daemon, container})."
 
 #. type: Plain text
 #: doc/guix.texi:2583
@@ -6472,7 +6479,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:2678
 msgid "In a multi-user setup, user profiles are stored in a place registered as a @dfn{garbage-collector root}, which @file{$HOME/.guix-profile} points to (@pxref{Invoking guix gc}).  That directory is normally @code{@var{localstatedir}/guix/profiles/per-user/@var{user}}, where @var{localstatedir} is the value passed to @code{configure} as @code{--localstatedir}, and @var{user} is the user name.  The @file{per-user} directory is created when @command{guix-daemon} is started, and the @var{user} sub-directory is created by @command{guix package}."
-msgstr "Dans un environnement multi-utilisateur, les profils utilisateurs sont stockés comme une @dfn{racine du ramasse-miettes}, vers laquelle pointe @file{$HOME/.guix-profile} (@pxref{Invoking guix gc}).  Ce répertoire est normalement @code{@var{localstatedir}/guix/profiles/per-user/@var{utilisateur}},  où @var{localstatedir} est la valeur passée à @code{configure} avec @code{--localstatedir} et @var{utilisateur} le nom d'utilisateur.  Le répertoire @file{per-user} est créé lorsque @command{guix-daemon} est démarré et sous-répertoire @var{utilisateur} est créé par @command{guix package}."
+msgstr "Dans un environnement multi-utilisateur, les profils utilisateurs sont stockés comme une @dfn{racine du ramasse-miettes}, vers laquelle pointe @file{$HOME/.guix-profile} (@pxref{Invoking guix gc}).  Ce répertoire est normalement @code{@var{localstatedir}/guix/profiles/per-user/@var{utilisateur}},  où @var{localstatedir} est la valeur passée à @code{configure} avec @code{--localstatedir} et @var{utilisateur} le nom d'utilisateur.  Le répertoire @file{per-user} est créé lorsque @command{guix-daemon} est démarré et le sous-répertoire @var{user} est créé par @command{guix package}."
 
 #. type: Plain text
 #: doc/guix.texi:2680
@@ -7243,7 +7250,7 @@ msgstr "@emph{Des intervalles}.  @code{--list-generations=2..9} affiche les"
 #. type: itemize
 #: doc/guix.texi:3061
 msgid "specified generations and everything in between.  Note that the start of a range must be smaller than its end."
-msgstr "générations demandées et tout ce qui se trouvent entre elles.  Remarquez que le début d'un intervalle doit être plus petit que sa fin."
+msgstr "générations demandées et tout ce qui se trouve entre elles.  Remarquez que le début d'un intervalle doit être plus petit que sa fin."
 
 #. type: itemize
 #: doc/guix.texi:3065
@@ -7455,7 +7462,7 @@ msgstr "signatures numériques"
 #. type: Plain text
 #: doc/guix.texi:3230
 msgid "Guix detects and raises an error when attempting to use a substitute that has been tampered with.  Likewise, it ignores substitutes that are not signed, or that are not signed by one of the keys listed in the ACL."
-msgstr "Guix détecte et lève une erreur lorsqu'il essaye d'utiliser un substituts qui a été modifié.  De même, il ignore les substituts qui ne sont pas signés ou qui ne sont pas signés par l'une des clefs listés dans l'ACL."
+msgstr "Guix détecte et lève une erreur lorsqu'il essaye d'utiliser un substitut qui a été modifié.  De même, il ignore les substituts qui ne sont pas signés ou qui ne sont pas signés par l'une des clefs listées dans l'ACL."
 
 #. type: Plain text
 #: doc/guix.texi:3236
@@ -7654,7 +7661,7 @@ msgstr "Ramasse les miettes — c.-à-d.@: les fichiers inaccessibles de @file{/
 #. type: table
 #: doc/guix.texi:3443
 msgid "When @var{min} is given, stop once @var{min} bytes have been collected.  @var{min} may be a number of bytes, or it may include a unit as a suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes (@pxref{Block size, size specifications,, coreutils, GNU Coreutils})."
-msgstr "Lorsque @var{min} est donné, s'arrêter une fois que @var{min} octets ont été collectés.  @var{min} pour être un nombre d'octets ou inclure un suffixe d'unité, comme @code{MiB} pour mébioctet et @code{GB} pour gigaoctet (@pxref{Block size, size specifications,, coreutils, GNU Coreutils})."
+msgstr "Lorsque @var{min} est donné, s'arrêter une fois que @var{min} octets ont été collectés.  @var{min} peut être un nombre d'octets ou inclure un suffixe d'unité, comme @code{MiB} pour mébioctet et @code{GB} pour gigaoctet (@pxref{Block size, size specifications,, coreutils, GNU Coreutils})."
 
 #. type: table
 #: doc/guix.texi:3445
@@ -8006,7 +8013,7 @@ msgstr "À la fin, @command{guix package} utilisera les paquets et les versions 
 #. type: Plain text
 #: doc/guix.texi:3614
 msgid "Any user can update their Guix copy using @command{guix pull}, and the effect is limited to the user who run @command{guix pull}.  For instance, when user @code{root} runs @command{guix pull}, this has no effect on the version of Guix that user @code{alice} sees, and vice versa."
-msgstr "Chaque utilisateur peut mettre à jour sa copie de Guix avec @command{guix pull} et l'effet est limité à l'utilisateur qui a lancé @command{guix pull}.  Par exemple, lorsque l'utilisateur @code{root} lance @command{guix pull}, cela n'a pas d'effet sur la version de Guix que vois @code{alice} et vice-versa."
+msgstr "Chaque utilisateur peut mettre à jour sa copie de Guix avec @command{guix pull} et l'effet est limité à l'utilisateur qui a lancé @command{guix pull}.  Par exemple, lorsque l'utilisateur @code{root} lance @command{guix pull}, cela n'a pas d'effet sur la version de Guix que voit @code{alice} et vice-versa."
 
 #. type: Plain text
 #: doc/guix.texi:3620
@@ -8102,7 +8109,7 @@ msgstr "@xref{Invoking guix describe, @command{guix describe}}, pour d'autres ma
 #. type: Plain text
 #: doc/guix.texi:3663
 msgid "This @code{~/.config/guix/current} profile works like any other profile created by @command{guix package} (@pxref{Invoking guix package}).  That is, you can list generations, roll back to the previous generation---i.e., the previous Guix---and so on:"
-msgstr "Ce profil @code{~/.config/guix/current} fonctionne comme les autres profils créés par @command{guix package} (@pxref{Invoking guix package}).  C'est-à-dire que vous pouvez lister les générations, revenir en arrière à une génération précédente — c.-à-d.@: la version de Guix précédente — etc :"
+msgstr "Ce profil @code{~/.config/guix/current} fonctionne comme les autres profils créés par @command{guix package} (@pxref{Invoking guix package}).  C'est-à-dire que vous pouvez lister les générations, revenir en arrière à une génération précédente — c.-à-d.@: la version de Guix précédente — etc.@: :"
 
 #. type: example
 #: doc/guix.texi:3669
@@ -8121,7 +8128,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:3673
 msgid "The @command{guix pull} command is usually invoked with no arguments, but it supports the following options:"
-msgstr "La commande @command{guix pull} est typiquement invoquée sans arguments mais il supporte les options suivantes :"
+msgstr "La commande @command{guix pull} est typiquement invoquée sans arguments mais elle prend en charge les options suivantes :"
 
 #. type: item
 #: doc/guix.texi:3675
@@ -9095,7 +9102,7 @@ msgstr ""
 #. type: Plain text
 #: doc/guix.texi:4226
 msgid "However, note that, in both examples, all of @code{emacs} and the profile as well as all of their dependencies are transferred (due to @code{-r}), regardless of what is already available in the store on the target machine.  The @code{--missing} option can help figure out which items are missing from the target store.  The @command{guix copy} command simplifies and optimizes this whole process, so this is probably what you should use in this case (@pxref{Invoking guix copy})."
-msgstr "Cependant, remarquez que, dans les deux exemples, le paquet @code{emacs}, le profil ainsi que toutes leurs dépendances sont transférées (à cause de @code{-r}), indépendamment du fait qu'ils soient disponibles dans le dépôt de la machine cible.  L'option @code{--missing} peut vous aider à comprendre les éléments qui manquent dans le dépôt de la machine cible.  La commande @command{guix copy} simplifie et optimise ce processus, c'est donc ce que vous devriez utiliser dans ce cas (@pxref{Invoking guix copy})."
+msgstr "Cependant, remarquez que, dans les deux exemples, le paquet @code{emacs}, le profil ainsi que toutes leurs dépendances sont transférés (à cause de @code{-r}), indépendamment du fait qu'ils soient ou non disponibles dans le dépôt de la machine cible.  L'option @code{--missing} peut vous aider à comprendre les éléments qui manquent dans le dépôt de la machine cible.  La commande @command{guix copy} simplifie et optimise ce processus, c'est donc ce que vous devriez utiliser dans ce cas (@pxref{Invoking guix copy})."
 
 #. type: cindex
 #: doc/guix.texi:4227
@@ -9388,7 +9395,7 @@ msgstr "$ ls \"$GUIX_ENVIRONMENT/bin\"\n"
 #. type: Plain text
 #: doc/guix.texi:4417
 msgid "Additionally, more than one package may be specified, in which case the union of the inputs for the given packages are used.  For example, the command below spawns a shell where all of the dependencies of both Guile and Emacs are available:"
-msgstr "En plus, plus d'un paquet peut être spécifié, auquel cas l'union des entrées des paquets données est utilisée.  Par exemple, la commande ci-dessous crée un shell où toutes les dépendances de Guile et Emacs sont disponibles :"
+msgstr "De surcroît, plus d'un paquet peut être spécifié, auquel cas l'union des entrées des paquets données est utilisée.  Par exemple, la commande ci-dessous crée un shell où toutes les dépendances de Guile et Emacs sont disponibles :"
 
 #. type: example
 #: doc/guix.texi:4420
@@ -9662,7 +9669,7 @@ msgstr ""
 #. type: table
 #: doc/guix.texi:4585
 msgid "This example runs @command{mpirun} in a context where the only environment variables defined are @code{PATH}, environment variables whose name starts with @code{SLURM}, as well as the usual ``precious'' variables (@code{HOME}, @code{USER}, etc.)"
-msgstr "Cet exemple exécute @command{mpirun} dans un contexte où les seules variables d'environnement défines sont @code{PATH}, les variables d'environnement dont le nom commence par @code{SLURM}, ainsi que les variables « importante » habituelles (@code{HOME}, @code{USER}, etc)."
+msgstr "Cet exemple exécute @command{mpirun} dans un contexte où les seules variables d'environnement défines sont @code{PATH}, les variables d'environnement dont le nom commence par @code{SLURM}, ainsi que les variables « importante » habituelles (@code{HOME}, @code{USER}, etc.)."
 
 #. type: item
 #: doc/guix.texi:4586
@@ -9925,7 +9932,7 @@ msgstr "binaires repositionnables, avec @command{guix pack}"
 #. type: Plain text
 #: doc/guix.texi:4752
 msgid "What if the recipient of your pack does not have root privileges on their machine, and thus cannot unpack it in the root file system? In that case, you will want to use the @code{--relocatable} option (see below).  This option produces @dfn{relocatable binaries}, meaning they they can be placed anywhere in the file system hierarchy: in the example above, users can unpack your tarball in their home directory and directly run @file{./opt/gnu/bin/guile}."
-msgstr "Et si le destinataire de votre pack n'a pas les privilèges root sur sa machine, et ne peut donc pas le décompresser dans le système de fichiers racine ?  Dans ce cas, vous pourriez utiliser l'option @code{--relocatable} (voir plus bas).  Cette option produite des @dfn{binaire repositionnables}, ce qui signifie qu'ils peuvent être placés n'importe où dans l'arborescence du système de fichiers : dans l'exemple au-dessus, les utilisateurs peuvent décompresser votre archive dans leur répertoire personnel et lancer directement @file{./opt/gnu/bin/guile}."
+msgstr "Et si le destinataire de votre pack n'a pas les privilèges root sur sa machine, et ne peut donc pas le décompresser dans le système de fichiers racine ?  Dans ce cas, vous pourriez utiliser l'option @code{--relocatable} (voir plus bas).  Cette option produit des @dfn{binaire repositionnables}, ce qui signifie qu'ils peuvent être placés n'importe où dans l'arborescence du système de fichiers : dans l'exemple au-dessus, les utilisateurs peuvent décompresser votre archive dans leur répertoire personnel et lancer directement @file{./opt/gnu/bin/guile}."
 
 #. type: cindex
 #: doc/guix.texi:4753
@@ -13248,7 +13255,7 @@ msgstr "strate de code"
 #. type: Plain text
 #: doc/guix.texi:6979
 msgid "It should come as no surprise that we like to write these build actions in Scheme.  When we do that, we end up with two @dfn{strata} of Scheme code@footnote{The term @dfn{stratum} in this context was coined by Manuel Serrano et al.@: in the context of their work on Hop.  Oleg Kiselyov, who has written insightful @url{http://okmij.org/ftp/meta-programming/#meta-scheme, essays and code on this topic}, refers to this kind of code generation as @dfn{staging}.}: the ``host code''---code that defines packages, talks to the daemon, etc.---and the ``build code''---code that actually performs build actions, such as making directories, invoking @command{make}, etc."
-msgstr "Ça ne devrait pas vous surprendre, mais nous aimons écrire ces actions de construction en Scheme.  Lorsqu'on fait ça, on fini avec deux @dfn{strates} de code Scheme@footnote{Le terme @dfn{strate} dans ce contexte a été inventé par Manuel Serrano et ses collaborateurs dans le contexte de leur travaux sur Hop.  Oleg Kiselyov, qui a écrit des @url{http://okmij.org/ftp/meta-programming/#meta-scheme, essais perspicaces et du code sur le sujet}, utilise le terme de « mise en scène » pour ce genre de génération de code.} : le « code hôte » — le code qui défini les paquets, parle au démon, etc — et le « code côté construction » — le code qui effectue effectivement les actions de construction, comme créer des répertoires, invoquer @code{make}, etc."
+msgstr "Ça ne devrait pas vous surprendre, mais nous aimons écrire ces actions de construction en Scheme.  Lorsqu'on fait ça, on fini avec deux @dfn{strates} de code Scheme@footnote{Le terme @dfn{strate} dans ce contexte a été inventé par Manuel Serrano et ses collaborateurs dans le contexte de leur travaux sur Hop.  Oleg Kiselyov, qui a écrit des @url{http://okmij.org/ftp/meta-programming/#meta-scheme, essais perspicaces et du code sur le sujet}, utilise le terme de « mise en scène » pour ce genre de génération de code.} : le « code hôte » — le code qui définit les paquets, parle au démon, etc.@: — et le « code côté construction » — le code qui effectue effectivement les actions de construction, comme créer des répertoires, invoquer @code{make}, etc."
 
 #. type: Plain text
 #: doc/guix.texi:6986
@@ -15250,7 +15257,7 @@ msgstr "Maintenant, vous pouvez invoquer les commandes comme si vous étiez le d
 #. type: Plain text
 #: doc/guix.texi:8217
 msgid "Sometimes it happens that, for example, a package's tests pass when you run them manually but they fail when the daemon runs them.  This can happen because the daemon runs builds in containers where, unlike in our environment above, network access is missing, @file{/bin/sh} does not exist, etc. (@pxref{Build Environment Setup})."
-msgstr "Parfois il arrive que, par exemple, les tests d'un paquet réussissent lorsque vous les lancez manuellement mais échouent quand ils sont lancés par le démon.  Cela peut arriver parce que le démon tourne dans un conteneur où, contrairement à notre environnement au-dessus, l'accès réseau est indisponible, @file{/bin/sh} n'existe pas, etc (@pxref{Build Environment Setup})."
+msgstr "Parfois il arrive que, par exemple, les tests d'un paquet réussissent lorsque vous les lancez manuellement mais échouent quand ils sont lancés par le démon.  Cela peut arriver parce que le démon tourne dans un conteneur où, contrairement à notre environnement au-dessus, l'accès réseau est indisponible, @file{/bin/sh} n'existe pas, etc.@: (@pxref{Build Environment Setup})."
 
 #. type: Plain text
 #: doc/guix.texi:8220
@@ -15512,7 +15519,7 @@ msgstr "-x"
 #. type: table
 #: doc/guix.texi:8388
 msgid "When combined with @option{--recursive}, exclude version control system directories (@file{.bzr}, @file{.git}, @file{.hg}, etc.)"
-msgstr "Lorsqu'elle est combinée à @option{--recursive}, exclut les répertoires de système de contrôle de version (@file{.bzr}, @file{.git}, @file{.hg}, etc)."
+msgstr "Lorsqu'elle est combinée à @option{--recursive}, exclut les répertoires de système de contrôle de version (@file{.bzr}, @file{.git}, @file{.hg}, etc.)"
 
 #. type: table
 #: doc/guix.texi:8393
@@ -20082,7 +20089,7 @@ msgstr "disposition clavier"
 #. type: Plain text
 #: doc/guix.texi:11134
 msgid "To specify what each key of your keyboard does, you need to tell the operating system what @dfn{keyboard layout} you want to use.  The default, when nothing is specified, is the US English QWERTY layout for 105-key PC keyboards.  However, German speakers will usually prefer the German QWERTZ layout, French speakers will want the AZERTY layout, and so on; hackers might prefer Dvorak or bépo, and they might even want to further customize the effect of some of the keys.  This section explains how to get that done."
-msgstr "Pour spécifier ce que fait chaque touche de votre clavier, vous devez dire au système d'exploitation quel @dfn{disposition du clavier} vous voulez utiliser.  Par défaut, lorsque rien n'est spécifié, la disposition QWERTY pour l'anglais américain pour les claviers 105 touches est utilisée.  Cependant, les germanophones préfèrent généralement la disposition QWERTZ, les francophones la disposition AZERTY etc ; les hackers peuvent préférer Dvorak ou bépo, et peuvent même vouloir personnaliser plus en détails l'effet de certaines touches.  Cette section explique comment faire cela."
+msgstr "Pour spécifier ce que fait chaque touche de votre clavier, vous devez dire au système d'exploitation quel @dfn{disposition du clavier} vous voulez utiliser.  Par défaut, lorsque rien n'est spécifié, la disposition QWERTY pour l'anglais américain pour les claviers 105 touches est utilisée.  Cependant, les germanophones préfèrent généralement la disposition QWERTZ, les francophones la disposition AZERTY etc.@: ; les hackers peuvent préférer Dvorak ou bépo, et peuvent même vouloir personnaliser plus en détails l'effet de certaines touches.  Cette section explique comment faire cela."
 
 #. type: cindex
 #: doc/guix.texi:11135
@@ -20892,7 +20899,7 @@ msgstr "Sinon et s'il y a une valeur pour une option @code{console} avec un tty 
 #. type: table
 #: doc/guix.texi:11633
 msgid "In both cases, agetty will leave the other serial device settings (baud rate etc.)@: alone---in the hope that Linux pinned them to the correct values."
-msgstr "Dans les deux cas, agetty laissera les autres paramètres du périphérique série (baud, etc) sans y toucher — dans l'espoir que Linux leur a assigné les bonnes valeurs."
+msgstr "Dans les deux cas, agetty laissera les autres paramètres du périphérique série (baud, etc.) sans y toucher — dans l'espoir que Linux leur a assigné les bonnes valeurs."
 
 #. type: item
 #: doc/guix.texi:11634
@@ -25673,7 +25680,7 @@ msgstr "{Procédure Scheme} xorg-start-command [@var{config}]"
 #. type: deffn
 #: doc/guix.texi:13744
 msgid "Return a @code{startx} script in which the modules, fonts, etc. specified in @var{config}, are available.  The result should be used in place of @code{startx}."
-msgstr "Renvoie un script @code{startx} dans lequel les modules, les polices, etc, spécifiés dans @var{config} sont disponibles.  Le résultat devrait être utilisé à la place de @code{startx}."
+msgstr "Renvoie un script @code{startx} dans lequel les modules, les polices, etc., spécifiés dans @var{config} sont disponibles.  Le résultat devrait être utilisé à la place de @code{startx}."
 
 #. type: deffn
 #: doc/guix.texi:13746
@@ -27321,8 +27328,10 @@ msgstr "C'est la liste des services qui étend @var{%base-services} en ajoutant 
 
 #. type: defvr
 #: doc/guix.texi:14629
+#, fuzzy
+#| msgid "In particular, it adds a graphical login manager (@pxref{X Window, @code{gdm-service-type}}), screen lockers, a network management tool (@pxref{Networking Services, @code{network-manager-service-type}}) with modem support (@pxref{Networking Services, @code{modem-manager-service-type}}), energy and color management services, the @code{elogind} login and seat manager, the Polkit privilege service, the GeoClue location service, the AccountsService daemon that allows authorized users change system passwords, an NTP client (@pxref{Networking Services}), the Avahi daemon, and has the name service switch service configured to be able to use @code{nss-mdns} (@pxref{Name Service Switch, mDNS})."
 msgid "In particular, it adds a graphical login manager (@pxref{X Window, @code{gdm-service-type}}), screen lockers, a network management tool (@pxref{Networking Services, @code{network-manager-service-type}}), energy and color management services, the @code{elogind} login and seat manager, the Polkit privilege service, the GeoClue location service, the AccountsService daemon that allows authorized users change system passwords, an NTP client (@pxref{Networking Services}), the Avahi daemon, and has the name service switch service configured to be able to use @code{nss-mdns} (@pxref{Name Service Switch, mDNS})."
-msgstr "En particulier, il ajoute un gestionnaire de connexion graphique (@pxref{X Window, @code{gdm-service-type}}), des verrouilleurs d'écran, un outil de gestion réseau (@pxref{Networking Services, @code{network-manager-service-type}}), des services de gestion de l'énergie et des couleurs, le gestionnaire de connexion et de session @code{elogind}, le service de privilèges Polkit, le service de géolocalisation GeoClue, le démon Accounts Service qui permet aux utilisateurs autorisés de changer les mots de passe du système, un client NTP (@pxref{Networking Services}), le démon Avahi, et le service name service switch est configuré pour pouvoir utiliser @code{nss-mdns} (@pxref{Name Service Switch, mDNS})."
+msgstr "En particulier, elle ajoute un gestionnaire de connexion graphique (@pxref{X Window, @code{gdm-service-type}}), des verrouilleurs d'écran, un outil de gestion réseau (@pxref{Networking Services, @code{network-manager-service-type}}) avec la prise en charge des modems (@pxref{Networking Services, @code{modem-manager-service-type}}), des services de gestion de l'énergie et des couleurs, le gestionnaire de connexion et de session @code{elogind}, le service de privilèges Polkit, le service de géolocalisation GeoClue, le démon Accounts Service qui permet aux utilisateurs autorisés de changer les mots de passe du système, un client NTP (@pxref{Networking Services}), le démon Avahi, et le service name service switch est configuré pour pouvoir utiliser @code{nss-mdns} (@pxref{Name Service Switch, mDNS})."
 
 #. type: Plain text
 #: doc/guix.texi:14634
@@ -30216,7 +30225,7 @@ msgstr "{paramètre de @code{dovecot-configuration}} space-separated-string-list
 #. type: deftypevr
 #: doc/guix.texi:16152
 msgid "List of plugins to load for all services.  Plugins specific to IMAP, LDA, etc.@: are added to this list in their own .conf files.  Defaults to @samp{()}."
-msgstr "Liste des greffons à charger pour tous les services.  Les greffons spécifiques à IMAP, LDA, etc sont ajoutés à cette liste dans leur propre fichiers .conf.  La valeur par défaut est @samp{()}."
+msgstr "Liste des greffons à charger pour tous les services.  Les greffons spécifiques à IMAP, LDA, etc.@: sont ajoutés à cette liste dans leur propre fichiers .conf.  La valeur par défaut est @samp{()}."
 
 #. type: deftypevr
 #: doc/guix.texi:16154
@@ -35832,7 +35841,7 @@ msgstr "Des améliorations à FastCGI, comme fastcgi_finish_request() -"
 #. type: itemize
 #: doc/guix.texi:19139
 msgid "a special function to finish request & flush all data while continuing to do something time-consuming (video converting, stats processing, etc.)"
-msgstr "une fonction spéciale pour terminer la requête et nettoyer toutes les données tout en continuant à faire d'autres choses qui prennent du temps (conversion vidéo, gestion des stats, etc…)."
+msgstr "une fonction spéciale pour terminer la requête et nettoyer toutes les données tout en continuant à faire d'autres choses qui prennent du temps (conversion vidéo, gestion des stats, etc.)."
 
 #. type: Plain text
 #: doc/guix.texi:19141
@@ -45339,8 +45348,10 @@ msgstr ""
 
 #. type: table
 #: doc/guix.texi:24514
+#, fuzzy
+#| msgid "Depending on what you run in the Docker container, it may be necessary to give the container additional permissions.  For example, if you intend to build software using Guix inside of the Docker container, you may need to pass the @option{--privileged} option to @code{docker create}."
 msgid "This command starts a new Docker container from the specified image.  It will boot the Guix system in the usual manner, which means it will start any services you have defined in the operating system configuration.  Depending on what you run in the Docker container, it may be necessary to give the container additional permissions.  For example, if you intend to build software using Guix inside of the Docker container, you may need to pass the @option{--privileged} option to @code{docker run}."
-msgstr "Cette commande démarre un nouveau conteneur Docker à partir de l'image spécifiée.  Il démarrera le système Guix de la manière habituelle, ce qui signifie qu'il démarrera tous les services que vous avez définis dans la configuration du système d'exploitation.  En fonction de ce que vous lancez dans le conteneur Docker, il peut être nécessaire de donner des permissions supplémentaires au conteneur.  Par exemple, si vous voulez construire des paquets avec Guix dans le conteneur Docker, vous devriez passer @option{--privileged} à @code{docker run}."
+msgstr "En fonction de ce que vous lancez dans le conteneur Docker, il peut être nécessaire de donner des permissions supplémentaires au conteneur.  Par exemple, si vous voulez construire des paquets avec Guix dans le conteneur Docker, vous devriez passer @option{--privileged} à @code{docker create}."
 
 #. type: table
 #: doc/guix.texi:24522
@@ -46565,9 +46576,10 @@ msgstr "Ce sont les noms qui peuvent être passés à @command{herd start}, @com
 
 #. type: item
 #: doc/guix.texi:25282
-#, no-wrap
+#, fuzzy, no-wrap
+#| msgid "@code{requirement} (default: @code{'()})"
 msgid "@code{requirements} (default: @code{'()})"
-msgstr "@code{requirements} (par défaut : @code{'()})"
+msgstr "@code{requirement} (par défaut : @code{'()})"
 
 #. type: table
 #: doc/guix.texi:25284
@@ -47349,6 +47361,33 @@ msgstr "license, GNU Free Documentation License"
 #, no-wrap
 msgid "fdl-1.3.texi"
 msgstr "fdl-1.3.texi"
+
+#~ msgid "little-endian 64-bit MIPS processors, specifically the Loongson series, n32 ABI, and Linux-Libre kernel.  This configuration is no longer fully supported; in particular, the project's build farms no longer provide substitutes for this architecture."
+#~ msgstr "les processeurs 64 bits MIPS en little-endian, spécifiquement la série Loongson, ABI n32, avec le noyau Linux-libre.  Cette configuration n'est plus totalement prise en charge ; en particulier, les fermes de construction du projet de fournissent plus de substituts pour cette architecture."
+
+#~ msgid ""
+#~ "image_id=\"`docker load < guix-system-docker-image.tar.gz`\"\n"
+#~ "container_id=\"`docker create $image_id`\"\n"
+#~ "docker start $container_id\n"
+#~ msgstr ""
+#~ "image_id=\"`docker load < guix-system-docker-image.tar.gz`\"\n"
+#~ "container_id=\"`docker create $image_id`\"\n"
+#~ "docker start $container_id\n"
+
+#~ msgid "This command starts a new Docker container from the specified image.  It will boot the Guix system in the usual manner, which means it will start any services you have defined in the operating system configuration.  You can get an interactive shell running in the container using @command{docker exec}:"
+#~ msgstr "Cette commande démarre un nouveau conteneur Docker à partir de l'image spécifiée.  Il démarrera le système Guix de la manière habituelle, ce qui signifie qu'il démarrera tous les services que vous avez définis dans la configuration du système d'exploitation.  Vous pouvez obtenir un shell interactif dans le conteneur en utilisant @command{docker exec} :"
+
+#~ msgid "docker exec -ti $container_id /run/current-system/profile/bin/bash --login\n"
+#~ msgstr "docker exec -ti $container_id /run/current-system/profile/bin/bash --login\n"
+
+#~ msgid "For the @code{container} action, allow containers to access the host network, that is, do not create a network namespace."
+#~ msgstr "Pour l'action @code{container}, permet aux conteneurs d'accéder au réseau de l'hôte, c'est-à-dire, ne crée pas pas d'espace de nom réseau."
+
+#~ msgid "@code{auto-start?} (default: @code{#t})"
+#~ msgstr "@code{auto-start?} (par défaut : @code{#t})"
+
+#~ msgid "Whether this service should be started automatically by the Shepherd.  If it is @code{#f} the service has to be started manually with @code{herd start}."
+#~ msgstr "Indique si ce service doit être démarré automatiquement par le Shepherd.  Si la valeur est @code{#f}, le service doit être démarré manuellement avec @code{herd start}."
 
 #~ msgid "The @code{guix} package must remain available in @code{root}'s profile, or it would become subject to garbage collection---in which case you would find yourself badly handicapped by the lack of the @command{guix} command.  In other words, do not remove @code{guix} by running @code{guix package -r guix}."
 #~ msgstr "Le paquet @code{guix} doit rester disponible dans le profil de @code{root} ou il pourrait être sujet au ramassage de miettes — dans ce cas vous vous retrouveriez gravement handicapé par l'absence de la commande @command{guix}.  En d'autres termes, ne supprimez pas @code{guix} en lançant @code{guix package -r guix}."

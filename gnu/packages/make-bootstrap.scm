@@ -2,8 +2,8 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -158,6 +158,15 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (current-source-location)
                                 #:native-inputs native-inputs))
 
+(define static-bash-for-bootstrap
+  (package
+    (inherit static-bash)
+    (source (origin
+              (inherit (package-source static-bash))
+              (patches
+               (cons (search-patch "bash-4.4-linux-pgrp-pipe.patch")
+                     (origin-patches (package-source static-bash))))))))
+
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
   (let ((coreutils (package (inherit coreutils)
@@ -234,7 +243,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                  (("-Wl,-export-dynamic") ""))
                                #t)))))))
                 (inputs (if (%current-target-system)
-                            `(("bash" ,static-bash))
+                            `(("bash" ,static-bash-for-bootstrap))
                             '()))))
 	(tar (package (inherit tar)
 	       (arguments
@@ -280,7 +289,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("sed" ,sed)
                ("grep" ,grep)
                ("gawk" ,gawk)))
-      ("bash" ,static-bash))))
+      ("bash" ,static-bash-for-bootstrap))))
 
 (define %static-binaries
   (package
@@ -585,8 +594,32 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
+;; One package: build + remove store references
+;; (define %mescc-tools-static-stripped
+;;   ;; A statically linked Mescc Tools with store references removed, for
+;;   ;; bootstrap.
+;;   (package
+;;     (inherit mescc-tools)
+;;     (name "mescc-tools-static-stripped")
+;;     (arguments
+;;      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+;;                           "CC=gcc -static")
+;;        #:test-target "test"
+;;        #:phases (modify-phases %standard-phases
+;;                   (delete 'configure)
+;;                   (add-after 'install 'strip-store-references
+;;                     (lambda _
+;;                       (let* ((out (assoc-ref %outputs "out"))
+;;                              (bin (string-append out "/bin")))
+;;                         (for-each (lambda (file)
+;;                                  (let ((target (string-append bin "/" file)))
+;;                                    (format #t "strippingg `~a'...~%" target)
+;;                                    (remove-store-references target)))
+;;                                   '( "M1" "blood-elf" "hex2"))))))))))
+
+;; Two packages: first build static, bare minimum content.
 (define %mescc-tools-static
-  ;; A statically linked MesCC Tools for bootstrap.
+  ;; A statically linked MesCC Tools.
   (package
     (inherit mescc-tools)
     (name "mescc-tools-static")
@@ -596,12 +629,73 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            ((#:make-flags flags)
             `(cons "CC=gcc -static" ,flags)))))))
 
-(define-public %mes-minimal-stripped
-  ;; A minimal Mes without documentation dependencies, for bootstrap.
+;; ... next remove store references.
+(define %mescc-tools-static-stripped
+  ;; A statically linked Mescc Tools with store references removed, for
+  ;; bootstrap.
+  (package
+    (inherit %mescc-tools-static)
+    (name (string-append (package-name %mescc-tools-static) "-stripped"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((in  (assoc-ref %build-inputs "mescc-tools"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin")))
+           (mkdir-p bin)
+           (for-each (lambda (file)
+                       (let ((target (string-append bin "/" file)))
+                         (format #t "copying `~a'...~%" file)
+                         (copy-file (string-append in "/bin/" file)
+                                    target)
+                         (remove-store-references target)))
+                     '( "M1" "blood-elf" "hex2"))
+           #t))))
+    (inputs `(("mescc-tools" ,%mescc-tools-static)))))
+
+;; (define-public %mes-minimal-stripped
+;;   ;; A minimal Mes without documentation dependencies, for bootstrap.
+;;   (let ((triplet "i686-unknown-linux-gnu"))
+;;     (package
+;;       (inherit mes)
+;;       (name "mes-minimal-stripped")
+;;       (native-inputs
+;;        `(("guile" ,guile-2.2)))
+;;       (arguments
+;;        `(#:system "i686-linux"
+;;          #:strip-binaries? #f
+;;          #:configure-flags '("--mes")
+;;          #:phases
+;;          (modify-phases %standard-phases
+;;            (delete 'patch-shebangs)
+;;            (add-after 'install 'strip-install
+;;              (lambda _
+;;                (let* ((out (assoc-ref %outputs "out"))
+;;                       (share (string-append out "/share")))
+;;                  (delete-file-recursively (string-append out "/lib/guile"))
+;;                  (delete-file-recursively (string-append share "/guile"))
+;;                  (delete-file-recursively (string-append share "/mes/scaffold"))
+
+;;                  (for-each delete-file
+;;                            (find-files
+;;                             (string-append share "/mes/lib") "\\.(h|c)"))
+
+;;                  (for-each (lambda (dir)
+;;                              (for-each remove-store-references
+;;                                        (find-files (string-append out "/" dir)
+;;                                                    ".*")))
+;;                            '("bin" "share/mes")))))))))))
+
+;; Two packages: first build static, bare minimum content.
+(define-public %mes-minimal
+  ;; A minimal Mes without documentation.
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
       (inherit mes)
-      (name "mes-minimal-stripped")
+      (name "mes-minimal")
       (native-inputs
        `(("guile" ,guile-2.2)))
       (arguments
@@ -610,6 +704,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
          #:configure-flags '("--mes")
          #:phases
          (modify-phases %standard-phases
+           (delete 'patch-shebangs)
            (add-after 'install 'strip-install
              (lambda _
                (let* ((out (assoc-ref %outputs "out"))
@@ -617,10 +712,35 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                  (delete-file-recursively (string-append out "/lib/guile"))
                  (delete-file-recursively (string-append share "/guile"))
                  (delete-file-recursively (string-append share "/mes/scaffold"))
-                 (for-each
-                  delete-file
-                  (find-files (string-append share  "/mes/lib")
-                              "\\.(h|c)")))))))))))
+
+                 (for-each delete-file
+                           (find-files
+                            (string-append share "/mes/lib")
+                            "\\.(h|c)")))))))))))
+
+;; next remove store references.
+(define %mes-minimal-stripped
+  ;; A minimal Mes with store references removed, for bootstrap.
+  (package
+    (inherit %mes-minimal)
+    (name (string-append (package-name %mes-minimal) "-stripped"))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((in  (assoc-ref %build-inputs "mes"))
+               (out (assoc-ref %outputs "out")))
+
+           (copy-recursively in out)
+           (for-each (lambda (dir)
+                       (for-each remove-store-references
+                                 (find-files (string-append out "/" dir)
+                                             ".*")))
+                     '("bin" "share/mes"))
+           #t))))
+    (inputs `(("mes" ,%mes-minimal)))))
 
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
@@ -680,6 +800,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                      ((#:tests? _ #f)
                       ;; There are uses of `dynamic-link' in
                       ;; {foreign,coverage}.test that don't fly here.
+                      #f)
+                     ((#:parallel-build? _ #f)
+                      ;; Work around the fact that the Guile build system is
+                      ;; not deterministic when parallel-build is enabled.
                       #f))))))
     (package-with-relocatable-glibc (static-package guile))))
 
@@ -790,11 +914,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (tarball-package %guile-static-stripped))
 
 (define %mescc-tools-bootstrap-tarball
-  ;; A tarball with MesCC binary seed.
-  (tarball-package %mescc-tools-static))
+  ;; A tarball with statically-linked MesCC binary seed.
+  (tarball-package %mescc-tools-static-stripped))
 
 (define %mes-bootstrap-tarball
-  ;; A tarball with Mes ASCII Seed and binary Mes C Library.
+  ;; A tarball with Mes binary seed.
   (tarball-package %mes-minimal-stripped))
 
 (define %bootstrap-tarballs

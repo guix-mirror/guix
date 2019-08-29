@@ -106,14 +106,14 @@ given, use that to invoke the remote Guile REPL."
   (let* ((repl-command (append (or become-command '())
                                '("guix" "repl" "-t" "machine")))
          (pipe (apply open-remote-pipe* session OPEN_BOTH repl-command)))
-    ;; XXX: 'channel-get-exit-status' would be better here, but hangs if the
-    ;; process does succeed. This doesn't reflect the documentation, so it's
-    ;; possible that it's a bug in guile-ssh.
     (when (eof-object? (peek-char pipe))
-      (raise (condition
-              (&message
-               (message (format #f (G_ "failed to run '~{~a~^ ~}'")
-                                repl-command))))))
+      (let ((status (channel-get-exit-status pipe)))
+        (close-port pipe)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "remote command '~{~a~^ ~}' failed \
+with status ~a")
+                                  repl-command status)))))))
     (port->inferior pipe)))
 
 (define* (inferior-remote-eval exp session #:optional become-command)

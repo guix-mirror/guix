@@ -131,7 +131,7 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public libtorrent
   (package
     (name "libtorrent")
-    (version "0.13.6")
+    (version "0.13.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -139,7 +139,7 @@ DHT, µTP, PEX and Magnet Links.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18"))))
+                "10z9i1rc41cmmi7nx8k7k1agsx6afv09g9cl7g9zr35fyhl5l4gd"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
@@ -156,7 +156,7 @@ speed and efficiency.")
 (define-public rtorrent
   (package
     (name "rtorrent")
-    (version "0.9.6")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -164,7 +164,7 @@ speed and efficiency.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "03jvzw9pi2mhcm913h8qg0qw9gwjqc6lhwynb1yz1y163x7w4s8y"))))
+                "1bs2fnf4q7mlhkhzp3i1v052v9xn8qa7g845pk9ia8hlpw207pwy"))))
     (build-system gnu-build-system)
     (inputs `(("libtorrent" ,libtorrent)
               ("ncurses" ,ncurses)

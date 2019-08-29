@@ -1,0 +1,30 @@
+Unconditionally enable PGRP_PIPE on Linux (the kernel), regardless of
+the kernel version in use on the build machine.
+
+--- configure.ac.orig	1969-12-31 19:00:00.000000000 -0500
++++ configure.ac	2019-08-11 22:28:26.038841961 -0400
+@@ -1092,9 +1092,7 @@
+ solaris2*)	LOCAL_CFLAGS=-DSOLARIS ;;
+ lynxos*)	LOCAL_CFLAGS=-DRECYCLES_PIDS ;;
+ linux*)		LOCAL_LDFLAGS=-rdynamic		 # allow dynamic loading
+-		case "`uname -r`" in
+-		2.[[456789]]*|[[34]]*)	AC_DEFINE(PGRP_PIPE) ;;
+-		esac ;;
++		AC_DEFINE(PGRP_PIPE) ;;
+ *qnx6*)		LOCAL_CFLAGS="-Dqnx -Dqnx6" LOCAL_LIBS="-lncurses" ;;
+ *qnx*)		LOCAL_CFLAGS="-Dqnx -F -3s" LOCAL_LDFLAGS="-3s" LOCAL_LIBS="-lunix -lncurses" ;;
+ powerux*)	LOCAL_LIBS="-lgen" ;;
+--- configure.orig	1969-12-31 19:00:00.000000000 -0500
++++ configure	2019-08-11 22:28:10.166763255 -0400
+@@ -16064,10 +16064,7 @@
+ solaris2*)	LOCAL_CFLAGS=-DSOLARIS ;;
+ lynxos*)	LOCAL_CFLAGS=-DRECYCLES_PIDS ;;
+ linux*)		LOCAL_LDFLAGS=-rdynamic		 # allow dynamic loading
+-		case "`uname -r`" in
+-		2.[456789]*|[34]*)	$as_echo "#define PGRP_PIPE 1" >>confdefs.h
+- ;;
+-		esac ;;
++		$as_echo "#define PGRP_PIPE 1" >>confdefs.h ;;
+ *qnx6*)		LOCAL_CFLAGS="-Dqnx -Dqnx6" LOCAL_LIBS="-lncurses" ;;
+ *qnx*)		LOCAL_CFLAGS="-Dqnx -F -3s" LOCAL_LDFLAGS="-3s" LOCAL_LIBS="-lunix -lncurses" ;;
+ powerux*)	LOCAL_LIBS="-lgen" ;;

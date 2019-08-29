@@ -3374,21 +3374,22 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "19.5")
+    (version "19.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "0sk6iyykwi2mm3f1g4r0iqbsrwk3zmyagp6jjqkh8njbq42cjr1y"))))
+                "0s2qv8sznvw6559bi39qj9p072azh9qcb2b86w6w8clz2azjaa76"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:out-of-source? #f              ; for the 'install-doc' phase
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
-              (docdir (string-append out "/share/doc/snd")))
+              (docdir (string-append out "/share/doc/"
+                                     ,name "-" ,version)))
          (list "--with-alsa" "--with-jack" "--with-gmp"
                (string-append "--with-doc-dir=" docdir)))
        #:phases
@@ -3401,7 +3402,7 @@ on the ALSA software PCM plugin.")
                (for-each
                 (lambda (f)
                   (install-file f doc))
-                (find-files "." "\\.html$|COPYING"))
+                (find-files "." "\\.html$"))
                (copy-recursively "pix" (string-append doc "/pix"))
                #t))))))
     (native-inputs

@@ -21,6 +21,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 swedebugia <swedebugia@riseup.net>
+;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,6 +56,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -70,6 +72,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages noweb)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -2350,22 +2353,52 @@ more expressive and flexible than the traditional @code{format} procedure.")
        ("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)
        ("texlive" ,(texlive-union (list texlive-generic-epsf)))))
-    (propagated-inputs
+    (inputs
      `(("dbus-glib" ,dbus-glib)
        ("guile" ,guile-2.2)
        ("guile-lib" ,guile-lib)
        ("guile-readline" ,guile-readline)
-       ("glib-networking" ,glib-networking)
        ("freeglut" ,freeglut)
-       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("webkitgtk" ,webkitgtk)))
+    (propagated-inputs
+     `(("glib-networking" ,glib-networking)
+       ("gssettings-desktop-schemas" ,gsettings-desktop-schemas)))
     (arguments
-     `(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (ice-9 regex)
+                  (ice-9 ftw)
+                  (srfi srfi-26))
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'setenv
            (lambda _
              (setenv "GUILE_AUTO_COMPILE" "0")
-             #t)))))
+             #t))
+         (add-after 'install 'wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (effective (read-line
+                                (open-pipe* OPEN_READ
+                                            "guile" "-c"
+                                            "(display (effective-version))")))
+                    (deps (map (cut assoc-ref inputs <>)
+                               '("guile-lib" "guile-readline")))
+                    (scm-path (map (cut string-append <> "/share/guile/site/"
+                                        effective) `(,out ,@deps)))
+                    (go-path (map (cut string-append <> "/lib/guile/" effective
+                                       "/site-ccache/") `(,out ,@deps)))
+                    (examples (filter (cut string-match "emacsy" <>)
+                                      (scandir (string-append out "/bin/"))))
+                    (progs (map (cut string-append out "/bin/" <>)
+                                examples)))
+               (map (cut wrap-program <>
+                         `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
+                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix ,go-path))
+                    progs)
+               #t))))))
     (home-page "https://savannah.nongnu.org/projects/emacsy")
     (synopsis "Embeddable GNU Emacs-like library using Guile")
     (description
@@ -2376,6 +2409,36 @@ and minor modes, etc., and can also be used as a pure Guile library.  It
 comes with a simple counter example using FreeGLUT and browser examples
 in C using Gtk+-3 and WebKitGtk.")
     (license license:gpl3+)))
+
+(define-public emacsy-minimal
+  (let ((commit "f3bf0dbd803d7805b6ae8303253507ad13922293"))
+    (package
+      (inherit emacsy)
+      (name "emacsy-minimal")
+      (version (git-version "v0.4.1" "19" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/emacsy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0ivy28km1p7nlrf63xx3hvrpxf5ld5amk1wcan3k7sqv1kq9mqdb"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("guile" ,guile-2.2)
+         ("guile-lib" ,guile-lib)
+         ("guile-readline" ,guile-readline)))
+      (propagated-inputs '())
+      (arguments
+       `(#:configure-flags '("--without-examples")
+         #:phases
+         (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (setenv "GUILE_AUTO_COMPILE" "0")
+             #t))))))))
 
 (define-public guile-jpeg
   (let ((commit "6a1673578b297c2c1b28e44a76bd5c49e76a5046")
@@ -2410,3 +2473,95 @@ in C using Gtk+-3 and WebKitGtk.")
        "Guile-JPEG is a Scheme library to parse JPEG image files and to
 perform geometrical transforms on JPEG images.")
       (license license:gpl3+))))
+
+(define-public nomad
+  (package
+    (name "nomad")
+    (version "0.1.1-alpha")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.savannah.gnu.org/git/nomad.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0abz07hl5dh802ciy71xzkvkhyryypq1i94wna40a2wndbd73f7z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("bash" ,bash)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)
+       ("guile" ,guile-2.2)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("guile-lib" ,guile-lib)
+       ("guile-gcrypt" ,guile-gcrypt)
+       ("guile-readline" ,guile-readline)
+       ("gnutls" ,gnutls)
+       ("shroud" ,shroud)
+       ("emacsy" ,emacsy-minimal)
+       ("glib" ,glib)
+       ("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("webkitgtk" ,webkitgtk)
+       ("xorg-server" ,xorg-server)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (srfi srfi-26))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (format #f "~a/bin/Xvfb :1 &"
+                             (assoc-ref inputs "xorg-server")))
+             (setenv "DISPLAY" ":1")
+             #t))
+         (add-after 'install 'wrap-binaries
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (gio-deps (map (cut assoc-ref inputs <>) '("glib-networking"
+                                                               "glib")))
+                    (gio-mod-path (map (cut string-append <> "/lib/gio/modules")
+                                       gio-deps))
+                    (effective (read-line (open-pipe*
+                                           OPEN_READ
+                                           "guile" "-c"
+                                           "(display (effective-version))")))
+                    (deps (map (cut assoc-ref inputs <>)
+                               '("emacsy" "guile-lib" "guile-readline"
+                                 "shroud")))
+                    (scm-path (map (cut string-append <>
+                                        "/share/guile/site/" effective)
+                                   `(,out ,@deps)))
+                    (go-path (map (cut string-append <>
+                                       "/lib/guile/" effective "/site-ccache")
+                                  `(,out ,@deps)))
+                    (progs (map (cut string-append out "/bin/" <>)
+                                '("nomad"))))
+               (map (cut wrap-program <>
+                         `("GIO_EXTRA_MODULES" ":" prefix ,gio-mod-path)
+                         `("GUILE_LOAD_PATH" ":" prefix ,scm-path)
+                         `("GUILE_LOAD_COMPILED_PATH" ":"
+                           prefix ,go-path))
+                    progs)
+               #t))))))
+    (home-page "https://savannah.nongnu.org/projects/nomad/")
+    (synopsis "Extensible Web Browser in Guile Scheme")
+    (description "Nomad is an Emacs-like Web Browser built using Webkitgtk and
+Emacsy.  It has a small C layer and most browser features are fully
+programmable in Guile.  It has hooks, keymaps, and self documentation
+features.")
+    (license license:gpl3+)))

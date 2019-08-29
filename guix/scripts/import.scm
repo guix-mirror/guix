@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2018 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,7 +114,8 @@ Run IMPORTER with ARGS.\n"))
                         (pretty-print expr (newline-rewriting-port
                                             (current-output-port))))))
            (match (apply (resolve-importer importer) args)
-             ((and expr ('package _ ...))
+             ((and expr (or ('package _ ...)
+                            ('let _ ...)))
               (print expr))
              ((? list? expressions)
               (for-each (lambda (expr)

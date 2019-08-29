@@ -21,6 +21,7 @@
 # Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+# Copyright © 2019 John Soo <jsoo1@asu.edu>
 #
 # This file is part of GNU Guix.
 #
@@ -99,6 +100,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/calcurse.scm			\
   %D%/packages/ccache.scm			\
   %D%/packages/cdrom.scm			\
+  %D%/packages/cedille.scm			\
   %D%/packages/certs.scm			\
   %D%/packages/check.scm			\
   %D%/packages/chemistry.scm			\
@@ -128,6 +130,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/cryptsetup.scm			\
   %D%/packages/cups.scm				\
   %D%/packages/curl.scm				\
+  %D%/packages/cvassistant.scm			\
   %D%/packages/cyrus-sasl.scm			\
   %D%/packages/databases.scm			\
   %D%/packages/datamash.scm			\
@@ -410,6 +413,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/rdf.scm				\
   %D%/packages/re2c.scm				\
   %D%/packages/readline.scm			\
+  %D%/packages/rednotebook.scm			\
   %D%/packages/regex.scm				\
   %D%/packages/robotics.scm			\
   %D%/packages/rrdtool.scm			\
@@ -697,6 +701,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
+  %D%/packages/patches/bash-4.4-linux-pgrp-pipe.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
@@ -1021,6 +1026,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libexif-CVE-2016-6328.patch		\
   %D%/packages/patches/libexif-CVE-2017-7544.patch		\
   %D%/packages/patches/libexif-CVE-2018-20030.patch		\
+  %D%/packages/patches/libextractor-exiv2.patch			\
   %D%/packages/patches/libgit2-avoid-python.patch		\
   %D%/packages/patches/libgit2-mtime-0.patch			\
   %D%/packages/patches/libgnome-encoding.patch			\
@@ -1099,7 +1105,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/meson-for-build-rpath.patch		\
   %D%/packages/patches/metabat-fix-compilation.patch		\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
-  %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
+  %D%/packages/patches/mingw-w64-6.0.0-gcc.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
   %D%/packages/patches/monero-use-system-miniupnpc.patch			\

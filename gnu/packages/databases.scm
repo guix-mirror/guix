@@ -2101,20 +2101,19 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.26")
+    (version "4.0.27")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32 "1qrxnf7ji5hml7z4y669k4wmk3iz2pcsr05bnn1n912asash09z5"))
+        (base32 "1kd2i7hc1330cli72vawzby17c3039cqn1aba4i0zrjnpghjhmib"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
      `(("unixodbc" ,unixodbc)))
     (arguments
-     `(;; No unit tests exist.
-       #:tests? #f))
+     `(#:tests? #f))                    ; no unit tests exist
     (home-page "https://github.com/mkleehammer/pyodbc")
     (synopsis "Python ODBC Library")
     (description "@code{python-pyodbc} provides a Python DB-API driver
@@ -2431,14 +2430,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "1dwl0264r6ri2jyrjr68am04x538ab26xwy4crqjnnhm4alwm3c2"))))
+         "1k5hag0vahd5vrf9abx8fdj2whrwaw2iq2yp736mmxnbsn5xkdyd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2449,8 +2448,7 @@ You might also want to install the following optional dependencies:
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
     (home-page "https://bitbucket.org/zzzeek/alembic")
-    (synopsis
-     "Database migration tool for SQLAlchemy")
+    (synopsis "Database migration tool for SQLAlchemy")
     (description
      "Alembic is a lightweight database migration tool for usage with the
 SQLAlchemy Database Toolkit for Python.")

@@ -963,23 +963,29 @@ with the administrator's password."
   (match-record enlightenment-desktop-configuration
                 <enlightenment-desktop-configuration>
                 (enlightenment)
-    (list (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_sys")
-          (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_backlight")
-          ;; TODO: Move this binary to a screen-locker service.
-          (file-append enlightenment
-                       "/lib/enlightenment/utils/enlightenment_ckpasswd")
-          (file-append enlightenment
-                       (string-append
-                         "/lib/enlightenment/modules/cpufreq/"
-                         (match (string-tokenize (%current-system)
-                                                 (char-set-complement (char-set #\-)))
-                                ((arch "linux") (string-append "linux-gnu-" arch))
-                                ((arch "gnu")   (string-append "gnu-" arch)))
-                         "-"
-                         (version-major+minor (package-version enlightenment))
-                         "/freqset")))))
+    (let ((module-arch (match (string-tokenize (%current-system)
+                                               (char-set-complement (char-set #\-)))
+                              ((arch "linux") (string-append "linux-gnu-" arch))
+                              ((arch "gnu")   (string-append "gnu-" arch)))))
+      (list (file-append enlightenment
+                         "/lib/enlightenment/utils/enlightenment_sys")
+            (file-append enlightenment
+                         "/lib/enlightenment/utils/enlightenment_backlight")
+            ;; TODO: Move this binary to a screen-locker service.
+            (file-append enlightenment
+                         "/lib/enlightenment/utils/enlightenment_ckpasswd")
+            (file-append enlightenment
+                         (string-append
+                           "/lib/enlightenment/modules/cpufreq/"
+                           module-arch "-"
+                           (package-version enlightenment)
+                           "/freqset"))
+            (file-append enlightenment
+                         (string-append
+                           "/lib/enlightenment/modules/sysinfo/"
+                           module-arch "-"
+                           (package-version enlightenment)
+                           "/cpuclock_sysfs"))))))
 
 (define enlightenment-desktop-service-type
   (service-type

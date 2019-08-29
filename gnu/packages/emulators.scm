@@ -479,16 +479,17 @@ and Game Boy Color games.")
          (delete 'configure)
          ;; Makefile is in a subdirectory.
          (add-before
-          'build 'cd-to-project-dir
+          'build 'chdir-to-project-directory
           (lambda _
-            (chdir "projects/unix"))))
+            (chdir "projects/unix")
+            #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "all" (string-append "PREFIX=" out)))
        ;; There are no tests.
        #:tests? #f))
     ;; As per the Makefile (in projects/unix/Makefile):
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Nintendo 64 emulator core library")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -534,7 +535,7 @@ core library.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -579,7 +580,7 @@ SDL audio plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -621,7 +622,7 @@ SDL input plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -663,7 +664,7 @@ high-level emulation (HLE) RSP processor plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -709,7 +710,7 @@ Z64 RSP processor plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -763,7 +764,7 @@ Arachnoid video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -813,7 +814,7 @@ Glide64 video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -861,7 +862,7 @@ Glide64MK2 video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -916,7 +917,7 @@ Rice Video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Z64 video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -1043,7 +1044,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
      (origin
        (method git-fetch)
@@ -1052,7 +1053,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "026720z0vpiwr4da7l2x2yinns09fmg6yxsib203xwnixj399azi"))))
+        (base32 "0xxd9nhqiclpkdd9crymvba37fl0xs5mikwhya68nfzcgar7w480"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1074,8 +1075,7 @@ emulation community.  It provides highly accurate emulation.")
                  (("/bin/true") (which "true")))
                ;; Use shared zlib.
                (substitute* '("libretro-common/file/archive_file_zlib.c"
-                              "libretro-common/streams/trans_stream_zlib.c"
-                              "network/httpserver/httpserver.c")
+                              "libretro-common/streams/trans_stream_zlib.c")
                  (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.

@@ -327,14 +327,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.5.1")
+    (version "1.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "08z62qba0kmm15k93s2rq7ipi769895g8iwigcp20qjh6amwnwph"))
+        (base32 "1qmapk2hyxxqd3ajiqacz4isij0ibx7gn10n8dbmq33gm3kgliyb"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
@@ -364,7 +364,8 @@ an interpreter, a compiler, a debugger, and much more.")
        ("inetutils" ,inetutils)         ;for hostname(1)
        ("ed" ,ed)
        ("texlive" ,(texlive-union (list texlive-tex-texinfo)))
-       ("texinfo" ,texinfo)))
+       ("texinfo" ,texinfo)
+       ("zlib" ,zlib)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -431,7 +432,9 @@ an interpreter, a compiler, a debugger, and much more.")
                                         (_
                                          `("clisp")))
                      (string-append "--prefix="
-                                    (assoc-ref outputs "out")))))
+                                    (assoc-ref outputs "out"))
+                     "--with-sb-core-compression"
+                     "--with-sb-xref-for-internals")))
          (replace 'install
            (lambda _
              (invoke "sh" "install.sh")))
@@ -440,6 +443,21 @@ an interpreter, a compiler, a debugger, and much more.")
              (with-directory-excursion "doc/manual"
                (and  (invoke "make" "info")
                      (invoke "make" "dist")))))
+         (add-after 'build 'build-source
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (rc (string-append out "/lib/sbcl/sbclrc"))
+                    (source-dir (string-append out "/share/sbcl")))
+               (for-each (lambda (p)
+                           (copy-recursively p (string-append source-dir "/" p)))
+                         '("src" "contrib"))
+               (mkdir-p (dirname rc))
+               (with-output-to-file rc
+                 (lambda ()
+                   (display
+                    (string-append "(sb-ext:set-sbcl-source-location \""
+                                   source-dir "\")") )))
+               #t)))
          (add-after 'install 'install-doc
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -6650,3 +6668,75 @@ discoverable library instead of many; consistency and composability, where
 @code{s} is always the last argument, which makes it easier to feed pipes and
 arrows.")
       (license license:expat))))
+
+(define-public sbcl-cl-xmlspam
+  (let ((commit "ea06abcca2a73a9779bcfb09081e56665f94e22a"))
+    (package
+      (name "sbcl-cl-xmlspam")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/rogpeppe/cl-xmlspam")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (string-append name "-" version))
+         (sha256
+          (base32
+           "0w4rqvrgdgk3fwfq3kx4r7wwdr2bv3b6n3bdqwsiriw9psqzpz2s"))))
+      (inputs
+       `(("cxml" ,sbcl-cxml)
+         ("cl-ppcre" ,sbcl-cl-ppcre)))
+      (synopsis "Concise, regexp-like pattern matching on streaming XML for Common Lisp")
+      (description "CXML does an excellent job at parsing XML elements, but what
+do you do when you have a XML file that's larger than you want to fit in
+memory, and you want to extract some information from it?  Writing code to deal
+with SAX events, or even using Klacks, quickly becomes tedious.
+@code{cl-xmlspam} (for XML Stream PAttern Matcher) is designed to make it easy
+to write code that mirrors the structure of the XML that it's parsing.  It
+also makes it easy to shift paradigms when necessary - the usual Lisp control
+constructs can be used interchangeably with pattern matching, and the full
+power of CXML is available when necessary.")
+      (license license:bsd-3))))
+
+;; TODO: dbus uses ASDF's package-inferred-system which is not supported by
+;; asdf-build-system/sbcl as of 2019-08-02.  We should fix
+;; asdf-build-system/sbcl.
+(define-public cl-dbus
+  (let ((commit "24b452df3a45ca5dc95015500f34baad175c981a")
+        (revision "1"))
+    (package
+      (name "cl-dbus")
+      (build-system asdf-build-system/source)
+      (version (git-version "20190408" revision commit))
+      (home-page "https://github.com/death/dbus")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fw2q866yddbf23nk9pxphm9gsasx35vjyss82xzvndnjmzlqfl5"))))
+      ;; Inputs must be propagated or else packages depending on this won't have the necessary packages.
+      (propagated-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("babel" ,sbcl-babel)
+         ("iolib" ,sbcl-iolib)
+         ("iolib+multiplex" ,(@@ (gnu packages lisp) sbcl-iolib+multiplex))
+         ("iolib+syscalls" ,(@@ (gnu packages lisp) sbcl-iolib+syscalls))
+         ("iolib+streams" ,(@@ (gnu packages lisp) sbcl-iolib+streams))
+         ("iolib+sockets" ,(@@ (gnu packages lisp) sbcl-iolib+sockets))
+         ("ieee-floats" ,sbcl-ieee-floats)
+         ("flexi-streams" ,sbcl-flexi-streams)
+         ("cl-xmlspam" ,sbcl-cl-xmlspam)
+         ("ironclad" ,sbcl-ironclad)))
+      (synopsis "D-Bus client library for Common Lisp")
+      (description "This is a Common Lisp library that allows to publish D-Bus
+objects as well as send and notify other objects connected to a bus.")
+      (license license:bsd-2))))

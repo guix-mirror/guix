@@ -905,6 +905,35 @@ skip set strings, which are arguments to @code{skip-chars-forward} and
 @code{skip-chars-backward}.")
     (license license:gpl3+)))
 
+(define-public emacs-ample-regexps
+  (let ((commit "cbe91e148cac1ee8e223874dc956ed4cf607f046")
+        (revision "1"))
+    (package
+      (name "emacs-ample-regexps")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/immerrr/ample-regexps.el")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1mm4icrwx4mscp7kbbmlc34995r164dhrfczn5ybkyxjzzf76jn1"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner" "-l" "ample-regexps")))
+      (home-page "https://github.com/immerrr/ample-regexps.el")
+      (synopsis "Compose and reuse Emacs regexps")
+      (description
+       "This package allows common parts of regexps to be easily picked out
+and reused.")
+      (license license:gpl3+))))
+
 (define-public emacs-reformatter
   (package
     (name "emacs-reformatter")
@@ -3048,30 +3077,27 @@ for Flow files.")
       (license license:gpl3+))))
 
 (define-public emacs-elisp-demos
-  (let ((commit "4c1fbc392668662890b685ab297e950259227e06")
-        (version "0.1")
-        (revision "1"))
-    (package
-      (name "emacs-elisp-demos")
-      (version (git-version version revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/xuchunyang/elisp-demos")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "01cbkmjgmzxdf02w9xgbf4bhnx1mh53vvpkri13yxfksym5zizp4"))))
-      (build-system emacs-build-system)
-      (arguments '(#:include '("\\.el$" "\\.org$")))
-      (home-page "https://github.com/xuchunyang/elisp-demos/")
-      (synopsis "Enhance @code{*Help*} buffers with additional examples")
-      (description
-       "This package injects example uses of Elisp functions into their
+  (package
+    (name "emacs-elisp-demos")
+    (version "2019.08.16")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/xuchunyang/elisp-demos")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
+    (build-system emacs-build-system)
+    (arguments '(#:include '("\\.el$" "\\.org$")))
+    (home-page "https://github.com/xuchunyang/elisp-demos/")
+    (synopsis "Enhance @code{*Help*} buffers with additional examples")
+    (description
+     "This package injects example uses of Elisp functions into their
 respective @code{*Help*} buffers.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-docker-compose-mode
   (package
@@ -3876,7 +3902,7 @@ in @code{html-mode}.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.23")
+    (version "2.24")
     (source
      (origin
        (method git-fetch)
@@ -3885,7 +3911,7 @@ in @code{html-mode}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0i637n0ragpbj39hqx65nx5k99xf0464c4w6w1qpzykm6z42grky"))))
+        (base32 "0js24x42m7b5iymb4rxz501dff19vav5pywnzv50b673rbkaaqvh"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
@@ -6246,20 +6272,20 @@ not tied in the trap of backward compatibility.")
 (define-public emacs-helm-swoop
   (package
     (name "emacs-helm-swoop")
-    (version "1.7.4")
+    (version "2.0.0")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://github.com/ShingoFukuyama/helm-swoop.git")
+             (url "https://github.com/emacsorphanage/helm-swoop.git")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0b23j1bkpg4pm310hqdhgnl4mxsj05gpl08b6kb2ja4fzrg6adsk"))))
+        (base32 "0k0ns92g45x8dbymqpl6ylk5mj3wiw2h03f48q5cy1z8in0c4rjd"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)))
-    (home-page "https://github.com/ShingoFukuyama/helm-swoop")
+    (home-page "https://github.com/emacsorphanage/helm-swoop")
     (synopsis "Filter and jump to lines in an Emacs buffer using Helm")
     (description
      "This package builds on the Helm interface to provide several commands
@@ -6555,8 +6581,8 @@ end of a line and increment or decrement it.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-owl
-  (let ((commit "36a5fe057f44d48e377e3ef4f04b4eb30e1af309")
-        (revision "1"))
+  (let ((commit "e8fe5b2f745e36db04cb71eb689bf91c5409614f")
+        (revision "2"))
     (package
       (name "emacs-evil-owl")
       (version (git-version "0.0.1" revision commit))
@@ -6569,11 +6595,10 @@ end of a line and increment or decrement it.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "07a6n0gqss1qx9a50dqzqqq0gj6n7a4ykbcv1a0c9qd4fnfnm90m"))))
+           "1g7kplna62f271135mnjdbvxk2ayx7m4gvd6l86d2394alx16nhq"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)
-         ("emacs-posframe" ,emacs-posframe)))
+       `(("emacs-evil" ,emacs-evil)))
       (home-page "https://github.com/mamapanda/evil-owl")
       (synopsis "Preview candidates when using Evil registers and marks")
       (description
@@ -13617,6 +13642,32 @@ integrating @code{iedit-mode} into Evil mode with an attempt at sensible
 defaults.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-mc
+  (let ((commit "5205fe671803465149e578849bbbe803c23a8e4e")
+        (revision "1"))
+    (package
+      (name "emacs-evil-mc")
+      (version (git-version "0.0.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gabesoft/evil-mc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "03pxpjjxbai4dwp84bgxh52ahh0f6ac58xi2mds1kl4v93nm7v42"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-evil" ,emacs-evil)))
+      (native-inputs
+       `(("emacs-espuds" ,emacs-espuds)))
+      (home-page "https://github.com/gabesoft/evil-mc")
+      (synopsis "Interactive search compatible with @code{multiple-cursors}")
+      (description "This package can be used with @code{multiple-cursors} to
+provide an incremental search that moves all fake cursors in sync.")
+      (license license:expat))))
+
 (define-public emacs-evil-org
   (let ((commit "b6d652a9163d3430a9e0933a554bdbee5244bbf6"))
     (package
@@ -16129,12 +16180,11 @@ packages with a consistent way to use them.")
       (license license:gpl3+))))
 
 (define-public emacs-undo-propose-el
-  (let ((commit "5f1fa99a04369a959aad01b476fe4f34229f28cd")
-        (version "1.0.0")
+  (let ((commit "21a5cdc8ebfe8113f7039867c4abb0197c0fe71c")
         (revision "1"))
     (package
       (name "emacs-undo-propose-el")
-      (version (git-version version revision commit))
+      (version (git-version "3.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16144,7 +16194,7 @@ packages with a consistent way to use them.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1p9h1fqmva07mcs46rqrg9vqn537b615as84s9b7xh76k1r8h1c0"))))
+           "035hav4lfxwgikg3zpb4cz1nf08qfp27awl87dqbm2ly6d74lpny"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/jackkamm/undo-propose-el")
       (synopsis "Simple and safe navigation of @code{undo} history")
@@ -17364,7 +17414,8 @@ connections using TLS encryption.")
          "0nnlxzsmhsbszqigcyxak9i1a0digrd13gv6v18ck4h760mihh1m"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-all-the-icons" ,emacs-all-the-icons)))
+     `(("emacs-flycheck" ,emacs-flycheck)
+       ("emacs-all-the-icons" ,emacs-all-the-icons)))
     (home-page
      "https://gitlab.petton.fr/nico/zerodark-theme")
     (synopsis

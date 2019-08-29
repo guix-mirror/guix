@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -138,6 +138,12 @@ printing, and psresize, for adjusting page sizes.")
   (package
     (name "ghostscript")
     (version "9.27")
+
+    ;; The problems addressed by GHOSTSCRIPT/FIXED are not security-related,
+    ;; but they have a significant impact on usability, hence this graft.
+    ;; TODO: Ungraft on next update cycle.
+    (replacement ghostscript/fixed)
+
     (source
       (origin
         (method url-fetch)
@@ -268,6 +274,25 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
+
+(define-public ghostscript/fixed
+  ;; This adds the Freetype dependency (among other things), which fixes the
+  ;; rendering issues described in <https://issues.guix.gnu.org/issue/34877>.
+  (package/inherit
+   ghostscript
+   (arguments
+    (substitute-keyword-arguments (package-arguments ghostscript)
+      ((#:configure-flags flags ''())
+       `(append (list "--disable-compile-inits"
+                      (string-append "--with-fontpath="
+                                     (assoc-ref %build-inputs "gs-fonts")
+                                     "/share/fonts/type1/ghostscript"))
+                ,flags))))
+   (native-inputs `(("pkg-config" ,pkg-config)    ;needed for freetype
+                    ,@(package-native-inputs ghostscript)))
+   (inputs `(("gs-fonts" ,gs-fonts)
+             ("fontconfig" ,fontconfig)
+             ,@(package-inputs ghostscript)))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript

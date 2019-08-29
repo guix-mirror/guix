@@ -134,22 +134,12 @@ directory = '" port)
   ;; upgrading the compiler for example.
   (setenv "RUSTFLAGS" "--cap-lints allow")
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-  #t)
 
-;; The Cargo.lock file tells the build system which crates are required for
-;; building and hardcodes their version and checksum.  In order to build with
-;; the inputs we provide, we need to recreate the file with our inputs.
-(define* (update-cargo-lock #:key
-                            (vendor-dir "guix-vendor")
-                            #:allow-other-keys)
-  "Regenerate the Cargo.lock file with the current build inputs."
+  ;; We don't use the Cargo.lock file to determine the package versions we use
+  ;; during building, and in any case if one is not present it is created
+  ;; during the 'build phase by cargo.
   (when (file-exists? "Cargo.lock")
-    (begin
-      ;; Unfortunately we can't generate a Cargo.lock file until the checksums
-      ;; are generated, so we have an extra round of generate-all-checksums here.
-      (generate-all-checksums vendor-dir)
-      (delete-file "Cargo.lock")
-      (invoke "cargo" "generate-lockfile")))
+    (delete-file "Cargo.lock"))
   #t)
 
 ;; After the 'patch-generated-file-shebangs phase any vendored crates who have
@@ -203,7 +193,6 @@ directory = '" port)
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'configure 'update-cargo-lock update-cargo-lock)
     (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums patch-cargo-checksums)))
 
 (define* (cargo-build #:key inputs (phases %standard-phases)

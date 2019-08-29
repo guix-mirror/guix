@@ -357,15 +357,14 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public mkvtoolnix
   (package
     (name "mkvtoolnix")
-    (version "31.0.0")
+    (version "37.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://mkvtoolnix.download/sources/"
-                           name "-" version ".tar.xz"))
+                           "mkvtoolnix-" version ".tar.xz"))
        (sha256
-        (base32
-         "0d8va2iamzc7y3wi71z8mk2vnqvnkgwb2p7casdfp37400x8r2pr"))
+        (base32 "0r4d9318ymb9a0mkc0shi9p4kjy3m70s49v4f8dmjhvj63silhix"))
        (modules '((guix build utils)))
        (snippet '(begin
                    ;; Delete bundled libraries.
@@ -419,6 +418,13 @@ H.264 (MPEG-4 AVC) video streams.")
              "--enable-precompiled-headers=no")
         #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'patch-relative-file-names
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+             (substitute* "src/mkvtoolnix-gui/util/settings.cpp"
+               (("mkvmerge" match)
+                (string-append out "/bin/" match)))
+             #t)))
          (add-before 'configure 'add-googletest
            (lambda* (#:key inputs #:allow-other-keys)
              (symlink
@@ -466,8 +472,9 @@ H.264 (MPEG-4 AVC) video streams.")
     (synopsis "Tools to create, alter and inspect Matroska files")
     (description
      "MKVToolNix provides tools for getting information about Matroska files
-(@code{mkvinfo}), extracting tracks/data from Matroska files (@code{mkvextract})
-and creating Matroska files from other media files (@code{mkvmerge}).")
+(@command{mkvinfo}), extracting tracks/data from Matroska files
+(@command{mkvextract}), and creating Matroska files from other media files
+(@command{mkvmerge}).")
     (license license:gpl2)))
 
 (define-public x265
@@ -1485,7 +1492,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.08.02")
+    (version "2019.08.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
@@ -1493,7 +1500,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "101b6jrf6ckbxrn76ppvgdyrb25p7d247kn8qgq7n476sfnkfg2p"))))
+                "0b94hrhbqa7jhn91pxsbphg2ylwkpkknb2y4v4sczp7rjvgmjgdj"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion

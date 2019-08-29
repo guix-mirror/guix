@@ -2218,24 +2218,21 @@ applications.")
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
-    (version "2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "Flask-SQLAlchemy" version))
-        (sha256
-          (base32
-            "1i9ps5d5snih9xlqhrvmi3qfiygkmqzxh92n25kj4pf89kj4s965"))))
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask-SQLAlchemy" version))
+              (sha256
+               (base32
+                "0nnllf0ddbh9jlhngnyjj98lbxgxr1csaplllx0caw98syq0k5hc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
        ("python-sqlalchemy" ,python-sqlalchemy)))
-    (home-page
-      "https://github.com/mitsuhiko/flask-sqlalchemy")
-    (synopsis
-      "Module adding SQLAlchemy support to your Flask application")
+    (home-page "https://github.com/mitsuhiko/flask-sqlalchemy")
+    (synopsis "Module adding SQLAlchemy support to your Flask application")
     (description
-      "This package adds SQLAlchemy support to your Flask application.")
+     "This package adds SQLAlchemy support to your Flask application.")
     (license license:bsd-3)))
 
 (define-public python-flask-restplus

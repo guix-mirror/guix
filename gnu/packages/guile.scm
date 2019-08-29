@@ -264,14 +264,14 @@ without requiring the source code to be rewritten.")
   (package
     (inherit guile-2.2)
     (name "guile-next")
-    (version "2.9.3")
+    (version "2.9.4")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "14990wcpysgw58kij03wbgiggmi5z94jmy7wdcqnn6ny7cimkkgr"))))
+                "1milviqhipyfx400pqhngxpxyajalzwmp597dxn5514pkk0g7v0p"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -541,7 +541,7 @@ Guile's foreign function interface.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -549,7 +549,7 @@ Guile's foreign function interface.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "0ibk7fjwpb450lnrva4bx45sgln3pbyb645az4ansvh1spgani43"))))
+                "07dffrmc6cnw9mmw0pdrqlkbhzzpz0hm8p26z738l2j5i84dypnk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -563,7 +563,8 @@ of the C programming language, to be used on bytevectors.  C's type
 system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "bytestructures")))))
 
 (define-public guile2.0-bytestructures
   (package-for-guile-2.0 guile-bytestructures))

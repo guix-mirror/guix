@@ -401,7 +401,8 @@ shutdown on system startup."))
                         (compose list tlp-configuration-tlp))
      (service-extension activation-service-type
                         tlp-activation)))
-   (default-value (tlp-configuration))))
+   (default-value (tlp-configuration))
+   (description "Run TLP, a power management tool.")))
 
 (define (generate-tlp-documentation)
   (generate-documentation
@@ -441,4 +442,6 @@ shutdown on system startup."))
    (name 'thermald)
    (extensions (list (service-extension shepherd-root-service-type
                                         thermald-shepherd-service)))
-   (default-value (thermald-configuration))))
+   (default-value (thermald-configuration))
+   (description "Run thermald, a CPU frequency scaling service that helps
+prevent overheating.")))

@@ -24,6 +24,7 @@
   #:use-module ((ice-9 rdelim) #:select (read-string read-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 receive)
@@ -32,11 +33,13 @@
   #:use-module (guix http-client)
   #:use-module (gcrypt hash)
   #:use-module (guix store)
+  #:use-module ((guix serialization) #:select (write-file))
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
   #:use-module ((guix build utils) #:select (find-files))
   #:use-module (guix utils)
+  #:use-module (guix git)
   #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
   #:use-module (guix upstream)
   #:use-module (guix packages)
@@ -166,11 +169,25 @@ bioconductor package NAME, or #F if the package is unknown."
                (bioconductor-packages-list type))
          (cut assoc-ref <> "Version")))
 
+;; XXX taken from (guix scripts hash)
+(define (vcs-file? file stat)
+  (case (stat:type stat)
+    ((directory)
+     (member (basename file) '(".bzr" ".git" ".hg" ".svn" "CVS")))
+    ((regular)
+     ;; Git sub-modules have a '.git' file that is a regular text file.
+     (string=? (basename file) ".git"))
+    (else
+     #f)))
+
 ;; Little helper to download URLs only once.
 (define download
   (memoize
-   (lambda (url)
-     (with-store store (download-to-store store url)))))
+   (lambda* (url #:optional git)
+     (with-store store
+       (if git
+           (latest-repository-commit store url)
+           (download-to-store store url))))))
 
 (define (fetch-description repository name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
@@ -211,7 +228,18 @@ from ~s: ~a (~s)~%"
                                                 (string-append dir "/DESCRIPTION") read-string))
                         (lambda (meta)
                           (if (boolean? type) meta
-                              (cons `(bioconductor-type . ,type) meta))))))))))))
+                              (cons `(bioconductor-type . ,type) meta))))))))))
+    ((git)
+     ;; Download the git repository at "NAME"
+     (call-with-values
+         (lambda () (download name #t))
+       (lambda (dir commit)
+         (and=> (description->alist (with-input-from-file
+                                        (string-append dir "/DESCRIPTION") read-string))
+                (lambda (meta)
+                  (cons* `(git . ,name)
+                         `(git-commit . ,commit)
+                         meta))))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
@@ -256,7 +284,7 @@ empty list when the FIELD cannot be found."
 
 (define cran-guix-name (cut guix-name "r-" <>))
 
-(define (needs-fortran? tarball)
+(define (tarball-needs-fortran? tarball)
   "Check if the TARBALL contains Fortran source files."
   (define (check pattern)
     (parameterize ((current-error-port (%make-void-port "rw+"))
@@ -266,69 +294,127 @@ empty list when the FIELD cannot be found."
       (check "*.f95")
       (check "*.f")))
 
+(define (directory-needs-fortran? dir)
+  "Check if the directory DIR contains Fortran source files."
+  (match (find-files dir "\\.f(90|95)?")
+    (() #f)
+    (_ #t)))
+
+(define (needs-fortran? thing tarball?)
+  "Check if the THING contains Fortran source files."
+  (if tarball?
+      (tarball-needs-fortran? thing)
+      (directory-needs-fortran? thing)))
+
+(define (files-match-pattern? directory regexp . file-patterns)
+  "Return #T if any of the files matching FILE-PATTERNS in the DIRECTORY match
+the given REGEXP."
+  (let ((pattern (make-regexp regexp)))
+    (any (lambda (file)
+           (call-with-input-file file
+             (lambda (port)
+               (let loop ()
+                 (let ((line (read-line port)))
+                   (cond
+                    ((eof-object? line) #f)
+                    ((regexp-exec pattern line) #t)
+                    (else (loop))))))))
+         (apply find-files directory file-patterns))))
+
 (define (tarball-files-match-pattern? tarball regexp . file-patterns)
   "Return #T if any of the files represented by FILE-PATTERNS in the TARBALL
 match the given REGEXP."
   (call-with-temporary-directory
    (lambda (dir)
-     (let ((pattern (make-regexp regexp)))
-       (parameterize ((current-error-port (%make-void-port "rw+")))
-         (apply system* "tar"
-                "xf" tarball "-C" dir
-                `("--wildcards" ,@file-patterns)))
-       (any (lambda (file)
-              (call-with-input-file file
-                (lambda (port)
-                  (let loop ()
-                    (let ((line (read-line port)))
-                      (cond
-                       ((eof-object? line) #f)
-                       ((regexp-exec pattern line) #t)
-                       (else (loop))))))))
-            (find-files dir))))))
+     (parameterize ((current-error-port (%make-void-port "rw+")))
+       (apply system* "tar"
+              "xf" tarball "-C" dir
+              `("--wildcards" ,@file-patterns)))
+     (files-match-pattern? dir regexp))))
 
-(define (needs-zlib? tarball)
+(define (directory-needs-zlib? dir)
+  "Return #T if any of the Makevars files in the src directory DIR contain a
+zlib linker flag."
+  (files-match-pattern? dir "-lz" "(Makevars.*|configure.*)"))
+
+(define (tarball-needs-zlib? tarball)
   "Return #T if any of the Makevars files in the src directory of the TARBALL
 contain a zlib linker flag."
   (tarball-files-match-pattern?
    tarball "-lz"
    "*/src/Makevars*" "*/src/configure*" "*/configure*"))
 
-(define (needs-pkg-config? tarball)
+(define (needs-zlib? thing tarball?)
+  "Check if the THING contains files indicating a dependency on zlib."
+  (if tarball?
+      (tarball-needs-zlib? thing)
+      (directory-needs-zlib? thing)))
+
+(define (directory-needs-pkg-config? dir)
+  "Return #T if any of the Makevars files in the src directory DIR reference
+the pkg-config tool."
+  (files-match-pattern? dir "pkg-config"
+                        "(Makevars.*|configure.*)"))
+
+(define (tarball-needs-pkg-config? tarball)
   "Return #T if any of the Makevars files in the src directory of the TARBALL
 reference the pkg-config tool."
   (tarball-files-match-pattern?
    tarball "pkg-config"
    "*/src/Makevars*" "*/src/configure*" "*/configure*"))
 
+(define (needs-pkg-config? thing tarball?)
+  "Check if the THING contains files indicating a dependency on pkg-config."
+  (if tarball?
+      (tarball-needs-pkg-config? thing)
+      (directory-needs-pkg-config? thing)))
+
+;; XXX adapted from (guix scripts hash)
+(define (file-hash file select? recursive?)
+  ;; Compute the hash of FILE.
+  (if recursive?
+      (let-values (((port get-hash) (open-sha256-port)))
+        (write-file file port #:select? select?)
+        (force-output port)
+        (get-hash))
+      (call-with-input-file file port-sha256)))
+
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
   (let* ((base-url   (case repository
                        ((cran)         %cran-url)
-                       ((bioconductor) %bioconductor-url)))
+                       ((bioconductor) %bioconductor-url)
+                       ((git)          #f)))
          (uri-helper (case repository
                        ((cran)         cran-uri)
-                       ((bioconductor) bioconductor-uri)))
+                       ((bioconductor) bioconductor-uri)
+                       ((git)          #f)))
          (name       (assoc-ref meta "Package"))
          (synopsis   (assoc-ref meta "Title"))
          (version    (assoc-ref meta "Version"))
          (license    (string->license (assoc-ref meta "License")))
          ;; Some packages have multiple home pages.  Some have none.
-         (home-page  (match (listify meta "URL")
-                       ((url rest ...) url)
-                       (_ (string-append base-url name))))
-         (source-url (match (apply uri-helper name version
-                                   (case repository
-                                     ((bioconductor)
-                                      (list (assoc-ref meta 'bioconductor-type)))
-                                     (else '())))
-                       ((url rest ...) url)
-                       ((? string? url) url)
-                       (_ #f)))
-         (tarball    (download source-url))
+         (home-page  (case repository
+                       ((git) (assoc-ref meta 'git))
+                       (else (match (listify meta "URL")
+                               ((url rest ...) url)
+                               (_ (string-append base-url name))))))
+         (source-url (case repository
+                       ((git) (assoc-ref meta 'git))
+                       (else
+                        (match (apply uri-helper name version
+                                      (case repository
+                                        ((bioconductor)
+                                         (list (assoc-ref meta 'bioconductor-type)))
+                                        (else '())))
+                          ((url rest ...) url)
+                          ((? string? url) url)
+                          (_ #f)))))
+         (git?       (assoc-ref meta 'git))
+         (source     (download source-url git?))
          (sysdepends (append
-                      (if (needs-zlib? tarball) '("zlib") '())
+                      (if (needs-zlib? source (not git?)) '("zlib") '())
                       (filter (lambda (name)
                                 (not (member name invalid-packages)))
                               (map string-downcase (listify meta "SystemRequirements")))))
@@ -339,41 +425,67 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                                          (listify meta "Imports")
                                          (listify meta "LinkingTo")
                                          (delete "R"
-                                                 (listify meta "Depends"))))))
+                                                 (listify meta "Depends")))))
+         (package
+           `(package
+              (name ,(cran-guix-name name))
+              (version ,(case repository
+                          ((git)
+                           `(git-version ,version revision commit))
+                          (else version)))
+              (source (origin
+                        (method ,(if git?
+                                     'git-fetch
+                                     'url-fetch))
+                        (uri ,(case repository
+                                ((git)
+                                 `(git-reference
+                                   (url ,(assoc-ref meta 'git))
+                                   (commit commit)))
+                                (else
+                                 `(,(procedure-name uri-helper) ,name version
+                                   ,@(or (and=> (assoc-ref meta 'bioconductor-type)
+                                                (lambda (type)
+                                                  (list (list 'quote type))))
+                                         '())))))
+                        ,@(if git?
+                              '((file-name (git-file-name name version)))
+                              '())
+                        (sha256
+                         (base32
+                          ,(bytevector->nix-base32-string
+                            (case repository
+                              ((git)
+                               (file-hash source (negate vcs-file?) #t))
+                              (else (file-sha256 source))))))))
+              ,@(if (not (and git?
+                              (equal? (string-append "r-" name)
+                                      (cran-guix-name name))))
+                    `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
+                    '())
+              (build-system r-build-system)
+              ,@(maybe-inputs sysdepends)
+              ,@(maybe-inputs (map cran-guix-name propagate) 'propagated-inputs)
+              ,@(maybe-inputs
+                 `(,@(if (needs-fortran? source (not git?))
+                         '("gfortran") '())
+                   ,@(if (needs-pkg-config? source (not git?))
+                         '("pkg-config") '()))
+                 'native-inputs)
+              (home-page ,(if (string-null? home-page)
+                              (string-append base-url name)
+                              home-page))
+              (synopsis ,synopsis)
+              (description ,(beautify-description (or (assoc-ref meta "Description")
+                                                      "")))
+              (license ,license))))
     (values
-     `(package
-        (name ,(cran-guix-name name))
-        (version ,version)
-        (source (origin
-                  (method url-fetch)
-                  (uri (,(procedure-name uri-helper) ,name version
-                        ,@(or (and=> (assoc-ref meta 'bioconductor-type)
-                                     (lambda (type)
-                                       (list (list 'quote type))))
-                              '())))
-                  (sha256
-                   (base32
-                    ,(bytevector->nix-base32-string (file-sha256 tarball))))))
-        ,@(if (not (equal? (string-append "r-" name)
-                           (cran-guix-name name)))
-              `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
-              '())
-        (build-system r-build-system)
-        ,@(maybe-inputs sysdepends)
-        ,@(maybe-inputs (map cran-guix-name propagate) 'propagated-inputs)
-        ,@(maybe-inputs
-           `(,@(if (needs-fortran? tarball)
-                   '("gfortran") '())
-             ,@(if (needs-pkg-config? tarball)
-                   '("pkg-config") '()))
-           'native-inputs)
-        (home-page ,(if (string-null? home-page)
-                        (string-append base-url name)
-                        home-page))
-        (synopsis ,synopsis)
-        (description ,(beautify-description (or (assoc-ref meta "Description")
-                                                "")))
-        (license ,license))
+     (case repository
+       ((git)
+        `(let ((commit ,(assoc-ref meta 'git-commit))
+               (revision "1"))
+           ,package))
+       (else package))
      propagate)))
 
 (define cran->guix-package

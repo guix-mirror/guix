@@ -851,6 +851,39 @@ cuirass-jobs.scm: $(GOBJECTS)
 .PHONY: clean-go make-go as-derivation
 .PHONY: update-guix-package update-NEWS release
 
+# Downloading up-to-date PO files.
+
+# make-download-po-rule DOMAIN DIRECTORY [FILE-NAME-PREFIX]
+define make-download-po-rule
+
+download-po.$(1):
+	if [ -f "$(top_srcdir)/$(2)/LINGUAS" ]; then				\
+	  LINGUAS="`grep -v '^[[:blank:]]*#' < $(top_srcdir)/$(2)/LINGUAS`" ;	\
+	else									\
+	  LINGUAS="`(cd $(top_srcdir)/$(2);					\
+	    for i in *.po; do echo $$$$i; done) | cut -d . -f 2`" ;		\
+	fi ;									\
+	for lang in $$$$LINGUAS; do						\
+	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
+	     "https://translationproject.org/latest/$(1)/$$$$lang.po" ;		\
+	  then									\
+	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp,} ;			\
+	  else									\
+	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
+	  fi ;									\
+	done
+
+.PHONY: download-po.$(1)
+
+endef
+
+$(eval $(call make-download-po-rule,guix,po/guix))
+$(eval $(call make-download-po-rule,guix-packages,po/packages))
+$(eval $(call make-download-po-rule,guix-manual,po/doc,guix-manual.))
+
+download-po: $(foreach domain,guix guix-packages guix-manual,download-po.$(domain))
+.PHONY: download-po
+
 ## -------------- ##
 ## Silent rules.  ##
 ## -------------- ##

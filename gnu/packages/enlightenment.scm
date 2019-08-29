@@ -65,7 +65,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.22.2")
+    (version "1.22.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1l0wdgzxqm2y919277b1p9d37xzg808zwxxaw0nn44arh8gqk68n"))))
+                "1j1i8cwq4ym9z34ikv35mdmv5q7q69hdp494mc6l03g9n6cl2yky"))))
     (outputs '("out"       ; 53 MB
                "include")) ; 21 MB
     (build-system gnu-build-system)
@@ -242,7 +242,7 @@ contents and more.")
 (define-public rage
   (package
     (name "rage")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -251,7 +251,7 @@ contents and more.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "0gfzdd4jg78bkmj61yg49w7bzspl5m1nh6agqgs8k7qrq9q26xqy"))))
+                "04fdk23bbgvni212zrfy4ndg7vmshbsjgicrhckdvhay87pk9i75"))))
     (build-system meson-build-system)
     (arguments
      '(#:phases
@@ -273,20 +273,22 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.22.4")
+    (version "0.23.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://download.enlightenment.org/rel/apps/"
-                              name "/" name "-" version ".tar.xz"))
+                              "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "0ygy891rrw5c7lhk539nhif77j88phvz2h0fhx172iaridy9kx2r"))
+                "1y7x594gvyvl5zbb1rnf3clj2pm6j97n8wl5mp9x6xjmhx0d1idq"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
-    (build-system gnu-build-system)
+    (build-system meson-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-Dsystemd=false")
+       #:phases
        (modify-phases %standard-phases
+         (delete 'bootstrap) ; We don't want to run the autogen script.
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
             (setenv "HOME" "/tmp")
@@ -294,6 +296,7 @@ Libraries with some extra bells and whistles.")
                    (setxkbmap (assoc-ref inputs "setxkbmap"))
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
+                   (bluez     (assoc-ref inputs "bluez"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
@@ -314,12 +317,14 @@ Libraries with some extra bells and whistles.")
                   (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
-               (substitute* "configure"
+               (substitute* "data/etc/meson.build"
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
                  (("/usr/bin/eject") (string-append utils "/bin/eject"))
-                 (("/etc/acpi/sleep.sh force") "/run/current-system/profile/bin/loginctl suspend")
-                 (("/etc/acpi/hibernate.sh force") "/run/current-system/profile/bin/loginctl hibernate")
+                 (("/usr/bin/l2ping") (string-append bluez "/bin/l2ling"))
+                 (("/bin/rfkill") (string-append utils "/sbin/rfkill"))
+                 (("SUSPEND   = ''") "SUSPEND   = '/run/current-system/profile/bin/loginctl suspend'")
+                 (("HIBERNATE = ''") "HIBERNATE = '/run/current-system/profile/bin/loginctl hibernate'")
                  (("/sbin/shutdown -h now") "/run/current-system/profile/bin/loginctl poweroff now")
                  (("/sbin/shutdown -r now") "/run/current-system/profile/bin/loginctl reboot now"))
                #t))))))
@@ -329,12 +334,14 @@ Libraries with some extra bells and whistles.")
        ("util-linux" ,util-linux)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("bluez" ,bluez)
        ("dbus" ,dbus)
        ("efl" ,efl)
        ("freetype" ,freetype)
        ("libxcb" ,libxcb)
        ("libxext" ,libxext)
        ("linux-pam" ,linux-pam)
+       ("puleseaudio" ,pulseaudio)
        ("setxkbmap" ,setxkbmap)
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xkeyboard-config" ,xkeyboard-config)))

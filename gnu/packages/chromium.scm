@@ -238,7 +238,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "76.0.3809.100")
+(define %chromium-version "76.0.3809.132")
 (define %ungoogled-revision "8eba5c0df1a318012e3deab39a9add252a0d56a3")
 (define %debian-revision "debian/76.0.3809.87-2")
 (define package-revision "0")
@@ -254,7 +254,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "0vfjfxsqf8jrmd7y08ln1lpbilwi150875zn2bawwdq87vd3mncc"))))
+      "0hajwjf7swlgh1flpf8ljfrb2zhmcpzvrigvvxqd36g3nm04cknm"))))
 
 (define %ungoogled-origin
   (origin

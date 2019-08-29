@@ -64,6 +64,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6999,14 +7000,14 @@ Supported netlink families and protocols include:
 (define-public python-wrapt
   (package
     (name "python-wrapt")
-    (version "1.11.1")
+    (version "1.11.2")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "wrapt" version))
-        (sha256
-          (base32
-            "0cqmysny1pz01jw26q48q5zasvns6507rwhgm6wcw743f0r01sja"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "wrapt" version))
+       (sha256
+        (base32
+         "1q81762dgsgrd12f8qc39zk8s5wll3m5xc32jdmlf6cls4gh4njn"))))
     (build-system python-build-system)
     (arguments
      ;; Tests are not included in the tarball, they are only available in the
@@ -7015,7 +7016,7 @@ Supported netlink families and protocols include:
     (home-page "https://github.com/GrahamDumpleton/wrapt")
     (synopsis "Module for decorators, wrappers and monkey patching")
     (description
-      "The aim of the wrapt module is to provide a transparent object proxy for
+     "The aim of the wrapt module is to provide a transparent object proxy for
   Python, which can be used as the basis for the construction of function
   wrappers and decorator functions.")
     (license license:bsd-2)))
@@ -7322,14 +7323,14 @@ responses, rather than doing any computation.")
 (define-public python-pip
   (package
     (name "python-pip")
-    (version "18.1")
+    (version "19.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pip" version))
        (sha256
         (base32
-         "188fclay154s520n43s7cxxlhdaiysvxf19zk8vr1xbyjyyr58n0"))))
+         "100sd12ss4mbdj5lf3wawad29cm573b27765mq098x6xhcj71395"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))          ; there are no tests in the pypi archive.
@@ -9990,13 +9991,13 @@ format.")
 (define-public python-twisted
   (package
     (name "python-twisted")
-    (version "19.2.1")
+    (version "19.7.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
-                "0liymyd4pzphizjlpwkncxjpm9akyr3lkfkm77yfg6wasv108b7s"))))
+                "17d3hnxv9qndagzz63mdpyk99xj63p9gq586vjn0rxk8cl197nym"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f))                    ; FIXME: some tests fail
@@ -16087,4 +16088,73 @@ passing rich vector/raster/HTML visualizations as markers on the map.
 The library has a number of built-in tilesets from OpenStreetMap, Mapbox, and
 Stamen, and supports custom tilesets with Mapbox or Cloudmade API keys.  It
 supports Image, Video, GeoJSON and TopoJSON overlays.")
+    (license license:expat)))
+
+(define-public jube
+  (package
+    ;; This is a command-line tool, so no "python-" prefix.
+    (name "jube")
+    (version "2.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version="
+                    version))
+              (sha256
+               (base32
+                "0xq4k1q63s1p6swgyp61vahlrd1fqmgbm0gm5kpj8ikwy0yc0nqk"))
+              (file-name (string-append "jube-" version ".tar.gz"))))
+    (build-system python-build-system)
+    (home-page "https://apps.fz-juelich.de/jsc/jube/jube2/docu/index.html")
+    (synopsis "Benchmarking environment")
+    (description
+     "JUBE helps perform and analyze benchmarks in a systematic way.  For each
+benchmarked application, benchmark data is stored in a format that allows JUBE
+to deduct the desired information.  This data can be parsed by automatic pre-
+and post-processing scripts that draw information and store it more densely
+for manual interpretation.")
+    (license license:gpl3+)))
+
+(define-public python-pyroutelib3
+  (package
+    (name "python-pyroutelib3")
+    (version "1.3.post1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyroutelib3" version))
+       (sha256
+        (base32
+         "1hpbydpn2alyswiajfbvhzq4c7f36vdmvxy91hgv8l1lb2g2vfrj"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)))
+    (home-page "https://github.com/MKuranowski/pyroutelib3")
+    (synopsis "Library for simple routing on OSM data")
+    (description "Library for simple routing on OSM data")
+    (license license:gpl3+)))
+
+(define-public python-elementpath
+  (package
+    (name "python-elementpath")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "elementpath" version))
+       (sha256
+        (base32
+         "1syn2z543brab23dskh3fjd9pqvz6npqbcicrs2d88dbg26xl08p"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sissaschool/elementpath")
+    (synopsis
+     "XPath 1.0/2.0 parsers and selectors for ElementTree and lxml")
+    (description
+     "The proposal of this package is to provide XPath 1.0 and 2.0 selectors
+for Python's ElementTree XML data structures, both for the standard
+ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
+
+For lxml.etree this package can be useful for providing XPath 2.0 selectors,
+because lxml.etree already has it's own implementation of XPath 1.0.")
     (license license:expat)))

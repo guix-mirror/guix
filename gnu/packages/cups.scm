@@ -594,7 +594,7 @@ should only be used as part of the Guix cups-pk-helper service.")
               (method url-fetch)
               (uri (string-append
                     "http://www.openprinting.org/download/foomatic/"
-                    name "-" version ".tar.gz"))
+                    "foomatic-filters-" version ".tar.gz"))
               (sha256
                (base32
                 "1qrkgbm5jay2r7sh9qbyf0aiyrsl1mdc844hxf7fhw95a0zfbqm2"))
@@ -639,14 +639,14 @@ printer/driver specific, but spooler-independent PPD file.")
 (define-public foo2zjs
   (package
     (name "foo2zjs")
-    (version "20190413")
+    (version "20190517")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "0djzp3ddslmzyxkjhzkhkg6qqqm02whjfnfvh5glprkshcskzlg9"))))
+                "13gzsd26nq4brx1xzpwmg1qnr4nk7ykgi94qr1hbjqfi561prki4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

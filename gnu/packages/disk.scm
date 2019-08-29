@@ -760,7 +760,7 @@ LVM D-Bus API).")
 (define-public rmlint
   (package
     (name "rmlint")
-    (version "2.8.0")
+    (version "2.9.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -769,7 +769,7 @@ LVM D-Bus API).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gc7gbnh0qg1kl151cv1ld87vhpm1v3pnkn7prhscdcc21jrg8nz"))))
+                "1b5cziam14h80xrfb285fmfrzz2rligxcpsq1xsig14xf4l2875i"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2

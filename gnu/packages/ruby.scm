@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Mikhail Kirillov <w96k.ru@gmail.com>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2035,13 +2036,13 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
 (define-public ruby-simplecov
   (package
     (name "ruby-simplecov")
-    (version "0.12.0")
+    (version "0.17.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "simplecov" version))
               (sha256
                (base32
-                "0ffhyrfnq2zm2mc1742a4hqy475g3qa1zf6yfldwg1ldh5sn3qbx"))))
+                "0dq0nkaxvbsnl70hkimy35g4yjfs3blx4s7nbpzbvgqx72hxgv5v"))))
     (build-system ruby-build-system)
     ;; Simplecov depends on rubocop for code style checking at build time.
     ;; Rubocop needs simplecov at build time.
@@ -3638,24 +3639,24 @@ to reproduce user environments.")
 
 (define-public ruby-mini-portile-2
   (package (inherit ruby-mini-portile)
-    (version "2.2.0")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mini_portile2" version))
               (sha256
                (base32
-                "0g5bpgy08q0nc0anisg3yvwc1gc3inl854fcrg48wvg7glqd6dpm"))))))
+                "15zplpfw3knqifj9bpf604rb3wc1vhq6363pd6lvhayng8wql5vy"))))))
 
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.8.0")
+    (version "1.10.4")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "1nffsyx1xjg6v5n9rrbi8y1arrcx2i5f21cp6clgh9iwiqkr7rnn"))))
+                "0nmdrqqz1gs0fwkgzxjl4wr554gr8dc1fkrqjc2jpsvwgm41rygv"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -8571,6 +8572,33 @@ characteristics.")
     (home-page "https://github.com/sinatra/mustermann")
     (license license:expat)))
 
+(define-public ruby-htmlentities
+  (package
+    (name "ruby-htmlentities")
+    (version "4.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "htmlentities" version))
+       (sha256
+        (base32
+         "1nkklqsn8ir8wizzlakncfv42i32wc0w9hxp00hvdlgjr7376nhj"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (map (lambda (file)
+                    (invoke "ruby" "-Itest" file))
+                  (find-files "./test" ".*_test\\.rb")))))))
+    (synopsis "Encode and decode (X)HTML entities")
+    (description
+     "This package provides a module for encoding and decoding (X)HTML
+entities.")
+    (home-page "https://github.com/threedaymonk/htmlentities")
+    (license license:expat)))
+
 (define-public ruby-sinatra
   (package
     (name "ruby-sinatra")
@@ -8807,3 +8835,92 @@ It is intended to determine whether a newer API specification is
 backwards-compatible with an older API specification.")
     (home-page "https://github.com/civisanalytics/swagger-diff")
     (license license:bsd-3)))
+
+(define-public ruby-reverse-markdown
+  (package
+    (name "ruby-reverse-markdown")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "reverse_markdown" version))
+       (sha256
+        (base32
+         "0w7y5n74daajvl9gixr91nh8670d7mkgspkk3ql71m8azq3nffbg"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-kramdown" ,ruby-kramdown)
+       ("ruby-simplecov" ,ruby-simplecov)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (synopsis "Convert HTML into Markdown")
+    (description
+     "This Ruby module allows you to map simple HTML back into
+Markdown---e.g., if you want to import existing HTML data in your
+application.")
+    (home-page "https://github.com/xijo/reverse_markdown")
+    (license license:wtfpl2)))
+
+(define-public ruby-solargraph
+  (package
+    (name "ruby-solargraph")
+    (version "0.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "solargraph" version))
+       (sha256
+        (base32
+         "0b93xzkgd1h06da9gdnwivj1mzbil8lc072y2838dy6i7bxgpy9i"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-backport" ,ruby-backport)
+       ("bundler" ,bundler)
+       ("ruby-htmlentities" ,ruby-htmlentities)
+       ("ruby-jaro-winkler" ,ruby-jaro-winkler)
+       ("ruby-maruku" ,ruby-maruku)
+       ("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-parser" ,ruby-parser)
+       ("ruby-reverse-markdown" ,ruby-reverse-markdown)
+       ("ruby-rubocop" ,ruby-rubocop)
+       ("ruby-thor" ,ruby-thor)
+       ("ruby-tilt" ,ruby-tilt)
+       ("ruby-yard" ,ruby-yard)))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-simplecov" ,ruby-simplecov)
+       ("ruby-webmock" ,ruby-webmock-2)))
+    ;; FIXME: can't figure out how to run the tests properly:
+
+    ;; An error occurred while loading spec_helper.
+    ;; Failure/Error: return gem_original_require(path)
+    ;; LoadError:
+    ;; cannot load such file -- spec_helper
+    (arguments
+     '(#:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* (#:key tests? #:allow-other-keys)
+             (when tests?
+               (invoke "rspec"))
+             #t)))))
+    (synopsis
+     "IDE tools for code completion, inline documentation, and static analysis")
+    (description
+     "Solargraph provides a comprehensive suite of tools for Ruby
+programming: intellisense, diagnostics, inline documentation, and type
+checking.")
+    (home-page "https://solargraph.org/")
+    (license license:expat)))

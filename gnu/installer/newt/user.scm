@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,7 +56,7 @@ REAL-NAME, and HOME-DIRECTORY as the initial values in the form."
          (entry-home-directory (make-entry -1 -1 entry-width
                                            #:initial-value home-directory))
          (password-visible-cb
-          (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
+          (make-checkbox -1 -1 (G_ "Show") #\space "x "))
          (entry-password (make-entry -1 -1 entry-width
                                      #:flags (logior FLAG-PASSWORD
                                                      FLAG-SCROLL)))
@@ -156,7 +157,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please confirm the password.")
                     (G_ "Password confirmation required")
                     #:allow-empty-input? #t
-                    #:input-hide-checkbox? #t))
+                    #:input-visibility-checkbox? #t))
 
   (if (string=? password confirmation)
       password
@@ -173,7 +174,7 @@ a thunk, if the confirmation doesn't match PASSWORD, and return its result."
     (run-input-page (G_ "Please choose a password for the system \
 administrator (\"root\").")
                     (G_ "System administrator password")
-                    #:input-hide-checkbox? #t))
+                    #:input-visibility-checkbox? #t))
 
   (confirm-password password run-root-password-page))
 

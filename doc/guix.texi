@@ -49,7 +49,7 @@ Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
 Copyright @copyright{} 2017 Maxim Cournoyer@*
-Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
@@ -5854,11 +5854,10 @@ should be added to the package definition via the
 
 In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
-parameters available to cargo.  The @code{update-cargo-lock} phase will,
-when there is a @code{Cargo.lock} file, update the @code{Cargo.lock} file
-with the inputs and their versions available at build time.  The
-@code{install} phase installs any crate the binaries if they are defined by
-the crate.
+parameters available to cargo.  It will also remove an included
+@code{Cargo.lock} file to be recreated by @code{cargo} during the
+@code{build} phase.  The @code{install} phase installs any crate the binaries
+if they are defined by the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -6112,7 +6111,7 @@ interpreter version.
 By default guix calls @code{setup.py} under control of
 @code{setuptools}, much like @command{pip} does.  Some packages are not
 compatible with setuptools (and pip), thus you can disable this by
-setting the @code{#:use-setuptools} parameter to @code{#f}.
+setting the @code{#:use-setuptools?} parameter to @code{#f}.
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
@@ -8629,14 +8628,22 @@ When @code{--archive=bioconductor} is added, metadata is imported from
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
-Information is extracted from the @code{DESCRIPTION} file of a package
-published on the web interface of the Bioconductor SVN repository.
+Information is extracted from the @code{DESCRIPTION} file contained in the
+package archive.
 
 The command below imports metadata for the @code{GenomicRanges}
 R package:
 
 @example
 guix import cran --archive=bioconductor GenomicRanges
+@end example
+
+Finally, you can also import R packages that have not yet been published on
+CRAN or Bioconductor as long as they are in a git repository.  Use
+@code{--archive=git} followed by the URL of the git repository:
+
+@example
+guix import cran --archive=git https://github.com/immunogenomics/harmony
 @end example
 
 @item texlive
@@ -12442,6 +12449,40 @@ gexps to introduce job definitions that are passed to mcron
                   %base-services)))
 @end lisp
 
+For more complex jobs defined in Scheme where you need control over the top
+level, for instance to introduce a @code{use-modules} form, you can move your
+code to a separate program using the @code{program-file} procedure of the
+@code{(guix gexp)} module (@pxref{G-Expressions}).  The example below
+illustrates that.
+
+@lisp
+(define %battery-alert-job
+  ;; Beep when the battery percentage falls below %MIN-LEVEL.
+  #~(job
+     '(next-minute (range 0 60 1))
+     #$(program-file
+        "battery-alert.scm"
+        (with-imported-modules (source-module-closure
+                                '((guix build utils)))
+          #~(begin
+              (define %min-level 20)
+              (use-modules (guix build utils)
+                           (ice-9 popen)
+                           (ice-9 regex)
+                           (ice-9 textual-ports)
+                           (srfi srfi-2))
+              (setenv "LC_ALL" "C")     ;ensure English output
+              (and-let* ((input-pipe (open-pipe*
+                                      OPEN_READ
+                                      #$(file-append acpi "/bin/acpi")))
+                         (output (get-string-all input-pipe))
+                         (m (string-match "Discharging, ([0-9]+)%" output))
+                         (level (string->number (match:substring m 1)))
+                         ((< level %min-level)))
+                (format #t "warning: Battery level is low (~a%)~%" level)
+                (invoke #$(file-append beep "/bin/beep") "-r5")))))))
+@end lisp
+
 @xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
 for more information on mcron job specifications.  Below is the
 reference of the mcron service.
@@ -14723,11 +14764,14 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{cups-configuration} parameter} ssl-options ssl-options
 Sets encryption options.  By default, CUPS only supports encryption
-using TLS v1.0 or higher using known secure cipher suites.  The
-@code{AllowRC4} option enables the 128-bit RC4 cipher suites, which are
-required for some older clients that do not implement newer ones.  The
-@code{AllowSSL3} option enables SSL v3.0, which is required for some
-older clients that do not support TLS v1.0.
+using TLS v1.0 or higher using known secure cipher suites.  Security is
+reduced when @code{Allow} options are used, and enhanced when @code{Deny}
+options are used.  The @code{AllowRC4} option enables the 128-bit RC4 cipher
+suites, which are required for some older clients.  The @code{AllowSSL3} option
+enables SSL v3.0, which is required for some older clients that do not support
+TLS v1.0.  The @code{DenyCBC} option disables all CBC cipher suites.  The
+@code{DenyTLS1.0} option disables TLS v1.0 support - this sets the minimum
+protocol version to TLS v1.1.
 
 Defaults to @samp{()}.
 @end deftypevr
@@ -21350,6 +21394,9 @@ Data type representing the configuration of Cuirass.
 @table @asis
 @item @code{log-file} (default: @code{"/var/log/cuirass.log"})
 Location of the log file.
+
+@item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
+Location of the log file used by the web interface.
 
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.

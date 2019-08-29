@@ -181,31 +181,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.2
   (linux-libre-deblob-scripts
-   "5.2.3"
+   "5.2.10"
    (base32 "076fwxlm6jq6z4vg1xq3kr474zz7qk71r90sf9dnfia3rw2pb4fa")
    (base32 "0d3pp1bqchqc7vnxr1a56km5r0hzjiiipzz2xc3wgjwfi51k9kxc")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.61"
+   "4.19.68"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1fyacg28aym6virxyn7wk99qil2fjbks3iwm7p3hxy51pccn34za")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.134"
+   "4.14.140"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.186"
+   "4.9.190"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
-   (base32 "1gmjn5cwxydg6qb47wcmahwkv37npsjx4papynzkkdxyidmrccya")))
+   (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.186"
+   "4.4.190"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "1x40lbiaizksy8z38ax7wpqr9ldgq7qvkxbb0ca98vd1axpklb10")))
 
@@ -349,42 +349,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.9")
+(define-public linux-libre-5.2-version "5.2.11")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "1rnlnphw9rih4qhdld9ic5lnj5jh4vy5nqbj9lqwv9bc615jmw5n")))
+        (hash (base32 "1y9kn1zny3xpmbi5an3g7hbzywnycys8chfaw6laij1xk4gq6ahc")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.67")
+(define-public linux-libre-4.19-version "4.19.69")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "00m5k0nfcvgff70686rbhn3w8c9wc3jxqvyddw40lylaqdh3s72s")))
+        (hash (base32 "11yrw8ixd5ni9rlpndqsz2ihx6k8qaf35a1lf164lkhaa85pd4f0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.139")
+(define-public linux-libre-4.14-version "4.14.141")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "0hkhwcbxg6bry13w9kspx48b10274w6pgv200wh91fjd8jax8qlc")))
+        (hash (base32 "05rs411rw10hhnfzvaxmcik3pq20i1i05shvvra4bv164f0z1f8b")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.189")
+(define-public linux-libre-4.9-version "4.9.190")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1cyhwnxkjd0qa5d48657yppjnzbi830q0p25jjv2dxs629k4bnck")))
+        (hash (base32 "05ha3snfk0vdqk9i27icwpq2if0h2jvshavn69ldwqm4h2h1r2py")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.189")
+(define-public linux-libre-4.4-version "4.4.190")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0nc8v62gw89m3ykqg6nqf749fzm8y1n481ns8vny4gbinyikjhlp")))
+        (hash (base32 "1rf28cjrrmj7mm8xqlfld6k20ddk15j4mmyarqibjx9pk9acij7y")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -4854,14 +4854,14 @@ running boot option, and more.")
 (define-public sysstat
   (package
     (name "sysstat")
-    (version "11.4.3")
+    (version "12.1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://perso.orange.fr/sebastien.godard/"
+              (uri (string-append "http://pagesperso-orange.fr/sebastien.godard/"
                                   "sysstat-" version ".tar.xz"))
               (sha256
                (base32
-                "1ryf9myjzpa2279i3rvsh6fr5psm6qvr5r9kbm1sxyspapxcms82"))))
+                "0agi17n82k363mf9f7cky3isq195hw112vs98v26yfhm0v2g6lpp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; No test suite.

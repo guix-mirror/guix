@@ -15097,3 +15097,42 @@ datasets, developed and maintained by the Macosko lab.  It relies on
 integrative non-negative matrix factorization to identify shared and
 dataset-specific factors.")
     (license license:gpl3)))
+
+(define-public r-harmony
+  ;; There are no tagged commits
+  (let ((commit "4d1653870d4dd70fff1807c182882db1fbf9af5a")
+        (revision "1"))
+    (package
+      (name "r-harmony")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/immunogenomics/harmony")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1gasdldr4aalr9h2q9kmm3y4i7azkgnhdn4bmvsszs7lg9xacw85"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-cowplot" ,r-cowplot)
+         ("r-dplyr" ,r-dplyr)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-irlba" ,r-irlba)
+         ("r-matrix" ,r-matrix)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)
+         ("r-rcppprogress" ,r-rcppprogress)
+         ("r-rlang" ,r-rlang)
+         ("r-tibble" ,r-tibble)
+         ("r-tidyr" ,r-tidyr)))
+      (home-page "https://github.com/immunogenomics/harmony")
+      (synopsis "Integration of single cell sequencing data")
+      (description
+       "This package provides an implementation of the Harmony algorithm for
+single cell integration, described in Korsunsky et al
+@url{doi.org/10.1101/461954}.  The package includes a standalone Harmony
+function and interfaces to external frameworks.")
+      (license license:gpl3))))

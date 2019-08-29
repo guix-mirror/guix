@@ -100,7 +100,7 @@ inside %DOCKER-OS."
              marionette))
 
           (test-equal "Load docker image and run it"
-            '("hello world" "hi!" "JSON!")
+            '("hello world" "hi!" "JSON!" #o1777)
             (marionette-eval
              `(begin
                 (define slurp
@@ -131,8 +131,15 @@ inside %DOCKER-OS."
                                    ,(string-append #$docker-cli "/bin/docker")
                                    "run" repository&tag
                                    "-c" "(use-modules (json))
-  (display (json-string->scm (scm->json-string \"JSON!\")))")))
-                  (list response1 response2 response3)))
+  (display (json-string->scm (scm->json-string \"JSON!\")))"))
+
+                       ;; Check whether /tmp exists.
+                       (response4 (slurp
+                                   ,(string-append #$docker-cli "/bin/docker")
+                                   "run" repository&tag "-c"
+                                   "(display (stat:perms (lstat \"/tmp\")))")))
+                  (list response1 response2 response3
+                        (string->number response4))))
              marionette))
 
           (test-end)

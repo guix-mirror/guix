@@ -85,20 +85,20 @@ formal verification.")
 (define-public iverilog
   (package
     (name "iverilog")
-    (version "10.2")
+    (version "10.3")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "ftp://ftp.icarus.com/pub/eda/verilog/v10/"
                               "verilog-" version ".tar.gz"))
               (sha256
-                (base32
-                   "0075x5nsxwkrgn7b3635il9kw7mslckaji518pdmwdrdn7fxppln"))))
+               (base32
+                "1vv88ckvfwq7mrysyjnilsrcrzm9d173kp9w5ivwh6rdw7klbgc6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
        ("bison" ,bison)
-       ("ghostscript" ,ghostscript))) ; ps2pdf
+       ("ghostscript" ,ghostscript)))   ; ps2pdf
     (home-page "http://iverilog.icarus.com/")
     (synopsis "FPGA Verilog simulation and synthesis tool")
     (description "Icarus Verilog is a Verilog simulation and synthesis tool.

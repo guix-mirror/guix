@@ -801,7 +801,8 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-host-inputs bag)
   "Same as 'package-transitive-target-inputs', but applied to a bag."
-  (transitive-inputs (bag-host-inputs bag)))
+  (parameterize ((%current-target-system (bag-target bag)))
+    (transitive-inputs (bag-host-inputs bag))))
 
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."

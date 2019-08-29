@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -925,3 +926,40 @@ main loop, simply get a connection to the bus via the methods in
 @code{Net::DBus::GLib} rather than the usual @code{Net::DBus} module.  Every
 other API remains the same.")
     (license license:gpl2+)))
+
+(define-public template-glib
+  (package
+    (name "template-glib")
+    (version "3.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1g0zx0sxpw8kqp7p3sgl9kngaqrg9xl6cir24nrahks0vgsk98rr"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-D" "enable_gtk_doc=true")))
+    (inputs
+     `(("gettext" ,gettext-minimal)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("glib:bin" ,glib "bin") ;; For glib-mkenums
+       ("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://gitlab.gnome.org/GNOME/template-glib")
+    (synopsis "Library for template expansion")
+    (description
+     "Template-GLib is a library to help you generate text based on a template and
+user defined state.  Template-GLib does not use a language runtime, so it is
+safe to use from any GObject-Introspectable language.
+
+Template-GLib allows you to access properties on GObjects as well as call
+simple methods via GObject-Introspection.")
+    (license license:lgpl2.1+)))

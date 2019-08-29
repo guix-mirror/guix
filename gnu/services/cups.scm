@@ -3,6 +3,7 @@
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -170,7 +171,10 @@
 
 (define (ssl-options? x)
   (and (list? x)
-       (and-map (lambda (elt) (memq elt '(AllowRC4 AllowSSL3))) x)))
+       (and-map (lambda (elt) (memq elt '(AllowRC4
+                                          AllowSSL3
+                                          DenyCBC
+                                          DenyTLS1.0))) x)))
 (define (serialize-ssl-options field-name val)
   (serialize-field field-name
                    (match val
@@ -805,12 +809,15 @@ an IPv6 address enclosed in brackets, an IPv4 address, or @code{*} to indicate
 all addresses.")
   (ssl-options
    (ssl-options '())
-   "Sets encryption options.
-By default, CUPS only supports encryption using TLS v1.0 or higher using known
-secure cipher suites.  The @code{AllowRC4} option enables the 128-bit RC4
-cipher suites, which are required for some older clients that do not implement
-newer ones.  The @code{AllowSSL3} option enables SSL v3.0, which is required
-for some older clients that do not support TLS v1.0.")
+   "Sets encryption options.  By default, CUPS only supports encryption
+using TLS v1.0 or higher using known secure cipher suites.  Security is
+reduced when @code{Allow} options are used, and enhanced when @code{Deny}
+options are used.  The @code{AllowRC4} option enables the 128-bit RC4 cipher
+suites, which are required for some older clients.  The @code{AllowSSL3} option
+enables SSL v3.0, which is required for some older clients that do not support
+TLS v1.0.  The @code{DenyCBC} option disables all CBC cipher suites.  The
+@code{DenyTLS1.0} option disables TLS v1.0 support - this sets the minimum
+protocol version to TLS v1.1.")
   #;
   (ssl-port
    (non-negative-integer 631)
