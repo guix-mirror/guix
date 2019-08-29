@@ -593,6 +593,31 @@ featuring zero allocations, composability, and iterator-like interfaces.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-futures-cpupool
+  (package
+    (name "rust-futures-cpupool")
+    (version "0.1.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "futures-cpupool" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r32456gpblzfvnkf60545v8acqk7gh5zhyhi1jn669k9gicv45b"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-futures" ,rust-futures)
+        ("rust-num-cpus" ,rust-num-cpus))))
+    (home-page "https://github.com/alexcrichton/futures-rs")
+    (synopsis "Implementation of thread pools which hand out futures")
+    (description
+     "An implementation of thread pools which hand out futures to the results of
+the computation on the threads themselves.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-futures-io-preview
   (package
     (name "rust-futures-io-preview")
