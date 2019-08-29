@@ -509,6 +509,27 @@ implementation that is more efficient for smaller hash keys.")
 process and much more.")
     (license license:expat)))
 
+(define-public rust-fuchsia-cprng
+  (package
+    (name "rust-fuchsia-cprng")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fuchsia-cprng" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1fnkqrbz7ixxzsb04bsz9p0zzazanma8znfdqjvh39n14vapfvx0"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:tests? #f)) ; tests require zircon
+    (home-page "https://fuchsia.googlesource.com/fuchsia/+/master/garnet/public/rust/fuchsia-cprng")
+    (synopsis "Fuchsia cryptographically secure pseudorandom number generator")
+    (description "Rust crate for the Fuchsia cryptographically secure
+pseudorandom number generator")
+    (license license:bsd-3)))
+
 (define-public rust-fuchsia-zircon
   (package
     (name "rust-fuchsia-zircon")
