@@ -1200,6 +1200,31 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-resolv-conf
+  (package
+    (name "rust-resolv-conf")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "resolv-conf" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1jvdsmksdf6yiipm3aqahyv8n1cjd7wqc8sa0p0gzsax3fmb8qxj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-quick-error" ,rust-quick-error)
+        ("rust-hostname" ,rust-hostname))
+       #:cargo-test-flags '("--release" "--lib" "--examples"))) ; doc tests fail
+    (home-page "https://github.com/tailhook/resolv-conf")
+    (synopsis "/etc/resolv.conf parser")
+    (description
+     "An /etc/resolv.conf parser crate for Rust.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-std-workspace-core
   (package
     (name "rust-rustc-std-workspace-core")
