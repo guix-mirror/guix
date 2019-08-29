@@ -8628,8 +8628,8 @@ When @code{--archive=bioconductor} is added, metadata is imported from
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
-Information is extracted from the @code{DESCRIPTION} file of a package
-published on the web interface of the Bioconductor SVN repository.
+Information is extracted from the @code{DESCRIPTION} file contained in the
+package archive.
 
 The command below imports metadata for the @code{GenomicRanges}
 R package:
