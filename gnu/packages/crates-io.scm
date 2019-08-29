@@ -2172,7 +2172,7 @@ UTF-32 types are provided, including support for malformed encoding.")
 (define-public rust-winapi
   (package
     (name "rust-winapi")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
       (origin
         (method url-fetch)
@@ -2180,7 +2180,7 @@ UTF-32 types are provided, including support for malformed encoding.")
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0w7pbhcl087lkggxdflfp2i92rq89ahsfdkjkv44fgmiy9m3h3pi"))))
+          "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
