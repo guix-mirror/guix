@@ -105,6 +105,8 @@
             request-cooking
             vault-fetch
 
+            commit-id?
+
             swh-download))
 
 ;;; Commentary:
@@ -568,7 +570,7 @@ requested bundle cooking, waiting for completion...~%"))
 
 (define (commit-id? reference)
   "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
-it is a tag name."
+it is a tag name.  This is based on a simple heuristic so use with care!"
   (and (= (string-length reference) 40)
        (string-every char-set:hex-digit reference)))
 
