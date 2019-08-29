@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -175,7 +175,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
 (define-public gpxsee
   (package
     (name "gpxsee")
-    (version "7.8")
+    (version "7.12")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -184,7 +184,7 @@ coordinates as well as partial support for adjustments in global coordinate syst
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ymqz4wrl9ghkyyqi2vrnlyvz3fc84s3p8a1dkiqlvyvj360ck9j"))))
+                "0c3axs3mm6xzabwbvy9vgq1sryjpi4h91nwzy9iyv9zjxz7phgzc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
