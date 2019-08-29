@@ -369,7 +369,16 @@ built-in registry server of Docker.")
                (("StockRuntimeName = .*")
                 (string-append "StockRuntimeName = \""
                                (assoc-ref inputs "runc")
-                               "/sbin/runc\"\n")))
+                               "/sbin/runc\"\n"))
+               (("DefaultInitBinary = .*")
+                (string-append "DefaultInitBinary = \""
+                               (assoc-ref inputs "tini")
+                               "/bin/tini\"\n")))
+             (substitute* "daemon/config/config_common_unix_test.go"
+               (("expectedInitPath: \"docker-init\"")
+                (string-append "expectedInitPath: \""
+                               (assoc-ref inputs "tini")
+                               "/bin/tini\"")))
              (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
                (("var defaultCommandCandidates = .*")
                 (string-append "var defaultCommandCandidates = []string{\""
@@ -542,6 +551,7 @@ built-in registry server of Docker.")
        ("runc" ,runc)
        ("util-linux" ,util-linux)
        ("lvm2" ,lvm2)
+       ("tini" ,tini)
        ("xfsprogs" ,xfsprogs)
        ("xz" ,xz)))
     (native-inputs
