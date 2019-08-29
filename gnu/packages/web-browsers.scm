@@ -409,6 +409,29 @@ key-bindings, is fully configurable and extensible in Lisp, and has powerful
 features for productive professionals.")
     (license license:bsd-3)))
 
+(define sbcl-next-download-manager
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-download-manager")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #f                      ; Need online access.
+       #:asd-file "next.asd"
+       #:asd-system-name "download-manager"))
+    (inputs
+     `(;; ASD libraries:
+       ("trivial-features" ,sbcl-trivial-features)
+       ;; Lisp libraries:
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("dexador" ,sbcl-dexador)
+       ("log4cl" ,sbcl-log4cl)
+       ("lparallel" ,sbcl-lparallel)
+       ("quri" ,sbcl-quri)
+       ("str" ,sbcl-cl-str)))
+    (native-inputs
+     `(("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (download manager)")))
+
 (define-public sbcl-next
   (package
     (inherit next-gtk-webkit)
