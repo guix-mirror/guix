@@ -1031,7 +1031,7 @@ the NIST server non-fatal."
 (define (report-tabulations package line line-number)
   "Warn about tabulations found in LINE."
   (match (string-index line #\tab)
-    (#f #t)
+    (#f #f)
     (index
      (make-warning package
                    (G_ "tabulation on line ~a, column ~a")
@@ -1043,44 +1043,44 @@ the NIST server non-fatal."
 
 (define (report-trailing-white-space package line line-number)
   "Warn about trailing white space in LINE."
-  (unless (or (string=? line (string-trim-right line))
-              (string=? line (string #\page)))
-    (make-warning package
-                  (G_ "trailing white space on line ~a")
-                  (list line-number)
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+  (and (not (or (string=? line (string-trim-right line))
+                (string=? line (string #\page))))
+       (make-warning package
+                     (G_ "trailing white space on line ~a")
+                     (list line-number)
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define (report-long-line package line line-number)
   "Emit a warning if LINE is too long."
   ;; Note: We don't warn at 80 characters because sometimes hashes and URLs
   ;; make it hard to fit within that limit and we want to avoid making too
   ;; much noise.
-  (when (> (string-length line) 90)
-    (make-warning package
-                  (G_ "line ~a is way too long (~a characters)")
-                  (list line-number (string-length line))
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+  (and (> (string-length line) 90)
+       (make-warning package
+                     (G_ "line ~a is way too long (~a characters)")
+                     (list line-number (string-length line))
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define %hanging-paren-rx
   (make-regexp "^[[:blank:]]*[()]+[[:blank:]]*$"))
 
 (define (report-lone-parentheses package line line-number)
   "Emit a warning if LINE contains hanging parentheses."
-  (when (regexp-exec %hanging-paren-rx line)
-    (make-warning package
-                  (G_ "parentheses feel lonely, \
+  (and (regexp-exec %hanging-paren-rx line)
+       (make-warning package
+                     (G_ "parentheses feel lonely, \
 move to the previous or next line")
-                  (list line-number)
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+                     (list line-number)
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define %formatting-reporters
   ;; List of procedures that report formatting issues.  These are not separate
@@ -1130,11 +1130,9 @@ them for PACKAGE."
                          warnings
                          (if (< line-number starting-line)
                              '()
-                             (filter
-                              lint-warning?
-                              (map (lambda (report)
-                                     (report package line line-number))
-                                   reporters))))))))))))
+                             (filter-map (lambda (report)
+                                           (report package line line-number))
+                                         reporters)))))))))))
 
 (define (check-formatting package)
   "Check the formatting of the source code of PACKAGE."
