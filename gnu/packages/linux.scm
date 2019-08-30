@@ -2335,14 +2335,14 @@ compressed, transparent to other programs, without decompressing them.")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
      "NUMA stands for Non-Uniform Memory Access, in other words a system whose
-memory is not all in one place.  The numactl program allows you to run your
-application program on specific CPU's and memory nodes.  It does this by
-supplying a NUMA memory policy to the operating system before running your
+memory is not all in one place.  The @command{numactl} program allows you to
+run your application program on specific CPUs and memory nodes.  It does this
+by supplying a NUMA memory policy to the operating system before running your
 program.
 
-The package contains other commands, such as numademo, numastat and memhog.
-The numademo command provides a quick overview of NUMA performance on your
-system.")
+The package contains other commands, such as @command{numastat},
+@command{memhog}, and @command{numademo} which provides a quick overview of
+NUMA performance on your system.")
     (license (list license:gpl2                   ;programs
                    license:lgpl2.1))))            ;library
 
