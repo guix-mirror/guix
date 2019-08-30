@@ -546,7 +546,7 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public diffoscope
-  (let ((version "121"))
+  (let ((version "122"))
     (package
       (name "diffoscope")
       (version version)
@@ -558,7 +558,7 @@ transactions from C or Python.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bw7s8qs1vnr93vhifl6pj6h6w6r6nrpc5anzhh9wx2gcaipkb3m"))))
+                  "1pwddknk8qyv88ba63why8vbnlc14b47434lv4ijx49m7ya3zfvg"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
