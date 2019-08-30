@@ -5230,3 +5230,24 @@ cis-regulatory topics (cisTopics) from single cell epigenomics data, and
 includes functionalities to identify cell states based on the contribution of
 cisTopics and explore the nature and regulatory proteins driving them.")
       (license license:gpl3))))
+
+(define-public r-genie3
+  (package
+    (name "r-genie3")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GENIE3" version))
+       (sha256
+        (base32
+         "0lvrpw4xn7xyinmn13f65i0vkzfzwdj5y8gsa8vyy8kcn83d28fx"))))
+    (properties `((upstream-name . "GENIE3")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-reshape2" ,r-reshape2)))
+    (home-page "https://bioconductor.org/packages/GENIE3")
+    (synopsis "Gene network inference with ensemble of trees")
+    (description
+     "This package implements the GENIE3 algorithm for inferring gene
+regulatory networks from expression data.")
+    (license license:gpl2+)))
