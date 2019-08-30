@@ -11325,7 +11325,8 @@ object has been freed.")
              #t)))))
     (inputs
      `(("emacs-minimal" ,emacs-minimal)
-       ("mariadb" ,mariadb)
+       ("mariadb" ,mariadb "lib")
+       ("mariadb-dev" ,mariadb "dev")
        ("postgresql" ,postgresql)))
     (propagated-inputs
      `(("emacs-finalize" ,emacs-finalize)
