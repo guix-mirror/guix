@@ -1,6 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2017, 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -25,6 +28,7 @@
 
 (define-module (gnu packages haskell-apps)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system haskell)
@@ -41,6 +45,103 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages version-control))
+
+(define-public cabal-install
+ (package
+  (name "cabal-install")
+   (version "2.2.0.0")
+   (source
+    (origin
+     (method url-fetch)
+      (uri (string-append
+            "https://hackage.haskell.org/package/cabal-install/cabal-install-"
+            version
+            ".tar.gz"))
+      (sha256
+       (base32 "1nd3ch7qr4dpfxhgkcq2lnhvszx2kjgnn1kwb44vk9y5jgfs4mn8"))))
+   (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+   (build-system haskell-build-system)
+   (inputs
+    `(("ghc-async" ,ghc-async)
+      ("ghc-base16-bytestring" ,ghc-base16-bytestring)
+      ("ghc-cryptohash-sha256" ,ghc-cryptohash-sha256)
+      ("ghc-echo" ,ghc-echo)
+      ("ghc-edit-distance" ,ghc-edit-distance)
+      ("ghc-hackage-security" ,ghc-hackage-security)
+      ("ghc-hashable" ,ghc-hashable)
+      ("ghc-http" ,ghc-http)
+      ("ghc-network-uri" ,ghc-network-uri)
+      ("ghc-network" ,ghc-network)
+      ("ghc-random" ,ghc-random)
+      ("ghc-resolv" ,ghc-resolv)
+      ("ghc-tar" ,ghc-tar)
+      ("ghc-zlib" ,ghc-zlib)))
+   (home-page "https://www.haskell.org/cabal/")
+   (synopsis "Command-line interface for Cabal and Hackage")
+   (description
+    "The cabal command-line program simplifies the process of managing
+Haskell software by automating the fetching, configuration, compilation and
+installation of Haskell libraries and programs.")
+   (license license:bsd-3)))
+
+(define-public corrode
+  (let ((commit "b6699fb2fa552a07c6091276285a44133e5c9789"))
+    (package
+      (name "corrode")
+      (version (string-append "0.0.1-" (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jameysharp/corrode.git")
+               (commit "b6699fb2fa552a07c6091276285a44133e5c9789")))
+         (file-name
+          (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "02v0yyj6sk4gpg2222wzsdqjxn8w66scbnf6b20x0kbmc69qcz4r"))))
+      (build-system haskell-build-system)
+      (inputs
+       `(("ghc-language-c" ,ghc-language-c)
+         ("ghc-markdown-unlit" ,ghc-markdown-unlit)))
+      (home-page "https://github.com/jameysharp/corrode")
+      (synopsis "Automatic semantics-preserving translation from C to Rust")
+      (description
+       "This program reads a C source file and prints an equivalent module in
+Rust syntax.  It is intended to be useful for two different purposes:
+
+@enumerate
+@item Partial automation for migrating legacy code that was implemented in C.
+@item A new, complementary approach to static analysis for C programs.
+@end enumerate\n")
+      (license license:gpl2+))))
+
+(define-public cpphs
+  (package
+    (name "cpphs")
+    (version "1.20.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/" name "/"
+             name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1bh524asqhk9v1s0wvipl0hgn7l63iy3js867yv0z3h5v2kn8vg5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-polyparse" ,ghc-polyparse)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-old-time" ,ghc-old-time)))
+    (home-page "http://projects.haskell.org/cpphs/")
+    (synopsis "Liberalised re-implementation of cpp, the C pre-processor")
+    (description "Cpphs is a re-implementation of the C pre-processor that is
+both more compatible with Haskell, and itself written in Haskell so that it
+can be distributed with compilers.  This version of the C pre-processor is
+pretty-much feature-complete and compatible with traditional (K&R)
+pre-processors.  Additional features include: a plain-text mode; an option to
+unlit literate code files; and an option to turn off macro-expansion.")
+    (license (list license:lgpl2.1+ license:gpl3+))))
 
 ;; Darcs has no https support: http://irclog.perlgeek.de/darcs/2016-09-17
 ;; http://darcs.net/manual/Configuring_darcs.html#SECTION00440070000000000000
@@ -364,6 +465,66 @@ programming.")
 @code{SDL2_image}.")
     (license license:expat)))
 
+(define-public hlint
+  (package
+    (name "hlint")
+    (version "2.1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/" name
+             "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19as2m9g75cr6n1agzvsij0cvqhb0wbjlk31w4y5d5mns87dki0w"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("cpphs" ,cpphs)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-haskell-src-exts-util" ,ghc-haskell-src-exts-util)
+       ("ghc-uniplate" ,ghc-uniplate)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-extra" ,ghc-extra)
+       ("ghc-refact" ,ghc-refact)
+       ("ghc-aeson" ,ghc-aeson)
+       ("hscolour" ,hscolour)))
+    (home-page "http://community.haskell.org/~ndm/hlint/")
+    (synopsis "Suggest improvements for Haskell source code")
+    (description "HLint reads Haskell programs and suggests changes that
+hopefully make them easier to read.  HLint also makes it easy to disable
+unwanted suggestions, and to add your own custom suggestions.")
+    (license license:bsd-3)))
+
+(define-public hscolour
+  (package
+    (name "hscolour")
+    (version "1.24.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/hscolour/hscolour-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "079jwph4bwllfp03yfr26s5zc6m6kw3nhb1cggrifh99haq34cr4"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/hscolour")
+    (synopsis "Script to colourise Haskell code")
+    (description "HSColour is a small Haskell script to colourise Haskell
+code.  It currently has six output formats: ANSI terminal codes (optionally
+XTerm-256colour codes), HTML 3.2 with font tags, HTML 4.01 with CSS, HTML 4.01
+with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
+and mIRC chat codes.")
+    (license license:bsd-3)))
+
 (define-public raincat
   (package
     (name "raincat")
@@ -405,3 +566,38 @@ play inspired from classics Lemmings and The Incredible Machine.  The project
 proved to be an excellent learning experience for the programmers.  Everything
 is programmed in Haskell.")
     (license license:bsd-3)))
+
+(define-public shellcheck
+  (package
+    (name "shellcheck")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/ShellCheck/ShellCheck-"
+             version ".tar.gz"))
+       (sha256
+        (base32 "1vx895cp5k5h0680xfwj74lk97m9y627n965x6srds0gfnbkzy9s"))
+       (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-regex-tdfa" ,ghc-regex-tdfa)))
+    (home-page "https://github.com/koalaman/shellcheck")
+    (synopsis "Static analysis for shell scripts")
+    (description "@code{shellcheck} provides static analysis for
+@command{bash} and @command{sh} shell scripts.
+It gives warnings and suggestions in order to:
+
+@enumerate
+@item Point out and clarify typical beginner's syntax issues that cause
+a shell to give cryptic error messages.
+@item Point out and clarify typical intermediate level semantic problems
+that cause a shell to behave strangely and counter-intuitively.
+@item Point out subtle caveats, corner cases and pitfalls that may cause an
+advanced user's otherwise working script to fail under future circumstances.
+@end enumerate")
+    (license license:gpl3+)))
