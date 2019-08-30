@@ -112,6 +112,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)

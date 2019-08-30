@@ -53,7 +53,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)

@@ -137,7 +137,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
