@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -268,17 +268,14 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.7.8")
+    (version "5.8.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.aquamaniac.de/sites/download/"
-                           "download.php?package=03&release=217&file=02&"
-                           "dummy=aqbanking-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
+                           "download/105/aqbanking-" version ".tar.gz"))
        (sha256
-        (base32
-         "0s67mysskbiw1h1p0np4ph4351r7wq3nc873vylam7lsqi66xy0n"))))
+        (base32 "0m44n2hyxprxzq7ijkrd7rmhhl0r033s1k21ix9y67a0p9skl1mg"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's
