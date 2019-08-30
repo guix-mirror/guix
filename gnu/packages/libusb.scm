@@ -82,9 +82,9 @@ devices on various operating systems.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/libusb/"
-                          name "-" (version-major+minor version) "/"
-                          name "-" version "/"
-                          name "-" version ".tar.bz2"))
+                          "libusb-compat-" (version-major+minor version) "/"
+                          "libusb-compat-" version "/"
+                          "libusb-compat-" version ".tar.bz2"))
       (sha256
        (base32
         "0nn5icrfm9lkhzw1xjvaks9bq3w6mjg86ggv3fn7kgi4nfvg8kj0"))))
