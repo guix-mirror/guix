@@ -231,17 +231,14 @@ to be read using the GNOME Yelp program.")
 (define-public gwenhywfar
   (package
     (name "gwenhywfar")
-    (version "4.20.0")
+    (version "4.20.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.aquamaniac.de/sites/download/"
-                           "download.php?package=01&release=208&file=02&"
-                           "dummy=gwenhywfar-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
+                           "download/108/gwenhywfar-" version ".tar.gz"))
        (sha256
-        (base32
-         "1c0g3f8jk6j693774ifslx2ds4ksabgbbalhhm9gk20kpamxm22s"))))
+        (base32 "0w1j7ppr1247kr3bpn4dqwyxp6cl8mfgr0m4782iz8f8a4ixjkqg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
