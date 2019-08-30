@@ -5565,8 +5565,8 @@ specified in the @code{uri} field as a @code{git-reference} object; a
 
 @example
 (git-reference
-  (url "git://git.debian.org/git/pkg-shadow/shadow")
-  (commit "v4.1.5.1"))
+  (url "https://git.savannah.gnu.org/git/hello.git")
+  (commit "v2.10"))
 @end example
 @end table
 
