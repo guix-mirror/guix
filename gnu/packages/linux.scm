@@ -2318,7 +2318,7 @@ compressed, transparent to other programs, without decompressing them.")
               (method url-fetch)
               (uri (string-append
                     "https://github.com/numactl/numactl/releases/download/v"
-                    version "/" name "-" version ".tar.gz"))
+                    version "/numactl-" version ".tar.gz"))
               (sha256
                (base32
                 "16lcypvcmx1ydkpi2s82kqhg13kak7qhpbnj8hd9bdbyhr5ja7lr"))))
