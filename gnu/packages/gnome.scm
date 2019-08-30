@@ -4312,15 +4312,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.62")
+    (version "0.9.63")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/bb4aad19272cc636bd17f2f6602127fe/"
+                                  "uploads/d42b466752729a0d3fa828a721e25043/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "06v76hg87fnhw45dil5vvl20myvaa38n1jqsl0lmkkq6af4mk8wx"))))
+                "11pp8g0w22h1q0bbj9517l5838gcymvvp8fp9kh6h2dmgir2ssih"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
