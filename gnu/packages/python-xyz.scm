@@ -14677,14 +14677,13 @@ working with iterables.")
 (define-public python-pybtex
   (package
     (name "python-pybtex")
-    (version "0.21")
+    (version "0.22.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pybtex" version))
        (sha256
-        (base32
-         "00300j8dn5pxq4ndxmfmbmycg2znawkqs49val2x6jlmfiy6r2mg"))))
+        (base32 "070wfcmxrd7xg1si421mi9150gmx2qwx431nwf69sq3hhmgnx080"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
