@@ -21,6 +21,7 @@
   #:use-module (gnu packages agda)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (guix build-system emacs)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
