@@ -12620,8 +12620,8 @@ Either @code{#f} or a gexp to execute once the rotation has completed.
 @end deftp
 
 @defvr {Scheme Variable} %default-rotations
-Specifies weekly rotation of @var{%rotated-files} and
-a couple of other files.
+Specifies weekly rotation of @var{%rotated-files} and of
+@file{/var/log/guix-daemon.log}.
 @end defvr
 
 @defvr {Scheme Variable} %rotated-files
