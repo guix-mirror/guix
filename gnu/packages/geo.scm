@@ -7,7 +7,7 @@
 ;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018, 2019 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019, 2020 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
@@ -1336,3 +1336,46 @@ MaxMind DB files.")
     (description "Provides an API for the GeoIP2 web services and databases.
 The API also works with MaxMind’s free GeoLite2 databases.")
     (license license:asl2.0)))
+
+(define-public routino
+  (package
+   (name "routino")
+   (version "3.3.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://www.routino.org/download/routino-"
+                         version ".tgz"))
+     (sha256
+      (base32
+       "1ccx3s99j8syxc1gqkzsaqkmyf44l7h3adildnc5iq2md7bp8wab"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("perl" ,perl)))
+   (inputs
+    `(("bzip2" ,bzip2)
+      ("xz" ,xz)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:test-target "test"
+      #:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile.conf"
+              (("prefix=/usr/local")
+               (string-append "prefix=" (assoc-ref outputs "out")))
+              (("LDFLAGS_LDSO=-Wl,-R\\.")
+               "LDFLAGS_LDSO=-Wl,-R$(libdir)")
+              (("#CFLAGS\\+=-DUSE_XZ")
+               "CFLAGS+=-DUSE_XZ")
+              (("#LDFLAGS\\+=-llzma")
+               "LDFLAGS+=-llzma"))
+            #t)))))
+   (synopsis "Routing application for OpenStreetMap data")
+   (description
+    "Routino is an application for finding a route between two points
+using the dataset of topographical information collected by
+@url{https://www.OpenStreetMap.org}.")
+   (home-page "https://www.routino.org/")
+   (license license:agpl3+)))
