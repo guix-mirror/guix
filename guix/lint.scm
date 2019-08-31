@@ -950,6 +950,16 @@ display a message including MESSAGE and return ERROR-VALUE."
                   message
                   (tls-certificate-error-string args))
          error-value)
+        ((and ('system-error _ ...) args)
+         (let ((errno (system-error-errno args)))
+           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
+               (let ((details (call-with-output-string
+                                (lambda (port)
+                                  (print-exception port #f (car args)
+                                                   (cdr args))))))
+                 (warning (G_ "~a: ~a~%") message details)
+                 error-value)
+               (apply throw args))))
         (args
          (apply throw args))))))
 
