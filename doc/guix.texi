@@ -14347,7 +14347,7 @@ Defaults to @samp{30}.
 Specifies what to do when an error occurs.  Possible values are
 @code{abort-job}, which will discard the failed print job;
 @code{retry-job}, which will retry the job at a later time;
-@code{retry-this-job}, which retries the failed job immediately; and
+@code{retry-current-job}, which retries the failed job immediately; and
 @code{stop-printer}, which stops the printer.
 
 Defaults to @samp{stop-printer}.

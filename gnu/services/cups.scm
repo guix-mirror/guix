@@ -139,7 +139,7 @@
 (define-enumerated-field-type default-encryption
   (Never IfRequested Required))
 (define-enumerated-field-type error-policy
-  (abort-job retry-job retry-this-job stop-printer))
+  (abort-job retry-job retry-current-job stop-printer))
 (define-enumerated-field-type log-level
   (none emerg alert crit error warn notice info debug debug2))
 (define-enumerated-field-type log-time-format
@@ -554,7 +554,7 @@ typically within a few milliseconds.")
    (error-policy 'stop-printer)
    "Specifies what to do when an error occurs.  Possible values are
 @code{abort-job}, which will discard the failed print job; @code{retry-job},
-which will retry the job at a later time; @code{retry-this-job}, which retries
+which will retry the job at a later time; @code{retry-current-job}, which retries
 the failed job immediately; and @code{stop-printer}, which stops the
 printer.")
   (filter-limit
