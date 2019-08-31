@@ -12626,7 +12626,8 @@ a couple of other files.
 
 @defvr {Scheme Variable} %rotated-files
 The list of syslog-controlled files to be rotated.  By default it is:
-@code{'("/var/log/messages" "/var/log/secure")}.
+@code{'("/var/log/messages" "/var/log/secure" "/var/log/debug" \
+"/var/log/maillog")}.
 @end defvr
 
 @node Networking Services
