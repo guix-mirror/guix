@@ -16102,7 +16102,7 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.0")
+    (version "6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -16111,12 +16111,13 @@ the standard @code{Dockerfile} file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v1mq6ixzlgiazj8fmg4xaqhsqn3l89iqy74yndhvzh2rdf0pbkl"))))
+                "0jn5slhv9zfs446a5966bfg9dq144g22v79wnkx9hxq7if78p652"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-ht" ,emacs-ht)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
        ("emacs-spinner" ,emacs-spinner)))
     (home-page "https://github.com/emacs-lsp/lsp-mode")
     (synopsis "Emacs client and library for the Language Server Protocol")
