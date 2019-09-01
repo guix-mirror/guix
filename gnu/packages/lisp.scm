@@ -2175,7 +2175,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.42")
+    (version "0.46")
     (source
      (origin
        (method git-fetch)
@@ -2184,14 +2184,15 @@ also be supported.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1wjcb9vpybxjrmch7f7s78a5abxmnknbd4fl49dl5lz8a3fc8vf0"))
-       (file-name (string-append "ironblad" version "-checkout"))))
+         "1s391awi2lsl7m1dbjirgpkm4p9p8wd076pakgvsvpn1rrznisnd"))
+       (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      ;; Tests only.
      `(("rt" ,sbcl-rt)))
     (inputs
-     `(("flexi-streams" ,sbcl-flexi-streams)
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("flexi-streams" ,sbcl-flexi-streams)
        ("nibbles" ,sbcl-nibbles)))
     (synopsis "Cryptographic toolkit written in Common Lisp")
     (description
