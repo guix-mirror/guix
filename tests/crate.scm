@@ -41,7 +41,7 @@
     \"actual_versions\": [
       { \"id\": \"foo\",
         \"num\": \"1.0.0\",
-        \"license\": \"MIT/Apache-2.0\",
+        \"license\": \"MIT OR Apache-2.0\",
         \"links\": {
           \"dependencies\": \"/api/v1/crates/foo/1.0.0/dependencies\"
         }

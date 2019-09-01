@@ -32,6 +32,7 @@
   #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
@@ -175,11 +176,19 @@ and LICENSE."
          (close-port port)
          pkg))
 
+(define %dual-license-rx
+  ;; Dual licensing is represented by a string such as "MIT OR Apache-2.0".
+  ;; This regexp matches that.
+  (make-regexp "^(.*) OR (.*)$"))
+
 (define (crate->guix-package crate-name)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
 `package' s-expression corresponding to that package, or #f on failure."
   (define (string->license string)
-    (map spdx-string->license (string-split string #\/)))
+    (match (regexp-exec %dual-license-rx string)
+      (#f (list (spdx-string->license string)))
+      (m  (list (spdx-string->license (match:substring m 1))
+                (spdx-string->license (match:substring m 2))))))
 
   (define (normal-dependency? dependency)
     (eq? (crate-dependency-kind dependency) 'normal))
