@@ -11179,7 +11179,7 @@ timestamps by providing a @code{ts} struct.")
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11187,11 +11187,13 @@ timestamps by providing a @code{ts} struct.")
                     (commit version)))
               (sha256
                (base32
-                "1nvzirn1lmgmgl7irbsc1n391a2cw8gmvwm3pa228l2c1gcx8kd8"))
+                "0mq0aj0a3a5gi9nz0ncpzsh731d92n86b0iinvx1m45dcal06h9y"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
+       ("emacs-ts" ,emacs-ts)
+       ("emacs-org" ,emacs-org)
        ("emacs-dash" ,emacs-dash)))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
