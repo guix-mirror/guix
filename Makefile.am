@@ -68,6 +68,7 @@ MODULES =					\
   guix/cpio.scm					\
   guix/deprecation.scm				\
   guix/docker.scm	   			\
+  guix/json.scm					\
   guix/records.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
