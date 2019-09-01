@@ -1059,7 +1059,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xxd9nhqiclpkdd9crymvba37fl0xs5mikwhya68nfzcgar7w480"))))
+        (base32 "0jwy5winrm87s6xa645fwa47x242r25m6i3rwf10x59448bd19r6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
