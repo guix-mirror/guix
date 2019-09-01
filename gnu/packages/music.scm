@@ -2050,6 +2050,52 @@ multiplatform realtime MIDI I/O library is also provided with various output
 backends, including ALSA, OSS, Network and FluidSynth.")
     (license license:gpl2+)))
 
+(define-public vmpk
+  (package
+    (name "vmpk")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
+                                  version "/vmpk-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1i3hnvdgz46n4k5v0q4jhgh7nkh0s390ix4nqr69z0q3026yp0p6"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f  ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake_admin/CreateManpages.cmake"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
+    (inputs
+     `(("drumstick" ,drumstick)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+     `(("libxslt" ,libxslt) ;for xsltproc
+       ("docbook-xsl" ,docbook-xsl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://vmpk.sourceforge.net")
+    (synopsis "Virtual MIDI piano keyboard")
+    (description
+     "Virtual MIDI Piano Keyboard is a MIDI events generator and receiver.  It
+doesn't produce any sound by itself, but can be used to drive a MIDI
+synthesizer (either hardware or software, internal or external).  You can use
+the computer's keyboard to play MIDI notes, and also the mouse.  You can use
+the Virtual MIDI Piano Keyboard to display the played MIDI notes from another
+instrument or MIDI file player.")
+    (license license:gpl3+)))
+
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
