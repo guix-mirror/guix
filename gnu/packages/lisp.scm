@@ -5337,17 +5337,18 @@ port within a range.")
 (define-public txr
   (package
     (name "txr")
-    (version "223")
+    (version "224")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.kylheku.com/cgit/txr/snapshot/txr-"
-                           version
-                           ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://www.kylheku.com/git/txr/")
+             (commit (string-append "txr-" version))))
+       (file-name (git-file-name name version))
        (patches (search-patches "txr-shell.patch"))
        (sha256
         (base32
-         "0109q8idqggba3kx58dpm5ccfpdrki68npkcxm18p5ga24611fcv"))))
+         "1036k71f6mffy9rjwzmhr5nnp1n0wzb0rqvilpzvb8jc5yxv0810"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("cc=gcc")
