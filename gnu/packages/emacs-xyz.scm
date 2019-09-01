@@ -13965,7 +13965,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
                  ("gif-screencast-cropping-program"
                   (string-append imagemagick "/bin/mogrify"))
                  ("gif-screencast-optimize-program"
-                  (string-append imagemagick "/bin/gifsicle")))))))))
+                  (string-append gifsicle "/bin/gifsicle")))))))))
       (home-page
        "https://gitlab.com/Ambrevar/emacs-gif-screencast")
       (synopsis "One-frame-per-action GIF recording")
