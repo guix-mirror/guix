@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
@@ -35,12 +35,17 @@
   #:export (%cargo-build-system-modules
             %cargo-utils-modules
             cargo-build-system
+            %crate-base-url
             crate-url
             crate-url?
             crate-uri))
 
-(define crate-url "https://crates.io/api/v1/crates/")
-(define crate-url? (cut string-prefix? crate-url <>))
+(define %crate-base-url
+  (make-parameter "https://crates.io"))
+(define crate-url
+  (string-append (%crate-base-url) "/api/v1/crates/"))
+(define crate-url?
+  (cut string-prefix? crate-url <>))
 
 (define (crate-uri name version)
   "Return a URI string for the crate package hosted at crates.io corresponding
