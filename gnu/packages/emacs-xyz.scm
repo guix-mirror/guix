@@ -4257,7 +4257,7 @@ started with 20 minutes.  All values are customizable.")
     (license license:gpl3+)))
 
 (define-public emacs-org-sidebar
-  (let ((commit "74ca98b9920f3de3f13d49866581435e1ec63ec5")
+  (let ((commit "ed951d1e0d8b7e65ed35797403fd3e8c88f507f5")
         (revision "1"))
     (package
       (name "emacs-org-sidebar")
@@ -4270,7 +4270,7 @@ started with 20 minutes.  All values are customizable.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "03p1ndyw2qp2skib5hszc4xyh84w7p2mhkd4a9dy6qv8q47xpsqn"))))
+          (base32 "01sf8v53pjsy80fzwmj2n8rp2z5gsnpyld0fm6j3bdv213clp69y"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
