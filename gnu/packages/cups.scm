@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -419,14 +419,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.9")
+    (version "3.19.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0g3q5mm2crjyc1z4z6gv4lam6sc5d3diz704djrnpqadk4q3h290"))
+                "0cmshi5dkmc1n5yiahhp0cv5p94zg61018piiqa2sna10ahgx1d3"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
@@ -438,10 +438,6 @@ should only be used as part of the Guix cups-pk-helper service.")
                                         (lambda (file stat)
                                           (elf-file? file))))
                   (delete-file "prnt/hpcups/ImageProcessor.h")
-
-                  ;; Fix type mismatch.
-                  (substitute* "prnt/hpcups/genPCLm.cpp"
-                    (("boolean") "bool"))
 
                   ;; Install binaries under libexec/hplip instead of
                   ;; share/hplip; that'll at least ensure they get stripped.
