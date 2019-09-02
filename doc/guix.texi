@@ -8509,8 +8509,13 @@ guix import @var{importer} @var{options}@dots{}
 
 @var{importer} specifies the source from which to import package
 metadata, and @var{options} specifies a package identifier and other
-options specific to @var{importer}.  Currently, the available
-``importers'' are:
+options specific to @var{importer}.
+
+Some of the importers rely on the ability to run the @command{gpgv} command.
+For these, GnuPG must be installed and in @code{$PATH}; run @code{guix install
+gnupg} if needed.
+
+Currently, the available ``importers'' are:
 
 @table @code
 @item gnu
@@ -8959,7 +8964,10 @@ update the version numbers and source tarball hashes of those package
 recipes (@pxref{Defining Packages}).  This is achieved by downloading
 each package's latest source tarball and its associated OpenPGP
 signature, authenticating the downloaded tarball against its signature
-using @command{gpg}, and finally computing its hash.  When the public
+using @command{gpgv}, and finally computing its hash---note that GnuPG must be
+installed and in @code{$PATH}; run @code{guix install gnupg} if needed.
+
+When the public
 key used to sign the tarball is missing from the user's keyring, an
 attempt is made to automatically retrieve it from a public key server;
 when this is successful, the key is added to the user's keyring; otherwise,
