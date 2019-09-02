@@ -37,6 +37,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu artwork)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages pkg-config)
@@ -309,6 +310,15 @@ management D-Bus specification.")
                 "1x3flv86jh9vqah7mr5mmfx2991mc6icsqjygsc3j88lgsyz7y6m"))
               (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tzdata-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (string-append "plugins/clock/clock.c")
+               (("/usr/share/zoneinfo")
+                (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -317,7 +327,8 @@ management D-Bus specification.")
      `(("gtk+-3" ,gtk+)                 ; required by libxfce4panel-2.0.pc
        ("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-2.0.pc
     (inputs
-     `(("exo" ,exo)
+     `(("tzdata" ,tzdata) ;; For fix-tzdata-path phase only.
+       ("exo" ,exo)
        ("gtk+-2" ,gtk+-2)
        ("xfconf" ,xfconf)
        ("garcon" ,garcon)
