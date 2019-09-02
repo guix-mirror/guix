@@ -6779,3 +6779,66 @@ power of CXML is available when necessary.")
       (description "This is a Common Lisp library that allows to publish D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
+
+(define-public sbcl-cl-hooks
+  (let ((commit "5b638083f3b4f1221a52631d9c8a0a265565cac7")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-hooks")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.2.1" revision commit))
+      (home-page "https://github.com/scymtym/architecture.hooks")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bg3l0a28lw5gqqjp6p6b5nhwqk46sgkb7184w5qbfngw1hk8x9y"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("let-plus" ,sbcl-let-plus)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Hooks extension point mechanism (as in Emacs) for Common Lisp")
+      (description "A hook, in the present context, is a certain kind of
+extension point in a program that allows interleaving the execution of
+arbitrary code with the execution of a the program without introducing any
+coupling between the two.  Hooks are used extensively in the extensible editor
+Emacs.
+
+In the Common LISP Object System (CLOS), a similar kind of extensibility is
+possible using the flexible multi-method dispatch mechanism.  It may even seem
+that the concept of hooks does not provide any benefits over the possibilites
+of CLOS.  However, there are some differences:
+
+@itemize
+
+@item There can be only one method for each combination of specializers and
+qualifiers.  As a result this kind of extension point cannot be used by
+multiple extensions independently.
+@item Removing code previously attached via a @code{:before}, @code{:after} or
+@code{:around} method can be cumbersome.
+@item There could be other or even multiple extension points besides @code{:before}
+and @code{:after} in a single method.
+@item Attaching codes to individual objects using eql specializers can be
+cumbersome.
+@item Introspection of code attached a particular extension point is
+cumbersome since this requires enumerating and inspecting the methods of a
+generic function.
+@end itemize
+
+This library tries to complement some of these weaknesses of method-based
+extension-points via the concept of hooks.")
+      (license license:llgpl))))
+
+(define-public cl-hooks
+  (sbcl-package->cl-source-package sbcl-cl-hooks))
+
+(define-public ecl-cl-hooks
+  (sbcl-package->ecl-package sbcl-cl-hooks))
