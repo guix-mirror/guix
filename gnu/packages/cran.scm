@@ -12348,17 +12348,17 @@ extensions.")
 (define-public r-wgaim
   (package
     (name "r-wgaim")
-    (version "1.4-11")
+    (version "2.0-0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "wgaim" version))
        (sha256
         (base32
-         "1jjyp100dcjjczp61xlvhmy48ynniqcys535vzbgswhr7fvijymg"))))
+         "0wnb10vibgq8h1ly6lq8kzymf30vx0j0g8fc2zidblbvwag9ka1g"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-lattice" ,r-lattice)
+     `(("r-ggplot2" ,r-ggplot2)
        ("r-qtl" ,r-qtl)))
     (home-page "https://cran.r-project.org/web/packages/wgaim")
     (synopsis "Whole genome average interval mapping for QTL detection")
