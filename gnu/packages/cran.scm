@@ -11786,14 +11786,14 @@ select colors to use in your R code.")
 (define-public r-ggextra
   (package
     (name "r-ggextra")
-    (version "0.8")
+    (version "0.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggExtra" version))
        (sha256
         (base32
-         "1m5zpn3l3p1y3d2692gyz50m63d58m2a3b7zb595kvcffdx2qr5b"))))
+         "18mbi6gblqmrsciad1d2c9ngllk6mayaqj43k40hjq9ydqnvjbgj"))))
     (properties `((upstream-name . "ggExtra")))
     (build-system r-build-system)
     (propagated-inputs
@@ -11801,6 +11801,7 @@ select colors to use in your R code.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-gtable" ,r-gtable)
        ("r-miniui" ,r-miniui)
+       ("r-r6" ,r-r6)
        ("r-scales" ,r-scales)
        ("r-shiny" ,r-shiny)
        ("r-shinyjs" ,r-shinyjs)))
