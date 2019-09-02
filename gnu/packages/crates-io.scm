@@ -1133,6 +1133,30 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-owning-ref
+  (package
+    (name "rust-owning-ref")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "owning_ref" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "04zgwy77lin8qz398s6g44467pd6kjhbrlqifkia5rkr47mbi929"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-stable-deref-trait" ,rust-stable-deref-trait))))
+    (home-page "https://github.com/Kimundi/owning-ref-rs")
+    (synopsis "Create references that carry their owner with them")
+    (description
+     "This package provides a library for creating references that carry their
+owner with them.  This can sometimes be useful because Rust borrowing rules
+normally prevent moving a type that has been borrowed from.")
+    (license license:expat)))
+
 (define-public rust-peeking-take-while
   (package
     (name "rust-peeking-take-while")
