@@ -166,14 +166,14 @@ objects.")
 (define-public r-sys
   (package
     (name "r-sys")
-    (version "3.2")
+    (version "3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sys" version))
        (sha256
         (base32
-         "1k5vk5q9wa5sin0n226i05nymg469s24f6lx64yyhb7yc624j698"))))
+         "14wvy46i2iz9jn7lj3cvifmps932s3395wq681hniva0f8m7q8d6"))))
     (build-system r-build-system)
     (home-page "https://github.com/jeroen/sys")
     (synopsis "Powerful and reliable tools for running system commands in R")
