@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Ivan Petkov <ivanppetkov@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -250,6 +251,27 @@ colorization.")
     (description
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
     (license license:bsd-2)))
+
+(define-public rust-constant-time-eq
+  (package
+    (name "rust-constant-time-eq")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "constant_time_eq" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "083icpr9xb72rrdxw3p4068dcspn6ai22jy7rhl2a8grfz448nlr"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/constant_time_eq")
+    (synopsis
+     "Compares two equal-sized byte strings in constant time")
+    (description
+     "This package compares two equal-sized byte strings in constant time.
+It is inspired by the Linux kernel's @code{crypto_memneq}.")
+    (license license:cc0)))
 
 (define-public rust-core-foundation-sys
   (package
