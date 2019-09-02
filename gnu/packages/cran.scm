@@ -1122,14 +1122,14 @@ coordinates.")
 (define-public r-rgooglemaps
   (package
     (name "r-rgooglemaps")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RgoogleMaps" version))
        (sha256
         (base32
-         "06ab3lg1rwm93hkshf1vxfm8mlxq5qsjan0wx43lhnrysay65js4"))))
+         "0sbklacc4jl5524ixhc11mh6smrzdz4l9pji6cn402i6zdn9z05x"))))
     (properties `((upstream-name . "RgoogleMaps")))
     (build-system r-build-system)
     (propagated-inputs `(("r-png" ,r-png)))
