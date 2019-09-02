@@ -2537,24 +2537,40 @@ and objects.")
 (define-public libxklavier
   (package
     (name "libxklavier")
-    (version "5.3")
+    (version "5.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              ;; Note: There's no tarball at ftp.gnome.org for this version.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://anongit.freedesktop.org/git/libxklavier")
+                    (commit (string-append "libxklavier-" version))))
               (sha256
                (base32
-                "016lpdv35z0qsw1cprdc2k5qzkdi5waj6qmr0a2q6ljn9g2kpv7b"))))
+                "1w1x5mrgly2ldiw3q2r6y620zgd89gk7n90ja46775lhaswxzv7a"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'no-configure
+           (lambda* _
+            (setenv "NOCONFIGURE" "1")
+            #t)))
+       #:configure-flags
        (list (string-append "--with-xkb-base="
                             (assoc-ref %build-inputs "xkeyboard-config")
-                            "/share/X11/xkb"))))
+                            "/share/X11/xkb")
+             "--disable-xmodmap-support")))
     (native-inputs
      `(("glib:bin"              ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config"            ,pkg-config)))
+       ("pkg-config"            ,pkg-config)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("which" ,which)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (propagated-inputs
      ;; Required by libxklavier.pc.
      `(("glib"    ,glib)
