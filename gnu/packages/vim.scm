@@ -483,7 +483,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "2.5")
+    (version "3.0")
     (source
       (origin
         (method git-fetch)
@@ -493,7 +493,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "17yz7gxn7a49jzndr4z5vnk1y4a6c22qss3mwxzmq4m46fni0k8q"))))
+          "0ghh8a9xysc3njqql1khhl2dkhymz93snpwqp2apm7pka6l893bc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -506,13 +506,15 @@ trouble using them, because you do not have to remember each snippet name.")
              (let* ((out (assoc-ref outputs "out"))
                     (vimfiles (string-append out "/share/vim/vimfiles"))
                     (autoload (string-append vimfiles "/autoload"))
-                    (doc (string-append vimfiles "/doc"))
+                    (doc      (string-append vimfiles "/doc"))
                     (ftdetect (string-append vimfiles "/ftdetect"))
-                    (plugin (string-append vimfiles "/plugin")))
+                    (plugin   (string-append vimfiles "/plugin"))
+                    (syntax   (string-append vimfiles "/syntax")))
                (copy-recursively "autoload" autoload)
                (copy-recursively "doc" doc)
                (copy-recursively "ftdetect" ftdetect)
                (copy-recursively "plugin" plugin)
+               (copy-recursively "syntax" syntax)
                #t))))))
     (home-page "https://github.com/tpope/vim-fugitive")
     (synopsis "Vim plugin to work with Git")
