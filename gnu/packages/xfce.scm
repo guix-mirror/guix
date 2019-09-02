@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
