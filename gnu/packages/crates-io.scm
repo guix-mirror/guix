@@ -664,6 +664,23 @@ heap.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-heapsize-0.3
+  (package
+    (inherit rust-heapsize)
+    (name "rust-heapsize")
+    (version "0.3.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "heapsize" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0dmwc37vgsdjzk10443dj4f23439i9gch28jcwzmry3chrwx8v2m"))))
+    (arguments
+     `(#:cargo-inputs (("rust-kernel32-sys" ,rust-kernel32-sys))
+       #:tests? #f)))) ;; No flexible-tests feature flags on this release.
+
 (define-public rust-hex
   (package
     (name "rust-hex")
