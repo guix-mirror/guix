@@ -14995,6 +14995,32 @@ radius searches and @code{bd} as well as @code{kd} trees.  The distance is
 computed using the L1 (Manhattan, taxicab) metric.")
     (license license:gpl3+)))
 
+(define-public r-leiden
+  (package
+    (name "r-leiden")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "leiden" version))
+       (sha256
+        (base32
+         "19gq27zin4gf4sh7h24gyq3f8jjir20n2l36a7pk1pbzcr4ixyhp"))))
+    (properties `((upstream-name . "leiden")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-matrix" ,r-matrix)
+       ("r-reticulate" ,r-reticulate)))
+    (home-page "https://github.com/TomKellyGenetics/leiden")
+    (synopsis "R implementation of Leiden clustering algorithm")
+    (description
+     "This package implements the Python @code{leidenalg} module to be called
+in R.  It enables clustering using the Leiden algorithm for partitioning a
+graph into communities.  See also Traag et al (2018) \"From Louvain to Leiden:
+guaranteeing well-connected communities.\" <arXiv:1810.08473>.")
+    (license license:gpl3)))
+
 (define-public r-patchwork
   ;; There has been no public release yet.
   (let ((commit "fd7958bae3e7a1e30237c751952e412a0a1d1242")
