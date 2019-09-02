@@ -494,12 +494,16 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
      (let ((description (fetch-description repo package-name)))
-       (if (and (not description)
-                (eq? repo 'bioconductor))
-           ;; Retry import from CRAN
-           (cran->guix-package package-name 'cran)
-           (and description
-                (description->package repo description)))))))
+       (if description
+           (description->package repo description)
+           (case repo
+             ((git)
+              ;; Retry import from Bioconductor
+              (cran->guix-package package-name 'bioconductor))
+             ((bioconductor)
+              ;; Retry import from CRAN
+              (cran->guix-package package-name 'cran))
+             (else #f)))))))
 
 (define* (cran-recursive-import package-name #:optional (repo 'cran))
   (recursive-import package-name repo
