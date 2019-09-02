@@ -1120,3 +1120,50 @@ window or a selected region.  You can set the delay that elapses before the scre
 is taken and the action that will be done with the screenshot.
 A plugin for the Xfce panel is also available.")
    (license gpl2+)))
+
+(define-public xfce4-screensaver
+  (package
+    (name "xfce4-screensaver")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/"
+                                  "xfce4-screensaver/"
+                                  (version-major+minor version)
+                                  "/xfce4-screensaver-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1mv0r150yb29kji2rr2462g9p574bqjax1lb6bzcqgpxlmg08mj0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dbus-1-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (dbus-dir (string-append out "/share/dbus-1/services")))
+               (substitute* "configure"
+                 (("DBUS_SESSION_SERVICE_DIR=.*")
+                  (string-append "DBUS_SESSION_SERVICE_DIR="
+                                 dbus-dir)))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib" ,glib)                             ; glib-compile-schemas
+       ("glib:bin" ,glib "bin")))                 ; glib-compile-schemas
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("libux-pam" ,linux-pam)
+       ("elogind" ,elogind)
+       ("garcon" ,garcon)
+       ("libxklavier" ,libxklavier)
+       ("libwnxk" ,libwnck)
+       ("libxscrnsaver" ,libxscrnsaver)
+       ("xfconf" ,xfconf)))
+    (home-page "https://docs.xfce.org/apps/screensaver/start")
+    (synopsis "Screensaver for the Xfce desktop")
+    (description
+     "Xfce Screensaver is a screen saver and locker that aims to have simple,
+ sane, secure defaults and be well integrated with the Xfce desktop. ")
+    (license gpl2+)))
