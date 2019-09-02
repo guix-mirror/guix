@@ -14813,17 +14813,18 @@ easily.")
 (define-public r-umap
   (package
     (name "r-umap")
-    (version "0.2.2.0")
+    (version "0.2.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "umap" version))
        (sha256
         (base32
-         "1s82w9gy1387h7cprjfbhp49l89zbmn3gc9s0wzqb1s73nza9n31"))))
+         "0rzz1s029cn1w1bf5va2pav2lg9j1mq97ibwcln39drvm67kj76d"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rcpp" ,r-rcpp)
+     `(("r-openssl" ,r-openssl)
+       ("r-rcpp" ,r-rcpp)
        ("r-reticulate" ,r-reticulate)
        ("r-rspectra" ,r-rspectra)))
     (home-page "https://github.com/tkonopka/umap")
