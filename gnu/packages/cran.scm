@@ -8696,14 +8696,14 @@ analysing multivariate abundance data in community ecology.")
 (define-public r-afex
   (package
     (name "r-afex")
-    (version "0.24-1")
+    (version "0.25-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "afex" version))
        (sha256
         (base32
-         "14w7kcwr5hxmjcjmdm5ia9ka3bw1nl18pxlm1vpw62nmvicn3455"))))
+         "12n020y7rjm7402940gkqxa5j901p093f381i23p66fa3fyrshkf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-car" ,r-car)
