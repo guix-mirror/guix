@@ -2490,14 +2490,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "06snfqdczr0x0nbp7qnvwhlp2pw0wx9c2y3xb4gr1wrvbik74y58"))))
+         "1v4cxfpvp85la4gqla6b4q2bwx4jv1fxqwndcnjsibbnybz6wcvd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
