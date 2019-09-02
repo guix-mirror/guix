@@ -4229,24 +4229,50 @@ number.")
     (license license:gpl3+)))
 
 (define-public emacs-org-pomodoro
-  (package
-    (name "emacs-org-pomodoro")
-    (version "2.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/lolownia/org-pomodoro.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0r5shgikm34d66i2hblyknbblpg92lb2zc9x4bcb28xkh7m9d0xv"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-alert" ,emacs-alert)))
-    (home-page "https://github.com/lolownia/org-pomodoro")
-    (synopsis "Pomodoro technique for org-mode")
-    (description "@code{emacs-org-pomodoro} adds very basic support for
+  ;; Last release version was from 2016.
+  (let ((commit "aa07c11318f91219336197e62c47bc7a3d090479")
+        (revision "1"))
+    (package
+      (name "emacs-org-pomodoro")
+      (version (git-version "2.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marcinkoziej/org-pomodoro.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nbprh2nhnmb7ngp9ndr6zr37ashcsvpi5slv7a37x1dl7j6w1k4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-alert" ,emacs-alert)))
+      (arguments
+       `(#:include (cons "^resources\\/" %default-include)
+         #:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "org-pomodoro-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "org-pomodoro-tests.el")
+               #t))
+           (add-before 'check 'add-require
+             (lambda _
+               (emacs-batch-edit-file "org-pomodoro-tests.el"
+                 `(progn (progn (goto-char (point-min))
+                                (re-search-forward
+                                 "ert-deftest")
+                                (beginning-of-line)
+                                (forward-line -1)
+                                (insert "(require 'org-pomodoro)"))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/marcinkoziej/org-pomodoro")
+      (synopsis "Pomodoro technique for org-mode")
+      (description "@code{emacs-org-pomodoro} adds very basic support for
 Pomodoro technique in Emacs org-mode.
 
 Run @code{M-x org-pomodoro} for the task at point or select one of the
@@ -4254,7 +4280,7 @@ last tasks that you clocked time for.  Each clocked-in pomodoro starts
 a timer of 25 minutes and after each pomodoro a break timer of 5
 minutes is started automatically.  Every 4 breaks a long break is
 started with 20 minutes.  All values are customizable.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-sidebar
   (let ((commit "ed951d1e0d8b7e65ed35797403fd3e8c88f507f5")
