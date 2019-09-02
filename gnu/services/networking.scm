@@ -315,7 +315,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
   (servers  ntp-configuration-servers
             (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
-                           (default #f)))
+                           (default #t))) ;as recommended in the ntpd manual
 
 (define ntp-shepherd-service
   (match-lambda

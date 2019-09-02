@@ -13050,7 +13050,7 @@ This is the data type for the NTP service configuration.
 This is the list of servers (host names) with which @command{ntpd} will be
 synchronized.
 
-@item @code{allow-large-adjustment?} (default: @code{#f})
+@item @code{allow-large-adjustment?} (default: @code{#t})
 This determines whether @command{ntpd} is allowed to make an initial
 adjustment of more than 1,000 seconds.
 
