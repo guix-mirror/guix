@@ -981,6 +981,14 @@ memory usage graphically, and it can display processes as a tree.")
               (sha256
                (base32
                 "0qlhvnl2m33vfxqlbkic2nmfpwyd4mq230jzhs48cg78392amy9w"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-libical3
+           (lambda* _
+             (substitute* "src/ical-code.c" ;; .is_utc not available in libical3
+               ((".*\\.is_utc.*$") ""))
+             #t)))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
