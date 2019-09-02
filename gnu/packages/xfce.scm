@@ -127,7 +127,7 @@ Xfce Desktop Environment.")
      '(#:phases
        ;; Run check after install phase to test dbus activation.
        (modify-phases %standard-phases
-         (add-after 'install 'check
+         (add-after 'install 'custom-check
            (lambda _
              (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
              ;; Run test-suite under a dbus session.
@@ -142,7 +142,8 @@ Xfce Desktop Environment.")
        ("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ;; for gdbus-codegen
        ("gobject-introspection" ,gobject-introspection)
-       ("vala" ,vala)))
+       ("vala" ,vala)
+       ("dbus" ,dbus)))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
      `(("glib" ,glib)))
