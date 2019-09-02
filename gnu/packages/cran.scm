@@ -872,14 +872,14 @@ well as file saving is available.")
 (define-public r-d3r
   (package
     (name "r-d3r")
-    (version "0.8.6")
+    (version "0.8.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "d3r" version))
        (sha256
         (base32
-         "0vcmiyhd000xyl28k6rm7ba50x5sz5b2cpllxnq36q13qhdnqw6k"))))
+         "0xl3im76lp7pd5lhp8jfyqdm4j4zvjrx5a5fl81xv2cf7x3n4f2a"))))
     (build-system r-build-system)
     (arguments
      `(#:modules ((guix build utils)
