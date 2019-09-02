@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4529,3 +4530,65 @@ discard bad quality ones.
 controller.")
     (home-page "https://github.com/charlesfleche/lpd8editor")
     (license license:expat)))
+
+(define-public fmit
+  (package
+    (name "fmit")
+    (version "1.2.6")
+    (source (origin
+	      (method git-fetch)
+	      (uri (git-reference
+		    (url "https://github.com/gillesdegottex/fmit/")
+		    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+	      (sha256
+               (base32
+                "03nzkig5mw2rqwhwmg0qvc5cnk9bwh2wp13jh0mdrr935w0587mz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+	 (delete 'configure)
+	 (add-before 'build 'qmake
+	   (lambda _
+	     (let ((out (assoc-ref %outputs "out")))
+               (invoke "qmake"
+                       "fmit.pro"
+                       (string-append "PREFIX=" out)
+                       (string-append "PREFIXSHORTCUT=" out)
+                       "CONFIG+=acs_qt acs_alsa acs_jack acs_portaudio"))))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/fmit")
+                 `("QT_PLUGIN_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/plugins"))
+                         '("qtbase" "qtmultimedia" "qtsvg")))
+                 `("QML2_IMPORT_PATH" ":" prefix
+                   ,(map (lambda (label)
+                           (string-append (assoc-ref inputs label)
+                                          "/lib/qt5/qml"))
+                         '("qtmultimedia"))))
+               #t))))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("jack" ,jack-1)
+       ("portaudio" ,portaudio)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)
+       ("qtsvg" ,qtsvg)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("itstool" ,itstool)
+       ("qttools" ,qttools)))
+    (synopsis "Musical instrument tuner")
+    (description "FMIT is a graphical utility for tuning musical instruments,
+with error and volume history, and advanced features.")
+    (home-page "https://gillesdegottex.github.io/fmit/")
+    ;; Most of the code is under GPL2+, but some abstract or helper classes
+    ;; are under LGPL2.1.
+    (license (list license:gpl2+ license:lgpl2.1))))
