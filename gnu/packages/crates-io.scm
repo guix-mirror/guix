@@ -1413,6 +1413,28 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; This package requires features which are unavailable
+;; on the stable releases of Rust.
+(define-public rust-redox-syscall ; guix upstreamable
+  (package
+    (name "rust-redox-syscall")
+    (version "0.1.56")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "redox_syscall" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "110y7dyfm2vci4x5vk7gr0q551dvp31npl99fnsx2fb17wzwcf94"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.redox-os.org/redox-os/syscall")
+    (synopsis "Rust library to access raw Redox system calls")
+    (description "This package provides a Rust library to access raw Redox
+system calls.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
+
 (define-public rust-regex-syntax
   (package
     (name "rust-regex-syntax")
@@ -1932,6 +1954,32 @@ to the terminal I/O interface implemented by Unix operating systems.  The safe
 bindings are a small wrapper around the raw C functions, which converts integer
 return values to @code{std::io::Result} to indicate success or failure.")
     (license license:expat)))
+
+(define-public rust-thread-id
+  (package
+    (name "rust-thread-id")
+    (version "3.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "thread-id" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1h90v19fjz3x9b25ywh68z5yf2zsmm6h5zb4rl302ckbsp4z9yy7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/ruuda/thread-id")
+    (synopsis "Get a unique ID for the current thread in Rust")
+    (description
+     "For diagnostics and debugging it can often be useful to get an ID that is
+different for every thread.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-thread-local
   (package
