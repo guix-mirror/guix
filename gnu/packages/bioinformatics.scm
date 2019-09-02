@@ -10190,22 +10190,24 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.14.0")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0lraxhq9ny3468534klrl64nx0dpaf9cbd5bir6m5qma8j7kfnyd"))))
+         "0xx04cghx6ads1ackwnw3z0gf72qv461nznzmcnkgmp7w5n9m2af"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-erma" ,r-erma)
+       ("r-ensdb-hsapiens-v75" ,r-ensdb-hsapiens-v75)
+       ("r-ensembldb" ,r-ensembldb)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfiles" ,r-genomicfiles)
        ("r-go-db" ,r-go-db)
        ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-httr" ,r-httr)
        ("r-matrix" ,r-matrix)
        ("r-rsamtools" ,r-rsamtools)
        ("r-snpstats" ,r-snpstats)
