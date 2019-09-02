@@ -8518,14 +8518,14 @@ ways.")
 (define-public r-summarytools
   (package
     (name "r-summarytools")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "summarytools" version))
        (sha256
         (base32
-         "1wfbkgvicaic37zgpr6zcm4a58yx43p59h0sqggdj44ncqs7147f"))))
+         "1n695baz56mg4f13xjjadfq0xalw5xsn6xicil0yap5hgi8fsr3a"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-checkmate" ,r-checkmate)
