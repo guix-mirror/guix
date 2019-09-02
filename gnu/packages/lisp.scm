@@ -710,6 +710,40 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
+(define-public sbcl-net.didierverna.asdf-flv
+  (package
+    (name "sbcl-net.didierverna.asdf-flv")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/didierverna/asdf-flv")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "asdf-flv" version))
+       (sha256
+        (base32 "1fi2y4baxan103jbg4idjddzihy03kwnj2mzbwrknw4d4x7xlgwj"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp ASDF extension to provide support for file-local variables")
+    (description "ASDF-FLV provides support for file-local variables through
+ASDF.  A file-local variable behaves like @code{*PACKAGE*} and
+@code{*READTABLE*} with respect to @code{LOAD} and @code{COMPILE-FILE}: a new
+dynamic binding is created before processing the file, so that any
+modification to the variable becomes essentially file-local.
+
+In order to make one or several variables file-local, use the macros
+@code{SET-FILE-LOCAL-VARIABLE(S)}.")
+    (home-page "https://www.lrde.epita.fr/~didier/software/lisp/misc.php#asdf-flv")
+    (license (license:non-copyleft
+              "https://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html"
+              "GNU All-Permissive License"))))
+
+(define-public cl-net.didierverna.asdf-flv
+  (sbcl-package->cl-source-package sbcl-net.didierverna.asdf-flv))
+
+(define-public ecl-alexandria
+  (sbcl-package->ecl-package sbcl-net.didierverna.asdf-flv))
+
 (define-public sbcl-fiveam
   (package
     (name "sbcl-fiveam")
