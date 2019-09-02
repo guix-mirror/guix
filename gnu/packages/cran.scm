@@ -7489,14 +7489,14 @@ multiple-imputation datasets.")
 (define-public r-magick
   (package
     (name "r-magick")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "magick" version))
        (sha256
         (base32
-         "1pz71maz05gx4ds1wfw0alggc8nn2w75lj12dg1zr72s3kybhkzg"))))
+         "1xh5mhaks3wk1iwqs9d3lnbfv121lc1yz5fqdzk5il9ppr831l85"))))
     (build-system r-build-system)
     (inputs
      `(("imagemagick" ,imagemagick)
