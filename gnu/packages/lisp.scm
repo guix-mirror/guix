@@ -747,7 +747,7 @@ In order to make one or several variables file-local, use the macros
 (define-public sbcl-fiveam
   (package
     (name "sbcl-fiveam")
-    (version "1.2")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -756,8 +756,11 @@ In order to make one or several variables file-local, use the macros
              (commit (string-append "v" version))))
        (file-name (git-file-name "fiveam" version))
        (sha256
-        (base32 "1yx9716mk8pq9076q6cjx4c9lyax3amiccy37sh0913k2x8gsm4l"))))
-    (inputs `(("alexandria" ,sbcl-alexandria)))
+        (base32 "1q3d38pwafnwnw42clq0f8g5xw7pbzr287jl9jsqmb1vb0n1vrli"))))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("net.didierverna.asdf-flv" ,sbcl-net.didierverna.asdf-flv)
+       ("trivial-backtrace" ,sbcl-trivial-backtrace)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
     (description "FiveAM is a simple (as far as writing and running tests
