@@ -1462,7 +1462,7 @@ for x86.")
             "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))
     (build-system cargo-build-system)
     (arguments
-      `(#:cargo-inputs (("rust-unicode-xid" ,rust-unicode-xid))
+      `(#:cargo-inputs (("rust-unicode-xid" ,rust-unicode-xid-0.1))
         #:cargo-development-inputs (("rust-quote" ,rust-quote))))
     (home-page "https://github.com/alexcrichton/proc-macro2")
     (synopsis "Stable implementation of the upcoming new `proc_macro` API")
@@ -2430,7 +2430,7 @@ with the Unicode character database.")
 (define-public rust-unicode-xid
   (package
     (name "rust-unicode-xid")
-    (version "0.1.0")
+    (version "0.2.0")
     (source
       (origin
         (method url-fetch)
@@ -2438,8 +2438,8 @@ with the Unicode character database.")
         (file-name
           (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32
-            "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))
+         (base32
+          "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2"))))
     (build-system cargo-build-system)
     (home-page
       "https://github.com/unicode-rs/unicode-xid")
@@ -2448,6 +2448,20 @@ with the Unicode character database.")
 or XID_Continue properties according to Unicode Standard Annex #31.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-unicode-xid-0.1
+  (package
+    (inherit rust-unicode-xid)
+    (name "rust-unicode-xid")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicode-xid" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1z57lqh4s18rr4x0j4fw4fmp9hf9346h0kmdgqsqx0fhjr3k0wpw"))))))
 
 (define-public rust-unindent
   (package
