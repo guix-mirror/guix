@@ -532,6 +532,28 @@ annotations for the genome of the model mouse Mus musculus.")
 by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
+(define-public r-ensdb-hsapiens-v75
+  (package
+    (name "r-ensdb-hsapiens-v75")
+    (version "2.99.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EnsDb.Hsapiens.v75" version 'annotation))
+       (sha256
+        (base32
+         "0jx6rf6v0j8yr07q3c1h7s121901dc400nm6xaiv4i7kb5czjn9c"))))
+    (properties
+     `((upstream-name . "EnsDb.Hsapiens.v75")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ensembldb" ,r-ensembldb)))
+    (home-page "https://bioconductor.org/packages/EnsDb.Hsapiens.v75")
+    (synopsis "Ensembl based annotation package")
+    (description
+     "This package exposes an annotation database generated from Ensembl.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
