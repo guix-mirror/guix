@@ -2999,14 +2999,14 @@ phenotype of interest.")
 (define-public r-fgsea
   (package
     (name "r-fgsea")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fgsea" version))
        (sha256
         (base32
-         "07mvv1i690q80fm8sxgdqxchamn76409vn91ppgcck2xpi6b8q6c"))))
+         "1k2f9hkp1mvc9fpqzhbf08jd0yg4xaa312v9vy37fxd9pyrwp5a6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
