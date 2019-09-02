@@ -230,16 +230,17 @@ from ~s: ~a (~s)~%"
                           (if (boolean? type) meta
                               (cons `(bioconductor-type . ,type) meta))))))))))
     ((git)
-     ;; Download the git repository at "NAME"
-     (call-with-values
-         (lambda () (download name #t))
-       (lambda (dir commit)
-         (and=> (description->alist (with-input-from-file
-                                        (string-append dir "/DESCRIPTION") read-string))
-                (lambda (meta)
-                  (cons* `(git . ,name)
-                         `(git-commit . ,commit)
-                         meta))))))))
+     (and (string-prefix? "http" name)
+          ;; Download the git repository at "NAME"
+          (call-with-values
+              (lambda () (download name #t))
+            (lambda (dir commit)
+              (and=> (description->alist (with-input-from-file
+                                             (string-append dir "/DESCRIPTION") read-string))
+                     (lambda (meta)
+                       (cons* `(git . ,name)
+                              `(git-commit . ,commit)
+                              meta)))))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
