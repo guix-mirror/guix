@@ -2984,6 +2984,30 @@ library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
 
+(define-public ocaml-charinfo-width
+  (package
+    (name "ocaml-charinfo-width")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bitbucket.org/zandoye/charinfo_width/get/1.1.0.tar.gz")
+              (sha256
+               (base32
+                "00bv4p1yqs8y0z4z07wd9w9yyv669dikp9b04dcjbwpiy2wy0086"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("ocaml-result" ,ocaml-result)
+       ("ocaml-camomile" ,ocaml-camomile)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (properties
+     `((upstream-name . "charInfo_width")))
+    (home-page "https://bitbucket.org/zandoye/charinfo_width/")
+    (synopsis "Determine column width for a character")
+    (description "This module is implements purely in OCaml a character width
+function that follows the prototype of POSIX's wcwidth.")
+    (license license:expat)))
+
 (define-public ocaml-zed
   (package
     (name "ocaml-zed")
