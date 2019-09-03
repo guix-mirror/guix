@@ -5105,7 +5105,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
 (define-public ocaml-odoc
   (package
     (name "ocaml-odoc")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -5115,7 +5115,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0br11cw6wa0mwafja4xdb45d2f8908l6nzdq5mw5lbfq2jnp68km"))))
+         "1i2j0krbzvb1n3dcic9h1pyyqxmf051ky82nrcyzx1nwqjb8zfh6"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)
