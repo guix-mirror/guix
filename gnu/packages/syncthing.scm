@@ -30,7 +30,7 @@
 (define-public syncthing
   (package
     (name "syncthing")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/syncthing/syncthing"
@@ -38,7 +38,7 @@
                                   "/syncthing-source-v" version ".tar.gz"))
               (sha256
                (base32
-                "1b6fidpkwfa2bm6hlv4p0bzxa1ha6s88vajczhryhqi5vjfxafri"))
+                "1wdjh8xw09s1nfkpc95v04619gqa4dpbygp2y5l35ww4g916lv3s"))
               (modules '((guix build utils)))
               ;; Delete bundled ("vendored") free software source code.
               (snippet '(begin
@@ -55,7 +55,6 @@
      `(("go-github-com-audriusbutkevicius-go-nat-pmp"
         ,go-github-com-audriusbutkevicius-go-nat-pmp)
        ("go-github-com-bkaradzic-go-lz4" ,go-github-com-bkaradzic-go-lz4)
-       ("go-github-com-calmh-du" ,go-github-com-calmh-du)
        ("go-github-com-calmh-xdr" ,go-github-com-calmh-xdr)
        ("go-github-com-chmduquesne-rollinghash"
         ,go-github-com-chmduquesne-rollinghash)
@@ -84,6 +83,7 @@
         ,go-github-com-gogo-protobuf-protoc-gen-gogo)
        ("go-github-com-prometheus-client-golang-prometheus"
         ,go-github-com-prometheus-client-golang-prometheus)
+       ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
        ("go-golang-org-x-net-bpf" ,go-golang-org-x-net-bpf)
        ("go-golang-org-x-net-internal-iana" ,go-golang-org-x-net-internal-iana)
        ("go-golang-org-x-net-internal-socket"
