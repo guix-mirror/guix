@@ -51,6 +51,7 @@
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (guix deprecation)
+  #:use-module (rnrs enums)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -72,13 +73,22 @@
             dhcpd-configuration-pid-file
             dhcpd-configuration-interfaces
 
-            %ntp-servers
-
             ntp-configuration
             ntp-configuration?
+            ntp-configuration-ntp
+            ntp-configuration-servers
+            ntp-allow-large-adjustment?
+
+            %ntp-servers
+            ntp-server
+            ntp-server-type
+            ntp-server-address
+            ntp-server-options
+
             ntp-service
             ntp-service-type
 
+            %openntpd-servers
             openntpd-configuration
             openntpd-configuration?
             openntpd-service-type
@@ -292,30 +302,86 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
     (list (service-extension shepherd-root-service-type dhcpd-shepherd-service)
           (service-extension activation-service-type dhcpd-activation)))))
 
-(define %ntp-servers
-  ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
-  ;; Within Guix, Leo Famulari <leo@famulari.name> is the administrative contact
-  ;; for this NTP pool "zone".
-  '("0.guix.pool.ntp.org"
-    "1.guix.pool.ntp.org"
-    "2.guix.pool.ntp.org"
-    "3.guix.pool.ntp.org"))
-
 
 ;;;
 ;;; NTP.
 ;;;
 
-;; TODO: Export.
+(define ntp-server-types (make-enumeration
+                          '(pool
+                            server
+                            peer
+                            broadcast
+                            manycastclient)))
+
+(define-record-type* <ntp-server>
+  ntp-server make-ntp-server
+  ntp-server?
+  ;; The type can be one of the symbols of the NTP-SERVER-TYPE? enumeration.
+  (type ntp-server-type
+        (default 'server))
+  (address ntp-server-address)    ; a string
+  ;; The list of options can contain single option names or tuples in the form
+  ;; '(name value).
+  (options ntp-server-options
+           (default '())))
+
+(define (ntp-server->string ntp-server)
+  ;; Serialize the NTP server object as a string, ready to use in the NTP
+  ;; configuration file.
+  (define (flatten lst)
+    (reverse
+     (let loop ((x lst)
+                (res '()))
+       (if (list? x)
+           (fold loop res x)
+           (cons (format #f "~s" x) res)))))
+
+  (match ntp-server
+    (($ <ntp-server> type address options)
+     ;; XXX: It'd be neater if fields were validated at the syntax level (for
+     ;; static ones at least).  Perhaps the Guix record type could support a
+     ;; predicate property on a field?
+     (unless (enum-set-member? type ntp-server-types)
+       (error "Invalid NTP server type" type))
+     (string-join (cons* (symbol->string type)
+                         address
+                         (flatten options))))))
+
+(define %ntp-servers
+  ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
+  ;; Within Guix, Leo Famulari <leo@famulari.name> is the administrative contact
+  ;; for this NTP pool "zone".
+  (list
+   (ntp-server
+    (type 'pool)
+    (address "0.guix.pool.ntp.org")
+    (options '("iburst")))))               ;as recommended in the ntpd manual
+
 (define-record-type* <ntp-configuration>
   ntp-configuration make-ntp-configuration
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers
+  (servers  %ntp-configuration-servers   ;list of <ntp-server> objects
             (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
                            (default #t))) ;as recommended in the ntpd manual
+
+(define (ntp-configuration-servers ntp-configuration)
+  ;; A wrapper to support the deprecated form of this field.
+  (let ((ntp-servers (%ntp-configuration-servers ntp-configuration)))
+    (match ntp-servers
+      (((? string?) (? string?) ...)
+       (format (current-error-port) "warning: Defining NTP servers as strings is \
+deprecated.  Please use <ntp-server> records instead.\n")
+       (map (lambda (addr)
+              (ntp-server
+               (type 'server)
+               (address addr)
+               (options '()))) ntp-servers))
+      ((($ <ntp-server>) ($ <ntp-server>) ...)
+       ntp-servers))))
 
 (define ntp-shepherd-service
   (match-lambda
@@ -324,8 +390,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
        ;; TODO: Add authentication support.
        (define config
          (string-append "driftfile /var/run/ntpd/ntp.drift\n"
-                        (string-join (map (cut string-append "server " <>)
-                                          servers)
+                        (string-join (map ntp-server->string servers)
                                      "\n")
                         "
 # Disable status queries as a workaround for CVE-2013-5211:
@@ -335,7 +400,11 @@ restrict -6 default kod nomodify notrap nopeer noquery limited
 
 # Yet, allow use of the local 'ntpq'.
 restrict 127.0.0.1
-restrict -6 ::1\n"))
+restrict -6 ::1
+
+# This is required to use servers from a pool directive when using the 'nopeer'
+# option by default, as documented in the 'ntp.conf' manual.
+restrict source notrap nomodify noquery\n"))
 
        (define ntpd.conf
          (plain-file "ntpd.conf" config))
@@ -409,6 +478,9 @@ make an initial adjustment of more than 1,000 seconds."
 ;;; OpenNTPD.
 ;;;
 
+(define %openntpd-servers
+  (map ntp-server-address %ntp-servers))
+
 (define-record-type* <openntpd-configuration>
   openntpd-configuration make-openntpd-configuration
   openntpd-configuration?
@@ -422,9 +494,9 @@ make an initial adjustment of more than 1,000 seconds."
   (sensor                  openntpd-sensor
                            (default '()))
   (server                  openntpd-server
-                           (default %ntp-servers))
-  (servers                 openntpd-servers
                            (default '()))
+  (servers                 openntpd-servers
+                           (default %openntpd-servers))
   (constraint-from         openntpd-constraint-from
                            (default '()))
   (constraints-from        openntpd-constraints-from

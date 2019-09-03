@@ -402,6 +402,7 @@ SCM_TESTS =					\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\
+  tests/networking.scm				\
   tests/opam.scm				\
   tests/packages.scm				\
   tests/pack.scm				\

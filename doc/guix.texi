@@ -48,7 +48,7 @@ Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
-Copyright @copyright{} 2017 Maxim Cournoyer@*
+Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
 Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
@@ -13048,8 +13048,9 @@ This is the data type for the NTP service configuration.
 
 @table @asis
 @item @code{servers} (default: @code{%ntp-servers})
-This is the list of servers (host names) with which @command{ntpd} will be
-synchronized.
+This is the list of servers (@code{<ntp-server>} records) with which
+@command{ntpd} will be synchronized.  See the @code{ntp-server} data type
+definition below.
 
 @item @code{allow-large-adjustment?} (default: @code{#t})
 This determines whether @command{ntpd} is allowed to make an initial
@@ -13064,6 +13065,32 @@ The NTP package to use.
 List of host names used as the default NTP servers.  These are servers of the
 @uref{https://www.ntppool.org/en/, NTP Pool Project}.
 @end defvr
+
+@deftp {Data Type} ntp-server
+The data type representing the configuration of a NTP server.
+
+@table @asis
+@item @code{type} (default: @code{'server})
+The type of the NTP server, given as a symbol. One of @code{'pool},
+@code{'server}, @code{'peer}, @code{'broadcast} or @code{'manycastclient}.
+
+@item @code{address}
+The address of the server, as a string.
+
+@item @code{options}
+NTPD options to use with that specific server, given as a list of option names
+and/or of option names and values tuples. The following example define a server
+to use with the options @option{iburst} and @option{prefer}, as well as
+@option{version} 3 and a @option{maxpoll} time of 16 seconds.
+
+@example
+(ntp-server
+ (type 'server)
+ (address "some.ntp.server.org")
+ (options `(iburst (version 3) (maxpoll 16) prefer))))
+@end example
+@end table
+@end deftp
 
 @cindex OpenNTPD
 @deffn {Scheme Procedure} openntpd-service-type
@@ -13084,6 +13111,11 @@ clock synchronized with that of the given servers.
 @end lisp
 @end deffn
 
+@defvr {Scheme Variable} %openntpd-servers
+This variable is a list of the server addresses defined in
+@var{%ntp-servers}.
+@end defvr
+
 @deftp {Data Type} openntpd-configuration
 @table @asis
 @item @code{openntpd} (default: @code{(file-append openntpd "/sbin/ntpd")})
@@ -13097,9 +13129,9 @@ Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
 will listen to each sensor that actually exists and ignore non-existent ones.
 See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
-@item @code{server} (default: @var{%ntp-servers})
+@item @code{server} (default: @code{'()})
 Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
-@item @code{servers} (default: @code{'()})
+@item @code{servers} (default: @var{%openntp-servers})
 Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
 @item @code{constraint-from} (default: @code{'()})
 @code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
