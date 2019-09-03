@@ -11345,6 +11345,11 @@ timestamps by providing a @code{ts} struct.")
        ("emacs-ts" ,emacs-ts)
        ("emacs-org" ,emacs-org)
        ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
     (description "This package provides a Lispy query language for Org
