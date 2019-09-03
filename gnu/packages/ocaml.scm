@@ -2383,6 +2383,28 @@ language.")
 can match the question using a regular expression or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
+(define-public ocaml-stdlib-shims
+  (package
+    (name "ocaml-stdlib-shims")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/stdlib-shims")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "007dwywsr5285z0np6a9nr0h8iqmyzfrlx6s5xaqcwj69zabsrjm"))))
+    (build-system dune-build-system)
+    (home-page "https://github.com/ocaml/stdlib-shims")
+    (synopsis "OCaml stdlib features backport to older OCaml compilers")
+    (description "This package backports some of the new stdlib features to
+older compilers, such as the Stdlib module.  This allows projects that require
+compatibility with older compiler to use these new features in their code.")
+    ;; with ocaml-linking exception
+    (license license:lgpl2.1+)))
+
 (define-public ocaml-fileutils
   (package
     (name "ocaml-fileutils")
