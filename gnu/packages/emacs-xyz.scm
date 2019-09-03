@@ -6786,6 +6786,17 @@ a popup window for previewing candidates.")
            "0bjpn4yqig17ddym6wqq5fm1b294q74hzcbj9a6gs97fqiwf88xa"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("cask exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/Dewdrops/evil-exchange")
       (synopsis "Exchange text easily within Evil")
       (description
