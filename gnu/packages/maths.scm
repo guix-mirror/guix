@@ -1050,8 +1050,11 @@ implemented in C.")
      `(("gfortran" ,gfortran)))
     (inputs
      `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
+       ;; XXX: These inputs are really dependencies of hdf4.
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)
+
        ("gctp" ,gctp)))
     (arguments
      `( #:configure-flags '("--enable-install-include" "--enable-shared"
