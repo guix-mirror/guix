@@ -2466,15 +2466,16 @@ from the oasis build log
 (define-public ocaml-cppo
   (package
     (name "ocaml-cppo")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/mjambon/cppo/archive/v" version
-                            ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mjambon/cppo")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256 (base32
-                  "1dkm3d5h6h56y937gcdk2wixlpzl59vv5pmiafglr89p20kf7gqf"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+                  "1smcc0l6fh2n0y6bp96c69j5nw755jja99w0b206wx3yb2m4w2hs"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f
