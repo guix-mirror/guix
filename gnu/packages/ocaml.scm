@@ -1347,7 +1347,7 @@ following a very simple s-expression syntax.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.2.0")
+    (version "1.4.0")
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (source
      (origin
@@ -1358,7 +1358,7 @@ following a very simple s-expression syntax.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "16kas19iwm4afijv3yxd250s08absabmdcb4yj57wc8r4fmzv5dm"))))
+         "0sv1p4615l8gpbah4ya2c40yr6fbvahvv3ks7zhrsgcwcq2ljyr2"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f))
@@ -1376,16 +1376,16 @@ functions to the next and/or previous version.")
 (define-public ocaml-ppx-tools-versioned
   (package
     (name "ocaml-ppx-tools-versioned")
-    (version "5.2.1")
+    (version "5.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ppx_tools_versioned/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml-ppx/ppx_tools_versioned")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
+                "1hcmpnw26zf70a71r3d2c2c0mn8q084gdn1r36ynng6fv9hq6j0y"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -5077,6 +5077,18 @@ combinators.")
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
        ("ocaml-ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-deprecated
+           (lambda _
+             ;; Fixed upstream in 22dd1ad9a0c9629f60599c22d82c6488394d6d32, but
+             ;; not in a release yet.
+             (substitute* "src/ppx/instrument.ml"
+               (("module Ast = Ast_405")
+                "module Ast = Migrate_parsetree.Ast_405
+module Ast_405 = Ast"))
+             #t)))))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
