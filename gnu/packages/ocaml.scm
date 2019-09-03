@@ -2408,17 +2408,38 @@ compatibility with older compiler to use these new features in their code.")
 (define-public ocaml-fileutils
   (package
     (name "ocaml-fileutils")
-    (version "0.5.3")
+    (version "0.6.0")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri name version 1728))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gildor478/ocaml-fileutils")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rc4cqlvdhbs55i85zfbfhz938fsy4fj6kwlkfm3ra7bpwn8bmpd"))))
+                "06gxbqfssl16xc8y4d34wpm0mwfr0jgph4lmlwfmgazyggnmvc7m"))))
     (build-system ocaml-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-topfind
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; add the line #directory ".." at the top of each file
+             ;; using #use "topfind";; to be able to find topfind
+             (let* ((findlib-path (assoc-ref inputs "findlib"))
+                    (findlib-libdir
+                     (string-append findlib-path "/lib/ocaml/site-lib")))
+               (substitute* "setup.ml"
+                 (("#use \"topfind\";;" all)
+                  (string-append "#directory \"" findlib-libdir "\"\n"
+                                 all))))
+             #t)))))
+    (propagated-inputs
+     `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("ounit" ,ocaml-ounit)))
+       ("ocaml-oasis" ,ocaml-oasis)
+       ("ocaml-ounit" ,ocaml-ounit)))
     (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
     (synopsis "Pure OCaml functions to manipulate real file and filename")
     (description "Library to provide pure OCaml functions to manipulate real
