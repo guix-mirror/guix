@@ -13923,6 +13923,18 @@ describing the key binding changes.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
        ("emacs-iedit" ,emacs-iedit)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("@cask exec ") ""))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page
      "https://github.com/hlissner/evil-multiedit")
     (synopsis "Multiple cursors for Evil mode")
