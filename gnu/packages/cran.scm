@@ -9325,6 +9325,26 @@ in-memory raw vectors.")
     ;; Either of these two license versions.
     (license (list license:gpl2 license:gpl3))))
 
+(define-public r-nlp
+  (package
+    (name "r-nlp")
+    (version "0.2-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NLP" version))
+       (sha256
+        (base32
+         "0xbhkrnxcbf322jfw31xcn4y2gnk5y7ccq1bz4h3prf44h0whr7w"))))
+    (properties `((upstream-name . "NLP")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/NLP/")
+    (synopsis "Natural language processing infrastructure")
+    (description
+     "This package provides basic classes and methods for Natural Language
+Processing.")
+    (license license:gpl3)))
+
 (define-public r-waveslim
   (package
     (name "r-waveslim")
