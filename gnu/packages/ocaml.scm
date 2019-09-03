@@ -1109,7 +1109,7 @@ files in these formats.")
 (define-public ocaml-zarith
   (package
     (name "ocaml-zarith")
-    (version "1.7")
+    (version "1.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1117,7 +1117,7 @@ files in these formats.")
                      (commit (string-append "release-" version))))
               (sha256
                (base32
-                "08x5xnamibhvxl50f1bb3jl9ym0hm6004hmc54xnrnrv7jxz9rvz"))))
+                "0hv5ywz1q2cgn8apfz490clwk5hcynr937g2v8i13x2ax4bnv0lz"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("perl" ,perl)))
