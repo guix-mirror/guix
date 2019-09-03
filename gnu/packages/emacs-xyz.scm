@@ -3129,11 +3129,10 @@ completion of relevant keywords.")
 
 (define-public emacs-sudo-edit
   (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
-        (version "0.1.0")
         (revision "6"))
     (package
       (name "emacs-sudo-edit")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3145,6 +3144,18 @@ completion of relevant keywords.")
           (base32
            "1qv58x5j5a3v1s2ylhck1ykbfclq0mbi0gsvaql3nyv8cxazqlwl"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("\\$\\(CASK\\) exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/nflath/sudo-edit/")
       (synopsis "Open files as another user")
       (description
