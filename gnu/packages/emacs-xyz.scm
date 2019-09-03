@@ -17597,6 +17597,17 @@ corresponding Evil keys.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-shell
+             ;; Setting the SHELL environment variable is required for the tests
+             ;; to find sh.
+             (lambda _
+               (setenv "SHELL" (which "sh"))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/mamapanda/evil-traces")
       (synopsis "Visual hints for @code{evil-ex}")
       (description "This package adds visual hints to certain @code{ex}
