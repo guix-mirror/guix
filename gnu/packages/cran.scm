@@ -9345,6 +9345,31 @@ in-memory raw vectors.")
 Processing.")
     (license license:gpl3)))
 
+(define-public r-tm
+  (package
+    (name "r-tm")
+    (version "0.7-6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tm" version))
+       (sha256
+        (base32
+         "0spv43kjbpxq3rdxx8ysgrncjyc35ydiwk7gp8n4sig45iqyz59r"))))
+    (properties `((upstream-name . "tm")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-nlp" ,r-nlp)
+       ("r-rcpp" ,r-rcpp)
+       ("r-slam" ,r-slam)
+       ("r-xml2" ,r-xml2)))
+    (home-page "http://tm.r-forge.r-project.org/")
+    (synopsis "Text mining package")
+    (description
+     "This package provides a framework for text mining applications within R.")
+    (license license:gpl3)))
+
 (define-public r-waveslim
   (package
     (name "r-waveslim")
