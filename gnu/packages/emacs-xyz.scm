@@ -9701,6 +9701,32 @@ included by default, and more can be readily added.")
       (description "This package provides functions for converting Unicode to ASCII.")
       (license license:gpl2+))))
 
+(define-public emacs-pubmed
+  (package
+    (name "emacs-pubmed")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/fvdbeek/emacs-pubmed.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15bwjxc7g43m5pi8z17anaqqkvi209r7kk1chmf175477gvrv7c0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)
+       ("emacs-esxml" ,emacs-esxml)
+       ("emacs-s" ,emacs-s)
+       ("emacs-unidecode" ,emacs-unidecode)))
+    (home-page "https://gitlab.com/fvdbeek/emacs-pubmed")
+    (synopsis "Interface to PubMed")
+    (description "This package provides an Emacs interface to the PubMed
+database of references on life sciences.")
+    (license license:gpl3+)))
+
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
