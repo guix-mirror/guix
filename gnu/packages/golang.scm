@@ -3123,30 +3123,28 @@ as conversion to and from @command{net.Addr}.")
       (license license:expat))))
 
 (define-public go-github-com-urfave-cli
-  (let ((commit "693af58b4d51b8fcc7f9d89576da170765980581")
-        (revision "0"))
-    (package
-      (name "go-github-com-urfave-cli")
-      (version (git-version "1.20.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/urfave/cli.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1krq752xgy658an1696vf4dc2zmp541clwjinhn11394sx2qksh6"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/urfave/cli"))
-      (home-page "https://github.com/urfave/cli")
-      (synopsis "Simple, fast, and fun package for building command line apps in Go")
-      (description "@command{cli} is a simple, fast, and fun package for
+  (package
+    (name "go-github-com-urfave-cli")
+    (version "1.21.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/urfave/cli.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "104jldhxn6d97l5vsbsl0q8hgy1bxrahbr6dbfqrlppva51jmydd"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/urfave/cli"))
+    (home-page "https://github.com/urfave/cli")
+    (synopsis "Simple, fast, and fun package for building command line apps in Go")
+    (description "@command{cli} is a simple, fast, and fun package for
 building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-whyrusleeping-json-filter
   (let ((commit "ff25329a9528f01c5175414f16cc0a6a162a5b8b")
