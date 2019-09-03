@@ -1087,3 +1087,36 @@ of data to either CD/DVD/BD.")
     (description
      "Mousepad is a graphical text editor for Xfce based on Leafpad.")
     (license gpl2+)))
+
+(define-public xfce4-screenshooter
+  (package
+   (name "xfce4-screenshooter")
+   (version "1.9.5")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://archive.xfce.org/src/apps/"
+                                "xfce4-screenshooter/"
+                                (version-major+minor version)
+                                "/xfce4-screenshooter-"
+                                version ".tar.bz2"))
+            (sha256
+             (base32
+              "135kad07922jxjs05amn48sdgm2x1rh97wbzdmy9h85r5i1vaddz"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("intltool" ,intltool)
+      ("glib:bin" ,glib "bin")))        ; glib-genmarshal
+   (inputs
+    `(("exo" ,exo)
+      ("libsoup" ,libsoup)
+      ("libxfce4ui" ,libxfce4ui)
+      ("xfce4-panel" ,xfce4-panel)))
+   (home-page "https://goodies.xfce.org/projects/applications/xfce4-screenshooter")
+   (synopsis "Xfce's application to take screenshots")
+   (description
+    "This application allows you to capture the entire screen, the active
+window or a selected region.  You can set the delay that elapses before the screenshot
+is taken and the action that will be done with the screenshot.
+A plugin for the Xfce panel is also available.")
+   (license gpl2+)))
