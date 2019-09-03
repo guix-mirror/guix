@@ -368,16 +368,18 @@ driven and does not detract you from your daily work.")
 (define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://source.atlas.engineer/public/next")
+             ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
+             ;; (url "https://source.atlas.engineer/public/next")
+             (url "https://github.com/atlas-engineer/next")
              (commit version)))
        (sha256
         (base32
-         "0ibq30xrf871pkpasi8p9krn0pmd86rsdzb3jqvz3wnp4wa3hl9d"))
+         "01fn1f080ydk0wj1bwkyakqz93bdq9xb5x8qz820jpl9id17bqgj"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -417,7 +419,7 @@ features for productive professionals.")
     (arguments
      `(#:tests? #f                      ; Need online access.
        #:asd-file "next.asd"
-       #:asd-system-name "download-manager"))
+       #:asd-system-name "next/download-manager"))
     (inputs
      `(;; ASD libraries:
        ("trivial-features" ,sbcl-trivial-features)
@@ -505,8 +507,6 @@ features for productive professionals.")
          ("cl-markup" ,sbcl-cl-markup)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
-         ("cl-string-match" ,sbcl-cl-string-match)
-         ("cl-strings" ,sbcl-cl-strings)
          ("closer-mop" ,sbcl-closer-mop)
          ("dbus" ,cl-dbus)
          ("dexador" ,sbcl-dexador)
