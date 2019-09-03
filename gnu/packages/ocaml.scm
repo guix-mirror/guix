@@ -3033,7 +3033,7 @@ function that follows the prototype of POSIX's wcwidth.")
 (define-public ocaml-zed
   (package
     (name "ocaml-zed")
-    (version "1.6")
+    (version "2.0.3")
     (source
      (origin
        (method git-fetch)
@@ -3042,14 +3042,15 @@ function that follows the prototype of POSIX's wcwidth.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00hhxcjf3bj3w2qm8nzs9x6vrqkadf4i0277s5whzy2rmiknj63v"))))
+        (base32 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
        #:test-target "."))
     (propagated-inputs
-     `(("camomile" ,ocaml-camomile)
-       ("react" ,ocaml-react)))
+     `(("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-charinfo-width" ,ocaml-charinfo-width)
+       ("ocaml-react" ,ocaml-react)))
     (home-page "https://github.com/diml/zed")
     (synopsis "Abstract engine for text editing in OCaml")
     (description "Zed is an abstract engine for text edition.  It can be used
@@ -3060,7 +3061,7 @@ connect an engine to your inputs and rendering functions to get an editor.")
 (define-public ocaml-lambda-term
   (package
     (name "ocaml-lambda-term")
-    (version "1.13")
+    (version "2.0.2")
     (source
      (origin
        (method git-fetch)
@@ -3069,7 +3070,7 @@ connect an engine to your inputs and rendering functions to get an editor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wwib20b2ir3h2g9zwhzn04cv160psb805skp8v23wqgyn5cnbh8"))))
+        (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
     (build-system dune-build-system)
     (arguments
      `(#:build-flags (list "--profile" "release")
@@ -3091,7 +3092,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.3.0")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -3100,7 +3101,7 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xvibb97vzzh7yabr5ajhilriwz8cg4c506lxq0bd7ss3aci9han"))))
+        (base32 "1jm3sagissbw8012mnppknsxl9dqd9514b891b64disqhdb5awg3"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
