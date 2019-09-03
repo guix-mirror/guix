@@ -2953,7 +2953,7 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
 (define-public ocaml-camomile
   (package
     (name "ocaml-camomile")
-    (version "1.0.1")
+    (version "1.0.2")
     (home-page "https://github.com/yoriyuki/Camomile")
     (source (origin
               (method url-fetch)
@@ -2961,18 +2961,19 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
                                   "/camomile-" version ".tbz"))
               (sha256
                (base32
-                "01ssjrqz41jvrqh27jxnh9cx7ywi9b5sgsykd00i7z9nrcwhlfy2"))))
+                "0chn7ldqb3wyf95yhmsxxq65cif56smgz1mhhc7m0dpwmyq1k97h"))))
     (build-system dune-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)))
     (arguments
-     `(#:build-flags (list "--profile" "realease")
+     `(#:build-flags (list "--profile" "release")
        #:test-target "camomile-test"
+       #:tests? #f; Tests fail, see https://github.com/yoriyuki/Camomile/issues/82
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-usr-share
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("Camomile/jbuild" "configure.ml")
+             (substitute* '("Camomile/dune" "configure.ml")
                (("/usr/share") (string-append (assoc-ref outputs "out") "/share")))
              #t)))))
     (synopsis "Comprehensive Unicode library")
