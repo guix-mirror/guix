@@ -9409,7 +9409,10 @@ pairs (Selesnick 2001, 2002).")
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcolorbrewer" ,r-rcolorbrewer)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ;; The "tm" package is only "suggested" according to CRAN, but the
+       ;; wordcloud package cannot be loaded without it.
+       ("r-tm" ,r-tm)))
     (home-page "https://cran.r-project.org/web/packages/wordcloud")
     (synopsis "Word clouds")
     (description
