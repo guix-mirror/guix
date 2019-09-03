@@ -675,14 +675,14 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.13")
+    (version "4.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
+        (base32 "0n29klrrbwan9307np0d9hr128dlpc4nnlf57a140080ll3jmp8l"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"))))
