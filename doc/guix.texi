@@ -13032,6 +13032,7 @@ objects}).
 @end deftp
 
 @cindex NTP (Network Time Protocol), service
+@cindex ntpd, service for the Network Time Protocol daemon
 @cindex real time clock
 @defvr {Scheme Variable} ntp-service-type
 This is the type of the service running the @uref{http://www.ntp.org,
