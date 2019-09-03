@@ -1,7 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +24,6 @@
   #:use-module (sxml simple)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -64,7 +62,6 @@
 
             %gnu-updater
             %gnu-ftp-updater
-            %kde-updater
             %xorg-updater
             %kernel.org-updater))
 
@@ -615,98 +612,6 @@ releases are on gnu.org."
 (define gnu-hosted?
   (url-prefix-predicate "mirror://gnu/"))
 
-(define %kde-file-list-uri
-  ;; URI of the file list (ls -lR format) for download.kde.org.
-  (string->uri "https://download.kde.org/ls-lR.bz2"))
-
-(define (download.kde.org-files)
-  ;;"Return the list of files available at download.kde.org."
-
-  (define (ls-lR-line->filename path line)
-    ;; remove mode, blocks, user, group, size, date, time and one space
-    (regexp-substitute
-     #f (string-match "^(\\S+\\s+){6}\\S+\\s" line) path 'post))
-
-  (define (canonicalize path)
-    (let* ((path (if (string-prefix? "/srv/archives/ftp/" path)
-                     (string-drop path (string-length "/srv/archives/ftp"))
-                     path))
-           (path (if (string-suffix? ":" path)
-                     (string-drop-right path 1)
-                     path))
-           (path (if (not (string-suffix? "/" path))
-                     (string-append path "/")
-                     path)))
-      path))
-
-  (define (write-cache input cache)
-    "Read bzipped ls-lR from INPUT, and write it as a list of file paths to
-CACHE."
-
-    (call-with-decompressed-port 'bzip2 input
-      (lambda (input)
-        (let loop_dirs ((files '()))
-          (let ((path (read-line input)))
-            (if
-             (or (eof-object? path) (string= path ""))
-             (write (reverse files) cache))
-            (let loop_entries ((path (canonicalize path))
-                               (files files))
-              (let ((line (read-line input)))
-                (cond
-                 ((eof-object? line)
-                  (write (reverse files) cache))
-                 ((string-prefix? "-" line)
-                  (loop_entries path
-                                (cons (ls-lR-line->filename path line) files)))
-                 ((not (string= line ""))
-                  (loop_entries path files))
-                 (#t (loop_dirs files))))))))))
-
-  (define (cache-miss uri)
-    (format (current-error-port) "fetching ~a...~%" (uri->string uri)))
-
-  (let* ((port (http-fetch/cached %kde-file-list-uri
-                                  #:ttl 3600
-                                  #:write-cache write-cache
-                                  #:cache-miss cache-miss))
-         (files (read port)))
-    (close-port port)
-    files))
-
-(define (latest-kde-release package)
-  "Return the latest release of PACKAGE, a KDE package, or #f if it could not
-be determined."
-  (let* ((uri      (string->uri (origin-uri (package-source package))))
-         (directory  (dirname (dirname (uri-path uri))))
-         (name     (package-upstream-name package))
-         (files    (download.kde.org-files))
-         (relevant (filter (lambda (file)
-                             (and (string-prefix? directory file)
-                                  (release-file? name (basename file))))
-                           files)))
-    (match (sort relevant (lambda (file1 file2)
-                            (version>? (tarball-sans-extension
-                                        (basename file1))
-                                       (tarball-sans-extension
-                                        (basename file2)))))
-           ((and tarballs (reference _ ...))
-            (let* ((version  (tarball->version reference))
-                   (tarballs (filter (lambda (file)
-                                       (string=? (tarball-sans-extension
-                                                  (basename file))
-                                                 (tarball-sans-extension
-                                                  (basename reference))))
-                                     tarballs)))
-              (upstream-source
-               (package name)
-               (version version)
-               (urls (map (lambda (file)
-                            (string-append "mirror://kde/" file))
-                          tarballs)))))
-           (()
-            #f))))
-
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."
   (let ((uri (string->uri (origin-uri (package-source package)))))
@@ -753,13 +658,6 @@ be determined."
            (and (not (gnu-hosted? package))
                 (pure-gnu-package? package))))
    (latest latest-release*)))
-
-(define %kde-updater
-  (upstream-updater
-    (name 'kde)
-    (description "Updater for KDE packages")
-    (pred (url-prefix-predicate "mirror://kde/"))
-    (latest latest-kde-release)))
 
 (define %xorg-updater
   (upstream-updater
