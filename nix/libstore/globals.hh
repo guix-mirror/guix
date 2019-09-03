@@ -66,6 +66,9 @@ struct Settings {
     /* File name of the socket the daemon listens to.  */
     Path nixDaemonSocketFile;
 
+    /* Absolute file name of the 'guix' program.  */
+    Path guixProgram;
+
     /* Whether to keep temporary directories of failed builds. */
     bool keepFailed;
 

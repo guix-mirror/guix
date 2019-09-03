@@ -73,6 +73,7 @@ void Settings::processEnvironment()
     nixLibexecDir = canonPath(getEnv("NIX_LIBEXEC_DIR", NIX_LIBEXEC_DIR));
     nixBinDir = canonPath(getEnv("NIX_BIN_DIR", NIX_BIN_DIR));
     nixDaemonSocketFile = canonPath(nixStateDir + DEFAULT_SOCKET_PATH);
+    guixProgram = canonPath(getEnv("GUIX", nixBinDir + "/guix"));
 }
 
 

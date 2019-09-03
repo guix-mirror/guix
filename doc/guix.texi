@@ -3496,6 +3496,10 @@ This prints nothing unless the daemon was started with
 List the GC roots owned by the user; when run as root, list @emph{all} the GC
 roots.
 
+@item --list-busy
+List store items in use by currently running processes.  These store
+items are effectively considered GC roots: they cannot be deleted.
+
 @item --clear-failures
 Remove the specified store items from the failed-build cache.
 

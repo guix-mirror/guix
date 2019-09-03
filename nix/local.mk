@@ -155,7 +155,6 @@ noinst_HEADERS =						\
 	           (write (get-string-all in) out)))))"
 
 nodist_pkglibexec_SCRIPTS =			\
-  %D%/scripts/list-runtime-roots		\
   %D%/scripts/substitute			\
   %D%/scripts/download
 
