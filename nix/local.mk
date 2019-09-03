@@ -157,13 +157,6 @@ noinst_HEADERS =						\
 nodist_pkglibexec_SCRIPTS =			\
   %D%/scripts/substitute
 
-if BUILD_DAEMON_OFFLOAD
-
-nodist_pkglibexec_SCRIPTS +=			\
-  %D%/scripts/offload
-
-endif BUILD_DAEMON_OFFLOAD
-
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
 nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service

@@ -614,9 +614,7 @@ HookInstance::HookInstance()
 {
     debug("starting build hook");
 
-    Path buildHook = getEnv("NIX_BUILD_HOOK");
-    if (string(buildHook, 0, 1) != "/") buildHook = settings.nixLibexecDir + "/nix/" + buildHook;
-    buildHook = canonPath(buildHook);
+    const Path &buildHook = settings.guixProgram;
 
     /* Create a pipe to get the output of the child. */
     fromHook.create();
@@ -642,13 +640,14 @@ HookInstance::HookInstance()
         if (dup2(builderOut.writeSide, 4) == -1)
             throw SysError("dupping builder's stdout/stderr");
 
-        execl(buildHook.c_str(), buildHook.c_str(), settings.thisSystem.c_str(),
+        execl(buildHook.c_str(), buildHook.c_str(), "offload",
+	    settings.thisSystem.c_str(),
             (format("%1%") % settings.maxSilentTime).str().c_str(),
             (format("%1%") % settings.printBuildTrace).str().c_str(),
             (format("%1%") % settings.buildTimeout).str().c_str(),
             NULL);
 
-        throw SysError(format("executing `%1%'") % buildHook);
+        throw SysError(format("executing `%1% offload'") % buildHook);
     });
 
     pid.setSeparatePG(true);
@@ -1581,7 +1580,7 @@ void DerivationGoal::buildDone()
 
 HookReply DerivationGoal::tryBuildHook()
 {
-    if (!settings.useBuildHook || getEnv("NIX_BUILD_HOOK") == "") return rpDecline;
+    if (!settings.useBuildHook) return rpDecline;
 
     if (!worker.hook)
         worker.hook = std::shared_ptr<HookInstance>(new HookInstance);

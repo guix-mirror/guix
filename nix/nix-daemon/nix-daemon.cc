@@ -580,8 +580,14 @@ static void performOp(bool trusted, unsigned int clientVersion,
             settings.set("build-max-silent-time", std::to_string(readInt(from)));
         }
 
-        if (GET_PROTOCOL_MINOR(clientVersion) >= 2)
+        if (GET_PROTOCOL_MINOR(clientVersion) >= 2) {
+#ifdef HAVE_DAEMON_OFFLOAD_HOOK
             settings.useBuildHook = readInt(from) != 0;
+#else
+	    readInt(from);			  // ignore the user's setting
+#endif
+	}
+
         if (GET_PROTOCOL_MINOR(clientVersion) >= 4) {
             settings.buildVerbosity = (Verbosity) readInt(from);
             logType = (LogType) readInt(from);
