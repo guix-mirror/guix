@@ -100,6 +100,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -684,7 +685,8 @@ computations.")
         (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
-                                "hdf4-shared-fortran.patch"))))
+                                "hdf4-shared-fortran.patch"
+                                "hdf4-tirpc.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -692,10 +694,14 @@ computations.")
        ("flex" ,flex)))
     (inputs
      `(("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)))
     (arguments
      `(#:parallel-tests? #f
-       #:configure-flags '("--enable-shared")
+       #:configure-flags (list "--enable-shared"
+                               (string-append "CPPFLAGS=-I"
+                                              (assoc-ref %build-inputs "libtirpc")
+                                              "/include/tirpc"))
        #:phases
        (modify-phases %standard-phases
          ;; This is inspired by two of Debian's patches.

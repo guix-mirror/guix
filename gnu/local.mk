@@ -944,6 +944,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/hdf4-architectures.patch 		\
   %D%/packages/patches/hdf4-reproducibility.patch 		\
   %D%/packages/patches/hdf4-shared-fortran.patch 		\
+  %D%/packages/patches/hdf4-tirpc.patch 			\
   %D%/packages/patches/hdf5-config-date.patch			\
   %D%/packages/patches/hdf5-mpi-deprecations.patch		\
   %D%/packages/patches/hdf5-1.8-mpi-deprecations.patch		\
