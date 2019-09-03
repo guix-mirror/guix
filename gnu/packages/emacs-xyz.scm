@@ -6915,6 +6915,9 @@ aligning text objects based on separators.")
            "0872ix682hkdz0k8pn6sb54rqkx00rz5fxpd5j2snx406yagpaxz"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/edkolev/evil-expat")
       (synopsis "Extra @code{ex} commands for @code{evil-mode}")
       (description
