@@ -1224,8 +1224,9 @@ static void checkSecrecy(const Path & path)
 
 static std::string runAuthenticationProgram(const Strings & args)
 {
-    return runProgram(settings.nixLibexecDir + "/authenticate",
-		      false, args);
+    Strings fullArgs = { "authenticate" };
+    fullArgs.insert(fullArgs.end(), args.begin(), args.end()); // append
+    return runProgram(settings.guixProgram, false, fullArgs);
 }
 
 void LocalStore::exportPath(const Path & path, bool sign,

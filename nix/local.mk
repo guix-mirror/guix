@@ -165,9 +165,6 @@ nodist_pkglibexec_SCRIPTS +=			\
 
 endif BUILD_DAEMON_OFFLOAD
 
-nodist_pkglibexec_SCRIPTS +=			\
-  %D%/scripts/authenticate
-
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
 nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service
