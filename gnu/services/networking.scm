@@ -330,8 +330,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                         "
 # Disable status queries as a workaround for CVE-2013-5211:
 # <http://support.ntp.org/bin/view/Main/SecurityNotice#DRDoS_Amplification_Attack_using>.
-restrict default kod nomodify notrap nopeer noquery
-restrict -6 default kod nomodify notrap nopeer noquery
+restrict default kod nomodify notrap nopeer noquery limited
+restrict -6 default kod nomodify notrap nopeer noquery limited
 
 # Yet, allow use of the local 'ntpq'.
 restrict 127.0.0.1
