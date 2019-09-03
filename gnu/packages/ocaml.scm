@@ -2276,7 +2276,7 @@ many additional enhancements, including:
 (define-public ocaml-batteries
   (package
     (name "ocaml-batteries")
-    (version "2.9.0")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml-batteries-team/"
@@ -2284,7 +2284,7 @@ many additional enhancements, including:
                                   version "/batteries-" version ".tar.gz"))
               (sha256
                (base32
-                "0lkdmv2my5hirkswmci2cch341n6wkkj2q8apjhs83sg6528caxi"))))
+                "08ghw87d56h1a6y1nnh3x2wy9xj25jqfk5sp6ma9nsyd37babb0h"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
