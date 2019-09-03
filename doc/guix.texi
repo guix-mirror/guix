@@ -25603,6 +25603,7 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
+                       (system "x86_64-linux")
                        (user "alice")
                        (identity "./id_rsa")
                        (port 2222)))))
