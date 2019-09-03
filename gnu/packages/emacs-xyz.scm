@@ -4342,6 +4342,30 @@ overview of tasks in a subtree.")
 organizer.")
     (license license:gpl3+)))
 
+(define-public emacs-org-tanglesync
+  (let ((commit "ab76a3eaaed263677d2e029d43f6c4de8fc21418")
+        (revision "1"))
+    (package
+      (name "emacs-org-tanglesync")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mtekman/org-tanglesync.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "14ify3yirq2qmi9isk8kcbwx8pbclv1fyg49kraz4srhgf2fssgf"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)))
+      (home-page "https://github.com/mtekman/org-tanglesync.el")
+      (synopsis "Sync Org source blocks with tangled external files")
+      (description "This package automatically pulls changes from source code
+to their corresponding tangled blocks.")
+      (license license:gpl3+))))
+
 (define-public emacs-company-flow
   (let ((commit "76ef585c70d2a3206c2eadf24ba61e59124c3a16")
         (revision "1"))
