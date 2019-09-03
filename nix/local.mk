@@ -155,8 +155,7 @@ noinst_HEADERS =						\
 	           (write (get-string-all in) out)))))"
 
 nodist_pkglibexec_SCRIPTS =			\
-  %D%/scripts/substitute			\
-  %D%/scripts/download
+  %D%/scripts/substitute
 
 if BUILD_DAEMON_OFFLOAD
 
