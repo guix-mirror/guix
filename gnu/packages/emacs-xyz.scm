@@ -3091,7 +3091,10 @@ for Flow files.")
         (base32
          "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
     (build-system emacs-build-system)
-    (arguments '(#:include '("\\.el$" "\\.org$")))
+    (arguments
+     `(#:include '("\\.el$" "\\.org$")
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/xuchunyang/elisp-demos/")
     (synopsis "Enhance @code{*Help*} buffers with additional examples")
     (description
