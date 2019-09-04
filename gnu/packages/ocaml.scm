@@ -1242,7 +1242,7 @@ to use -- to sophisticated random generation of test cases.")
 (define-public ocaml-stringext
   (package
     (name "ocaml-stringext")
-    (version "1.5.0")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1251,7 +1251,7 @@ to use -- to sophisticated random generation of test cases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0035pyakk0r7pfhkrayvqncpv9mk6lssr455j3prmdcirh6s50d7"))))
+                "1m09cmn3vrk3gdm60fb730qsygcfyxsyv7gl9xfzck08q1x2x9qx"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
