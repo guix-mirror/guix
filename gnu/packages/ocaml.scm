@@ -1140,7 +1140,7 @@ for speed and space economy.")
 (define-public ocaml-frontc
   (package
     (name "ocaml-frontc")
-    (version "3.4.1")
+    (version "3.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1150,7 +1150,7 @@ for speed and space economy.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dq5nks0c9gsbr1m8k39m1bniawr5hqcy1r8x5px7naa95ch06ak"))))
+                "0k7jk9hkglnkk27s62xl493jyqc017gyvwqb1lyc0ywbb001s102"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
