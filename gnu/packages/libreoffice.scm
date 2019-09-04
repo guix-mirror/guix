@@ -576,14 +576,14 @@ created by PageMaker version 6.x and 7.")
 (define-public libvisio
   (package
     (name "libvisio")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/libvisio/"
                           "libvisio-" version ".tar.xz"))
       (sha256 (base32
-               "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
+               "0k7adcbbf27l7n453cca1m6s9yj6qvb5j6bsg2db09ybf3w8vbwg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
