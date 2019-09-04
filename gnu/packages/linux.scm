@@ -669,6 +669,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
+             ;; Unset CROSS_CPATH to make sure that cross-libc is not
+             ;; found. Otherwise, some of its header would conflict with the
+             ;; one from linux (stdint.h and linux/types.h)
+             ,@(if (%current-target-system)
+                   '((unsetenv "CROSS_CPATH"))
+                   '())
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
