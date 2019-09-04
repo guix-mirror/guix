@@ -110,7 +110,6 @@ libstore_a_CPPFLAGS =				\
   -DNIX_STATE_DIR=\"$(localstatedir)/guix\"	\
   -DNIX_LOG_DIR=\"$(localstatedir)/log/guix\"	\
   -DGUIX_CONFIGURATION_DIRECTORY=\"$(sysconfdir)/guix\"		\
-  -DNIX_LIBEXEC_DIR=\"$(libexecdir)/guix\"	\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
   -DDEFAULT_CHROOT_DIRS="\"\""
 

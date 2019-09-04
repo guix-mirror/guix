@@ -42,12 +42,6 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH
 PATH="$abs_top_builddir/scripts:$abs_top_builddir:$PATH"
 export PATH
 
-# Daemon helpers.
-
-NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'authenticate', etc.
-
-export NIX_LIBEXEC_DIR
-
 # The daemon invokes 'guix'; tell it which one to use.
 GUIX="$abs_top_builddir/scripts/guix"
 export GUIX

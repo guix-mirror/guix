@@ -57,9 +57,6 @@ struct Settings {
     /* The directory where configuration files are stored. */
     Path nixConfDir;
 
-    /* The directory where internal helper programs are stored. */
-    Path nixLibexecDir;
-
     /* The directory where the main programs are stored. */
     Path nixBinDir;
 
