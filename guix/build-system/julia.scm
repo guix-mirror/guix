@@ -17,8 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system julia)
-  #:use-module (guix build julia-build-system)
-  #:use-module (gnu packages julia)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -51,7 +49,7 @@
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
-                (julia julia)
+                (julia (default-julia))
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
