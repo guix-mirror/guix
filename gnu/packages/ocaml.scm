@@ -1870,15 +1870,16 @@ locks or other synchronization primitives.")
 (define-public ocaml-lwt-log
   (package
     (name "ocaml-lwt-log")
-    (version "1.1.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/aantron/lwt_log/archive/" version
-                            ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256 (base32
-                  "1lr62j2266pbsi54xmzsfvl2z7fi7smhak7fp1ybl8hssxwi6in2"))))
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aantron/lwt_log")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n12i1rmn9cjn6p8yr6qn5dwbrwvym7ckr7bla04a1xnq8qlcyj7"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
