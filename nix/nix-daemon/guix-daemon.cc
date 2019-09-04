@@ -466,8 +466,7 @@ main (int argc, char *argv[])
     {
       settings.processEnvironment ();
 
-      /* Use our substituter by default.  */
-      settings.substituters.clear ();
+      /* Enable substitutes by default.  */
       settings.set ("build-use-substitutes", "true");
 
       /* Use our substitute server by default.  */
@@ -489,14 +488,6 @@ main (int argc, char *argv[])
       settings.update ();
       printMsg(lvlDebug,
 	       format ("build log compression: %1%") % settings.logCompression);
-
-      if (settings.useSubstitutes)
-	settings.substituters.push_back (settings.nixLibexecDir
-					 + "/substitute");
-      else
-	/* Clear the substituter list to make sure nothing ever gets
-	   substituted, regardless of the client's settings.  */
-	settings.substituters.clear ();
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
 	fprintf (stderr, _("warning: daemon is running as root, so \

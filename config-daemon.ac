@@ -148,8 +148,6 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_SUBST([GUIX_TEST_ROOT])
 
   GUIX_CHECK_LOCALSTATEDIR
-  AC_CONFIG_FILES([nix/scripts/substitute],
-    [chmod +x nix/scripts/substitute])
 fi
 
 AM_CONDITIONAL([HAVE_LIBBZ2], [test "x$HAVE_LIBBZ2" = "xyes"])

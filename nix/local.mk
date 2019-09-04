@@ -154,9 +154,6 @@ noinst_HEADERS =						\
 	         (lambda (in)					\
 	           (write (get-string-all in) out)))))"
 
-nodist_pkglibexec_SCRIPTS =			\
-  %D%/scripts/substitute
-
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system
 nodist_systemdservice_DATA = etc/guix-daemon.service etc/guix-publish.service

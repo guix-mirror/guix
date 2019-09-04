@@ -596,8 +596,12 @@ static void performOp(bool trusted, unsigned int clientVersion,
         if (GET_PROTOCOL_MINOR(clientVersion) >= 6
             && GET_PROTOCOL_MINOR(clientVersion) < 0x61)
             settings.set("build-cores", std::to_string(readInt(from)));
-        if (GET_PROTOCOL_MINOR(clientVersion) >= 10)
-            settings.set("build-use-substitutes", readInt(from) ? "true" : "false");
+        if (GET_PROTOCOL_MINOR(clientVersion) >= 10) {
+	    if (settings.useSubstitutes)
+		settings.set("build-use-substitutes", readInt(from) ? "true" : "false");
+	    else
+		readInt(from);			// substitutes remain disabled
+	}
         if (GET_PROTOCOL_MINOR(clientVersion) >= 12) {
             unsigned int n = readInt(from);
             for (unsigned int i = 0; i < n; i++) {

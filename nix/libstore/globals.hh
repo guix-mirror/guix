@@ -115,11 +115,6 @@ struct Settings {
        means infinity.  */
     time_t buildTimeout;
 
-    /* The substituters.  There are programs that can somehow realise
-       a store path without building, e.g., by downloading it or
-       copying it from a CD. */
-    Paths substituters;
-
     /* Whether to use build hooks (for distributed builds).  Sometimes
        users want to disable this from the command-line. */
     bool useBuildHook;
