@@ -41,8 +41,28 @@
                (base32
                 "0rixv4c301djr0d0cnsxs8c1wjndi6bf9vi5axz6mwjkv80cmfcv"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("perl" ,perl)))
+    (arguments
+     ;; When cross-compiling, the package is configured twice: once with the
+     ;; native compiler and once with the cross-compiler. During the configure
+     ;; with the native compiler, the environment is reset. This leads to
+     ;; multiple environment variables missing. Do not reset the environment
+     ;; to prevent that.
+     (if (%current-target-system)
+         '(#:phases
+           (modify-phases %standard-phases
+             (add-before 'configure 'fix-cross-configure
+               (lambda _
+                 (substitute* "configure"
+                   (("env -i")
+                    "env "))
+                 #t))))
+         '()))
+    (inputs `(("ncurses" ,ncurses)))
+    ;; When cross-compiling, texinfo will build some of its own binaries with
+    ;; the native compiler. This means ncurses is needed both in both inputs
+    ;; and native-inputs.
+    (native-inputs `(("perl" ,perl)
+                     ("ncurses" ,ncurses)))
 
     (native-search-paths
      ;; This is the variable used by the standalone Info reader.
