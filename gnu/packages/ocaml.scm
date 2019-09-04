@@ -3540,19 +3540,29 @@ than the first one.")
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")
-   (version "1.2.0")
+   (version "1.2.1")
    (home-page "https://github.com/mjambon/biniou")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mjpgwyfq2b2izjw0flmlpvdjgqpq8shs89hxj1np2r50csr8dcb"))))
+         "0x2kiy809n1j0yf32l7hj102y628jp5jdrkbi3z7ld8jq04h1790"))))
    (build-system dune-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'make-writable
+          (lambda _
+            (for-each
+              (lambda (file)
+                (chmod file #o644))
+              (find-files "." "."))
+            #t)))))
    (inputs
     `(("ocaml-easy-format" ,ocaml-easy-format)))
    (native-inputs
