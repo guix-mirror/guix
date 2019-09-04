@@ -285,7 +285,7 @@ path to the repository."
                                           'ocaml-build-system))
                        ,@(if (null? inputs)
                            '()
-                           `((inputs ,(list 'quasiquote inputs))))
+                           `((propagated-inputs ,(list 'quasiquote inputs))))
                        ,@(if (null? native-inputs)
                            '()
                            `((native-inputs ,(list 'quasiquote native-inputs))))
