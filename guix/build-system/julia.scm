@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system julia)
-  #:use-module ((guix build julia-build-system))
+  #:use-module (guix build julia-build-system)
   #:use-module (gnu packages julia)
   #:use-module (guix store)
   #:use-module (guix utils)
