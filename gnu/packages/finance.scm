@@ -490,9 +490,12 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        ("zeromq" ,zeromq)))
     (arguments
      `(#:out-of-source? #t
-       #:configure-flags '("-DARCH=default"
-                           "-DBUILD_TESTS=ON"
-                           "-DBUILD_GUI_DEPS=ON")
+       #:configure-flags
+       (list "-DARCH=default"
+             "-DBUILD_TESTS=ON"
+             "-DBUILD_GUI_DEPS=ON"
+             (string-append "-DReadline_ROOT_DIR="
+                            (assoc-ref %build-inputs "readline")))
        #:phases
        (modify-phases %standard-phases
          ;; tests/core_tests need a valid HOME
