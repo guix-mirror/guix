@@ -5066,7 +5066,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "0.8.0")
+    (version "0.8.1")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -5077,10 +5077,11 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+         "0gzdjfnkv56vhmpvi9xpv1p05z50y55izhn156bkmb35s6izxds3"))))
     (build-system dune-build-system)
-    (inputs
-     `(("ocaml-uchar" ,ocaml-uchar)
+    (propagated-inputs
+     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+       ("ocaml-uchar" ,ocaml-uchar)
        ("ocaml-uutf" ,ocaml-uutf)
        ("ocaml-lwt" ,ocaml-lwt)))
     (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
@@ -5155,7 +5156,7 @@ combinators.")
         (base32
          "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
     (build-system dune-build-system)
-    (inputs
+    (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
        ("ocaml-ounit" ,ocaml-ounit)))
