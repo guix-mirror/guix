@@ -15853,6 +15853,31 @@ buffers, etc.  It also has plug-ins to help your Emacs life.")
 programs can use this table component for the application UI.")
       (license license:gpl3+))))
 
+(define-public emacs-leetcode
+  (let ((commit "8624496af9e105c3e07d88844b37ede87540d604")
+        (revision "1"))
+    (package
+      (name "emacs-leetcode")
+      (version (git-version "0" "1" commit))
+      (home-page "https://github.com/ginqi7/leetcode-emacs.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ginqi7/leetcode-emacs")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "11pp7ydlmwrv7djf9mwk4xzn295xbmdnj5x13bfj5yjpjr89p531"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-names" ,emacs-names)
+         ("emacs-ctable" ,emacs-ctable)))
+      (synopsis "Solve and submit LeetCode problems from within Emacs")
+      (description "This package provides an Emacs interface to LeetCode
+allowing users to log in and solve problems of their choice using Emacs.")
+      (license license:unlicense))))
+
 (define-public emacs-epc
   (let ((commit "e1bfa5ca163273859336e3cc89b4b6460f7f8cda"))
     (package
