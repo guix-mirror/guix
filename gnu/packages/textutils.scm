@@ -475,7 +475,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.9.2")
+    (version "6.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
@@ -483,7 +483,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "0slp4hpw9qxk4xhn7abyw7065sd355xwkyfq72glxczcjsqxsynv"))))
+                "0pvj37r1rd5h5vw99mdk8z4k44gq1ldwrapkamdiicksdfkr4ndb"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")
