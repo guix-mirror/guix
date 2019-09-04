@@ -238,7 +238,9 @@ path to the repository."
              (version (find-latest-version name repository))
              (file (string-append repository "/packages/" name "/" name "." version "/opam")))
     `(("metadata" ,@(get-metadata file))
-      ("version" . ,version))))
+      ("version" . ,(if (string-prefix? "v" version)
+                        (substring version 1)
+                        version)))))
 
 (define (opam->guix-package name)
   (and-let* ((opam-file (opam-fetch name))
