@@ -7299,3 +7299,41 @@ The class may be used to simplify the preamble in sub-files.  By default the
 The behaviour in standalone mode may adjusted using a configuration file
 @code{standalone.cfg} to redefine the standalone environment.")
     (license license:lppl1.3+)))
+
+(define-public texlive-siunitx
+  (package
+    (name "texlive-siunitx")
+    (version (number->string %texlive-revision))
+    (source (texlive-origin
+             name version
+             (list "/source/latex/siunitx/siunitx.dtx"
+                   "/doc/latex/siunitx/README.md")
+             (base32
+              "0dmljnxgv2bwl3mi74iil41q03swvrm1b0ziwxlhc4m9lx31b1q1")))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/siunitx"
+       #:build-targets '("siunitx.dtx")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "source/latex/siunitx") #t)))))
+    (propagated-inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
+       ("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+    (home-page "http://www.ctan.org/pkg/siunitx")
+    (synopsis "Comprehensive SI units package")
+    (description
+     "Typesetting values with units requires care to ensure that the combined
+mathematical meaning of the value plus unit combination is clear.  In
+particular, the SI units system lays down a consistent set of units with rules
+on how they are to be used.  However, different countries and publishers have
+differing conventions on the exact appearance of numbers (and units).  A
+number of LaTeX packages have been developed to provide consistent application
+of the various rules.  The @code{siunitx} package takes the best from the
+existing packages, and adds new features and a consistent interface.  A number
+of new ideas have been incorporated, to fill gaps in the existing provision.
+The package also provides backward-compatibility with @code{SIunits},
+@code{sistyle}, @code{unitsdef} and @code{units}.  The aim is to have one
+package to handle all of the possible unit-related needs of LaTeX users.")
+    (license license:lppl1.3c)))
