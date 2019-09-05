@@ -2835,6 +2835,32 @@ whitespace from a string.")
 untrusted inputs in Rust.")
     (license license:isc)))
 
+(define-public rust-vcpkg
+  (package
+    (name "rust-vcpkg")
+    (version "0.2.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "vcpkg" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "15dzk1b96q946v9aisbd1bbhi33n93wvgziwh1shmscn1xflbp9k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-lazy-static" ,rust-lazy-static)
+        ("rust-tempdir" ,rust-tempdir))
+       #:tests? #f)) ; tests try to link libmysql, graphite2, harfbuzz
+    (home-page "https://github.com/mcgoo/vcpkg-rs")
+    (synopsis "Find native dependencies in a vcpkg tree at build time")
+    (description
+     "This package provides a library to find native dependencies in a
+@code{vcpkg} tree at build time in order to be used in Cargo build scripts.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-version-check
   (package
     (name "rust-version-check")
