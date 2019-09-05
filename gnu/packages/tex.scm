@@ -3567,7 +3567,10 @@ standard LaTeX packages."
                ;; the updmap.cfg file)
                (match (filter (match-lambda
                                 ((name . _)
-                                 (not (member name '("bash" "updmap.cfg")))))
+                                 (not (member name '("bash"
+                                                     "coreutils"
+                                                     "sed"
+                                                     "updmap.cfg")))))
                               %build-inputs)
                  (((names . directories) ...)
                   (union-build (assoc-ref %outputs "out")
@@ -3587,6 +3590,7 @@ standard LaTeX packages."
                (setenv "PATH" (string-append
                                (assoc-ref %build-inputs "bash") "/bin:"
                                (assoc-ref %build-inputs "coreutils") "/bin:"
+                               (assoc-ref %build-inputs "sed") "/bin:"
                                (string-append out "/bin")))
                (for-each
                 (cut wrap-program <>
@@ -3595,16 +3599,32 @@ standard LaTeX packages."
                 (find-files (string-append out "/bin") ".*"))
 
                ;; Remove invalid maps from config file.
-               (let ((port (open-pipe* OPEN_WRITE "updmap-sys"
-                                       "--syncwithtrees"
-                                       "--nohash"
-                                       (assoc-ref %build-inputs "updmap.cfg"))))
-                 (display "Y\n" port)
-                 (when (not (zero? (status:exit-val (close-pipe port))))
-                   (error "failed to filter updmap.cfg")))
-               ;; Generate maps.
-               (invoke "updmap-sys" "--force"
-                       (string-append out "/share/texmf-config/web2c/updmap.cfg"))
+               (let ((web2c (string-append out "/share/texmf-config/web2c/"))
+                     (maproot (string-append out "/share/texmf-dist/fonts/map/")))
+                 (mkdir-p web2c)
+                 (copy-file
+                  (assoc-ref %build-inputs "updmap.cfg")
+                  (string-append web2c "updmap.cfg"))
+                 (make-file-writable (string-append web2c "updmap.cfg"))
+
+                 (let* ((port (open-pipe* OPEN_WRITE "updmap-sys"
+                                          "--syncwithtrees"
+                                          "--nohash"
+                                          (string-append "--cnffile=" web2c "updmap.cfg"))))
+                   (display "Y\n" port)
+                   (when (not (zero? (status:exit-val (close-pipe port))))
+                     (error "failed to filter updmap.cfg")))
+                 ;; Generate maps.
+                 (invoke "updmap-sys"
+                         (string-append "--cnffile=" web2c "updmap.cfg")
+                         (string-append "--dvipdfmxoutputdir="
+                                        maproot "dvipdfmx/updmap/")
+                         (string-append "--dvipsoutputdir="
+                                        maproot "dvips/updmap/")
+                         (string-append "--pdftexoutputdir="
+                                        maproot "pdftex/updmap/"))
+                 ;; Having this file breaks all file lookups later.
+                 (delete-file (string-append out "/share/texmf-dist/ls-R")))
                #t))))
         (inputs
          `(("bash" ,bash)
