@@ -57,6 +57,7 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system python)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
@@ -88,6 +89,12 @@
                       (lambda _
                         (substitute* "setup.py"
                           (("'python-magic',") ""))))
+                    ;; Patch in support for known tools
+                    (add-after 'unpack 'add-known-tools
+                      (lambda _
+                        (substitute* "diffoscope/external_tools.py"
+                          (("'arch': 'wabt'},")
+                           "'arch': 'wabt', 'guix': 'wabt'},"))))
                     ;; This test is broken because our `file` package has a
                     ;; bug in berkeley-db file type detection.
                     (add-after 'unpack 'remove-berkeley-test
@@ -188,6 +195,7 @@
                        ("squashfs-tools" ,squashfs-tools)
                        ("tcpdump" ,tcpdump)
                        ("unzip" ,unzip)
+                       ("wabt" ,wabt)
                        ("xxd" ,xxd)
                        ("xz" ,xz)
                        ("zip" ,zip)))
