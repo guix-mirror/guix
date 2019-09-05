@@ -24,6 +24,8 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config))
 
 ;;;
@@ -1370,6 +1372,42 @@ streaming API for miniz_oxide.")
     (description
      "This library contains extensions to the standard library's networking
 types as proposed in RFC 1158.")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-netlib-src
+  (package
+    (name "rust-netlib-src")
+    (version "0.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "netlib-src" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "112hwfw1zzdj10h3j213xxqjrq38iygb3nb3ijay65ycmrg819s4"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-cmake" ,rust-cmake)
+        ("rust-libc" ,rust-libc))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-lapack
+           (lambda _
+             (delete-file-recursively "source")
+             (substitute* "Cargo.toml"
+               (("default .*")
+                "default = [\"system\"]\n"))
+             #t)))))
+    (inputs
+     `(("gfortran:lib" ,gfortran "lib")
+       ("lapack" ,lapack)))
+    (home-page "https://github.com/blas-lapack-rs/netlib-src")
+    (synopsis "Source of BLAS and LAPACK via Netlib")
+    (description
+     "The package provides a source of BLAS and LAPACK via Netlib.")
     (license (list license:asl2.0
                    license:expat))))
 
