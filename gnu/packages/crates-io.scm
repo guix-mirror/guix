@@ -594,6 +594,38 @@ provides implementations for @code{HashMap} and @code{HashSet}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-filetime
+  (package
+    (name "rust-filetime")
+    (version "0.2.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "filetime" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sflihq2l77xjrza7yjalnxsc7dxzg25rhzcfbd9vmyfah5kimvb"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if)
+        ("rust-libc" ,rust-libc)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))))
+    (home-page "https://github.com/alexcrichton/filetime")
+    (synopsis "Platform-agnostic accessors of timestamps in File metadata")
+    (description
+     "This library contains a helper library for inspecting and setting the
+various timestamps of files in Rust.  This library takes into account
+cross-platform differences in terms of where the timestamps are located, what
+they are called, and how to convert them into a platform-independent
+representation.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-findshlibs
   (package
     (name "rust-findshlibs")
