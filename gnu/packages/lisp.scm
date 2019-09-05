@@ -760,7 +760,7 @@ In order to make one or several variables file-local, use the macros
 (define-public cl-net.didierverna.asdf-flv
   (sbcl-package->cl-source-package sbcl-net.didierverna.asdf-flv))
 
-(define-public ecl-alexandria
+(define-public ecl-net.didierverna.asdf-flv
   (sbcl-package->ecl-package sbcl-net.didierverna.asdf-flv))
 
 (define-public sbcl-fiveam
