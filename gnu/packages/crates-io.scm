@@ -230,6 +230,45 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cc
+  (package
+    (name "rust-cc")
+    (version "1.0.41")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cc" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zxzd559dbbf1iwdzmkj7czapzccs17kqqmsj9ayijpdix5rrbld"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(;#:cargo-inputs
+       ;(("rust-rayon" ,rust-rayon))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-optional-deps
+           (lambda _
+             (substitute* "Cargo.toml.orig"
+               ((".*optional.*") "\n")
+               ((".*features.*") "")
+               ((".*parallel.*") ""))
+             (delete-file "Cargo.toml")
+             (copy-file "Cargo.toml.orig" "Cargo.toml")
+             #t)))
+       #:tests? #f)) ; Tests require cc-test from git repo.
+    (home-page "https://github.com/alexcrichton/cc-rs")
+    (synopsis "Invoke the native C compiler")
+    (description
+     "This package provides a build-time dependency for Cargo build scripts to
+assist in invoking the native C compiler to compile native C code into a static
+archive to be linked into Rustcode.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-cfg-if
   (package
     (name "rust-cfg-if")
