@@ -1075,12 +1075,11 @@ multi-dimensional image processing.")
    (home-page "https://ukoethe.github.io/vigra/")))
 
 (define-public vigra-c
-  (let* ((commit "a2ff675f42079e2623318d8ff8b4288dbe7a7f06")
-         (revision "0")
-         (version (git-version "0.0.0" revision commit)))
+  (let* ((commit "66ff4fa5a7d4a77415caa676a45c2c6ea16562e7")
+         (revision "1"))
     (package
       (name "vigra-c")
-      (version version)
+      (version (git-version "0.0.0" revision commit))
       (home-page "https://github.com/BSeppke/vigra_c")
       (source (origin
                 (method git-fetch)
@@ -1089,7 +1088,7 @@ multi-dimensional image processing.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1f1phmfbbz3dsq9330rd6bjmdg29hxskxi9l17cyx1f4mdqpgdgl"))
+                  "1pnd92s284dvsg8zp6md7p8ck55bmcsryz58gzic7jh6m72hg689"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
@@ -1099,6 +1098,7 @@ multi-dimensional image processing.")
       (inputs
        `(("fftw" ,fftw)
          ("fftwf" ,fftwf)
+         ("hdf5" ,hdf5)
          ("vigra" ,vigra)))
       (synopsis "C interface to the VIGRA computer vision library")
       (description
