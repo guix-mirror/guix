@@ -2701,6 +2701,20 @@ with one of the implemented strategies.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-semver-parser-0.7
+  (package
+    (inherit rust-semver-parser)
+    (name "rust-semver-parser")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "semver-parser" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "18vhypw6zgccnrlm5ps1pwa0khz7ry927iznpr88b87cagr1v2iq"))))))
+
 (define-public rust-shlex
   (package
     (name "rust-shlex")
