@@ -74,7 +74,7 @@
      `(("openssl" ,openssl)
        ("libnfnetlink" ,libnfnetlink)
        ("libnl" ,libnl)))
-    (home-page "http://www.keepalived.org/")
+    (home-page "https://www.keepalived.org/")
     (synopsis "Load balancing and high-availability frameworks")
     (description
      "Keepalived provides frameworks for both load balancing and high
