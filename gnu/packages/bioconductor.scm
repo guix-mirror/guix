@@ -5319,3 +5319,40 @@ Characteristic} (ROC) curves, with a focus on micro arrays.")
      "This package provides manifests and annotation for Illumina's 450k array
 data.")
     (license license:artistic2.0)))
+
+(define-public r-watermelon
+  (package
+    (name "r-watermelon")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wateRmelon" version))
+       (sha256
+        (base32
+         "0354ahmfvhqw3yfp17rmz35vlgjp262n4q3hr8qyccyrnk2dz17z"))))
+    (properties `((upstream-name . "wateRmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-illuminahumanmethylation450kanno-ilmn12-hg19"
+        ,r-illuminahumanmethylation450kanno-ilmn12-hg19)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-limma" ,r-limma)
+       ("r-lumi" ,r-lumi)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-methylumi" ,r-methylumi)
+       ("r-roc" ,r-roc)))
+    (home-page "https://bioconductor.org/packages/wateRmelon/")
+    (synopsis "Illumina 450 methylation array normalization and metrics")
+    (description
+     "The standard index of DNA methylation (beta) is computed from methylated
+and unmethylated signal intensities.  Betas calculated from raw signal
+intensities perform well, but using 11 methylomic datasets we demonstrate that
+quantile normalization methods produce marked improvement.  The commonly used
+procedure of normalizing betas is inferior to the separate normalization of M
+and U, and it is also advantageous to normalize Type I and Type II assays
+separately.  This package provides 15 flavours of betas and three performance
+metrics, with methods for objects produced by the @code{methylumi} and
+@code{minfi} packages.")
+    (license license:gpl3)))
