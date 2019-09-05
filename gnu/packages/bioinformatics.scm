@@ -14673,16 +14673,14 @@ proximity within a reference genome.")
          "08y3vz1vcx09whmbsn722lcs6jl9wyrh9i4p3k8j4cb1i32bij4a"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pandas" ,python-pandas)
+     `(("python-pandas" ,python-pandas)
        ("python-future" ,python-future)
        ("python-scipy" ,python-scipy)
        ("python-matplotlib" ,python-matplotlib)
        ("python-regex" ,python-regex)
        ("python-pysam" ,python-pysam)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-cython" ,python-cython)))
+     `(("python-cython" ,python-cython)))
     (home-page "https://github.com/CGATOxford/UMI-tools")
     (synopsis "Tools for analyzing unique modular identifiers")
     (description "This package provides tools for dealing with @dfn{Unique
