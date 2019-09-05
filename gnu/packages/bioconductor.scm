@@ -5273,3 +5273,23 @@ cisTopics and explore the nature and regulatory proteins driving them.")
      "This package implements the GENIE3 algorithm for inferring gene
 regulatory networks from expression data.")
     (license license:gpl2+)))
+
+(define-public r-roc
+  (package
+    (name "r-roc")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ROC" version))
+       (sha256
+        (base32
+         "1sapnl8kyaldgvdc657wqcmyjb24nvrnaw7v94bbs8yf5pmfm71c"))))
+    (properties `((upstream-name . "ROC")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/ROC/")
+    (synopsis "Utilities for ROC curves")
+    (description
+     "This package provides utilities for @dfn{Receiver Operating
+Characteristic} (ROC) curves, with a focus on micro arrays.")
+    (license license:artistic2.0)))
