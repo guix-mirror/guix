@@ -2152,6 +2152,33 @@ to the same address.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-stacker
+  (package
+    (name "rust-stacker")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "stacker" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0js0axz5nla1mkr2dm2vrv9rj964ng1lrv4l43sqlnfgawplhygv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if)
+        ("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi)
+        ("rust-cc" ,rust-cc))))
+    (home-page "https://github.com/rust-lang/stacker")
+    (synopsis "Manual segmented stacks for Rust")
+    (description
+     "This package provides a stack growth library useful when implementing
+deeply recursive algorithms that may accidentally blow the stack.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-stdweb-internal-runtime
   (package
     (name "rust-stdweb-internal-runtime")
