@@ -1303,6 +1303,30 @@ file IO.")
 streaming API for miniz_oxide.")
     (license license:expat)))
 
+(define-public rust-miniz-sys
+  (package
+    (name "rust-miniz-sys")
+    (version "0.1.12")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "miniz-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "00l2r4anm8g35x0js2zfdnwfbrih9m43vphdpb77c5ga3kjkm7hy"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-libc" ,rust-libc))))
+    (home-page "https://github.com/alexcrichton/flate2-rs")
+    (synopsis "Bindings to the miniz.c library")
+    (description
+     "This package provides bindings to the @code{miniz.c} library.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-modifier
   (package
     (name "rust-modifier")
