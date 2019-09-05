@@ -5356,3 +5356,60 @@ separately.  This package provides 15 flavours of betas and three performance
 metrics, with methods for objects produced by the @code{methylumi} and
 @code{minfi} packages.")
     (license license:gpl3)))
+
+(define-public r-gdsfmt
+  (package
+    (name "r-gdsfmt")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gdsfmt" version))
+       (sha256
+        (base32
+         "0h3hgwxq26dg09fyxqg545v9dg1dizsj58cf05rncr3jj4f8g0xy"))
+       (modules '((guix build utils)))
+       ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
+       ;; them and link with system libraries instead.
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     '("src/LZ4"
+                       "src/XZ"
+                       "src/ZLIB"))
+           (substitute* "src/Makevars"
+             (("all: \\$\\(SHLIB\\)") "all:")
+             (("\\$\\(SHLIB\\): liblzma.a") "")
+             (("(ZLIB|LZ4)/.*") "")
+             (("CoreArray/dVLIntGDS.cpp.*")
+              "CoreArray/dVLIntGDS.cpp")
+             (("CoreArray/dVLIntGDS.o.*")
+              "CoreArray/dVLIntGDS.o")
+             (("PKG_LIBS = ./liblzma.a")
+              "PKG_LIBS = -llz4"))
+           (substitute* "src/CoreArray/dStream.h"
+             (("include \"../(ZLIB|LZ4|XZ/api)/(.*)\"" _ _ header)
+              (string-append "include <" header ">")))
+           #t))))
+    (properties `((upstream-name . "gdsfmt")))
+    (build-system r-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "http://corearray.sourceforge.net/")
+    (synopsis
+     "R Interface to CoreArray Genomic Data Structure (GDS) Files")
+    (description
+     "This package provides a high-level R interface to CoreArray @dfn{Genomic
+Data Structure} (GDS) data files, which are portable across platforms with
+hierarchical structure to store multiple scalable array-oriented data sets
+with metadata information.  It is suited for large-scale datasets, especially
+for data which are much larger than the available random-access memory.  The
+@code{gdsfmt} package offers efficient operations specifically designed for
+integers of less than 8 bits, since a diploid genotype, like
+@dfn{single-nucleotide polymorphism} (SNP), usually occupies fewer bits than a
+byte.  Data compression and decompression are available with relatively
+efficient random access.  It is also allowed to read a GDS file in parallel
+with multiple R processes supported by the package @code{parallel}.")
+    (license license:lgpl3)))
