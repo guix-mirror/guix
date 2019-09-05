@@ -121,6 +121,29 @@ support.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-base-x
+  (package
+    (name "rust-base-x")
+    (version "0.2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "base-x" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0hv4y5cdhv6bk0ghk2434clw8v4mmk5cc9lsh6qrpri92zlfmx3n"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-bencher" ,rust-bencher)
+        ("rust-json" ,rust-json)
+        ("rust-rand" ,rust-rand-0.3))))
+    (home-page "https://github.com/OrKoN/base-x-rs")
+    (synopsis "Encode/decode any base")
+    (description "This library provides for encoding and decoding any base.")
+    (license license:expat)))
+
 (define-public rust-bencher
   (package
     (name "rust-bencher")
