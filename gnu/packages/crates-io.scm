@@ -2092,6 +2092,32 @@ system calls.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-demangle
+  (package
+    (name "rust-rustc-demangle")
+    (version "0.1.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-demangle" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "10qp42sl1wrdbgbbh8rnay2grm976z7hqgz32c4y09l1c071qsac"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-compiler-builtins"
+         ,rust-compiler-builtins)
+        ("rust-rustc-std-workspace-core"
+         ,rust-rustc-std-workspace-core))))
+    (home-page "https://github.com/alexcrichton/rustc-demangle")
+    (synopsis "Rust compiler symbol demangling")
+    (description
+     "This package demanges the symbols from the Rust compiler.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-serialize
   (package
     (name "rust-rustc-serialize")
