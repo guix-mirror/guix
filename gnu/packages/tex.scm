@@ -7116,3 +7116,31 @@ provide a different layout and more modern styles (using the @code{xcolor},
 not (yet) be used with other packages, since the implementation might
 change.")
       (license license:lppl1.3+))))
+
+(define-public texlive-pstricks
+  (let ((template (simple-texlive-package
+                   "texlive-pstricks"
+                   (list "/doc/generic/pstricks/"
+                         "/dvips/pstricks/"
+                         "/tex/generic/pstricks/"
+                         "/tex/latex/pstricks/")
+                   (base32
+                    "04566354c77claxl1sznc490cda0m5gaa5ck6ms4q7mm44rj3rzk")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'reset-gzip-timestamps)))))
+      (home-page "http://www.ctan.org/pkg/pstricks")
+      (synopsis "PostScript macros for TeX")
+      (description "PSTricks offers an extensive collection of macros for
+generating PostScript that is usable with most TeX macro formats, including
+Plain TeX, LaTeX, AMS-TeX, and AMS-LaTeX.  Included are macros for colour,
+graphics, pie charts, rotation, trees and overlays.  It has many special
+features, including a wide variety of graphics (picture drawing) macros, with
+a flexible interface and with colour support.  There are macros for colouring
+or shading the cells of tables.")
+      (license license:lppl1.3+))))
