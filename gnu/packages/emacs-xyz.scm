@@ -13818,28 +13818,31 @@ be changed by customizing the appropriate variables.")
     (license license:gpl3+)))
 
 (define-public emacs-org-caldav
-  (package
-    (name "emacs-org-caldav")
-    (version "20180403")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/dengste/org-caldav/raw/"
-             "8d3492c27a09f437d2d94f2736c56d7652e87aa0"
-             "/org-caldav.el"))
-       (sha256
-        (base32
-         "1fh4gh68ddj0is99z2ccyh97v6psnyda61n2dsadzqhcxn51amlc"))))
-    (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-org" ,emacs-org)))
-    (home-page "https://github.com/dengste/org-caldav")
-    (synopsis
-     "Sync Org files with external calendars via the CalDAV protocol")
-    (description
-     "Synchronize between events in Org-mode files and a CalDAV calendar.
-This code is still alpha.")
-    (license license:gpl3+)))
+  (let ((commit "a563500c9884f38ce08793e2964f8274adde163d"))
+    (package
+      (name "emacs-org-caldav")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dengste/org-caldav.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18qi1iv5dc0gsvkv9ifal3cjpm568nlb907v8a53cnm4439x1l0l"))))
+      (build-system emacs-build-system)
+      (arguments
+       ;; Tests require to have two specific calendars on a test server.
+       `(#:exclude '("^org-caldav-testsuite\\.el")))
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)))
+      (home-page "https://github.com/dengste/org-caldav")
+      (synopsis "Sync Org files with external calendars via the CalDAV protocol")
+      (description "Synchronize between events in Org files and a CalDAV
+calendar.")
+      (license license:gpl3+))))
 
 (define-public emacs-zotxt
   (package
