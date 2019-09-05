@@ -480,6 +480,7 @@ features for productive professionals.")
                         (build-program
                          (string-append (assoc-ref outputs "out") "/bin/next")
                          outputs
+                         #:compress? #t
                          #:entry-program '((next:entry-point) 0))))
                     (add-before 'build 'install-assets
                       ;; Since the ASDF build system generates a new .asd with a
