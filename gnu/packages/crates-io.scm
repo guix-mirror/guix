@@ -931,6 +931,38 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-glob
+  (package
+    (name "rust-glob")
+    (version "0.3.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glob" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0x25wfr7vg3mzxc9x05dcphvd3nwlcmbnxrvwcvrrdwplcrrk4cv"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           ;; This test assumes /root exists but is unreadable by the user.
+           (lambda _
+             (substitute* "src/lib.rs"
+               (("cfg\\(all\\(unix,.*") "cfg(windows)]\n"))
+             #t)))))
+    (home-page "https://github.com/rust-lang-nursery/glob")
+    (synopsis "Match file paths against Unix shell style patterns")
+    (description
+     "This package provides support for matching file paths against Unix
+shell style patterns.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-heapsize
   (package
     (name "rust-heapsize")
