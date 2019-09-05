@@ -2875,30 +2875,45 @@ documents.  It comprises the packages color, graphics, graphicx, trig, epsfig,
 keyval, and lscape.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-xcolor
-  (package
-    (name "texlive-latex-xcolor")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xcolor"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xcolor"))
-    (home-page "https://www.ctan.org/pkg/xcolor")
-    (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
-    (description
-     "The package starts from the basic facilities of the colorcolor package,
+(define-public texlive-xcolor
+  (let ((template (simple-texlive-package
+                   "texlive-xcolor"
+                   (list "/doc/latex/xcolor/"
+                         "/source/latex/xcolor/")
+                   (base32
+                    "12q6spmpxg30alhvarjmxzigmz7lazapbrb0mc4vhbn6n1sdz7pp"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/xcolor")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/xcolor") #t))
+             (add-after 'install 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((share (string-append (assoc-ref outputs "out")
+                                             "/share/texmf-dist")))
+                   (mkdir-p (string-append share "/dvips/xcolor"))
+                   (rename-file (string-append share "/tex/latex/xcolor/xcolor.pro")
+                                (string-append share "/dvips/xcolor/xcolor.pro"))
+                   #t)))))))
+      (home-page "https://www.ctan.org/pkg/xcolor")
+      (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
+      (description
+       "The package starts from the basic facilities of the colorcolor package,
 and provides easy driver-independent access to several kinds of color tints,
 shades, tones, and mixes of arbitrary colors.  It allows a user to select a
 document-wide target color model and offers complete tools for conversion
 between eight color models.  Additionally, there is a command for alternating
 row colors plus repeated non-aligned material (like horizontal lines) in
 tables.")
-    (license license:lppl1.2+)))
+      (license license:lppl1.2+))))
+
+(define-public texlive-latex-xcolor
+  (deprecated-package "texlive-latex-xcolor" texlive-xcolor))
 
 (define-public texlive-latex-hyperref
   (package
