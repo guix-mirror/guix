@@ -879,6 +879,44 @@ indentation.
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
 
+(define-public odt2txt
+  (package
+    (name "odt2txt")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/dstosberg/odt2txt/")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0im3kzvhxkjlx57w6h13mc9584c74ma1dyymgvpq2y61av3gc35v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no make check
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/dstosberg/odt2txt/")
+    (synopsis "Converter from OpenDocument Text to plain text")
+    (description "odt2txt is a command-line tool which extracts the text out
+of OpenDocument Texts, as produced by OpenOffice.org, KOffice, StarOffice and
+others.
+
+odt2txt can also extract text from some file formats similar to OpenDocument
+Text, such as OpenOffice.org XML (*.sxw), which was used by OpenOffice.org
+version 1.x and older StarOffice versions.  To a lesser extent, odt2txt may be
+useful to extract content from OpenDocument spreadsheets (*.ods) and
+OpenDocument presentations (*.odp).")
+    (license license:gpl2)))
+
 (define-public opencc
   (package
     (name "opencc")
