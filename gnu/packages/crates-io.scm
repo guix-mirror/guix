@@ -30,6 +30,30 @@
 ;;; Please: Try to add new module packages in alphabetic order.
 ;;;
 
+(define-public rust-adler32
+  (package
+    (name "rust-adler32")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "adler32" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0p7fxlnks9l7p7rwfqi7aqgnk2bps5zc0rjiw00mdw19nnbjjlky"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs (("rust-rand" ,rust-rand))))
+    (home-page "https://github.com/remram44/adler32-rs")
+    (synopsis "Implementation of the Adler32 rolling hash algorithm")
+    (description
+     "This library is an implementation of the Adler32 rolling hash algorithm in
+the Rust programming language.")
+    (license (list license:bsd-3
+                   license:zlib))))
+
 (define-public rust-antidote
   (package
     (name "rust-antidote")
