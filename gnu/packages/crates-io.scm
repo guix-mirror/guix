@@ -3191,6 +3191,37 @@ fixed set of worker threads.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-time
+  (package
+    (name "rust-time")
+    (version "0.1.39")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "time" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "161hqx0gw722ikydanpahky447vaxqncwmkj66rny282vzqpalx1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-rustc-serialize" ,rust-rustc-serialize)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-log" ,rust-log)
+        ("rust-winapi" ,rust-winapi))
+       #:tests? #f)) ; Tests have difficulty with the timezones.
+    (home-page "https://github.com/rust-lang-deprecated/time")
+    (synopsis "Simple time handling in Rust")
+    (description
+     "This package provides utilities for working with time-related functions
+in Rust.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-tokio-mock-task
   (package
     (name "rust-tokio-mock-task")
