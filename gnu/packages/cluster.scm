@@ -52,7 +52,7 @@
            (lambda _
              (invoke "make" "-C" "doc" "texinfo")
              ;; Put images in a subdirectory as recommended by 'texinfo'.
-             (install-file "doc/build/texinfo/software_design.png"
+             (install-file "doc/source/images/software_design.png"
                            "doc/build/texinfo/keepalived-figures")
              (substitute* "doc/build/texinfo/keepalived.texi"
                (("@image\\{software_design,")
@@ -63,7 +63,7 @@
              (let* ((out (assoc-ref outputs "out"))
                     (infodir (string-append out "/share/info")))
                (install-file "doc/build/texinfo/keepalived.info" infodir)
-               (install-file "doc/build/texinfo/software_design.png"
+               (install-file "doc/source/images/software_design.png"
                              (string-append infodir "/keepalived-figures"))
                #t))))))
     (native-inputs
