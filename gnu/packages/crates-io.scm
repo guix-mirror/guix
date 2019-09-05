@@ -2720,6 +2720,39 @@ and Jaro-Winkler.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-tar
+  (package
+    (name "rust-tar")
+    (version "0.4.26")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tar" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1lr6v3cpkfxd2lk5ll2jd8wr1xdskwj35smnh5sfb8xvzzxnn6dk"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-filetime" ,rust-filetime)
+        ("rust-libc" ,rust-libc)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-xattr" ,rust-xattr))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))
+       #:tests? #f)) ; Test archives are not distributed in the crate tarball.
+    (home-page "https://github.com/alexcrichton/tar-rs")
+    (synopsis "Tar file reading/writing for Rust")
+    (description
+     "This package provides a Rust implementation of a TAR file reader and
+writer.  This library does not currently handle compression, but it is abstract
+over all I/O readers and writers.  Additionally, great lengths are taken to
+ensure that the entire contents are never required to be entirely resident in
+memory all at once.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-tempdir
   (package
     (name "rust-tempdir")
