@@ -7270,3 +7270,32 @@ macros it defines for keys, and to define families of key definitions; these
 all help use in documents where several packages define their own sets of
 keys.")
     (license license:lppl1.3+)))
+
+(define-public texlive-standalone
+  (package
+    (name "texlive-standalone")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "standalone"))
+       (sha256
+        (base32
+         "192ydxcn8ir96q8qwvnppksmqf5i0p50i0wz6iqazbwmh3dqxpx4"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/standalone"))
+    (propagated-inputs
+     `(("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+    (native-inputs
+     `(("texlive-ydoc" ,texlive-ydoc)))
+    (home-page "http://www.ctan.org/pkg/standalone")
+    (synopsis "Compile TeX pictures stand-alone or as part of a document")
+    (description "A class and package is provided which allows TeX pictures or
+other TeX code to be compiled standalone or as part of a main document.
+Special support for pictures with beamer overlays is also provided.  The
+package is used in the main document and skips extra preambles in sub-files.
+The class may be used to simplify the preamble in sub-files.  By default the
+@code{preview} package is used to display the typeset code without margins.
+The behaviour in standalone mode may adjusted using a configuration file
+@code{standalone.cfg} to redefine the standalone environment.")
+    (license license:lppl1.3+)))
