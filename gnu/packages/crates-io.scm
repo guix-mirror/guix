@@ -1558,6 +1558,27 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-openssl-probe
+  (package
+    (name "rust-openssl-probe")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "openssl-probe" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1pijrdifgsdwd45b08c2g0dsmnhz7c3kmagb70839ngrd7d29bvp"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/openssl-probe")
+    (synopsis "Find SSL certificate locations")
+    (description
+     "This package provides a tool to find SSL certificate locations on the
+system for OpenSSL.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-owning-ref
   (package
     (name "rust-owning-ref")
