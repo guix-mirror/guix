@@ -1767,8 +1767,8 @@ well as many of the command line options.")
          (add-after 'unpack 'keep-references-to-bwa
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "bwameth.py"
-               (("bwa mem")
-                (string-append (which "bwa") " mem"))
+               (("bwa (mem|index)" _ command)
+                (string-append (which "bwa") " " command))
                ;; There's an ill-advised check for "samtools" on PATH.
                (("^checkX.*") ""))
              #t)))))
