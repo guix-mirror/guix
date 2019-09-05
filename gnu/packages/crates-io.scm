@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages maths)
@@ -1242,6 +1243,42 @@ functions and static variables these libraries contain.")
     (synopsis "Lightweight logging")
     (description
      "This package provides a lightweight logging facade for Rust")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-lzma-sys
+  (package
+    (name "rust-lzma-sys")
+    (version "0.1.15")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lzma-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "14gyj256yh0wm77jbvmlc39v7lfn0navpfrja4alczarzlc8ir2k"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-libc" ,rust-libc)
+        ("rust-pkg-config" ,rust-pkg-config))
+        #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unbundle-xz
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xz (assoc-ref inputs "xz")))
+               (delete-file-recursively "xz-5.2"))
+             #t)))))
+    (inputs
+     `(("pkg-config" ,pkg-config)
+       ("xz" ,xz)))
+    (home-page "https://github.com/alexcrichton/xz2-rs")
+    (synopsis "Bindings to liblzma for lzma and xz stream encoding/decoding")
+    (description
+     "This package contains the raw bindings to liblzma which contains an
+implementation of LZMA and xz stream encoding/decoding.")
     (license (list license:asl2.0
                    license:expat))))
 
