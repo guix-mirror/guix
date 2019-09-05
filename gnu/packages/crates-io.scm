@@ -1540,6 +1540,24 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-0.3
+  (package
+    (inherit rust-rand)
+    (name "rust-rand")
+    (version "0.3.23")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-rand" ,rust-rand))))))
+
 (define-public rust-rawpointer
   (package
     (name "rust-rawpointer")
