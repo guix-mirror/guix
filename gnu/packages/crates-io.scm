@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config))
 
@@ -1023,6 +1024,41 @@ hexadecimal representation.")
     (synopsis "Fast functions for printing integer primitives")
     (description "This crate provides fast functions for printing integer
 primitives to an @code{io::Write}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-jemalloc-sys
+  (package
+    (name "rust-jemalloc-sys")
+    (version "0.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "jemalloc-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ify9vlql01qhfxlj7d4p9jvcp90mj2h69nkbq7slccvbhzryfqd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-cc" ,rust-cc)
+        ("rust-fs-extra" ,rust-fs-extra))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'override-jemalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((jemalloc (assoc-ref inputs "jemalloc")))
+               (delete-file-recursively "jemalloc")
+               (setenv "JEMALLOC_OVERRIDE"
+                       (string-append jemalloc "/lib/libjemalloc_pic.a")))
+             #t)))))
+    (inputs
+     `(("jemalloc" ,jemalloc)))
+    (home-page "https://github.com/gnzlbg/jemallocator")
+    (synopsis "Rust FFI bindings to jemalloc")
+    (description "This package provides Rust FFI bindings to jemalloc.")
     (license (list license:asl2.0
                    license:expat))))
 
