@@ -708,6 +708,31 @@ the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-celegans-ucsc-ce6-ensgene
+  (package
+    (name "r-txdb-celegans-ucsc-ce6-ensgene")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TxDb.Celegans.UCSC.ce6.ensGene"
+                              version 'annotation))
+       (sha256
+        (base32
+         "1sgppva33cdy4isj2is8mfalj5gmmkpbkq9w1d83a4agcq31mi90"))))
+    (properties
+     `((upstream-name . "TxDb.Celegans.UCSC.ce6.ensGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/TxDb.Celegans.UCSC.ce6.ensGene/")
+    (synopsis "Annotation package for C elegans TxDb objects")
+    (description
+     "This package exposes a C elegans annotation database generated from UCSC
+by exposing these as TxDb objects.")
+    (license license:artistic2.0)))
+
 (define-public r-fdb-infiniummethylation-hg19
   (package
     (name "r-fdb-infiniummethylation-hg19")
