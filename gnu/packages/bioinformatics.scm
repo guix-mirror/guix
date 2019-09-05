@@ -2353,16 +2353,16 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 (define-public libbigwig
   (package
     (name "libbigwig")
-    (version "0.4.2")
+    (version "0.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/dpryan79/libBigWig.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h2smg24v5srdcqzrmz2g23cmlp4va465mgx8r2z571sfz8pv454"))))
+                "09693dmf1scdac5pyq6qyn8b4mcipvnmc370k9a5z41z81m3dcsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
