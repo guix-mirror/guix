@@ -7186,3 +7186,34 @@ package also provides the @code{\\RequirePDFTeX}, @code{\\RequireXeTeX}, and
 @code{\\RequireLuaTeX} commands which throw an error if pdfTeX, XeTeX or
 LuaTeX (respectively) is not the engine in use.")
       (license license:lppl1.3+))))
+
+(define-public texlive-tools
+  (let ((template (simple-texlive-package
+                   "texlive-tools"
+                   (list "/doc/latex/tools/"
+                         "/source/latex/tools/")
+                   (base32
+                    "0v3zqcpy0w5bzy1xdcv1wnxbmxrn1j6x03h3y2af7qmjggph2a09"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/tools")
+         ((#:build-targets _ '())
+          ''("tools.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/tools") #t))))))
+      (home-page "https://www.ctan.org/tex-archive/macros/latex/required/tools/")
+      (synopsis "LaTeX standard tools bundle")
+      (description "This package provides a collection of simple tools that
+are part of the LaTeX required tools distribution, comprising the packages:
+@code{afterpage}, @code{array}, @code{bm}, @code{calc}, @code{dcolumn},
+@code{delarray}, @code{enumerate}, @code{fileerr}, @code{fontsmpl},
+@code{ftnright}, @code{hhline}, @code{indentfirst}, @code{layout},
+@code{longtable}, @code{multicol}, @code{rawfonts}, @code{showkeys},
+@code{somedefs}, @code{tabularx}, @code{theorem}, @code{trace},
+@code{varioref}, @code{verbatim}, @code{xr}, and @code{xspace}.")
+      (license license:lppl1.3+))))
