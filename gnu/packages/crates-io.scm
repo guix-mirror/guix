@@ -1229,6 +1229,26 @@ file IO.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-memmap-0.6
+  (package
+    (inherit rust-memmap)
+    (name "rust-memmap")
+    (version "0.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "memmap" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zy6s0ni0lx9rjzq3gq2zz9r8zgjmbp02332g3gsj4fyhv4s5zz2"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))))))
+
 (define-public rust-mime
   (package
     (name "rust-mime")
