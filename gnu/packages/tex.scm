@@ -5444,7 +5444,7 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
 as an alternative version of the Kurier typeface, which was designed in 1975
 for a diploma in typeface design at the Warsaw Academy of Fine Arts under the
 supervision of Roman Tomaszewski.  Kurier was designed for linotype
-typesetting of newspapers and similar periodicals. The Iwona fonts are an
+typesetting of newspapers and similar periodicals.  The Iwona fonts are an
 alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
