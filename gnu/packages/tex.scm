@@ -7144,3 +7144,25 @@ features, including a wide variety of graphics (picture drawing) macros, with
 a flexible interface and with colour support.  There are macros for colouring
 or shading the cells of tables.")
       (license license:lppl1.3+))))
+
+(define-public texlive-pst-text
+  (let ((template (simple-texlive-package
+                   "texlive-pst-text"
+                   (list "/doc/generic/pst-text/"
+                         "/source/generic/pst-text/Makefile"
+                         "/dvips/pst-text/pst-text.pro"
+                         "/tex/generic/pst-text/"
+                         "/tex/latex/pst-text/")
+                   (base32
+                    "0s2bbkdfy0shqrrkjflrn0x0pnvxzbdc38pjbdfw46wnmnxrnasm")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-pstricks" ,texlive-pstricks)))
+      (home-page "http://www.ctan.org/pkg/pst-text")
+      (synopsis "Text and character manipulation in PSTricks")
+      (description "Pst-text is a PSTricks based package for plotting text along
+a different path and manipulating characters.  It includes the functionality
+of the old package @code{pst-char}.")
+      (license license:lppl))))
