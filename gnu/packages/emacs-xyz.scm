@@ -89,6 +89,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages dictionaries)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gtk)
@@ -3091,6 +3092,60 @@ boundaries defined by syntax highlighting.")
        "This package allows @code{flycheck-mode} to provide syntax-checking
 for Flow files.")
       (license license:gpl3+))))
+
+(define-public emacs-flycheck-grammalecte
+  (package
+    (name "emacs-flycheck-grammalecte")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://git.deparis.io/"
+                                  "flycheck-grammalecte/snapshot/"
+                                  "flycheck-grammalecte-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0wjm9xyra870pci4bcrbnc9x66x18mi7iz08rkxa4clxv28xzryb"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:include '("\\.(el|py)$")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-python
+           ;; Hardcode python3 executable in the Emacs library.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((python3 (string-append (assoc-ref inputs "python")
+                                           "/bin/python3")))
+               (substitute* "flycheck-grammalecte.el"
+                 (("python3") python3))
+               #t)))
+         (add-after 'install 'link-to-grammalecte
+           ;; The package expects grammalecte to be in a sub-directory.
+           ;; Symlink it there from the store.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((grammalecte (assoc-ref inputs "grammalecte"))
+                   (out (assoc-ref outputs "out"))
+                   (version ,(version-major+minor (package-version python))))
+               (with-directory-excursion
+                   (string-append out
+                                  "/share/emacs/site-lisp/guix.d/"
+                                  "flycheck-grammalecte-" ,version)
+                 (symlink (string-append grammalecte "/lib/"
+                                         "python" version "/site-packages/"
+                                         "grammalecte")
+                          "grammalecte"))
+               #t))))))
+    (inputs
+     `(("grammalecte" ,grammalecte)
+       ("python" ,python)))
+    (propagated-inputs
+     `(("emacs-flycheck" ,emacs-flycheck)))
+    (home-page "https://git.deparis.io/flycheck-grammalecte/")
+    (synopsis "Integrate Grammalecte with Flycheck")
+    (description "Integrate the French grammar and typography checker
+Grammalecte with Flycheck to automatically look for mistakes in your writings.
+It also provides an easy way to find synonyms and antonyms for a given
+word (to avoid repetitions for example).")
+    (license license:gpl3+)))
 
 (define-public emacs-elisp-demos
   (package
