@@ -5413,3 +5413,31 @@ byte.  Data compression and decompression are available with relatively
 efficient random access.  It is also allowed to read a GDS file in parallel
 with multiple R processes supported by the package @code{parallel}.")
     (license license:lgpl3)))
+
+(define-public r-bigmelon
+  (package
+    (name "r-bigmelon")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bigmelon" version))
+       (sha256
+        (base32
+         "0269kf3d34dbng3swk7pclpk02vy4k3askygmzi5my3fqyfzdkj9"))))
+    (properties `((upstream-name . "bigmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-gdsfmt" ,r-gdsfmt)
+       ("r-geoquery" ,r-geoquery)
+       ("r-methylumi" ,r-methylumi)
+       ("r-minfi" ,r-minfi)
+       ("r-watermelon" ,r-watermelon)))
+    (home-page "https://bioconductor.org/packages/bigmelon/")
+    (synopsis "Illumina methylation array analysis for large experiments")
+    (description
+     "This package provides methods for working with Illumina arrays using the
+@code{gdsfmt} package.")
+    (license license:gpl3)))
