@@ -27,6 +27,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages jemalloc)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config))
 
@@ -348,6 +349,42 @@ depending on a large number of #[cfg] parameters.  Structured like an
 @code{if-else} chain, the first matching branch is the item that gets emitted.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-clang-sys
+  (package
+    (name "rust-clang-sys")
+    (version "0.28.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ls8zcqi5bmmrvrk3b6r1ym4wlivinbv590d2dvg2xn9f44mbpl1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob)
+        ("rust-libc" ,rust-libc)
+        ("rust-libloading" ,rust-libloading))
+       #:cargo-development-inputs
+       (("rust-glob" ,rust-glob))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+             #t)))))
+    (inputs
+     `(("libclang" ,clang)))
+    (home-page "https://github.com/KyleMayes/clang-sys")
+    (synopsis "Rust bindings for libclang")
+    (description
+     "This package provides Rust bindings for @code{libclang}.")
+    (license license:asl2.0)))
 
 (define-public rust-clicolors-control
   (package
