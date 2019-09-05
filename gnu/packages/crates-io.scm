@@ -210,6 +210,29 @@ behave like a set of bitflags.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-cargon
+  (package
+    (name "rust-cargon")
+    (version "0.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cargon" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1cszlab7jk736p0lb50ag4l9nv72m7j41bwrmygl0lr4iz0350w2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-gcc" ,rust-gcc))))
+    (home-page "https://github.com/bryant/argon2rs")
+    (synopsis "Thin wrapper around the Argon2 C library")
+    (description
+     "This package provides a thin wrapper around the Argon2 C library.  It is
+used in argon2rs' bench suite.")
+    (license license:wtfpl2)))
+
 (define-public rust-cblas-sys
   (package
     (name "rust-cblas-sys")
