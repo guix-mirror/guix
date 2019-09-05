@@ -1514,6 +1514,32 @@ to write.")
     ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
 
+(define-public rust-rand
+  (package
+    (name "rust-rand")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-fuchsia-zircon" ,rust-fuchsia-zircon)
+        ("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://crates.io/crates/rand")
+    (synopsis "Random number generators and other randomness functionality")
+    (description
+     "Rand provides utilities to generate random numbers, to convert them to
+useful types and distributions, and some randomness-related algorithms.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rawpointer
   (package
     (name "rust-rawpointer")
