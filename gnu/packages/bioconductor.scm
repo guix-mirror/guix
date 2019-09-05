@@ -5293,3 +5293,29 @@ regulatory networks from expression data.")
      "This package provides utilities for @dfn{Receiver Operating
 Characteristic} (ROC) curves, with a focus on micro arrays.")
     (license license:artistic2.0)))
+
+(define-public r-illuminahumanmethylation450kanno-ilmn12-hg19
+  (package
+    (name "r-illuminahumanmethylation450kanno-ilmn12-hg19")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri
+             "IlluminaHumanMethylation450kanno.ilmn12.hg19"
+             version 'annotation))
+       (sha256
+        (base32
+         "059vlxsx3p3fcnywwirahsc6mlk813zpqnbv0jsrag6x5bb8z6r4"))))
+    (properties
+     `((upstream-name
+        . "IlluminaHumanMethylation450kanno.ilmn12.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-minfi" ,r-minfi)))
+    (home-page
+     "https://bioconductor.org/packages/IlluminaHumanMethylation450kanno.ilmn12.hg19/")
+    (synopsis "Annotation for Illumina's 450k methylation arrays")
+    (description
+     "This package provides manifests and annotation for Illumina's 450k array
+data.")
+    (license license:artistic2.0)))
