@@ -16594,11 +16594,10 @@ unescaping of quotes.")
 
 (define-public emacs-flycheck-haskell
   (let ((commit "32ddff87165a7d3a35e7318bee997b5b4bd41278")
-        (version "0.8")
-        (revision "79"))
+        (revision "2"))
     (package
       (name "emacs-flycheck-haskell")
-      (version (git-version version revision commit))
+      (version (git-version "0.8" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16616,6 +16615,8 @@ unescaping of quotes.")
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-haskell-mode" ,emacs-haskell-mode)
          ("emacs-let-alist" ,emacs-let-alist)))
+      (arguments
+       `(#:include '("\\.el$" "\\.hs$")))
       (home-page "https://github.com/flycheck/flycheck-haskell")
       (synopsis "Flycheck for Haskell")
       (description "This package configures syntax-checking for Haskell
