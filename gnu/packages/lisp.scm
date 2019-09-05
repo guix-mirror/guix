@@ -353,11 +353,21 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;       ABCL (recent versions only)
      ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
      ;;       XCL
-     ;; CCL seems ideal then, but it unfortunately only builds reliably
-     ;; on some architectures.
+     ;;
+     ;; From NEWS:
+     ;;     * build enhancement: new host quirks mechanism, support for building under
+     ;;     ABCL and ECL (as well as CCL, CMUCL, CLISP and SBCL itself)
+     ;;
+     ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
+     ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
+     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last update
+     ;; in 2010.
+     ;;
+     ;; For now we stick to CLISP for all systems.  We keep the `match' in to
+     ;; make it easier to change the host compiler for various architectures.
      `(,@(match (%current-system)
            ((or "x86_64-linux" "i686-linux")
-            `(("ccl" ,ccl)))
+            `(("clisp" ,clisp)))
            (_
             `(("clisp" ,clisp))))
        ("which" ,which)
@@ -428,7 +438,7 @@ an interpreter, a compiler, a debugger, and much more.")
              (setenv "CC" "gcc")
              (invoke "sh" "make.sh" ,@(match (%current-system)
                                         ((or "x86_64-linux" "i686-linux")
-                                         `("ccl"))
+                                         `("clisp"))
                                         (_
                                          `("clisp")))
                      (string-append "--prefix="
@@ -488,6 +498,15 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (license:x11-style "file://src/code/loop.lisp")))))
 
 (define-public ccl
+  ;; Warning: according to upstream, CCL is not bootstrappable.
+  ;; See https://github.com/Clozure/ccl/issues/222 from 2019-09-02:
+  ;;
+  ;;     "As far as I know, there is no way to build CCL without an existing
+  ;;     running CCL image. It was bootstrapped back in 1986 or so as
+  ;;     Macintosh Common Lisp, by Gary Byers, I believe, who is no longer on
+  ;;     the planet to tell us the story. It SHOULD be possible to port the
+  ;;     CCL compiler to portable Common Lisp, so that ANY lisp could build
+  ;;     it, as is the case for SBCL, but I know of no attempt to do so."
   (package
     (name "ccl")
     (version "1.11.5")
