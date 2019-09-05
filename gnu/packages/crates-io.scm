@@ -2543,6 +2543,36 @@ words, like Python's shlex.")
 data type.")
     (license license:expat)))
 
+(define-public rust-socket2
+  (package
+    (name "rust-socket2")
+    (version "0.3.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "socket2" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "11bdcz04i106g4q7swkll0qxrb4287srqd2k3aq2q6i22zjlvdz8"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cfg-if" ,rust-cfg-if)
+        ("rust-libc" ,rust-libc)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))
+       #:tests? #f)) ; Tests expect network connectivity.
+    (home-page "https://github.com/alexcrichton/socket2-rs")
+    (synopsis "Networking sockets in Rust")
+    (description
+     "This package provides utilities for handling networking sockets with a
+maximal amount of configuration possible intended.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-spin
   (package
     (name "rust-spin")
