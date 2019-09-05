@@ -1968,6 +1968,31 @@ owner with them.  This can sometimes be useful because Rust borrowing rules
 normally prevent moving a type that has been borrowed from.")
     (license license:expat)))
 
+(define-public rust-parity-wasm
+  (package
+    (name "rust-parity-wasm")
+    (version "0.40.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "parity-wasm" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1p84f0k36q05j18jy66n122lyali794cj78hbxgy9wj6si84plqd"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-time" ,rust-time))
+       #:tests? #f)) ; Test files are not included in release.
+    (home-page "https://github.com/paritytech/parity-wasm")
+    (synopsis "Low-level WebAssembly format library")
+    (description
+     "This package provides a WebAssembly binary format serialization,
+deserialization, and interpreter in Rust.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-peeking-take-while
   (package
     (name "rust-peeking-take-while")
