@@ -362,6 +362,36 @@ CMAKE environmental variable is set.")
     (license (list license:asl2.0
                    license:expat))))
 
+;; This package requires features which are unavailable
+;; on the stable releases of Rust.
+(define-public rust-compiler-builtins
+  (package
+    (name "rust-compiler-builtins")
+    (version "0.1.19")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "compiler_builtins" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1fpabpmg8paj4r5a37vmidh1jx1b7a6ilxm4s3xsxczx27ybjcjf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-rustc-std-workspace-core"
+         ,rust-rustc-std-workspace-core))))
+    (home-page "https://github.com/rust-lang-nursery/compiler-builtins")
+    (synopsis "Compiler intrinsics used by the Rust compiler")
+    (description
+     "This package provides compiler intrinsics used by the Rust compiler.  This
+package is primarily useful when building the @code{core} crate yourself and you
+need compiler-rt intrinsics.")
+    (properties `((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-constant-time-eq
   (package
     (name "rust-constant-time-eq")
