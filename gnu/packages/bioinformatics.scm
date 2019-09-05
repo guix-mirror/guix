@@ -13433,8 +13433,7 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
          "0y5zyjksj1rdglj601xd2bbni5abhdh622y3ck76chyzxz9z4rx8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (home-page "http://mattshirley.com")
     (synopsis "Random access to fasta subsequences")
     (description
