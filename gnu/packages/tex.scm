@@ -3974,31 +3974,6 @@ with a user specified LaTeX construction, properly aligned, scaled, and/or
 rotated.")
     (license (license:fsf-free "file://psfrag.dtx"))))
 
-(define-public texlive-latex-xkeyval
-  (package
-    (name "texlive-latex-xkeyval")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xkeyval"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xkeyval"))
-    (home-page "https://www.ctan.org/pkg/xkeyval")
-    (synopsis "Macros for defining and setting keys")
-    (description
-     "This package is an extension of the @code{keyval} package and offers
-more flexible macros for defining and setting keys.  The package provides a
-pointer and a preset system.  Furthermore, it supplies macros to allow class
-and package options to contain options of the @code{key=value} form.  A LaTeX
-kernel patch is provided to avoid premature expansions of macros in class or
-package options.  A specialized system for setting @code{PSTricks} keys is
-provided by the @code{pst-xkey} package.")
-    (license license:lppl1.3+)))
-
 (define-public texlive-pstool
   (package
     (inherit (simple-texlive-package
@@ -7217,3 +7192,81 @@ are part of the LaTeX required tools distribution, comprising the packages:
 @code{somedefs}, @code{tabularx}, @code{theorem}, @code{trace},
 @code{varioref}, @code{verbatim}, @code{xr}, and @code{xspace}.")
       (license license:lppl1.3+))))
+
+(define-public texlive-latex-xkeyval
+  (package
+    (name "texlive-latex-xkeyval")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "xkeyval"))
+              (sha256
+               (base32
+                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/xkeyval"
+       #:build-targets '("xkeyval.dtx")
+       #:tex-format "latex" ; won't build with luatex
+       #:phases
+       (modify-phases %standard-phases
+         ;; This package cannot be built out of tree as it expects to find
+         ;; built files in the working directory.
+         (add-before 'build 'fix-build
+           (lambda _
+             (setenv "TEXINPUTS"
+                     (string-append (getcwd) "/build:"))
+             (substitute* "xkeyval.dtx"
+               (("usepackage\\{xcolor\\}")
+                "usepackage[dvips]{xcolor}"))
+             #t))
+         ;; FIXME: We don't have a package for this font yet.
+         (add-after 'unpack 'remove-dependency-on-fourier
+           (lambda _
+             (substitute* "xkeyval.dtx"
+               (("\\\\usepackage\\{fourier\\}") ""))
+             #t))
+         (add-after 'install 'move-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/texmf-dist"))
+                    (source (string-append share "/tex/latex/xkeyval/"))
+                    (target (string-append share "/tex/generic/xkeyval/")))
+               (mkdir-p target)
+               (for-each (lambda (file)
+                           (rename-file (string-append source file)
+                                        (string-append target file)))
+                         '("keyval.tex"
+                           "pst-xkey.tex"
+                           "xkeyval.tex"
+                           "xkvex1.tex"
+                           "xkvex2.tex"
+                           "xkvex3.tex"
+                           "xkvex4.tex"
+                           "xkvtxhdr.tex"
+                           "xkvutils.tex"))
+               #t))))))
+    (native-inputs
+     `(("texlive-latex-base" ,texlive-latex-base)
+       ("texlive-cm" ,texlive-cm)
+       ("texlive-lm" ,texlive-lm)
+       ("texlive-url" ,texlive-url)
+       ("texlive-graphics-def" ,texlive-graphics-def)
+       ("texlive-xcolor" ,texlive-xcolor)
+       ("texlive-latex-footmisc" ,texlive-latex-footmisc)
+       ("texlive-latex-listings" ,texlive-latex-listings)
+       ("texlive-iftex" ,texlive-iftex)
+       ("texlive-pstricks" ,texlive-pstricks)
+       ("texlive-pst-text" ,texlive-pst-text)
+       ("texlive-tools" ,texlive-tools)
+       ("texlive-latex-pgf" ,texlive-latex-pgf)))
+    (home-page "http://www.ctan.org/pkg/xkeyval")
+    (synopsis "Extension of the keyval package")
+    (description
+     "This package is an extension of the keyval package and offers additional
+macros for setting keys and declaring and setting class or package options.
+The package allows the programmer to specify a prefix to the name of the
+macros it defines for keys, and to define families of key definitions; these
+all help use in documents where several packages define their own sets of
+keys.")
+    (license license:lppl1.3+)))
