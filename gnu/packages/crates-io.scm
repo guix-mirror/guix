@@ -968,6 +968,28 @@ archive to be linked into Rustcode.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-getopts
+  (package
+    (name "rust-getopts")
+    (version "0.2.17")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "getopts" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "018yhq97zgcrcxwhj3pxh31h83704sgaiijdnpl0r1ir366c005r"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-log" ,rust-log))))
+    (home-page "https://github.com/rust-lang-nursery/getopts")
+    (synopsis "Rust library for option parsing for CLI utilities")
+    (description "This library provides getopts-like option parsing.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-glob
   (package
     (name "rust-glob")
