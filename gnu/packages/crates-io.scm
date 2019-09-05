@@ -338,6 +338,30 @@ colorization.")
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
     (license license:bsd-2)))
 
+(define-public rust-cmake
+  (package
+    (name "rust-cmake")
+    (version "0.1.42")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cmake" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qkwibkvx5xjazvv9v8gvdlpky2jhjxvcz014nrixgzqfyv2byw1"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs (("rust-cc" ,rust-cc))))
+    (home-page "https://github.com/alexcrichton/cmake-rs")
+    (synopsis "Rust build dependency for running cmake")
+    (description
+     "This package provides a build dependency for running @code{cmake} to build
+a native library.  The CMake executable is assumed to be @code{cmake} unless the
+CMAKE environmental variable is set.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-constant-time-eq
   (package
     (name "rust-constant-time-eq")
