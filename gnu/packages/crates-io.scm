@@ -1202,6 +1202,33 @@ whether an expression matches a pattern.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-memmap
+  (package
+    (name "rust-memmap")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "memmap" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ns7kkd1h4pijdkwfvw4qlbbmqmlmzwlq3g2676dcl5vwyazv1b5"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))))
+    (home-page "https://github.com/danburkert/memmap-rs")
+    (synopsis "Rust library for cross-platform memory mapped IO")
+    (description
+     "This package provides a cross-platform Rust API for memory-mapped
+file IO.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-mime
   (package
     (name "rust-mime")
