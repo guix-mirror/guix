@@ -7166,3 +7166,23 @@ or shading the cells of tables.")
 a different path and manipulating characters.  It includes the functionality
 of the old package @code{pst-char}.")
       (license license:lppl))))
+
+(define-public texlive-iftex
+  (let ((template (simple-texlive-package
+                   "texlive-iftex"
+                   (list "/doc/generic/iftex/"
+                         "/tex/generic/iftex/iftex.sty")
+                   (base32
+                    "089zvw31gby150n1k0zdk2c0q97pgbqs46phxydaqil64b55nnl7")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/iftex")
+      (synopsis "Determine the currently used TeX engine")
+      (description "This package, which works both for Plain TeX and for
+LaTeX, defines the @code{\\ifPDFTeX}, @code{\\ifXeTeX}, and @code{\\ifLuaTeX}
+conditionals for testing which engine is being used for typesetting.  The
+package also provides the @code{\\RequirePDFTeX}, @code{\\RequireXeTeX}, and
+@code{\\RequireLuaTeX} commands which throw an error if pdfTeX, XeTeX or
+LuaTeX (respectively) is not the engine in use.")
+      (license license:lppl1.3+))))
