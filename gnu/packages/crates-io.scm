@@ -2102,6 +2102,32 @@ and Jaro-Winkler.")
      "This package provides helper test traits for synstructure doctests.")
     (license license:expat)))
 
+(define-public rust-tempdir
+  (package
+    (name "rust-tempdir")
+    (version "0.3.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tempdir" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1n5n86zxpgd85y0mswrp5cfdisizq2rv3la906g6ipyc03xvbwhm"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-rand" ,rust-rand)
+        ("rust-remove-dir-all" ,rust-remove-dir-all))))
+    (home-page
+      "https://github.com/rust-lang/tempdir")
+    (synopsis "Temporary directory management for Rust")
+    (description
+     "This package provides a library for managing a temporary directory and
+deleting all contents when it's dropped.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-termcolor
   (package
     (name "rust-termcolor")
