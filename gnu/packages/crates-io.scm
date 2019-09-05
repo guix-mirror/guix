@@ -1004,6 +1004,26 @@ the platform that libc is compiled for.")
     (license (list license:expat
                    license:asl2.0))))
 
+(define-public rust-log
+  (package
+    (name "rust-log")
+    (version "0.3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "log" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nsn28syc49vvjhxcfc8261rd1frhjc0r4bn9v3mqvps3ra7f3w8"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang-nursery/log")
+    (synopsis "Lightweight logging")
+    (description
+     "This package provides a lightweight logging facade for Rust")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-maplit
   (package
     (name "rust-maplit")
