@@ -2714,6 +2714,34 @@ deleting all contents when it's dropped.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-tempfile
+  (package
+    (name "rust-tempfile")
+    (version "3.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tempfile" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0ny1cdbcsrmwjpy4k9366xm6p0jqkrmrvr0cln2djxspp1inyxs7"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-rand" ,rust-rand)
+        ("rust-redox-syscall" ,rust-redox-syscall)
+        ("rust-remove-dir-all" ,rust-remove-dir-all)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "http://stebalien.com/projects/tempfile-rs")
+    (synopsis "Library for managing temporary files and directories")
+    (description
+     "This package provides a library for managing temporary files and
+directories.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-termcolor
   (package
     (name "rust-termcolor")
