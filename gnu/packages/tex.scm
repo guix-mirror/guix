@@ -7068,3 +7068,51 @@ the file to which it applies.")
      "This package helps LaTeX users to create PDF/X, PFD/A and other
 standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
     (license license:lppl1.2+)))
+
+(define-public texlive-ydoc
+  (let ((template (simple-texlive-package
+                   "texlive-ydoc"
+                   (list "/doc/latex/ydoc/"
+                         "/source/latex/ydoc/")
+                   (base32
+                    "0ckcpy1b8v1fk3qc8qkxgiag2wc0qzxm6bgksv000m4m1hsi2g8b")
+                   #:trivial? #f)))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/ydoc")
+         ((#:build-targets _ #t)
+          ''("ydoc.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ydoc") #t))
+             (add-after 'copy-files 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((share (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist"))
+                        (target (string-append share "/tex/generic/ydoc"))
+                        (doc (string-append (assoc-ref outputs "doc")
+                                            "/share/texmf-dist/doc") ))
+                   (mkdir-p target)
+                   (for-each
+                    (lambda (file)
+                      (rename-file (string-append share "/tex/latex/ydoc/" file)
+                                   (string-append target "/" file)))
+                    '("ydocincl.tex" "ydocstrip.tex"))
+                   (mkdir-p doc)
+                   (rename-file (string-append share "/doc") doc)
+                   #t)))))))
+      (home-page "http://www.ctan.org/pkg/ydoc")
+      (synopsis "Macros for documentation of LaTeX classes and packages")
+      (description "The package provides macros and environments to document
+LaTeX packages and classes.  It is an (as yet unfinished) alternative to the
+@code{ltxdoc} class and the @code{doc} or @code{xdoc} packages.  The aim is to
+provide a different layout and more modern styles (using the @code{xcolor},
+@code{hyperref} packages, etc.)  This is an alpha release, and should probably
+not (yet) be used with other packages, since the implementation might
+change.")
+      (license license:lppl1.3+))))
