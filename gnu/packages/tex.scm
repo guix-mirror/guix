@@ -7337,3 +7337,25 @@ The package also provides backward-compatibility with @code{SIunits},
 @code{sistyle}, @code{unitsdef} and @code{units}.  The aim is to have one
 package to handle all of the possible unit-related needs of LaTeX users.")
     (license license:lppl1.3c)))
+
+(define-public texlive-booktabs
+  (package
+    (name "texlive-booktabs")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "booktabs"))
+       (sha256
+        (base32
+         "1dqid48vgh25wmw8xzmx6x3pfgz1y9f0r8aza1yxq2mjny5yf68x"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/booktabs"))
+    (home-page "http://www.ctan.org/pkg/booktabs")
+    (synopsis "Publication quality tables in LaTeX")
+    (description
+     "This package enhances the quality of tables in LaTeX, providing extra
+commands as well as behind-the-scenes optimisation.  Guidelines are given as
+to what constitutes a good table in this context.  The package offers
+@code{longtable} compatibility.")
+    (license license:lppl1.3+)))
