@@ -963,6 +963,31 @@ shell style patterns.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-glob-0.2
+  (package
+    (inherit rust-glob)
+    (name "rust-glob")
+    (version "0.2.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "glob" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1ysvi72slkw784fcsymgj4308c3y03gwjjzqxp80xdjnkbh8vqcb"))))
+    (arguments
+     `(#:cargo-development-inputs
+       (("rust-tempdir" ,rust-tempdir))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           ;; This test assumes /root exists but is unreadable by the user.
+           (lambda _
+             (substitute* "src/lib.rs"
+               (("cfg\\(unix") "cfg(windows"))
+             #t)))))))
+
 (define-public rust-heapsize
   (package
     (name "rust-heapsize")
