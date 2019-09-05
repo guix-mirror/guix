@@ -1097,6 +1097,33 @@ the platform that libc is compiled for.")
     (license (list license:expat
                    license:asl2.0))))
 
+(define-public rust-libloading
+  (package
+    (name "rust-libloading")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libloading" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0lyply8rcqc8agajzxs7bq6ivba9dnn1i68kgb9z2flnfjh13cgj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/nagisa/rust_libloading/")
+    (synopsis "Rust library for loading dynamic libraries")
+    (description
+     "A memory-safer wrapper around system dynamic library loading primitives.
+The most important safety guarantee by this library is prevention of
+dangling-Symbols that may occur after a Library is unloaded.  Using this library
+allows loading dynamic libraries (also known as shared libraries) as well as use
+functions and static variables these libraries contain.")
+    (license license:isc)))
+
 (define-public rust-log
   (package
     (name "rust-log")
