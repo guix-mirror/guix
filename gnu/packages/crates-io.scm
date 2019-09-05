@@ -58,6 +58,38 @@ the Rust programming language.")
     (license (list license:bsd-3
                    license:zlib))))
 
+(define-public rust-ansi-term
+  (package
+    (name "rust-ansi-term")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ansi_term" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "16wpvrghvd0353584i1idnsgm0r3vchg8fyrm0x8ayv1rgvbljgf"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-winapi" ,rust-winapi))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           ;; https://github.com/ogham/rust-ansi-term/commit/5ff6af6f38790abcb3aafee1239286c10ef69576.patch
+           (lambda _
+             (substitute* "src/debug.rs"
+               (("^ *Blue") "        Blue,")
+               (("underline: false") "underline: false,"))
+             #t)))))
+    (home-page "https://github.com/ogham/rust-ansi-term")
+    (synopsis "Library for ANSI terminal colours and styles")
+    (description
+     "This is a library for controlling colours and formatting, such as red bold
+text or blue underlined text, on ANSI terminals.")
+    (license license:expat)))
+
 (define-public rust-antidote
   (package
     (name "rust-antidote")
