@@ -1556,6 +1556,28 @@ IOCP and Async I/O abstractions.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-miow-0.2
+  (package
+    (inherit rust-miow)
+    (name "rust-miow")
+    (version "0.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "miow" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "06g9b8sqlh5gxakwqq4rrib07afwanfnxgxajrldwcgk3hxjy7wc"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys)
+        ("rust-net2" ,rust-net2)
+        ("rust-winapi" ,rust-winapi-0.2)
+        ("rust-ws2-32-sys" ,rust-ws2-32-sys))
+       #:cargo-development-inputs
+       (("rust-rand" ,rust-rand-0.3))))))
+
 (define-public rust-modifier
   (package
     (name "rust-modifier")
