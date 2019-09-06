@@ -34,6 +34,7 @@
              (gnu packages gawk)
              (gnu packages gettext)
              (gnu packages guile)
+             (gnu packages guile-xyz)
              (gnu packages iso-codes)
              (gnu packages texinfo)
              (gnu packages tex)
@@ -164,6 +165,115 @@ as well as images, OS examples, and translations."
   ;; Options passed to 'makeinfo --html'.
   '("--css-ref=https://www.gnu.org/software/gnulib/manual.css"))
 
+(define* (syntax-highlighted-html input
+                                  #:key
+                                  (name "highlighted-syntax")
+                                  (syntax-css-url
+                                   "/static/base/css/code.css"))
+  "Return a derivation called NAME that processes all the HTML files in INPUT
+to (1) add them a link to SYNTAX-CSS-URL, and (2) highlight the syntax of all
+its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
+  (define build
+    (with-extensions (list guile-lib guile-syntax-highlight)
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (htmlprag)
+                         (syntax-highlight)
+                         (syntax-highlight scheme)
+                         (syntax-highlight lexers)
+                         (guix build utils)
+                         (ice-9 match)
+                         (ice-9 threads))
+
+            (define entity->string
+              (match-lambda
+                ("rArr"   "⇒")
+                ("hellip" "…")
+                ("rsquo"  "’")
+                (e (pk 'unknown-entity e) (primitive-exit 2))))
+
+            (define (concatenate-snippets pieces)
+              ;; Concatenate PIECES, which contains strings and entities,
+              ;; replacing entities with their corresponding string.
+              (let loop ((pieces pieces)
+                         (strings '()))
+                (match pieces
+                  (()
+                   (string-concatenate-reverse strings))
+                  (((? string? str) . rest)
+                   (loop rest (cons str strings)))
+                  ((('*ENTITY* "additional" entity) . rest)
+                   (loop rest (cons (entity->string entity) strings)))
+                  ((('span _ lst ...) . rest)     ;for <span class="roman">
+                   (loop (append lst rest) strings))
+                  (something
+                   (pk 'unsupported-code-snippet something)
+                   (primitive-exit 1)))))
+
+            (define (syntax-highlight sxml)
+              ;; Recurse over SXML and syntax-highlight code snippets.
+              (match sxml
+                (('*TOP* decl body ...)
+                 `(*TOP* ,decl ,@(map syntax-highlight body)))
+                (('head things ...)
+                 `(head ,@things
+                        (link (@ (rel "stylesheet")
+                                 (type "text/css")
+                                 (href #$syntax-css-url)))))
+                (('pre ('@ ('class "lisp")) code-snippet ...)
+                 `(pre (@ (class "lisp"))
+                       ,(highlights->sxml
+                         (highlight lex-scheme
+                                    (concatenate-snippets code-snippet)))))
+                ((tag ('@ attributes ...) body ...)
+                 `(,tag (@ ,@attributes) ,@(map syntax-highlight body)))
+                ((tag body ...)
+                 `(,tag ,@(map syntax-highlight body)))
+                ((? string? str)
+                 str)))
+
+            (define (process-html file)
+              ;; Parse FILE and perform syntax highlighting for its Scheme
+              ;; snippets.  Install the result to #$output.
+              (format (current-error-port) "processing ~a...~%" file)
+              (let* ((shtml        (call-with-input-file file html->shtml))
+                     (highlighted  (syntax-highlight shtml))
+                     (base         (string-drop file (string-length #$input)))
+                     (target       (string-append #$output base)))
+                (mkdir-p (dirname target))
+                (call-with-output-file target
+                  (lambda (port)
+                    (write-shtml-as-html highlighted port)))))
+
+            (define (copy-as-is file)
+              ;; Copy FILE as is to #$output.
+              (let* ((base   (string-drop file (string-length #$input)))
+                     (target (string-append #$output base)))
+                (mkdir-p (dirname target))
+                (catch 'system-error
+                  (lambda ()
+                    (if (eq? 'symlink (stat:type (lstat file)))
+                        (symlink (readlink file) target)
+                        (link file target)))
+                  (lambda args
+                    (let ((errno (system-error-errno args)))
+                      (pk 'error-link file target (strerror errno))
+                      (primitive-exit 3))))))
+
+            ;; Install a UTF-8 locale so we can process UTF-8 files.
+            (setenv "GUIX_LOCPATH"
+                    #+(file-append glibc-utf8-locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.utf8")
+
+            (n-par-for-each (parallel-job-count)
+                            (lambda (file)
+                              (if (string-suffix? ".html" file)
+                                  (process-html file)
+                                  (copy-as-is file)))
+                            (find-files #$input))))))
+
+  (computed-file name build))
+
 (define* (html-manual source #:key (languages %languages)
                       (version "0.0")
                       (manual "guix")
@@ -242,7 +352,10 @@ makeinfo OPTIONS."
                                                 "/html_node/images"))))
                     '#$languages))))
 
-  (computed-file (string-append manual "-html-manual") build))
+  (let* ((name   (string-append manual "-html-manual"))
+         (manual (computed-file name build)))
+    (syntax-highlighted-html manual
+                             #:name (string-append name "-highlighted"))))
 
 (define* (pdf-manual source #:key (languages %languages)
                      (version "0.0")
