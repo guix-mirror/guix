@@ -2427,7 +2427,6 @@ to handle."
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append (canonical-package bash)
                                             "/bin/sh"))
-                                            "/bin/sh"))
                    ("/usr/bin/env" ,(file-append (canonical-package coreutils)
                                                  "/usr/bin/env"))))))
 
