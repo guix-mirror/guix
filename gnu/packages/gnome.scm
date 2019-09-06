@@ -40,6 +40,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8122,11 +8123,21 @@ generic enough to work for everyone.")
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       (list "-DENABLE_PST_IMPORT=OFF"    ; libpst is not packaged
-             "-DENABLE_LIBCRYPTUI=OFF"))) ; libcryptui hasn't seen a release
-                                          ; in four years and cannot be built.
+       (list "-DENABLE_PST_IMPORT=OFF"  ; libpst is not packaged
+             "-DENABLE_LIBCRYPTUI=OFF") ; libcryptui hasn't seen a release
+                                        ; in four years and cannot be built
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/evolution")
+                 `("XDG_DATA_DIRS" ":" prefix (,(getenv "XDG_DATA_DIRS")))
+                 `("GSETTINGS_SCHEMA_DIR" =
+                   (,(string-append out "/share/glib-2.0/schemas")))))
+             #t)))))
     (native-inputs
-     `(("glib" ,glib "bin")               ; glib-mkenums
+     `(("glib" ,glib "bin")             ; glib-mkenums
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("itstool" ,itstool)))
@@ -8134,6 +8145,7 @@ generic enough to work for everyone.")
      `(("enchant" ,enchant)
        ("evolution-data-server" ,evolution-data-server) ; must be the same version
        ("gcr" ,gcr)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gnome-autoar" ,gnome-autoar)
        ("gnome-desktop" ,gnome-desktop)
        ("gtkspell3" ,gtkspell3)
