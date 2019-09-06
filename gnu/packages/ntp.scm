@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,8 +109,11 @@ computers over a network.")
                 "0fn12i4kzsi0zkr4qp3dp9bycmirnfapajqvdfx02zhr4hanj0kv"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-privsep-user=ntpd"
-                           "--localstatedir=/var")
+     '(#:configure-flags `( "--with-privsep-user=ntpd"
+                            "--localstatedir=/var"
+                            ,(string-append "--with-cacert="
+                                            (assoc-ref %build-inputs "libressl")
+                                            "/etc/ssl/cert.pem"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'modify-install-locations
