@@ -393,9 +393,7 @@ reducing the memory footprint."
                              ,(module-name module)
                              ,symbol
                              ,(package-outputs package)
-                             ,(->bool
-                               (member (%current-system)
-                                       (package-supported-systems package)))
+                             ,(->bool (supported-package? package))
                              ,(->bool (package-superseded package))
                              ,@(let ((loc (package-location package)))
                                  (if loc
