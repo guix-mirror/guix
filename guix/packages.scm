@@ -767,23 +767,29 @@ in INPUTS and their transitive propagated inputs."
        (transitive-inputs inputs)))
 
 (define package-transitive-supported-systems
-  (mlambdaq (package)
-    "Return the intersection of the systems supported by PACKAGE and those
+  (let ()
+    (define supported-systems
+      (mlambda (package system)
+        (parameterize ((%current-system system))
+          (fold (lambda (input systems)
+                  (match input
+                    ((label (? package? package) . _)
+                     (lset-intersection string=? systems
+                                        (supported-systems package system)))
+                    (_
+                     systems)))
+                (package-supported-systems package)
+                (bag-direct-inputs (package->bag package))))))
+
+    (lambda* (package #:optional (system (%current-system)))
+      "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-    (fold (lambda (input systems)
-            (match input
-              ((label (? package? p) . _)
-               (lset-intersection
-                string=? systems (package-transitive-supported-systems p)))
-              (_
-               systems)))
-          (package-supported-systems package)
-          (bag-direct-inputs (package->bag package)))))
+      (supported-systems package system))))
 
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
 dependencies are known to build on SYSTEM."
-  (member system (package-transitive-supported-systems package)))
+  (member system (package-transitive-supported-systems package system)))
 
 (define (bag-direct-inputs bag)
   "Same as 'package-direct-inputs', but applied to a bag."

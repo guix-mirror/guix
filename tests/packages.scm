@@ -341,7 +341,6 @@
                (build-system gnu-build-system)
                (supported-systems
                 `("does-not-exist" "foobar" ,@%supported-systems)))))
-    (invalidate-memoization! package-transitive-supported-systems)
     (parameterize ((%current-system "armhf-linux")) ; a traditionally-bootstrapped architecture
       (package-transitive-supported-systems p))))
 
@@ -354,17 +353,40 @@
              (build-system gnu-build-system)
              (supported-systems
               `("does-not-exist" "foobar" ,@%supported-systems)))))
-    (invalidate-memoization! package-transitive-supported-systems)
     (parameterize ((%current-system "x86_64-linux"))
       (package-transitive-supported-systems p))))
 
 (test-assert "supported-package?"
-  (let ((p (dummy-package "foo"
-             (build-system gnu-build-system)
-             (supported-systems '("x86_64-linux" "does-not-exist")))))
+  (let* ((d (dummy-package "dep"
+              (build-system trivial-build-system)
+              (supported-systems '("x86_64-linux"))))
+         (p (dummy-package "foo"
+              (build-system gnu-build-system)
+              (inputs `(("d" ,d)))
+              (supported-systems '("x86_64-linux" "armhf-linux")))))
     (and (supported-package? p "x86_64-linux")
-         (not (supported-package? p "does-not-exist"))
-         (not (supported-package? p "i686-linux")))))
+         (not (supported-package? p "i686-linux"))
+         (not (supported-package? p "armhf-linux")))))
+
+(test-assert "supported-package? vs. system-dependent graph"
+  ;; The inputs of a package can depend on (%current-system).  Thus,
+  ;; 'supported-package?' must make sure that it binds (%current-system)
+  ;; appropriately before traversing the dependency graph.  In the example
+  ;; below, 'supported-package?' must thus return true for both systems.
+  (let* ((p0a (dummy-package "foo-arm"
+                (build-system trivial-build-system)
+                (supported-systems '("armhf-linux"))))
+         (p0b (dummy-package "foo-x86_64"
+                (build-system trivial-build-system)
+                (supported-systems '("x86_64-linux"))))
+         (p   (dummy-package "bar"
+                (build-system trivial-build-system)
+                (inputs
+                 (if (string=? (%current-system) "armhf-linux")
+                     `(("foo" ,p0a))
+                     `(("foo" ,p0b)))))))
+    (and (supported-package? p "x86_64-linux")
+         (supported-package? p "armhf-linux"))))
 
 (test-skip (if (not %store) 8 0))
 
