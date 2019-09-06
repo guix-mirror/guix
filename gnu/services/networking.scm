@@ -508,41 +508,41 @@ make an initial adjustment of more than 1,000 seconds."
   (match-record config <openntpd-configuration>
     (openntpd listen-on query-from sensor server servers constraint-from
               constraints-from allow-large-adjustment?)
-    (let ()
-      (define config
-        (string-join
-          (filter-map
-            (lambda (field value)
-              (string-join
-                (map (cut string-append field <> "\n")
-                     value)))
-            '("listen on " "query from " "sensor " "server " "servers "
-              "constraint from ")
-            (list listen-on query-from sensor server servers constraint-from))
-          ;; The 'constraints from' field needs to be enclosed in double quotes.
+
+    (define config
+      (string-join
+       (filter-map
+        (lambda (field value)
           (string-join
-            (map (cut string-append "constraints from \"" <> "\"\n")
-                 constraints-from))))
+           (map (cut string-append field <> "\n")
+                value)))
+        '("listen on " "query from " "sensor " "server " "servers "
+          "constraint from ")
+        (list listen-on query-from sensor server servers constraint-from))
+       ;; The 'constraints from' field needs to be enclosed in double quotes.
+       (string-join
+        (map (cut string-append "constraints from \"" <> "\"\n")
+             constraints-from))))
 
-      (define ntpd.conf
-        (plain-file "ntpd.conf" config))
+    (define ntpd.conf
+      (plain-file "ntpd.conf" config))
 
-      (list (shepherd-service
-              (provision '(ntpd))
-              (documentation "Run the Network Time Protocol (NTP) daemon.")
-              (requirement '(user-processes networking))
-              (start #~(make-forkexec-constructor
-                         (list (string-append #$openntpd "/sbin/ntpd")
-                               "-f" #$ntpd.conf
-                               "-d" ;; don't daemonize
-                               #$@(if allow-large-adjustment?
-                                    '("-s")
-                                    '()))
-                         ;; When ntpd is daemonized it repeatedly tries to respawn
-                         ;; while running, leading shepherd to disable it.  To
-                         ;; prevent spamming stderr, redirect output to logfile.
-                         #:log-file "/var/log/ntpd"))
-              (stop #~(make-kill-destructor)))))))
+    (list (shepherd-service
+           (provision '(ntpd))
+           (documentation "Run the Network Time Protocol (NTP) daemon.")
+           (requirement '(user-processes networking))
+           (start #~(make-forkexec-constructor
+                     (list (string-append #$openntpd "/sbin/ntpd")
+                           "-f" #$ntpd.conf
+                           "-d" ;; don't daemonize
+                           #$@(if allow-large-adjustment?
+                                  '("-s")
+                                  '()))
+                     ;; When ntpd is daemonized it repeatedly tries to respawn
+                     ;; while running, leading shepherd to disable it.  To
+                     ;; prevent spamming stderr, redirect output to logfile.
+                     #:log-file "/var/log/ntpd"))
+           (stop #~(make-kill-destructor))))))
 
 (define (openntpd-service-activation config)
   "Return the activation gexp for CONFIG."
