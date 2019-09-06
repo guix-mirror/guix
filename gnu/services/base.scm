@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,9 +42,9 @@
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
-  #:use-module ((gnu packages base)
-                #:select (canonical-package glibc glibc-utf8-locales))
   #:use-module (gnu packages bash)
+  #:use-module ((gnu packages base)
+                #:select (canonical-package coreutils glibc glibc-utf8-locales))
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
@@ -2425,6 +2426,8 @@ to handle."
 
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append (canonical-package bash)
-                                            "/bin/sh"))))))
+                                            "/bin/sh"))
+                   ("/usr/bin/env" ,(file-append (canonical-package coreutils)
+                                                 "/usr/bin/env"))))))
 
 ;;; base.scm ends here
