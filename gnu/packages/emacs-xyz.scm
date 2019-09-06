@@ -4493,6 +4493,32 @@ variants.")
 package provides a light and a dark variant.")
     (license license:gpl3+)))
 
+(define-public emacs-poet-theme
+  (let ((commit "d84f7b259cc9b6ff8d442cf4c38bd6c7065ff8f4")
+        (revision "0"))
+    (package
+      (name "emacs-poet-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kunalb/poet.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0a84jdaj619mb59a46dmkk2sfs42rylqk9ryl1drgs8d3lia79mz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kunalb/poet/")
+      (synopsis "Emacs theme for prose")
+      (description
+       "Emacs has very good support for multiple fonts in a single file.  Poet
+uses this support to make it much more convenient to write prose within Emacs,
+with particular attention paid to @code{org-mode} and @code{markdown-mode}.
+Code blocks, tables, etc are formatted in monospace text with the appropriate
+backgrounds.")
+      (license license:expat))))
+
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
