@@ -501,7 +501,7 @@ need compiler-rt intrinsics.")
         (base32
          "083icpr9xb72rrdxw3p4068dcspn6ai22jy7rhl2a8grfz448nlr"))))
     (build-system cargo-build-system)
-    (home-page "https://crates.io/crates/constant_time_eq")
+    (home-page "https://github.com/cesarb/constant_time_eq")
     (synopsis
      "Compares two equal-sized byte strings in constant time")
     (description
@@ -733,7 +733,7 @@ cross platform API.")
          (base32
           "0czam11mi80dbyhf4rd4lz0ihcf7vkfchrdcrn45wbs0h40dxm46"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/bluss/fixedbitset")
+    (home-page "https://github.com/petgraph/fixedbitset")
     (synopsis "FixedBitSet is a simple bitset collection")
     (description "FixedBitSet is a simple bitset collection.")
     (license (list license:asl2.0
@@ -900,7 +900,7 @@ featuring zero allocations, composability, and iterator-like interfaces.")
      `(#:cargo-inputs
        (("rust-futures" ,rust-futures)
         ("rust-num-cpus" ,rust-num-cpus))))
-    (home-page "https://github.com/alexcrichton/futures-rs")
+    (home-page "https://github.com/rust-lang-nursery/futures-rs")
     (synopsis "Implementation of thread pools which hand out futures")
     (description
      "An implementation of thread pools which hand out futures to the results of
@@ -2074,7 +2074,7 @@ algorithm.")
      `(#:cargo-inputs
        (("rust-gcc" ,rust-gcc)
         ("rust-libc" ,rust-libc))))
-    (home-page "https://github.com/reem/rust-pico-sys.git")
+    (home-page "https://github.com/reem/rust-pico-sys")
     (synopsis "Bindings to the PicoHTTPParser")
     (description
      "This package provides bindings to the PicoHTTPParser.")
@@ -2117,7 +2117,7 @@ algorithm.")
        (("rust-lazy-static" ,rust-lazy-static))))
     (inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/alexcrichton/pkg-config-rs")
+    (home-page "https://github.com/rust-lang/pkg-config-rs")
     (synopsis "Library to run the pkg-config system tool")
     (description
      "A library to run the pkg-config system tool at build time in order to be
@@ -2246,7 +2246,7 @@ in terms of the upstream unstable API.")
          (base32
           "1w6kgwwv7p7zr0yyg5rb315lkk24bimywklwx7fsvsbwi10bjx4j"))))
     (build-system cargo-build-system)
-    (home-page "http://github.com/tailhook/quick-error")
+    (home-page "https://github.com/tailhook/quick-error")
     (synopsis "Macro which makes error types pleasant to write")
     (description "This crate provides a macro which makes error types pleasant
 to write.")
@@ -2409,7 +2409,7 @@ system calls.")
            ;; The test phase expects there to be a README.md in the root directory.
            (lambda _
              (invoke "touch" "README.md"))))))
-    (home-page "https://github.com/XAMPPRocky/remove_dir_all.git")
+    (home-page "https://github.com/XAMPPRocky/remove_dir_all")
     (synopsis "Implementation of remove_dir_all for Windows")
     (description
      "This package provides a safe, reliable implementation of
@@ -2846,7 +2846,7 @@ track of where each new file and line starts.")
          (base32
           "0m9clchsj0rf13bggsgvbv9haiy0f6rhvnvkpvkk8720a5pkydj4"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/mvdnes/spin-rs.git")
+    (home-page "https://github.com/mvdnes/spin-rs")
     (synopsis "Synchronization primitives based on spinning")
     (description "This crate provides synchronization primitives based on
 spinning.  They may contain data, are usable without @code{std},and static
@@ -3060,8 +3060,7 @@ memory all at once.")
      `(#:cargo-inputs
        (("rust-rand" ,rust-rand)
         ("rust-remove-dir-all" ,rust-remove-dir-all))))
-    (home-page
-      "https://github.com/rust-lang/tempdir")
+    (home-page "https://github.com/rust-lang-deprecated/tempdir")
     (synopsis "Temporary directory management for Rust")
     (description
      "This package provides a library for managing a temporary directory and
@@ -3303,7 +3302,7 @@ in Rust.")
          (base32
           "0yb0n8822mr59j200fyr2fxgzzgqljyxflx9y8bdy3rlaqngilgg"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/reem/rust-traitobject.git")
+    (home-page "https://github.com/reem/rust-traitobject")
     (synopsis "Unsafe helpers for dealing with raw trait objects")
     (description "Unsafe helpers for dealing with raw trait objects.")
     (license (list license:asl2.0
@@ -3672,7 +3671,7 @@ If that fails, no determination is made, and calls return None.")
          (base32
           "0zc8f0ksxvmhvgx4fdg0zyn6vdnbxd2xv9hfx4nhzg6kbs4f80ka"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/reem/rust-void.git")
+    (home-page "https://github.com/reem/rust-void")
     (synopsis "Void type for use in statically impossible cases")
     (description
      "The uninhabited void type for use in statically impossible cases.")
