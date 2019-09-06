@@ -1836,3 +1836,42 @@ identical visual appearance.")
 to the standard output.  It works well together with grim.")
    ;; MIT license.
    (license license:expat)))
+
+(define-public sng
+  (package
+    (name "sng")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sng/sng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06a6ydvx9xb3vxvrzdrg3hq0rjwwj9ibr7fyyxjxq6qx1j3mb70i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'link-pngsuite
+           ;; tests expect pngsuite in source dir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (symlink (assoc-ref inputs "pngsuite") "pngsuite")
+             #t)))
+       #:configure-flags
+       (list (string-append "--with-rgbtxt="
+                            (assoc-ref %build-inputs "xorg-rgb")
+                            "/share/X11/rgb.txt"))))
+    (inputs `(("xorg-rgb" ,xorg-rgb)
+              ("libpng" ,libpng)))
+    (native-inputs `(("pngsuite" ,pngsuite)))
+    (home-page "http://sng.sourceforge.net")
+    (synopsis "Markup language for representing PNG contents")
+    (description "SNG (Scriptable Network Graphics) is a minilanguage designed
+specifically to represent the entire contents of a PNG (Portable Network
+Graphics) file in an editable form.  Thus, SNGs representing elaborate
+graphics images and ancillary chunk data can be readily generated or modified
+using only text tools.
+
+SNG is implemented by a compiler/decompiler called sng that
+losslessly translates between SNG and PNG.")
+    (license license:zlib)))
