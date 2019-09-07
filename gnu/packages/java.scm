@@ -202,6 +202,11 @@ language.")
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
        ("zlib" ,zlib)))
+    ;; When built with a recent GCC and glibc the configure step of icedtea-6
+    ;; fails with an invalid instruction error.
+    (native-inputs
+     `(("gcc" ,gcc-5)
+       ("libc" ,glibc-2.28)))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
