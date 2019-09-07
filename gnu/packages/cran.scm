@@ -13607,14 +13607,14 @@ the XKCD web comic.")
 (define-public r-msigdbr
   (package
     (name "r-msigdbr")
-    (version "6.2.1")
+    (version "7.0.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "msigdbr" version))
        (sha256
         (base32
-         "1264j1hs74kq7hyh68vfynadfi6mdpq46qm1hnwzkzzhmbzpb9cg"))))
+         "19p8z617m3my8la7n1qgb1s2msf940r372im3q30qkbcx3qxg3sd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
