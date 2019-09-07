@@ -2813,7 +2813,7 @@ and the GLib main loop, to integrate well with GNOME applications.")
               (uri (string-append
                     "mirror://gnome/sources/libsecret/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "libsecret-" version ".tar.xz"))
               (sha256
                (base32
                 "058x64689k55wxfkdp4svhnwvv8jmqm7z5mrynybl38f4sfqiyiv"))))
