@@ -926,7 +926,6 @@ machine.")))
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5 or gcc-7
        ("gtk" ,gtk+-2)
        ("gawk" ,gawk)
        ("giflib" ,giflib)
