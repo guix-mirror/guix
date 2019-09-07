@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -92,6 +92,9 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "hg-checkout") build
+                      #:leaked-env-vars '("http_proxy" "https_proxy"
+                                          "LC_ALL" "LC_MESSAGES" "LANG"
+                                          "COLUMNS")
                       #:system system
                       #:local-build? #t           ;don't offload repo cloning
                       #:hash-algo hash-algo

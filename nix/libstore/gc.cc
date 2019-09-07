@@ -569,9 +569,8 @@ void LocalStore::removeUnusedLinks(const GCState & state)
             throw SysError(format("statting `%1%'") % path);
 
         if (st.st_nlink != 1) {
-            unsigned long long size = st.st_blocks * 512ULL;
-            actualSize += size;
-            unsharedSize += (st.st_nlink - 1) * size;
+            actualSize += st.st_size;
+            unsharedSize += (st.st_nlink - 1) * st.st_size;
             continue;
         }
 
@@ -580,13 +579,13 @@ void LocalStore::removeUnusedLinks(const GCState & state)
         if (unlink(path.c_str()) == -1)
             throw SysError(format("deleting `%1%'") % path);
 
-        state.results.bytesFreed += st.st_blocks * 512;
+        state.results.bytesFreed += st.st_size;
     }
 
     struct stat st;
     if (stat(linksDir.c_str(), &st) == -1)
         throw SysError(format("statting `%1%'") % linksDir);
-    long long overhead = st.st_blocks * 512ULL;
+    long long overhead = st.st_size;
 
     printMsg(lvlInfo, format("note: currently hard linking saves %.2f MiB")
         % ((unsharedSize - actualSize - overhead) / (1024.0 * 1024.0)));

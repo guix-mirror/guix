@@ -2885,30 +2885,45 @@ documents.  It comprises the packages color, graphics, graphicx, trig, epsfig,
 keyval, and lscape.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-xcolor
-  (package
-    (name "texlive-latex-xcolor")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xcolor"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xcolor"))
-    (home-page "https://www.ctan.org/pkg/xcolor")
-    (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
-    (description
-     "The package starts from the basic facilities of the colorcolor package,
+(define-public texlive-xcolor
+  (let ((template (simple-texlive-package
+                   "texlive-xcolor"
+                   (list "/doc/latex/xcolor/"
+                         "/source/latex/xcolor/")
+                   (base32
+                    "12q6spmpxg30alhvarjmxzigmz7lazapbrb0mc4vhbn6n1sdz7pp"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/xcolor")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/xcolor") #t))
+             (add-after 'install 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((share (string-append (assoc-ref outputs "out")
+                                             "/share/texmf-dist")))
+                   (mkdir-p (string-append share "/dvips/xcolor"))
+                   (rename-file (string-append share "/tex/latex/xcolor/xcolor.pro")
+                                (string-append share "/dvips/xcolor/xcolor.pro"))
+                   #t)))))))
+      (home-page "https://www.ctan.org/pkg/xcolor")
+      (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
+      (description
+       "The package starts from the basic facilities of the colorcolor package,
 and provides easy driver-independent access to several kinds of color tints,
 shades, tones, and mixes of arbitrary colors.  It allows a user to select a
 document-wide target color model and offers complete tools for conversion
 between eight color models.  Additionally, there is a command for alternating
 row colors plus repeated non-aligned material (like horizontal lines) in
 tables.")
-    (license license:lppl1.2+)))
+      (license license:lppl1.2+))))
+
+(define-public texlive-latex-xcolor
+  (deprecated-package "texlive-latex-xcolor" texlive-xcolor))
 
 (define-public texlive-latex-hyperref
   (package
@@ -3968,31 +3983,6 @@ PSfrag automatically removing these tags from the figure and replacing them
 with a user specified LaTeX construction, properly aligned, scaled, and/or
 rotated.")
     (license (license:fsf-free "file://psfrag.dtx"))))
-
-(define-public texlive-latex-xkeyval
-  (package
-    (name "texlive-latex-xkeyval")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xkeyval"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xkeyval"))
-    (home-page "https://www.ctan.org/pkg/xkeyval")
-    (synopsis "Macros for defining and setting keys")
-    (description
-     "This package is an extension of the @code{keyval} package and offers
-more flexible macros for defining and setting keys.  The package provides a
-pointer and a preset system.  Furthermore, it supplies macros to allow class
-and package options to contain options of the @code{key=value} form.  A LaTeX
-kernel patch is provided to avoid premature expansions of macros in class or
-package options.  A specialized system for setting @code{PSTricks} keys is
-provided by the @code{pst-xkey} package.")
-    (license license:lppl1.3+)))
 
 (define-public texlive-pstool
   (package
@@ -5454,7 +5444,7 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
 as an alternative version of the Kurier typeface, which was designed in 1975
 for a diploma in typeface design at the Warsaw Academy of Fine Arts under the
 supervision of Roman Tomaszewski.  Kurier was designed for linotype
-typesetting of newspapers and similar periodicals. The Iwona fonts are an
+typesetting of newspapers and similar periodicals.  The Iwona fonts are an
 alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
@@ -7063,3 +7053,319 @@ the file to which it applies.")
      "This package helps LaTeX users to create PDF/X, PFD/A and other
 standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
     (license license:lppl1.2+)))
+
+(define-public texlive-ydoc
+  (let ((template (simple-texlive-package
+                   "texlive-ydoc"
+                   (list "/doc/latex/ydoc/"
+                         "/source/latex/ydoc/")
+                   (base32
+                    "0ckcpy1b8v1fk3qc8qkxgiag2wc0qzxm6bgksv000m4m1hsi2g8b")
+                   #:trivial? #f)))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/ydoc")
+         ((#:build-targets _ #t)
+          ''("ydoc.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ydoc") #t))
+             (add-after 'copy-files 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((share (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist"))
+                        (target (string-append share "/tex/generic/ydoc"))
+                        (doc (string-append (assoc-ref outputs "doc")
+                                            "/share/texmf-dist/doc") ))
+                   (mkdir-p target)
+                   (for-each
+                    (lambda (file)
+                      (rename-file (string-append share "/tex/latex/ydoc/" file)
+                                   (string-append target "/" file)))
+                    '("ydocincl.tex" "ydocstrip.tex"))
+                   (mkdir-p doc)
+                   (rename-file (string-append share "/doc") doc)
+                   #t)))))))
+      (home-page "http://www.ctan.org/pkg/ydoc")
+      (synopsis "Macros for documentation of LaTeX classes and packages")
+      (description "The package provides macros and environments to document
+LaTeX packages and classes.  It is an (as yet unfinished) alternative to the
+@code{ltxdoc} class and the @code{doc} or @code{xdoc} packages.  The aim is to
+provide a different layout and more modern styles (using the @code{xcolor},
+@code{hyperref} packages, etc.)  This is an alpha release, and should probably
+not (yet) be used with other packages, since the implementation might
+change.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-pstricks
+  (let ((template (simple-texlive-package
+                   "texlive-pstricks"
+                   (list "/doc/generic/pstricks/"
+                         "/dvips/pstricks/"
+                         "/tex/generic/pstricks/"
+                         "/tex/latex/pstricks/")
+                   (base32
+                    "04566354c77claxl1sznc490cda0m5gaa5ck6ms4q7mm44rj3rzk")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'reset-gzip-timestamps)))))
+      (home-page "http://www.ctan.org/pkg/pstricks")
+      (synopsis "PostScript macros for TeX")
+      (description "PSTricks offers an extensive collection of macros for
+generating PostScript that is usable with most TeX macro formats, including
+Plain TeX, LaTeX, AMS-TeX, and AMS-LaTeX.  Included are macros for colour,
+graphics, pie charts, rotation, trees and overlays.  It has many special
+features, including a wide variety of graphics (picture drawing) macros, with
+a flexible interface and with colour support.  There are macros for colouring
+or shading the cells of tables.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-pst-text
+  (let ((template (simple-texlive-package
+                   "texlive-pst-text"
+                   (list "/doc/generic/pst-text/"
+                         "/source/generic/pst-text/Makefile"
+                         "/dvips/pst-text/pst-text.pro"
+                         "/tex/generic/pst-text/"
+                         "/tex/latex/pst-text/")
+                   (base32
+                    "0s2bbkdfy0shqrrkjflrn0x0pnvxzbdc38pjbdfw46wnmnxrnasm")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-pstricks" ,texlive-pstricks)))
+      (home-page "http://www.ctan.org/pkg/pst-text")
+      (synopsis "Text and character manipulation in PSTricks")
+      (description "Pst-text is a PSTricks based package for plotting text along
+a different path and manipulating characters.  It includes the functionality
+of the old package @code{pst-char}.")
+      (license license:lppl))))
+
+(define-public texlive-iftex
+  (let ((template (simple-texlive-package
+                   "texlive-iftex"
+                   (list "/doc/generic/iftex/"
+                         "/tex/generic/iftex/iftex.sty")
+                   (base32
+                    "089zvw31gby150n1k0zdk2c0q97pgbqs46phxydaqil64b55nnl7")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/iftex")
+      (synopsis "Determine the currently used TeX engine")
+      (description "This package, which works both for Plain TeX and for
+LaTeX, defines the @code{\\ifPDFTeX}, @code{\\ifXeTeX}, and @code{\\ifLuaTeX}
+conditionals for testing which engine is being used for typesetting.  The
+package also provides the @code{\\RequirePDFTeX}, @code{\\RequireXeTeX}, and
+@code{\\RequireLuaTeX} commands which throw an error if pdfTeX, XeTeX or
+LuaTeX (respectively) is not the engine in use.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-tools
+  (let ((template (simple-texlive-package
+                   "texlive-tools"
+                   (list "/doc/latex/tools/"
+                         "/source/latex/tools/")
+                   (base32
+                    "0v3zqcpy0w5bzy1xdcv1wnxbmxrn1j6x03h3y2af7qmjggph2a09"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/tools")
+         ((#:build-targets _ '())
+          ''("tools.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/tools") #t))))))
+      (home-page "https://www.ctan.org/tex-archive/macros/latex/required/tools/")
+      (synopsis "LaTeX standard tools bundle")
+      (description "This package provides a collection of simple tools that
+are part of the LaTeX required tools distribution, comprising the packages:
+@code{afterpage}, @code{array}, @code{bm}, @code{calc}, @code{dcolumn},
+@code{delarray}, @code{enumerate}, @code{fileerr}, @code{fontsmpl},
+@code{ftnright}, @code{hhline}, @code{indentfirst}, @code{layout},
+@code{longtable}, @code{multicol}, @code{rawfonts}, @code{showkeys},
+@code{somedefs}, @code{tabularx}, @code{theorem}, @code{trace},
+@code{varioref}, @code{verbatim}, @code{xr}, and @code{xspace}.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-latex-xkeyval
+  (package
+    (name "texlive-latex-xkeyval")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "xkeyval"))
+              (sha256
+               (base32
+                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/xkeyval"
+       #:build-targets '("xkeyval.dtx")
+       #:tex-format "latex" ; won't build with luatex
+       #:phases
+       (modify-phases %standard-phases
+         ;; This package cannot be built out of tree as it expects to find
+         ;; built files in the working directory.
+         (add-before 'build 'fix-build
+           (lambda _
+             (setenv "TEXINPUTS"
+                     (string-append (getcwd) "/build:"))
+             (substitute* "xkeyval.dtx"
+               (("usepackage\\{xcolor\\}")
+                "usepackage[dvips]{xcolor}"))
+             #t))
+         ;; FIXME: We don't have a package for this font yet.
+         (add-after 'unpack 'remove-dependency-on-fourier
+           (lambda _
+             (substitute* "xkeyval.dtx"
+               (("\\\\usepackage\\{fourier\\}") ""))
+             #t))
+         (add-after 'install 'move-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/texmf-dist"))
+                    (source (string-append share "/tex/latex/xkeyval/"))
+                    (target (string-append share "/tex/generic/xkeyval/")))
+               (mkdir-p target)
+               (for-each (lambda (file)
+                           (rename-file (string-append source file)
+                                        (string-append target file)))
+                         '("keyval.tex"
+                           "pst-xkey.tex"
+                           "xkeyval.tex"
+                           "xkvex1.tex"
+                           "xkvex2.tex"
+                           "xkvex3.tex"
+                           "xkvex4.tex"
+                           "xkvtxhdr.tex"
+                           "xkvutils.tex"))
+               #t))))))
+    (native-inputs
+     `(("texlive-latex-base" ,texlive-latex-base)
+       ("texlive-cm" ,texlive-cm)
+       ("texlive-lm" ,texlive-lm)
+       ("texlive-url" ,texlive-url)
+       ("texlive-graphics-def" ,texlive-graphics-def)
+       ("texlive-xcolor" ,texlive-xcolor)
+       ("texlive-latex-footmisc" ,texlive-latex-footmisc)
+       ("texlive-latex-listings" ,texlive-latex-listings)
+       ("texlive-iftex" ,texlive-iftex)
+       ("texlive-pstricks" ,texlive-pstricks)
+       ("texlive-pst-text" ,texlive-pst-text)
+       ("texlive-tools" ,texlive-tools)
+       ("texlive-latex-pgf" ,texlive-latex-pgf)))
+    (home-page "http://www.ctan.org/pkg/xkeyval")
+    (synopsis "Extension of the keyval package")
+    (description
+     "This package is an extension of the keyval package and offers additional
+macros for setting keys and declaring and setting class or package options.
+The package allows the programmer to specify a prefix to the name of the
+macros it defines for keys, and to define families of key definitions; these
+all help use in documents where several packages define their own sets of
+keys.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-standalone
+  (package
+    (name "texlive-standalone")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "standalone"))
+       (sha256
+        (base32
+         "192ydxcn8ir96q8qwvnppksmqf5i0p50i0wz6iqazbwmh3dqxpx4"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/standalone"))
+    (propagated-inputs
+     `(("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+    (native-inputs
+     `(("texlive-ydoc" ,texlive-ydoc)))
+    (home-page "http://www.ctan.org/pkg/standalone")
+    (synopsis "Compile TeX pictures stand-alone or as part of a document")
+    (description "A class and package is provided which allows TeX pictures or
+other TeX code to be compiled standalone or as part of a main document.
+Special support for pictures with beamer overlays is also provided.  The
+package is used in the main document and skips extra preambles in sub-files.
+The class may be used to simplify the preamble in sub-files.  By default the
+@code{preview} package is used to display the typeset code without margins.
+The behaviour in standalone mode may adjusted using a configuration file
+@code{standalone.cfg} to redefine the standalone environment.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-siunitx
+  (package
+    (name "texlive-siunitx")
+    (version (number->string %texlive-revision))
+    (source (texlive-origin
+             name version
+             (list "/source/latex/siunitx/siunitx.dtx"
+                   "/doc/latex/siunitx/README.md")
+             (base32
+              "0dmljnxgv2bwl3mi74iil41q03swvrm1b0ziwxlhc4m9lx31b1q1")))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/siunitx"
+       #:build-targets '("siunitx.dtx")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "source/latex/siunitx") #t)))))
+    (propagated-inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
+       ("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+    (home-page "http://www.ctan.org/pkg/siunitx")
+    (synopsis "Comprehensive SI units package")
+    (description
+     "Typesetting values with units requires care to ensure that the combined
+mathematical meaning of the value plus unit combination is clear.  In
+particular, the SI units system lays down a consistent set of units with rules
+on how they are to be used.  However, different countries and publishers have
+differing conventions on the exact appearance of numbers (and units).  A
+number of LaTeX packages have been developed to provide consistent application
+of the various rules.  The @code{siunitx} package takes the best from the
+existing packages, and adds new features and a consistent interface.  A number
+of new ideas have been incorporated, to fill gaps in the existing provision.
+The package also provides backward-compatibility with @code{SIunits},
+@code{sistyle}, @code{unitsdef} and @code{units}.  The aim is to have one
+package to handle all of the possible unit-related needs of LaTeX users.")
+    (license license:lppl1.3c)))
+
+(define-public texlive-booktabs
+  (package
+    (name "texlive-booktabs")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "booktabs"))
+       (sha256
+        (base32
+         "1dqid48vgh25wmw8xzmx6x3pfgz1y9f0r8aza1yxq2mjny5yf68x"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/booktabs"))
+    (home-page "http://www.ctan.org/pkg/booktabs")
+    (synopsis "Publication quality tables in LaTeX")
+    (description
+     "This package enhances the quality of tables in LaTeX, providing extra
+commands as well as behind-the-scenes optimisation.  Guidelines are given as
+to what constitutes a good table in this context.  The package offers
+@code{longtable} compatibility.")
+    (license license:lppl1.3+)))

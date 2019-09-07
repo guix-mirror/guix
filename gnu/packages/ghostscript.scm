@@ -275,7 +275,7 @@ output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
 
-(define-public ghostscript/fixed
+(define ghostscript/fixed
   ;; This adds the Freetype dependency (among other things), which fixes the
   ;; rendering issues described in <https://issues.guix.gnu.org/issue/34877>.
   (package/inherit

@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix records)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
+  #:use-module (ice-9 match)
   #:export (menu-entry
             menu-entry?
             menu-entry-label
@@ -31,6 +33,9 @@
             menu-entry-linux-arguments
             menu-entry-initrd
             menu-entry-device-mount-point
+
+            menu-entry->sexp
+            sexp->menu-entry
 
             bootloader
             bootloader?
@@ -76,6 +81,35 @@
                    (default '()))          ; list of string-valued gexps
   (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
+(define (menu-entry->sexp entry)
+  "Return ENTRY serialized as an sexp."
+  (match entry
+    (($ <menu-entry> label device mount-point linux linux-arguments initrd)
+     `(menu-entry (version 0)
+                  (label ,label)
+                  (device ,device)
+                  (device-mount-point ,mount-point)
+                  (linux ,linux)
+                  (linux-arguments ,linux-arguments)
+                  (initrd ,initrd)))))
+
+(define (sexp->menu-entry sexp)
+  "Turn SEXP, an sexp as returned by 'menu-entry->sexp', into a <menu-entry>
+record."
+  (match sexp
+    (('menu-entry ('version 0)
+                  ('label label) ('device device)
+                  ('device-mount-point mount-point)
+                  ('linux linux) ('linux-arguments linux-arguments)
+                  ('initrd initrd) _ ...)
+     (menu-entry
+      (label label)
+      (device device)
+      (device-mount-point mount-point)
+      (linux linux)
+      (linux-arguments linux-arguments)
+      (initrd initrd)))))
+
 
 ;;;
 ;;; Bootloader record.
@@ -108,7 +142,7 @@
   (bootloader         bootloader-configuration-bootloader) ;<bootloader>
   (target             bootloader-configuration-target      ;string
                       (default #f))
-  (menu-entries       bootloader-configuration-menu-entries ;list of <boot-parameters>
+  (menu-entries       bootloader-configuration-menu-entries ;list of <menu-entry>
                       (default '()))
   (default-entry      bootloader-configuration-default-entry ;integer
                       (default 0))

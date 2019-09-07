@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +48,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -418,14 +419,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.18.9")
+    (version "3.19.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0g3q5mm2crjyc1z4z6gv4lam6sc5d3diz704djrnpqadk4q3h290"))
+                "0cmshi5dkmc1n5yiahhp0cv5p94zg61018piiqa2sna10ahgx1d3"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
@@ -437,10 +438,6 @@ should only be used as part of the Guix cups-pk-helper service.")
                                         (lambda (file stat)
                                           (elf-file? file))))
                   (delete-file "prnt/hpcups/ImageProcessor.h")
-
-                  ;; Fix type mismatch.
-                  (substitute* "prnt/hpcups/genPCLm.cpp"
-                    (("boolean") "bool"))
 
                   ;; Install binaries under libexec/hplip instead of
                   ;; share/hplip; that'll at least ensure they get stripped.
@@ -739,6 +736,66 @@ printers.  It can only be used with printers that support the Epson ESC/P-R
 language.")
     (home-page "http://download.ebz.epson.net/dsc/search/01/search")
     (license license:gpl2+)))
+
+(define-public splix
+  ;; The last release was in 2009.  The SVN repository contains 5 years of
+  ;; unreleased bug fixes and support for newer printer models.
+  (let ((revision 315))
+    (package
+      (name "splix")
+      (version (string-append "2.0.0-" (number->string revision)))
+      (source
+       (origin
+         (method svn-fetch)
+         (uri (svn-reference
+               (url "https://svn.code.sf.net/p/splix/code/splix/")
+               (revision revision)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32 "16wbm4xnz35ca3mw2iggf5f4jaxpyna718ia190ka6y4ah932jxl"))))
+      (build-system gnu-build-system)
+      ;; 90% (3.8 MiB) of output are .ppd files.  Don't install them by default:
+      ;; CUPS has been able to read the .drv sources directly since version 1.2.
+      (outputs (list "out" "ppd"))
+      (arguments
+       '(#:make-flags
+         (list (string-append "CUPSDRV="
+                              (assoc-ref %outputs "out") "/share/cups/drv")
+               (string-append "CUPSFILTER="
+                              (assoc-ref %outputs "out") "/lib/cups/filter")
+               (string-append "CUPSPPD="
+                              (assoc-ref %outputs "ppd") "/share/cups/model")
+               "CACHESIZE=100"          ; pages in RAM, ±300 KiB each
+               "THREADS=4")             ; compress and print faster
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)          ; no configure script
+           (add-before 'build 'build-.drv-files
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "drv" make-flags)))
+           (add-after 'install 'install-.drv-files
+             (lambda* (#:key make-flags #:allow-other-keys)
+               (apply invoke "make" "install" "DRV_ONLY=1" make-flags))))
+         #:tests? #f))                  ; no test suite
+      (inputs
+       `(("cups" ,cups-minimal)
+         ("zlib" ,zlib)
+
+         ;; This dependency can be dropped by setting DISABLE_JBIG=1, but the
+         ;; result will not support some printers like the Samsung CLP-600.
+         ("jbigkit" ,jbigkit)))
+      (synopsis "QPDL (SPL2) printer driver")
+      (description
+       "SpliX is a set of CUPS drivers for printers that speak @acronym{QPDL,
+Quick Page Description Language}, also called @acronym{SPL2, Samsung Printer
+Language version 2}.  These include many laser printers sold by Samsung,
+Xerox, Lexmark, Toshiba, and Dell.
+
+Colour printers need colour profile files to get better results.  These
+@file{cms} files are provided by the printer's manufacturer and must be
+obtained and installed separately.")
+      (home-page "http://splix.ap2c.org/")
+      (license license:gpl2))))
 
 (define-public python-pycups
   (package

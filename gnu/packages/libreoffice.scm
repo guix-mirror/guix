@@ -335,14 +335,14 @@ as Alfresco or Nuxeo.")
 (define-public libabw
   (package
     (name "libabw")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://dev-www.libreoffice.org/src/libabw/"
                           "libabw-" version ".tar.xz"))
       (sha256 (base32
-               "11949iscdb99f2jplxjd39282jxcrf2fw0sqbh5dl7gqb96r8whb"))))
+               "1vbfrmnvib3cym0yyyabnd8xpx4f7wp20vnn09s6dln347fajqz7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -354,9 +354,6 @@ as Alfresco or Nuxeo.")
        ("libxml2" ,libxml2)))
     (inputs
      `(("boost" ,boost)))
-    (arguments
-     ;; avoid triggering configure errors by simple inclusion of boost headers
-     `(#:configure-flags '("--disable-werror")))
     (home-page "https://wiki.documentfoundation.org/DLP/Libraries/libabw")
     (synopsis "Library for parsing the AbiWord format")
     (description "Libabw is a library that parses the file format of
@@ -585,14 +582,14 @@ created by PageMaker version 6.x and 7.")
 (define-public libvisio
   (package
     (name "libvisio")
-    (version "0.1.6")
+    (version "0.1.7")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://dev-www.libreoffice.org/src/libvisio/"
                           "libvisio-" version ".tar.xz"))
       (sha256 (base32
-               "1yahpfl13qk6178irv8jn5ppxdn7isafqisyqsdw0lqxcz9h447y"))))
+               "0k7adcbbf27l7n453cca1m6s9yj6qvb5j6bsg2db09ybf3w8vbwg"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)

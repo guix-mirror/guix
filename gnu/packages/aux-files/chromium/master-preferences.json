@@ -17,9 +17,6 @@
     "alternate_error_pages": {
         "enabled": false
     },
-    "hardware": {
-        "audio_capture_enabled": false
-    },
     "default_apps": "noinstall",
     "hide_web_store_icon": true,
     "homepage": "https://www.gnu.org/software/guix/"

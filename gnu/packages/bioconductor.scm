@@ -31,7 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages netpbm)
@@ -532,6 +532,28 @@ annotations for the genome of the model mouse Mus musculus.")
 by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
+(define-public r-ensdb-hsapiens-v75
+  (package
+    (name "r-ensdb-hsapiens-v75")
+    (version "2.99.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EnsDb.Hsapiens.v75" version 'annotation))
+       (sha256
+        (base32
+         "0jx6rf6v0j8yr07q3c1h7s121901dc400nm6xaiv4i7kb5czjn9c"))))
+    (properties
+     `((upstream-name . "EnsDb.Hsapiens.v75")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ensembldb" ,r-ensembldb)))
+    (home-page "https://bioconductor.org/packages/EnsDb.Hsapiens.v75")
+    (synopsis "Ensembl based annotation package")
+    (description
+     "This package exposes an annotation database generated from Ensembl.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
@@ -684,6 +706,31 @@ database is exposed as a @code{TxDb} object.")
 prefabricated databases contained in this package.  This package provides
 the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
+    (license license:artistic2.0)))
+
+(define-public r-txdb-celegans-ucsc-ce6-ensgene
+  (package
+    (name "r-txdb-celegans-ucsc-ce6-ensgene")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TxDb.Celegans.UCSC.ce6.ensGene"
+                              version 'annotation))
+       (sha256
+        (base32
+         "1sgppva33cdy4isj2is8mfalj5gmmkpbkq9w1d83a4agcq31mi90"))))
+    (properties
+     `((upstream-name . "TxDb.Celegans.UCSC.ce6.ensGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/TxDb.Celegans.UCSC.ce6.ensGene/")
+    (synopsis "Annotation package for C elegans TxDb objects")
+    (description
+     "This package exposes a C elegans annotation database generated from UCSC
+by exposing these as TxDb objects.")
     (license license:artistic2.0)))
 
 (define-public r-fdb-infiniummethylation-hg19
@@ -2977,14 +3024,14 @@ phenotype of interest.")
 (define-public r-fgsea
   (package
     (name "r-fgsea")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fgsea" version))
        (sha256
         (base32
-         "07mvv1i690q80fm8sxgdqxchamn76409vn91ppgcck2xpi6b8q6c"))))
+         "1k2f9hkp1mvc9fpqzhbf08jd0yg4xaa312v9vy37fxd9pyrwp5a6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -5000,14 +5047,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.8.0")
+    (version "6.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "1f08jx35amn3sfcmqb96mjxxsm6dnpzhff625z758x1992wj4zsk"))))
+         "0issfrhsgc102sr33q9v6w6jrrd32plig7szd1nm0n4r3yn4y2fc"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5230,3 +5277,192 @@ cis-regulatory topics (cisTopics) from single cell epigenomics data, and
 includes functionalities to identify cell states based on the contribution of
 cisTopics and explore the nature and regulatory proteins driving them.")
       (license license:gpl3))))
+
+(define-public r-genie3
+  (package
+    (name "r-genie3")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GENIE3" version))
+       (sha256
+        (base32
+         "0lvrpw4xn7xyinmn13f65i0vkzfzwdj5y8gsa8vyy8kcn83d28fx"))))
+    (properties `((upstream-name . "GENIE3")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-reshape2" ,r-reshape2)))
+    (home-page "https://bioconductor.org/packages/GENIE3")
+    (synopsis "Gene network inference with ensemble of trees")
+    (description
+     "This package implements the GENIE3 algorithm for inferring gene
+regulatory networks from expression data.")
+    (license license:gpl2+)))
+
+(define-public r-roc
+  (package
+    (name "r-roc")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ROC" version))
+       (sha256
+        (base32
+         "1sapnl8kyaldgvdc657wqcmyjb24nvrnaw7v94bbs8yf5pmfm71c"))))
+    (properties `((upstream-name . "ROC")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/ROC/")
+    (synopsis "Utilities for ROC curves")
+    (description
+     "This package provides utilities for @dfn{Receiver Operating
+Characteristic} (ROC) curves, with a focus on micro arrays.")
+    (license license:artistic2.0)))
+
+(define-public r-illuminahumanmethylation450kanno-ilmn12-hg19
+  (package
+    (name "r-illuminahumanmethylation450kanno-ilmn12-hg19")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri
+             "IlluminaHumanMethylation450kanno.ilmn12.hg19"
+             version 'annotation))
+       (sha256
+        (base32
+         "059vlxsx3p3fcnywwirahsc6mlk813zpqnbv0jsrag6x5bb8z6r4"))))
+    (properties
+     `((upstream-name
+        . "IlluminaHumanMethylation450kanno.ilmn12.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-minfi" ,r-minfi)))
+    (home-page
+     "https://bioconductor.org/packages/IlluminaHumanMethylation450kanno.ilmn12.hg19/")
+    (synopsis "Annotation for Illumina's 450k methylation arrays")
+    (description
+     "This package provides manifests and annotation for Illumina's 450k array
+data.")
+    (license license:artistic2.0)))
+
+(define-public r-watermelon
+  (package
+    (name "r-watermelon")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wateRmelon" version))
+       (sha256
+        (base32
+         "0354ahmfvhqw3yfp17rmz35vlgjp262n4q3hr8qyccyrnk2dz17z"))))
+    (properties `((upstream-name . "wateRmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-illuminahumanmethylation450kanno-ilmn12-hg19"
+        ,r-illuminahumanmethylation450kanno-ilmn12-hg19)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-limma" ,r-limma)
+       ("r-lumi" ,r-lumi)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-methylumi" ,r-methylumi)
+       ("r-roc" ,r-roc)))
+    (home-page "https://bioconductor.org/packages/wateRmelon/")
+    (synopsis "Illumina 450 methylation array normalization and metrics")
+    (description
+     "The standard index of DNA methylation (beta) is computed from methylated
+and unmethylated signal intensities.  Betas calculated from raw signal
+intensities perform well, but using 11 methylomic datasets we demonstrate that
+quantile normalization methods produce marked improvement.  The commonly used
+procedure of normalizing betas is inferior to the separate normalization of M
+and U, and it is also advantageous to normalize Type I and Type II assays
+separately.  This package provides 15 flavours of betas and three performance
+metrics, with methods for objects produced by the @code{methylumi} and
+@code{minfi} packages.")
+    (license license:gpl3)))
+
+(define-public r-gdsfmt
+  (package
+    (name "r-gdsfmt")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gdsfmt" version))
+       (sha256
+        (base32
+         "0h3hgwxq26dg09fyxqg545v9dg1dizsj58cf05rncr3jj4f8g0xy"))
+       (modules '((guix build utils)))
+       ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
+       ;; them and link with system libraries instead.
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     '("src/LZ4"
+                       "src/XZ"
+                       "src/ZLIB"))
+           (substitute* "src/Makevars"
+             (("all: \\$\\(SHLIB\\)") "all:")
+             (("\\$\\(SHLIB\\): liblzma.a") "")
+             (("(ZLIB|LZ4)/.*") "")
+             (("CoreArray/dVLIntGDS.cpp.*")
+              "CoreArray/dVLIntGDS.cpp")
+             (("CoreArray/dVLIntGDS.o.*")
+              "CoreArray/dVLIntGDS.o")
+             (("PKG_LIBS = ./liblzma.a")
+              "PKG_LIBS = -llz4"))
+           (substitute* "src/CoreArray/dStream.h"
+             (("include \"../(ZLIB|LZ4|XZ/api)/(.*)\"" _ _ header)
+              (string-append "include <" header ">")))
+           #t))))
+    (properties `((upstream-name . "gdsfmt")))
+    (build-system r-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "http://corearray.sourceforge.net/")
+    (synopsis
+     "R Interface to CoreArray Genomic Data Structure (GDS) Files")
+    (description
+     "This package provides a high-level R interface to CoreArray @dfn{Genomic
+Data Structure} (GDS) data files, which are portable across platforms with
+hierarchical structure to store multiple scalable array-oriented data sets
+with metadata information.  It is suited for large-scale datasets, especially
+for data which are much larger than the available random-access memory.  The
+@code{gdsfmt} package offers efficient operations specifically designed for
+integers of less than 8 bits, since a diploid genotype, like
+@dfn{single-nucleotide polymorphism} (SNP), usually occupies fewer bits than a
+byte.  Data compression and decompression are available with relatively
+efficient random access.  It is also allowed to read a GDS file in parallel
+with multiple R processes supported by the package @code{parallel}.")
+    (license license:lgpl3)))
+
+(define-public r-bigmelon
+  (package
+    (name "r-bigmelon")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bigmelon" version))
+       (sha256
+        (base32
+         "0269kf3d34dbng3swk7pclpk02vy4k3askygmzi5my3fqyfzdkj9"))))
+    (properties `((upstream-name . "bigmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-gdsfmt" ,r-gdsfmt)
+       ("r-geoquery" ,r-geoquery)
+       ("r-methylumi" ,r-methylumi)
+       ("r-minfi" ,r-minfi)
+       ("r-watermelon" ,r-watermelon)))
+    (home-page "https://bioconductor.org/packages/bigmelon/")
+    (synopsis "Illumina methylation array analysis for large experiments")
+    (description
+     "This package provides methods for working with Illumina arrays using the
+@code{gdsfmt} package.")
+    (license license:gpl3)))

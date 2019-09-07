@@ -19,6 +19,7 @@
 (define-module (test-swh)
   #:use-module (guix swh)
   #:use-module (guix tests http)
+  #:use-module (web response)
   #:use-module (srfi srfi-64))
 
 ;; Test the JSON mapping machinery used in (guix swh).
@@ -40,7 +41,7 @@
        \"dir_id\": 2 } ]")
 
 (define-syntax-rule (with-json-result str exp ...)
-  (with-http-server 200 str
+  (with-http-server `((200 ,str))
     (parameterize ((%swh-base-url (%local-url)))
       exp ...)))
 
@@ -56,7 +57,7 @@
 
 (test-equal "lookup-origin, not found"
   #f
-  (with-http-server 404 "Nope."
+  (with-http-server `((404 "Nope."))
     (parameterize ((%swh-base-url (%local-url)))
       (lookup-origin "http://example.org/whatever"))))
 
@@ -68,9 +69,45 @@
                  (directory-entry-length entry)))
          (lookup-directory "123"))))
 
+(test-equal "rate limit reached"
+  3000000000
+  (let ((too-many (build-response
+                   #:code 429
+                   #:reason-phrase "Too many requests"
+
+                   ;; Pretend we've reached the limit and it'll be reset in
+                   ;; June 2065.
+                   #:headers '((x-ratelimit-remaining . "0")
+                               (x-ratelimit-reset . "3000000000")))))
+    (with-http-server `((,too-many "Too bad."))
+      (parameterize ((%swh-base-url (%local-url)))
+        (catch 'swh-error
+          (lambda ()
+            (lookup-origin "http://example.org/guix.git"))
+          (lambda (key url method response)
+            ;; Ensure the reset time was recorded.
+            (@@ (guix swh) %general-rate-limit-reset-time)))))))
+
+(test-assert "%allow-request? and request-rate-limit-reached?"
+  ;; Here we test two things: that the rate limit set above is in effect and
+  ;; that %ALLOW-REQUEST? is called, and that 'request-rate-limit-reached?'
+  ;; returns true.
+  (let* ((key (gensym "skip-request"))
+         (skip-if-limit-reached
+          (lambda (url method)
+            (or (not (request-rate-limit-reached? url method))
+                (throw key #t)))))
+    (parameterize ((%allow-request? skip-if-limit-reached))
+      (catch key
+        (lambda ()
+          (lookup-origin "http://example.org/guix.git")
+          #f)
+        (const #t)))))
+
 (test-end "swh")
 
 ;; Local Variables:
 ;; eval: (put 'with-json-result 'scheme-indent-function 1)
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; End:
 

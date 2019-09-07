@@ -2266,21 +2266,20 @@ list of components.  This module takes care of that for you.")
 (define-public guile-gi
   (package
     (name "guile-gi")
-    (version "0.0.2")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://lonelycactus.com/tarball/guile_gi-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hs0viqzff7nzgcmyw721ima1jyymrlzrcycpgwrs6iprscxvqwn"))))
+                "1n4pbrmbrjkrx826a4m31ag5c35rgkj1sirqh4qalk7gg67cfb41"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")
-       ;; The atomic_int_set test does not actually fail.
-       #:make-flags '("XFAIL_TESTS=strjoinv.scm")))
+     `(#:configure-flags '("--with-gnu-filesystem-hierarchy")))
     (native-inputs
      `(("gettext" ,gnu-gettext)
+       ("glib:bin" ,glib "bin") ; for glib-compile-resources
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs

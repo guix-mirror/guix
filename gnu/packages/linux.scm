@@ -349,42 +349,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.11")
+(define-public linux-libre-5.2-version "5.2.13")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "1y9kn1zny3xpmbi5an3g7hbzywnycys8chfaw6laij1xk4gq6ahc")))
+        (hash (base32 "12hpph3iynr22mfwz7745lp01waf2kg579hr56d4pvhx4iahzdhp")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.69")
+(define-public linux-libre-4.19-version "4.19.71")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "11yrw8ixd5ni9rlpndqsz2ihx6k8qaf35a1lf164lkhaa85pd4f0")))
+        (hash (base32 "1bjwkb7k82l646ryyy0jbwsnygm2qsxgcwli8bdrj844skzynlqz")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.141")
+(define-public linux-libre-4.14-version "4.14.142")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "05rs411rw10hhnfzvaxmcik3pq20i1i05shvvra4bv164f0z1f8b")))
+        (hash (base32 "1wwhnm1n1b6yzsd2zzzf9i3n4hlvgnph70p67cwahw0ik4ssayz6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.190")
+(define-public linux-libre-4.9-version "4.9.191")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "05ha3snfk0vdqk9i27icwpq2if0h2jvshavn69ldwqm4h2h1r2py")))
+        (hash (base32 "1g5p736p8zx5rmxaj56yw93jp768npl868jsn8973dny0rsbim6y")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.190")
+(define-public linux-libre-4.4-version "4.4.191")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "1rf28cjrrmj7mm8xqlfld6k20ddk15j4mmyarqibjx9pk9acij7y")))
+        (hash (base32 "0x3lnq4xyj5v6r1cz4jizm4vdspws1nb806f5qczwi3yil5nm6bh")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -664,6 +664,12 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
+             ;; Unset CROSS_CPATH to make sure that cross-libc is not
+             ;; found. Otherwise, some of its header would conflict with the
+             ;; one from linux (stdint.h and linux/types.h)
+             ,@(if (%current-target-system)
+                   '((unsetenv "CROSS_CPATH"))
+                   '())
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -887,7 +893,7 @@ and should be used with caution, especially on untested models.")
 (define-public vhba-module
   (package
     (name "vhba-module")
-    (version "20190410")
+    (version "20190831")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -895,7 +901,7 @@ and should be used with caution, especially on untested models.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1513hq130raxp9z5grj54cwfjfxj05apipxg425j0zicii59a60c"))))
+                "1ybbk6l06n0y11n5wnfmvdz0baizmq55l458ywimghdyz0n7g0ws"))))
     (build-system linux-module-build-system)
     (arguments
      ;; TODO: No tests?
@@ -1915,7 +1921,7 @@ transparently through a bridge.")
 (define-public libnl
   (package
     (name "libnl")
-    (version "3.4.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1924,7 +1930,7 @@ transparently through a bridge.")
                     "/libnl-" version ".tar.gz"))
               (sha256
                (base32
-                "1gzm444rnsib64dddv0cwlpzy1q4bycjqhp1i5pxpikimqvpca5p"))))
+                "1yh5bqmkivd78x378x34gzb28lvykn6b9k3hgvvpdnj5jpn3689m"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -1939,7 +1945,7 @@ transparently through a bridge.")
                  (string-join (string-split version #\.) "_")
                  "/libnl-doc-" version ".tar.gz"))
            (sha256
-            (base32 "1m5cnzviv31gjnz6fz5rgyl6ah4dbp2akm49j9973sgwl36gs8jx"))))))
+            (base32 "19p5y8q3cm5wqvamqc4s5syxnnkvzxy3gw8ivxk6fv9ybn8jm35h"))))))
     (inputs
      `(("python-2" ,python-2)
        ("python-3" ,python-3)))
@@ -2308,15 +2314,15 @@ compressed, transparent to other programs, without decompressing them.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.12")
+    (version "2.0.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/numactl/numactl/releases/download/v"
-                    version "/" name "-" version ".tar.gz"))
+                    version "/numactl-" version ".tar.gz"))
               (sha256
                (base32
-                "0ad7mpi3vacbfnx3aqxnvgsj64yp3mav9yxnaz8ancjv7wvdmfsm"))))
+                "16lcypvcmx1ydkpi2s82kqhg13kak7qhpbnj8hd9bdbyhr5ja7lr"))))
     (build-system gnu-build-system)
     (arguments
      '(;; There's a 'test' target, but it requires NUMA support in the kernel
@@ -2330,14 +2336,14 @@ compressed, transparent to other programs, without decompressing them.")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
      "NUMA stands for Non-Uniform Memory Access, in other words a system whose
-memory is not all in one place.  The numactl program allows you to run your
-application program on specific CPU's and memory nodes.  It does this by
-supplying a NUMA memory policy to the operating system before running your
+memory is not all in one place.  The @command{numactl} program allows you to
+run your application program on specific CPUs and memory nodes.  It does this
+by supplying a NUMA memory policy to the operating system before running your
 program.
 
-The package contains other commands, such as numademo, numastat and memhog.
-The numademo command provides a quick overview of NUMA performance on your
-system.")
+The package contains other commands, such as @command{numastat},
+@command{memhog}, and @command{numademo} which provides a quick overview of
+NUMA performance on your system.")
     (license (list license:gpl2                   ;programs
                    license:lgpl2.1))))            ;library
 

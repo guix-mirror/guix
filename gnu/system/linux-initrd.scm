@@ -99,7 +99,7 @@ the derivations referenced by EXP are automatically copied to the initrd."
                         #:init #$init
                         ;; Copy everything INIT refers to into the initrd.
                         #:references-graphs '("closure")
-                        #:gzip (string-append #$gzip "/bin/gzip")))))
+                        #:gzip (string-append #+gzip "/bin/gzip")))))
 
   (file-append (computed-file name builder
                               #:options

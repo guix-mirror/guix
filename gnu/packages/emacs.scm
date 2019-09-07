@@ -15,7 +15,7 @@
 ;;; Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,14 +68,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "26.2")
+    (version "26.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "13n5m60i47k96mpv5pp6km2ph9rv2m5lmbpzj929v02vpsfyc70m"))
+               "119ldpk7sgn9jlpyngv5y4z3i7bb8q3xp4p0qqi7i5nq39syd42d"))
              (patches (search-patches "emacs-exec-path.patch"
                                       "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
@@ -114,7 +114,7 @@
                  #t))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:tests? #f                      ; no check target
        #:configure-flags (list "--with-modules"
                                "--disable-build-details")
        #:phases

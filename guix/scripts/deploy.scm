@@ -66,11 +66,15 @@ Perform the deployment specified by FILE.\n"))
          %standard-build-options))
 
 (define %default-options
-  `((substitutes? . #t)
-    (build-hook? . #t)
-    (graft? . #t)
+  ;; Alist of default option values.
+  `((verbosity . 1)
     (debug . 0)
-    (verbosity . 1)))
+    (graft? . #t)
+    (substitutes? . #t)
+    (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)))
 
 (define (load-source-file file)
   "Load FILE as a user module."

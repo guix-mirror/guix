@@ -345,6 +345,17 @@ sys_enable_guix_daemon()
             { cp "${ROOT_HOME}/.config/guix/current/lib/systemd/system/guix-daemon.service" \
                  /etc/systemd/system/;
               chmod 664 /etc/systemd/system/guix-daemon.service;
+
+	      # Work around <https://bugs.gnu.org/36074>, present in 1.0.1.
+	      sed -i /etc/systemd/system/guix-daemon.service \
+	          -e "s/GUIX_LOCPATH='/'GUIX_LOCPATH=/";
+
+	      # Work around <https://bugs.gnu.org/35671>, present in 1.0.1.
+	      if ! grep en_US /etc/systemd/system/guix-daemon.service >/dev/null;
+	      then sed -i /etc/systemd/system/guix-daemon.service \
+		       -e 's/^Environment=\(.*\)$/Environment=\1 LC_ALL=en_US.UTF-8';
+	      fi;
+
               systemctl daemon-reload &&
                   systemctl start guix-daemon &&
                   systemctl enable guix-daemon; } &&

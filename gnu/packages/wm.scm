@@ -48,9 +48,9 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gawk)
@@ -172,14 +172,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.17")
+    (version "4.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1z8qmkkq9dhqmqy8sjw3rnpnmnb8v7lr456bs0qzp23bgpj17gjf"))))
+                "0iazv2i2rgmakzh95pgj6iapyzn7bdpcbcd35a79mhlml4ry33qy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1138,7 +1138,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1147,7 +1147,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rdcmll5b8w242n6yfjpsaprq280ck2jmbz46dxndhignxgda7k4"))))
+        (base32 "0jzxa6psbc7ddxli7rbfqxmv1svxnis51l1vch4hb9fdixqm284a"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")

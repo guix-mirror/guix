@@ -83,6 +83,14 @@
 (define (serialize-multiline-string-list field-name val)
   (for-each (lambda (str) (serialize-field field-name str)) val))
 
+(define (comma-separated-string-list? val)
+  (and (list? val)
+       (and-map (lambda (x)
+                  (and (string? x) (not (string-index x #\,))))
+                val)))
+(define (serialize-comma-separated-string-list field-name val)
+  (serialize-field field-name (string-join val ",")))
+
 (define (space-separated-string-list? val)
   (and (list? val)
        (and-map (lambda (x)
@@ -131,7 +139,7 @@
 (define-enumerated-field-type default-encryption
   (Never IfRequested Required))
 (define-enumerated-field-type error-policy
-  (abort-job retry-job retry-this-job stop-printer))
+  (abort-job retry-job retry-current-job stop-printer))
 (define-enumerated-field-type log-level
   (none emerg alert crit error warn notice info debug debug2))
 (define-enumerated-field-type log-time-format
@@ -450,7 +458,10 @@ or state files.")
   (user
    (string "lp")
    "Specifies the user name or ID that is used when running external
-programs."))
+programs.")
+  (set-env
+   (string "variable value")
+   "Set the specified environment variable to be passed to child processes."))
 
 (define (serialize-files-configuration field-name val)
   #f)
@@ -489,6 +500,11 @@ requests.")
    (boolean #f)
    "Specifies whether to purge job history data automatically when it is no
 longer required for quotas.")
+  (browse-dns-sd-sub-types
+   (comma-separated-string-list (list "_cups"))
+   "Specifies a list of DNS-SD sub-types to advertise for each shared printer.
+For example, @samp{\"_cups\" \"_print\"} will tell network clients that both
+CUPS sharing and IPP Everywhere are supported.")
   (browse-local-protocols
    (browse-local-protocols 'dnssd)
    "Specifies which protocols to use for local printer sharing.")
@@ -538,7 +554,7 @@ typically within a few milliseconds.")
    (error-policy 'stop-printer)
    "Specifies what to do when an error occurs.  Possible values are
 @code{abort-job}, which will discard the failed print job; @code{retry-job},
-which will retry the job at a later time; @code{retry-this-job}, which retries
+which will retry the job at a later time; @code{retry-current-job}, which retries
 the failed job immediately; and @code{stop-printer}, which stops the
 printer.")
   (filter-limit
@@ -798,9 +814,6 @@ reports @code{CUPS 2.0}.  @code{Minimal} reports @code{CUPS 2.0.0}.  @code{OS}
 reports @code{CUPS 2.0.0 (@var{uname})} where @var{uname} is the output of the
 @code{uname} command.  @code{Full} reports @code{CUPS 2.0.0 (@var{uname})
 IPP/2.0}.")
-  (set-env
-   (string "variable value")
-   "Set the specified environment variable to be passed to child processes.")
   (ssl-listen
    (multiline-string-list '())
    "Listens on the specified interfaces for encrypted connections.  Valid

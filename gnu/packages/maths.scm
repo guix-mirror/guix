@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -675,14 +676,14 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.13")
+    (version "4.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
+        (base32 "0n29klrrbwan9307np0d9hr128dlpc4nnlf57a140080ll3jmp8l"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
                                 "hdf4-shared-fortran.patch"
@@ -5144,3 +5145,36 @@ algorithm, a parametric integer programming solver, and primitives for
 termination analysis via the automatic synthesis of linear ranking
 functions.")
     (license license:gpl3+)))
+
+(define-public speedcrunch
+  (package
+    (name "speedcrunch")
+    (version "0.12.0")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+        (url "https://bitbucket.org/heldercorreia/speedcrunch.git")
+        (commit (string-append "release-" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0vh7cd1915bjqzkdp3sk25ngy8cq624mkh8c53c5bnzk357kb0fk"))))
+    (build-system cmake-build-system)
+    (inputs `(("qtbase" ,qtbase)))
+    (native-inputs `(("qttools" ,qttools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-src
+           (lambda _ (chdir "src") #t)))))
+    (synopsis "High-precision scientific calculator")
+    (description
+     "SpeedCrunch is a high-precision scientific calculator.  It features a
+syntax-highlighted scrollable display and is designed to be fully used via
+keyboard.  Some distinctive features are auto-completion of functions and
+variables, a formula book, and quick insertion of constants from various
+fields of knowledge.")
+    (home-page "http://speedcrunch.org/")
+    (license license:gpl2+)))
+

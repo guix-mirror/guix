@@ -20,6 +20,8 @@
   #:use-module (guix base16)
   #:use-module (guix build utils)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module (web uri)
+  #:use-module (guix json)
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (json)
@@ -32,6 +34,9 @@
   #:use-module (ice-9 popen)
   #:use-module ((ice-9 ftw) #:select (scandir))
   #:export (%swh-base-url
+            %allow-request?
+
+            request-rate-limit-reached?
 
             origin?
             origin-id
@@ -101,6 +106,8 @@
             request-cooking
             vault-fetch
 
+            commit-id?
+
             swh-download))
 
 ;;; Commentary:
@@ -128,40 +135,6 @@
   (if (string-suffix? "/" url)
       url
       (string-append url "/")))
-
-(define-syntax-rule (define-json-reader json->record ctor spec ...)
-  "Define JSON->RECORD as a procedure that converts a JSON representation,
-read from a port, string, or hash table, into a record created by CTOR and
-following SPEC, a series of field specifications."
-  (define (json->record input)
-    (let ((table (cond ((port? input)
-                        (json->scm input))
-                       ((string? input)
-                        (json-string->scm input))
-                       ((or (null? input) (pair? input))
-                        input))))
-      (let-syntax ((extract-field (syntax-rules ()
-                                    ((_ table (field key json->value))
-                                     (json->value (assoc-ref table key)))
-                                    ((_ table (field key))
-                                     (assoc-ref table key))
-                                    ((_ table (field))
-                                     (assoc-ref table
-                                                (symbol->string 'field))))))
-        (ctor (extract-field table spec) ...)))))
-
-(define-syntax-rule (define-json-mapping rtd ctor pred json->record
-                      (field getter spec ...) ...)
-  "Define RTD as a record type with the given FIELDs and GETTERs, à la SRFI-9,
-and define JSON->RECORD as a conversion from JSON to a record of this type."
-  (begin
-    (define-record-type rtd
-      (ctor field ...)
-      pred
-      (field getter) ...)
-
-    (define-json-reader json->record ctor
-      (field spec ...) ...)))
 
 (define %date-regexp
   ;; Match strings like "2014-11-17T22:09:38+01:00" or
@@ -196,31 +169,71 @@ Software Heritage."
     ((? string? str) str)
     ((? null?) #f)))
 
+(define %allow-request?
+  ;; Takes a URL and method (e.g., the 'http-get' procedure) and returns true
+  ;; to keep going.  This can be used to disallow a requests when
+  ;; 'request-rate-limit-reached?' returns true, for instance.
+  (make-parameter (const #t)))
+
+;; The time when the rate limit for "/origin/save" POST requests and that of
+;; other requests will be reset.
+;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
+(define %save-rate-limit-reset-time 0)
+(define %general-rate-limit-reset-time 0)
+
+(define (request-rate-limit-reached? url method)
+  "Return true if the rate limit has been reached for URI."
+  (define uri
+    (string->uri url))
+
+  (define reset-time
+    (if (and (eq? method http-post)
+             (string-prefix? "/api/1/origin/save/" (uri-path uri)))
+        %save-rate-limit-reset-time
+        %general-rate-limit-reset-time))
+
+  (< (car (gettimeofday)) reset-time))
+
+(define (update-rate-limit-reset-time! url method response)
+  "Update the rate limit reset time for URL and METHOD based on the headers in
+RESPONSE."
+  (let ((uri (string->uri url)))
+    (match (assq-ref (response-headers response) 'x-ratelimit-reset)
+      ((= string->number (? number? reset))
+       (if (and (eq? method http-post)
+                (string-prefix? "/api/1/origin/save/" (uri-path uri)))
+           (set! %save-rate-limit-reset-time reset)
+           (set! %general-rate-limit-reset-time reset)))
+      (_
+       #f))))
+
 (define* (call url decode #:optional (method http-get)
                #:key (false-if-404? #t))
   "Invoke the endpoint at URL using METHOD.  Decode the resulting JSON body
 using DECODE, a one-argument procedure that takes an input port.  When
 FALSE-IF-404? is true, return #f upon 404 responses."
-  (let*-values (((response port)
-                 (method url #:streaming? #t)))
-    ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
-    (match (assq-ref (response-headers response) 'x-ratelimit-remaining)
-      (#f #t)
-      ((? (compose zero? string->number))
-       (throw 'swh-error url response))
-      (_ #t))
+  (and ((%allow-request?) url method)
+       (let*-values (((response port)
+                      (method url #:streaming? #t)))
+         ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
+         (match (assq-ref (response-headers response) 'x-ratelimit-remaining)
+           (#f #t)
+           ((? (compose zero? string->number))
+            (update-rate-limit-reset-time! url method response)
+            (throw 'swh-error url method response))
+           (_ #t))
 
-    (cond ((= 200 (response-code response))
-           (let ((result (decode port)))
-             (close-port port)
-             result))
-          ((and false-if-404?
-                (= 404 (response-code response)))
-           (close-port port)
-           #f)
-          (else
-           (close-port port)
-           (throw 'swh-error url response)))))
+         (cond ((= 200 (response-code response))
+                (let ((result (decode port)))
+                  (close-port port)
+                  result))
+               ((and false-if-404?
+                     (= 404 (response-code response)))
+                (close-port port)
+                #f)
+               (else
+                (close-port port)
+                (throw 'swh-error url method response))))))
 
 (define-syntax define-query
   (syntax-rules (path)
@@ -524,7 +537,7 @@ requested bundle cooking, waiting for completion...~%"))
 
 (define (commit-id? reference)
   "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
-it is a tag name."
+it is a tag name.  This is based on a simple heuristic so use with care!"
   (and (= (string-length reference) 40)
        (string-every char-set:hex-digit reference)))
 

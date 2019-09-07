@@ -230,16 +230,17 @@ from ~s: ~a (~s)~%"
                           (if (boolean? type) meta
                               (cons `(bioconductor-type . ,type) meta))))))))))
     ((git)
-     ;; Download the git repository at "NAME"
-     (call-with-values
-         (lambda () (download name #t))
-       (lambda (dir commit)
-         (and=> (description->alist (with-input-from-file
-                                        (string-append dir "/DESCRIPTION") read-string))
-                (lambda (meta)
-                  (cons* `(git . ,name)
-                         `(git-commit . ,commit)
-                         meta))))))))
+     (and (string-prefix? "http" name)
+          ;; Download the git repository at "NAME"
+          (call-with-values
+              (lambda () (download name #t))
+            (lambda (dir commit)
+              (and=> (description->alist (with-input-from-file
+                                             (string-append dir "/DESCRIPTION") read-string))
+                     (lambda (meta)
+                       (cons* `(git . ,name)
+                              `(git-commit . ,commit)
+                              meta)))))))))
 
 (define (listify meta field)
   "Look up FIELD in the alist META.  If FIELD contains a comma-separated
@@ -494,12 +495,16 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
      "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
      (let ((description (fetch-description repo package-name)))
-       (if (and (not description)
-                (eq? repo 'bioconductor))
-           ;; Retry import from CRAN
-           (cran->guix-package package-name 'cran)
-           (and description
-                (description->package repo description)))))))
+       (if description
+           (description->package repo description)
+           (case repo
+             ((git)
+              ;; Retry import from Bioconductor
+              (cran->guix-package package-name 'bioconductor))
+             ((bioconductor)
+              ;; Retry import from CRAN
+              (cran->guix-package package-name 'cran))
+             (else #f)))))))
 
 (define* (cran-recursive-import package-name #:optional (repo 'cran))
   (recursive-import package-name repo

@@ -137,7 +137,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages video)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages wordnet)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
@@ -2855,7 +2855,7 @@ mode-line.")
 (define-public emacs-robe
   (package
     (name "emacs-robe")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -2864,7 +2864,7 @@ mode-line.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ll7ivxqnglfb0i70ly6qq2yfw9cyi3vq3lmj4s6h6c1c7rm3gcq"))))
+        (base32 "0qw18wi54yg971n4wnjqkd8lqj5lbs9ra8bvmngif2bzhqlfdsbn"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^lib\\/" %default-include)))
@@ -3091,7 +3091,10 @@ for Flow files.")
         (base32
          "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
     (build-system emacs-build-system)
-    (arguments '(#:include '("\\.el$" "\\.org$")))
+    (arguments
+     `(#:include '("\\.el$" "\\.org$")
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/xuchunyang/elisp-demos/")
     (synopsis "Enhance @code{*Help*} buffers with additional examples")
     (description
@@ -3126,11 +3129,10 @@ completion of relevant keywords.")
 
 (define-public emacs-sudo-edit
   (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
-        (version "0.1.0")
         (revision "6"))
     (package
       (name "emacs-sudo-edit")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3142,6 +3144,18 @@ completion of relevant keywords.")
           (base32
            "1qv58x5j5a3v1s2ylhck1ykbfclq0mbi0gsvaql3nyv8cxazqlwl"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("\\$\\(CASK\\) exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/nflath/sudo-edit/")
       (synopsis "Open files as another user")
       (description
@@ -4229,24 +4243,50 @@ number.")
     (license license:gpl3+)))
 
 (define-public emacs-org-pomodoro
-  (package
-    (name "emacs-org-pomodoro")
-    (version "2.1.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/lolownia/org-pomodoro.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0r5shgikm34d66i2hblyknbblpg92lb2zc9x4bcb28xkh7m9d0xv"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-alert" ,emacs-alert)))
-    (home-page "https://github.com/lolownia/org-pomodoro")
-    (synopsis "Pomodoro technique for org-mode")
-    (description "@code{emacs-org-pomodoro} adds very basic support for
+  ;; Last release version was from 2016.
+  (let ((commit "aa07c11318f91219336197e62c47bc7a3d090479")
+        (revision "1"))
+    (package
+      (name "emacs-org-pomodoro")
+      (version (git-version "2.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/marcinkoziej/org-pomodoro.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0nbprh2nhnmb7ngp9ndr6zr37ashcsvpi5slv7a37x1dl7j6w1k4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-alert" ,emacs-alert)))
+      (arguments
+       `(#:include (cons "^resources\\/" %default-include)
+         #:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "org-pomodoro-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "org-pomodoro-tests.el")
+               #t))
+           (add-before 'check 'add-require
+             (lambda _
+               (emacs-batch-edit-file "org-pomodoro-tests.el"
+                 `(progn (progn (goto-char (point-min))
+                                (re-search-forward
+                                 "ert-deftest")
+                                (beginning-of-line)
+                                (forward-line -1)
+                                (insert "(require 'org-pomodoro)"))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/marcinkoziej/org-pomodoro")
+      (synopsis "Pomodoro technique for org-mode")
+      (description "@code{emacs-org-pomodoro} adds very basic support for
 Pomodoro technique in Emacs org-mode.
 
 Run @code{M-x org-pomodoro} for the task at point or select one of the
@@ -4254,10 +4294,10 @@ last tasks that you clocked time for.  Each clocked-in pomodoro starts
 a timer of 25 minutes and after each pomodoro a break timer of 5
 minutes is started automatically.  Every 4 breaks a long break is
 started with 20 minutes.  All values are customizable.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-sidebar
-  (let ((commit "74ca98b9920f3de3f13d49866581435e1ec63ec5")
+  (let ((commit "ed951d1e0d8b7e65ed35797403fd3e8c88f507f5")
         (revision "1"))
     (package
       (name "emacs-org-sidebar")
@@ -4270,7 +4310,7 @@ started with 20 minutes.  All values are customizable.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "03p1ndyw2qp2skib5hszc4xyh84w7p2mhkd4a9dy6qv8q47xpsqn"))))
+          (base32 "01sf8v53pjsy80fzwmj2n8rp2z5gsnpyld0fm6j3bdv213clp69y"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
@@ -4315,6 +4355,30 @@ overview of tasks in a subtree.")
 @code{org-mode} with Trello abilities.  Trello is an online project
 organizer.")
     (license license:gpl3+)))
+
+(define-public emacs-org-tanglesync
+  (let ((commit "ab76a3eaaed263677d2e029d43f6c4de8fc21418")
+        (revision "1"))
+    (package
+      (name "emacs-org-tanglesync")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mtekman/org-tanglesync.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "14ify3yirq2qmi9isk8kcbwx8pbclv1fyg49kraz4srhgf2fssgf"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)))
+      (home-page "https://github.com/mtekman/org-tanglesync.el")
+      (synopsis "Sync Org source blocks with tangled external files")
+      (description "This package automatically pulls changes from source code
+to their corresponding tangled blocks.")
+      (license license:gpl3+))))
 
 (define-public emacs-company-flow
   (let ((commit "76ef585c70d2a3206c2eadf24ba61e59124c3a16")
@@ -4428,6 +4492,32 @@ variants.")
      "Solarized for Emacs is a port of the Solarized theme for Vim.  This
 package provides a light and a dark variant.")
     (license license:gpl3+)))
+
+(define-public emacs-poet-theme
+  (let ((commit "d84f7b259cc9b6ff8d442cf4c38bd6c7065ff8f4")
+        (revision "0"))
+    (package
+      (name "emacs-poet-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kunalb/poet.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0a84jdaj619mb59a46dmkk2sfs42rylqk9ryl1drgs8d3lia79mz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kunalb/poet/")
+      (synopsis "Emacs theme for prose")
+      (description
+       "Emacs has very good support for multiple fonts in a single file.  Poet
+uses this support to make it much more convenient to write prose within Emacs,
+with particular attention paid to @code{org-mode} and @code{markdown-mode}.
+Code blocks, tables, etc are formatted in monospace text with the appropriate
+backgrounds.")
+      (license license:expat))))
 
 (define-public emacs-ahungry-theme
   (package
@@ -6292,6 +6382,31 @@ not tied in the trap of backward compatibility.")
 for search-based navigation of buffers.")
     (license license:gpl2+)))
 
+(define-public emacs-helm-ag
+  (let ((commit "2fc02c4ead29bf0db06fd70740cc7c364cb650ac")
+        (revision "1"))
+    (package
+      (name "emacs-helm-ag")
+      (version "0.58")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/syohex/emacs-helm-ag.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gnn0byywbld6afcq1vp92cjvy4wlag9d1wgymnqn86c3b1bcf21"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/syohex/emacs-helm-ag")
+      (synopsis "Helm interface to the Silver Searcher")
+      (description
+       "This package provides a frontend for grepping tools like ag and ack,
+as well as features for editing search results.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-projectile
   (package
     (name "emacs-helm-projectile")
@@ -6315,6 +6430,86 @@ for search-based navigation of buffers.")
     (description
      "This Emacs library provides a Helm interface for Projectile.")
     (license license:gpl3+)))
+
+(define-public emacs-taskrunner
+  (let ((commit "3afd4a546d42339543d3d4e51b175fc3e82b3358")
+        (revision "1"))
+    (package
+      (name "emacs-taskrunner")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/emacs-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1lkdvmjn3alhqxq2i64sdr977sbw3g0b2670d9bwyzi67qh0jxrv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/emacs-taskrunner")
+      (synopsis "Retrieve tasks from various build systems and task-runners")
+      (description "This package parses Makefiles and build-system files for
+multiple project types.")
+      (license license:gpl3+))))
+
+(define-public emacs-ivy-taskrunner
+  (let ((commit "75d8d67cfe3c29663fe0f5508a887adf40ed5162")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-taskrunner")
+      (version (git-version "0.9" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/ivy-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wf4s4k0ap21f7g5w6128an8nsvbja7f5n889vcml5b6gjz058db"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-taskrunner" ,emacs-taskrunner)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/ivy-taskrunner")
+      (synopsis "Retrieve build-system tasks using Ivy")
+      (description "This package provides an Ivy interface for selecting
+Makefile targets.")
+      (license license:gpl3+))))
+
+(define-public emacs-helm-taskrunner
+  (let ((commit "1910dac19cbc7bd4fd08b0faf9affd455339fbea")
+        (revision "1"))
+    (package
+      (name "emacs-helm-taskrunner")
+      (version (git-version "0.9" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-taskrunner/helm-taskrunner.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "182lmr858fx6rdhp1fy7kv8dvrhzcnxzwfck1q22s6xs8x85d5q7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-taskrunner" ,emacs-taskrunner)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/emacs-taskrunner/helm-taskrunner")
+      (synopsis "Retrieve build-system tasks using Helm")
+      (description "This package provides a Helm interface for selecting
+Makefile targets.")
+      (license license:gpl3+))))
 
 (define-public emacs-helm-make
   (let ((commit "feae8df22bc4b20705ea08ac9adfc2b43bb348d0")
@@ -6501,11 +6696,11 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "0748c695dfa89b79eb316da5060360de8c0f04da")
-        (revision "9"))
+  (let ((commit "986ca7eb0b75eccd843bdad2f7fdb48f4ca6ac22")
+        (revision "10"))
     (package
       (name "emacs-evil-collection")
-      (version (git-version "0.0.1" revision commit))
+      (version (git-version "0.0.2" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -6514,7 +6709,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "17w8nh3q7ffc7776f3qzixk0c0g6vys3xybgw16ky1f416585kvb"))))
+                  "172sx5w50x5wrs5w0sb6rkbj3q22s7mmsnk4c6pwknhbz3vwlvwz"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -6581,8 +6776,8 @@ end of a line and increment or decrement it.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-owl
-  (let ((commit "e8fe5b2f745e36db04cb71eb689bf91c5409614f")
-        (revision "2"))
+  (let ((commit "24c5f43df375194386344e69bc720ea3986c9510")
+        (revision "3"))
     (package
       (name "emacs-evil-owl")
       (version (git-version "0.0.1" revision commit))
@@ -6595,10 +6790,13 @@ end of a line and increment or decrement it.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1g7kplna62f271135mnjdbvxk2ayx7m4gvd6l86d2394alx16nhq"))))
+           "0bqzch14whlmrcasakah3psrzswvkzd7mmi8hx5s64kfp29wbdhi"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/mamapanda/evil-owl")
       (synopsis "Preview candidates when using Evil registers and marks")
       (description
@@ -6625,6 +6823,17 @@ a popup window for previewing candidates.")
            "0bjpn4yqig17ddym6wqq5fm1b294q74hzcbj9a6gs97fqiwf88xa"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("cask exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/Dewdrops/evil-exchange")
       (synopsis "Exchange text easily within Evil")
       (description
@@ -6754,6 +6963,9 @@ aligning text objects based on separators.")
            "0872ix682hkdz0k8pn6sb54rqkx00rz5fxpd5j2snx406yagpaxz"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/edkolev/evil-expat")
       (synopsis "Extra @code{ex} commands for @code{evil-mode}")
       (description
@@ -6924,14 +7136,14 @@ passive voice.")
     (name "emacs-org")
     ;; emacs-org-contrib inherits from this package.  Please update its sha256
     ;; checksum as well.
-    (version "9.2.5")
+    (version "9.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/org-"
                                   version ".tar"))
               (sha256
                (base32
-                "1pid1sykgz83i4ry5n8f270finag6sm7ckqxn5lkikyya43wlzx1"))))
+                "0ikd78k4yw4sm5x7l3dsbvfcmvnv5qna2mxirr560gvcnzhr0zg4"))))
     (build-system emacs-build-system)
     (home-page "https://orgmode.org/")
     (synopsis "Outline-based notes management and organizer")
@@ -6945,14 +7157,14 @@ programming and reproducible research.")
   (package
     (inherit emacs-org)
     (name "emacs-org-contrib")
-    (version "20190805")
+    (version "20190904")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://orgmode.org/elpa/org-plus-contrib-"
-                                  version ".tar"))
+              (uri (string-append "https://orgmode.org/elpa/"
+                                  "org-plus-contrib-" version ".tar"))
               (sha256
                (base32
-                "1mw91hwbqyjq5pyz9hzdhvjlc2bphqpi23yqd3sdk1crpc87s40c"))))
+                "08s3fk3jim0y2v00l6ah8y08ba8wbcf29z6fxqzyaxj58a5sq81a"))))
     (arguments
      `(#:modules ((guix build emacs-build-system)
                   (guix build utils)
@@ -9503,6 +9715,75 @@ subsequent invocations can be readily customized.  Several recipes are
 included by default, and more can be readily added.")
       (license license:gpl3+))))
 
+(define-public emacs-unidecode
+  (let ((commit "5502ada9287b4012eabb879f12f5b0a9df52c5b7")
+        (revision "1"))
+    (package
+      (name "emacs-unidecode")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/sindikat/unidecode")
+               (commit commit)))
+         (sha256
+          (base32
+           "03x3nakbhmakwm977mwrf8jifvjnfwzpjv6wrwpizbqjnkgfchmn"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons* "^tools/" "^data/" %default-include)
+         #:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "unidecode-test.el"
+                          "-f" "ert-run-tests-batch-and-exit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "unidecode-test.el")
+               #t))
+           (add-before 'check 'add-require
+             (lambda _
+               (emacs-batch-edit-file "unidecode-test.el"
+                 `(progn (progn (goto-char (point-min))
+                                (re-search-forward
+                                 "ert-deftest")
+                                (forward-line -1)
+                                (insert "(require 'unidecode)"))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/sindikat/unidecode")
+      (synopsis "Transliterate Unicode text to ASCII")
+      (description "This package provides functions for converting Unicode to ASCII.")
+      (license license:gpl2+))))
+
+(define-public emacs-pubmed
+  (package
+    (name "emacs-pubmed")
+    (version "0.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/fvdbeek/emacs-pubmed.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "15bwjxc7g43m5pi8z17anaqqkvi209r7kk1chmf175477gvrv7c0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-deferred" ,emacs-deferred)
+       ("emacs-esxml" ,emacs-esxml)
+       ("emacs-s" ,emacs-s)
+       ("emacs-unidecode" ,emacs-unidecode)))
+    (home-page "https://gitlab.com/fvdbeek/emacs-pubmed")
+    (synopsis "Interface to PubMed")
+    (description "This package provides an Emacs interface to the PubMed
+database of references on life sciences.")
+    (license license:gpl3+)))
+
 (define-public emacs-websocket
   (package
     (name "emacs-websocket")
@@ -11008,10 +11289,73 @@ into sections while preserving the structure imposed by any timestamps.")
 tables of contents.")
     (license license:gpl3+)))
 
+(define-public emacs-ts
+  (let ((commit "93c074f2895a204e003e8c7f3033c37d6486fac8")
+        (revision "1"))
+    (package
+      (name "emacs-ts")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/ts.el")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0lpyv78k04vbp9glnv14dawcfgi3m49847wlgwfmkdq5cr3fn735"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-dash" ,emacs-dash)))
+      (arguments
+       ;; XXX: Three tests are failing because of a timezone-related issue
+       ;; with how they're written.  On my machine, all the failing test
+       ;; results are 18000 seconds (5 hours) off.
+
+       ;; The ts-parse-org function accepts a string without any timezone
+       ;; info, not assumed to be in Unix time, and converts it to a so-called
+       ;; ts struct.  The ts-unix function (accessor) accepts a ts struct,
+       ;; then seems to assume the struct's corresponding time is in terms of
+       ;; the user's current time zone, before returning a Unix time in
+       ;; seconds.
+
+       ;; The failing tests all have similar problems, but nothing else about
+       ;; the library seems particularly off.
+
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "test/test.el"
+                          "-f" "ert-run-tests-batch-and-exit")
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "test/test.el")
+               #t))
+           (add-before 'check 'delete-failing-tests
+             (lambda _
+               (emacs-batch-edit-file "test/test.el"
+                 `(progn (progn
+                          (goto-char (point-min))
+                          (dolist (test-regexp '("ert-deftest ts-format"
+                                                 "ert-deftest ts-parse-org\\_>"
+                                                 "ert-deftest ts-parse-org-element"))
+                                  (re-search-forward test-regexp)
+                                  (beginning-of-line)
+                                  (kill-sexp)))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/alphapapa/ts.el")
+      (synopsis "Timestamp and date/time library")
+      (description "This package facilitates manipulating dates, times, and
+timestamps by providing a @code{ts} struct.")
+      (license license:gpl3+))))
+
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11019,12 +11363,19 @@ tables of contents.")
                     (commit version)))
               (sha256
                (base32
-                "1nvzirn1lmgmgl7irbsc1n391a2cw8gmvwm3pa228l2c1gcx8kd8"))
+                "0mq0aj0a3a5gi9nz0ncpzsh731d92n86b0iinvx1m45dcal06h9y"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-s" ,emacs-s)
+       ("emacs-ts" ,emacs-ts)
+       ("emacs-org" ,emacs-org)
        ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
     (description "This package provides a Lispy query language for Org
@@ -11906,12 +12257,11 @@ key again.")
     (license license:gpl3+)))
 
 (define-public emacs-mbsync
-  (let ((commit "42077e83ae2db778ce0f8e22f8357b40355526b3")
-        (revision "1"))
+  (let ((commit "f549eccde6033449d24cd5b6148599484850c403")
+        (revision "2"))
     (package
       (name "emacs-mbsync")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.1.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -11921,7 +12271,7 @@ key again.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0yj93y2mpxlir8x73znlg1slxlv4blm1vjv5h2w3j8lxg8bxvmn6"))))
+           "1pdj41rq3pq4jdb5pma5j495xj7w7jgn8pnz1z1zwg75pn7ydfp0"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
@@ -13530,28 +13880,31 @@ be changed by customizing the appropriate variables.")
     (license license:gpl3+)))
 
 (define-public emacs-org-caldav
-  (package
-    (name "emacs-org-caldav")
-    (version "20180403")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/dengste/org-caldav/raw/"
-             "8d3492c27a09f437d2d94f2736c56d7652e87aa0"
-             "/org-caldav.el"))
-       (sha256
-        (base32
-         "1fh4gh68ddj0is99z2ccyh97v6psnyda61n2dsadzqhcxn51amlc"))))
-    (build-system emacs-build-system)
-    (propagated-inputs `(("emacs-org" ,emacs-org)))
-    (home-page "https://github.com/dengste/org-caldav")
-    (synopsis
-     "Sync Org files with external calendars via the CalDAV protocol")
-    (description
-     "Synchronize between events in Org-mode files and a CalDAV calendar.
-This code is still alpha.")
-    (license license:gpl3+)))
+  (let ((commit "a563500c9884f38ce08793e2964f8274adde163d"))
+    (package
+      (name "emacs-org-caldav")
+      (version (git-version "0.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dengste/org-caldav.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "18qi1iv5dc0gsvkv9ifal3cjpm568nlb907v8a53cnm4439x1l0l"))))
+      (build-system emacs-build-system)
+      (arguments
+       ;; Tests require to have two specific calendars on a test server.
+       `(#:exclude '("^org-caldav-testsuite\\.el")))
+      (propagated-inputs
+       `(("emacs-org" ,emacs-org)))
+      (home-page "https://github.com/dengste/org-caldav")
+      (synopsis "Sync Org files with external calendars via the CalDAV protocol")
+      (description "Synchronize between events in Org files and a CalDAV
+calendar.")
+      (license license:gpl3+))))
 
 (define-public emacs-zotxt
   (package
@@ -13632,6 +13985,18 @@ describing the key binding changes.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
        ("emacs-iedit" ,emacs-iedit)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("@cask exec ") ""))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page
      "https://github.com/hlissner/evil-multiedit")
     (synopsis "Multiple cursors for Evil mode")
@@ -13861,7 +14226,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
                  ("gif-screencast-cropping-program"
                   (string-append imagemagick "/bin/mogrify"))
                  ("gif-screencast-optimize-program"
-                  (string-append imagemagick "/bin/gifsicle")))))))))
+                  (string-append gifsicle "/bin/gifsicle")))))))))
       (home-page
        "https://gitlab.com/Ambrevar/emacs-gif-screencast")
       (synopsis "One-frame-per-action GIF recording")
@@ -15514,6 +15879,31 @@ buffers, etc.  It also has plug-ins to help your Emacs life.")
 programs can use this table component for the application UI.")
       (license license:gpl3+))))
 
+(define-public emacs-leetcode
+  (let ((commit "8624496af9e105c3e07d88844b37ede87540d604")
+        (revision "1"))
+    (package
+      (name "emacs-leetcode")
+      (version (git-version "0" "1" commit))
+      (home-page "https://github.com/ginqi7/leetcode-emacs.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ginqi7/leetcode-emacs")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "11pp7ydlmwrv7djf9mwk4xzn295xbmdnj5x13bfj5yjpjr89p531"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-names" ,emacs-names)
+         ("emacs-ctable" ,emacs-ctable)))
+      (synopsis "Solve and submit LeetCode problems from within Emacs")
+      (description "This package provides an Emacs interface to LeetCode
+allowing users to log in and solve problems of their choice using Emacs.")
+      (license license:unlicense))))
+
 (define-public emacs-epc
   (let ((commit "e1bfa5ca163273859336e3cc89b4b6460f7f8cda"))
     (package
@@ -15998,7 +16388,7 @@ the standard @code{Dockerfile} file format.")
 (define-public emacs-lsp-mode
   (package
     (name "emacs-lsp-mode")
-    (version "6.0")
+    (version "6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -16007,12 +16397,13 @@ the standard @code{Dockerfile} file format.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1v1mq6ixzlgiazj8fmg4xaqhsqn3l89iqy74yndhvzh2rdf0pbkl"))))
+                "0jn5slhv9zfs446a5966bfg9dq144g22v79wnkx9hxq7if78p652"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
        ("emacs-f" ,emacs-f)
        ("emacs-ht" ,emacs-ht)
+       ("emacs-markdown-mode" ,emacs-markdown-mode)
        ("emacs-spinner" ,emacs-spinner)))
     (home-page "https://github.com/emacs-lsp/lsp-mode")
     (synopsis "Emacs client and library for the Language Server Protocol")
@@ -16254,11 +16645,10 @@ unescaping of quotes.")
 
 (define-public emacs-flycheck-haskell
   (let ((commit "32ddff87165a7d3a35e7318bee997b5b4bd41278")
-        (version "0.8")
-        (revision "79"))
+        (revision "2"))
     (package
       (name "emacs-flycheck-haskell")
-      (version (git-version version revision commit))
+      (version (git-version "0.8" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16276,6 +16666,8 @@ unescaping of quotes.")
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-haskell-mode" ,emacs-haskell-mode)
          ("emacs-let-alist" ,emacs-let-alist)))
+      (arguments
+       `(#:include '("\\.el$" "\\.hs$")))
       (home-page "https://github.com/flycheck/flycheck-haskell")
       (synopsis "Flycheck for Haskell")
       (description "This package configures syntax-checking for Haskell
@@ -17257,6 +17649,17 @@ corresponding Evil keys.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-shell
+             ;; Setting the SHELL environment variable is required for the tests
+             ;; to find sh.
+             (lambda _
+               (setenv "SHELL" (which "sh"))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/mamapanda/evil-traces")
       (synopsis "Visual hints for @code{evil-ex}")
       (description "This package adds visual hints to certain @code{ex}

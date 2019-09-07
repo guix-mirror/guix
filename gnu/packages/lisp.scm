@@ -113,7 +113,7 @@
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f  ; The build system seems not to be thread safe.
-         #:tests? #f  ; There does not seem to be make check or anything similar.
+         #:test-target "ansi-tests/test_results"
          #:configure-flags '("--enable-ansi") ; required for use by the maxima package
          #:make-flags (list
                        (string-append "GCL_CC=" (assoc-ref %build-inputs "gcc")
@@ -327,14 +327,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.5.5")
+    (version "1.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "1qmapk2hyxxqd3ajiqacz4isij0ibx7gn10n8dbmq33gm3kgliyb"))
+        (base32 "10z43dc29p7s8dl3jixklhmzqfp7gcm3fccjdfd36qqhyfxqxx3a"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.
@@ -353,11 +353,21 @@ an interpreter, a compiler, a debugger, and much more.")
      ;;       ABCL (recent versions only)
      ;;       CLISP (only some versions: 2.44.1 is OK, 2.47 is not)
      ;;       XCL
-     ;; CCL seems ideal then, but it unfortunately only builds reliably
-     ;; on some architectures.
+     ;;
+     ;; From NEWS:
+     ;;     * build enhancement: new host quirks mechanism, support for building under
+     ;;     ABCL and ECL (as well as CCL, CMUCL, CLISP and SBCL itself)
+     ;;
+     ;; CCL is not bootstrappable so it won't do.  CLISP 2.49 seems to work.
+     ;; ECL too.  ECL builds SBCL about 20% slower than CLISP.  As of
+     ;; 2019-09-05, ECL was last updated in 2016 while CLISP was last update
+     ;; in 2010.
+     ;;
+     ;; For now we stick to CLISP for all systems.  We keep the `match' in to
+     ;; make it easier to change the host compiler for various architectures.
      `(,@(match (%current-system)
            ((or "x86_64-linux" "i686-linux")
-            `(("ccl" ,ccl)))
+            `(("clisp" ,clisp)))
            (_
             `(("clisp" ,clisp))))
        ("which" ,which)
@@ -428,7 +438,7 @@ an interpreter, a compiler, a debugger, and much more.")
              (setenv "CC" "gcc")
              (invoke "sh" "make.sh" ,@(match (%current-system)
                                         ((or "x86_64-linux" "i686-linux")
-                                         `("ccl"))
+                                         `("clisp"))
                                         (_
                                          `("clisp")))
                      (string-append "--prefix="
@@ -488,6 +498,15 @@ statistical profiler, a code coverage tool, and many other extensions.")
                    (license:x11-style "file://src/code/loop.lisp")))))
 
 (define-public ccl
+  ;; Warning: according to upstream, CCL is not bootstrappable.
+  ;; See https://github.com/Clozure/ccl/issues/222 from 2019-09-02:
+  ;;
+  ;;     "As far as I know, there is no way to build CCL without an existing
+  ;;     running CCL image. It was bootstrapped back in 1986 or so as
+  ;;     Macintosh Common Lisp, by Gary Byers, I believe, who is no longer on
+  ;;     the planet to tell us the story. It SHOULD be possible to port the
+  ;;     CCL compiler to portable Common Lisp, so that ANY lisp could build
+  ;;     it, as is the case for SBCL, but I know of no attempt to do so."
   (package
     (name "ccl")
     (version "1.11.5")
@@ -710,10 +729,44 @@ portable between implementations.")
 (define-public ecl-alexandria
   (sbcl-package->ecl-package sbcl-alexandria))
 
+(define-public sbcl-net.didierverna.asdf-flv
+  (package
+    (name "sbcl-net.didierverna.asdf-flv")
+    (version "2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/didierverna/asdf-flv")
+             (commit (string-append "version-" version))))
+       (file-name (git-file-name "asdf-flv" version))
+       (sha256
+        (base32 "1fi2y4baxan103jbg4idjddzihy03kwnj2mzbwrknw4d4x7xlgwj"))))
+    (build-system asdf-build-system/sbcl)
+    (synopsis "Common Lisp ASDF extension to provide support for file-local variables")
+    (description "ASDF-FLV provides support for file-local variables through
+ASDF.  A file-local variable behaves like @code{*PACKAGE*} and
+@code{*READTABLE*} with respect to @code{LOAD} and @code{COMPILE-FILE}: a new
+dynamic binding is created before processing the file, so that any
+modification to the variable becomes essentially file-local.
+
+In order to make one or several variables file-local, use the macros
+@code{SET-FILE-LOCAL-VARIABLE(S)}.")
+    (home-page "https://www.lrde.epita.fr/~didier/software/lisp/misc.php#asdf-flv")
+    (license (license:non-copyleft
+              "https://www.gnu.org/prep/maintain/html_node/License-Notices-for-Other-Files.html"
+              "GNU All-Permissive License"))))
+
+(define-public cl-net.didierverna.asdf-flv
+  (sbcl-package->cl-source-package sbcl-net.didierverna.asdf-flv))
+
+(define-public ecl-net.didierverna.asdf-flv
+  (sbcl-package->ecl-package sbcl-net.didierverna.asdf-flv))
+
 (define-public sbcl-fiveam
   (package
     (name "sbcl-fiveam")
-    (version "1.2")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -722,8 +775,11 @@ portable between implementations.")
              (commit (string-append "v" version))))
        (file-name (git-file-name "fiveam" version))
        (sha256
-        (base32 "1yx9716mk8pq9076q6cjx4c9lyax3amiccy37sh0913k2x8gsm4l"))))
-    (inputs `(("alexandria" ,sbcl-alexandria)))
+        (base32 "1q3d38pwafnwnw42clq0f8g5xw7pbzr287jl9jsqmb1vb0n1vrli"))))
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("net.didierverna.asdf-flv" ,sbcl-net.didierverna.asdf-flv)
+       ("trivial-backtrace" ,sbcl-trivial-backtrace)))
     (build-system asdf-build-system/sbcl)
     (synopsis "Common Lisp testing framework")
     (description "FiveAM is a simple (as far as writing and running tests
@@ -2175,7 +2231,7 @@ also be supported.")
 (define-public sbcl-ironclad
   (package
     (name "sbcl-ironclad")
-    (version "0.42")
+    (version "0.46")
     (source
      (origin
        (method git-fetch)
@@ -2184,14 +2240,15 @@ also be supported.")
              (commit (string-append "v" version))))
        (sha256
         (base32
-         "1wjcb9vpybxjrmch7f7s78a5abxmnknbd4fl49dl5lz8a3fc8vf0"))
-       (file-name (string-append "ironblad" version "-checkout"))))
+         "1s391awi2lsl7m1dbjirgpkm4p9p8wd076pakgvsvpn1rrznisnd"))
+       (file-name (git-file-name name version))))
     (build-system asdf-build-system/sbcl)
     (native-inputs
      ;; Tests only.
      `(("rt" ,sbcl-rt)))
     (inputs
-     `(("flexi-streams" ,sbcl-flexi-streams)
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("flexi-streams" ,sbcl-flexi-streams)
        ("nibbles" ,sbcl-nibbles)))
     (synopsis "Cryptographic toolkit written in Common Lisp")
     (description
@@ -5337,17 +5394,18 @@ port within a range.")
 (define-public txr
   (package
     (name "txr")
-    (version "223")
+    (version "224")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "http://www.kylheku.com/cgit/txr/snapshot/txr-"
-                           version
-                           ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://www.kylheku.com/git/txr/")
+             (commit (string-append "txr-" version))))
+       (file-name (git-file-name name version))
        (patches (search-patches "txr-shell.patch"))
        (sha256
         (base32
-         "0109q8idqggba3kx58dpm5ccfpdrki68npkcxm18p5ga24611fcv"))))
+         "1036k71f6mffy9rjwzmhr5nnp1n0wzb0rqvilpzvb8jc5yxv0810"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("cc=gcc")
@@ -6740,3 +6798,66 @@ power of CXML is available when necessary.")
       (description "This is a Common Lisp library that allows to publish D-Bus
 objects as well as send and notify other objects connected to a bus.")
       (license license:bsd-2))))
+
+(define-public sbcl-cl-hooks
+  (let ((commit "5b638083f3b4f1221a52631d9c8a0a265565cac7")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-hooks")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "0.2.1" revision commit))
+      (home-page "https://github.com/scymtym/architecture.hooks")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bg3l0a28lw5gqqjp6p6b5nhwqk46sgkb7184w5qbfngw1hk8x9y"))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("let-plus" ,sbcl-let-plus)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("closer-mop" ,sbcl-closer-mop)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Hooks extension point mechanism (as in Emacs) for Common Lisp")
+      (description "A hook, in the present context, is a certain kind of
+extension point in a program that allows interleaving the execution of
+arbitrary code with the execution of a the program without introducing any
+coupling between the two.  Hooks are used extensively in the extensible editor
+Emacs.
+
+In the Common LISP Object System (CLOS), a similar kind of extensibility is
+possible using the flexible multi-method dispatch mechanism.  It may even seem
+that the concept of hooks does not provide any benefits over the possibilites
+of CLOS.  However, there are some differences:
+
+@itemize
+
+@item There can be only one method for each combination of specializers and
+qualifiers.  As a result this kind of extension point cannot be used by
+multiple extensions independently.
+@item Removing code previously attached via a @code{:before}, @code{:after} or
+@code{:around} method can be cumbersome.
+@item There could be other or even multiple extension points besides @code{:before}
+and @code{:after} in a single method.
+@item Attaching codes to individual objects using eql specializers can be
+cumbersome.
+@item Introspection of code attached a particular extension point is
+cumbersome since this requires enumerating and inspecting the methods of a
+generic function.
+@end itemize
+
+This library tries to complement some of these weaknesses of method-based
+extension-points via the concept of hooks.")
+      (license license:llgpl))))
+
+(define-public cl-hooks
+  (sbcl-package->cl-source-package sbcl-cl-hooks))
+
+(define-public ecl-cl-hooks
+  (sbcl-package->ecl-package sbcl-cl-hooks))

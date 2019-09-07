@@ -154,14 +154,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.10.6")
+    (version "4.10.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.samba.org/pub/samba/stable/"
                                  "samba-" version ".tar.gz"))
              (sha256
               (base32
-               "0hpgdqlyczj98pkh2ldglvvnkrb1q541r3qikdvxq0qjvd9fpywy"))))
+               "1x0hlhb674fndfkmimjicnzs543n3i8465a5ifcmjwvzavxha7y4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -245,14 +245,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1g1fqa37xkjp9lp6lrwxrbfgashcink769ll505zvcwnxx2nlvsw"))))
+                "1iigk4a7n9k9qqq0h3a5vah67ycpqzvahvdhzy15lm428jrvrmbm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -312,14 +312,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.10.0")
+    (version "0.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1rm4d9245ya15wyrh9vqn1dnz14l2ic88mr46ykyc6kdrl99dwrk"))))
+                "1dhhd7fz6wyvlwrk1a6gj5m2mcjsc3ilx0mcv1qsr1lbndldm93r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

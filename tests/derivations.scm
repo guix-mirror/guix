@@ -209,7 +209,7 @@
   (test-skip 1))
 (test-assert "'download' built-in builder"
   (let ((text (random-text)))
-    (with-http-server 200 text
+    (with-http-server `((200 ,text))
       (let* ((drv (derivation %store "world"
                               "builtin:download" '()
                               #:env-vars `(("url"
@@ -224,7 +224,7 @@
 (unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, invalid hash"
-  (with-http-server 200 "hello, world!"
+  (with-http-server `((200 "hello, world!"))
     (let* ((drv (derivation %store "world"
                             "builtin:download" '()
                             #:env-vars `(("url"
@@ -239,7 +239,7 @@
 (unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, not found"
-  (with-http-server 404 "not found"
+  (with-http-server '((404 "not found"))
     (let* ((drv (derivation %store "will-never-be-found"
                             "builtin:download" '()
                             #:env-vars `(("url"
@@ -274,9 +274,9 @@
                                         . ,(object->string (%local-url))))
                           #:hash-algo 'sha256
                           #:hash (sha256 (string->utf8 text)))))
-    (and (with-http-server 200 text
+    (and (with-http-server `((200 ,text))
            (build-derivations %store (list drv)))
-         (with-http-server 200 text
+         (with-http-server `((200 ,text))
            (build-derivations %store (list drv)
                               (build-mode check)))
          (string=? (call-with-input-file (derivation->output-path drv)
@@ -1263,5 +1263,5 @@
 (test-end)
 
 ;; Local Variables:
-;; eval: (put 'with-http-server 'scheme-indent-function 2)
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; End:

@@ -2534,24 +2534,40 @@ and objects.")
 (define-public libxklavier
   (package
     (name "libxklavier")
-    (version "5.3")
+    (version "5.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
-                                  version "/" name "-" version ".tar.xz"))
+              ;; Note: There's no tarball at ftp.gnome.org for this version.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://anongit.freedesktop.org/git/libxklavier")
+                    (commit (string-append "libxklavier-" version))))
               (sha256
                (base32
-                "016lpdv35z0qsw1cprdc2k5qzkdi5waj6qmr0a2q6ljn9g2kpv7b"))))
+                "1w1x5mrgly2ldiw3q2r6y620zgd89gk7n90ja46775lhaswxzv7a"))
+              (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'no-configure
+           (lambda* _
+            (setenv "NOCONFIGURE" "1")
+            #t)))
+       #:configure-flags
        (list (string-append "--with-xkb-base="
                             (assoc-ref %build-inputs "xkeyboard-config")
-                            "/share/X11/xkb"))))
+                            "/share/X11/xkb")
+             "--disable-xmodmap-support")))
     (native-inputs
      `(("glib:bin"              ,glib "bin") ; for glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection)
-       ("pkg-config"            ,pkg-config)))
+       ("pkg-config"            ,pkg-config)
+       ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
+       ("which" ,which)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (propagated-inputs
      ;; Required by libxklavier.pc.
      `(("glib"    ,glib)
@@ -4337,15 +4353,15 @@ work and the interface is well tested.")
 (define-public eolie
   (package
     (name "eolie")
-    (version "0.9.62")
+    (version "0.9.63")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gitlab.gnome.org/World/eolie/"
-                                  "uploads/bb4aad19272cc636bd17f2f6602127fe/"
+                                  "uploads/d42b466752729a0d3fa828a721e25043/"
                                   "eolie-" version ".tar.xz"))
               (sha256
                (base32
-                "06v76hg87fnhw45dil5vvl20myvaa38n1jqsl0lmkkq6af4mk8wx"))))
+                "11pp8g0w22h1q0bbj9517l5838gcymvvp8fp9kh6h2dmgir2ssih"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t
@@ -8265,7 +8281,7 @@ advanced image management tool")
 (define-public libhandy
   (package
     (name "libhandy")
-    (version "0.0.10")
+    (version "0.0.11")
     (source
      (origin
        (method git-fetch)
@@ -8274,7 +8290,7 @@ advanced image management tool")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1702hbdqhfpgw0c4vj2ag08vgl83byiryrbngbq11b9azmj3jhzs"))))
+        (base32 "0622zp5wrvn5bvgardijxd11y76g1i54fs32y03dw9nrar7i6vb0"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
@@ -8282,12 +8298,6 @@ advanced image management tool")
          "-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-test
-           (lambda _
-             ;; This test fails for unknown reasons
-             (substitute* "tests/meson.build"
-               (("'test-dialog',") ""))
-             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; Tests require a running X server.
@@ -8303,7 +8313,10 @@ advanced image management tool")
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)
        ("gettext" ,gettext-minimal)
-       ("xorg-server" ,xorg-server)))
+       ("xorg-server" ,xorg-server)
+
+       ;; Test suite dependencies.
+       ("hicolor-icon-theme" ,hicolor-icon-theme)))
     (home-page "https://source.puri.sm/Librem5/libhandy")
     (synopsis "Library full of GTK+ widgets for mobile phones")
     (description "The aim of the handy library is to help with developing user

@@ -68,6 +68,7 @@ MODULES =					\
   guix/cpio.scm					\
   guix/deprecation.scm				\
   guix/docker.scm	   			\
+  guix/json.scm					\
   guix/records.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
@@ -125,6 +126,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
+  guix/build-system/julia.scm			\
   guix/build-system/linux-module.scm		\
   guix/build-system/node.scm			\
   guix/build-system/perl.scm			\
@@ -183,6 +185,7 @@ MODULES =					\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
+  guix/build/julia-build-system.scm		\
   guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
   guix/build/json.scm				\

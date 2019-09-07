@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (web server http)
   #:use-module (web response)
   #:use-module (srfi srfi-39)
+  #:use-module (ice-9 match)
   #:export (with-http-server
             call-with-http-server
             %http-server-port
@@ -69,10 +70,20 @@ needed."
   (string-append "http://localhost:" (number->string (%http-server-port))
                  "/foo/bar"))
 
-(define* (call-with-http-server code data thunk
-                                #:key (headers '()))
-  "Call THUNK with an HTTP server running and returning CODE and DATA (a
-string) on HTTP requests."
+(define* (call-with-http-server responses+data thunk)
+  "Call THUNK with an HTTP server running and returning RESPONSES+DATA on HTTP
+requests.  Each elements of RESPONSES+DATA must be a tuple containing a
+response and a string, or an HTTP response code and a string."
+  (define responses
+    (map (match-lambda
+           (((? response? response) data)
+            (list response data))
+           (((? integer? code) data)
+            (list (build-response #:code code
+                                  #:reason-phrase "Such is life")
+                  data)))
+         responses+data))
+
   (define (http-write server client response body)
     "Write RESPONSE."
     (let* ((response (write-response response client))
@@ -82,7 +93,8 @@ string) on HTTP requests."
        (else
         (write-response-body response body)))
       (close-port port)
-      (quit #t)                                   ;exit the server thread
+      (when (null? responses)
+        (quit #t))                                ;exit the server thread
       (values)))
 
   ;; Mutex and condition variable to synchronize with the HTTP server.
@@ -105,10 +117,10 @@ string) on HTTP requests."
 
   (define (server-body)
     (define (handle request body)
-      (values (build-response #:code code
-                              #:reason-phrase "Such is life"
-                              #:headers headers)
-              data))
+      (match responses
+        (((response data) rest ...)
+         (set! responses rest)
+         (values response data))))
 
     (let ((socket (open-http-server-socket)))
       (catch 'quit
@@ -126,10 +138,7 @@ string) on HTTP requests."
 
 (define-syntax with-http-server
   (syntax-rules ()
-    ((_ (code headers) data body ...)
-     (call-with-http-server code data (lambda () body ...)
-                            #:headers headers))
-    ((_ code data body ...)
-     (call-with-http-server code data (lambda () body ...)))))
+    ((_ responses+data body ...)
+     (call-with-http-server responses+data (lambda () body ...)))))
 
 ;;; http.scm ends here

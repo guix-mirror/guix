@@ -21,9 +21,9 @@
 
 (define-module (gnu packages idris)
   #:use-module (gnu packages)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)

@@ -2219,6 +2219,12 @@ time Web content can be enhanced with native controls.")
     ;; Building QtWebKit takes around 13 hours on an AArch64 machine.  Give some
     ;; room for slower or busy hardware.
     (properties '((timeout . 64800)))   ;18 hours
+
+    ;; XXX: This consumes too much RAM to successfully build on AArch64 (e.g.,
+    ;; SoftIron OverDrive with 8 GiB of RAM), so instead of wasting resources,
+    ;; disable it on non-Intel platforms.
+    (supported-systems '("x86_64-linux" "i686-linux"))
+
     (license license:lgpl2.1+)))
 
 (define-public dotherside

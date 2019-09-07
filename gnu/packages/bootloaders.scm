@@ -99,7 +99,7 @@
        (list "PYTHON=true")
        #:phases (modify-phases %standard-phases
                   (add-after 'unpack 'patch-stuff
-                   (lambda* (#:key inputs #:allow-other-keys)
+                   (lambda* (#:key native-inputs inputs #:allow-other-keys)
                      (substitute* "grub-core/Makefile.in"
                        (("/bin/sh") (which "sh")))
 
@@ -114,7 +114,9 @@
                                        "/sbin/mdadm\"")))
 
                      ;; Make the font visible.
-                     (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
+                     (copy-file (assoc-ref (or native-inputs inputs)
+                                           "unifont")
+                                "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
 
                      ;; Give the absolute file name of 'ckbcomp'.

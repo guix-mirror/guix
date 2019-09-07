@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
   #:use-module (guix build-system python)
@@ -368,7 +369,16 @@ built-in registry server of Docker.")
                (("StockRuntimeName = .*")
                 (string-append "StockRuntimeName = \""
                                (assoc-ref inputs "runc")
-                               "/sbin/runc\"\n")))
+                               "/sbin/runc\"\n"))
+               (("DefaultInitBinary = .*")
+                (string-append "DefaultInitBinary = \""
+                               (assoc-ref inputs "tini")
+                               "/bin/tini\"\n")))
+             (substitute* "daemon/config/config_common_unix_test.go"
+               (("expectedInitPath: \"docker-init\"")
+                (string-append "expectedInitPath: \""
+                               (assoc-ref inputs "tini")
+                               "/bin/tini\"")))
              (substitute* "vendor/github.com/moby/buildkit/executor/runcexecutor/executor.go"
                (("var defaultCommandCandidates = .*")
                 (string-append "var defaultCommandCandidates = []string{\""
@@ -541,6 +551,7 @@ built-in registry server of Docker.")
        ("runc" ,runc)
        ("util-linux" ,util-linux)
        ("lvm2" ,lvm2)
+       ("tini" ,tini)
        ("xfsprogs" ,xfsprogs)
        ("xz" ,xz)))
     (native-inputs
@@ -655,3 +666,36 @@ provisioning etc.")
 way to run commands in the current directory, but within a Docker container
 defined in a per-project configuration file.")
     (license license:gpl3+)))
+
+(define-public tini
+  (package
+    (name "tini")
+    (version "0.18.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/krallin/tini.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h20i3wwlbd8x4jr2gz68hgklh0lb0jj7y5xk1wvr8y58fip1rdn"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                    ;tests require a Docker daemon
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'disable-static-build
+                    ;; Disable the static build as it fails to install, with
+                    ;; the error: "No valid ELF RPATH or RUNPATH entry exists
+                    ;; in the file".
+                    (lambda _
+                      (substitute* "CMakeLists.txt"
+                        ((".*tini-static.*") ""))
+                      #t)))))
+    (home-page "https://github.com/krallin/tini")
+    (synopsis "Tiny but valid init for containers")
+    (description "Tini is an init program specifically designed for use with
+containers.  It manages a single child process and ensures that any zombie
+processes produced from it are reaped and that signals are properly forwarded.
+Tini is integrated with Docker.")
+    (license license:expat)))

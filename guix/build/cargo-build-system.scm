@@ -81,10 +81,10 @@ Cargo.toml file present at its root."
          ;; archive, but not nested anywhere else). We do this by cutting up
          ;; each output line and only looking at the second component. We then
          ;; check if it matches Cargo.toml exactly and short circuit if it does.
-         (zero? (apply system* (list "sh" "-c"
-                                     (string-append "tar -tf " path
-                                                    " | cut -d/ -f2"
-                                                    " | grep -q '^Cargo.toml$'"))))))
+         (apply invoke (list "sh" "-c"
+                             (string-append "tar -tf " path
+                                            " | cut -d/ -f2"
+                                            " | grep -q '^Cargo.toml$'")))))
 
 (define* (configure #:key inputs
                     (vendor-dir "guix-vendor")
@@ -157,7 +157,7 @@ directory = '" port)
                 #:allow-other-keys)
   "Build a given Cargo package."
   (or skip-build?
-      (zero? (apply system* `("cargo" "build" ,@cargo-build-flags)))))
+      (apply invoke `("cargo" "build" ,@cargo-build-flags))))
 
 (define* (check #:key
                 tests?
@@ -165,7 +165,7 @@ directory = '" port)
                 #:allow-other-keys)
   "Run tests for a given Cargo package."
   (if tests?
-      (zero? (apply system* `("cargo" "test" ,@cargo-test-flags)))
+      (apply invoke `("cargo" "test" ,@cargo-test-flags))
       #t))
 
 (define (touch file-name)
@@ -184,7 +184,7 @@ directory = '" port)
     ;; otherwise cargo will raise an error.
     (or skip-build?
         (not (has-executable-target?))
-        (zero? (system* "cargo" "install" "--path" "." "--root" out)))))
+        (invoke "cargo" "install" "--path" "." "--root" out))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

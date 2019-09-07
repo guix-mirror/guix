@@ -53,7 +53,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
@@ -1828,13 +1828,13 @@ and density estimation.")
 (define-public r-chron
   (package
     (name "r-chron")
-    (version "2.3-53")
+    (version "2.3-54")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "chron" version))
               (sha256
                (base32
-                "02bkywwsxwrxc035hv51dxgdm1fjxdm7dn19ivifln59dfs1862j"))))
+                "0vc7dxqwx0jqzwszax6di3091npsxnhnbvr7sy7rlip0jqzarwqd"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/chron")
     (synopsis "Chronological R objects which can handle dates and times")
@@ -2097,13 +2097,13 @@ previous R versions and their release dates.")
 (define-public r-whisker
   (package
     (name "r-whisker")
-    (version "0.3-2")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "whisker" version))
               (sha256
                (base32
-                "0z4cn115gxcl086d6bnqr8afi67b6a7xqg6ivmk3l4ng1x8kcj28"))))
+                "1a7vz0dk95xfjvi38wbpw8vmf5qn3g8p490msz2rw0piwidmk1ks"))))
     (build-system r-build-system)
     (home-page "https://github.com/edwindj/whisker")
     (synopsis "Logicless mustache templating for R")
@@ -2490,14 +2490,14 @@ were originally a part of the r-devtools package.")
 (define-public r-hms
   (package
     (name "r-hms")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hms" version))
        (sha256
         (base32
-         "06snfqdczr0x0nbp7qnvwhlp2pw0wx9c2y3xb4gr1wrvbik74y58"))))
+         "1v4cxfpvp85la4gqla6b4q2bwx4jv1fxqwndcnjsibbnybz6wcvd"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)
@@ -2696,14 +2696,14 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.14")
+    (version "1.15")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "0qfw5rkvwqpgix32g6qy9xrr50awmm146aqbm836xravih2b2dpn"))))
+            "0fkfzxkvakc6bb1s2lx7sxmnfff8q1m9isihynhiyqh4x8yikcmw"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5028,14 +5028,14 @@ VGLMs can be loosely thought of as multivariate generalised linear models.")
 (define-public r-pbapply
   (package
     (name "r-pbapply")
-    (version "1.4-1")
+    (version "1.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pbapply" version))
        (sha256
         (base32
-         "1bbws9n90cqnnp5k58hp852jwmm6513jnhn4vzhl9f8x314k6qxk"))))
+         "1xmk4p006v8gij26rs6kp5prjyf2n32nqjxiyp8a6kvgyc4z46dc"))))
     (build-system r-build-system)
     (home-page "https://github.com/psolymos/pbapply")
     (synopsis "Adding progress bar to apply functions")

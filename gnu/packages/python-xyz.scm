@@ -4081,14 +4081,14 @@ operators such as union, intersection, and difference.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.2.2")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
         (base32
-         "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))
+         "1df113c9i6vazsn6y3n9wc22jh737z1g7dmx3mypkdwpdnscyhr6"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -4184,9 +4184,19 @@ routines such as routines for numerical integration and optimization.")
     (properties `((python2-variant . ,(delay python2-scipy))))
     (license license:bsd-3)))
 
+;; Version 1.2.2 is the last version to support Python 2
 (define-public python2-scipy
-  (package-with-python2
-   (strip-python2-variant python-scipy)))
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-scipy)))
+    (version "1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "scipy" version))
+       (sha256
+        (base32
+         "1cgvgin8fvckv96hjh3ikmwkra5rif51bdb75ifzf7xbil5iwcx4"))))))
 
 (define-public python-socksipy-branch
   (package
@@ -14676,14 +14686,13 @@ working with iterables.")
 (define-public python-pybtex
   (package
     (name "python-pybtex")
-    (version "0.21")
+    (version "0.22.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pybtex" version))
        (sha256
-        (base32
-         "00300j8dn5pxq4ndxmfmbmycg2znawkqs49val2x6jlmfiy6r2mg"))))
+        (base32 "070wfcmxrd7xg1si421mi9150gmx2qwx431nwf69sq3hhmgnx080"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))

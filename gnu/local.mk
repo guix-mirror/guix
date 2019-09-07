@@ -1362,7 +1362,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/totem-meson-compat.patch			\
   %D%/packages/patches/totem-meson-easy-codec.patch		\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
-  %D%/packages/patches/twinkle-include-qregexpvalidator.patch	\
   %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
@@ -1420,7 +1419,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/xf86-video-tga-remove-mibstore.patch	\
   %D%/packages/patches/xf86-video-voodoo-pcitag.patch		\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
-  %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
   %D%/packages/patches/xinetd-CVE-2013-4342.patch		\

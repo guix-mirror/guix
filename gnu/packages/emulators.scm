@@ -119,8 +119,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "24718c1a389e4f51db974575cd15c372485b92e2")
-        (revision "6"))
+  (let ((commit "a9745400ec5cea7e55d94955afbdc44d1a4982d1")
+        (revision "7"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -140,13 +140,13 @@
                            (string-append "Externals/" dir)))
                        '("LZO" "OpenAL" "Qt" "SFML" "curl" "ffmpeg"
                          "gettext" "hidapi" "libpng" "libusb" "mbedtls"
-                         "miniupnpc" "zlib"))
+                         "miniupnpc" "MoltenVK" "zlib"))
              ;; Clean up source.
              (for-each delete-file (find-files "." ".*\\.(bin|dsy|exe|jar|rar)$"))
              #t))
          (sha256
           (base32
-           "1d92rhnw307j3m6swk6bycb8fyc7vw2hfgakd5hpsc4qw65vxfq8"))))
+           "0ic08ii4vlqlmk2wkfc99jiy6nji2wfq56r7slj23wgvhznnaabk"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
@@ -169,7 +169,11 @@
                  (copy-file "font_western.bin" "../Data/Sys/GC/font_western.bin")
                  (chdir "..")
                  (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
-                              (("libvulkan.so") libvulkan))
+                              (("\"vulkan\", 1") (string-append "\"vulkan\"")))
+                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
+                              (("\"vulkan\"") (string-append "\"" libvulkan "\"")))
+                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
+                              (("Common::DynamicLibrary::GetVersionedFilename") ""))
                  #t))))
 
          ;; The FindGTK2 cmake script only checks hardcoded directories for
@@ -1053,7 +1057,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xxd9nhqiclpkdd9crymvba37fl0xs5mikwhya68nfzcgar7w480"))))
+        (base32 "0jwy5winrm87s6xa645fwa47x242r25m6i3rwf10x59448bd19r6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

@@ -428,7 +428,7 @@ the opam file fomat.")
 (define-public opam
   (package
     (name "opam")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -437,7 +437,7 @@ the opam file fomat.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yx5k8v5vnnc20fmz5zx8kqd242j48qcknlk6vmkr7rkq886ipq2"))))
+                "0pf2smq2sdcxryq5i87hz3dv05pb3zasb1is3kxq1pi1s4cn55mx"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:configure-flags
@@ -1109,7 +1109,7 @@ files in these formats.")
 (define-public ocaml-zarith
   (package
     (name "ocaml-zarith")
-    (version "1.7")
+    (version "1.9.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1117,7 +1117,7 @@ files in these formats.")
                      (commit (string-append "release-" version))))
               (sha256
                (base32
-                "08x5xnamibhvxl50f1bb3jl9ym0hm6004hmc54xnrnrv7jxz9rvz"))))
+                "0hv5ywz1q2cgn8apfz490clwk5hcynr937g2v8i13x2ax4bnv0lz"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("perl" ,perl)))
@@ -1140,7 +1140,7 @@ for speed and space economy.")
 (define-public ocaml-frontc
   (package
     (name "ocaml-frontc")
-    (version "3.4.1")
+    (version "3.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1150,7 +1150,7 @@ for speed and space economy.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1dq5nks0c9gsbr1m8k39m1bniawr5hqcy1r8x5px7naa95ch06ak"))))
+                "0k7jk9hkglnkk27s62xl493jyqc017gyvwqb1lyc0ywbb001s102"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:phases
@@ -1186,7 +1186,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1195,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0w83v9ylycsssyn47q8wnkfbvhn5vn10z6i35n5965i2m1r0mmcf"))))
+        (base32 "1i7axg7vmivrkzsahyg79my584myvzxv0922k4000bdwnhzd0kzh"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -1242,7 +1242,7 @@ to use -- to sophisticated random generation of test cases.")
 (define-public ocaml-stringext
   (package
     (name "ocaml-stringext")
-    (version "1.5.0")
+    (version "1.6.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1251,7 +1251,7 @@ to use -- to sophisticated random generation of test cases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0035pyakk0r7pfhkrayvqncpv9mk6lssr455j3prmdcirh6s50d7"))))
+                "1m09cmn3vrk3gdm60fb730qsygcfyxsyv7gl9xfzck08q1x2x9qx"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -1317,14 +1317,16 @@ coverage information.")
 (define-public dune
   (package
     (name "dune")
-    (version "1.9.3")
+    (version "1.11.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml/dune/releases/"
-                                  "download/" version "/dune-" version ".tbz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/dune")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jlhnx580v6i1d451z5cl8ibfd0m9qln963y2pp5v6s2winyqyri"))))
+                "0l4x0x2fz135pljv88zj8y6w1ninsqw0gn1mdxzprd6wbxbyn8wr"))))
     (build-system ocaml-build-system)
     (arguments
      `(#:tests? #f; require odoc
@@ -1347,7 +1349,7 @@ following a very simple s-expression syntax.")
 (define-public ocaml-migrate-parsetree
   (package
     (name "ocaml-migrate-parsetree")
-    (version "1.2.0")
+    (version "1.4.0")
     (home-page "https://github.com/ocaml-ppx/ocaml-migrate-parsetree")
     (source
      (origin
@@ -1358,7 +1360,7 @@ following a very simple s-expression syntax.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "16kas19iwm4afijv3yxd250s08absabmdcb4yj57wc8r4fmzv5dm"))))
+         "0sv1p4615l8gpbah4ya2c40yr6fbvahvv3ks7zhrsgcwcq2ljyr2"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f))
@@ -1376,16 +1378,16 @@ functions to the next and/or previous version.")
 (define-public ocaml-ppx-tools-versioned
   (package
     (name "ocaml-ppx-tools-versioned")
-    (version "5.2.1")
+    (version "5.2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/ocaml-ppx/"
-                                  "ppx_tools_versioned/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml-ppx/ppx_tools_versioned")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1x2xfjpkzbcz4rza1d7gh3ipliw6jqfcklbsln82v3561qgkqgmh"))))
+                "1hcmpnw26zf70a71r3d2c2c0mn8q084gdn1r36ynng6fv9hq6j0y"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -1435,7 +1437,7 @@ powerful.")
 (define-public ocaml-result
   (package
     (name "ocaml-result")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1444,7 +1446,7 @@ powerful.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "081ayblszn9pj2rqcif40x6cz2zda48vi45gy49rc2qfc4gszry3"))))
+                "0hir97k9i72nfkm6kncxnqpyk400wlsxysbldgcvk0fd9pjnsc3p"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -1798,7 +1800,7 @@ lets the client choose the concrete timeline.")
 (define-public ocaml-ssl
   (package
     (name "ocaml-ssl")
-    (version "0.5.7")
+    (version "0.5.9")
     (source
       (origin
         (method git-fetch)
@@ -1807,7 +1809,7 @@ lets the client choose the concrete timeline.")
               (commit version)))
         (file-name (git-file-name name version))
         (sha256 (base32
-                  "06zxqnwqkvf7pmj5s44jflkknv01czgbi4nbaac0ys1p7rv99y3x"))))
+                  "04h02rvzrwp886n5hsx84rnc9b150iggy38g5v1x1rwz3pkdnmf0"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -1868,15 +1870,16 @@ locks or other synchronization primitives.")
 (define-public ocaml-lwt-log
   (package
     (name "ocaml-lwt-log")
-    (version "1.1.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/aantron/lwt_log/archive/" version
-                            ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256 (base32
-                  "1lr62j2266pbsi54xmzsfvl2z7fi7smhak7fp1ybl8hssxwi6in2"))))
+    (version "1.1.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aantron/lwt_log")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1n12i1rmn9cjn6p8yr6qn5dwbrwvym7ckr7bla04a1xnq8qlcyj7"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f; require lwt_ppx
@@ -2276,7 +2279,7 @@ many additional enhancements, including:
 (define-public ocaml-batteries
   (package
     (name "ocaml-batteries")
-    (version "2.9.0")
+    (version "2.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ocaml-batteries-team/"
@@ -2284,7 +2287,7 @@ many additional enhancements, including:
                                   version "/batteries-" version ".tar.gz"))
               (sha256
                (base32
-                "0lkdmv2my5hirkswmci2cch341n6wkkj2q8apjhs83sg6528caxi"))))
+                "08ghw87d56h1a6y1nnh3x2wy9xj25jqfk5sp6ma9nsyd37babb0h"))))
     (build-system ocaml-build-system)
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
@@ -2381,20 +2384,63 @@ language.")
 can match the question using a regular expression or a timeout.")
     (license license:lgpl2.1+))) ; with the OCaml static compilation exception
 
+(define-public ocaml-stdlib-shims
+  (package
+    (name "ocaml-stdlib-shims")
+    (version "0.1.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/ocaml/stdlib-shims")
+                     (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "007dwywsr5285z0np6a9nr0h8iqmyzfrlx6s5xaqcwj69zabsrjm"))))
+    (build-system dune-build-system)
+    (home-page "https://github.com/ocaml/stdlib-shims")
+    (synopsis "OCaml stdlib features backport to older OCaml compilers")
+    (description "This package backports some of the new stdlib features to
+older compilers, such as the Stdlib module.  This allows projects that require
+compatibility with older compiler to use these new features in their code.")
+    ;; with ocaml-linking exception
+    (license license:lgpl2.1+)))
+
 (define-public ocaml-fileutils
   (package
     (name "ocaml-fileutils")
-    (version "0.5.3")
+    (version "0.6.0")
     (source (origin
-              (method url-fetch)
-              (uri (ocaml-forge-uri name version 1728))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gildor478/ocaml-fileutils")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1rc4cqlvdhbs55i85zfbfhz938fsy4fj6kwlkfm3ra7bpwn8bmpd"))))
+                "06gxbqfssl16xc8y4d34wpm0mwfr0jgph4lmlwfmgazyggnmvc7m"))))
     (build-system ocaml-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-topfind
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; add the line #directory ".." at the top of each file
+             ;; using #use "topfind";; to be able to find topfind
+             (let* ((findlib-path (assoc-ref inputs "findlib"))
+                    (findlib-libdir
+                     (string-append findlib-path "/lib/ocaml/site-lib")))
+               (substitute* "setup.ml"
+                 (("#use \"topfind\";;" all)
+                  (string-append "#directory \"" findlib-libdir "\"\n"
+                                 all))))
+             #t)))))
+    (propagated-inputs
+     `(("ocaml-stdlib-shims" ,ocaml-stdlib-shims)))
     (native-inputs
      `(("ocamlbuild" ,ocamlbuild)
-       ("ounit" ,ocaml-ounit)))
+       ("ocaml-oasis" ,ocaml-oasis)
+       ("ocaml-ounit" ,ocaml-ounit)))
     (home-page "http://ocaml-fileutils.forge.ocamlcore.org")
     (synopsis "Pure OCaml functions to manipulate real file and filename")
     (description "Library to provide pure OCaml functions to manipulate real
@@ -2466,15 +2512,16 @@ from the oasis build log
 (define-public ocaml-cppo
   (package
     (name "ocaml-cppo")
-    (version "1.6.5")
+    (version "1.6.6")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://github.com/mjambon/cppo/archive/v" version
-                            ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/mjambon/cppo")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
         (sha256 (base32
-                  "1dkm3d5h6h56y937gcdk2wixlpzl59vv5pmiafglr89p20kf7gqf"))
-        (file-name (string-append name "-" version ".tar.gz"))))
+                  "1smcc0l6fh2n0y6bp96c69j5nw755jja99w0b206wx3yb2m4w2hs"))))
     (build-system dune-build-system)
     (arguments
      `(#:tests? #f
@@ -2706,19 +2753,28 @@ JSON.")
 (define-public ocaml-easy-format
   (package
     (name "ocaml-easy-format")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                      (url "https://github.com/mjambon/easy-format")
-                     (commit (string-append "v" version))))
+                     (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0jfncci15b8sf1y72yrxfjlsmhs9aavcd14vwz4d7kj8k9w9c4qk"))))
+                "1fc95q2ypck6m6rv3kiawwilh5ac93v2hcp823mj608d5kj79xkb"))))
     (build-system dune-build-system)
     (arguments
-     `(#:jbuild? #t))
+     `(#:jbuild? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-writable
+           (lambda _
+             (for-each
+               (lambda (file)
+                 (chmod file #o644))
+               (find-files "." "."))
+             #t)))))
     (home-page "https://github.com/mjambon/easy-format")
     (synopsis "Interface to the Format module")
     (description "Easy-format is a high-level and functional interface to the
@@ -2950,7 +3006,7 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
 (define-public ocaml-camomile
   (package
     (name "ocaml-camomile")
-    (version "1.0.1")
+    (version "1.0.2")
     (home-page "https://github.com/yoriyuki/Camomile")
     (source (origin
               (method url-fetch)
@@ -2958,18 +3014,19 @@ the plugins facilitate extensibility, and the frontends serve as entry points.")
                                   "/camomile-" version ".tbz"))
               (sha256
                (base32
-                "01ssjrqz41jvrqh27jxnh9cx7ywi9b5sgsykd00i7z9nrcwhlfy2"))))
+                "0chn7ldqb3wyf95yhmsxxq65cif56smgz1mhhc7m0dpwmyq1k97h"))))
     (build-system dune-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)))
     (arguments
-     `(#:build-flags (list "--profile" "realease")
+     `(#:build-flags (list "--profile" "release")
        #:test-target "camomile-test"
+       #:tests? #f; Tests fail, see https://github.com/yoriyuki/Camomile/issues/82
        #:phases
        (modify-phases %standard-phases
          (add-before 'build 'fix-usr-share
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* '("Camomile/jbuild" "configure.ml")
+             (substitute* '("Camomile/dune" "configure.ml")
                (("/usr/share") (string-append (assoc-ref outputs "out") "/share")))
              #t)))))
     (synopsis "Comprehensive Unicode library")
@@ -2980,10 +3037,34 @@ library is currently designed for Unicode Standard 3.2.")
     ;; with an exception for linked libraries to use a different license
     (license license:lgpl2.0+)))
 
+(define-public ocaml-charinfo-width
+  (package
+    (name "ocaml-charinfo-width")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri "https://bitbucket.org/zandoye/charinfo_width/get/1.1.0.tar.gz")
+              (sha256
+               (base32
+                "00bv4p1yqs8y0z4z07wd9w9yyv669dikp9b04dcjbwpiy2wy0086"))))
+    (build-system dune-build-system)
+    (propagated-inputs
+     `(("ocaml-result" ,ocaml-result)
+       ("ocaml-camomile" ,ocaml-camomile)))
+    (native-inputs
+     `(("ocaml-ppx-expect" ,ocaml-ppx-expect)))
+    (properties
+     `((upstream-name . "charInfo_width")))
+    (home-page "https://bitbucket.org/zandoye/charinfo_width/")
+    (synopsis "Determine column width for a character")
+    (description "This module is implements purely in OCaml a character width
+function that follows the prototype of POSIX's wcwidth.")
+    (license license:expat)))
+
 (define-public ocaml-zed
   (package
     (name "ocaml-zed")
-    (version "1.6")
+    (version "2.0.3")
     (source
      (origin
        (method git-fetch)
@@ -2992,14 +3073,15 @@ library is currently designed for Unicode Standard 3.2.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00hhxcjf3bj3w2qm8nzs9x6vrqkadf4i0277s5whzy2rmiknj63v"))))
+        (base32 "0pa9awinqr0plp4b2az78dwpvh01pwaljnn5ydg8mc6hi7rmir55"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
        #:test-target "."))
     (propagated-inputs
-     `(("camomile" ,ocaml-camomile)
-       ("react" ,ocaml-react)))
+     `(("ocaml-camomile" ,ocaml-camomile)
+       ("ocaml-charinfo-width" ,ocaml-charinfo-width)
+       ("ocaml-react" ,ocaml-react)))
     (home-page "https://github.com/diml/zed")
     (synopsis "Abstract engine for text editing in OCaml")
     (description "Zed is an abstract engine for text edition.  It can be used
@@ -3010,7 +3092,7 @@ connect an engine to your inputs and rendering functions to get an editor.")
 (define-public ocaml-lambda-term
   (package
     (name "ocaml-lambda-term")
-    (version "1.13")
+    (version "2.0.2")
     (source
      (origin
        (method git-fetch)
@@ -3019,7 +3101,7 @@ connect an engine to your inputs and rendering functions to get an editor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wwib20b2ir3h2g9zwhzn04cv160psb805skp8v23wqgyn5cnbh8"))))
+        (base32 "0zcjy6fvf0d3i2ssz96asl889n3r6bplyzk7xvb2s3dkxbgcisyy"))))
     (build-system dune-build-system)
     (arguments
      `(#:build-flags (list "--profile" "release")
@@ -3041,7 +3123,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.3.0")
+    (version "2.4.1")
     (source
      (origin
        (method git-fetch)
@@ -3050,7 +3132,7 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0xvibb97vzzh7yabr5ajhilriwz8cg4c506lxq0bd7ss3aci9han"))))
+        (base32 "1jm3sagissbw8012mnppknsxl9dqd9514b891b64disqhdb5awg3"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t
@@ -3468,19 +3550,29 @@ than the first one.")
 (define-public ocaml-biniou
  (package
    (name "ocaml-biniou")
-   (version "1.2.0")
+   (version "1.2.1")
    (home-page "https://github.com/mjambon/biniou")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url (string-append home-page ".git"))
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mjpgwyfq2b2izjw0flmlpvdjgqpq8shs89hxj1np2r50csr8dcb"))))
+         "0x2kiy809n1j0yf32l7hj102y628jp5jdrkbi3z7ld8jq04h1790"))))
    (build-system dune-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'make-writable
+          (lambda _
+            (for-each
+              (lambda (file)
+                (chmod file #o644))
+              (find-files "." "."))
+            #t)))))
    (inputs
     `(("ocaml-easy-format" ,ocaml-easy-format)))
    (native-inputs
@@ -4983,7 +5075,7 @@ the full Core is not available, such as in Javascript.")
 (define-public ocaml-markup
   (package
     (name "ocaml-markup")
-    (version "0.8.0")
+    (version "0.8.1")
     (home-page "https://github.com/aantron/markup.ml")
     (source
      (origin
@@ -4994,10 +5086,11 @@ the full Core is not available, such as in Javascript.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0aif4abvfmi9xc1pvw5n5rbm6rzkkpsxyvdn0lanr33rjpvkwdlm"))))
+         "0gzdjfnkv56vhmpvi9xpv1p05z50y55izhn156bkmb35s6izxds3"))))
     (build-system dune-build-system)
-    (inputs
-     `(("ocaml-uchar" ,ocaml-uchar)
+    (propagated-inputs
+     `(("ocaml-bisect-ppx" ,ocaml-bisect-ppx)
+       ("ocaml-uchar" ,ocaml-uchar)
        ("ocaml-uutf" ,ocaml-uutf)
        ("ocaml-lwt" ,ocaml-lwt)))
     (native-inputs `(("ocaml-ounit" ,ocaml-ounit)))
@@ -5072,10 +5165,22 @@ combinators.")
         (base32
          "1vp3qvrkz7q25nbmvd40vhsnz2k9aqh17bnd21i3q8q0xlr5hdag"))))
     (build-system dune-build-system)
-    (inputs
+    (propagated-inputs
      `(("ocaml-migrate-parsetree" ,ocaml-migrate-parsetree)
        ("ocaml-ppx-tools-versioned" ,ocaml-ppx-tools-versioned)
        ("ocaml-ounit" ,ocaml-ounit)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-deprecated
+           (lambda _
+             ;; Fixed upstream in 22dd1ad9a0c9629f60599c22d82c6488394d6d32, but
+             ;; not in a release yet.
+             (substitute* "src/ppx/instrument.ml"
+               (("module Ast = Ast_405")
+                "module Ast = Migrate_parsetree.Ast_405
+module Ast_405 = Ast"))
+             #t)))))
     (home-page "https://github.com/aantron/bisect_ppx")
     (synopsis "Code coverage for OCaml")
     (description "Bisect_ppx helps you test thoroughly.  It is a small
@@ -5090,7 +5195,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
 (define-public ocaml-odoc
   (package
     (name "ocaml-odoc")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
      (origin
        (method git-fetch)
@@ -5100,7 +5205,7 @@ then run the Bisect_ppx report tool on the generated visitation files.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0br11cw6wa0mwafja4xdb45d2f8908l6nzdq5mw5lbfq2jnp68km"))))
+         "1i2j0krbzvb1n3dcic9h1pyyqxmf051ky82nrcyzx1nwqjb8zfh6"))))
     (build-system dune-build-system)
     (inputs
      `(("ocaml-alcotest" ,ocaml-alcotest)

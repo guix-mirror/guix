@@ -544,7 +544,7 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public diffoscope
-  (let ((version "121"))
+  (let ((version "122"))
     (package
       (name "diffoscope")
       (version version)
@@ -556,7 +556,7 @@ transactions from C or Python.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1bw7s8qs1vnr93vhifl6pj6h6w6r6nrpc5anzhh9wx2gcaipkb3m"))))
+                  "1pwddknk8qyv88ba63why8vbnlc14b47434lv4ijx49m7ya3zfvg"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -963,7 +963,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2018.9.1")
+    (version "2019.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -971,7 +971,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "01mygpkbl9sk2vr3hjbpih6qlg8lwx0q5lklm09f7jfwfpnwyqzj"))))
+                "1r07yqbc9iiq0lzv1pryppd35fv695ym8r040msbfc93pmiy77y0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -983,13 +983,14 @@ for packaging and deployment of cross-compiled Windows applications.")
              (setenv "TEST_TMPDIR" (getenv "TMPDIR"))
              #t)))
        ;; XXX: fails with:
+       ;;     tap-driver.sh: missing test plan
        ;;     tap-driver.sh: internal error getting exit status
        ;;     tap-driver.sh: fatal: I/O or internal error
        #:tests? #f))
     (native-inputs
      `(("attr" ,attr)                   ; for tests
        ("bison" ,bison)
-       ("glib:bin" ,glib "bin")          ; for 'glib-mkenums'
+       ("glib:bin" ,glib "bin")         ; for 'glib-mkenums'
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
