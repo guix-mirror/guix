@@ -15300,3 +15300,36 @@ stress majorization by Gansner et al. (2004)
 <doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms allow to
 emphasize hidden group structures in networks or focus on specific nodes.")
     (license license:expat)))
+
+(define-public r-tidygraph
+  (package
+    (name "r-tidygraph")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidygraph" version))
+       (sha256
+        (base32
+         "1zpsarm74afbc7p5dlyb0whc09670qdcddw1ckb25cfc9hfh0hjn"))))
+    (properties `((upstream-name . "tidygraph")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-igraph" ,r-igraph)
+       ("r-magrittr" ,r-magrittr)
+       ("r-pillar" ,r-pillar)
+       ("r-r6" ,r-r6)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)))
+    (home-page "https://github.com/thomasp85/tidygraph")
+    (synopsis "Tidy API for graph manipulation")
+    (description
+     "This package provides a graph implementation that can be thought of as
+two tidy data frames describing node and edge data respectively.  It provides
+an approach to manipulate these two virtual data frames using the API defined
+in the @code{dplyr} package, and it also provides tidy interfaces to a lot of
+common graph algorithms.")
+    (license license:expat)))
