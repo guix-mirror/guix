@@ -1177,7 +1177,8 @@ processes currently in existence, much like code{top} or code{ps}.")
         (base32 "0v1vvi8vf9y8nv8y0gzffaqji53s75ab5jypksih0ndcws8ryww4"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("utf8proc" ,utf8proc)))
     (native-inputs
      `(("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
