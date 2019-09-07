@@ -141,7 +141,7 @@ Guile.")
 (define-public mescc-tools
   (package
     (name "mescc-tools")
-    (version "0.5.2")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -151,11 +151,12 @@ Guile.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
+                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                          "CC=gcc")
        #:test-target "test"
        #:phases (modify-phases %standard-phases
                   (delete 'configure))))
