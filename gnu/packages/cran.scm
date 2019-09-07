@@ -15244,3 +15244,32 @@ It is an indirect measure of test quality and completeness.  This package is
 compatible with any testing methodology or framework and tracks coverage of
 both R code and compiled C/C++/FORTRAN code.")
     (license license:gpl3)))
+
+(define-public r-systemfonts
+  (package
+    (name "r-systemfonts")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "systemfonts" version))
+       (sha256
+        (base32
+         "0m0ljid683xcam2f14x7k2zv1yx4npac38a3gfv11vhxfbnpgp0z"))))
+    (properties `((upstream-name . "systemfonts")))
+    (build-system r-build-system)
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/r-lib/systemfonts")
+    (synopsis "System native font finding")
+    (description
+     "This package provides system native access to the font catalogue.  As
+font handling varies between systems it is difficult to correctly locate
+installed fonts across different operating systems.  The 'systemfonts' package
+provides bindings to the native libraries for finding font files that can then
+be used further by e.g. graphic devices.")
+    (license license:expat)))
