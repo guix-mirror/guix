@@ -505,22 +505,33 @@ make an initial adjustment of more than 1,000 seconds."
                            (default #f))) ; upstream default
 
 (define (openntpd-configuration->string config)
+
+  (define (quote-field? name)
+    (member name '("constraints from")))
+
   (match-record config <openntpd-configuration>
     (listen-on query-from sensor server servers constraint-from
                constraints-from)
-    (string-join
-     (filter-map
-      (lambda (field value)
-        (string-join
-         (map (cut string-append field <> "\n")
-              value)))
-      '("listen on " "query from " "sensor " "server " "servers "
-        "constraint from ")
-      (list listen-on query-from sensor server servers constraint-from))
-     ;; The 'constraints from' field needs to be enclosed in double quotes.
+    (string-append
      (string-join
-      (map (cut string-append "constraints from \"" <> "\"\n")
-           constraints-from)))))
+      (concatenate
+       (filter-map (lambda (field values)
+                     (match values
+                       (() #f)          ;discard entry with filter-map
+                       ((val ...)       ;validate value type
+                        (map (lambda (value)
+                               (if (quote-field? field)
+                                   (format #f "~a \"~a\"" field value)
+                                   (format #f "~a ~a" field value)))
+                             values))))
+                   ;; The entry names.
+                   '("listen on" "query from" "sensor" "server" "servers"
+                     "constraint from" "constraints from")
+                   ;; The corresponding entry values.
+                   (list listen-on query-from sensor server servers
+                         constraint-from constraints-from)))
+      "\n")
+     "\n")))                              ;add a trailing newline
 
 (define (openntpd-shepherd-service config)
   (let ((openntpd (openntpd-configuration-openntpd config))
