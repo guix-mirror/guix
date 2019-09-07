@@ -1462,6 +1462,40 @@ PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
 
+(define-public pngsuite
+  (package
+    (name "pngsuite")
+    (version "2017jul19")
+    (source
+     (origin
+       (method url-fetch/tarbomb)
+       (uri (string-append "http://www.schaik.com/pngsuite2011/PngSuite-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "1j7xgd9iffcnpphhzz9ld9ybrjmx9brhq0803g0450ssr52b5502"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there is no test target
+       #:license-file-regexp "PngSuite.LICENSE"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "." (string-append out "/"))
+             #t)))
+         (delete 'build)
+         (delete 'configure))))
+    (home-page "http://www.schaik.com/pngsuite2011/pngsuite.html")
+    (synopsis "Example PNGs for use in test suites")
+    (description "Collection of graphics images created to test PNG
+applications like viewers, converters and editors.  As far as that is
+possible, all formats supported by the PNG standard are represented.")
+    (license (license:fsdg-compatible "file://PngSuite.LICENSE" "Permission to
+use, copy, modify and distribute these images for any purpose and without fee
+is hereby granted."))))
+
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
