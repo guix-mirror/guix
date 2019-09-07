@@ -94,22 +94,19 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 (define-public mes
   (package
     (name "mes")
-    (version "0.19")
+    (version "0.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
+                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs
      `(("mescc-tools" ,mescc-tools)
-
-       ;; XXX: MesCC appears to enter an infinite loop (?) while building
-       ;; crt1.o when we switch to nyacc 0.94.
-       ("nyacc" ,nyacc-0.86)))
+       ("nyacc" ,nyacc)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)
