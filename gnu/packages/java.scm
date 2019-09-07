@@ -756,6 +756,9 @@ machine.")))
              (with-directory-excursion "openjdk"
                (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
                (rename-file "hg-checkout" "hotspot"))
+             (substitute* "patches/freetypeversion.patch"
+               (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                "REQUIRED_FREETYPE_VERSION = 2.10.1"))
              (substitute* "Makefile.in"
                (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
                 "echo \"trust me\";")
