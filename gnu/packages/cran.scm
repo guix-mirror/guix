@@ -15273,3 +15273,30 @@ installed fonts across different operating systems.  The 'systemfonts' package
 provides bindings to the native libraries for finding font files that can then
 be used further by e.g. graphic devices.")
     (license license:expat)))
+
+(define-public r-graphlayouts
+  (package
+    (name "r-graphlayouts")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "graphlayouts" version))
+       (sha256
+        (base32
+         "03dizbhhdhnzbj2i5zvqgs617kwcv4h2pha4f16adic0fph1rxl3"))))
+    (properties `((upstream-name . "graphlayouts")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-igraph" ,r-igraph)
+       ("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "https://github.com/schochastics/graphlayouts")
+    (synopsis "Additional layout algorithms for network visualizations")
+    (description
+     "This package provides several layout algorithms to visualize networks
+which are not part of the igraph library.  Most are based on the concept of
+stress majorization by Gansner et al. (2004)
+<doi:10.1007/978-3-540-31843-9_25>.  Some more specific algorithms allow to
+emphasize hidden group structures in networks or focus on specific nodes.")
+    (license license:expat)))
