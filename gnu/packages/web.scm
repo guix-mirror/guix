@@ -6603,7 +6603,7 @@ Anonip can also be uses as a Python module in your own Python application.")
 (define-public poussetaches
   (package
     (name "poussetaches")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method git-fetch)
@@ -6613,7 +6613,7 @@ Anonip can also be uses as a Python module in your own Python application.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07106kfcz3a39jvrv3mlqqxlihsmdhgkrjnqznyjsij9absgvdv6"))))
+         "0kckcwvqklavd855np9aq5js6mg84isrlwchr504yigwma0sm7hm"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)
