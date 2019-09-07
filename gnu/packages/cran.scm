@@ -15212,3 +15212,35 @@ single cell integration, described in Korsunsky et al
 @url{doi.org/10.1101/461954}.  The package includes a standalone Harmony
 function and interfaces to external frameworks.")
       (license license:gpl3))))
+
+(define-public r-covr
+  (package
+    (name "r-covr")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "covr" version))
+       (sha256
+        (base32
+         "0fvd7v53w11x6kaw61hbml8n1j2ck9l2fv2wvqdsg689xic9rqcs"))))
+    (properties `((upstream-name . "covr")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-crayon" ,r-crayon)
+       ("r-digest" ,r-digest)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-rex" ,r-rex)
+       ("r-withr" ,r-withr)
+       ("r-yaml" ,r-yaml)))
+    (home-page "https://github.com/r-lib/covr")
+    (synopsis "Test coverage for R packages")
+    (description
+     "Thisp package enables you to track and report code coverage for your
+package and (optionally) upload the results to a coverage service.  Code
+coverage is a measure of the amount of code being exercised by a set of tests.
+It is an indirect measure of test quality and completeness.  This package is
+compatible with any testing methodology or framework and tracks coverage of
+both R code and compiled C/C++/FORTRAN code.")
+    (license license:gpl3)))
