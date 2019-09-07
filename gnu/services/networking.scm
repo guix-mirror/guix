@@ -504,28 +504,30 @@ make an initial adjustment of more than 1,000 seconds."
   (allow-large-adjustment? openntpd-allow-large-adjustment?
                            (default #f))) ; upstream default
 
-(define (openntpd-shepherd-service config)
+(define (openntpd-configuration->string config)
   (match-record config <openntpd-configuration>
-    (openntpd listen-on query-from sensor server servers constraint-from
-              constraints-from allow-large-adjustment?)
+    (listen-on query-from sensor server servers constraint-from
+               constraints-from)
+    (string-join
+     (filter-map
+      (lambda (field value)
+        (string-join
+         (map (cut string-append field <> "\n")
+              value)))
+      '("listen on " "query from " "sensor " "server " "servers "
+        "constraint from ")
+      (list listen-on query-from sensor server servers constraint-from))
+     ;; The 'constraints from' field needs to be enclosed in double quotes.
+     (string-join
+      (map (cut string-append "constraints from \"" <> "\"\n")
+           constraints-from)))))
 
-    (define config
-      (string-join
-       (filter-map
-        (lambda (field value)
-          (string-join
-           (map (cut string-append field <> "\n")
-                value)))
-        '("listen on " "query from " "sensor " "server " "servers "
-          "constraint from ")
-        (list listen-on query-from sensor server servers constraint-from))
-       ;; The 'constraints from' field needs to be enclosed in double quotes.
-       (string-join
-        (map (cut string-append "constraints from \"" <> "\"\n")
-             constraints-from))))
+(define (openntpd-shepherd-service config)
+  (let ((openntpd (openntpd-configuration-openntpd config))
+        (allow-large-adjustment? (openntpd-allow-large-adjustment? config)))
 
     (define ntpd.conf
-      (plain-file "ntpd.conf" config))
+      (plain-file "ntpd.conf" (openntpd-configuration->string config)))
 
     (list (shepherd-service
            (provision '(ntpd))

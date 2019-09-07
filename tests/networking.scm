@@ -17,10 +17,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (tests networking)
+  #:use-module (ice-9 regex)
   #:use-module (gnu services networking)
   #:use-module (srfi srfi-64))
 
 ;;; Tests for the (gnu services networking) module.
+
+(test-begin "networking")
+
+
+;;;
+;;; NTP.
+;;;
 
 (define ntp-server->string (@@ (gnu services networking) ntp-server->string))
 
@@ -29,8 +37,6 @@
    (type 'server)
    (address "some.ntp.server.org")
    (options `(iburst (version 3) (maxpoll 16) prefer))))
-
-(test-begin "networking")
 
 (test-equal "ntp-server->string"
   (ntp-server->string %ntp-server-sample)
@@ -46,5 +52,62 @@
   (ntp-configuration-servers
    (ntp-configuration
     (servers (list "example.pool.ntp.org")))))
+
+
+;;;
+;;; OpenNTPD
+;;;
+
+(define openntpd-configuration->string (@@ (gnu services networking)
+                                           openntpd-configuration->string))
+
+(define %openntpd-conf-sample
+  (openntpd-configuration
+   (server '("0.guix.pool.ntp.org" "1.guix.pool.ntp.org"))
+   (listen-on '("127.0.0.1" "::1"))
+   (sensor '("udcf0 correction 70000"))
+   (constraint-from '("www.gnu.org"))
+   (constraints-from '("https://www.google.com/"))
+   (allow-large-adjustment? #t)))
+
+(test-assert "openntpd configuration generation sanity check"
+
+  (begin
+    (define (string-match/newline pattern text)
+      (regexp-exec (make-regexp pattern regexp/newline) text))
+
+    (define (match-count pattern text)
+      (fold-matches (make-regexp pattern regexp/newline) text 0
+                    (lambda (match count)
+                      (1+ count))))
+
+    (let ((config (openntpd-configuration->string %openntpd-conf-sample)))
+      (if (not
+           (and (string-match/newline "^listen on 127.0.0.1$" config)
+                (string-match/newline "^listen on ::1$" config)
+                (string-match/newline "^sensor udcf0 correction 70000$" config)
+                (string-match/newline "^constraint from www.gnu.org$" config)
+                (string-match/newline "^server 0.guix.pool.ntp.org$" config)
+                (string-match/newline
+                 "^constraints from \"https://www.google.com/\"$"
+                 config)
+
+                ;; Check for issue #3731 (see:
+                ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=37318).
+                (= (match-count "^listen on " config) 2)
+                (= (match-count "^sensor " config) 1)
+                (= (match-count "^constraint from " config) 1)
+                (= (match-count "^server " config) 2)
+                (= (match-count "^constraints from " config) 1)))
+          (begin
+            (format #t "The configuration below failed \
+the sanity check:\n~a~%" config)
+            #f)
+          #t))))
+
+(test-equal "openntpd generated config string ends with a newline"
+  (let ((config (openntpd-configuration->string %openntpd-conf-sample)))
+    (string-take-right config 1))
+  "\n")
 
 (test-end "networking")
