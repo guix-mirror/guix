@@ -4168,6 +4168,8 @@ sgml/html integration, and indentation (working with sgml).")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-company" ,emacs-company)))
+      (arguments
+       `(#:include (cons "^tools\\/" %default-include)))
       (home-page "https://github.com/iquiw/company-cabal/")
       (synopsis "Company completion for Haskell Cabal files")
       (description
