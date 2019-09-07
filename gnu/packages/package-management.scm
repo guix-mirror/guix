@@ -546,7 +546,7 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public diffoscope
-  (let ((version "122"))
+  (let ((version "123"))
     (package
       (name "diffoscope")
       (version version)
@@ -558,7 +558,7 @@ transactions from C or Python.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pwddknk8qyv88ba63why8vbnlc14b47434lv4ijx49m7ya3zfvg"))))
+                  "11bxms5rkhi0v4pxx29v4qgvhp3fmf0fkzci6gn5xcv4fl1zy4wj"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -574,6 +574,13 @@ transactions from C or Python.")
                     (add-after 'unpack 'remove-berkeley-test
                       (lambda _
                         (delete-file "tests/comparators/test_berkeley_db.py")
+                        #t))
+                    ;; Test is dynamically generated and may have false
+                    ;; negatives with different ocaml versions.  Further
+                    ;; background in: https://bugs.debian.org/939386
+                    (add-after 'unpack 'remove-ocaml-test
+                      (lambda _
+                        (delete-file "tests/comparators/test_ocaml.py")
                         #t))
                     (add-after 'unpack 'embed-tool-references
                       (lambda* (#:key inputs #:allow-other-keys)
@@ -594,10 +601,9 @@ transactions from C or Python.")
                         #t))
                     (add-before 'check 'writable-test-data
                       (lambda _
-                        ;; tests/comparators/test_elf.py needs write access to
-                        ;; test data
-                        (make-file-writable
-                         "tests/data/ignore_readelf_errors_expected_diff")
+                        ;; tests may need needs write access to tests
+                        ;; directory
+                        (for-each make-file-writable (find-files "tests"))
                         #t))
                     (add-before 'check 'delete-failing-test
                       (lambda _
