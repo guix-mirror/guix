@@ -2607,13 +2607,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.600.4.0")
+    (version "0.9.700.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "07jg2667xyhmp1fbcdi5nnhmkk81da76s9rlswfq4k2sjsmbfmr0"))))
+                "0g25w32dnqrvhnri8x4yxqawxd8qhn7w3m8d29nxxy0gybx3y8x9"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
