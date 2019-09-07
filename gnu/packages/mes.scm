@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017,2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -63,14 +63,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 (define-public nyacc
   (package
     (inherit nyacc-0.86)
-    (version "0.94.0")
+    (version "0.99.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/nyacc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "12qnzwm1n3j8z7hbr9hy2wka9a1aasm2rvnpnvdxkjcsbdzj8fn4"))
+                "0hl5qxx19i4x1r0839sxm19ziqq65g4hy97yik81cc2yb9yvgyv3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
