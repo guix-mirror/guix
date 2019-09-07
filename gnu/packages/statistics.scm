@@ -49,6 +49,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gettext)
@@ -1199,23 +1200,24 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.9")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "0w4fihf52q5qxxk0lg36x6yvjjl8vw66y60ncdjs5fvnxqn5z2vb"))))
+         "1mvpkp8cj30fwd4bwlz96x3cff7yzfbfz7iswmf77zl0a6122inh"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
+       ("freetype2" ,freetype)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
-       ("r-withr" ,r-withr)))
+       ("r-systemfonts" ,r-systemfonts)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
