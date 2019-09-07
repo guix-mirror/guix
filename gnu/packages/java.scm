@@ -1125,6 +1125,18 @@ bootstrapping purposes.")
                                             ((name . _) name))
                                           inputs))))
                  #t)))
+           (add-after 'unpack 'patch-bitrot
+             (lambda _
+               (substitute* '("patches/boot/revert-6973616.patch"
+                              "openjdk.src/jdk/make/common/shared/Defs-versions.gmk")
+                 (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                  "REQUIRED_FREETYPE_VERSION = 2.10.1"))
+               ;; As of attr 2.4.48 this header is no longer
+               ;; included.  It is provided by the libc instead.
+               (substitute* '("configure"
+                              "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
+                 (("attr/xattr.h") "sys/xattr.h"))
+               #t))
            (add-after 'unpack 'fix-x11-extension-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
@@ -1604,6 +1616,7 @@ IcedTea build harness.")
                  (delete 'patch-paths)
                  (delete 'set-additional-paths)
                  (delete 'patch-patches)
+                 (delete 'patch-bitrot)
                  ;; Prevent the keytool from recording the current time when
                  ;; adding certificates at build time.
                  (add-after 'unpack 'patch-keystore
