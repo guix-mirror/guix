@@ -924,8 +924,8 @@ interfaces, based on the useradd, usermod and userdel commands.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.freedesktop.org/software/" name "/"
-                    name "-" version ".tar.xz"))
+                    "https://www.freedesktop.org/software/libmbim/"
+                    "libmbim-" version ".tar.xz"))
               (sha256
                (base32
                 "0s4jsfsydp2vykv7lnimalp9i680aas1qcx7zdpjiic64b5g48vp"))))
