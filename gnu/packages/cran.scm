@@ -13881,14 +13881,14 @@ databases, including ENA, PDB or ChEMBL are also accessible.")
 (define-public r-ggraph
   (package
     (name "r-ggraph")
-    (version "1.0.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggraph" version))
        (sha256
         (base32
-         "0fpmp326mryd1k1qvacjadksrnhbla8h960i18lmrimzrag7692c"))))
+         "0qj7w3af0pgmd9mil6y571jikfkln7b8csvzg6b08spwbglfy1s3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -13896,12 +13896,14 @@ databases, including ENA, PDB or ChEMBL are also accessible.")
        ("r-ggforce" ,r-ggforce)
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggrepel" ,r-ggrepel)
+       ("r-graphlayouts" ,r-graphlayouts)
        ("r-gtable" ,r-gtable)
        ("r-igraph" ,r-igraph)
        ("r-mass" ,r-mass)
-       ("r-plyr" ,r-plyr)
        ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)
        ("r-scales" ,r-scales)
+       ("r-tidygraph" ,r-tidygraph)
        ("r-viridis" ,r-viridis)))
     (home-page "https://cran.r-project.org/web/packages/ggraph/")
     (synopsis "Implementation of grammar of graphics for graphs and networks")
