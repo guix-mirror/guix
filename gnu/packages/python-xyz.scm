@@ -7490,17 +7490,31 @@ serve the same purpose: provide Python bindings for libmagic.")))
   (package
     (name "python-debian")
     (home-page "https://salsa.debian.org/python-debian-team/python-debian")
-    (version "0.1.28")
+    (version "0.1.36")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri name version))
+       ;; Use git-fetch, as pypi doesn't include test suite.
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0i15f0xzx679sd0ldq2sls9pnnps9fv6vhqvnv9dzf4qhma42i0y"))))
+         "0qy6x28bj6yfikhjww932v5xq4mf5bm1iczl7acy4c7zm6mwhqfa"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'remove-debian-specific-tests
+                    ;; python-apt, apt and dpkg are not yet available in guix,
+                    ;; and these tests heavily depend on them.
+                    (lambda _
+                      (delete-file "lib/debian/tests/test_deb822.py")
+                      (delete-file "lib/debian/tests/test_debfile.py")
+                      #t)))))
     (propagated-inputs
-     `(("python-six" ,python-six)))
+     `(("python-six" ,python-six)
+       ("python-chardet" ,python-chardet)))
     (synopsis "Debian package related modules")
     (description
      ;; XXX: Use @enumerate instead of @itemize to work around
