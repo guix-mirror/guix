@@ -18171,3 +18171,32 @@ JIRA issue servers.")
        "This packages fontifies the ssh config keywords and creates
 keybindings for skipping from host section to host section.")
       (license license:gpl3+))))
+
+(define-public emacs-tao-theme
+  (let ((commit "c5107fbe7e752f4e58c2d2147ff18a1ebb12937c")
+        (revision "0"))
+    (package
+      (name "emacs-tao-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/11111000000/tao-theme-emacs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07vvlglmkj87hpxz79s3bl2cjn71vain57fdxs7j9vlr5jkchxwn"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/11111000000/tao-theme-emacs")
+      (synopsis "Parameterized uncolored color themes for Emacs")
+      (description
+       "This package provides two parameterized uncolored color themes for
+Emacs: @code{tao-yin} and @code{tao-yang}.  The default
+@code{tao-theme-scale-fn} is @code{tao-theme-golden-scale}.
+
+You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
+@code{tao-theme-scale-filter-fn}, for edge filter; and
+@code{tao-theme-use-height}.")
+      (license license:gpl3+))))
