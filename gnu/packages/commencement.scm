@@ -89,6 +89,14 @@
    (package
      (inherit mes)
      (name "mes-boot")
+     (version "0.19")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append "mirror://gnu/mes/"
+                                   "mes-" version ".tar.gz"))
+               (sha256
+                (base32
+                 "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
      (inputs '())
      (propagated-inputs '())
      (native-inputs
