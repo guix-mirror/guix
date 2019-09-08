@@ -289,13 +289,14 @@ well as some other extensions from Ruby.")
     (name "js-highlight")
     (version "9.12.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/isagalaev/highlight.js/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/isagalaev/highlight.js")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1jjn9mj7fwq4zpr6is438bscf03b3q8jkj0k5c3fc6pkmjnhw939"))))
+                "12qz22qjpd6svj58pwgcwg2x2rzhihfdrxg6lgj39nfpaln6dris"))))
     (build-system minify-build-system)
     (arguments
      `(#:javascript-files '("src/highlight.js")))
