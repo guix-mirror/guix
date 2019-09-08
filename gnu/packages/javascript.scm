@@ -151,38 +151,12 @@ be able to view it naturally and easily.")))
               (sha256
                (base32
                 "0ds1ya2a185jp93mdn07159c2x8zczwi960ykrawpp62bwk2n93d"))))
-    (build-system trivial-build-system)
+    (build-system minify-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils)
-                      (ice-9 match)
-                      (ice-9 popen)
-                      (srfi srfi-26))
-         (set-path-environment-variable
-          "PATH" '("bin") (map (match-lambda
-                                 ((_ . input)
-                                  input))
-                               %build-inputs))
-         (let ((install-directory (string-append %output
-                                                 "/share/javascript/respond/")))
-           (invoke "tar" "xvf"
-                   (assoc-ref %build-inputs "source")
-                   "--strip" "1")
-           (mkdir-p install-directory)
-           (let* ((file "src/respond.js")
-                  (installed (string-append install-directory "respond.min.js")))
-             (let ((minified (open-pipe* OPEN_READ "uglify-js" file)))
-               (call-with-output-file installed
-                 (cut dump-port minified <>)))))
-         #t)))
+     `(#:javascript-files '("src/matchmedia.addListener.js"
+                            "src/matchmedia.polyfill.js"
+                            "src/respond.js")))
     (home-page "https://github.com/scottjehl/Respond")
-    (native-inputs
-     `(("uglify-js" ,uglify-js)
-       ("source" ,source)
-       ("gzip" ,gzip)
-       ("tar" ,tar)))
     (synopsis "Polyfill for min/max-width CSS3 Media Queries")
     (description "The goal of this script is to provide a fast and lightweight
 script to enable responsive web designs in browsers that don't support CSS3
