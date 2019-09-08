@@ -143,6 +143,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
+  %D%/packages/diffoscope.scm			\
   %D%/packages/digest.scm			\
   %D%/packages/direct-connect.scm		\
   %D%/packages/disk.scm				\

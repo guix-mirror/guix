@@ -10,7 +10,6 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,7 +30,6 @@
 (define-module (gnu packages package-management)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
-  #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
@@ -40,7 +38,6 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
-  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
@@ -50,7 +47,6 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -58,19 +54,12 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages haskell)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
-  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages mono)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
-  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -82,10 +71,8 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
@@ -557,176 +544,6 @@ transactions from C or Python.")
 
     ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
     (license license:gpl2+)))
-
-(define-public diffoscope
-  (let ((version "123"))
-    (package
-      (name "diffoscope")
-      (version version)
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                      (commit version)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "11bxms5rkhi0v4pxx29v4qgvhp3fmf0fkzci6gn5xcv4fl1zy4wj"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    ;; setup.py mistakenly requires python-magic from PyPi, even
-                    ;; though the Python bindings of `file` are sufficient.
-                    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                    (add-after 'unpack 'dependency-on-python-magic
-                      (lambda _
-                        (substitute* "setup.py"
-                          (("'python-magic',") ""))))
-                    ;; This test is broken because our `file` package has a
-                    ;; bug in berkeley-db file type detection.
-                    (add-after 'unpack 'remove-berkeley-test
-                      (lambda _
-                        (delete-file "tests/comparators/test_berkeley_db.py")
-                        #t))
-                    ;; Test is dynamically generated and may have false
-                    ;; negatives with different ocaml versions.  Further
-                    ;; background in: https://bugs.debian.org/939386
-                    (add-after 'unpack 'remove-ocaml-test
-                      (lambda _
-                        (delete-file "tests/comparators/test_ocaml.py")
-                        #t))
-                    (add-after 'unpack 'embed-tool-references
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "diffoscope/comparators/utils/compare.py"
-                          (("\\['xxd',")
-                           (string-append "['" (which "xxd") "',")))
-                        (substitute* "diffoscope/comparators/elf.py"
-                          (("@tool_required\\('readelf'\\)") "")
-                          (("get_tool_name\\('readelf'\\)")
-                           (string-append "'" (which "readelf") "'")))
-                        (substitute* "diffoscope/comparators/directory.py"
-                          (("@tool_required\\('stat'\\)") "")
-                          (("@tool_required\\('getfacl'\\)") "")
-                          (("\\['stat',")
-                           (string-append "['" (which "stat") "',"))
-                          (("\\['getfacl',")
-                           (string-append "['" (which "getfacl") "',")))
-                        #t))
-                    (add-before 'check 'writable-test-data
-                      (lambda _
-                        ;; tests may need needs write access to tests
-                        ;; directory
-                        (for-each make-file-writable (find-files "tests"))
-                        #t))
-                    (add-before 'check 'delete-failing-test
-                      (lambda _
-                        ;; this requires /sbin to be on the path
-                        (delete-file "tests/test_tools.py")
-                        #t)))))
-      (inputs `(("rpm" ,rpm)                        ;for rpm-python
-                ("python-file" ,python-file)
-                ("python-debian" ,python-debian)
-                ("python-libarchive-c" ,python-libarchive-c)
-                ("python-tlsh" ,python-tlsh)
-                ("acl" ,acl)                        ;for getfacl
-                ("colordiff" ,colordiff)
-                ("xxd" ,xxd)))
-      ;; Below are modules used for tests.
-      (native-inputs `(("python-pytest" ,python-pytest)
-                       ("python-chardet" ,python-chardet)
-                       ;; test suite skips tests when tool is missing
-                       ("bdb" ,bdb)
-                       ("binutils" ,binutils)
-                       ("bzip2" ,bzip2)
-                       ("cdrtools" ,cdrtools)
-                       ("colord" ,colord)
-                       ("cpio" ,cpio)
-                       ("docx2txt" ,docx2txt)
-                       ("e2fsprogs" ,e2fsprogs)
-                       ("ffmpeg" ,ffmpeg)
-                       ("gettext" ,gettext-minimal)
-                       ("ghc" ,ghc)
-                       ("ghostscript" ,ghostscript)
-                       ("giflib:bin" ,giflib "bin")
-                       ("gnumeric" ,gnumeric)
-                       ("gnupg" ,gnupg)
-                       ("imagemagick" ,imagemagick)
-                       ("libarchive" ,libarchive)
-                       ("llvm" ,llvm)
-                       ("lz4" ,lz4)
-                       ("mono" ,mono)
-                       ("odt2txt" ,odt2txt)
-                       ;; no unversioned openjdk available
-                       ("openjdk:jdk" ,openjdk12 "jdk")
-                       ("openssh" ,openssh)
-                       ("pgpdump" ,pgpdump)
-                       ("poppler" ,poppler)
-                       ("rpm" ,rpm)
-                       ("sng" ,sng)
-                       ("sqlite" ,sqlite)
-                       ("squashfs-tools" ,squashfs-tools)
-                       ("tcpdump" ,tcpdump)
-                       ("unzip" ,unzip)
-                       ("xxd" ,xxd)
-                       ("xz" ,xz)
-                       ("zip" ,(@ (gnu packages compression) zip))))
-      (home-page "https://diffoscope.org/")
-      (synopsis "Compare files, archives, and directories in depth")
-      (description
-       "Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.")
-      (license license:gpl3+))))
-
-(define-public trydiffoscope
- (package
-   (name "trydiffoscope")
-   (version "67.0.1")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://salsa.debian.org/reproducible-builds/trydiffoscope.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "03b66cjii7l2yiwffj6ym6mycd5drx7prfp4j2550281pias6mjh"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((share (string-append (assoc-ref outputs "out") "/share/")))
-               (mkdir-p (string-append share "/man/man1/" ))
-               (invoke "rst2man.py"
-                       "trydiffoscope.1.rst"
-                       (string-append share "/man/man1/trydiffoscope.1"))
-               (mkdir-p (string-append share "/doc/" ,name "-" ,version))
-               (install-file "./README.rst"
-                          (string-append share "/doc/" ,name "-" ,version)))
-             #t)))))
-    (propagated-inputs
-     `(("python-requests" ,python-requests)))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("python-docutils" ,python-docutils)))
-    (build-system python-build-system)
-    (home-page "https://try.diffoscope.org")
-    (synopsis "Client for remote diffoscope service")
-    (description "This is a client for the @url{https://try.diffoscope.org,
-remote diffoscope service}.
-
-Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.
-
-Results are displayed by default, stored as local text or html files, or made
-available via a URL on @url{https://try.diffoscope.org}.  Results stored on the
-server are purged after 30 days.")
-    (license license:gpl3+)))
 
 (define-public python-anaconda-client
   (package
