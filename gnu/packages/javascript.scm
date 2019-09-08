@@ -144,13 +144,14 @@ be able to view it naturally and easily.")))
     (name "js-respond")
     (version "1.4.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/scottjehl/Respond/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/scottjehl/Respond")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0ds1ya2a185jp93mdn07159c2x8zczwi960ykrawpp62bwk2n93d"))))
+                "00xid731rirc7sdy1gc8qal3v9g0agr2qx15hm4x97l1lcbylyn2"))))
     (build-system minify-build-system)
     (arguments
      `(#:javascript-files '("src/matchmedia.addListener.js"
