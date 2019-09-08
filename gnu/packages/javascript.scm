@@ -359,13 +359,14 @@ navigation; it is useful for tagging, contact lists, etc.")
     (name "js-es5-shim")
     (version "4.5.9")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/es-shims/es5-shim/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/es-shims/es5-shim")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yfndyijz0ykddzprpvfjb2453gzpn528klmwycwbqc1bqd3m1hl"))))
+                "03kp6iinnr8ky298k3cfa5rm2ykqfry1nd65dqaywc3i3fs3h43d"))))
     (build-system minify-build-system)
     (arguments `(#:javascript-files
                  '("es5-sham.js"
