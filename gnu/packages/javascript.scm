@@ -194,13 +194,14 @@ Media Queries.")
     (name "js-html5shiv")
     (version "3.7.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/aFarkas/html5shiv/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/aFarkas/html5shiv")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0inlbpxpqzdyi24lqagzf7l24zxg0y02xcpqs2h4npjscazzw7hg"))))
+                "0y1c5nyq0brl9fjdihhax33vks4s1ij9iv113879sg3zflmgqpd0"))))
     (build-system minify-build-system)
     (home-page "https://github.com/aFarkas/html5shiv")
     (synopsis "Enable HTML5 sectioning elements in legacy browsers")
