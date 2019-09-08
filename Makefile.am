@@ -814,7 +814,8 @@ assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
-		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-cookbook.pot --exclude=guix-cookbook.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\

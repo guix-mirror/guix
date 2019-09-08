@@ -26,7 +26,8 @@ info_TEXINFOS = %D%/guix.texi			\
   %D%/guix.es.texi				\
   %D%/guix.fr.texi				\
   %D%/guix.ru.texi				\
-  %D%/guix.zh_CN.texi
+  %D%/guix.zh_CN.texi				\
+  %D%/guix-cookbook.texi
 
 %C%_guix_TEXINFOS = \
   %D%/contributing.texi \
@@ -105,6 +106,12 @@ endef
 $(srcdir)/%D%/guix.%.texi: po/doc/guix-manual.%.po $(srcdir)/%D%/contributing.%.texi
 	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix.texi" -p "$<" -l "$@.tmp"
 	-sed -i "s|guix\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
+	-$(AM_V_POXREF)$(xref_command)
+	-mv "$@.tmp" "$@"
+
+$(srcdir)/%D%/guix-cookbook.%.texi: po/doc/guix-cookbook.%.po
+	-$(AM_V_PO4A)$(PO4A_TRANSLATE) $(PO4A_PARAMS) -m "%D%/guix-cookbook.texi" -p "$<" -l "$@.tmp"
+	-sed -i "s|guix-cookbook\.info|$$(basename "$@" | sed 's|texi$$|info|')|" "$@.tmp"
 	-$(AM_V_POXREF)$(xref_command)
 	-mv "$@.tmp" "$@"
 
