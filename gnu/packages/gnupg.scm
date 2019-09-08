@@ -907,6 +907,34 @@ bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
 them to transform your existing public key into a secret key.")
     (license license:gpl2+)))
 
+(define-public pgpdump
+  (package
+    (name "pgpdump")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.mew.org/~kazu/proj/pgpdump/pgpdump-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1j001jra2m89n6cys3n0hs574bipjdzfxhzpnd4jfyv95mqwl7n4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no make check
+       #:configure-flags (list "--prefix=/")
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://www.mew.org/~kazu/proj/pgpdump/en/")
+    (synopsis "PGP packet visualizer")
+    (description "pgpdump displays the sequence of OpenPGP or PGP version 2
+packets from a file.
+
+The output of this command is similar to GnuPG's list packets command,
+however, pgpdump produces more detailed and easier to understand output.")
+    (license license:bsd-3)))
+
 (define-public gpa
   (package
     (name "gpa")

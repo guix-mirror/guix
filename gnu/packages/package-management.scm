@@ -659,6 +659,7 @@ transactions from C or Python.")
                        ;; no unversioned openjdk available
                        ("openjdk:jdk" ,openjdk12 "jdk")
                        ("openssh" ,openssh)
+                       ("pgpdump" ,pgpdump)
                        ("poppler" ,poppler)
                        ("rpm" ,rpm)
                        ("sng" ,sng)
