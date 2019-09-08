@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
@@ -87,14 +88,15 @@ independently or together to provide resilient infrastructures.")
   (package
     (name "libraft")
     (version "0.9.5")
+    (home-page "https://github.com/canonical/raft")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/canonical/raft/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0zd8nnmsszvsrwvybcg783y705z4xik9pi0mb6gb6ii58qq2b3hz"))))
+                "1q49f5mmv6nr6dxhnp044xwc6jlczgh0nj0bl6718wiqh28411x0"))))
     (arguments '(#:configure-flags '("--disable-uv")))
     ;; The uv plugin tests fail, if libuv (or the example) is enabled,
     ;; because setting up the environment requires too much privileges.
@@ -105,7 +107,6 @@ independently or together to provide resilient infrastructures.")
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (build-system gnu-build-system)
-    (home-page "https://github.com/canonical/raft")
     (synopsis "C implementation of the Raft consensus protocol")
     (description "The library has modular design: its core part implements only
 the core Raft algorithm logic, in a fully platform independent way.  On top of
