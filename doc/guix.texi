@@ -3624,7 +3624,7 @@ version.  New @command{guix} sub-commands added by the update also
 become available.
 
 Any user can update their Guix copy using @command{guix pull}, and the
-effect is limited to the user who run @command{guix pull}.  For
+effect is limited to the user who ran @command{guix pull}.  For
 instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
 versa.
