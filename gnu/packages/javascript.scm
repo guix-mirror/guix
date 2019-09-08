@@ -337,13 +337,14 @@ HTML tables with minimal effort.")
     (name "js-selectize")
     (version "0.12.4")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/selectize/selectize.js/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/selectize/selectize.js")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0756p49aaz34mw2dx8k1gxf210mngfrri25vkba0j7wihd2af8gn"))))
+                "1l6gdl9v9z0xb1yl81ssaqm067imjbxwbpa76nd0cyrx0jskih22"))))
     (build-system minify-build-system)
     (arguments `(#:javascript-files '("src/selectize.js")))
     (home-page "http://selectize.github.io/selectize.js/")
