@@ -265,13 +265,14 @@ provided by ES5.  @code{JSONPath} is used to represent the links.")
     (name "js-strftime")
     (version "0.10.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/samsonjs/strftime/"
-                                  "archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url"https://github.com/samsonjs/strftime")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1iya43w7y26y2dp9l4d40bhjc4scb5a9mng5ng5c8hsqr82f1375"))))
+                "131nmlivazwxyba25kh9lda99749fq4xsyin6lzfalaaydviby4p"))))
     (build-system minify-build-system)
     (arguments
      `(#:javascript-files '("strftime.js")))
