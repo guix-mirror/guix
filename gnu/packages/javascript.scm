@@ -357,7 +357,7 @@ navigation; it is useful for tagging, contact lists, etc.")
 (define-public js-es5-shim
   (package
     (name "js-es5-shim")
-    (version "4.5.9")
+    (version "4.5.13")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -366,7 +366,7 @@ navigation; it is useful for tagging, contact lists, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "03kp6iinnr8ky298k3cfa5rm2ykqfry1nd65dqaywc3i3fs3h43d"))))
+                "142w384fbyllq4yggv173g82lw3wix4jqcg6hkhx1ymq89vvnpmh"))))
     (build-system minify-build-system)
     (arguments `(#:javascript-files
                  '("es5-sham.js"
