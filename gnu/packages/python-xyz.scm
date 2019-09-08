@@ -19,7 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2018-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
@@ -16398,3 +16398,30 @@ because lxml.etree already has it's own implementation of XPath 1.0.")
     (synopsis "Python library to parse BibTeX files")
     (description "BibtexParser is a Python library to parse BibTeX files.")
     (license (list license:bsd-3 license:lgpl3))))
+
+(define-public python-distro
+  (package
+    (name "python-distro")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "distro" version))
+       (sha256
+        (base32
+         "0mrg75w4ap7mdzyga75yaid9n8bgb345ih5mwjp3plj6v1jxwb9n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/nir0s/distro")
+    (synopsis
+     "OS platform information API")
+    (description
+     "@code{distro} provides information about the OS distribution it runs on,
+such as a reliable machine-readable ID, or version information.
+
+It is the recommended replacement for Python's original
+`platform.linux_distribution` function (which will be removed in Python 3.8).
+@code{distro} also provides a command-line interface to output the platform
+information in various formats.")
+    (license license:asl2.0)))
