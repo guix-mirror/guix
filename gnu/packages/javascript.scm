@@ -335,7 +335,7 @@ HTML tables with minimal effort.")
 (define-public js-selectize
   (package
     (name "js-selectize")
-    (version "0.12.4")
+    (version "0.12.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -344,7 +344,7 @@ HTML tables with minimal effort.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1l6gdl9v9z0xb1yl81ssaqm067imjbxwbpa76nd0cyrx0jskih22"))))
+                "15gichl8wi6yxag2ps723nxrgyan15976dzsnvw9h9py8sbyyzjn"))))
     (build-system minify-build-system)
     (arguments `(#:javascript-files '("src/selectize.js")))
     (home-page "http://selectize.github.io/selectize.js/")
