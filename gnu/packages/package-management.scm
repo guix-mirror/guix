@@ -123,8 +123,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "c902458863d1d341ffd74970b75e69c2bb848183")
-        (revision 4))
+        (commit "cc98b00857e29074de96a6ed60e325cdfffaea1a")
+        (revision 5))
     (package
       (name "guix")
 
@@ -140,7 +140,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0w93qjgy9n0qqyij12s7hm7fl4wb6h99bmfril4cqf4ynckpdvbb"))
+                  "0r5v4a0lyvn97gvp1q6algpw91k77r36vlnxx8w4s0c6r767b6z3"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -355,6 +355,19 @@ the Nix package manager.")
         #f)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'change-default-guix
+             (lambda _
+               ;; We need to tell 'guix-daemon' which 'guix' command to use.
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
+               (substitute* "nix/libstore/globals.cc"
+                 (("guixProgram = (.*)nixBinDir + \"/guix\"" _ before)
+                  (string-append "guixProgram = " before
+                                 "/var/guix/profiles/per-user/root\
+/current-guix/bin/guix")))
+               #t))
            (replace 'build
              (lambda _
                (invoke "make" "nix/libstore/schema.sql.hh")
@@ -364,19 +377,7 @@ the Nix package manager.")
            (delete 'copy-bootstrap-guile)
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install-binPROGRAMS"
-                       "install-nodist_pkglibexecSCRIPTS")
-
-               ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code root's
-               ;; current guix, which could be wrong (XXX).  Note that scripts
-               ;; like 'guix perform-download' do not run as root so we assume
-               ;; that they have access to /var/guix/profiles/per-user/root.
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* (find-files (string-append out "/libexec"))
-                   (("exec \".*/bin/guix\"")
-                    "exec \"${GUIX:-/var/guix/profiles/per-user/root/current-guix/bin/guix}\""))
-                 #t)))
+               (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
