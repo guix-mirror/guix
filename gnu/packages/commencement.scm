@@ -753,7 +753,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                 (setenv "CC" (string-append gcc "/bin/gcc " cppflags cflags))
                 #t)))
           ;; glibc-2.2.5 needs a more classic invocation of configure
-          ;; configure: warning: CONFIG_SHELL=/gnu/store/kpxi8h3669afr9r1bgvaf9ij3y4wdyyn-bash-minimal-4.4.12/bin/bash: invalid host type
+          ;; configure: warning: CONFIG_SHELL=/gnu/store/…-bash-minimal-4.4.12/bin/bash: invalid host type
           (replace 'configure
             (lambda* (#:key configure-flags #:allow-other-keys)
               (format (current-error-port)

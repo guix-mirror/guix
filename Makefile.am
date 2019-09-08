@@ -815,6 +815,7 @@ assert-no-store-file-names:
 		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
+	     --exclude=binutils-boot-2.20*.patch				\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
