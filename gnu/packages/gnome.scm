@@ -2629,7 +2629,7 @@ library.")
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
                 "0s006gs9nsq6mg31spqha1jffzmp6qjh10y27h0fxf1iw1ah5ymx"))
