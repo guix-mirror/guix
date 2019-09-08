@@ -21,7 +21,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages wget)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -74,7 +74,7 @@
 HTTPS and FTP protocols.  It can resume interrupted downloads, use file name
 wild cards, supports proxies and cookies, and it can convert absolute links
 in downloaded documents to relative links.")
-    (license gpl3+))) ; some files are under GPLv2+
+    (license license:gpl3+))) ; some files are under GPLv2+
 
 (define-public wgetpaste
   (package
@@ -136,7 +136,7 @@ in downloaded documents to relative links.")
     (description
      "@code{wgetpaste} is an extremely simple command-line interface to various
 online pastebin services.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public wget2
   (package
@@ -200,4 +200,4 @@ online pastebin services.")
    (description "GNU Wget2 is the successor of GNU Wget, a file and recursive
 website downloader.  Designed and written from scratch it wraps around libwget,
 that provides the basic functions needed by a web client.")
-   (license (list gpl3+ lgpl3+))))
+   (license (list license:gpl3+ license:lgpl3+))))
