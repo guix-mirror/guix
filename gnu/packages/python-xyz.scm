@@ -882,6 +882,27 @@ messages in color.")
 (define-public python2-coloredlogs
   (package-with-python2 python-coloredlogs))
 
+(define-public python-editorconfig
+  (package
+    (name "python-editorconfig")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "EditorConfig" version))
+       (sha256
+        (base32
+         "0v55z351p9qkyp3bbspwywwn28sbcknhirngjbj779n3z52z63hv"))))
+    (build-system python-build-system)
+    (home-page "https://editorconfig.org/")
+    (synopsis "EditorConfig bindings for python")
+    (description "The EditorConfig project consists of a file format for
+defining coding styles and a collection of text editor plugins that enable
+editors to read the file format and adhere to defined styles.  EditorConfig
+files are easily readable and they work nicely with version control systems.")
+    ;; "fnmatch.py" and "ini.py" are licensed under psfl, the rest is bsd-2.
+    (license (list license:bsd-2 license:psfl))))
+
 (define-public python-et-xmlfile
   (package
     (name "python-et-xmlfile")
