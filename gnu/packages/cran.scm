@@ -15335,3 +15335,33 @@ an approach to manipulate these two virtual data frames using the API defined
 in the @code{dplyr} package, and it also provides tidy interfaces to a lot of
 common graph algorithms.")
     (license license:expat)))
+
+(define-public r-soupx
+  (let ((commit "a3354be76fb52fd795be6ddf163cf056c05c6cb8")
+        (revision "1"))
+    (package
+      (name "r-soupx")
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/constantAmateur/SoupX")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zmlyzrl0fz6l79gn2wswid670p88mm3y292is89sa5p3h7frr99"))))
+      (properties `((upstream-name . "SoupX")))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-ggplot2" ,r-ggplot2)
+         ("r-matrix" ,r-matrix)
+         ("r-seurat" ,r-seurat)))
+      (home-page "https://github.com/constantAmateur/SoupX")
+      (synopsis "Single cell mRNA Soup eXterminator")
+      (description
+       "This package provides a package for quantifying, profiling and
+removing cell free mRNA contamination (the \"soup\") from droplet based single
+cell RNA-seq experiments.")
+      (license license:gpl2))))
