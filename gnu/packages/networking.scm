@@ -284,7 +284,7 @@ transparently check connection attempts against an access control list.")
        (sha256
         (base32 "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
     (build-system gnu-build-system)
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
     (description
      "The 0MQ lightweight messaging kernel is a library which extends the
