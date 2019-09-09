@@ -529,16 +529,16 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "1.3.3")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/kdeconnect/"
-                            version "/src/kdeconnect-kde-"
+                            version "/kdeconnect-kde-"
                             version ".tar.xz"))
         (sha256
          (base32
-          "1vac0mw1myrswr61adv7lgif0c4wzw5wnsj0sqxj6msp4l4pfgsg"))))
+          "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON")
