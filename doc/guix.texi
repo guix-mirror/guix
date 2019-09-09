@@ -8912,7 +8912,17 @@ in Guix.
 @item crate
 @cindex crate
 Import metadata from the crates.io Rust package repository
-@uref{https://crates.io, crates.io}.
+@uref{https://crates.io, crates.io}, as in this example:
+
+@example
+guix import crate blake2-rfc
+@end example
+
+The crate importer also allows you to specify a version string:
+
+@example
+guix import crate constant-time-eq@@0.1.0
+@end example
 
 @item opam
 @cindex OPAM
