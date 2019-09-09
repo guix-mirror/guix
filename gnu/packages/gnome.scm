@@ -39,6 +39,7 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
@@ -7992,7 +7994,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.23")
+    (version "1.10.34")
     (source
      (origin
        (method git-fetch)
@@ -8003,7 +8005,7 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qhlwfhwk5agv4904d6bsf83k9k89q7bms6agg967vsca4905vcw"))))
+        (base32 "0czwhr7nw523753ajcjjfwrf91mq8pmzr19gp0srqsvb1dsn1zcf"))))
     (build-system glib-or-gtk-build-system)
     (propagated-inputs `(("glib" ,glib)
                          ("gtk+" ,gtk+)
@@ -8014,9 +8016,8 @@ configurable file renaming. ")
                          ("libxtst" ,libxtst)
                          ("dconf" ,dconf)
                          ("libice" ,libice)))
-    (inputs `(("libsm" ,libsm)
-              ("python-cheetah" ,python2-cheetah)))
-    (native-inputs `(("glib" ,glib "bin")
+    (inputs `(("libsm" ,libsm)))
+    (native-inputs `(("boost" ,boost)
                      ("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)
                      ("autoconf" ,autoconf)
@@ -8026,7 +8027,8 @@ configurable file renaming. ")
                      ("intltool" ,intltool)
                      ("libxscrnsaver" ,libxscrnsaver)
                      ("gobject-introspection" ,gobject-introspection)
-                     ("python2" ,python-2)))
+                     ("python3" ,python-3)
+                     ("python-jinja2" ,python-jinja2)))
     (synopsis "Tool to help prevent repetitive strain injury (RSI)")
     (description
      "Workrave is a program that assists in the recovery and prevention of
