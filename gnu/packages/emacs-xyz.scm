@@ -12940,10 +12940,11 @@ browse the phrases by the paper section and fill-in the blanks if required.")
       (license license:gpl3+))))
 
 (define-public emacs-auto-yasnippet
-  (let ((commit "d1ccfea87312c6dd8cf8501ab5b71b1d3d44d95b"))
+  (let ((commit "624b0d9711222073a2a3f2186e2605eb99fc83c9")
+        (revision "2"))
     (package
       (name "emacs-auto-yasnippet")
-      (version (git-version "0.3.0" "1" commit))
+      (version (git-version "0.3.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -12952,17 +12953,11 @@ browse the phrases by the paper section and fill-in the blanks if required.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1i8k2qiyzd5rq0zplk4xb5nfa5mp0ibxbzwqj6c7877waq7244xk"))))
+                  "15g8wi067f345xhpi0c12w0h04p4f4lpccwmdjdfj8hzfl4gyxy9"))))
       (build-system emacs-build-system)
       (arguments
-       '(#:phases
-         (modify-phases %standard-phases
-           (add-before 'install 'check
-             (lambda _
-               (invoke "emacs" "--batch"
-                       "-l" "auto-yasnippet.el"
-                       "-l" "auto-yasnippet-test.el"
-                       "-f" "ert-run-tests-batch-and-exit"))))))
+       '(#:tests? #t
+         #:test-command '("make" "test")))
       (propagated-inputs
        `(("emacs-yasnippet" ,emacs-yasnippet)))
       (home-page "https://github.com/abo-abo/auto-yasnippet/")
