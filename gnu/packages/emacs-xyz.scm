@@ -14260,30 +14260,29 @@ on-line service.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-company
-  (let ((commit "d3fc093a0e833b4dee6561c00d6df3d62aa50f3f"))
-    (package
-      (name "emacs-helm-company")
-      (version (git-version "0.2.3" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Sodel-the-Vociferous/helm-company")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1ciirsanhajdqm5iwl8k9ywf4jha1wdv4sc4d9kslyrfr9zn4q6k"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-company" ,emacs-company)))
-      (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
-      (synopsis "Helm interface for company-mode")
-      (description
-       "This is a Helm interface to company-mode, a text completion
+  (package
+    (name "emacs-helm-company")
+    (version "0.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sodel-the-Vociferous/helm-company")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ci37w6ahnqrfpb284gjvxmimlf61sdxb9k192yy9q983cksv2hx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
+    (synopsis "Helm interface for company-mode")
+    (description
+     "This is a Helm interface to company-mode, a text completion
 framework.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-descbinds
   (let ((commit "033be73f21778633813264ce1634a6e1ad873d8e"))
