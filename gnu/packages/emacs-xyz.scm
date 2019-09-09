@@ -18199,3 +18199,37 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 @code{tao-theme-scale-filter-fn}, for edge filter; and
 @code{tao-theme-use-height}.")
       (license license:gpl3+))))
+
+(define-public emacs-doom-themes
+  (package
+    (name "emacs-doom-themes")
+    (version "2.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hlissner/emacs-doom-themes.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "042pzcdhxi2z07jcscgjbaki9nrrm0cbgbbrnymd1r4q8ckkn8l9"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-themes
+           (lambda _
+             ;; Move the source files to the top level, which is in the
+             ;; EMACSLOADPATH.
+             (for-each (lambda (f)
+                         (rename-file f (basename f)))
+                       (find-files "./themes" ".*\\.el$"))
+             #t)))))
+    (synopsis "Wide collection of color themes for Emacs")
+    (description "Emacs-doom-themes contains numerous popular color themes for
+Emacs that integrate with major modes like Org-mode.")
+    (home-page "https://github.com/hlissner/emacs-doom-themes")
+    (license license:expat)))
