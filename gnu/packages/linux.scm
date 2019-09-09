@@ -5862,15 +5862,15 @@ the superuser to make device nodes.")
 (define-public fakeroot
   (package
     (name "fakeroot")
-    (version "1.23")
+    (version "1.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.debian.org/debian/pool/main/f/"
-                                  "fakeroot/fakeroot_" version ".orig.tar.xz"))
+              (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
+                                  "fakeroot/fakeroot_" version ".orig.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xpl0s2yjyjwlf832b6kbkaa5921liybaar13k7n45ckd9lxd700"))))
+                "1vb6f93hjyqnwx8dc8mm3dgma7axgqk8s7sdsjs8l2rpc0qmn11f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
