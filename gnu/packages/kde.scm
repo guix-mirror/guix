@@ -600,4 +600,5 @@ communicate with each other.  Here's a few things KDE Connect can do:
 @item Browse your phone from the desktop
 @item Control the desktop's volume from the phone
 @end enumerate")
+    (properties `((upstream-name . "kdeconnect-kde")))
     (license (list license:gpl2 license:gpl3)))) ; dual licensed
