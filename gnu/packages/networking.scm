@@ -275,14 +275,14 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.zeromq.org/zeromq-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00vvwhgcdr1lva2pavicvy92iad0hj8cf71n702hv6blw1kjj2z0"))))
+    (version "4.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/zeromq/libzmq/releases/"
+                           "download/v" version "/zeromq-" version ".tar.gz"))
+       (sha256
+        (base32 "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
     (build-system gnu-build-system)
     (home-page "http://zeromq.org")
     (synopsis "Library for message-based applications")
