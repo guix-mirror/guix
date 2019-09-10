@@ -16475,6 +16475,33 @@ like @code{company}, @code{flycheck}, and @code{projectile}.")
 and code peeking.")
     (license license:gpl3+)))
 
+(define-public emacs-helm-lsp
+  (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
+        (revision "1"))
+    (package
+      (name "emacs-helm-lsp")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-lsp/helm-lsp.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0wh5zai3s17ss2q8wcdd6d87hv1h3nbyrxxs4js9cas8m6y2ssjv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-lsp-mode" ,emacs-lsp-mode)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/emacs-lsp/helm-lsp")
+      (synopsis "Convert keyboard macros to Emacs Lisp")
+      (description
+       "This package displays keyboard macros or latest interactive commands
+as Emacs Lisp.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-notmuch
   (package
     (name "emacs-helm-notmuch")
