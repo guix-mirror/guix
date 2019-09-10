@@ -12214,8 +12214,8 @@ until the top-level form is no longer a macro call.")
     (license license:gpl3)))
 
 (define-public emacs-isearch-prop
-  (let ((commit "5e9dc44cf582d998aaa73ccd4d07cbda01248156")
-        (revision "1"))
+  (let ((commit "4a2765f835dd115d472142da05215c4c748809f4")
+        (revision "2"))
     (package
       (name "emacs-isearch-prop")
       (version (git-version "0" revision commit))
@@ -12228,7 +12228,7 @@ until the top-level form is no longer a macro call.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1xawppy705ybsgx566zvj8zk2aajq0sqvhvfs7nijqq32lx0a2zl"))))
+           "06gdk5m84q6pxwng8rjxny1zkll8f3m2x6lw4xyib2dvg7iaslh3"))))
       (build-system emacs-build-system)
       (home-page "https://www.emacswiki.org/emacs/isearch-prop.el")
       (synopsis "Extensions to @code{isearch.el}")
