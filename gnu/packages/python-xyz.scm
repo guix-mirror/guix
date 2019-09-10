@@ -14755,6 +14755,10 @@ time-based (TOTP) passwords.")
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "-vv"))))))
     (home-page "https://github.com/davidhalter/parso")
     (synopsis "Python Parser")
     (description "Parso is a Python parser that supports error recovery and
