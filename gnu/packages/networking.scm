@@ -1970,14 +1970,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.0")
+    (version "5.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0cq9m86ydd2i0awxkv4a256f4926p2f9pzlisyskl9fngl6f3c8m"))))
+        (base32 "034rd6kr1bmnvj8rg2kcxdjb0cgj3dn9310mmm94j1awxan71byr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2000,7 +2000,7 @@ displays the results in real time.")
              #t)))
        #:configure-flags
        (list
-        ;; Disable bsd-4 licensed plugins
+        ;; Disable bsd-4 licensed plugins.
         "--disable-des"
         "--disable-blowfish")))
     (inputs
