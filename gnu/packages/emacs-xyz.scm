@@ -16865,12 +16865,11 @@ Lisp functions that call themselves in tail position.")
       (license license:gpl3+))))
 
 (define-public emacs-equake
-  (let ((commit "ed15fd55cd4f2276161a6f712ed0b83cd10a8cdc")
-        (version "0.85")
-        (revision "1"))
+  (let ((commit "7eddc025ee61b83029363e22219af228b8c20681")
+        (revision "2"))
     (package
       (name "emacs-equake")
-      (version (git-version version revision commit))
+      (version (git-version "0.85" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16880,7 +16879,7 @@ Lisp functions that call themselves in tail position.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "04kj88rlnn22gwmmv2gly2ibi6jka6l2cd4979pi6lhlvqqgjdnj"))))
+           "1c55pbqak3d02sw6z1139baxzy401b90g0gxzcc3j6sgplz6sc6w"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
