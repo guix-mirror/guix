@@ -4466,7 +4466,7 @@ cpufreq sub-system is enabled or not.")
        (sha256
         (base32 "11kr19n2f87izsj341lv5amhd1wc2ckfmqr9pq5fxix8pkbs94rh"))))
     (build-system gnu-build-system)
-    (home-page "http://www.issihosts.com/haveged")
+    (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
     (description
      "haveged generates an unpredictable stream of random numbers for use by
