@@ -14717,12 +14717,11 @@ viewing files with long lines.")
       (license license:gpl3+))))
 
 (define-public emacs-github-review
-  (let ((commit "9c3ffe30fba5d02e9951e76d1a5be2ed046663da")
-        (version "0.1")
-        (revision "1"))
+  (let ((commit "a13a3b4f1b6114a32af843971a145ab880f51232")
+        (revision "2"))
     (package
       (name "emacs-github-review")
-      (version (git-version version revision commit))
+      (version (git-version "0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14732,7 +14731,7 @@ viewing files with long lines.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "078rv6f2p3wrznhgvmkhd071bwy72007f5l2m2a0r1k2i3vbfaja"))))
+           "0injfpxzgfhmqalba845j5l5cdcxxqz43knhxwinf36g52nfabl0"))))
       (build-system emacs-build-system)
       (inputs
        `(("emacs-dash" ,emacs-dash)
