@@ -13171,10 +13171,11 @@ perform regression test for packages that provide font-lock rules.")
       (license license:gpl3+))))
 
 (define-public emacs-grep-context
-  (let ((commit "a17c57e66687a54e195e08afe776bdd60cb6c0a7"))
+  (let ((commit "5a4e3efdf775755c1bbefcfe4b461c1166d81d7d")
+        (revision "1"))
     (package
       (name "emacs-grep-context")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13184,11 +13185,11 @@ perform regression test for packages that provide font-lock rules.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1nqfa6kjzjshww4hnwg1c0vcr90bdjihy3kmixq3c3jkvxg99b62"))))
+           "00q7l4a3c0ay6g5ff9bfa2qgkiswsyh4s6pqnpg0zpzhvv5710f5"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
-      (home-page "https://github.com/nashamri/academic-phrases")
+      (home-page "https://github.com/mkcms/grep-context")
       (synopsis "Increase context in compilation and grep buffers")
       (description
        "This package provides an Emacs package for more context in
