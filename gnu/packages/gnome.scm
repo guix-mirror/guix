@@ -4182,9 +4182,9 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
     (version "1.36.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gvfs/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gvfs-" version ".tar.xz"))
               (sha256
                (base32
                 "1xq105596sk9yram5a143b369wpaiiwc9gz86n0j1kfr7nipkqn4"))))
