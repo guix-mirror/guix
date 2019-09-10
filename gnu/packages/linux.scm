@@ -4475,10 +4475,10 @@ standard mechanisms for filling the entropy pool may not be sufficient for
 systems with high needs or limited user interaction, such as headless servers.
 
 @command{haveged} runs as a privileged daemon, harvesting randomness from the
-indirect effects of hardware events on hidden processor state using the HArdware
-Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
-itself to its environment and provides the same built-in test suite for the
-output stream as used on certified hardware security devices.
+indirect effects of hardware events on hidden processor state using the
+@acronym{HAVEGE, HArdware Volatile Entropy Gathering and Expansion} algorithm.
+It tunes itself to its environment and provides the same built-in test suite
+for the output stream as used on certified hardware security devices.
 
 The quality of the randomness produced by this algorithm has not been proven.
 It is recommended to run it together with another entropy source like rngd, and
