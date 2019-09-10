@@ -558,16 +558,11 @@ handful of functions that are not resource-specific.")
     (license license:gpl3+)))
 
 (define-public emacs-scribble-mode
-  (let ((commit "34e9e5edb921813b6483e0fefa848efb6ee4b314")
-        (version "0.0")
-        (revision 0))
+  (let ((commit "217945d54de5e4bb207033f2116baa28f5c5ecf2")
+        (revision "2"))
     (package
       (name "emacs-scribble-mode")
-      (version (if (zero? revision)
-                   version
-                   (string-append version "-"
-                                  (number->string revision)
-                                  "." (string-take commit 7))))
+      (version (git-version "0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -575,7 +570,7 @@ handful of functions that are not resource-specific.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0598byqpz2q6yi2q4dwd77jj9z3n99z34d3an51s9m2za0nh1qvp"))))
+                  "1s5ccw1a5ack01wd94ywfcrar9j98agchwdh30q7iyxr0d2z4sii"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/emacs-pe/scribble-mode")
       (synopsis "Emacs mode for editing the Scribble documentation syntax.")
