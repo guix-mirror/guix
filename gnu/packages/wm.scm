@@ -271,42 +271,30 @@ Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
 
 (define-public i3blocks
-  (let ((commit "ec050e79ad8489a6f8deb37d4c20ab10729c25c3")
-        (revision "2"))
-    (package
-      (name "i3blocks")
-      (version (string-append "1.4-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vivien/i3blocks.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1fx4230lmqa5rpzph68dwnpcjfaaqv5gfkradcr85hd1z8d1qp1b"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
-         #:phases (modify-phases %standard-phases
-                    (add-after 'install 'install-doc
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (man1 (string-append out "/share/man/man1")))
-                          (install-file "docs/i3blocks.1" man1)
-                          #t))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/vivien/i3blocks")
-      (synopsis "Minimalist scheduler for status bar scripts")
-      (description "i3blocks executes your command lines and generates a
+  (package
+    (name "i3blocks")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vivien/i3blocks.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0v8mwnm8qzpv6xnqvrk43s4b9iyld4naqzbaxk4ldq1qkhai0wsv"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/vivien/i3blocks")
+    (synopsis "Minimalist scheduler for status bar scripts")
+    (description "i3blocks executes your command lines and generates a
 status line from their output.  The generated line is meant to be displayed by
 the i3 window manager through its i3bar component, as an alternative to
 i3status.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public perl-anyevent-i3
   (package
