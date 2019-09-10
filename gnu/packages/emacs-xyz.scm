@@ -13793,8 +13793,8 @@ systems.")
     (license license:gpl3+)))
 
 (define-public emacs-isearch+
-  (let ((commit "95e49af9dbf0254e095a11f115e101b52659520a")
-        (revision "1"))
+  (let ((commit "7c251b91a67bf914066e23e269ba52fda5b45f5f")
+        (revision "2"))
     (package
       (name "emacs-isearch+")
       (version (git-version "0" revision commit))
@@ -13807,7 +13807,7 @@ systems.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0xhd9zgknf4lvzyf4apirpd7spb1hbpzkvys00a7pkmd0vvahk0v"))))
+           "1w2799714jcdycjlxgs8lpmmz6dmzvcvqy8xwxhvmgpb60g4f2yr"))))
       (build-system emacs-build-system)
       (home-page "https://www.emacswiki.org/emacs/isearch+.el")
       (synopsis "Extensions to @code{isearch.el}")
