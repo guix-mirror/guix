@@ -201,6 +201,14 @@ shared NFS home directories.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-dbus-launch-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((dbus (assoc-ref inputs "dbus")))
+              (substitute* "gio/gdbusaddress.c"
+                (("command_line = g_strdup_printf \\(\"dbus-launch")
+                 (string-append "command_line = g_strdup_printf (\""
+                                dbus "/bin/dbus-launch")))
+              #t)))
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; For tests/gdatetime.c.
