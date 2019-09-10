@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -520,3 +520,30 @@ minutes.  For simpler timetables, it may take a shorter time, under
 difficult timetables, it may take a longer time, a matter of hours.")
     (license license:agpl3+)))
 
+(define-public klavaro
+  (package
+    (name "klavaro")
+    (version "3.09")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/klavaro/klavaro-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32
+          "12gml7h45b1w9s318h0d5wxw92h7pgajn2kh57j0ak9saq0yb0wr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("pango" ,pango)))
+    (home-page "https://klavaro.sourceforge.io/en/index.html")
+    (synopsis "Touch typing tutor")
+    (description
+     "Klavaro is a simple tutor to teach correct typing, almost independently of
+language and very flexible regarding to new or unknown keyboard layouts.")
+    (license license:gpl3+)))
