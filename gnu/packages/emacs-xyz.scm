@@ -17020,12 +17020,11 @@ invoked.")
     (license license:gpl3+)))
 
 (define-public emacs-prodigy-el
-  (let ((commit "701dccaa56de9e6a330c05bde33bce4f3b3d6a97")
-        (version "0.7.0")
-        (revision "28"))
+  (let ((commit "0a12eec1f001a4eef16b2c0c524f02f2647a4ff1")
+        (revision "2"))
     (package
       (name "emacs-prodigy-el")
-      (version (git-version version revision commit))
+      (version (git-version "0.7.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17035,7 +17034,7 @@ invoked.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1vyvxawlayp2nra0q83146q2nzv8qwn5a4nj0sx1jc90a0a83vgj"))))
+           "02kysq57kqzg0zkhaf302ada9cp9spgp71z8vbdq4c7dl6x75h4g"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
