@@ -15797,21 +15797,22 @@ other frame parameters.")
       (license license:gpl3+))))
 
 (define-public emacs-general
-  (let ((commit "675050199b5a30d54a24b58a367db32c0bdc47f5"))
+  (let ((commit "f032c3a77079487d0ea563b17ee3e5b2fb084611")
+        (revision "2"))
     (package
       (name "emacs-general")
-      (version (git-version "0" "0" commit))
-      (home-page "https://github.com/noctuid/general.el")
+      (version (git-version "0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url (string-append home-page ".git"))
+                      (url "https://github.com/noctuid/general.el.git")
                       (commit commit)))
                 (sha256
                  (base32
-                  "175yyhzk57yk1sskxh3d2jzhrh2waiibbcfsll167qxr117yji5h"))
+                  "0lgh5z17ag5wvvnqwagvam29cp1n1vd50amn6df02xln80bsbllx"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (home-page "https://github.com/noctuid/general.el")
       (synopsis "More convenient key definitions in emacs")
       (description "@code{general.el} provides a more convenient method for
 binding keys in emacs (for both evil and non-evil users).  Like
