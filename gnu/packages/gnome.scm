@@ -2701,7 +2701,7 @@ libxml to ease remote use of the RESTful API.")
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libsoup-" version ".tar.xz"))
               (sha256
                (base32
                 "0amfw1yvy1kjrg41rfh2vvrw5gkwnyckqbw1fab50hm6xc1acbmx"))))
