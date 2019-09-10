@@ -17169,12 +17169,11 @@ definition-jumping and type-checking on demand.")
       (license license:bsd-3))))
 
 (define-public emacs-rjsx-mode
-  (let ((commit "03dd8d1683501e81b58674d64c3032b7b718402c")
-        (version "0.4.0")
-        (revision "35"))
+  (let ((commit "0e7fa6b4facdec4f85a7a8865bdf59dfd57217b5")
+        (revision "2"))
     (package
       (name "emacs-rjsx-mode")
-      (version (git-version version revision commit))
+      (version (git-version "0.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17184,7 +17183,7 @@ definition-jumping and type-checking on demand.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1kc44g9f38klpjklmz9n50a28nqv7prz6ck6ghdr6bnj1s98pb8a"))))
+           "0s0871sx3ch09kgvbcp9na4zdrfrda62xjq8m9knbq5vnj8q8qpi"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-js2-mode" ,emacs-js2-mode)))
