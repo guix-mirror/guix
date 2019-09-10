@@ -4455,16 +4455,16 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.4")
+    (version "1.9.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/jirka-h/haveged.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hrwzjd4byq4fdrg8svww3d8x449k80jxxrjy9v6jvzhfv19rvxr"))))
+        (base32 "11kr19n2f87izsj341lv5amhd1wc2ckfmqr9pq5fxix8pkbs94rh"))))
     (build-system gnu-build-system)
     (home-page "http://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
