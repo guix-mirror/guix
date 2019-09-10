@@ -602,3 +602,28 @@ communicate with each other.  Here's a few things KDE Connect can do:
 @end enumerate")
     (properties `((upstream-name . "kdeconnect-kde")))
     (license (list license:gpl2 license:gpl3)))) ; dual licensed
+
+(define-public kqtquickcharts
+  (package
+    (name "kqtquickcharts")
+    (version "19.08.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/applications/"
+                            version "/src/kqtquickcharts-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1j3rivvh4sa94lsd0hi4xfvcikl05zrqd7634wxyaxs718ais6dg"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://phabricator.kde.org/source/kqtquickcharts/")
+    (synopsis "Interactive charts for Qt Quick")
+    (description
+     "Kqtquickcharts is a QtQuick plugin to render beautiful and interactive
+charts.")
+    (license license:lgpl2.1+)))
