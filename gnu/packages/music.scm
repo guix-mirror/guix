@@ -2146,7 +2146,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.6.0")
+    (version "1.6.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2154,10 +2154,10 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bcc5spnq73yp1fmm367d1mxcswqkmzs3cnpb4cxr513ir98sa50"))))
+                "140f2k4akj39pny8c7i794q125415gyvmy4rday0il5ncp3glik4"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; there are no tests
+     `(#:tests? #f                      ; there are no tests
        #:configure-flags
        (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
                             (assoc-ref %outputs "out") "/share"))
