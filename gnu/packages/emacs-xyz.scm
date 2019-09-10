@@ -16738,12 +16738,11 @@ buffers.")
       (license license:gpl3+))))
 
 (define-public emacs-js2-refactor-el
-  (let ((commit "79124b3274c43ad1f9ec6205fa362576552db02f")
-        (version "0.9.0")
-        (revision "27"))
+  (let ((commit "d4c40b5fc86d3edd7c6a7d83ac86483ee1cb7a28")
+        (revision "2"))
     (package
       (name "emacs-js2-refactor-el")
-      (version (git-version version revision commit))
+      (version (git-version "0.9.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16753,7 +16752,7 @@ buffers.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1wswhlpbd3airrhyncb9vblqigwnqg9n96z0iis8jnz37q2whica"))))
+           "08b25y3raz0p98zxk9xdd8nj9shqd6mzrqhbq1gg4cwsmi7h7ly1"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
