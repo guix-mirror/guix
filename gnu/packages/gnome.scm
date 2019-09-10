@@ -6299,9 +6299,9 @@ easy, safe, and automatic.")
     (version "2.0.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/tracker/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "tracker-" version ".tar.xz"))
               (sha256
                (base32
                 "1mfc5lv820kr7ssi7hldn25gmshh65k19kh478qjsnb64sshsbyf"))))
