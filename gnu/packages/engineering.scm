@@ -65,6 +65,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -89,6 +90,7 @@
   #:use-module (gnu packages tex)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wxwidgets)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public librecad
@@ -2145,3 +2147,70 @@ well as conversion and validation tools for input and output data.  The
 specification can be downloaded at @url{http://3mf.io/specification/}.")
     (home-page "https://3mf.io/")
     (license license:bsd-2)))
+
+(define-public openscad
+  (package
+    (name "openscad")
+    (version "2019.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://files.openscad.org/openscad-" version
+                           ".src.tar.gz"))
+       (sha256
+        (base32
+         "0nbgk5q5pgnw53la0kccdcpz2f4xf6d6076rkn0q08z57hkc85ha"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost)
+       ("cgal" ,cgal)
+       ("double-conversion" ,double-conversion)
+       ("eigen" ,eigen)
+       ("fontconfig" ,fontconfig)
+       ("glew" ,glew)
+       ("gmp" ,gmp)
+       ("harfbuzz" ,harfbuzz)
+       ("lib3mf" ,lib3mf)
+       ("libxml2" ,libxml2)
+       ("libzip" ,libzip)
+       ("mpfr" ,mpfr)
+       ("opencsg" ,opencsg)
+       ("qscintilla" ,qscintilla)
+       ("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("which" ,which)
+       ;; the following are only needed for tests
+       ("imagemagick" ,imagemagick)
+       ("ps" ,procps)
+       ("python" ,python)
+       ("xvfb" ,xorg-server)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (invoke "qmake"
+                     (string-append "PREFIX=" (assoc-ref outputs "out")))
+             #t))
+         (replace 'check
+           (lambda _
+             (with-directory-excursion "tests"
+               (invoke "cmake" ".")
+               (invoke "make")
+               (invoke "ctest"))
+             ;; strip python test files since lib dir ends up in out/share
+             (for-each delete-file
+                       (find-files "libraries/MCAD" ".*\\.py"))
+             #t)))))
+    (synopsis "Script-based 3D modeling application")
+    (description
+     "OpenSCAD is a 3D Computer-aided Design (CAD) application.  Unlike an
+interactive modeler, OpenSCAD generates 3D models from a script, giving you
+full programmatic control over your models.")
+    (home-page "https://www.openscad.org/")
+    (license license:gpl2+)))
