@@ -14744,14 +14744,14 @@ time-based (TOTP) passwords.")
 (define-public python-parso
   (package
     (name "python-parso")
-    (version "0.3.1")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "parso" version))
        (sha256
         (base32
-         "18p89iwcm8mnf380f92g9w0bhx5km8wxp392vvjcq4y1ld1llw1m"))))
+         "171a9ivhxwsd52h1cgsz40zgzpgzscn7yqb7sdjhy8m1lzj0wsv6"))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (build-system python-build-system)
