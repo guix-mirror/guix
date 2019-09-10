@@ -1,0 +1,40 @@
+By default commands such as "ctest" would not look for certificates
+at all: <https://issues.guix.gnu.org/issue/37371>.
+
+This changes CMake such that commands honor SSL_CERT_FILE and SSL_CERT_DIR
+as well as /etc/ssl/certs.
+
+--- cmake-3.13.1/Source/cmCurl.cxx	2019-09-10 17:27:36.926907260 +0200
++++ cmake-3.13.1/Source/cmCurl.cxx	2019-09-10 17:52:35.475903919 +0200
+@@ -4,11 +4,8 @@
+ 
+ #include "cmThirdParty.h"
+ 
+-#if !defined(CMAKE_USE_SYSTEM_CURL) && !defined(_WIN32) &&                    \
+-  !defined(__APPLE__) && !defined(CURL_CA_BUNDLE) && !defined(CURL_CA_PATH)
+ #  define CMAKE_FIND_CAFILE
+ #  include "cmSystemTools.h"
+-#endif
+ 
+ // curl versions before 7.21.5 did not provide this error code
+ #if defined(LIBCURL_VERSION_NUM) && LIBCURL_VERSION_NUM < 0x071505
+@@ -29,6 +26,19 @@ std::string cmCurlSetCAInfo(::CURL* curl
+     ::CURLcode res = ::curl_easy_setopt(curl, CURLOPT_CAINFO, cafile);
+     check_curl_result(res, "Unable to set TLS/SSL Verify CAINFO: ");
+   }
++
++  /* Honor the usual environment variables.  */
++  else if (cmSystemTools::GetEnv("SSL_CERT_FILE", e)) {
++    ::CURLcode res =
++      ::curl_easy_setopt(curl, CURLOPT_CAINFO, e.c_str());
++    check_curl_result(res, "Unable to set TLS/SSL Verify CAINFO: ");
++  }
++  else if (cmSystemTools::GetEnv("SSL_CERT_DIR", e)) {
++    ::CURLcode res =
++      ::curl_easy_setopt(curl, CURLOPT_CAPATH, e.c_str());
++    check_curl_result(res, "Unable to set TLS/SSL Verify CAINFO: ");
++  }
++
+ #ifdef CMAKE_FIND_CAFILE
+ #  define CMAKE_CAFILE_FEDORA "/etc/pki/tls/certs/ca-bundle.crt"
+   else if (cmSystemTools::FileExists(CMAKE_CAFILE_FEDORA, true)) {
