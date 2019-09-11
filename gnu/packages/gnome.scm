@@ -7231,9 +7231,9 @@ compiled.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/"
+                    "mirror://gnome/sources/gfbgraph/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "gfbgraph-" version ".tar.xz"))
               (sha256
                (base32
                 "1dp0v8ia35fxs9yhnqpxj3ir5lh018jlbiwifjfn8ayy7h47j4fs"))))
