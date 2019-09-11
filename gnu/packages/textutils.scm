@@ -13,7 +13,7 @@
 ;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -89,23 +89,22 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7.1")
+    (version "3.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rrthomas/recode/releases/"
                            "download/v" version "/" name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "0215hfj0rhlh0grg91qfx75pp6z09bpv8211qdxqihniw7y9a4fs"))
+        (base32 "1sl99dfx2b76paq86wv3a0lcy66f1hylf6iy04rzwxj7ccwpsk30"))
        (modules '((guix build utils)))
        (snippet '(begin
                    (delete-file "tests/Recode.c")
                    #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
-       ("python2-cython" ,python2-cython)))
+     `(("python" ,python)
+       ("python-cython" ,python-cython)))
     (home-page "https://github.com/rrthomas/recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
