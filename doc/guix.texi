@@ -1724,7 +1724,7 @@ to make sure your TrueType fonts are listed there.
 After installing fonts you may have to refresh the font cache to use
 them in applications.  The same applies when applications installed via
 Guix do not seem to find fonts.  To force rebuilding of the font cache
-run @code{fc-cache -frv}.  The @code{fc-cache} command is provided by
+run @code{fc-cache -rv}.  The @code{fc-cache} command is provided by
 the @code{fontconfig} package.
 
 @subsection X.509 Certificates
