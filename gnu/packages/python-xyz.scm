@@ -10556,25 +10556,29 @@ characters, mouse support, and auto suggestions.")
 (define-public python-jedi
   (package
     (name "python-jedi")
-    (version "0.13.3")
+    (version "0.15.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "jedi" version))
        (sha256
         (base32
-         "0nsrjlb57njqppxmi8wjsb1dkad7qa7svx67jbkhixq66lz61c1b"))))
+         "0bp4pxhsynaarbvzblsn5x32lzp29svy3sxfy8i6m5iwz9s9r1ds"))))
     (build-system python-build-system)
     (arguments
-     `( ;; Many tests are failing with Python 3.7.x as of version 0.13.3 (see:
-        ;; https://github.com/davidhalter/jedi/issues/1263)
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'disable-file-completion-test
+           ;; A single parameterized test currently fail (see:
+           ;; https://github.com/davidhalter/jedi/issues/1395).  Remove it.
+           (lambda _
+             (substitute* "test/test_api/test_completion.py"
+               ((".*'example.py', 'rb\"' \\+ join\\('\\.\\.'.*") ""))
+             #t))
          (replace 'check
-           (lambda* (#:key tests? #:allow-other-keys)
-             (when tests?
-               (invoke "py.test" "-vv")))))))
+           (lambda _
+             (setenv "HOME" "/tmp")
+             (invoke "python" "-m" "pytest"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
        ("python-docopt" ,python-docopt)))
@@ -10592,11 +10596,7 @@ well.")
     (license license:expat)))
 
 (define-public python2-jedi
-  (let ((base (package-with-python2 (strip-python2-variant python-jedi))))
-    (package
-      (inherit base)
-      (arguments (substitute-keyword-arguments (package-arguments base)
-                   ((#:tests? _) #t))))))
+  (package-with-python2 python-jedi))
 
 (define-public ptpython
   (package
