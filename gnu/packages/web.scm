@@ -6386,7 +6386,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
        (method url-fetch)
        (uri (string-append "https://github.com/nghttp2/nghttp2/"
                            "releases/download/v" version "/"
-                           name "-" version ".tar.xz"))
+                           "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
          "0fi6qg2w82636wixwkqy7bclpgxslmvg82r431hs8h6aqc4mnzwv"))))
