@@ -94,7 +94,7 @@ to DOS format and vice versa.")
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rrthomas/recode/releases/"
-                           "download/v" version "/" name "-" version ".tar.gz"))
+                           "download/v" version "/recode-" version ".tar.gz"))
        (sha256
         (base32 "1sl99dfx2b76paq86wv3a0lcy66f1hylf6iy04rzwxj7ccwpsk30"))
        (modules '((guix build utils)))
