@@ -58,9 +58,6 @@
     (properties
      `((upstream-name . "BSgenome.Celegans.UCSC.ce6")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
