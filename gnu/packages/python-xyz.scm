@@ -2984,38 +2984,44 @@ Language (TOML) configuration files.")
 Server (PLS).")
     (license license:expat)))
 
+;; XXX: We must use a non-release version since the latest release version
+;; requires python-jedi version < 0.15.
 (define-public python-language-server
-  (package
-    (name "python-language-server")
-    (version "0.28.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "python-language-server" version))
-       (sha256
-        (base32
-         "1qbiij208l6g1l5hzihx8badhmqkxdk0spn7gm7564yg54zdp2g2"))))
-    (build-system python-build-system)
-    (propagated-inputs
-     `(("python-pluggy" ,python-pluggy)
-       ("python-jsonrpc-server" ,python-jsonrpc-server)
-       ("python-jedi" ,python-jedi)
-       ("python-yapf" ,python-yapf)
-       ("python-pyflakes" ,python-pyflakes)
-       ("python-pydocstyle" ,python-pydocstyle)
-       ("python-pycodestyle" ,python-pycodestyle)
-       ("python-mccabe" ,python-mccabe)
-       ("python-rope" ,python-rope)
-       ("python-autopep8" ,python-autopep8)
-       ("python-pylint" ,python-pylint)))
-    (home-page "https://github.com/palantir/python-language-server")
-    (synopsis "Python implementation of the Language Server Protocol")
-    (description
-     "The Python Language Server (pyls) is an implementation of the Python 3
+  (let ((commit "c3cab77a85b1de4af1aec1bafea6a7320d6baec5")
+        (revision "1"))
+    (package
+      (name "python-language-server")
+      (version (git-version "0.28.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/palantir/python-language-server.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1q0xdwgln09sh58j0ryygj92hfgdhwcs57zjvqihya23jr5v0bz4"))))
+      (build-system python-build-system)
+      (propagated-inputs
+       `(("python-pluggy" ,python-pluggy)
+         ("python-jsonrpc-server" ,python-jsonrpc-server)
+         ("python-jedi" ,python-jedi)
+         ("python-yapf" ,python-yapf)
+         ("python-pyflakes" ,python-pyflakes)
+         ("python-pydocstyle" ,python-pydocstyle)
+         ("python-pycodestyle" ,python-pycodestyle)
+         ("python-mccabe" ,python-mccabe)
+         ("python-rope" ,python-rope)
+         ("python-autopep8" ,python-autopep8)
+         ("python-pylint" ,python-pylint)))
+      (home-page "https://github.com/palantir/python-language-server")
+      (synopsis "Python implementation of the Language Server Protocol")
+      (description
+       "The Python Language Server (pyls) is an implementation of the Python 3
 language specification for the Language Server Protocol (LSP).  This tool is
 used in text editing environments to provide a complete and integrated
 feature-set for programming Python effectively.")
-    (license license:expat)))
+      (license license:expat))))
 
 (define-public python-black
   (package
