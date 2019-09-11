@@ -50,12 +50,8 @@
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Celegans.UCSC.ce6_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Celegans.UCSC.ce6"
+                                     version 'annotation))
               (sha256
                (base32
                 "0mqzb353xv2c3m3vkb315dkmnxkgczp7ndnknyhpgjlybyf715v9"))))
