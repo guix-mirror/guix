@@ -432,7 +432,10 @@ potential infinite waits blocking libvirt."))
            (provision '(libvirtd))
            (start #~(make-forkexec-constructor
                      (list (string-append #$libvirt "/sbin/libvirtd")
-                           "-f" #$config-file)))
+                           "-f" #$config-file)
+                     #:environment-variables
+                     ;; For finding qemu binaries.
+                     '("PATH=/run/current-system/profile/bin")))
            (stop #~(make-kill-destructor))))))
 
 (define libvirt-service-type
