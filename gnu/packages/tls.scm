@@ -412,7 +412,7 @@ required structures.")
   (package
     (inherit openssl)
     (name "openssl")
-    (version "1.1.1c")
+    (version "1.1.1d")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -425,7 +425,7 @@ required structures.")
               (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
               (sha256
                (base32
-                "142c7zdlz06hjrrvinb9f276czc78bnkyhd9xma621qmmmwk1yzn"))))
+                "1whinyw402z3b9xlb3qaxv4b9sk4w1bgh9k0y8df1z4x3yy92fhy"))))
     (outputs '("out"
                "doc"        ; 6.8 MiB of man3 pages and full HTML documentation
                "static"))   ; 6.4 MiB of .a files
