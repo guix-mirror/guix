@@ -6405,9 +6405,11 @@ tool.  This build system runs @code{scons} to build the package,
 the package.
 
 Additional flags to be passed to @code{scons} can be specified with the
-@code{#:scons-flags} parameter.  The version of Python used to run SCons
-can be specified by selecting the appropriate SCons package with the
-@code{#:scons} parameter.
+@code{#:scons-flags} parameter.  The default build and install targets
+can be overridden with @code{#:build-targets} and
+@code{#:install-targets} respectively.  The version of Python used to
+run SCons can be specified by selecting the appropriate SCons package
+with the @code{#:scons} parameter.
 @end defvr
 
 @defvr {Scheme Variable} haskell-build-system

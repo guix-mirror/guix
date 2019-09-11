@@ -29,7 +29,7 @@
 ;;
 ;; Code:
 
-(define* (build #:key outputs (scons-flags '()) (parallel-build? #t) #:allow-other-keys)
+(define* (build #:key outputs (build-targets '()) (scons-flags '()) (parallel-build? #t) #:allow-other-keys)
   (let ((out (assoc-ref outputs "out")))
     (mkdir-p out)
     (apply invoke "scons"
@@ -37,7 +37,8 @@
                        (list "-j" (number->string
                                    (parallel-job-count)))
                        (list))
-                   scons-flags))))
+                   scons-flags
+                   build-targets))))
 
 (define* (check #:key tests? test-target (scons-flags '()) #:allow-other-keys)
   "Run the test suite of a given SCons application."
@@ -46,9 +47,9 @@
       (format #t "test suite not run~%"))
   #t)
 
-(define* (install #:key outputs (scons-flags '()) #:allow-other-keys)
+(define* (install #:key outputs (install-targets '("install")) (scons-flags '()) #:allow-other-keys)
   "Install a given SCons application."
-  (apply invoke "scons" "install" scons-flags))
+  (apply invoke "scons" (append scons-flags install-targets)))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases

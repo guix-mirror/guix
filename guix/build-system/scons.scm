@@ -76,7 +76,9 @@
                       #:key
                       (tests? #t)
                       (scons-flags ''())
+                      (build-targets ''())
                       (test-target "test")
+                      (install-targets ''("install"))
                       (phases '(@ (guix build scons-build-system)
                                   %standard-phases))
                       (outputs '("out"))
@@ -101,8 +103,10 @@ provides a 'SConstruct' file as its build system."
                                  source))
                     #:scons-flags ,scons-flags
                     #:system ,system
+                    #:build-targets ,build-targets
                     #:test-target ,test-target
                     #:tests? ,tests?
+                    #:install-targets ,install-targets
                     #:phases ,phases
                     #:outputs %outputs
                     #:search-paths ',(map search-path-specification->sexp
