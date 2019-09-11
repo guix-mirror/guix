@@ -5399,6 +5399,13 @@ computing.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-docs-reproducible
+           (lambda _
+             (substitute* "IPython/sphinxext/ipython_directive.py"
+               ((".*import datetime") "")
+               ((".*datetime.datetime.now\\(\\)") "")
+               (("%timeit") "# %timeit"))
+             #t))
          ;; Tests can only be run after the library has been installed and not
          ;; within the source directory.
          (delete 'check)
