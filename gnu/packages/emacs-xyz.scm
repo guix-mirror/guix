@@ -13189,16 +13189,17 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
 (define-public emacs-interactive-align
   (package
     (name "emacs-interactive-align")
-    (version "0.1.0")
+    (version "0.4.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mkcms/interactive-align/"
-                           "archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mkcms/interactive-align.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sibpgb4lp6yy3pziak8f3hz4b28yj0dqy2nzh51z3d0b63h528m"))))
+         "0bh03w91i622hbar5dcq631ndxx1y8kd3h655pgw1g0lqkv1mlnc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mkcms/interactive-align/")
     (synopsis "Interactive align-regexp command in Emacs")
