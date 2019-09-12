@@ -3828,8 +3828,8 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
-       ("texlive" ,(texlive-union (list texlive-generic-xypic
-                                        texlive-fonts-xypic
+       ("texlive" ,(texlive-union (list texlive-xypic
+                                        texlive-cm
                                         texlive-latex-hyperref
                                         texlive-bibtex)))
        ("ghostscript" ,ghostscript)))
