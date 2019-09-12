@@ -30,6 +30,7 @@
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
@@ -109,7 +110,11 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
             ;; Remove nscd service if network is shared with the host.
             (if shared-network?
                 (list nscd-service-type
-                      static-networking-service-type)
+                      static-networking-service-type
+                      dhcp-client-service-type
+                      network-manager-service-type
+                      connman-service-type
+                      wicd-service-type)
                 (list))))
 
   (operating-system
