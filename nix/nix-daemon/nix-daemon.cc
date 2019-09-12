@@ -1,3 +1,4 @@
+#include "config.h"
 #include "shared.hh"
 #include "local-store.hh"
 #include "util.hh"
