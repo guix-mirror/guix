@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Brett Gilio <brettg@posteo.net>
 ;;; Copyright © 2019 Nicolò Balzarotti <anothersms@gmail.com>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -15365,3 +15366,30 @@ common graph algorithms.")
 removing cell free mRNA contamination (the \"soup\") from droplet based single
 cell RNA-seq experiments.")
       (license license:gpl2))))
+
+(define-public r-assertr
+  (package
+    (name "r-assertr")
+    (version "2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertr" version))
+       (sha256
+        (base32
+         "0g4ii6vhp0155a29ljhs64a09x0nzy5ybvwwchhk4mkcgsvnvfkj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-mass" ,r-mass)
+       ("r-rlang" ,r-rlang)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))           ; needed for vignette
+    (home-page "https://github.com/ropensci/assertr")
+    (synopsis "Assertive programming for R analysis pipelines")
+    (description
+     "This package provides functionality to assert conditions that have to be
+met so that errors in data used in analysis pipelines can fail quickly.  It is
+similar to @code{stopifnot()} but more powerful, friendly, and easier for use
+in pipelines.")
+    (license license:expat)))
