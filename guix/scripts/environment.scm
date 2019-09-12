@@ -462,6 +462,10 @@ host file systems to mount inside the container.  If USER is not #f, each
 target of USER-MAPPINGS will be re-written relative to '/home/USER', and USER
 will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
 ~/.guix-profile to the environment profile."
+  (define (optional-mapping->fs mapping)
+    (and (file-exists? (file-system-mapping-source mapping))
+         (file-system-mapping->bind-mount mapping)))
+
   (mlet %store-monad ((reqs (inputs->requisites
                              (list (direct-store-path bash) profile))))
     (return
@@ -498,11 +502,6 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                                   (target cwd)
                                   (writable? #t)))
                            '())))
-              ;; When in Rome, do as Nix build.cc does: Automagically
-              ;; map common network configuration files.
-              (if network?
-                  %network-file-mappings
-                  '())
               ;; Mappings for the union closure of all inputs.
               (map (lambda (dir)
                      (file-system-mapping
@@ -511,6 +510,10 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                       (writable? #f)))
                    reqs)))
             (file-systems (append %container-file-systems
+                                  (if network?
+                                      (filter-map optional-mapping->fs
+                                                  %network-file-mappings)
+                                      '())
                                   (map file-system-mapping->bind-mount
                                        mappings))))
        (exit/status

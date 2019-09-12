@@ -147,13 +147,6 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
-  (define nscd-run-directory "/var/run/nscd")
-
-  (define nscd-mapping
-    (file-system-mapping
-     (source nscd-run-directory)
-     (target nscd-run-directory)))
-
   (define (mountable-file-system? file-system)
     ;; Return #t if FILE-SYSTEM should be mounted in the container.
     (and (not (string=? "/" (file-system-mount-point file-system)))
@@ -168,12 +161,7 @@ that will be shared with the host system."
               os (cons %store-mapping mappings)
               #:shared-network? shared-network?
               #:extra-file-systems %container-file-systems))
-         (nscd-os (containerized-operating-system
-                   os (cons* nscd-mapping %store-mapping mappings)
-                   #:shared-network? shared-network?
-                   #:extra-file-systems %container-file-systems))
-         (specs (os-file-system-specs os))
-         (nscd-specs (os-file-system-specs nscd-os)))
+         (specs (os-file-system-specs os)))
 
     (define script
       (with-imported-modules (source-module-closure
@@ -182,14 +170,19 @@ that will be shared with the host system."
         #~(begin
             (use-modules (gnu build linux-container)
                          (gnu system file-systems) ;spec->file-system
-                         (guix build utils))
+                         (guix build utils)
+                         (srfi srfi-1))
 
-            (call-with-container
-                (map spec->file-system
-                     (if (and #$shared-network?
-                              (file-exists? #$nscd-run-directory))
-                         '#$nscd-specs
-                         '#$specs))
+            (define file-systems
+              (filter-map (lambda (spec)
+                            (let* ((fs    (spec->file-system spec))
+                                   (flags (file-system-flags fs)))
+                              (and (or (not (memq 'bind-mount flags))
+                                       (file-exists? (file-system-device fs)))
+                                   fs)))
+                          '#$specs))
+
+            (call-with-container file-systems
               (lambda ()
                 (setenv "HOME" "/root")
                 (setenv "TMPDIR" "/tmp")
