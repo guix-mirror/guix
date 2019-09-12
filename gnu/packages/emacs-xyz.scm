@@ -13669,7 +13669,7 @@ through the symbol: @command{this-fn}.")
 (define-public emacs-dumb-jump
   (package
     (name "emacs-dumb-jump")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
@@ -13678,7 +13678,7 @@ through the symbol: @command{this-fn}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00ph85vp8sa3k99qrdxfz4l8zx121q9xf47vvspzg26bk9l4nwin"))))
+        (base32 "1njf60264snhxrd36m4z687lqfkis0p9mmrr7cf1c8l0lfdvawxi"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests freeze when run.
