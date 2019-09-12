@@ -1717,11 +1717,16 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
     (version "2.16.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://gmsh.info/src/gmsh-"
-                          version "-source.tgz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://gitlab.onelab.info/gmsh/gmsh.git")
+            (commit
+             (string-append "gmsh_"
+                            (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                        version)))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "1slf0bfkwrcgn6296wb4qhbk4ahz6i4wfb10hnim08x05vrylag8"))
+       (base32 "08rq4jajwmlpivnm9yifz2jhaivnz065lnk0h2zv773nwl9wf162"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
