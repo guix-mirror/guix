@@ -2428,6 +2428,6 @@ to handle."
                  `(("/bin/sh" ,(file-append (canonical-package bash)
                                             "/bin/sh"))
                    ("/usr/bin/env" ,(file-append (canonical-package coreutils)
-                                                 "/usr/bin/env"))))))
+                                                 "/bin/env"))))))
 
 ;;; base.scm ends here
