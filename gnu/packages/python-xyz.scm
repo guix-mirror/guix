@@ -3960,6 +3960,7 @@ toolkits.")
      `(("python-matplotlib" ,python-matplotlib)
        ("python-colorspacious" ,python-colorspacious)
        ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-copybutton" ,python-sphinx-copybutton)
        ("python-sphinx-gallery" ,python-sphinx-gallery)
        ("python-numpydoc" ,python-numpydoc)
        ("python-ipython" ,python-ipython)
@@ -4037,7 +4038,12 @@ toolkits.")
     (license (package-license python-matplotlib))))
 
 (define-public python2-matplotlib-documentation
-  (package-with-python2 python-matplotlib-documentation))
+  (let ((parent (package-with-python2 python-matplotlib-documentation)))
+    (package
+      (inherit parent)
+      (native-inputs
+       (alist-delete "python-sphinx-copybutton"
+                     (package-native-inputs parent))))))
 
 (define-public python-matplotlib-venn
   (package
