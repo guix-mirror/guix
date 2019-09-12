@@ -171,11 +171,15 @@ that will be shared with the host system."
     (define script
       (with-imported-modules (source-module-closure
                               '((guix build utils)
-                                (gnu build linux-container)))
+                                (gnu build linux-container)
+                                (guix i18n)
+                                (guix diagnostics)))
         #~(begin
             (use-modules (gnu build linux-container)
                          (gnu system file-systems) ;spec->file-system
                          (guix build utils)
+                         (guix i18n)
+                         (guix diagnostics)
                          (srfi srfi-1))
 
             (define file-systems
@@ -186,6 +190,16 @@ that will be shared with the host system."
                                        (file-exists? (file-system-device fs)))
                                    fs)))
                           '#$specs))
+
+            (define (explain pid)
+              ;; XXX: We can't quite call 'bindtextdomain' so there's actually
+              ;; no i18n.
+              (info (G_ "system container is running as PID ~a~%") pid)
+              ;; XXX: Should we recommend 'guix container exec'?  It's more
+              ;; verbose and doesn't bring much.
+              (info (G_ "Run 'sudo nsenter -a -t ~a' to get a shell into it.~%")
+                    pid)
+              (newline (guix-warning-port)))
 
             (call-with-container file-systems
               (lambda ()
@@ -201,7 +215,8 @@ that will be shared with the host system."
               #:host-uids 65536
               #:namespaces (if #$shared-network?
                                (delq 'net %namespaces)
-                               %namespaces)))))
+                               %namespaces)
+              #:process-spawned-hook explain))))
 
     (gexp->script "run-container" script)))
 
