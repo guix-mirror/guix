@@ -4972,7 +4972,8 @@ releases.")
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-appdirs" ,python-appdirs)))
+     `(("python-appdirs" ,python-appdirs)
+       ("python-importlib-metadata" ,python-importlib-metadata)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)
