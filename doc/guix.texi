@@ -13041,6 +13041,33 @@ objects}).
 @end table
 @end deftp
 
+@cindex nftables
+@defvr {Scheme Variable} nftables-service-type
+This is the service type to set up a nftables configuration.  nftables is a
+netfilter project that aims to replace the existing iptables, ip6tables,
+arptables and ebtables framework.  It provides a new packet filtering
+framework, a new user-space utility @command{nft}, and a compatibility layer
+for iptables.  This service comes with a default ruleset
+@code{%default-nftables-ruleset} that rejecting all incomming connections
+except those to the ssh port 22.  To use it, simply write:
+
+@lisp
+(service nftables-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} nftables-configuration
+The data type representing the configuration of nftables.
+
+@table @asis
+@item @code{package} (default: @code{nftables})
+The nftables package that provides @command{nft}.
+@item @code{ruleset} (default: @code{%default-nftables-ruleset})
+The nftables ruleset to use.  This may be any ``file-like'' object
+(@pxref{G-Expressions, file-like objects}).
+@end table
+@end deftp
+
 @cindex NTP (Network Time Protocol), service
 @cindex ntpd, service for the Network Time Protocol daemon
 @cindex real time clock
