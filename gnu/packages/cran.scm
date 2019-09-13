@@ -448,13 +448,13 @@ into a pipeline of data manipulation and visualisation.")
 (define-public r-httpuv
   (package
     (name "r-httpuv")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httpuv" version))
               (sha256
                (base32
-                "042piypg4c8sqrlcdl3dwajkafkbglsky3x7d0jpjv8s5wxnpfxm"))))
+                "13ax0hs2lc39ilznh1zarwqdzahcbhb8adilrfik3xg0fkljpcwk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
