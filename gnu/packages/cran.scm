@@ -15420,3 +15420,32 @@ or bootstrapping of parameters and models, feature reduction (feature
 extraction and variable selection) as well as conversion between indices of
 effect size.")
     (license license:gpl3)))
+
+(define-public r-rgdal
+  (package
+    (name "r-rgdal")
+    (version "1.4-4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "rgdal" version))
+       (sha256
+        (base32
+         "1my56hdc9x40ynxx1qwqwqxjvjxybmm00w4xg5gi8zgj19pffci5"))))
+    (properties `((upstream-name . "rgdal")))
+    (build-system r-build-system)
+    (inputs
+     `(("gdal" ,gdal)
+       ("proj.4" ,proj.4)
+       ("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-sp" ,r-sp)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://rgdal.r-forge.r-project.org")
+    (synopsis "Bindings for the Geospatial Data Abstraction Library")
+    (description
+     "This package provides bindings to the Geospatial Data Abstraction
+Library (GDAL) and access to projection/transformation operations from the
+PROJ.4 library.")
+    (license license:gpl2+)))
