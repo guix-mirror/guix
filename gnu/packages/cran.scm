@@ -15479,3 +15479,31 @@ Earth radius vector, declination, sunset and sunrise, daylength, equation of
 time, vector in the direction of the sun, vector normal to surface, and some
 atmospheric physics.")
     (license license:gpl2+)))
+
+(define-public r-lifecycle
+  (package
+    (name "r-lifecycle")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "lifecycle" version))
+       (sha256
+        (base32
+         "11rk7hkw63rfrf4aqmb4xrb88kg95xh8hajpjvjfwjym2v02h74n"))))
+    (properties `((upstream-name . "lifecycle")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-glue" ,r-glue)
+       ("r-rlang" ,r-rlang)))
+    (home-page "https://github.com/r-lib/lifecycle")
+    (synopsis "Manage the life cycle of your package functions")
+    (description
+     "Manage the life cycle of your exported functions with shared
+conventions, documentation badges, and non-invasive deprecation warnings.  The
+lifecycle package defines four development stages (experimental, maturing,
+stable, and questioning) and three deprecation stages (soft-deprecated,
+deprecated, and defunct).  It makes it easy to insert badges corresponding to
+these stages in your documentation.  Usage of deprecated functions are
+signalled with increasing levels of non-invasive verbosity.")
+    (license license:gpl3)))
