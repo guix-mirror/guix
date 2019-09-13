@@ -8198,14 +8198,14 @@ results using @code{ggplot2}.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.7.0")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
         (base32
-         "1m0gy991fmxvqry91kkzdkdapyalhrwql25d0hg2a2naxgfw4zpk"))))
+         "14shypabpahf68hd66rb1dpqhiyl3i0yx1yc85wamdvljh9fdymb"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
