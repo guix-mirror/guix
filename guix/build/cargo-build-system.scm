@@ -168,9 +168,6 @@ directory = '" port)
       (apply invoke `("cargo" "test" ,@cargo-test-flags))
       #t))
 
-(define (touch file-name)
-  (call-with-output-file file-name (const #t)))
-
 (define* (install #:key inputs outputs skip-build? #:allow-other-keys)
   "Install a given Cargo package."
   (let* ((out (assoc-ref outputs "out")))
