@@ -15449,3 +15449,31 @@ effect size.")
 Library (GDAL) and access to projection/transformation operations from the
 PROJ.4 library.")
     (license license:gpl2+)))
+
+(define-public r-insol
+  (package
+    (name "r-insol")
+    (version "1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "insol" version))
+       (sha256
+        (base32
+         "14ikz05375pjn9hby7kwkhcnykjilbnkdy5i8lsl7c5qdbhmqcm5"))))
+    (properties `((upstream-name . "insol")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-raster" ,r-raster)
+       ("r-rgdal" ,r-rgdal)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://meteoexploration.com/R/insol/index.html")
+    (synopsis "Tools for calculating solar radiation")
+    (description
+     "This package provides functions to compute insolation on tilted
+surfaces, computes atmospheric transmittance and related parameters such as:
+Earth radius vector, declination, sunset and sunrise, daylength, equation of
+time, vector in the direction of the sun, vector normal to surface, and some
+atmospheric physics.")
+    (license license:gpl2+)))
