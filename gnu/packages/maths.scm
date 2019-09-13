@@ -1752,7 +1752,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
                            "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
-    (home-page "http://www.geuz.org/gmsh/")
+    (home-page "http://gmsh.info/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
 CAD engine and post-processor.  Its design goal is to provide a fast, light
