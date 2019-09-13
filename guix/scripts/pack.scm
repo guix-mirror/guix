@@ -944,7 +944,8 @@ Create a bundle of PACKAGE.\n"))
                                   (list (transform store package) output))
                                  ((? package? package)
                                   (list (transform store package) "out")))
-                               (filter-map maybe-package-argument opts)))
+                               (reverse
+                                (filter-map maybe-package-argument opts))))
            (manifest-file (assoc-ref opts 'manifest)))
       (define properties
         (if (assoc-ref opts 'save-provenance?)
