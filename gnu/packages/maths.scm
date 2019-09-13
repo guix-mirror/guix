@@ -3096,6 +3096,10 @@ parts of it.")
 
 (define-public openblas
   (package
+    ;; TODO: Incorporate 'openblas/fixed-num-threads' changes on the next
+    ;; rebuild cycle.
+    (replacement openblas/fixed-num-threads)
+
     (name "openblas")
     (version "0.3.5")
     (source
@@ -3166,7 +3170,7 @@ parts of it.")
     (license license:bsd-3)))
 
 (define-public openblas-ilp64
-  (package (inherit openblas)
+  (package/inherit openblas
     (name "openblas-ilp64")
     (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
     (arguments
@@ -3176,6 +3180,24 @@ parts of it.")
                  ,flags))))
     (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
+
+(define openblas/fixed-num-threads
+  ;; TODO: Move that to 'openblas' proper on the next rebuild cycle.
+  (package
+    (inherit openblas)
+    (version (match (string-split (package-version openblas) #\.)
+               ((numbers ... (= string-length len))
+                (string-join (append numbers
+                                     (list (make-string len #\a)))
+                             "."))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags ''())
+        ;; This is the maximum number of threads OpenBLAS will ever use (that
+        ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
+        ;; is used.)  If we don't set it, the makefile sets it to the number
+        ;; of cores of the build machine, which is obviously wrong.
+        `(cons "NUM_THREADS=128" ,flags))))))
 
 (define* (make-blis implementation #:optional substitutable?)
   "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
