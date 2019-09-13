@@ -15393,3 +15393,30 @@ met so that errors in data used in analysis pipelines can fail quickly.  It is
 similar to @code{stopifnot()} but more powerful, friendly, and easier for use
 in pipelines.")
     (license license:expat)))
+
+(define-public r-parameters
+  (package
+    (name "r-parameters")
+    (version "0.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "parameters" version))
+       (sha256
+        (base32
+         "12v301va1l3xydicbf0k04anxlmyjclbbjfg0riprryhkxwwk8g5"))))
+    (properties `((upstream-name . "parameters")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bayestestr" ,r-bayestestr)
+       ("r-insight" ,r-insight)))
+    (home-page "https://cran.r-project.org/web/packages/parameters")
+    (synopsis "Processing of model parameters")
+    (description
+     "This package provides utilities for processing the parameters of various
+statistical models.  Beyond computing p values, CIs, and other indices for a
+wide variety of models, this package implements features like standardization
+or bootstrapping of parameters and models, feature reduction (feature
+extraction and variable selection) as well as conversion between indices of
+effect size.")
+    (license license:gpl3)))
