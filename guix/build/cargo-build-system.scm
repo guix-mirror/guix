@@ -99,7 +99,7 @@ Cargo.toml file present at its root."
   (for-each
     (match-lambda
       ((name . path)
-       (let* ((basepath (string-drop (basename path) 33))
+       (let* ((basepath (strip-store-file-name path))
               (crate-dir (string-append vendor-dir "/" basepath)))
          (and (crate-src? path)
               ;; Gracefully handle duplicate inputs
