@@ -516,6 +516,18 @@ the image."
               `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
                 ,@(append-map symlink->directives '#$symlinks)))
 
+            (define tag
+              ;; Compute a meaningful "repository" name, which will show up in
+              ;; the output of "docker images".
+              (let ((manifest (profile-manifest #$profile)))
+                (let loop ((names (map manifest-entry-name
+                                       (manifest-entries manifest))))
+                  (define str (string-join names "-"))
+                  (if (< (string-length str) 40)
+                      str
+                      (match names
+                        ((_) str)
+                        ((names ... _) (loop names))))))) ;drop one entry
 
             (setenv "PATH" (string-append #$archiver "/bin"))
 
@@ -524,6 +536,7 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
+                                #:repository tag
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:environment environment

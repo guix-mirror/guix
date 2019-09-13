@@ -57,22 +57,36 @@
     (created . ,time)
     (container_config . #nil)))
 
-(define (generate-tag path)
-  "Generate an image tag for the given PATH."
-  (match (string-split (basename path) #\-)
-    ((hash name . rest) (string-append name ":" hash))))
+(define (canonicalize-repository-name name)
+  "\"Repository\" names are restricted to roughtl [a-z0-9_.-].
+Return a version of TAG that follows these rules."
+  (define ascii-letters
+    (string->char-set "abcdefghijklmnopqrstuvwxyz"))
 
-(define (manifest path id)
+  (define separators
+    (string->char-set "_-."))
+
+  (define repo-char-set
+    (char-set-union char-set:digit ascii-letters separators))
+
+  (string-map (lambda (chr)
+                (if (char-set-contains? repo-char-set chr)
+                    chr
+                    #\.))
+              (string-trim (string-downcase name) separators)))
+
+(define* (manifest path id #:optional (tag "guix"))
   "Generate a simple image manifest."
-  `#(((Config . "config.json")
-      (RepoTags . #(,(generate-tag path)))
-      (Layers . #(,(string-append id "/layer.tar"))))))
+  (let ((tag (canonicalize-repository-name tag)))
+    `#(((Config . "config.json")
+        (RepoTags . #(,(string-append tag ":latest")))
+        (Layers . #(,(string-append id "/layer.tar")))))))
 
 ;; According to the specifications this is required for backwards
 ;; compatibility.  It duplicates information provided by the manifest.
-(define (repositories path id)
+(define* (repositories path id #:optional (tag "guix"))
   "Generate a repositories file referencing PATH and the image ID."
-  `((,(generate-tag path) . ((latest . ,id)))))
+  `((,(canonicalize-repository-name tag) . ((latest . ,id)))))
 
 ;; See https://github.com/opencontainers/image-spec/blob/master/config.md
 (define* (config layer time arch #:key entry-point (environment '()))
@@ -112,6 +126,7 @@
 
 (define* (build-docker-image image paths prefix
                              #:key
+                             (repository "guix")
                              (extra-files '())
                              (transformations '())
                              (system (utsname:machine (uname)))
@@ -121,7 +136,9 @@
                              compressor
                              (creation-time (current-time time-utc)))
   "Write to IMAGE a Docker image archive containing the given PATHS.  PREFIX
-must be a store path that is a prefix of any store paths in PATHS.
+must be a store path that is a prefix of any store paths in PATHS.  REPOSITORY
+is a descriptive name that will show up in \"REPOSITORY\" column of the output
+of \"docker images\".
 
 When DATABASE is true, copy it to /var/guix/db in the image and create
 /var/guix/gcroots and friends.
@@ -243,10 +260,10 @@ SRFI-19 time-utc object, as the creation time in metadata."
                              #:entry-point entry-point))))
       (with-output-to-file "manifest.json"
         (lambda ()
-          (scm->json (manifest prefix id))))
+          (scm->json (manifest prefix id repository))))
       (with-output-to-file "repositories"
         (lambda ()
-          (scm->json (repositories prefix id)))))
+          (scm->json (repositories prefix id repository)))))
 
     (apply invoke "tar" "-cf" image "-C" directory
            `(,@%tar-determinism-options
