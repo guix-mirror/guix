@@ -3757,25 +3757,28 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.8.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0dyc4b03wi65bk7j0ma0y188syh37h57wgxji82i0h8j6pn593x1"))))
+         "1403j0xd93l0r7qj738ryd5zc79hbcghrzybib3c3hrnaq5s78cj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-magrittr" ,r-magrittr)
        ("r-glue" ,r-glue)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-tidyselect" ,r-tidyselect)
        ("r-rcpp" ,r-rcpp)
        ("r-stringi" ,r-stringi)
-       ("r-tibble" ,r-tibble)))
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/hadley/tidyr")
     (synopsis "Tidy data with `spread()` and `gather()` functions")
     (description
