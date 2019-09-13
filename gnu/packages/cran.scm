@@ -8037,14 +8037,14 @@ detection, parallelism through BLAS and parallel user templates.")
 (define-public r-sjstats
   (package
     (name "r-sjstats")
-    (version "0.17.5")
+    (version "0.17.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjstats" version))
        (sha256
         (base32
-         "1x9ybvz84vgaabmqp4z6crbv5q6kqjg6msk1spbr11zx9dbj06ca"))))
+         "11z1wfi0d74d1rld0320l3vmv6rl41wa0v9bjc44rk06yc90wld2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayestestr" ,r-bayestestr)
@@ -8056,6 +8056,7 @@ detection, parallelism through BLAS and parallel user templates.")
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-modelr" ,r-modelr)
+       ("r-parameters" ,r-parameters)
        ("r-performance" ,r-performance)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
