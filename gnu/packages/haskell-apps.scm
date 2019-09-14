@@ -337,6 +337,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
        ("ghc-http-conduit" ,ghc-http-conduit)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-magic" ,ghc-magic)
        ("ghc-memory" ,ghc-memory)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-monad-logger" ,ghc-monad-logger)
