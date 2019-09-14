@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5952,6 +5953,28 @@ monadic incremental interface is provided as well.")
     (description
      "This package provides a @code{Conduit} interface for the LZMA
 compression algorithm used in the @code{.xz} file format.")
+    (license license:bsd-3)))
+
+(define-public ghc-magic
+  (package
+    (name "ghc-magic")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/magic/magic-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "10p0gjjjwr1dda7hahwrwn5njbfhl67arq3v3nf1jr3vymlkn75j"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/magic")
+    (synopsis "Interface to C file/magic library")
+    (description
+     "This package provides a full-featured binding to the C libmagic library.
+With it, you can determine the type of a file by examining its contents rather
+than its name.")
     (license license:bsd-3)))
 
 (define-public ghc-markdown-unlit
