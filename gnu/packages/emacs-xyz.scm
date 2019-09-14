@@ -18234,3 +18234,28 @@ You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
 Emacs that integrate with major modes like Org-mode.")
     (home-page "https://github.com/hlissner/emacs-doom-themes")
     (license license:expat)))
+
+(define-public emacs-elixir-mode
+  (package
+    (name "emacs-elixir-mode")
+    (version "2.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://stable.melpa.org/packages/elixir-mode-"
+             version
+             ".tar"))
+       (sha256
+        (base32
+         "091cizxg1aw8bkj58y048mj020ssapjflav633z9bl6gmi10dy4v"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-pkg-info" ,emacs-pkg-info)))
+    (home-page
+     "https://github.com/elixir-editors/emacs-elixir")
+    (synopsis "Major mode for editing Elixir files")
+    (description
+     "Elixir-Mode Provides font-locking, indentation and navigation support
+ for the Elixir programming language.")
+    (license license:gpl3+)))
