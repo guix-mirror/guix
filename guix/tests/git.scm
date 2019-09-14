@@ -18,6 +18,7 @@
 
 (define-module (guix tests git)
   #:use-module (git)
+  #:use-module ((guix git) #:select (with-repository))
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
@@ -55,7 +56,11 @@ Return DIRECTORY on success."
          (mkdir-p (dirname file))
          (call-with-output-file file
            (lambda (port)
-             (display contents port)))
+             (display (if (string? contents)
+                          contents
+                          (with-repository directory repository
+                            (contents repository)))
+                      port)))
          (git "add" file)
          (loop rest)))
       ((('commit text) rest ...)

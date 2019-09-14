@@ -3991,6 +3991,68 @@ add a meta-data file @file{.guix-channel} that contains:
   (directory "guix"))
 @end lisp
 
+@cindex news, for channels
+@subsection Writing Channel News
+
+Channel authors may occasionally want to communicate to their users
+information about important changes in the channel.  You'd send them all
+an email, but that's not convenient.
+
+Instead, channels can provide a @dfn{news file}; when the channel users
+run @command{guix pull}, that news file is automatically read and
+@command{guix pull --news} can display the announcements that correspond
+to the new commits that have been pulled, if any.
+
+To do that, channel authors must first declare the name of the news file
+in their @file{.guix-channel} file:
+
+@lisp
+(channel
+  (version 0)
+  (news-file "etc/news.txt"))
+@end lisp
+
+The news file itself, @file{etc/news.txt} in this example, must look
+something like this:
+
+@lisp
+(channel-news
+  (version 0)
+  (entry (commit "d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300")
+         (title (en "Fixed terrible bug")
+                (fr "Oh la la"))
+         (body (en "@@emph@{Good news@}!  It's fixed!")
+               (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
+         (title (en "Added a great package")
+                (ca "Què vol dir guix?"))
+         (body (en "Don't miss the @@code@{hello@} package!"))))
+@end lisp
+
+The file consists of a list of @dfn{news entries}.  Each entry is
+associated with a commit: it describes changes made in this commit,
+possibly in preceding commits as well.  Users see entries only the first
+time they obtain the commit the entry refers to.
+
+The @code{title} field should be a one-line summary while @code{body}
+can be arbitrarily long, and both can contain Texinfo markup
+(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
+a list of language tag/message tuples, which allows @command{guix pull}
+to display news in the language that corresponds to the user's locale.
+
+If you want to translate news using a gettext-based workflow, you can
+extract translatable strings with @command{xgettext} (@pxref{xgettext
+Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
+you write news entries in English first, the command below creates a PO
+file containing the strings to translate:
+
+@example
+xgettext -o news.po -l scheme -ken etc/news.scm
+@end example
+
+To sum up, yes, you could use your channel as a blog.  But beware, this
+is @emph{not quite} what your users might expect.
+
 @subsection Replicating Guix
 
 @cindex pinning, channels
