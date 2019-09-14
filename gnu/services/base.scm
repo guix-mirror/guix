@@ -1478,7 +1478,7 @@ information on the configuration file syntax."
                               (module "pam_limits.so")
                               (arguments '("conf=/etc/security/limits.conf")))))
              (if (member (pam-service-name pam)
-                         '("login" "su" "slim"))
+                         '("login" "su" "slim" "gdm-password"))
                  (pam-service
                   (inherit pam)
                   (session (cons pam-limits
