@@ -220,6 +220,21 @@ dynamic extent of EXP."
               (G_ "Support for submodules is missing; \
 please upgrade Guile-Git.~%"))))
 
+(define (reference-available? repository ref)
+  "Return true if REF, a reference such as '(commit . \"cabba9e\"), is
+definitely available in REPOSITORY, false otherwise."
+  (match ref
+    (('commit . commit)
+     (catch 'git-error
+       (lambda ()
+         (->bool (commit-lookup repository (string->oid commit))))
+       (lambda (key error . rest)
+         (if (= GIT_ENOTFOUND (git-error-code error))
+             #f
+             (apply throw key error rest)))))
+    (_
+     #f)))
+
 (define* (update-cached-checkout url
                                  #:key
                                  (ref '(branch . "master"))
@@ -254,7 +269,8 @@ When RECURSIVE? is true, check out submodules as well, if any."
                              (repository-open cache-directory)
                              (clone* url cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
-     (when cache-exists?
+     (when (and cache-exists?
+                (not (reference-available? repository ref)))
        (remote-fetch (remote-lookup repository "origin")))
      (when recursive?
        (update-submodules repository #:log-port log-port))
