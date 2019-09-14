@@ -307,7 +307,10 @@ STORE_MODULES =					\
 MODULES += $(STORE_MODULES)
 
 # Internal modules with test suite support.
-dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
+dist_noinst_DATA =				\
+  guix/tests.scm				\
+  guix/tests/http.scm				\
+  guix/tests/git.scm
 
 # Auxiliary files for packages.
 AUX_FILES =						\
@@ -391,6 +394,7 @@ SCM_TESTS =					\
   tests/file-systems.scm			\
   tests/gem.scm				\
   tests/gexp.scm				\
+  tests/git.scm					\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
   tests/grafts.scm				\
