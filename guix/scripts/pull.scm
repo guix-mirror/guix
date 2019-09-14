@@ -213,6 +213,62 @@ newest generation of PROFILE."
                                         (G_ "New in this revision:\n")))))
     (_ #t)))
 
+(define (display-channel channel)
+  "Display information about CHANNEL."
+  (format (current-error-port)
+          ;; TRANSLATORS: This describes a "channel"; the first placeholder is
+          ;; the channel name (e.g., "guix") and the second placeholder is its
+          ;; URL.
+          (G_ "    ~a at ~a~%")
+          (channel-name channel)
+          (channel-url channel)))
+
+(define (channel=? channel1 channel2)
+  "Return true if CHANNEL1 and CHANNEL2 are the same for all practical
+purposes."
+  ;; Assume that the URL matters less than the name.
+  (eq? (channel-name channel1) (channel-name channel2)))
+
+(define (display-channel-news profile)
+  "Display news about the channels of PROFILE "
+  (define previous
+    (and=> (relative-generation profile -1)
+           (cut generation-file-name profile <>)))
+
+  (when previous
+    (let ((old-channels (profile-channels previous))
+          (new-channels (profile-channels profile)))
+      (and (pair? old-channels) (pair? new-channels)
+           (begin
+             (match (lset-difference channel=? new-channels old-channels)
+               (()
+                #t)
+               (new
+                (let ((count (length new)))
+                  (format (current-error-port)
+                          (N_ "  ~*One new channel:~%"
+                              "  ~a new channels:~%" count)
+                          count)
+                  (for-each display-channel new))))
+             (match (lset-difference channel=? old-channels new-channels)
+               (()
+                #t)
+               (removed
+                (let ((count (length removed)))
+                  (format (current-error-port)
+                          (N_ "  ~*One channel removed:~%"
+                              "  ~a channels removed:~%" count)
+                          count)
+                  (for-each display-channel removed)))))))))
+
+(define (display-news profile)
+  ;; Display profile news, with the understanding that this process represents
+  ;; the newest generation.
+  (display-profile-news profile
+                        #:current-is-newer? #t)
+
+  (display-channel-news profile))
+
 (define* (build-and-install instances profile
                             #:key use-substitutes? verbose? dry-run?)
   "Build the tool from SOURCE, and install it in PROFILE.  When DRY-RUN? is
@@ -521,10 +577,7 @@ list of package changes.")))))
                ((numbers ...)
                 (list-generations profile numbers)))))))
     (('display-news)
-     ;; Display profile news, with the understanding that this process
-     ;; represents the newest generation.
-     (display-profile-news profile
-                           #:current-is-newer? #t))))
+     (display-news profile))))
 
 (define (process-generation-change opts profile)
   "Process a request to change the current generation (roll-back, switch, delete)."
