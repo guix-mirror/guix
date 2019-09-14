@@ -374,9 +374,16 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 checking the file contents into Git.  It can store files in many places,
 such as local hard drives and cloud storage services.  It can also be
 used to keep a folder in sync between computers.")
-    ;; The web app is released under the AGPLv3+.
-    (license (list license:gpl3+
-                   license:agpl3+))))
+    ;; The main author has released all his changes under AGPLv3+ as of March
+    ;; 2019 (7.20190219-187-g40ecf58d4).  These are also licensed under the
+    ;; original GPLv3+ license, but going forward new changes will be under
+    ;; only AGPLv3+.  The other licenses below cover code written by others.
+    ;; See git-annex's COPYRIGHT file for details on each file.
+    (license (list license:agpl3+
+                   license:gpl3+
+                   license:bsd-2
+                   license:expat
+                   license:gpl2))))
 
 (define-public hlint
   (package
