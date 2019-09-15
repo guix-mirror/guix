@@ -533,6 +533,7 @@ EXTRA_DIST +=						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
   build-aux/build-self.scm				\
