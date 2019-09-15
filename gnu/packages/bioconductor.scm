@@ -5459,3 +5459,49 @@ with multiple R processes supported by the package @code{parallel}.")
      "This package provides methods for working with Illumina arrays using the
 @code{gdsfmt} package.")
     (license license:gpl3)))
+
+(define-public r-wavcluster
+  (package
+    (name "r-wavcluster")
+    (version "2.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wavClusteR" version))
+       (sha256
+        (base32
+         "02i53dskirzr9nls3dsmv7dqhvy3vikkpx7247zpy2qd9r5yvhy2"))))
+    (properties `((upstream-name . "wavClusteR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-iranges" ,r-iranges)
+       ("r-mclust" ,r-mclust)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqinr" ,r-seqinr)
+       ("r-stringr" ,r-stringr)
+       ("r-wmtsa" ,r-wmtsa)))
+    (home-page "https://bioconductor.org/packages/wavClusteR/")
+    (synopsis "Identification of RNA-protein interaction sites in PAR-CLIP data")
+    (description
+     "This package provides an integrated pipeline for the analysis of
+PAR-CLIP data.  PAR-CLIP-induced transitions are first discriminated from
+sequencing errors, SNPs and additional non-experimental sources by a non-
+parametric mixture model.  The protein binding sites (clusters) are then
+resolved at high resolution and cluster statistics are estimated using a
+rigorous Bayesian framework.  Post-processing of the results, data export for
+UCSC genome browser visualization and motif search analysis are provided.  In
+addition, the package allows to integrate RNA-Seq data to estimate the False
+Discovery Rate of cluster detection.  Key functions support parallel multicore
+computing.  While wavClusteR was designed for PAR-CLIP data analysis, it can
+be applied to the analysis of other NGS data obtained from experimental
+procedures that induce nucleotide substitutions (e.g. BisSeq).")
+    (license license:gpl2)))
