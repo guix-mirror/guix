@@ -1151,6 +1151,54 @@ customizable permutation tests to assess the association between genomic
 region sets and other genomic features.")
     (license license:artistic2.0)))
 
+(define-public r-reportingtools
+  (package
+    (name "r-reportingtools")
+    (version "2.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ReportingTools" version))
+       (sha256
+        (base32
+         "16ska7mlacka0xi8x2icy8v42vaxccb3a1x73szmfvcrwr592qsc"))))
+    (properties
+     `((upstream-name . "ReportingTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-category" ,r-category)
+       ("r-deseq2" ,r-deseq2)
+       ("r-edger" ,r-edger)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gostats" ,r-gostats)
+       ("r-gseabase" ,r-gseabase)
+       ("r-hwriter" ,r-hwriter)
+       ("r-iranges" ,r-iranges)
+       ("r-knitr" ,r-knitr)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-pfam-db" ,r-pfam-db)
+       ("r-r-utils" ,r-r-utils)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/ReportingTools/")
+    (synopsis "Tools for making reports in various formats")
+    (description
+     "The ReportingTools package enables users to easily display reports of
+analysis results generated from sources such as microarray and sequencing
+data.  The package allows users to create HTML pages that may be viewed on a
+web browser, or in other formats.  Users can generate tables with sortable and
+filterable columns, make and display plots, and link table entries to other
+data sources such as NCBI or larger plots within the HTML page.  Using the
+package, users can also produce a table of contents page to link various
+reports together for a particular project that can be viewed in a web
+browser.")
+    (license license:artistic2.0)))
+
 (define-public r-geneplotter
   (package
     (name "r-geneplotter")
