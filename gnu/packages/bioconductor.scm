@@ -810,6 +810,28 @@ annotations.")
 Disease Ontology.")
     (license license:artistic2.0)))
 
+(define-public r-pfam-db
+  (package
+    (name "r-pfam-db")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "PFAM.db" version 'annotation))
+       (sha256
+        (base32
+         "0rn1arzzcniy3yyc4yc44vn40g0cqss37dhwnvsgxpfayqq1k59s"))))
+    (properties `((upstream-name . "PFAM.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/PFAM.db")
+    (synopsis "Set of protein ID mappings for PFAM")
+    (description
+     "This package provides a set of protein ID mappings for PFAM, assembled
+using data from public repositories.")
+    (license license:artistic2.0)))
+
 
 ;;; Experiment data
 
