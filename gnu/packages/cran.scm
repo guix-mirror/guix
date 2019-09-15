@@ -797,6 +797,84 @@ extensive prebuilt widgets make it possible to build beautiful,
 responsive, and powerful applications with minimal effort.")
     (license license:artistic2.0)))
 
+;; This package includes minified JavaScript files.  When upgrading please
+;; check that there are no new minified JavaScript files.
+(define-public r-shinytree
+  (package
+    (name "r-shinytree")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinyTree" version))
+       (sha256
+        (base32
+         "0jfx2capckv7hf2yx3fn8i4rcmhi222ah91jnmhg497x8wgz31s3"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Delete minified JavaScript
+           (for-each delete-file
+                     '("inst/www/jsTree-3.3.7/libs/require.js"
+                       "inst/www/jsTree-3.3.7/libs/jquery.js"
+                       "inst/www/jsTree-3.3.7/jstree.min.js"))
+           #t))))
+    (properties `((upstream-name . "shinyTree")))
+    (build-system r-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build r-build-system)
+                  (srfi srfi-1)
+                  (ice-9 popen))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-minified-javascript
+           (lambda* (#:key inputs #:allow-other-keys)
+             (with-directory-excursion "inst/www/jsTree-3.3.7/"
+               (symlink (string-append (assoc-ref inputs "js-requirejs")
+                                       "/share/javascript/require.min.js")
+                        "libs/require.js")
+               (call-with-values
+                   (lambda ()
+                     (unzip2
+                      `((,(assoc-ref inputs "js-jquery")
+                         "libs/jquery.js")
+                        ("jstree.js"
+                         "jstree.min.js"))))
+                 (lambda (sources targets)
+                   (for-each (lambda (source target)
+                               (format #t "Processing ~a --> ~a~%"
+                                       source target)
+                               (let ((minified (open-pipe* OPEN_READ "uglify-js" source)))
+                                 (call-with-output-file target
+                                   (lambda (port)
+                                     (dump-port minified port)))))
+                             sources targets))))
+             #t)))))
+    (propagated-inputs
+     `(("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-promises" ,r-promises)
+       ("r-shiny" ,r-shiny)
+       ("r-stringr" ,r-stringr)))
+    (inputs
+     `(("js-requirejs" ,js-requirejs)))
+    (native-inputs
+     `(("uglify-js" ,uglify-js)
+       ("js-jquery"
+        ,(origin
+           (method url-fetch)
+           (uri "https://code.jquery.com/jquery-3.3.1.js")
+           (sha256
+            (base32
+             "1b8zxrp6xwzpw25apn8j4qws0f6sr7qr7h2va5h1mjyfqvn29anq"))))))
+    (home-page "https://cran.r-project.org/web/packages/shinyTree/")
+    (synopsis "jsTree bindings for Shiny")
+    (description
+     "This package exposes R bindings to jsTree, a JavaScript library that
+supports interactive trees, to enable rich, editable trees in Shiny.")
+    (license license:expat)))
+
 (define-public r-shinydashboard
   (package
     (name "r-shinydashboard")
