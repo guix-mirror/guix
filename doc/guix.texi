@@ -11788,6 +11788,7 @@ declaration.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
+* Guix Services::               Services relating specifically to Guix.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -24326,6 +24327,57 @@ The wesnoth server package to use.
 The port to bind the server to.
 @end table
 @end deftp
+
+
+@node Guix Services
+@subsection Guix Services
+
+@subsubheading Guix Data Service
+The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
+and provides data about GNU Guix.  This includes information about
+packages, derivations and lint warnings.
+
+The data is stored in a PostgreSQL database, and available through a web
+interface.
+
+@defvar {Scheme Variable} guix-data-service-type
+Service type for the Guix Data Service.  Its value must be a
+@code{guix-data-service-configuration} object.  The service optionally
+extends the getmail service, as the guix-commits mailing list is used to
+find out about changes in the Guix git repository.
+@end defvar
+
+@deftp {Data Type} guix-data-service-configuration
+Data type representing the configuration of the Guix Data Service.
+
+@table @asis
+@item @code{package} (default: @code{guix-data-service})
+The Guix Data Service package to use.
+
+@item @code{user} (default: @code{"guix-data-service"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-data-service"})
+The system group to run the service as.
+
+@item @code{port} (default: @code{8765})
+The port to bind the web service to.
+
+@item @code{host} (default: @code{"127.0.0.1"})
+The host to bind the web service to.
+
+@item @code{getmail-idle-mailboxes} (default: @code{#f})
+If set, this is the list of mailboxes that the getmail service will be
+configured to listen to.
+
+@item @code{commits-getmail-retriever-configuration} (default: @code{#f})
+If set, this is the @code{getmail-retriever-configuration} object with
+which to configure getmail to fetch mail from the guix-commits mailing
+list.
+
+@end table
+@end deftp
+
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services

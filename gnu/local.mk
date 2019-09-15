@@ -535,6 +535,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/getmail.scm				\
+  %D%/services/guix.scm			\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
@@ -599,6 +600,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/docker.scm				\
+  %D%/tests/guix.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
