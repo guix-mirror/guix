@@ -1224,6 +1224,41 @@ browser.")
      "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
 
+(define-public r-oligoclasses
+  (package
+    (name "r-oligoclasses")
+    (version "1.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "oligoClasses" version))
+       (sha256
+        (base32
+         "0z86zrmn80kcy6fgb9i9zs82vhim73n8hlkqy7y8sbb2jwksdr72"))))
+    (properties `((upstream-name . "oligoClasses")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-ff" ,r-ff)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/oligoClasses/")
+    (synopsis "Classes for high-throughput arrays")
+    (description
+     "This package contains class definitions, validity checks, and
+initialization methods for classes used by the @code{oligo} and @code{crlmm}
+packages.")
+    (license license:gpl2+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
