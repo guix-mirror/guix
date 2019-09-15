@@ -1002,6 +1002,34 @@ packages.")
 measures for Affymetrix Oligonucleotide Arrays.")
     (license license:gpl2+)))
 
+(define-public r-affycompatible
+  (package
+    (name "r-affycompatible")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AffyCompatible" version))
+       (sha256
+        (base32
+         "1zi96qa6vkgwvvy5cn6c3p1kbfsaz74zsw2kjxarz5qs744f0xvs"))))
+    (properties
+     `((upstream-name . "AffyCompatible")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/AffyCompatible/")
+    (synopsis "Work with Affymetrix GeneChip files")
+    (description
+     "This package provides an interface to Affymetrix chip annotation and
+sample attribute files.  The package allows an easy way for users to download
+and manage local data bases of Affynmetrix NetAffx annotation files.  It also
+provides access to @dfn{GeneChip Operating System} (GCOS) and @dfn{GeneChip
+Command Console} (AGCC)-compatible sample annotation files.")
+    (license license:artistic2.0)))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
