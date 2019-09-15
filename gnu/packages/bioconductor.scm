@@ -6006,3 +6006,44 @@ same genome coordinate system.")
      "This package is designed to conduct transcriptome analysis for tiling
 arrays based on fast wavelet-based functional models.")
     (license license:gpl2+)))
+
+(define-public r-variancepartition
+  (package
+    (name "r-variancepartition")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "variancePartition" version))
+       (sha256
+        (base32
+         "1ycapwb2mq57xibrzzjz9zwxqz4nwz9f3n5gskhlr5vcs7irkjd6"))))
+    (properties
+     `((upstream-name . "variancePartition")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-colorramps" ,r-colorramps)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-iterators" ,r-iterators)
+       ("r-limma" ,r-limma)
+       ("r-lme4" ,r-lme4)
+       ("r-lmertest" ,r-lmertest)
+       ("r-mass" ,r-mass)
+       ("r-pbkrtest" ,r-pbkrtest)
+       ("r-progress" ,r-progress)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://bioconductor.org/packages/variancePartition/")
+    (synopsis "Analyze variation in gene expression experiments")
+    (description
+     "This is a package providing tools to quantify and interpret multiple
+sources of biological and technical variation in gene expression experiments.
+It uses a linear mixed model to quantify variation in gene expression
+attributable to individual, tissue, time point, or technical variables.  The
+package includes dream differential expression analysis for repeated
+measures.")
+    (license license:gpl2+)))
