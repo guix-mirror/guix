@@ -272,12 +272,12 @@ and NEW are <channel> records with a proper 'commit' field."
            (for-each (cut display-news-entry <> language port) entries)
            (newline port)))))))
 
-(define (display-channel-news profile)
-  "Display news about the channels of PROFILE "
-  (define previous
-    (and=> (relative-generation profile -1)
-           (cut generation-file-name profile <>)))
-
+(define* (display-channel-news profile
+                               #:optional
+                               (previous
+                                (and=> (relative-generation profile -1)
+                                       (cut generation-file-name profile <>))))
+  "Display news about the channels of PROFILE compared to PREVIOUS."
   (when previous
     (let ((old-channels (profile-channels previous))
           (new-channels (profile-channels profile)))
@@ -614,6 +614,8 @@ display long package lists that would fill the user's screen."
               ((first second rest ...)
                (display-profile-content-diff profile
                                              first second)
+               (display-channel-news (generation-file-name profile second)
+                                     (generation-file-name profile first))
                (loop (cons second rest)))
               ((_) #t)
               (()  #t))))))
