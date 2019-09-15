@@ -946,6 +946,31 @@ this gives the user direct access to the file system without the need to
 well as file saving is available.")
     (license license:gpl2+)))
 
+(define-public r-shinythemes
+  (package
+    (name "r-shinythemes")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "shinythemes" version))
+       (sha256
+        (base32
+         "12miz44n2zxfswnia7p8dirxj3miw0aqn4pkx2111ikz67ax84rf"))))
+    (properties `((upstream-name . "shinythemes")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-shiny" ,r-shiny)))
+    (home-page "http://rstudio.github.io/shinythemes/")
+    (synopsis "Themes for Shiny")
+    (description
+     "This package provides themes for use with Shiny.  It includes several
+Bootstrap themes, which are packaged for use with Shiny applications.")
+    ;; The package is released under version 3 of the GPL, but it includes
+    ;; source files that are covered by the Expat license.  It also includes
+    ;; fonts under SIL or the ASL.
+    (license (list license:gpl3 license:expat
+                   license:silofl1.1 license:asl2.0))))
+
 ;; The package sources include minified variants of d3.js and non-minified
 ;; source code of d3-jetpack.
 (define-public r-d3r
