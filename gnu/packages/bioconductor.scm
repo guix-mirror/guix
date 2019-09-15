@@ -1116,6 +1116,34 @@ problems in CEL-level data to help evaluate performance of quality metrics.")
 to streamline the more common analyses that a Biostatistician might see.")
     (license license:artistic2.0)))
 
+(define-public r-affxparser
+  (package
+    (name "r-affxparser")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affxparser" version))
+       (sha256
+        (base32
+         "1jv7k9pn4c7szi3ma2f2xsd58pkrkvjpk5wra73r6kc607qgrv33"))))
+    (properties `((upstream-name . "affxparser")))
+    (build-system r-build-system)
+    (home-page "https://github.com/HenrikBengtsson/affxparser")
+    (synopsis "Affymetrix File Parsing SDK")
+    (description
+     "This is a package for parsing Affymetrix files (CDF, CEL, CHP, BPMAP,
+BAR).  It provides methods for fast and memory efficient parsing of Affymetrix
+files using the Affymetrix' Fusion SDK.  Both ASCII- and binary-based files
+are supported.  Currently, there are methods for reading @dfn{chip definition
+file} (CDF) and a @dfn{cell intensity file} (CEL).  These files can be read
+either in full or in part.  For example, probe signals from a few probesets
+can be extracted very quickly from a set of CEL files into a convenient list
+structure.")
+    ;; The Fusion SDK contains files under GPLv2 and LGPLv2.1.  The R code is
+    ;; under LGPLv2+.
+    (license (list license:lgpl2.0+ license:lgpl2.1 license:gpl2))))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
