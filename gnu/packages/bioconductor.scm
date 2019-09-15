@@ -5975,3 +5975,34 @@ strength of GenomeGraphs is to plot different data types such as array CGH,
 gene expression, sequencing and other data, together in one plot using the
 same genome coordinate system.")
     (license license:artistic2.0)))
+
+(define-public r-wavetiling
+  (package
+    (name "r-wavetiling")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "waveTiling" version))
+       (sha256
+        (base32
+         "0l0saa0myabpq2rl9dq70zff8jpxr3mkanxlj65hc41f0m5xllir"))))
+    (properties `((upstream-name . "waveTiling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomegraphs" ,r-genomegraphs)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-oligo" ,r-oligo)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-waveslim" ,r-waveslim)))
+    (home-page "https://r-forge.r-project.org/projects/wavetiling/")
+    (synopsis "Wavelet-based models for tiling array transcriptome analysis")
+    (description
+     "This package is designed to conduct transcriptome analysis for tiling
+arrays based on fast wavelet-based functional models.")
+    (license license:gpl2+)))
