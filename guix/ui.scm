@@ -121,6 +121,10 @@
             roll-back*
             switch-to-generation*
             delete-generation*
+
+            %default-message-language
+            current-message-language
+
             run-guix-command
             run-guix
             guix-main))
@@ -427,6 +431,20 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
   "Capture 'unbound-variable' exceptions in the dynamic extent of EXP... and
 report them in a user-friendly way."
   (call-with-unbound-variable-handling (lambda () exp ...)))
+
+(define %default-message-language
+  ;; Default language to use for messages.
+  (make-parameter "en"))
+
+(define (current-message-language)
+  "Return the language used for messages according to the current locale.
+Return %DEFAULT-MESSAGE-LANGUAGE if that information could not be obtained.  The
+result is an ISO-639-2 language code such as \"ar\", without the territory
+part."
+  (let ((locale (setlocale LC_MESSAGES)))
+    (match (string-index locale #\_)
+      (#f    locale)
+      (index (string-take locale index)))))
 
 (define (install-locale)
   "Install the current locale settings."
