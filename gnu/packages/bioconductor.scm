@@ -981,6 +981,27 @@ package @code{affy}.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-affycomp
+  (package
+    (name "r-affycomp")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affycomp" version))
+       (sha256
+        (base32
+         "1nijqljg5r3qj1y6an0i58sby76hqacj3a3nvainxic4n5wlzh0n"))))
+    (properties `((upstream-name . "affycomp")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/affycomp/")
+    (synopsis "Graphics toolbox for assessment of Affymetrix expression measures")
+    (description
+     "The package contains functions that can be used to compare expression
+measures for Affymetrix Oligonucleotide Arrays.")
+    (license license:gpl2+)))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
