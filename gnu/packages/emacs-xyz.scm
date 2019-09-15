@@ -49,7 +49,7 @@
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
-;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
@@ -17804,17 +17804,17 @@ connections using TLS encryption.")
 (define-public emacs-zerodark-theme
   (package
     (name "emacs-zerodark-theme")
-    (version "4.5")
+    (version "4.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.petton.fr/nico/zerodark-theme.git")
+             (url "https://github.com/NicolasPetton/zerodark-theme")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nnlxzsmhsbszqigcyxak9i1a0digrd13gv6v18ck4h760mihh1m"))))
+         "0pfyd1iqs7l2ngwgvj9n0r9k1px7yl16h8n502xdyf0pprxcs4p6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)
