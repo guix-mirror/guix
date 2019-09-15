@@ -926,7 +926,16 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (inputs
      `(("guile" ,guile-2.2)))
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0") ; to prevent guild warnings
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-module-dir
+           (lambda _
+             (substitute* "Makefile.in"
+               (("^godir = ([[:graph:]]+)")
+                "godir = \
+$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
+             #t)))))
     (home-page "https://guile-email.systemreboot.net")
     (synopsis "Guile email parser")
     (description "guile-email is a collection of email utilities implemented
