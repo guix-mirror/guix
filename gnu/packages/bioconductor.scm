@@ -1030,6 +1030,31 @@ provides access to @dfn{GeneChip Operating System} (GCOS) and @dfn{GeneChip
 Command Console} (AGCC)-compatible sample annotation files.")
     (license license:artistic2.0)))
 
+(define-public r-affycontam
+  (package
+    (name "r-affycontam")
+    (version "1.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affyContam" version))
+       (sha256
+        (base32
+         "0nzk1cm26rhmym753wyhn35hqnz5lvavi3i5qfgdvhxgjy3m1jgp"))))
+    (properties `((upstream-name . "affyContam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-affydata" ,r-affydata)
+       ("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/affyContam/")
+    (synopsis "Structured corruption of Affymetrix CEL file data")
+    (description
+     "Microarray quality assessment is a major concern of microarray analysts.
+This package provides some simple approaches to in silico creation of quality
+problems in CEL-level data to help evaluate performance of quality metrics.")
+    (license license:artistic2.0)))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
