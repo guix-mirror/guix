@@ -1077,6 +1077,45 @@ This package provides some simple approaches to in silico creation of quality
 problems in CEL-level data to help evaluate performance of quality metrics.")
     (license license:artistic2.0)))
 
+(define-public r-affycoretools
+  (package
+    (name "r-affycoretools")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affycoretools" version))
+       (sha256
+        (base32
+         "17dxpzhwwdwnxkdpmyjwdnacg41hw60mlc71w4nzlvs28sfsy09s"))))
+    (properties `((upstream-name . "affycoretools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-edger" ,r-edger)
+       ("r-gcrma" ,r-gcrma)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gostats" ,r-gostats)
+       ("r-gplots" ,r-gplots)
+       ("r-hwriter" ,r-hwriter)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-reportingtools" ,r-reportingtools)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://bioconductor.org/packages/affycoretools/")
+    (synopsis "Functions for analyses with Affymetrix GeneChips")
+    (description
+     "This package provides various wrapper functions that have been written
+to streamline the more common analyses that a Biostatistician might see.")
+    (license license:artistic2.0)))
+
 (define-public r-annotate
   (package
     (name "r-annotate")
