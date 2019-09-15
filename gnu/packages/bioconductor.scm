@@ -5838,3 +5838,50 @@ course data which includes dimensionality reduction, clustering, two-sample
 differential expression testing and gene ranking techniques.  The package also
 provides methods for retrieving enriched pathways.")
     (license license:lgpl3+)))
+
+(define-public r-variantfiltering
+  (package
+    (name "r-variantfiltering")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "VariantFiltering" version))
+       (sha256
+        (base32
+         "0vpghxacqcbaxx2scb5gfhcmfpw1lkls7h6qnbwbnmjwy01q2p17"))))
+    (properties
+     `((upstream-name . "VariantFiltering")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dt" ,r-dt)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicscores" ,r-genomicscores)
+       ("r-graph" ,r-graph)
+       ("r-gviz" ,r-gviz)
+       ("r-iranges" ,r-iranges)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
+       ("r-shinythemes" ,r-shinythemes)
+       ("r-shinytree" ,r-shinytree)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://github.com/rcastelo/VariantFiltering")
+    (synopsis "Filtering of coding and non-coding genetic variants")
+    (description
+     "Filter genetic variants using different criteria such as inheritance
+model, amino acid change consequence, minor allele frequencies across human
+populations, splice site strength, conservation, etc.")
+    (license license:artistic2.0)))
