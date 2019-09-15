@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,10 +19,14 @@
 
 (define-module (gnu packages authentication)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages security-token)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -77,3 +82,39 @@ Supported technologies include the event-based @dfn{HOTP} algorithm (RFC4226)
 and the time-based @dfn{TOTP} algorithm (RFC6238).")
     (license (list license:lgpl2.1+     ; the libraries (liboath/ & libpskc/)
                    license:gpl3+))))    ; the tools (everything else)
+
+(define-public yubico-pam
+  (let ((commit "b5bd00db81e0e0e0ecced65c684080bb56ddc35b")
+        (revision "0"))
+    (package
+      (name "yubico-pam")
+      (version (git-version "2.26" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Yubico/yubico-pam.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "10dq8dqi3jldllj6p8r9hldx9sank9n82c44w8akxrs1vli6nj3m"))))
+      (build-system gnu-build-system)
+      (arguments
+       ;; The pam_test fails because ykclient fails to build a Curl handle.
+       '(#:make-flags '("TESTS=util_test")))
+      (inputs
+       `(("linux-pam" ,linux-pam)
+         ("libyubikey" ,libyubikey)
+         ("ykclient" ,ykclient)
+         ("yubikey-personalization" ,yubikey-personalization)))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("asciidoc" ,asciidoc)
+         ("pkg-config" ,pkg-config)))
+      (home-page "https://developers.yubico.com/yubico-pam")
+      (synopsis "Yubico pluggable authentication module")
+      (description "The Yubico PAM module provides an easy way to integrate the
+YubiKey into your existing user authentication infrastructure.")
+      (license license:bsd-2))))
