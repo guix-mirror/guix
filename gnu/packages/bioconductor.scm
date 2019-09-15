@@ -1326,6 +1326,40 @@ initialization methods for classes used by the @code{oligo} and @code{crlmm}
 packages.")
     (license license:gpl2+)))
 
+(define-public r-oligo
+  (package
+    (name "r-oligo")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "oligo" version))
+       (sha256
+        (base32
+         "0qkyz65zvry0syibjkvkshwijccna18jy0hlib0n5x4c8x9zs5df"))))
+    (properties `((upstream-name . "oligo")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-affxparser" ,r-affxparser)
+       ("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-ff" ,r-ff)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/oligo/")
+    (synopsis "Preprocessing tools for oligonucleotide arrays")
+    (description
+     "This package provides a package to analyze oligonucleotide
+arrays (expression/SNP/tiling/exon) at probe-level.  It currently supports
+Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
+    (license license:lgpl2.0+)))
+
 (define-public r-qvalue
   (package
     (name "r-qvalue")
