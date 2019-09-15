@@ -5505,3 +5505,42 @@ computing.  While wavClusteR was designed for PAR-CLIP data analysis, it can
 be applied to the analysis of other NGS data obtained from experimental
 procedures that induce nucleotide substitutions (e.g. BisSeq).")
     (license license:gpl2)))
+
+(define-public r-timeseriesexperiment
+  (package
+    (name "r-timeseriesexperiment")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TimeSeriesExperiment" version))
+       (sha256
+        (base32
+         "1j11g7a2p0yk38fx6wd6152l1xynghj01pfxihalw601jwf1bl0y"))))
+    (properties
+     `((upstream-name . "TimeSeriesExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-deseq2" ,r-deseq2)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-edger" ,r-edger)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-proxy" ,r-proxy)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-vegan" ,r-vegan)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/nlhuong/TimeSeriesExperiment/")
+    (synopsis "Analysis for short time-series data")
+    (description
+     "This package is a visualization and analysis toolbox for short time
+course data which includes dimensionality reduction, clustering, two-sample
+differential expression testing and gene ranking techniques.  The package also
+provides methods for retrieving enriched pathways.")
+    (license license:lgpl3+)))
