@@ -536,6 +536,7 @@ EXTRA_DIST +=						\
   .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
+  etc/news.scm						\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
