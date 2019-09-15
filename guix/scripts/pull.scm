@@ -19,6 +19,7 @@
 
 (define-module (guix scripts pull)
   #:use-module (guix ui)
+  #:use-module (guix colors)
   #:use-module (guix utils)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix scripts)
@@ -229,6 +230,48 @@ purposes."
   ;; Assume that the URL matters less than the name.
   (eq? (channel-name channel1) (channel-name channel2)))
 
+(define (display-news-entry entry language port)
+  "Display ENTRY, a <channel-news-entry>, in LANGUAGE, a language code, to
+PORT."
+  (let ((title (channel-news-entry-title entry))
+        (body  (channel-news-entry-body entry)))
+    (format port "  ~a~%"
+            (highlight
+             (string-trim-right
+              (texi->plain-text (or (assoc-ref title language)
+                                    (assoc-ref title (%default-message-language))
+                                    "")))))
+    (format port (G_ "    commit ~a~%")
+            (channel-news-entry-commit entry))
+    (newline port)
+    (format port "    ~a~%"
+            (indented-string
+             (parameterize ((%text-width (- (%text-width) 4)))
+               (string-trim-right
+                (texi->plain-text (or (assoc-ref body language)
+                                      (assoc-ref body (%default-message-language))
+                                      ""))))
+             4))))
+
+(define* (display-channel-specific-news new old
+                                        #:key (port (current-output-port)))
+  "Display channel news applicable the commits between OLD and NEW, where OLD
+and NEW are <channel> records with a proper 'commit' field."
+  (let ((channel new)
+        (old     (channel-commit old))
+        (new     (channel-commit new)))
+    (when (and old new)
+      (let ((language (current-message-language)))
+        (match (channel-news-for-commit channel new old)
+          (()                                     ;no news is good news
+           #t)
+          ((entries ...)
+           (newline port)
+           (format port (G_ "News for channel '~a'~%")
+                   (channel-name channel))
+           (for-each (cut display-news-entry <> language port) entries)
+           (newline port)))))))
+
 (define (display-channel-news profile)
   "Display news about the channels of PROFILE "
   (define previous
@@ -259,7 +302,20 @@ purposes."
                           (N_ "  ~*One channel removed:~%"
                               "  ~a channels removed:~%" count)
                           count)
-                  (for-each display-channel removed)))))))))
+                  (for-each display-channel removed))))
+
+             ;; Display channel-specific news for those channels that were
+             ;; here before and are still around afterwards.
+             (for-each (match-lambda
+                         ((new old)
+                          (display-channel-specific-news new old)))
+                       (filter-map (lambda (new)
+                                     (define old
+                                       (find (cut channel=? new <>)
+                                             old-channels))
+
+                                     (and old (list new old)))
+                                   new-channels)))))))
 
 (define (display-news profile)
   ;; Display profile news, with the understanding that this process represents
@@ -534,8 +590,7 @@ display long package lists that would fill the user's screen."
     (when (and concise?
                (or (> new-count concise/max-item-count)
                    (> upgraded-count concise/max-item-count)))
-      (display-hint (G_ "Run @command{guix pull --news} to view the complete
-list of package changes.")))))
+      (display-hint (G_ "Run @command{guix pull --news} to read all the news.")))))
 
 (define (display-profile-content-diff profile gen1 gen2)
   "Display the changes in PROFILE GEN2 compared to generation GEN1."
