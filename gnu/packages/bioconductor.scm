@@ -935,6 +935,29 @@ jointly normalized data that are available here.  The data are presented in
 the form of an @code{exprSet} object.")
     (license license:artistic2.0)))
 
+(define-public r-affydata
+  (package
+    (name "r-affydata")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affydata" version 'experiment))
+       (sha256
+        (base32
+         "1l9qhmjqgbrdl9cmd74rlnvmvr6mslbmckb83n0211whp2i0b7h5"))))
+    (properties `((upstream-name . "affydata")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)))
+    (home-page "https://bioconductor.org/packages/affydata/")
+    (synopsis "Affymetrix data for demonstration purposes")
+    (description
+     "This package provides example datasets that represent 'real world
+examples' of Affymetrix data, unlike the artificial examples included in the
+package @code{affy}.")
+    (license license:gpl2+)))
+
 
 ;;; Packages
 
