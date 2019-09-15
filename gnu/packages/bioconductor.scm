@@ -5701,6 +5701,34 @@ with multiple R processes supported by the package @code{parallel}.")
 @code{gdsfmt} package.")
     (license license:gpl3)))
 
+(define-public r-seqbias
+  (package
+    (name "r-seqbias")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "seqbias" version))
+       (sha256
+        (base32
+         "1pk97jsq0rxijsdm5wnmlw79mhy19skdq1h3mmfbdjh560md47lw"))))
+    (properties `((upstream-name . "seqbias")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rhtslib" ,r-rhtslib)))
+    (inputs
+     `(("zlib" ,zlib))) ; This comes from rhtslib.
+    (home-page "https://bioconductor.org/packages/seqbias/")
+    (synopsis "Estimation of per-position bias in high-throughput sequencing data")
+    (description
+     "This package implements a model of per-position sequencing bias in
+high-throughput sequencing data using a simple Bayesian network, the structure
+and parameters of which are trained on a set of aligned reads and a reference
+genome sequence.")
+    (license license:lgpl3)))
+
 (define-public r-wavcluster
   (package
     (name "r-wavcluster")
