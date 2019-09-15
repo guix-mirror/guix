@@ -855,3 +855,36 @@ designed to be capable of bootstrapping their standard GNU counterparts.
 Underpinning these utilities are many Scheme interfaces for manipulating
 files and text.")
     (license gpl3+)))
+
+(define-public gash-core-utils
+  (package
+    (name "gash-core-utils")
+    (version "0.0.211-789c3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://lilypond.org/janneke/guix/20191123/"
+                                  "/gash-core-utils-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ycf0ivyn9q3lc9hwq8vxg6wkwpsykvh48a5lrzsmganh0ma8wrr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.2)
+       ("gash" ,gash)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             (substitute* "tests/core-utils.org"
+               (("ls \\(GASH\\) UNKNOWN") "ls (GASH) 0.0.211-789c3"))
+             #t)))))
+    (home-page "https://gitlab.com/janneke/gash-core-utils")
+    (synopsis "Bootstrappable replacement of core GNU utilities in Guile Scheme")
+    (description "Gash Core Utils provides core GNU utilities in Guile
+Scheme as bootstrappable replacement for GNU coreutils&co.")
+    (license gpl3+)))
