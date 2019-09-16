@@ -5912,7 +5912,7 @@ providing graphical log-ins and managing local and remote displays.")
 (define-public libgtop
   (package
     (name "libgtop")
-    (version "2.38.0")
+    (version "2.40.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libgtop/"
@@ -5920,7 +5920,7 @@ providing graphical log-ins and managing local and remote displays.")
                                   "libgtop-" version ".tar.xz"))
               (sha256
                (base32
-                "04mnxgzyb26wqk6qij4iw8cxwl82r8pcsna5dg8vz2j3pdi0wv2g"))))
+                "1m6jbqk8maa52gxrf223442fr5bvvxgb7ham6v039i3r1i62gwvq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
