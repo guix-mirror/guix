@@ -7146,3 +7146,33 @@ on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
 
 (define-public ecl-xlunit
   (sbcl-package->ecl-package sbcl-xlunit))
+
+(define-public sbcl-fprog
+  (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
+        (revision "1"))
+    (package
+      (name "sbcl-fprog")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/cambl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "103mry04j2k9vznsxm7wcvccgxkil92cdrv52miwcmxl8daa4jiz"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Functional programming utilities for Common Lisp")
+      (description
+       "@code{fprog} is a Common Lisp library allowing iteration over
+immutable lists sharing identical sublists.")
+      (home-page "https://github.com/jwiegley/cambl")
+      (license license:bsd-3))))
+
+(define-public cl-fprog
+  (sbcl-package->cl-source-package sbcl-fprog))
+
+(define-public ecl-fprog
+  (sbcl-package->ecl-package sbcl-fprog))
