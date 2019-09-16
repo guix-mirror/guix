@@ -49,6 +49,7 @@
             cran-recursive-import
             %cran-updater
             %bioconductor-updater
+            %bioconductor-version
 
             cran-package?
             bioconductor-package?
