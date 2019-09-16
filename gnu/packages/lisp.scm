@@ -2485,7 +2485,7 @@ new fiends in addition to old friends like @command{aif} and
   (let ((commit "7d49a66c62759535624037826891152223d4206c"))
     (package
       (name "sbcl-lift")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "1.7.1" "1" commit))
       (source
        (origin
          (method git-fetch)
