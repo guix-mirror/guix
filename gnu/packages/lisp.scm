@@ -7005,3 +7005,23 @@ discontiguous ranges of time.")
 
 (define-public ecl-periods
   (sbcl-package->ecl-package sbcl-periods))
+
+(define-public sbcl-periods-series
+  (package
+    (inherit sbcl-periods)
+    (name "sbcl-periods-series")
+    (inputs
+     `(("periods" ,sbcl-periods)
+       ("series" ,sbcl-series)))
+    (arguments
+     '(#:asd-file "periods-series.asd"
+       #:asd-system-name "periods-series"))
+    (description
+     "Periods-series is an extension of the periods Common Lisp library
+providing functions compatible with the series Common Lisp library.")))
+
+(define-public cl-periods-series
+  (sbcl-package->cl-source-package sbcl-periods-series))
+
+(define-public ecl-periods-series
+  (sbcl-package->ecl-package sbcl-periods-series))
