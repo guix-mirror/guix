@@ -6900,3 +6900,37 @@ number of other open source projects.
 
 (define-public ecl-s-sysdeps
   (sbcl-package->ecl-package sbcl-s-sysdeps))
+
+(define-public sbcl-cl-prevalence
+  (let ((commit "c163c227ed85d430b82cb1e3502f72d4f88e3cfa")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-prevalence")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "5" revision commit))
+      (home-page "https://github.com/40ants/cl-prevalence")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i9zj1q2ahgwch56an21yzbgkynz0kab9fyxkq9mg8p3xrv38jjn"))))
+      (inputs
+       `(("s-sysdeps" ,sbcl-s-sysdeps)
+         ("s-xml" ,sbcl-s-xml)))
+      (synopsis "Implementation of object prevalence for Common Lisp")
+      (description "This Common Lisp library implements object prevalence (see
+@url{https://en.wikipedia.org/wiki/System_prevalence}).  It allows
+for (de)serializing to and from s-exps as well as XML.  Serialization of arbitrary
+classes and cyclic data structures are supported.")
+      (license license:llgpl))))
+
+(define-public cl-prevalence
+  (sbcl-package->cl-source-package sbcl-cl-prevalence))
+
+(define-public ecl-cl-prevalence
+  (sbcl-package->ecl-package sbcl-cl-prevalence))
