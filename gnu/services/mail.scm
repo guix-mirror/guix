@@ -137,7 +137,7 @@
 (define (free-form-fields? val)
   (match val
     (() #t)
-    ((((? symbol?) . (? string)) . val) (free-form-fields? val))
+    ((((? symbol?) . (? string?)) . val) (free-form-fields? val))
     (_ #f)))
 (define (serialize-free-form-fields field-name val)
   (for-each (match-lambda ((k . v) (serialize-field k v))) val))
@@ -145,7 +145,7 @@
 (define (free-form-args? val)
   (match val
     (() #t)
-    ((((? symbol?) . (? string)) . val) (free-form-args? val))
+    ((((? symbol?) . (? string?)) . val) (free-form-args? val))
     (_ #f)))
 (define (serialize-free-form-args field-name val)
   (serialize-field field-name
