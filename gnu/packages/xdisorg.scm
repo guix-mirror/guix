@@ -25,6 +25,7 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1708,3 +1709,28 @@ temperature of the screen.")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for
 Wayland.")
     (license license:gpl3+)))
+
+(define-public autocutsel
+  (package
+    (name "autocutsel")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sigmike/autocutsel"
+                                  "/releases/download/" version "/"
+                                  "autocutsel-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gsys2dzh4az51ndcsabhlbbrjn2nm75lnjr45kg6r8sm8q66dx2"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f)) ; no "check" target
+    (native-inputs `(("libx11" ,libx11)
+                     ("libxaw" ,libxaw)))
+    (home-page "https://www.nongnu.org/autocutsel/")
+    (synopsis "Automated X11 clipboard and cutbuffer synchronization")
+    (description "@code{autocutsel} tracks changes in the server's cutbuffer
+and clipboard selection.  When the clipboard is changed, it updates the
+cutbuffer.  When the cutbuffer is changed, it owns the clipboard selection.
+The cutbuffer and clipboard selection are always synchronized.")
+    (license license:gpl2+)))
