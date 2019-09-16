@@ -7108,3 +7108,41 @@ decisions becomes significantly easier.")
 
 (define-public ecl-cl-containers
   (sbcl-package->ecl-package sbcl-cl-containers))
+
+(define-public sbcl-xlunit
+  (let ((commit "3805d34b1d8dc77f7e0ee527a2490194292dd0fc")
+        (revision "1"))
+    (package
+      (name "sbcl-xlunit")
+      (version (git-version "0.6.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/xlunit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0argfmp9nghs4sihyj3f8ch9qfib2b7ll07v5m9ziajgzsfl5xw3"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "xlunit.asd"
+                 ((" :force t") ""))
+               #t)))))
+      (synopsis "Unit testing package for Common Lisp")
+      (description
+       "The XLUnit package is a toolkit for building test suites.  It is based
+on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
+      (home-page "http://quickdocs.org/xlunit/")
+      (license license:bsd-3))))
+
+(define-public cl-xlunit
+  (sbcl-package->cl-source-package sbcl-xlunit))
+
+(define-public ecl-xlunit
+  (sbcl-package->ecl-package sbcl-xlunit))
