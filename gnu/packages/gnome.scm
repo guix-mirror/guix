@@ -5915,9 +5915,9 @@ providing graphical log-ins and managing local and remote displays.")
     (version "2.38.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgtop/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgtop-" version ".tar.xz"))
               (sha256
                (base32
                 "04mnxgzyb26wqk6qij4iw8cxwl82r8pcsna5dg8vz2j3pdi0wv2g"))))
