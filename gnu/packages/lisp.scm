@@ -7176,3 +7176,31 @@ immutable lists sharing identical sublists.")
 
 (define-public ecl-fprog
   (sbcl-package->ecl-package sbcl-fprog))
+
+(define-public sbcl-cambl
+  (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
+        (revision "1"))
+    (package
+      (inherit sbcl-fprog)
+      (name "sbcl-cambl")
+      (version (git-version "4.0.0" revision commit))
+      (native-inputs
+       `(("xlunit" ,sbcl-xlunit)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-containers" ,sbcl-cl-containers)
+         ("local-time" ,sbcl-local-time)
+         ("periods" ,sbcl-periods)
+         ("fprog" ,sbcl-fprog)))
+      (synopsis "Commoditized amounts and balances for Common Lisp")
+      (description
+       "CAMBL is a Common Lisp library providing a convenient facility for
+working with commoditized values.  It does not allow compound units (and so is
+not suited for scientific operations) but does work rather nicely for the
+purpose of financial calculations."))))
+
+(define-public cl-cambl
+  (sbcl-package->cl-source-package sbcl-cambl))
+
+(define-public ecl-cambl
+  (sbcl-package->ecl-package sbcl-cambl))
