@@ -7282,3 +7282,36 @@ can contain any kind of values.")
 
 (define-public ecl-bst
   (sbcl-package->ecl-package sbcl-bst))
+
+(define-public sbcl-cl-octet-streams
+  (package
+    (name "sbcl-cl-octet-streams")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/glv2/cl-octet-streams.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d7mn6ydv0j2x4r7clpc9ijjwrnfpxmvhifv8n5j7jh7s744sf8d"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "In-memory octet streams for Common Lisp")
+    (description
+     "CL-octet-streams is a library implementing in-memory octet
+streams for Common Lisp.  It was inspired by the trivial-octet-streams and
+cl-plumbing libraries.")
+    (home-page "https://github.com/glv2/cl-octet-streams")
+    (license license:gpl3+)))
+
+(define-public cl-octet-streams
+  (sbcl-package->cl-source-package sbcl-cl-octet-streams))
+
+(define-public ecl-cl-octet-streams
+  (sbcl-package->ecl-package sbcl-cl-octet-streams))
