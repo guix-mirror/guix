@@ -6972,3 +6972,36 @@ programming style and the efficiency of an iterative programming style.")
 
 (define-public ecl-series
   (sbcl-package->ecl-package sbcl-series))
+
+(define-public sbcl-periods
+  (let ((commit "983d4a57325db3c8def942f163133cec5391ec28")
+        (revision "1"))
+    (package
+      (name "sbcl-periods")
+      (version (git-version "0.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/periods.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z30jr3lxz3cmi019fsl4lgcgwf0yqpn95v9zkkkwgymdrkd4lga"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("local-time" ,sbcl-local-time)))
+      (synopsis "Common Lisp library for manipulating date/time objects")
+      (description
+       "Periods is a Common Lisp library providing a set of utilities for
+manipulating times, distances between times, and both contiguous and
+discontiguous ranges of time.")
+      (home-page "https://github.com/jwiegley/periods")
+      (license license:bsd-3))))
+
+(define-public cl-periods
+  (sbcl-package->cl-source-package sbcl-periods))
+
+(define-public ecl-periods
+  (sbcl-package->ecl-package sbcl-periods))
