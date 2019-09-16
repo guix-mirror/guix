@@ -735,7 +735,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.7")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -745,7 +745,7 @@ are detected, the user is notified.")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j6w5jvq5v7kf7diad91qs1acr427nidnk9s24yyrz0hwdd1c2lh"))))
+         "13w446plvgl219lhj29jyimhiqvs1y1byrz4qpdmxgyddmx9xqss"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -754,13 +754,6 @@ are detected, the user is notified.")))
        #:configure-flags '("-DPREFER_LUA:BOOL=YES")
        #:phases
        (modify-phases %standard-phases
-         ;; TODO: remove 'patch-tic on update
-         ;; see: https://github.com/neovim/neovim/issues/9687
-         (add-after 'unpack 'patch-tic
-           (lambda _
-             (substitute* "src/nvim/tui/tui.c"
-               (("value != NULL") "value != NULL && value != (char *)-1"))
-             #t))
          (add-after 'unpack 'set-lua-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((lua-version "5.1")
@@ -774,6 +767,7 @@ are detected, the user is notified.")))
                          (string-append path "/?.lua;" path "/?/?.lua"))))
                     (lua-inputs (map (cute assoc-ref %build-inputs <>)
                                      '("lua"
+                                       "lua-luv"
                                        "lua-lpeg"
                                        "lua-bitop"
                                        "lua-libmpack"))))
@@ -791,6 +785,7 @@ are detected, the user is notified.")))
        ("jemalloc" ,jemalloc)
        ("libiconv" ,libiconv)
        ("lua" ,lua-5.1)
+       ("lua-luv" ,lua5.1-luv)
        ("lua-lpeg" ,lua5.1-lpeg)
        ("lua-bitop" ,lua5.1-bitop)
        ("lua-libmpack" ,lua5.1-libmpack)))
