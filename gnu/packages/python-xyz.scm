@@ -65,6 +65,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16376,3 +16377,24 @@ ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
 For lxml.etree this package can be useful for providing XPath 2.0 selectors,
 because lxml.etree already has it's own implementation of XPath 1.0.")
     (license license:expat)))
+
+(define-public python-bibtexparser
+  (package
+    (name "python-bibtexparser")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bibtexparser" version))
+       (sha256
+        (base32
+         "0zwhfkrzf3n5847dbnfng92k7ak199l9v6x6ax3dgdidfpm6d2fz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)))
+    (native-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/sciunto-org/python-bibtexparser")
+    (synopsis "Python library to parse BibTeX files")
+    (description "BibtexParser is a Python library to parse BibTeX files.")
+    (license (list license:bsd-3 license:lgpl3))))
