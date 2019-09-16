@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -39,6 +39,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
@@ -449,6 +450,69 @@ Grammars (PEGs).")
 
 (define-public lua5.2-lpeg
   (make-lua-lpeg "lua5.2-lpeg" lua-5.2))
+
+(define (make-lua-luv name lua)
+  (package
+    (name name)
+    (version "1.30.1-0")
+    (source (origin
+              ;; The release tarball includes the sources of libuv but does
+              ;; not include the pkg-config files.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/luvit/luv.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1lfzzyphpim28kw33k7zylcyxnf40ckhdg6hbqyzb5hszdf2hbka"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:configure-flags
+       '("-DWITH_LUA_ENGINE=Lua"
+         "-DWITH_SHARED_LIBUV=On"
+         "-DBUILD_MODULE=Off"
+         "-DBUILD_SHARED_LIBS=On"
+         "-DLUA_BUILD_TYPE=System")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-lua-compat
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "lua-compat")
+                               "lua-compat")
+             (setenv "CPATH"
+                     (string-append (getcwd) "/lua-compat:"
+                                    (or (getenv "CPATH") "")))
+             #t)))))
+    (inputs
+     `(("lua" ,lua)
+       ("libuv" ,libuv)))
+    (native-inputs
+     `(("lua-compat"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/keplerproject/lua-compat-5.3.git")
+                 (commit "daebe77a2f498817713df37f0bb316db1d82222f")))
+           (file-name "lua-compat-5.3-checkout")
+           (sha256
+            (base32
+             "02a14nvn7aggg1yikj9h3dcf8aqjbxlws1bfvqbpfxv9d5phnrpz"))))))
+    (home-page "https://github.com/luvit/luv/")
+    (synopsis "Libuv bindings for Lua")
+    (description
+     "This library makes libuv available to Lua scripts.")
+    (license license:asl2.0)))
+
+(define-public lua-luv
+  (make-lua-luv "lua-luv" lua))
+
+(define-public lua5.1-luv
+  (make-lua-luv "lua5.1-luv" lua-5.1))
+
+(define-public lua5.2-luv
+  (make-lua-luv "lua5.2-luv" lua-5.2))
 
 ;; Lua 5.3 is not supported.
 (define (make-lua-bitop name lua)
