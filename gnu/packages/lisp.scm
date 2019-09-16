@@ -7057,3 +7057,54 @@ which implements a set of utilities.")
 
 (define-public ecl-metatilities-base
   (sbcl-package->ecl-package sbcl-metatilities-base))
+
+(define-public sbcl-cl-containers
+  (let ((commit "810927e19d933bcf38ffeb7a23ce521efc432d45")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-containers")
+      (version (git-version "0.12.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/cl-containers.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1s9faxw7svhbjpkhfrz2qxgjm3cvyjb8wpyb4m8dx4i5g7vvprkv"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (inputs
+       `(("metatilities-base" ,sbcl-metatilities-base)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'relax-version-checks
+             (lambda _
+               (substitute* "cl-containers.asd"
+                 (("\\(:version \"metatilities-base\" \"0\\.6\\.6\"\\)")
+                  "\"metatilities-base\""))
+               (substitute* "cl-containers-test.asd"
+                 (("\\(:version \"lift\" \"1\\.7\\.0\"\\)")
+                  "\"lift\""))
+               #t)))))
+      (synopsis "Container library for Common Lisp")
+      (description
+       "Common Lisp ships with a set of powerful built in data structures
+including the venerable list, full featured arrays, and hash-tables.
+CL-containers enhances and builds on these structures by adding containers
+that are not available in native Lisp (for example: binary search trees,
+red-black trees, sparse arrays and so on), and by providing a standard
+interface so that they are simpler to use and so that changing design
+decisions becomes significantly easier.")
+      (home-page "https://common-lisp.net/project/cl-containers/")
+      (license license:expat))))
+
+(define-public cl-containers
+  (sbcl-package->cl-source-package sbcl-cl-containers))
+
+(define-public ecl-cl-containers
+  (sbcl-package->ecl-package sbcl-cl-containers))
