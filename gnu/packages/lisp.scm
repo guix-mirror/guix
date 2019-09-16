@@ -6934,3 +6934,41 @@ classes and cyclic data structures are supported.")
 
 (define-public ecl-cl-prevalence
   (sbcl-package->ecl-package sbcl-cl-prevalence))
+
+(define-public sbcl-series
+  (let ((commit "da9061b336119d1e5214aff9117171d494d5a58a")
+        (revision "1"))
+    (package
+      (name "sbcl-series")
+      (version (git-version "2.2.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.code.sf.net/p/series/series")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07hk2lhfx42zk018pxqvn4gs77vd4n4g8m4xxbqaxgca76mifwfw"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Disable the tests, they are apparently buggy and I didn't find
+       ;; a simple way to make them run and pass.
+       '(#:tests? #f))
+      (synopsis "Series data structure for Common Lisp")
+      (description
+       "This Common Lisp library provides a series data structure much like
+a sequence, with similar kinds of operations.  The difference is that in many
+situations, operations on series may be composed functionally and yet execute
+iteratively, without the need to construct intermediate series values
+explicitly.  In this manner, series provide both the clarity of a functional
+programming style and the efficiency of an iterative programming style.")
+      (home-page "http://series.sourceforge.net/")
+      (license license:expat))))
+
+(define-public cl-series
+  (sbcl-package->cl-source-package sbcl-series))
+
+(define-public ecl-series
+  (sbcl-package->ecl-package sbcl-series))
