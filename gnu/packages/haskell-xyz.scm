@@ -62,6 +62,7 @@
   #:use-module (guix build-system haskell)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -6070,6 +6071,24 @@ Megaparsec is a feature-rich package that strikes a nice balance between
 speed, flexibility, and quality of parse errors.")
     (license license:bsd-2)))
 
+;;; Idris 1.3.2 requires 'megaparse>=7.0.4' but we'd like to keep the public
+;;; package at the current Stackage LTS version:
+(define-public ghc-megaparsec-7
+  (hidden-package
+   (package
+     (inherit ghc-megaparsec)
+     (version "7.0.5")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/megaparsec/"
+                            "megaparsec-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0bqx1icbmk8s7wmbcdzsgnlh607c7kzg8l80cp02dxr5valjxp7j"))))
+     (arguments (strip-keyword-arguments (list #:cabal-revision)
+                                         (package-arguments ghc-megaparsec))))))
+
 (define-public ghc-memory
   (package
     (name "ghc-memory")
@@ -6739,6 +6758,24 @@ between 2 and 3 times faster than the Mersenne Twister.")
     (description
      "This package provides a low-level networking interface.")
     (license license:bsd-3)))
+
+;;; Until we update our default GHC to >=8.6 we cannot update our ghc-network
+;;; package, since the 'cabal-install' package that supports the current
+;;; 'Cabal' module requires 'network==2.6.*'.  Here we provide an updated
+;;; version to be used for our idris package.
+(define-public ghc-network-2.8
+  (hidden-package
+   (package
+     (inherit ghc-network)
+     (version "2.8.0.1")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/network/"
+                            "network-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0im8k51rw3ahmr23ny10pshwbz09jfg0fdpam0hzf2hgxnzmvxb1")))))))
 
 (define-public ghc-network-info
   (package
