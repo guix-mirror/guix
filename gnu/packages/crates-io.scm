@@ -33,6 +33,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web))
 
 ;;;
@@ -1565,6 +1566,51 @@ constants under the crate root, so all items are accessible as
 the platform that libc is compiled for.")
     (license (list license:expat
                    license:asl2.0))))
+
+(define-public rust-libgit2-sys
+  (package
+    (name "rust-libgit2-sys")
+    (version "0.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libgit2-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0y2mibmx7wy91s2kmb2gfb29mrqlqaxpy5wcwr8s1lwws7b9w5sc")) ))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-libssh2-sys" ,rust-libssh2-sys)
+        ("rust-libz-sys" ,rust-libz-sys)
+        ("rust-openssl-sys" ,rust-openssl-sys))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-pkg-config" ,rust-pkg-config))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'find-openssl
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((openssl (assoc-ref inputs "openssl")))
+              (setenv "OPENSSL_DIR" openssl))
+            (delete-file-recursively "libgit2")
+            (setenv "LIBGIT2_SYS_USE_PKG_CONFIG" "1")
+            (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgit2" ,libgit2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/rust-lang/git2-rs")
+    (synopsis "Native bindings to the libgit2 library")
+    (description
+     "This package provides native rust bindings to the @code{libgit2} library.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-libloading
   (package
