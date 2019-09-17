@@ -3045,6 +3045,20 @@ metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
 and Jaro-Winkler.")
     (license license:expat)))
 
+(define-public rust-strsim-0.8
+  (package
+    (inherit rust-strsim)
+    (name "rust-strsim")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "strsim" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
+
 (define-public rust-synstructure-test-traits
   (package
     (name "rust-synstructure-test-traits")
