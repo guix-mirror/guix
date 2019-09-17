@@ -3164,6 +3164,30 @@ directories.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-term
+  (package
+    (name "rust-term")
+    (version "0.4.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "term" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1wbh8ngqkqr3f6wz902yplf60bd5yapnckvrkgmzp5nffi7n8qzs"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-kernel32-sys" ,rust-kernel32-sys)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/Stebalien/term")
+    (synopsis "Terminal formatting library")
+    (description
+     "This package provides a terminal formatting library in rust.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-termcolor
   (package
     (name "rust-termcolor")
