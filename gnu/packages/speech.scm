@@ -361,7 +361,9 @@ be used by the sighted.")
                              "examples/text2wave"))
 
                  ;; Documentation
-                 (install-file "doc/info/festival.info" info)
+                 (for-each (lambda (file)
+                             (install-file file info))
+                           (find-files "doc/info/" "festival.info.*"))
 
                  ;; Headers
                  (mkdir-p incdir)
