@@ -386,6 +386,35 @@ depending on a large number of #[cfg] parameters.  Structured like an
      "This package provides Rust bindings for @code{libclang}.")
     (license license:asl2.0)))
 
+(define-public rust-clang-sys-0.26
+  (package
+    (inherit rust-clang-sys)
+    (name "rust-clang-sys")
+    (version "0.26.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clang-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1r50dwy5hj5gq07dn0qf8222d07qv0970ymx0j8n9779yayc3w3f"))))
+    (arguments
+     `(#:cargo-inputs
+       (("rust-glob" ,rust-glob-0.2)
+        ("rust-libc" ,rust-libc)
+        ("rust-libloading" ,rust-libloading))
+       #:cargo-development-inputs
+       (("rust-glob" ,rust-glob-0.2))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-environmental-variable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((clang (assoc-ref inputs "libclang")))
+               (setenv "LIBCLANG_PATH"
+                       (string-append clang "/lib")))
+            #t)))))))
+
 (define-public rust-clicolors-control
   (package
     (name "rust-clicolors-control")
@@ -411,6 +440,31 @@ depending on a large number of #[cfg] parameters.  Structured like an
      "This package provides a common utility library to control CLI
 colorization.")
     (license license:expat)))
+
+(define-public rust-clippy
+  (package
+    (name "rust-clippy")
+    (version "0.0.302")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clippy" version))
+        (file-name
+          (string-append name "-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1562x3sq9mgmc8j39gd34wqm7ybrdvpmj7cc1n450gwsawayw4fr"))))
+    (build-system cargo-build-system)
+    (arguments
+      `(#:cargo-inputs
+        (("rust-term" ,rust-term))))
+    (home-page "https://github.com/rust-lang/rust-clippy")
+    (synopsis
+      "A bunch of helpful lints to avoid common pitfalls in Rust.")
+    (description
+      "This package provides a bunch of helpful lints to avoid common pitfalls in Rust.")
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-cloudabi
   (package
