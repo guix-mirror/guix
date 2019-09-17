@@ -2938,6 +2938,26 @@ deeply recursive algorithms that may accidentally blow the stack.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-static-assertions
+  (package
+    (name "rust-static-assertions")
+    (version "0.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "static-assertions" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1lw33i89888yb3x29c6dv4mrkg3534n0rlg3r7qzh4p58xmv6gkz"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/nvzqz/static-assertions-rs")
+    (synopsis "Compile-time assertions for rust")
+    (description
+     "This package provides compile-time assertions to ensure that invariants
+are met.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-stdweb-internal-runtime
   (package
     (name "rust-stdweb-internal-runtime")
