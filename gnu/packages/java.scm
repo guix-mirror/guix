@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -11109,3 +11109,67 @@ network protocols, and core version control algorithms.")
      `(("java-javaewah" ,java-javaewah)
        ("java-jsch" ,java-jsch)
        ("java-slf4j-api" ,java-slf4j-api)))))
+
+(define-public abcl
+  (package
+    (name "abcl")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://abcl.org/releases/"
+                           version "/abcl-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hhvcg050nfpjbdmskc1cv2j38qi6qfl77a61b5cxx576kbff3lj"))
+       (patches
+        (search-patches
+         "abcl-fix-build-xml.patch"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (arguments
+     `(#:build-target "abcl.jar"
+       #:test-target "abcl.test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/java/"))
+                   (bin (string-append (assoc-ref outputs "out")
+                                       "/bin/")))
+               (mkdir-p share)
+               (install-file "dist/abcl.jar" share)
+               (install-file "dist/abcl-contrib.jar" share)
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "abcl")
+                 (lambda _
+                   (let ((classpath (string-append
+                                     share "abcl.jar"
+                                     ":"
+                                     share "abcl-contrib.jar")))
+                     (display (string-append
+                               "#!" (which "sh") "\n"
+                               "if [[ -z $CLASSPATH ]]; then\n"
+                               "  cp=\"" classpath "\"\n"
+                               "else\n"
+                               "  cp=\"" classpath ":$CLASSPATH\"\n"
+                               "fi\n"
+                               "exec " (which "java")
+                               " -cp $cp org.armedbear.lisp.Main $@\n")))))
+               (chmod (string-append bin "abcl") #o755)
+               #t))))))
+    (home-page "https://abcl.org/")
+    (synopsis "Common Lisp Implementation on the JVM")
+    (description
+     "@dfn{Armed Bear Common Lisp} (ABCL) is a full implementation of the Common
+Lisp language featuring both an interpreter and a compiler, running in the
+JVM.  It supports JSR-223 (Java scripting API): it can be a scripting engine
+in any Java application.  Additionally, it can be used to implement (parts of)
+the application using Java to Lisp integration APIs.")
+    (license (list license:gpl2+
+                   ;; named-readtables is released under 3 clause BSD
+                   license:bsd-3
+                   ;; jfli is released under CPL 1.0
+                   license:cpl1.0))))
