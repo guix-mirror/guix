@@ -29,7 +29,8 @@
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages web))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -1880,6 +1881,33 @@ types as proposed in RFC 1158.")
     (synopsis "Source of BLAS and LAPACK via Netlib")
     (description
      "The package provides a source of BLAS and LAPACK via Netlib.")
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-libnghttp2-sys
+  (package
+    (name "rust-libnghttp2-sys")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libnghttp2-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0qr4lyh7righx9n22c7amlcpk906rn1jnb2zd6gdfpa3yi24s982"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc))))
+    (inputs
+     `(("nghttp2" ,nghttp2)))
+    (home-page "https://github.com/alexcrichton/nghttp2-rs")
+    (synopsis "FFI bindings for libnghttp2 (nghttp2)")
+    (description
+     "This package provides FFI bindings for libnghttp2 (nghttp2).")
     (license (list license:asl2.0
                    license:expat))))
 
