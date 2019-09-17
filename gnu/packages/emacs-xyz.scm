@@ -53,6 +53,7 @@
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18241,14 +18242,13 @@ Emacs that integrate with major modes like Org-mode.")
     (version "2.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://stable.melpa.org/packages/elixir-mode-"
-             version
-             ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elixir-editors/emacs-elixir.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "091cizxg1aw8bkj58y048mj020ssapjflav633z9bl6gmi10dy4v"))))
+        (base32 "06bi68x49v6f7flpz279mm4jpg31ll3s274givm3pvr8slcxs6xg"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-pkg-info" ,emacs-pkg-info)))
