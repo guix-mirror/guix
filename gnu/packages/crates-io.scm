@@ -695,6 +695,20 @@ floating-point primitives to an @code{io::Write}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-dtoa-0.2
+  (package
+    (inherit rust-dtoa)
+    (name "rust-dtoa")
+    (version "0.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dtoa" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0g96cap6si1g6wi62hsdk2fnj3sf5vd4i97zj6163j8hhnsl3n0d"))))))
+
 (define-public rust-fallible-iterator
   (package
     (name "rust-fallible-iterator")
