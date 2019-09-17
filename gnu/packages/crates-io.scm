@@ -2482,6 +2482,26 @@ system calls.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rustc-hash
+  (package
+    (name "rust-rustc-hash")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rustc-hash" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "114bf72466bl63i5hh8fgqfnhihs0w1m9c9jz505095agfixnvg0"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang-nursery/rustc-hash")
+    (synopsis "Speedy, non-cryptographic hash used in rustc")
+    (description
+     "This package provides a speedy, non-cryptographic hash used in rustc.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-rustc-serialize
   (package
     (name "rust-rustc-serialize")
