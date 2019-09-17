@@ -2035,6 +2035,20 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-percent-encoding-1
+  (package
+    (inherit rust-percent-encoding)
+    (name "rust-percent-encoding")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "percent-encoding" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0cgq08v1fvr6bs5fvy390cz830lq4fak8havdasdacxcw790s09i"))))))
+
 (define-public rust-permutohedron
   (package
     (name "rust-permutohedron")
