@@ -1977,6 +1977,24 @@ implementation (which is unstable / requires nightly).")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-num-traits-0.1
+  (package
+    (inherit rust-num-traits)
+    (name "rust-num-traits")
+    (version "0.1.43")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "num-traits" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0c9whknf2dm74a3cqirafy6gj83a76gl56g4v3g19k6lkwz13rcj"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-num-traits" ,rust-num-traits))))))
+
 (define-public rust-openssl-probe
   (package
     (name "rust-openssl-probe")
