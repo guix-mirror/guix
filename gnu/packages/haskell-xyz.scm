@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Danny Milosavljevic <dannym@scratchpost.org>
@@ -20,6 +20,7 @@
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -463,7 +464,7 @@ complicated text/binary file formats.")
     (inputs
      `(("ghc-scientific" ,ghc-scientific-bootstrap)))
     (native-inputs '())
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-attoparsec-iso8601
   (package
@@ -5201,7 +5202,7 @@ in migrated modules.")
     (name "ghc-integer-logarithms-bootstrap")
     (arguments `(#:tests? #f))
     (native-inputs '())
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-interpolate
   (package
@@ -5952,6 +5953,28 @@ monadic incremental interface is provided as well.")
     (description
      "This package provides a @code{Conduit} interface for the LZMA
 compression algorithm used in the @code{.xz} file format.")
+    (license license:bsd-3)))
+
+(define-public ghc-magic
+  (package
+    (name "ghc-magic")
+    (version "1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://hackage.haskell.org/package/magic/magic-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "10p0gjjjwr1dda7hahwrwn5njbfhl67arq3v3nf1jr3vymlkn75j"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/magic")
+    (synopsis "Interface to C file/magic library")
+    (description
+     "This package provides a full-featured binding to the C libmagic library.
+With it, you can determine the type of a file by examining its contents rather
+than its name.")
     (license license:bsd-3)))
 
 (define-public ghc-markdown-unlit
@@ -8667,7 +8690,7 @@ notation}.")
        ("ghc-hashable" ,ghc-hashable)
        ("ghc-primitive" ,ghc-primitive)))
     (native-inputs '())
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-sdl
   (package
@@ -8951,7 +8974,7 @@ semigroup.")
        ("ghc-tagged" ,ghc-tagged)
        ("ghc-unordered-containers" ,ghc-unordered-containers-bootstrap)
        ("ghc-hashable" ,ghc-hashable-bootstrap)))
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-setenv
   (package
@@ -10781,7 +10804,7 @@ and high speed.")
     (arguments `(#:tests? #f))
     (inputs
      `(("ghc-hashable" ,ghc-hashable-bootstrap)))
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-unsafe
   (package
@@ -11322,7 +11345,7 @@ widths to the Char type.")
      `(("ghc-setlocale" ,ghc-setlocale)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-attoparsec" ,ghc-attoparsec-bootstrap)))
-    (properties '(hidden? #t))))
+    (properties '((hidden? #t)))))
 
 (define-public ghc-weigh
   (package

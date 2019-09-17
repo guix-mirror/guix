@@ -368,8 +368,16 @@ the latest known version of ~a (~a)~%")
                      (upstream-source-version source)))))))
     (#f
      (when warn?
-       (warn-no-updater package)))))
-
+       ;; Distinguish between "no updater" and "failing updater."
+       (match (lookup-updater package updaters)
+         ((? upstream-updater? updater)
+          (warning (package-location package)
+                   (G_ "'~a' updater failed to determine available \
+releases for ~a~%")
+                   (upstream-updater-name updater)
+                   (package-name package)))
+         (#f
+          (warn-no-updater package)))))))
 
 
 ;;;

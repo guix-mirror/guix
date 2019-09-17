@@ -1428,6 +1428,40 @@ PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
 
+(define-public pngsuite
+  (package
+    (name "pngsuite")
+    (version "2017jul19")
+    (source
+     (origin
+       (method url-fetch/tarbomb)
+       (uri (string-append "http://www.schaik.com/pngsuite2011/PngSuite-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "1j7xgd9iffcnpphhzz9ld9ybrjmx9brhq0803g0450ssr52b5502"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there is no test target
+       #:license-file-regexp "PngSuite.LICENSE"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "." (string-append out "/"))
+             #t)))
+         (delete 'build)
+         (delete 'configure))))
+    (home-page "http://www.schaik.com/pngsuite2011/pngsuite.html")
+    (synopsis "Example PNGs for use in test suites")
+    (description "Collection of graphics images created to test PNG
+applications like viewers, converters and editors.  As far as that is
+possible, all formats supported by the PNG standard are represented.")
+    (license (license:fsdg-compatible "file://PngSuite.LICENSE" "Permission to
+use, copy, modify and distribute these images for any purpose and without fee
+is hereby granted."))))
+
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
@@ -1755,3 +1789,42 @@ identical visual appearance.")
 to the standard output.  It works well together with grim.")
    ;; MIT license.
    (license license:expat)))
+
+(define-public sng
+  (package
+    (name "sng")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sng/sng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06a6ydvx9xb3vxvrzdrg3hq0rjwwj9ibr7fyyxjxq6qx1j3mb70i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'link-pngsuite
+           ;; tests expect pngsuite in source dir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (symlink (assoc-ref inputs "pngsuite") "pngsuite")
+             #t)))
+       #:configure-flags
+       (list (string-append "--with-rgbtxt="
+                            (assoc-ref %build-inputs "xorg-rgb")
+                            "/share/X11/rgb.txt"))))
+    (inputs `(("xorg-rgb" ,xorg-rgb)
+              ("libpng" ,libpng)))
+    (native-inputs `(("pngsuite" ,pngsuite)))
+    (home-page "http://sng.sourceforge.net")
+    (synopsis "Markup language for representing PNG contents")
+    (description "SNG (Scriptable Network Graphics) is a minilanguage designed
+specifically to represent the entire contents of a PNG (Portable Network
+Graphics) file in an editable form.  Thus, SNGs representing elaborate
+graphics images and ancillary chunk data can be readily generated or modified
+using only text tools.
+
+SNG is implemented by a compiler/decompiler called sng that
+losslessly translates between SNG and PNG.")
+    (license license:zlib)))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -181,9 +182,11 @@ and LICENSE."
   ;; This regexp matches that.
   (make-regexp "^(.*) OR (.*)$"))
 
-(define (crate->guix-package crate-name)
+(define* (crate->guix-package crate-name #:optional version)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
-`package' s-expression corresponding to that package, or #f on failure."
+`package' s-expression corresponding to that package, or #f on failure.
+When VERSION is specified, attempt to fetch that version; otherwise fetch the
+latest version of CRATE-NAME."
   (define (string->license string)
     (match (regexp-exec %dual-license-rx string)
       (#f (list (spdx-string->license string)))
@@ -196,12 +199,18 @@ and LICENSE."
   (define crate
     (lookup-crate crate-name))
 
-  (and crate
-       (let* ((version        (find (lambda (version)
-                                      (string=? (crate-version-number version)
-                                                (crate-latest-version crate)))
-                                    (crate-versions crate)))
-              (dependencies   (crate-version-dependencies version))
+  (define version-number
+    (or version
+        (crate-latest-version crate)))
+
+  (define version*
+    (find (lambda (version)
+            (string=? (crate-version-number version)
+                      version-number))
+          (crate-versions crate)))
+
+  (and crate version*
+       (let* ((dependencies   (crate-version-dependencies version*))
               (dep-crates     (filter normal-dependency? dependencies))
               (dev-dep-crates (remove normal-dependency? dependencies))
               (cargo-inputs   (sort (map crate-dependency-id dep-crates)
@@ -210,14 +219,14 @@ and LICENSE."
                (sort (map crate-dependency-id dev-dep-crates)
                      string-ci<?)))
          (make-crate-sexp #:name crate-name
-                          #:version (crate-version-number version)
+                          #:version (crate-version-number version*)
                           #:cargo-inputs cargo-inputs
                           #:cargo-development-inputs cargo-development-inputs
                           #:home-page (or (crate-home-page crate)
                                           (crate-repository crate))
                           #:synopsis (crate-description crate)
                           #:description (crate-description crate)
-                          #:license (and=> (crate-version-license version)
+                          #:license (and=> (crate-version-license version*)
                                            string->license)))))
 
 (define (guix-package->crate-name package)

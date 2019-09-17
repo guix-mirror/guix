@@ -39,6 +39,8 @@
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +67,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages build-tools)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
@@ -2626,7 +2629,7 @@ library.")
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "glib-networking-" version ".tar.xz"))
               (sha256
                (base32
                 "1mfw44qpmwvz6yzj8c6spx6z357wrmkk15byrkc5byagd82860fm"))))
@@ -2689,7 +2692,7 @@ libxml to ease remote use of the RESTful API.")
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libsoup-" version ".tar.xz"))
               (sha256
                (base32
                 "0amfw1yvy1kjrg41rfh2vvrw5gkwnyckqbw1fab50hm6xc1acbmx"))))
@@ -2795,16 +2798,16 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18.8")
+    (version "0.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/libsecret/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "libsecret-" version ".tar.xz"))
               (sha256
                (base32
-                "058x64689k55wxfkdp4svhnwvv8jmqm7z5mrynybl38f4sfqiyiv"))))
+                "0fhflcsr70b1pps2pcvqcbdhip2ny5am9nbm634f4sj5g40y30w5"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -3353,7 +3356,7 @@ playlists in a variety of formats.")
 (define-public aisleriot
   (package
     (name "aisleriot")
-    (version "3.22.8")
+    (version "3.22.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/aisleriot/"
@@ -3361,7 +3364,7 @@ playlists in a variety of formats.")
                                   "aisleriot-" version ".tar.xz"))
               (sha256
                (base32
-                "15pm39679ymxki07sb5nvhycz4z53zwbvascyp5wm4864bn98815"))))
+                "0yzdh9cw5cjjgvfh75bihl968czlgfmpmn1z0fdk88sgvpjgzwji"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
@@ -4204,9 +4207,9 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
     (version "1.40.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/gvfs/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "gvfs-" version ".tar.xz"))
               (sha256
                (base32
                 "1cfnzamr4mvgpf6yhm28lh9cafy9z6842s8jpbqnfizfxybg8ylj"))))
@@ -5902,15 +5905,15 @@ providing graphical log-ins and managing local and remote displays.")
 (define-public libgtop
   (package
     (name "libgtop")
-    (version "2.38.0")
+    (version "2.40.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgtop/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgtop-" version ".tar.xz"))
               (sha256
                (base32
-                "04mnxgzyb26wqk6qij4iw8cxwl82r8pcsna5dg8vz2j3pdi0wv2g"))))
+                "1m6jbqk8maa52gxrf223442fr5bvvxgb7ham6v039i3r1i62gwvq"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -6295,9 +6298,9 @@ easy, safe, and automatic.")
     (version "2.0.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/tracker/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "tracker-" version ".tar.xz"))
               (sha256
                (base32
                 "1mfc5lv820kr7ssi7hldn25gmshh65k19kh478qjsnb64sshsbyf"))))
@@ -7224,9 +7227,9 @@ compiled.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/"
+                    "mirror://gnome/sources/gfbgraph/"
                     (version-major+minor version) "/"
-                    name "-" version ".tar.xz"))
+                    "gfbgraph-" version ".tar.xz"))
               (sha256
                (base32
                 "1dp0v8ia35fxs9yhnqpxj3ir5lh018jlbiwifjfn8ayy7h47j4fs"))))
@@ -7994,7 +7997,7 @@ configurable file renaming. ")
 (define-public workrave
   (package
     (name "workrave")
-    (version "1.10.23")
+    (version "1.10.34")
     (source
      (origin
        (method git-fetch)
@@ -8005,20 +8008,20 @@ configurable file renaming. ")
                                          version)))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1qhlwfhwk5agv4904d6bsf83k9k89q7bms6agg967vsca4905vcw"))))
+        (base32 "0czwhr7nw523753ajcjjfwrf91mq8pmzr19gp0srqsvb1dsn1zcf"))))
     (build-system glib-or-gtk-build-system)
-    (propagated-inputs `(("glib" ,glib)
-                         ("gtk+" ,gtk+)
-                         ("gdk-pixbuf" ,gdk-pixbuf)
-                         ("gtkmm" ,gtkmm)
-                         ("glibmm" ,glibmm)
-                         ("libx11" ,libx11)
-                         ("libxtst" ,libxtst)
-                         ("dconf" ,dconf)
-                         ("libice" ,libice)))
-    (inputs `(("libsm" ,libsm)
-              ("python-cheetah" ,python2-cheetah)))
-    (native-inputs `(("glib" ,glib "bin")
+    (inputs `(("glib" ,glib)
+              ("gtk+" ,gtk+)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("gtkmm" ,gtkmm)
+              ("glibmm" ,glibmm)
+              ("libx11" ,libx11)
+              ("libxtst" ,libxtst)
+              ("dconf" ,dconf)
+              ("libice" ,libice)
+              ("libsm" ,libsm)
+              ("libxscrnsaver" ,libxscrnsaver)))
+    (native-inputs `(("boost" ,boost)
                      ("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)
                      ("autoconf" ,autoconf)
@@ -8026,9 +8029,9 @@ configurable file renaming. ")
                      ("automake" ,automake)
                      ("libtool" ,libtool)
                      ("intltool" ,intltool)
-                     ("libxscrnsaver" ,libxscrnsaver)
                      ("gobject-introspection" ,gobject-introspection)
-                     ("python2" ,python-2)))
+                     ("python3" ,python-3)
+                     ("python-jinja2" ,python-jinja2)))
     (synopsis "Tool to help prevent repetitive strain injury (RSI)")
     (description
      "Workrave is a program that assists in the recovery and prevention of
@@ -8147,7 +8150,7 @@ generic enough to work for everyone.")
          (add-after 'install 'glib-or-gtk-wrap
            (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap)))))
     (native-inputs
-     `(("glib" ,glib "bin")               ; glib-mkenums
+     `(("glib" ,glib "bin")             ; glib-mkenums
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("itstool" ,itstool)))
@@ -8155,6 +8158,7 @@ generic enough to work for everyone.")
      `(("enchant" ,enchant)
        ("evolution-data-server" ,evolution-data-server) ; must be the same version
        ("gcr" ,gcr)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gnome-autoar" ,gnome-autoar)
        ("gnome-desktop" ,gnome-desktop)
        ("gtkspell3" ,gtkspell3)

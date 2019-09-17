@@ -636,14 +636,14 @@ printer/driver specific, but spooler-independent PPD file.")
 (define-public foo2zjs
   (package
     (name "foo2zjs")
-    (version "20190517")
+    (version "20190909")
     (source (origin
               (method url-fetch)
               ;; XXX: This is an unversioned URL!
               (uri "http://foo2zjs.rkkda.com/foo2zjs.tar.gz")
               (sha256
                (base32
-                "13gzsd26nq4brx1xzpwmg1qnr4nk7ykgi94qr1hbjqfi561prki4"))))
+                "1nn84c045mbv6yzpjfggc6152bvgrmcxiyvgz9v2w3sws7ihshrm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

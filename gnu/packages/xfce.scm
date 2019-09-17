@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -283,11 +284,14 @@ merging features essential for loading menus modified with menu editors.")
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
        ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
-       ("gstreamer" ,gstreamer)))
+       ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails
+       ;; ("gstreamer" ,gstreamer)
+       ))
     (home-page "https://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
@@ -638,7 +642,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.7")
+    (version "1.8.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -646,7 +650,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0afkp528mwwa2m18m39mvw53qgaijyynrw9wwwiyxgjiczq3l0ry"))))
+                "1fah2d7v3a7fp28xa5wv896rap1iad9q9y04qchca09mq1x8wxbs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -670,7 +674,7 @@ fast.")
 (define-public thunar-volman
   (package
     (name "thunar-volman")
-    (version "0.9.3")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -678,7 +682,7 @@ fast.")
                            (version-major+minor version) "/"
                            "thunar-volman-" version ".tar.bz2"))
        (sha256
-        (base32 "1sfmz40164rg77hclrkrgnbk8cb7f325qqi7lz2hh3wbvf8r0c19"))))
+        (base32 "0dqqkbhn43hhmhqyx1fnmawpvysdjzw6ln4ryf629wil6dlwd9vy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -907,7 +911,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.8.4")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
@@ -915,14 +919,14 @@ inhibit interface which allows applications to prevent automatic sleep.")
                                   "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
-                "18nf01djwnbjc91bdlv3p0h6pwcq1kfnjgp6yaxhxv4kdi9f82rs"))))
+                "0sa75m1w6yvv4xvzrwqiif6vnqgi29hjrixrh87nxss58bbms8hn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("desktop-file-utils" ,desktop-file-utils)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxfce4ui" ,libxfce4ui)
        ("librsvg" ,librsvg)
@@ -978,6 +982,14 @@ memory usage graphically, and it can display processes as a tree.")
               (sha256
                (base32
                 "0qlhvnl2m33vfxqlbkic2nmfpwyd4mq230jzhs48cg78392amy9w"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-libical3
+           (lambda* _
+             (substitute* "src/ical-code.c" ;; .is_utc not available in libical3
+               ((".*\\.is_utc.*$") ""))
+             #t)))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1068,7 +1080,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/mousepad/"
@@ -1076,11 +1088,10 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "12si6fvhp68wz4scr339c23jxqq5ywn5nf4w55jld5lxjadkg9rr"))))
+                "1myy7954r1a30dk7inwy7kwki7zvfbnnsc3a8swk72vzrbgjmh44"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-gtk3"
-                           ;; Use the GSettings keyfile backend rather than
+     '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
                            ;; DConf.
                            "--enable-keyfile-settings")
        #:phases
@@ -1100,7 +1111,8 @@ of data to either CD/DVD/BD.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)))
+       ("gtksourceview" ,gtksourceview-3)
+       ("xfconf" ,xfconf)))
     (home-page "https://git.xfce.org/apps/mousepad/")
     (synopsis "Simple text editor for Xfce")
     (description

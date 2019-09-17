@@ -3195,24 +3195,28 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.5.2")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32
-         "1p6yz5q7czyf9ard65sp4kawdlkg40cfscr3b24znymmhs3p7rbk"))
+        (base32 "0nnqixvw3x7i22nsr54n4bgm35z9nh3d9qj5s75cfd3ajjsjndyh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; XXX
-           (substitute* "bs1770gain/bs1770gain.c"
-             (("\"N.*\"") "\"\""))
-           (substitute* "configure"
-             (("URL=.*$")
-              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html\n"))))))
+           (substitute* "libbg/bgx.c"
+             (("#define BS.* ") "#define BS ")
+             (("BS.*NO?.*N.*S.*E.*N.*SE?") "NO")
+             (("\"( #|N).*\"") "\"\""))
+           (substitute* (list "config.h"
+                              "configure.ac"
+                              "configure")
+             (("https?://bs1770gain[^/]*/")
+              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html"))
+           #t))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))

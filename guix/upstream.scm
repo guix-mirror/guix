@@ -245,18 +245,18 @@ correspond to the same version."
 (define (lookup-updater package updaters)
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
 them matches."
-  (any (match-lambda
-         (($ <upstream-updater> name description pred latest)
-          (and (pred package) latest)))
-       updaters))
+  (find (match-lambda
+          (($ <upstream-updater> name description pred latest)
+           (pred package)))
+        updaters))
 
 (define (package-latest-release package updaters)
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
 none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
 that the returned source is newer than the current one."
   (match (lookup-updater package updaters)
-    ((? procedure? latest-release)
-     (latest-release package))
+    ((? upstream-updater? updater)
+     ((upstream-updater-latest updater) package))
     (_ #f)))
 
 (define (package-latest-release* package updaters)

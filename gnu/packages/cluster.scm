@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Andrew Miloradovsky <andrew@interpretmath.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,10 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sphinx)
@@ -79,3 +83,34 @@ Server (@dfn{IPVS}) kernel module.  High availability is achieved by the Virtual
 Redundancy Routing Protocol (@dfn{VRRP}).  Each Keepalived framework can be used
 independently or together to provide resilient infrastructures.")
     (license license:gpl2+)))
+
+(define-public libraft
+  (package
+    (name "libraft")
+    (version "0.9.5")
+    (home-page "https://github.com/canonical/raft")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1q49f5mmv6nr6dxhnp044xwc6jlczgh0nj0bl6718wiqh28411x0"))))
+    (arguments '(#:configure-flags '("--disable-uv")))
+    ;; The uv plugin tests fail, if libuv (or the example) is enabled,
+    ;; because setting up the environment requires too much privileges.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gettext-minimal)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (build-system gnu-build-system)
+    (synopsis "C implementation of the Raft consensus protocol")
+    (description "The library has modular design: its core part implements only
+the core Raft algorithm logic, in a fully platform independent way.  On top of
+that, a pluggable interface defines the I/O implementation for networking
+(send/receive RPC messages) and disk persistence (store log entries and
+snapshots).")
+    (license license:asl2.0)))

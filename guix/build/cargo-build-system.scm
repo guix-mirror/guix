@@ -99,7 +99,7 @@ Cargo.toml file present at its root."
   (for-each
     (match-lambda
       ((name . path)
-       (let* ((basepath (basename path))
+       (let* ((basepath (strip-store-file-name path))
               (crate-dir (string-append vendor-dir "/" basepath)))
          (and (crate-src? path)
               ;; Gracefully handle duplicate inputs
@@ -167,9 +167,6 @@ directory = '" port)
   (if tests?
       (apply invoke `("cargo" "test" ,@cargo-test-flags))
       #t))
-
-(define (touch file-name)
-  (call-with-output-file file-name (const #t)))
 
 (define* (install #:key inputs outputs skip-build? #:allow-other-keys)
   "Install a given Cargo package."

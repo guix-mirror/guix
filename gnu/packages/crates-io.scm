@@ -2019,7 +2019,7 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
 (define-public rust-percent-encoding
   (package
     (name "rust-percent-encoding")
-    (version "2.0.0")
+    (version "2.1.0")
     (source
       (origin
         (method url-fetch)
@@ -2027,7 +2027,7 @@ the @code{take_while} predicate returned false after dropping the @code{by_ref}.
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
          (base32
-          "0m6rkp3iy11la04p6z3492rns6n693pvmx585dvfmzzlzak2hkxs"))))
+          "0bp3zrsk3kr47fbpipyczidbbx4g54lzxdm77ni1i3qws10mdzfl"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/servo/rust-url/")
     (synopsis "Percent encoding and decoding")

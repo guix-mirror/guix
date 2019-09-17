@@ -6861,3 +6861,76 @@ extension-points via the concept of hooks.")
 
 (define-public ecl-cl-hooks
   (sbcl-package->ecl-package sbcl-cl-hooks))
+
+(define-public sbcl-s-sysdeps
+  (let ((commit "d28246b5dffef9e73a0e0e6cfbc4e878006fe34d")
+        (revision "1"))
+    (package
+      (name "sbcl-s-sysdeps")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "1" revision commit))
+      (home-page "https://github.com/svenvc/s-sysdeps")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14b69b81yrxmjlvmm3lfxk04x5v7hqz4fql121334wh72czznfh9"))))
+      (synopsis "Common Lisp abstraction layer over platform dependent functionality")
+      (description "@code{s-sysdeps} is an abstraction layer over platform
+dependent functionality.  This simple package is used as a building block in a
+number of other open source projects.
+
+@code{s-sysdeps} abstracts:
+
+@itemize
+@item managing processes,
+@item implementing a standard TCP/IP server,
+@item opening a client TCP/IP socket stream,
+@item working with process locks.
+@end itemize\n")
+      (license license:llgpl))))
+
+(define-public cl-s-sysdeps
+  (sbcl-package->cl-source-package sbcl-s-sysdeps))
+
+(define-public ecl-s-sysdeps
+  (sbcl-package->ecl-package sbcl-s-sysdeps))
+
+(define-public sbcl-cl-prevalence
+  (let ((commit "c163c227ed85d430b82cb1e3502f72d4f88e3cfa")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-prevalence")
+      (build-system asdf-build-system/sbcl)
+      (version (git-version "5" revision commit))
+      (home-page "https://github.com/40ants/cl-prevalence")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1i9zj1q2ahgwch56an21yzbgkynz0kab9fyxkq9mg8p3xrv38jjn"))))
+      (inputs
+       `(("s-sysdeps" ,sbcl-s-sysdeps)
+         ("s-xml" ,sbcl-s-xml)))
+      (synopsis "Implementation of object prevalence for Common Lisp")
+      (description "This Common Lisp library implements object prevalence (see
+@url{https://en.wikipedia.org/wiki/System_prevalence}).  It allows
+for (de)serializing to and from s-exps as well as XML.  Serialization of arbitrary
+classes and cyclic data structures are supported.")
+      (license license:llgpl))))
+
+(define-public cl-prevalence
+  (sbcl-package->cl-source-package sbcl-cl-prevalence))
+
+(define-public ecl-cl-prevalence
+  (sbcl-package->ecl-package sbcl-cl-prevalence))

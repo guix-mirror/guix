@@ -352,7 +352,7 @@ object."
 
   (match (package-location package)
     (($ <location> file line column)
-     (catch 'system
+     (catch 'system-error
        (lambda ()
          ;; In general we want to keep relative file names for modules.
          (with-fluids ((%file-port-name-canonicalization 'relative))

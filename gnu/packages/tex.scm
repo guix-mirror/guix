@@ -6827,17 +6827,14 @@ titles.")
                          "/fonts/afm/public/xypic/"
                          "/fonts/tfm/public/xypic/"
                          "/fonts/type1/public/xypic/"
-
-                         ;;"/tex/generic/xypic/" ; I guess these are generated
-                         )
+                         "/tex/generic/xypic/")
                    (base32
-                    "0sqkkvjzzsiazvh8803qqyrcv4is3m1qs9x9v2m35jjikbqc08y8"))))
+                    "09b51bbm189xh7039h5n8nmab5nn2bybhh26qjn08763m80zdhjg")
+                   #:trivial? #t)))
     (package
       (inherit template)
       (arguments
        (substitute-keyword-arguments (package-arguments template)
-         ((#:tex-directory _ #t)
-          "tex/generic/xypic")
          ((#:phases phases)
           `(modify-phases ,phases
              (delete 'reset-gzip-timestamps)))))

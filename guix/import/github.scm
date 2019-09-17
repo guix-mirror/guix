@@ -161,7 +161,7 @@ empty list."
         url))
 
   (match (json-fetch (decorate release-url) #:headers headers)
-    (()
+    (#()
      ;; We got the empty list, presumably because the user didn't use GitHub's
      ;; "release" mechanism, but hopefully they did use Git tags.
      (json-fetch (decorate tag-url) #:headers headers))

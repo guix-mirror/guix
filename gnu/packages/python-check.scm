@@ -2,6 +2,7 @@
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -226,11 +227,27 @@ testing framework.")
         (base32
          "03w2zz3crblj1p6i8nq17946hbn3zqp9z7cfnifw47hi4a4fww12"))))
     (build-system python-build-system)
-    (arguments '(#:tests? #f)) ; one test fails; can't find virtualenv
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Reference the virtualenv executable directly, to avoid the need
+         ;; for PYTHONPATH, which gets cleared when instantiating a new
+         ;; virtualenv with pytest-virtualenv.
+         (add-after 'unpack 'patch-virtualenv-executable
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((virtualenv (assoc-ref inputs "python-virtualenv"))
+                    (virtualenv-bin (string-append virtualenv
+                                                   "/bin/virtualenv")))
+               (substitute* "pytest_virtualenv.py"
+                 (("^DEFAULT_VIRTUALENV_FIXTURE_EXECUTABLE.*$")
+                  (format #f "DEFAULT_VIRTUALENV_FIXTURE_EXECUTABLE = '~a'"
+                          virtualenv-bin)))
+               #t))))))
     (propagated-inputs
-     `(("python-virtualenv" ,python-virtualenv)
-       ("python-pytest-shutil" ,python-pytest-shutil)
+     `(("python-pytest-shutil" ,python-pytest-shutil)
        ("python-pytest-fixture-config" ,python-pytest-fixture-config)))
+    (inputs
+     `(("python-virtualenv" ,python-virtualenv)))
     (native-inputs
      `(("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)

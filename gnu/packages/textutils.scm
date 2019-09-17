@@ -13,7 +13,7 @@
 ;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -89,23 +89,22 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7.1")
+    (version "3.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rrthomas/recode/releases/"
-                           "download/v" version "/" name "-" version ".tar.gz"))
+                           "download/v" version "/recode-" version ".tar.gz"))
        (sha256
-        (base32
-         "0215hfj0rhlh0grg91qfx75pp6z09bpv8211qdxqihniw7y9a4fs"))
+        (base32 "1sl99dfx2b76paq86wv3a0lcy66f1hylf6iy04rzwxj7ccwpsk30"))
        (modules '((guix build utils)))
        (snippet '(begin
                    (delete-file "tests/Recode.c")
                    #t))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
-       ("python2-cython" ,python2-cython)))
+     `(("python" ,python)
+       ("python-cython" ,python-cython)))
     (home-page "https://github.com/rrthomas/recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
@@ -878,6 +877,44 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public odt2txt
+  (package
+    (name "odt2txt")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/dstosberg/odt2txt/")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0im3kzvhxkjlx57w6h13mc9584c74ma1dyymgvpq2y61av3gc35v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no make check
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/dstosberg/odt2txt/")
+    (synopsis "Converter from OpenDocument Text to plain text")
+    (description "odt2txt is a command-line tool which extracts the text out
+of OpenDocument Texts, as produced by OpenOffice.org, KOffice, StarOffice and
+others.
+
+odt2txt can also extract text from some file formats similar to OpenDocument
+Text, such as OpenOffice.org XML (*.sxw), which was used by OpenOffice.org
+version 1.x and older StarOffice versions.  To a lesser extent, odt2txt may be
+useful to extract content from OpenDocument spreadsheets (*.ods) and
+OpenDocument presentations (*.odp).")
+    (license license:gpl2)))
 
 (define-public opencc
   (package

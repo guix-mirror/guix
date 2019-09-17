@@ -67,16 +67,10 @@
           (file-system-mapping
            (source "/etc/group") (target source))))
 
-  (define nscd-socket
-    (file-system-mapping
-     (source "/var/run/nscd") (target source)
-     (writable? #t)))
-
   (append (cons (tmpfs "/tmp") %container-file-systems)
           (let ((mappings `(,@(if (memq 'net namespaces)
                                   '()
-                                  (cons nscd-socket
-                                        %network-file-mappings))
+                                  %network-file-mappings)
                             ,@(if (and (memq 'mnt namespaces)
                                        (not (memq 'user namespaces)))
                                   accounts

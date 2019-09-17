@@ -7340,13 +7340,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.22.0")
+    (version "0.22.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "1wkqmpy0d0fab9bjfc7i5wh2zng75pg9rn9c1z1lkki7fpwaw2jb"))))
+                "0cpxqb18wd3pjd7bi8lry13sm5ffqahcvvxpk5pwm5xcj30cdlm9"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7447,13 +7447,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.26.7")
+    (version "3.26.8")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "1xbhb8aa1ygm5crkp1bmqs2x1601ppa2kgc2xlf2zh8jj8zqapg8"))))
+                "1wwimzviy2vklp80faz7sbbp74qcw2csbmlfgvzj7b785vwarpwg"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7569,13 +7569,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.36.0")
+    (version "1.36.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "1285fr8qjd7d0ixpv7d5imi0n6wzc4k6yia1rkmig71qd2gg556k"))))
+                "1yid84gn0052v52h84685lvk854grl1wl65psmlmxx9yyykgc0jn"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
@@ -7872,13 +7872,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.44.3")
+    (version "1.44.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "091zydz1zpz519ha0jkbvzrhxjvw5r2963qz9grmvl2jd8girvcg"))))
+                "0dnifr58j2si2qbnvap2wslz3xgjv3h4l7a6v7nmmc57hq6kdbym"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -9628,14 +9628,14 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.16.0")
+    (version "2.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "1rpzl4x5mrwxrrf1jzm4zni6li6x34fjfyybsdvplb0ixa48zhn4"))))
+         "0c773cmhng907839f0bq161jky7362lxxny36ac55qxiz1giqi8j"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10023,14 +10023,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gprofiler
   (package
     (name "r-gprofiler")
-    (version "0.6.7")
+    (version "0.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gProfileR" version))
        (sha256
         (base32
-         "12nwidbnqmnfy5dnqga26byslvdnkrpz2fi19qfcby6xx0wbndk7"))))
+         "05d6y6b7vkkzp2qhs1cwlvp02djij1b28dbwxnrms08f8qi35iaj"))))
     (properties `((upstream-name . "gProfileR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10448,14 +10448,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "1lpmyxlwwcy92hyxqag321ssc5z6yw3a0ws9r058jwgzyjg7i2gm"))
+         "0niz9dh66fcwbvqpkpsdlz9d06kwi3kfh45dhk3qz9g9qqyiakr1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10644,14 +10644,14 @@ variable and significantly correlated genes.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "0632ypndblrgzfk8k98rr8c6m2r0zwzf02pzvlrhcp9bj1pvqbrz"))))
+         "1riyzfsq4bd513hidkw3cfkx3jywk3x87j89q70v459xsdfdc95b"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)

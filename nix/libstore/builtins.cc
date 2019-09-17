@@ -39,7 +39,7 @@ static void builtinDownload(const Derivation &drv,
 
     const char *const argv[] =
       {
-	"download", drvPath.c_str(), output.c_str(), NULL
+	  "guix", "perform-download", drvPath.c_str(), output.c_str(), NULL
       };
 
     /* Tell the script what the store file name is, so that
@@ -50,7 +50,7 @@ static void builtinDownload(const Derivation &drv,
     /* Tell it about options such as "print-extended-build-trace".  */
     setenv("_NIX_OPTIONS", settings.pack().c_str(), 1);
 
-    const string program = settings.nixLibexecDir + "/download";
+    const string program = settings.guixProgram;
     execv(program.c_str(), (char *const *) argv);
 
     throw SysError(format("failed to run download program '%1%'") % program);

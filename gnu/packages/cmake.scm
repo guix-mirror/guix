@@ -207,6 +207,18 @@ and workspaces that can be used in the compiler environment of your choice.")
     (outputs '("out" "doc"))
     (properties (alist-delete 'hidden? (package-properties cmake-minimal)))))
 
+(define-public cmake/fixed
+  ;; This is a variant of CMake that fixes X.509 certificate lookup:
+  ;; <https://issues.guix.gnu.org/issue/37371>.
+  (package
+    (inherit cmake)
+    (version (string-append (package-version cmake) "-1"))
+    (source (origin
+              (inherit (package-source cmake))
+              (patches
+               (append (search-patches "cmake-curl-certificates.patch")
+                       (origin-patches (package-source cmake))))))))
+
 (define-public emacs-cmake-mode
   (package
     (inherit cmake)

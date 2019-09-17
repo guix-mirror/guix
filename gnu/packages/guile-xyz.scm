@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Eraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2016 Amirouche <amirouche@hypermove.net>
@@ -48,7 +48,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages disk)
-  #:use-module (gnu packages ed)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages gawk)
@@ -1926,30 +1925,17 @@ is no support for parsing block and inline level HTML.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mcron/mcron-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1i9mcp6r6my61zfiydsm3n6my41mwvl7dfala4q29qx0zn1ynlm4"))))
+                "069m3ri7nc8lgy3h9ka7gj3v3anqj69x9jw4l3cfq65nqkxsch4g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
-                  (add-before 'check 'set-timezone
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      ;; 'tests/job-specifier.scm' expects to be running in
-                      ;; UTC-2 or something.
-                      ;; FIXME: This issue is being investigated upstream, for
-                      ;; now we'll just skip the tests (see below):
-                      ;; <https://lists.gnu.org/archive/html/bug-mcron/2018-04/msg00005.html>.
-                      (let ((tzdata (assoc-ref inputs "tzdata")))
-                        (setenv "TZDIR"
-                                (string-append tzdata
-                                               "/share/zoneinfo"))
-                        (setenv "TZ" "UTC-2")
-                        #t)))
                   (add-before 'check 'adjust-tests
                     (lambda _
                       (substitute* "tests/job-specifier.scm"
@@ -1966,9 +1952,13 @@ is no support for parsing block and inline level HTML.")
                         (("\\(test-equal \"next-year\"" all)
                          (string-append "(test-skip 4)\n" all)))
                       #t)))))
-    (native-inputs `(("pkg-config" ,pkg-config)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("help2man" ,help2man)
+                     ("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)
                      ("tzdata" ,tzdata-for-tests)))
-    (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.2)))
+    (inputs `(("guile" ,guile-2.2)))
     (home-page "https://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description

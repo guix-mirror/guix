@@ -596,7 +596,13 @@ interactive environment for the functional language Haskell.")
                  (("^test\\('T8108'") "# guix skipped: test('T8108'"))
                (substitute* "libraries/unix/tests/libposix/all.T"
                  (("^test\\('posix010'") "# guix skipped: test('posix010'"))
-               #t))))))))
+               #t))))))
+    (native-search-paths (list (search-path-specification
+                                (variable "GHC_PACKAGE_PATH")
+                                (files (list
+                                        (string-append "lib/ghc-" version)))
+                                (file-pattern ".*\\.conf\\.d$")
+                                (file-type 'directory))))))
 
 (define-public ghc-8 ghc-8.4)
 

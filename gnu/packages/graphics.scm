@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1019,3 +1020,43 @@ requirements.")
 performance subdivision surface (subdiv) evaluation on massively parallel CPU
 and GPU architectures.")
     (license license:asl2.0)))
+
+(define-public opencsg
+  (let ((dot-to-dash (lambda (c) (if (char=? c #\.) #\- c))))
+    (package
+      (name "opencsg")
+      (version "1.4.2")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/floriankirsch/OpenCSG.git")
+               (commit (string-append "opencsg-"
+                                      (string-map dot-to-dash version)
+                                      "-release"))))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "00m4vs6jn3scqczscc4591l1d6zg6anqp9v1ldf9ymf70rdyvm7m"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "src/Makefile"
+                 (("/usr/local") (assoc-ref outputs "out")))
+               #t))
+           (add-before 'build 'skip-example
+             (lambda _ (chdir "src") #t)))))
+      (inputs
+       `(("glew" ,glew)
+         ("freeglut" ,freeglut)))
+      (synopsis "Library for rendering Constructive Solid Geometry (CSG)")
+      (description
+       "OpenCSG is a library for rendering Constructive Solid Geometry (CSG) using
+OpenGL.  CSG is an approach for modeling complex 3D-shapes using simpler ones.
+For example, two shapes can be combined by uniting them, by intersecting them,
+or by subtracting one shape from the other.")
+      (home-page "http://www.opencsg.org/")
+      (license license:gpl2))))

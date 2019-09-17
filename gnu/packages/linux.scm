@@ -349,10 +349,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.13")
+(define-public linux-libre-5.2-version "5.2.15")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "12hpph3iynr22mfwz7745lp01waf2kg579hr56d4pvhx4iahzdhp")))
+        (hash (base32 "0jhc70r2rygm91qifjagg1jgbpjwyyq6m8g1n5iv81l1v84i0mpb")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
@@ -3838,7 +3838,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.2.1")
+    (version "5.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3846,7 +3846,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0crjv3i20nyj2dagfw6q7byshscpn6j7wlqch3apkzzzk00lmb1n"))))
+                "1imivxjppi8zl27gn472pwpk8bg5dijkbyi340by31vhy7dj24w2"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -4455,18 +4455,18 @@ cpufreq sub-system is enabled or not.")
 (define-public haveged
   (package
     (name "haveged")
-    (version "1.9.4")
+    (version "1.9.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/jirka-h/haveged.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1hrwzjd4byq4fdrg8svww3d8x449k80jxxrjy9v6jvzhfv19rvxr"))))
+        (base32 "11kr19n2f87izsj341lv5amhd1wc2ckfmqr9pq5fxix8pkbs94rh"))))
     (build-system gnu-build-system)
-    (home-page "http://www.issihosts.com/haveged")
+    (home-page "https://www.issihosts.com/haveged")
     (synopsis "Entropy source for the Linux random number generator")
     (description
      "haveged generates an unpredictable stream of random numbers for use by
@@ -4475,10 +4475,10 @@ standard mechanisms for filling the entropy pool may not be sufficient for
 systems with high needs or limited user interaction, such as headless servers.
 
 @command{haveged} runs as a privileged daemon, harvesting randomness from the
-indirect effects of hardware events on hidden processor state using the HArdware
-Volatile Entropy Gathering and Expansion (@dfn{HAVEGE}) algorithm.  It tunes
-itself to its environment and provides the same built-in test suite for the
-output stream as used on certified hardware security devices.
+indirect effects of hardware events on hidden processor state using the
+@acronym{HAVEGE, HArdware Volatile Entropy Gathering and Expansion} algorithm.
+It tunes itself to its environment and provides the same built-in test suite
+for the output stream as used on certified hardware security devices.
 
 The quality of the randomness produced by this algorithm has not been proven.
 It is recommended to run it together with another entropy source like rngd, and
@@ -5140,14 +5140,14 @@ re-use code and to avoid re-inventing the wheel.")
 (define-public libnftnl
   (package
     (name "libnftnl")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://netfilter.org/libnftnl/"
                            "libnftnl-" version ".tar.bz2"))
        (sha256
-        (base32 "03xszkcpqk3s1rqc6vh7g5j13kh3d3yjnvjhk5scds3an39rgp92"))))
+        (base32 "087dfc2n4saf2k68hyi4byvgz5grwpw5kfjvmkpn3wmd8y1riiy8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -5164,7 +5164,7 @@ used by nftables.")
 (define-public nftables
   (package
     (name "nftables")
-    (version "0.9.0")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
@@ -5172,7 +5172,7 @@ used by nftables.")
                            "/files/nftables-" version ".tar.bz2"))
        (sha256
         (base32
-         "14bygs6vg2v448cw5r4pxqi8an29hw0m9vab8hpmgjmrzjsq30dd"))))
+         "1x8kalbggjq44j4916i6vyv1rb20dlh1dcsf9xvzqsry2j063djw"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags
                  '("--disable-man-doc"))) ; FIXME: Needs docbook2x.
@@ -5874,15 +5874,15 @@ the superuser to make device nodes.")
 (define-public fakeroot
   (package
     (name "fakeroot")
-    (version "1.23")
+    (version "1.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.debian.org/debian/pool/main/f/"
-                                  "fakeroot/fakeroot_" version ".orig.tar.xz"))
+              (uri (string-append "https://deb.debian.org/debian/pool/main/f/"
+                                  "fakeroot/fakeroot_" version ".orig.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xpl0s2yjyjwlf832b6kbkaa5921liybaar13k7n45ckd9lxd700"))))
+                "1vb6f93hjyqnwx8dc8mm3dgma7axgqk8s7sdsjs8l2rpc0qmn11f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

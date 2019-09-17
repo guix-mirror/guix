@@ -99,7 +99,7 @@ url {
                          ('base32
                           (? string? hash)))))
              ('build-system 'ocaml-build-system)
-             ('inputs
+             ('propagated-inputs
               ('quasiquote
                (("ocaml-zarith" ('unquote 'ocaml-zarith)))))
              ('native-inputs
