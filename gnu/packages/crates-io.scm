@@ -1488,6 +1488,31 @@ allows loading dynamic libraries (also known as shared libraries) as well as use
 functions and static variables these libraries contain.")
     (license license:isc)))
 
+(define-public rust-lock-api
+  (package
+    (name "rust-lock-api")
+    (version "0.1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "lock_api" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0b24q9mh258xa52ap636q1sxz0j5vrnp0hwbbh7ddjka3wwz3sv2"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-owning-ref" ,rust-owning-ref)
+        ("rust-scopeguard" ,rust-scopeguard-0.3))))
+    (home-page "https://github.com/Amanieu/parking_lot")
+    (synopsis "Wrappers to create fully-featured Mutex and RwLock types")
+    (description
+     "This package provides wrappers to create fully-featured @code{Mutex} and
+@code{RwLock} types.  It is compatible with @code{no_std}.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-log
   (package
     (name "rust-log")
