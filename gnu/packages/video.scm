@@ -1495,8 +1495,8 @@ access to mpv's powerful playback capabilities.")
     (version "2019.09.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
-                                  "download/" version "/youtube-dl-"
+              (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
+                                  "releases/download/" version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
