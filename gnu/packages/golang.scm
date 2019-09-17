@@ -409,8 +409,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "04rvwj69gmw3bz8pw5pf10r21ar0pgpnswp15nkddf04dxyl9s4m"))
-       (patches (search-patches "go-skip-gc-test.patch"))))
+         "04rvwj69gmw3bz8pw5pf10r21ar0pgpnswp15nkddf04dxyl9s4m"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -424,6 +423,12 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                       (tzdata-path
                        (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
                       (output (assoc-ref outputs "out")))
+
+                 ;; Having the patch in the 'patches' field of <origin> breaks
+                 ;; the 'TestServeContent' test due to the fact that
+                 ;; timestamps are reset.  Thus, apply it from here.
+                 (invoke "patch" "-p2" "--force" "-i"
+                         (assoc-ref inputs "go-skip-gc-test.patch"))
 
                  ;; A side effect of these test scripts is testing
                  ;; cgo. Attempts at using cgo flags and directives with these
@@ -576,6 +581,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
+       ("go-skip-gc-test.patch" ,(search-patch "go-skip-gc-test.patch"))
        ,@(match (%current-system)
            ((or "armhf-linux" "aarch64-linux")
             `(("gold" ,binutils-gold)))
