@@ -666,6 +666,33 @@ hexadecimal, bas32, and base64.")
          (base32
           "17giv0n0n1r64z0dahfvkjy3ys517jxyhs8sd9lmgvcljpjyryxa"))))))
 
+(define-public rust-dirs
+  (package
+    (name "rust-dirs")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "dirs" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "02vigc566z5i6n9wr2x8sch39qp4arn89xhhrh18fhpm3jfc0ygn"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-winapi" ,rust-winapi))))
+    (home-page "https://github.com/soc/dirs-rs")
+    (synopsis "Abstractions for standard locations for various platforms")
+    (description
+     "This package provides a tiny low-level library that provides
+platform-specific standard locations of directories for config, cache and other
+data on Linux, Windows, macOS and Redox by leveraging the mechanisms defined by
+the XDG base/user directory specifications on Linux, the Known Folder API on
+Windows, and the Standard Directory guidelines on macOS.")
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-discard
   (package
     (name "rust-discard")
