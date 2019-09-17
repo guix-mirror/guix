@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages llvm)
@@ -613,6 +614,51 @@ It is inspired by the Linux kernel's @code{crypto_memneq}.")
      "Bindings to Core Foundation for OS X.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-curl-sys
+  (package
+    (name "rust-curl-sys")
+    (version "0.4.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "curl-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "02542zmvl3fpdqf7ai4cqnamm4albx9j645dkjx5qr1myq8ax42y"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-libnghttp2-sys" ,rust-libnghttp2-sys)
+        ("rust-libz-sys" ,rust-libz-sys)
+        ("rust-openssl-sys" ,rust-openssl-sys)
+        ("rust-winapi" ,rust-winapi))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-pkg-config" ,rust-pkg-config)
+        ("rust-openssl-src" ,rust-openssl-src)
+        ("rust-vcpkg" ,rust-vcpkg))
+        #:phases
+       (modify-phases %standard-phases
+        (add-after 'unpack 'find-openssl
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((openssl (assoc-ref inputs "openssl")))
+              (setenv "OPENSSL_DIR" openssl))
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("nghttp2" ,nghttp2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/alexcrichton/curl-rust")
+    (synopsis "Native bindings to the libcurl library")
+    (description
+     "This package provides native bindings to the @code{libcurl} library.")
+    (license license:expat)))
 
 (define-public rust-data-encoding
   (package
