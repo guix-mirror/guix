@@ -1911,6 +1911,42 @@ types as proposed in RFC 1158.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-libz-sys
+  (package
+    (name "rust-libz-sys")
+    (version "1.0.25")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libz-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1gjycyl2283525abks98bhxa4r259m617xfm5z52p3p3c8ry9d9f"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-cc" ,rust-cc)
+        ("rust-pkg-config" ,rust-pkg-config)
+        ("rust-vcpkg" ,rust-vcpkg))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-vendored-zlib
+           (lambda _
+             (delete-file-recursively "src/zlib")
+             #t)))))
+    (inputs
+     `(("pkg-config" ,pkg-config)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/rust-lang/libz-sys")
+    (synopsis "Bindings to the system libz library")
+    (description
+     "This package provides bindings to the system @code{libz} library (also
+known as zlib).")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-nodrop
   (package
     (name "rust-nodrop")
