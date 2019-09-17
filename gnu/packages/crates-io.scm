@@ -159,6 +159,35 @@ support.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-backtrace-sys
+  (package
+    (name "rust-backtrace-sys")
+    (version "0.1.31")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "backtrace-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0as2pk77br4br04daywhivpi1ixxb8y2c7f726kj849dxys31a42"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-compiler-builtins"
+         ,rust-compiler-builtins)
+        ("rust-libc" ,rust-libc)
+        ("rust-rustc-std-workspace-core"
+         ,rust-rustc-std-workspace-core))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc))))
+    (home-page "https://github.com/rust-lang/backtrace-rs")
+    (synopsis "Bindings to the libbacktrace gcc library")
+    (description
+     "This package provides bindings to the libbacktrace gcc library.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-base-x
   (package
     (name "rust-base-x")
