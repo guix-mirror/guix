@@ -31,6 +31,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
@@ -1591,6 +1592,52 @@ dangling-Symbols that may occur after a Library is unloaded.  Using this library
 allows loading dynamic libraries (also known as shared libraries) as well as use
 functions and static variables these libraries contain.")
     (license license:isc)))
+
+(define-public rust-libssh2-sys
+  (package
+    (name "rust-libssh2-sys")
+    (version "0.2.12")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libssh2-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1zb6gsw795nq848nk5x2smzpfnn1s15wjlzjnvr8ihlz2l5x2549"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-libc" ,rust-libc)
+        ("rust-libz-sys" ,rust-libz-sys)
+        ("rust-openssl-sys" ,rust-openssl-sys))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-openssl-src" ,rust-openssl-src)
+        ("rust-pkg-config" ,rust-pkg-config)
+        ("rust-vcpkg" ,rust-vcpkg))
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'find-openssl
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((openssl (assoc-ref inputs "openssl")))
+              (setenv "OPENSSL_DIR" openssl))
+            (delete-file-recursively "libssh2")
+            (setenv "LIBSSH2_SYS_USE_PKG_CONFIG" "1")
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/alexcrichton/ssh2-rs")
+    (synopsis "Native bindings to the libssh2 library")
+    (description
+     "This package provides native rust bindings to the @code{libssh2} library.")
+    (license (list license:asl2.0
+                   license:expat))))
+
 
 (define-public rust-lock-api
   (package
