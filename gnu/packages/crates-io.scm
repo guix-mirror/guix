@@ -30,6 +30,7 @@
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
 ;;;
@@ -2210,6 +2211,45 @@ system for OpenSSL.")
      "This package contains the source of OpenSSL and logic to build it.")
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-openssl-sys
+  (package
+    (name "rust-openssl-sys")
+    (version "0.9.49")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "openssl-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1168vivyqbzaxl48bvv9r1x714c03f5c1za8pv5x8fyj9gjxkypl"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-autocfg" ,rust-autocfg)
+        ("rust-libc" ,rust-libc))
+       #:cargo-development-inputs
+       (("rust-autocfg" ,rust-autocfg)
+        ("rust-cc" ,rust-cc)
+        ("rust-openssl-src" ,rust-openssl-src)
+        ("rust-pkg-config" ,rust-pkg-config)
+        ("rust-vcpkg" ,rust-vcpkg))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'find-openssl
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl")))
+               (setenv "OPENSSL_DIR" openssl))
+             #t)))))
+    (inputs
+     `(("openssl" ,openssl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/sfackler/rust-openssl")
+    (synopsis "FFI bindings to OpenSSL")
+    (description
+     "This package provides FFI bindings to OpenSSL for use in rust crates.")
+    (license license:expat)))
 
 (define-public rust-owning-ref
   (package
