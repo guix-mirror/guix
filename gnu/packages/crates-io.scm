@@ -1276,6 +1276,20 @@ primitives to an @code{io::Write}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-itoa-0.1
+ (package
+   (inherit rust-itoa)
+   (name "rust-itoa")
+   (version "0.1.1")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "itoa" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18g7p2hrb3dk84z3frfgmszfc9hjb4ps9vp99qlb1kmf9gm8hc5f"))))))
+
 (define-public rust-jemalloc-sys
   (package
     (name "rust-jemalloc-sys")
