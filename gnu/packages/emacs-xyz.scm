@@ -2126,15 +2126,16 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "1.5.7")
+    (version "1.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://stable.melpa.org/packages/olivetti-"
-                    version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rnkn/olivetti.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yj2ylg46q0pw1xzlv2b0fv9x8p56x25284s9v2smwjr4vf0nwcj"))))
+                "0ba30swqxxbpa8866chymywnahby1hk670zzkz44q49328i2wksj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/olivetti")
     (synopsis "Emacs minor mode for a nice writing environment")
