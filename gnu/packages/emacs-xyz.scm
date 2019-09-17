@@ -4592,15 +4592,16 @@ board and goal value can be customized.")
 (define-public emacs-base16-theme
   (package
     (name "emacs-base16-theme")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://stable.melpa.org/packages/base16-theme-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/belak/base16-emacs.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z6hrwz2jlz6jbr381rcqcqvx6hss5cad352klx07rark7zccacj"))))
+        (base32 "01w89g413s1da6rf94y1xnhw79cjy2bqb01yfjs58cy492cm0vr6"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/belak/base16-emacs")
     (synopsis "Base16 color themes for Emacs")
