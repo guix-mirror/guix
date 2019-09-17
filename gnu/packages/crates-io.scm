@@ -1612,6 +1612,34 @@ the platform that libc is compiled for.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-libgit2-sys-0.7
+  (package
+    (inherit rust-libgit2-sys)
+    (name "rust-libgit2-sys")
+    (version "0.7.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "libgit2-sys" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1wcvg2qqra2aviasvqcscl8gb2rnjnd6h998wy5dlmf2bnriqi28"))))
+    (build-system cargo-build-system)
+    (arguments
+     `(#:cargo-inputs
+       (("rust-curl-sys" ,rust-curl-sys)
+        ("rust-libc" ,rust-libc)
+        ("rust-libssh2-sys" ,rust-libssh2-sys)
+        ("rust-libz-sys" ,rust-libz-sys)
+        ("rust-openssl-sys" ,rust-openssl-sys))
+       #:cargo-development-inputs
+       (("rust-cc" ,rust-cc)
+        ("rust-pkg-config" ,rust-pkg-config))))
+   (inputs
+    `(("curl" ,curl)
+      ,@(package-inputs rust-libgit2-sys)))))
+
 (define-public rust-libloading
   (package
     (name "rust-libloading")
