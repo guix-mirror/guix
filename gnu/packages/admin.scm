@@ -684,7 +684,7 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "11")
-         (bind-patch-version "10")
+         (bind-patch-version "11")
          (bind-release-type "")         ; for patch release, use "-P"
          (bind-release-version "")      ; for patch release, e.g. "6"
          (bind-version (string-append bind-major-version
@@ -825,7 +825,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1hvhdaar9swh5087kzkbmav1nbn19rxh0m60x0d7gri0v8689fxj"))))
+                      "0swavslyli3vcrkcm2ip11s6p58g3k7r4gjs2b899r25cqrk0lk1"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
