@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1281,33 +1282,32 @@ weight of this field in the final score.
 
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
-  (define (score str)
-    (define scores
-      (map (lambda (regexp)
-             (fold-matches regexp str 0
-                           (lambda (m score)
-                             (+ score
-                                (if (string=? (match:substring m) str)
-                                    5             ;exact match
-                                    1)))))
-           regexps))
+  (define (score regexp str)
+    (fold-matches regexp str 0
+                  (lambda (m score)
+                    (+ score
+                       (if (string=? (match:substring m) str)
+                           5             ;exact match
+                           1)))))
 
+  (define (regexp->score regexp)
+    (let ((score-regexp (lambda (str) (score regexp str))))
+      (fold (lambda (metric relevance)
+              (match metric
+                ((field . weight)
+                 (match (field obj)
+                   (#f  relevance)
+                   ((? string? str)
+                    (+ relevance (* (score-regexp str) weight)))
+                   ((lst ...)
+                    (+ relevance (* weight (apply + (map score-regexp lst)))))))))
+            0 metrics)))
+
+  (let ((scores (map regexp->score regexps)))
     ;; Return zero if one of REGEXPS doesn't match.
     (if (any zero? scores)
         0
-        (reduce + 0 scores)))
-
-  (fold (lambda (metric relevance)
-          (match metric
-            ((field . weight)
-             (match (field obj)
-               (#f  relevance)
-               ((? string? str)
-                (+ relevance (* (score str) weight)))
-               ((lst ...)
-                (+ relevance (* weight (apply + (map score lst)))))))))
-        0
-        metrics))
+        (reduce + 0 scores))))
 
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set
