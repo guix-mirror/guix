@@ -42,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -394,17 +395,29 @@ it is comparable to protobuf.")
 (define-public nlohmann-json-cpp
   (package
     (name "nlohmann-json-cpp")
-    (version "2.1.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/nlohmann/json/"
-                          "archive/v" version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256
-       (base32
-        "0lrh6cjd643c7kmvmwafbgq7dqj3b778483gjhjbvp6rc6z5xf2r"))))
+    (version "3.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nlohmann/json.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v7xih4zjixxxfvkfbs7a8j9qcvpwlsv4vrkbyns3hc7b44nb8ap"))))
     (build-system cmake-build-system)
+    (native-inputs
+     ;; Integer overflow tests like those from
+     ;; <https://github.com/nlohmann/json/issues/1447> fail when building with
+     ;; gcc@5.  Thus, build with a newer GCC.
+     `(("gcc" ,gcc-9)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'unset-path-variables
+                    (lambda _
+                      (unsetenv "C_INCLUDE_PATH")
+                      (unsetenv "CPLUS_INCLUDE_PATH")
+                      #t)))))
     (home-page "https://nlohmann.github.io/json/")
     (synopsis "JSON library for C++")
     (description
