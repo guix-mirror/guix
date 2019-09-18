@@ -5252,6 +5252,8 @@ navigate code in a tree-like fashion.")
        ("emacs-ivy" ,emacs-ivy)
        ("emacs-hydra" ,emacs-hydra)
        ("emacs-zoutline" ,emacs-zoutline)))
+    (arguments
+     `(#:include (cons* "\\.clj$" "\\.edn$" "\\.py$" %default-include)))
     (synopsis "Modal S-expression editing")
     (description
      "Due to the structure of Lisp syntax it's very rare for the programmer
