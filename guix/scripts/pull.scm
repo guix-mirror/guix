@@ -38,7 +38,8 @@
   #:use-module (guix git)
   #:use-module (git)
   #:use-module (gnu packages)
-  #:use-module ((guix scripts package) #:select (build-and-use-profile))
+  #:use-module ((guix scripts package) #:select (build-and-use-profile
+                                                 delete-matching-generations))
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
@@ -92,6 +93,14 @@ Download and deploy the latest version of Guix.\n"))
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
   (display (G_ "
+      --roll-back        roll back to the previous generation"))
+  (display (G_ "
+  -d, --delete-generations[=PATTERN]
+                         delete generations matching PATTERN"))
+  (display (G_ "
+  -S, --switch-generation=PATTERN
+                         switch to a generation matching PATTERN"))
+  (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of ~/.config/guix/current"))
   (display (G_ "
   -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
@@ -119,6 +128,18 @@ Download and deploy the latest version of Guix.\n"))
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result)
                    (cons `(query list-generations ,arg)
+                         result)))
+         (option '("roll-back") #f #f
+                 (lambda (opt name arg result)
+                   (cons '(generation roll-back)
+                         result)))
+         (option '(#\S "switch-generation") #t #f
+                 (lambda (opt name arg result)
+                   (cons `(generation switch ,arg)
+                         result)))
+         (option '(#\d "delete-generations") #f #t
+                 (lambda (opt name arg result)
+                   (cons `(generation delete ,arg)
                          result)))
          (option '(#\N "news") #f #f
                  (lambda (opt name arg result)
@@ -505,6 +526,22 @@ list of package changes.")))))
      (display-profile-news profile
                            #:current-is-newer? #t))))
 
+(define (process-generation-change opts profile)
+  "Process a request to change the current generation (roll-back, switch, delete)."
+  (unless (assoc-ref opts 'dry-run?)
+    (match (assoc-ref opts 'generation)
+      (('roll-back)
+       (with-store store
+         (roll-back* store profile)))
+      (('switch pattern)
+       (let ((number (relative-generation-spec->number profile pattern)))
+         (if number
+             (switch-to-generation* profile number)
+             (leave (G_ "cannot switch to generation '~a'~%") pattern))))
+      (('delete pattern)
+       (with-store store
+         (delete-matching-generations store profile pattern))))))
+
 (define (channel-list opts)
   "Return the list of channels to use.  If OPTS specify a channel file,
 channels are read from there; otherwise, if ~/.config/guix/channels.scm
@@ -572,6 +609,8 @@ Use '~/.config/guix/channels.scm' instead."))
             (profile  (or (assoc-ref opts 'profile) %current-profile)))
        (cond ((assoc-ref opts 'query)
               (process-query opts profile))
+             ((assoc-ref opts 'generation)
+              (process-generation-change opts profile))
              (else
               (with-store store
                 (ensure-default-profile)

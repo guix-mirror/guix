@@ -3673,11 +3673,20 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 @xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
-This @code{~/.config/guix/current} profile works like any other profile
-created by @command{guix package} (@pxref{Invoking guix package}).  That
+This @code{~/.config/guix/current} profile works exactly like the profiles
+created by @command{guix package} (@pxref{Invoking guix package}). That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
+@example
+$ guix pull --roll-back
+switched from generation 3 to 2
+$ guix pull --delete-generations=1
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
+@end example
+
+You can also use @command{guix package} (@pxref{Invoking guix package})
+to manage the profile by naming it explicitly:
 @example
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
@@ -3723,6 +3732,40 @@ List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
 is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
+
+@item --roll-back
+@cindex rolling back
+@cindex undoing transactions
+@cindex transactions, undoing
+Roll back to the previous @dfn{generation} of @file{~/.config/guix/current}---i.e.,
+undo the last transaction.
+
+@item --switch-generation=@var{pattern}
+@itemx -S @var{pattern}
+@cindex generations
+Switch to a particular generation defined by @var{pattern}.
+
+@var{pattern} may be either a generation number or a number prefixed
+with ``+'' or ``-''.  The latter means: move forward/backward by a
+specified number of generations.  For example, if you want to return to
+the latest generation after @code{--roll-back}, use
+@code{--switch-generation=+1}.
+
+@item --delete-generations[=@var{pattern}]
+@itemx -d [@var{pattern}]
+When @var{pattern} is omitted, delete all generations except the current
+one.
+
+This command accepts the same patterns as @option{--list-generations}.
+When @var{pattern} is specified, delete the matching generations.  When
+@var{pattern} specifies a duration, generations @emph{older} than the
+specified duration match.  For instance, @code{--delete-generations=1m}
+deletes generations that are more than one month old.
+
+If the current generation matches, it is @emph{not} deleted.
+
+Note that deleting generations prevents rolling back to them.
+Consequently, this command must be used with care.
 
 @xref{Invoking guix describe}, for a way to display information about the
 current generation only.
