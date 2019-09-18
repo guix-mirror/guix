@@ -331,6 +331,17 @@ cat > "$module_dir/package.scm"<<EOF
 EOF
 guix package --bootstrap --install-from-file="$module_dir/package.scm"
 
+# Make sure an error is raised if the file doesn't return a package.
+cat > "$module_dir/package.scm"<<EOF
+(use-modules (gnu packages base))
+
+(define my-package coreutils)   ;returns *unspecified*
+EOF
+if guix package --bootstrap --install-from-file="$module_dir/package.scm"
+then false; else true; fi
+
+rm "$module_dir/package.scm"
+
 # This one should not show up in searches since it's no supported on the
 # current system.
 test "`guix package -A super-non-portable-emacs`" = ""

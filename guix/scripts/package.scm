@@ -607,7 +607,11 @@ and upgrades."
                        (let-values (((package output)
                                      (specification->package+output spec)))
                          (package->manifest-entry* package output))))
-                  (_ #f))
+                  (('install . obj)
+                   (leave (G_ "cannot install non-package object: ~s~%")
+                          obj))
+                  (_
+                   #f))
                 opts))
 
   (fold manifest-transaction-install-entry
