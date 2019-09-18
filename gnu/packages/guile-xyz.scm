@@ -2554,3 +2554,67 @@ Emacsy.  It has a small C layer and most browser features are fully
 programmable in Guile.  It has hooks, keymaps, and self documentation
 features.")
     (license license:gpl3+)))
+
+(define-public guile-cv
+  (package
+    (name "guile-cv")
+    (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/guile-cv/guile-cv-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qdf0s2h1xj5lbhnc1pfw69i3zg08pqy2y6869b92ydfis8r82j9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'prepare-build
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (substitute* "configure"
+               (("SITEDIR=\"\\$datadir/guile-cv\"")
+                "SITEDIR=\"$datadir/guile/site/$GUILE_EFFECTIVE_VERSION\"")
+               (("SITECCACHEDIR=\"\\$libdir/guile-cv/")
+                "SITECCACHEDIR=\"$libdir/"))
+             (substitute* "cv/init.scm"
+               (("\\(dynamic-link \"libvigra_c\"\\)")
+                (string-append "(dynamic-link \""
+                               (assoc-ref inputs "vigra-c")
+                               "/lib/libvigra_c\")"))
+               (("\\(dynamic-link \"libguile-cv\"\\)")
+                (format #f "~s"
+                        `(dynamic-link
+                          (format #f "~alibguile-cv"
+                                  (if (getenv "GUILE_CV_UNINSTALLED")
+                                      ""
+                                      ,(format #f "~a/lib/"
+                                               (assoc-ref outputs "out"))))))))
+             (setenv "GUILE_CV_UNINSTALLED" "1")
+             ;; Only needed to satisfy the configure script.
+             (setenv "LD_LIBRARY_PATH"
+                     (string-append (assoc-ref inputs "vigra-c") "/lib"))
+             #t)))))
+    (inputs
+     `(("vigra" ,vigra)
+       ("vigra-c" ,vigra-c)
+       ("guile" ,guile-2.2)))
+    (native-inputs
+     `(("texlive" ,(texlive-union (list texlive-booktabs
+                                        texlive-lm
+                                        texlive-siunitx
+                                        texlive-standalone
+                                        texlive-xcolor
+                                        texlive-fonts-iwona)))
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile-lib" ,guile-lib)))
+    (home-page "https://www.gnu.org/software/guile-cv/")
+    (synopsis "Computer vision library for Guile")
+    (description "Guile-CV is a Computer Vision functional programming library
+for the Guile Scheme language.  It is based on Vigra (Vision with Generic
+Algorithms), a C++ image processing and analysis library.  Guile-CV contains
+bindings to Vigra C (a C wrapper to most of the Vigra functionality) and is
+enriched with pure Guile Scheme algorithms, all accessible through a nice,
+clean and easy to use high level API.")
+    (license license:gpl3+)))
