@@ -275,16 +275,16 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.0.7")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.zeromq.org/zeromq-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "00vvwhgcdr1lva2pavicvy92iad0hj8cf71n702hv6blw1kjj2z0"))))
+    (version "4.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/zeromq/libzmq/releases/"
+                           "download/v" version "/zeromq-" version ".tar.gz"))
+       (sha256
+        (base32 "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
     (build-system gnu-build-system)
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
     (description
      "The 0MQ lightweight messaging kernel is a library which extends the
@@ -1970,14 +1970,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.0")
+    (version "5.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0cq9m86ydd2i0awxkv4a256f4926p2f9pzlisyskl9fngl6f3c8m"))))
+        (base32 "034rd6kr1bmnvj8rg2kcxdjb0cgj3dn9310mmm94j1awxan71byr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -2000,7 +2000,7 @@ displays the results in real time.")
              #t)))
        #:configure-flags
        (list
-        ;; Disable bsd-4 licensed plugins
+        ;; Disable bsd-4 licensed plugins.
         "--disable-des"
         "--disable-blowfish")))
     (inputs

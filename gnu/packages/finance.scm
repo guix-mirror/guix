@@ -473,16 +473,20 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        ("git" ,git)
        ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)
+       ("protobuf" ,protobuf)
+       ("python" ,python)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("cppzmq" ,cppzmq)
        ("expat" ,expat)
        ("hidapi" ,hidapi)
-       ("libunwind" ,libunwind)
        ("libsodium" ,libsodium)
+       ("libunwind" ,libunwind)
+       ("libusb" ,libusb)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
        ("rapidjson" ,rapidjson)
        ("readline" ,readline)
        ("unbound" ,unbound)
@@ -490,9 +494,12 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        ("zeromq" ,zeromq)))
     (arguments
      `(#:out-of-source? #t
-       #:configure-flags '("-DARCH=default"
-                           "-DBUILD_TESTS=ON"
-                           "-DBUILD_GUI_DEPS=ON")
+       #:configure-flags
+       (list "-DARCH=default"
+             "-DBUILD_TESTS=ON"
+             "-DBUILD_GUI_DEPS=ON"
+             (string-append "-DReadline_ROOT_DIR="
+                            (assoc-ref %build-inputs "readline")))
        #:phases
        (modify-phases %standard-phases
          ;; tests/core_tests need a valid HOME
@@ -531,7 +538,13 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                      ":")))
                (invoke "tests/unit_tests/unit_tests"
                        (string-append "--gtest_filter=-"
-                                      excluded-unit-tests))))))))
+                                      excluded-unit-tests)))))
+         (add-after 'install 'delete-dead-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/lib/libprotobuf.so"))
+               (delete-file (string-append out "/lib/libusb-1.0.so"))
+               #t))))))
     (home-page "https://getmonero.org/")
     (synopsis "Command-line interface to the Monero currency")
     (description
@@ -542,7 +555,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.14.1.0")
+    (version "0.14.1.2")
     (source
      (origin
        (method git-fetch)
@@ -552,7 +565,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ilx47771faygf97wilm64xnqxgxa3b43q0g9v014npk0qj8pc31"))))
+         "1rm043r6y2mzy8pclnzbjjfxgps8pkfa2b92p66k8y8rdmgq6m1k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -560,9 +573,11 @@ the Monero command line client and daemon.")
     (inputs
      `(("boost" ,boost)
        ("hidapi" ,hidapi)
-       ("libunwind" ,libunwind)
        ("libsodium" ,libsodium)
+       ("libunwind" ,libunwind)
+       ("libusb" ,libusb)
        ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)

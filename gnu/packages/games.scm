@@ -2210,7 +2210,24 @@ also available.")
        (modify-phases %standard-phases
          (add-before
           'configure 'link-libm
-          (lambda _ (setenv "LIBS" "-lm"))))))
+          (lambda _ (setenv "LIBS" "-lm")))
+         (add-after 'install 'create-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                 (string-append apps "/gnujump.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=GNUjump~@
+                           Comment=Jump up the tower to survive~@
+                           Exec=~a/bin/gnujump~@
+                           Terminal=false~@
+                           Type=Application~@
+                           Categories=Game;ArcadeGame~%"
+                           out)))))))))
     (inputs
      `(("glu" ,glu)
        ("mesa" ,mesa)

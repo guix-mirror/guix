@@ -2725,7 +2725,7 @@ tool for remote execution and deployment.")
 (define-public neofetch
   (package
     (name "neofetch")
-    (version "6.0.0")
+    (version "6.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2733,7 +2733,7 @@ tool for remote execution and deployment.")
                     (commit version)))
               (sha256
                (base32
-                "0j0r40llyry1sgc6p9wd7jrpydps2lnj4rwajjp37697g2bik89i"))))
+                "022xzn9jk18k2f4b6011d8jk5nbl84i3mw3inlz4q52p2hvk8fch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests

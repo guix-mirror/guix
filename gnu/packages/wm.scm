@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,6 +127,86 @@
     (synopsis "Tiling window manager based on binary space partitioning")
     (description "bspwm is a tiling window manager that represents windows as
 the leaves of a full binary tree.")
+    (license license:bsd-2)))
+
+(define-public herbstluftwm
+  (package
+    (name "herbstluftwm")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kc18aj9j3nfz6fj4qxg9s3gg4jvn6kzi3ii24hfm0vqdpy17xnz"))
+       (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dzen"        ,dzen)
+       ("dmenu"       ,dmenu)
+       ("glib"        ,glib)
+       ("glibmm"      ,glibmm)
+       ("xterm"       ,xterm)
+       ("xsetroot"    ,xsetroot)
+       ("libx11"      ,libx11)
+       ("libxext"     ,libxext)
+       ("libxinerama" ,libxinerama)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/herbstluftwm.desktop")
+                 (lambda (port)
+                   (format port "~
+                     [Desktop Entry]~@
+                     Name=herbstluftwm~@
+                     Comment=Manual tiling window manager~@
+                     Exec=~a/bin/herbstluftwm~@
+                     Type=XSession~%" out)))
+               #t))))
+       #:tests? #f
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "CC=gcc"
+               (string-append "PREFIX=''")
+               (string-append "DESTDIR=" out)
+               (string-append "BASHCOMPLETIONDIR=" out
+                              "/etc/bash_completion.d")))))
+    (synopsis "Tiling window manager for X11")
+    (description "herbstluftwm is a manual tiling window manager for X11 using
+Xlib and GLib.  Its main features are:
+
+@itemize
+@item
+The layout is based on splitting frames into subframes which can be split
+again or can be filled with windows (similar to i3 or musca).
+
+@item
+Tags (or workspaces or virtual desktops or …) can be added/removed at runtime.
+Each tag contains an own layout.
+
+@item
+Exactly one tag is viewed on each monitor.  The tags are monitor independent
+(similar to Xmonad).
+
+@item
+It is configured at runtime via IPC calls from @command{herbstclient}.  So the
+configuration file is just a script which is run on startup (similar to wmii
+or musca).
+
+@end itemize")
+    (home-page "https://herbstluftwm.org")
     (license license:bsd-2)))
 
 (define-public i3status
@@ -271,42 +352,30 @@ Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
 
 (define-public i3blocks
-  (let ((commit "ec050e79ad8489a6f8deb37d4c20ab10729c25c3")
-        (revision "2"))
-    (package
-      (name "i3blocks")
-      (version (string-append "1.4-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vivien/i3blocks.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1fx4230lmqa5rpzph68dwnpcjfaaqv5gfkradcr85hd1z8d1qp1b"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
-         #:phases (modify-phases %standard-phases
-                    (add-after 'install 'install-doc
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (man1 (string-append out "/share/man/man1")))
-                          (install-file "docs/i3blocks.1" man1)
-                          #t))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/vivien/i3blocks")
-      (synopsis "Minimalist scheduler for status bar scripts")
-      (description "i3blocks executes your command lines and generates a
+  (package
+    (name "i3blocks")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vivien/i3blocks.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0v8mwnm8qzpv6xnqvrk43s4b9iyld4naqzbaxk4ldq1qkhai0wsv"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/vivien/i3blocks")
+    (synopsis "Minimalist scheduler for status bar scripts")
+    (description "i3blocks executes your command lines and generates a
 status line from their output.  The generated line is meant to be displayed by
 the i3 window manager through its i3bar component, as an alternative to
 i3status.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public perl-anyevent-i3
   (package

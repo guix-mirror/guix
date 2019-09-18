@@ -49,10 +49,11 @@
 ;;; Copyright © 2019 LaFreniere, Joseph <joseph@lafreniere.xyz>
 ;;; Copyright © 2019 Amar Singh <nly@disroot.org>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
-;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autitici.org>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2125,15 +2126,16 @@ a command.")
 (define-public emacs-olivetti
   (package
     (name "emacs-olivetti")
-    (version "1.5.7")
+    (version "1.8.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://stable.melpa.org/packages/olivetti-"
-                    version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rnkn/olivetti.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1yj2ylg46q0pw1xzlv2b0fv9x8p56x25284s9v2smwjr4vf0nwcj"))))
+                "0ba30swqxxbpa8866chymywnahby1hk670zzkz44q49328i2wksj"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/rnkn/olivetti")
     (synopsis "Emacs minor mode for a nice writing environment")
@@ -2855,7 +2857,7 @@ mode-line.")
 (define-public emacs-robe
   (package
     (name "emacs-robe")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
        (method git-fetch)
@@ -2864,7 +2866,7 @@ mode-line.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0ll7ivxqnglfb0i70ly6qq2yfw9cyi3vq3lmj4s6h6c1c7rm3gcq"))))
+        (base32 "0qw18wi54yg971n4wnjqkd8lqj5lbs9ra8bvmngif2bzhqlfdsbn"))))
     (build-system emacs-build-system)
     (arguments
      '(#:include (cons "^lib\\/" %default-include)))
@@ -2932,7 +2934,7 @@ snippets for yasnippet.")
 (define-public emacs-smart-mode-line
   (package
     (name "emacs-smart-mode-line")
-    (version "2.12.0")
+    (version "2.13")
     (source
      (origin
        (method git-fetch)
@@ -2941,7 +2943,7 @@ snippets for yasnippet.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1gs4ay9hdg8gmia4ir74qawk80pqwv99hp4yhy108kpfry5mrq6z"))))
+        (base32 "164b697xm1rwcggv37dymhf3npbyh2bs59z8b6m5x35lb4c3lf8b"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
@@ -3091,7 +3093,10 @@ for Flow files.")
         (base32
          "0lybadq66bl4snkwph9i1y0qxln29wyfjn222ii3nfwany28cj66"))))
     (build-system emacs-build-system)
-    (arguments '(#:include '("\\.el$" "\\.org$")))
+    (arguments
+     `(#:include '("\\.el$" "\\.org$")
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/xuchunyang/elisp-demos/")
     (synopsis "Enhance @code{*Help*} buffers with additional examples")
     (description
@@ -3126,11 +3131,10 @@ completion of relevant keywords.")
 
 (define-public emacs-sudo-edit
   (let ((commit "cc3d478937b1accd38742bfceba92af02ee9357d")
-        (version "0.1.0")
         (revision "6"))
     (package
       (name "emacs-sudo-edit")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -3142,6 +3146,18 @@ completion of relevant keywords.")
           (base32
            "1qv58x5j5a3v1s2ylhck1ykbfclq0mbi0gsvaql3nyv8cxazqlwl"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("\\$\\(CASK\\) exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/nflath/sudo-edit/")
       (synopsis "Open files as another user")
       (description
@@ -3197,14 +3213,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.18")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "00kich80zdg7v3v613f9prqddkpwpm1nf9sj10f0n6wh15rzwv07"))))
+                "0cpby8f088cqb5mpd756a2mb706x763k15cg2xdmmsxl415k3yw4"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -4479,6 +4495,32 @@ variants.")
 package provides a light and a dark variant.")
     (license license:gpl3+)))
 
+(define-public emacs-poet-theme
+  (let ((commit "d84f7b259cc9b6ff8d442cf4c38bd6c7065ff8f4")
+        (revision "0"))
+    (package
+      (name "emacs-poet-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kunalb/poet.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "0a84jdaj619mb59a46dmkk2sfs42rylqk9ryl1drgs8d3lia79mz"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/kunalb/poet/")
+      (synopsis "Emacs theme for prose")
+      (description
+       "Emacs has very good support for multiple fonts in a single file.  Poet
+uses this support to make it much more convenient to write prose within Emacs,
+with particular attention paid to @code{org-mode} and @code{markdown-mode}.
+Code blocks, tables, etc are formatted in monospace text with the appropriate
+backgrounds.")
+      (license license:expat))))
+
 (define-public emacs-ahungry-theme
   (package
     (name "emacs-ahungry-theme")
@@ -4550,15 +4592,16 @@ board and goal value can be customized.")
 (define-public emacs-base16-theme
   (package
     (name "emacs-base16-theme")
-    (version "2.1")
+    (version "2.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://stable.melpa.org/packages/base16-theme-"
-                           version ".tar"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/belak/base16-emacs.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z6hrwz2jlz6jbr381rcqcqvx6hss5cad352klx07rark7zccacj"))))
+        (base32 "01w89g413s1da6rf94y1xnhw79cjy2bqb01yfjs58cy492cm0vr6"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/belak/base16-emacs")
     (synopsis "Base16 color themes for Emacs")
@@ -5968,7 +6011,7 @@ indentation guides in Emacs:
 (define-public emacs-elpy
   (package
     (name "emacs-elpy")
-    (version "1.28.0")
+    (version "1.31.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5977,7 +6020,7 @@ indentation guides in Emacs:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "073bwxwjzcbmvpcz9q2xjwzx9x7hkvjni6fwvikh6yawzjp56jis"))))
+                "0bvmgqs3c80bhs9v5ymgadv7vk4iamha10y7rl09pixmjm4mzagk"))))
     (build-system emacs-build-system)
     (arguments
      `(#:include (cons* "^elpy/[^/]+\\.py$" "^snippets\\/" %default-include)
@@ -6736,8 +6779,8 @@ end of a line and increment or decrement it.")
       (license license:gpl3+))))
 
 (define-public emacs-evil-owl
-  (let ((commit "e8fe5b2f745e36db04cb71eb689bf91c5409614f")
-        (revision "2"))
+  (let ((commit "24c5f43df375194386344e69bc720ea3986c9510")
+        (revision "3"))
     (package
       (name "emacs-evil-owl")
       (version (git-version "0.0.1" revision commit))
@@ -6750,10 +6793,13 @@ end of a line and increment or decrement it.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1g7kplna62f271135mnjdbvxk2ayx7m4gvd6l86d2394alx16nhq"))))
+           "0bqzch14whlmrcasakah3psrzswvkzd7mmi8hx5s64kfp29wbdhi"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/mamapanda/evil-owl")
       (synopsis "Preview candidates when using Evil registers and marks")
       (description
@@ -6780,6 +6826,17 @@ a popup window for previewing candidates.")
            "0bjpn4yqig17ddym6wqq5fm1b294q74hzcbj9a6gs97fqiwf88xa"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (native-inputs `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("cask exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/Dewdrops/evil-exchange")
       (synopsis "Exchange text easily within Evil")
       (description
@@ -6909,6 +6966,9 @@ aligning text objects based on separators.")
            "0872ix682hkdz0k8pn6sb54rqkx00rz5fxpd5j2snx406yagpaxz"))))
       (build-system emacs-build-system)
       (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/edkolev/evil-expat")
       (synopsis "Extra @code{ex} commands for @code{evil-mode}")
       (description
@@ -11314,6 +11374,11 @@ timestamps by providing a @code{ts} struct.")
        ("emacs-ts" ,emacs-ts)
        ("emacs-org" ,emacs-org)
        ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/alphapapa/org-ql/")
     (synopsis "Query language for Org buffers")
     (description "This package provides a Lispy query language for Org
@@ -13127,16 +13192,17 @@ compilation/grep buffers.  Works with @code{wgrep}, @code{ack}, @code{ag},
 (define-public emacs-interactive-align
   (package
     (name "emacs-interactive-align")
-    (version "0.1.0")
+    (version "0.4.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/mkcms/interactive-align/"
-                           "archive/" "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/mkcms/interactive-align.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0sibpgb4lp6yy3pziak8f3hz4b28yj0dqy2nzh51z3d0b63h528m"))))
+         "0bh03w91i622hbar5dcq631ndxx1y8kd3h655pgw1g0lqkv1mlnc"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/mkcms/interactive-align/")
     (synopsis "Interactive align-regexp command in Emacs")
@@ -13606,7 +13672,7 @@ through the symbol: @command{this-fn}.")
 (define-public emacs-dumb-jump
   (package
     (name "emacs-dumb-jump")
-    (version "0.5.2")
+    (version "0.5.3")
     (source
      (origin
        (method git-fetch)
@@ -13615,7 +13681,7 @@ through the symbol: @command{this-fn}.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "00ph85vp8sa3k99qrdxfz4l8zx121q9xf47vvspzg26bk9l4nwin"))))
+        (base32 "1njf60264snhxrd36m4z687lqfkis0p9mmrr7cf1c8l0lfdvawxi"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests freeze when run.
@@ -13923,6 +13989,18 @@ describing the key binding changes.")
     (propagated-inputs
      `(("emacs-evil" ,emacs-evil)
        ("emacs-iedit" ,emacs-iedit)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-makefile
+           (lambda _
+             (substitute* "Makefile"
+               (("@cask exec ") ""))
+             #t)))
+       #:tests? #t
+       #:test-command '("make" "test")))
     (home-page
      "https://github.com/hlissner/evil-multiedit")
     (synopsis "Multiple cursors for Evil mode")
@@ -14186,30 +14264,29 @@ on-line service.")
     (license license:gpl3+)))
 
 (define-public emacs-helm-company
-  (let ((commit "d3fc093a0e833b4dee6561c00d6df3d62aa50f3f"))
-    (package
-      (name "emacs-helm-company")
-      (version (git-version "0.2.3" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/Sodel-the-Vociferous/helm-company")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1ciirsanhajdqm5iwl8k9ywf4jha1wdv4sc4d9kslyrfr9zn4q6k"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)
-         ("emacs-company" ,emacs-company)))
-      (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
-      (synopsis "Helm interface for company-mode")
-      (description
-       "This is a Helm interface to company-mode, a text completion
+  (package
+    (name "emacs-helm-company")
+    (version "0.2.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Sodel-the-Vociferous/helm-company")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ci37w6ahnqrfpb284gjvxmimlf61sdxb9k192yy9q983cksv2hx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-company" ,emacs-company)))
+    (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
+    (synopsis "Helm interface for company-mode")
+    (description
+     "This is a Helm interface to company-mode, a text completion
 framework.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-helm-descbinds
   (let ((commit "033be73f21778633813264ce1634a6e1ad873d8e"))
@@ -15805,6 +15882,31 @@ buffers, etc.  It also has plug-ins to help your Emacs life.")
 programs can use this table component for the application UI.")
       (license license:gpl3+))))
 
+(define-public emacs-leetcode
+  (let ((commit "8624496af9e105c3e07d88844b37ede87540d604")
+        (revision "1"))
+    (package
+      (name "emacs-leetcode")
+      (version (git-version "0" "1" commit))
+      (home-page "https://github.com/ginqi7/leetcode-emacs.git")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ginqi7/leetcode-emacs")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "11pp7ydlmwrv7djf9mwk4xzn295xbmdnj5x13bfj5yjpjr89p531"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-names" ,emacs-names)
+         ("emacs-ctable" ,emacs-ctable)))
+      (synopsis "Solve and submit LeetCode problems from within Emacs")
+      (description "This package provides an Emacs interface to LeetCode
+allowing users to log in and solve problems of their choice using Emacs.")
+      (license license:unlicense))))
+
 (define-public emacs-epc
   (let ((commit "e1bfa5ca163273859336e3cc89b4b6460f7f8cda"))
     (package
@@ -16546,11 +16648,10 @@ unescaping of quotes.")
 
 (define-public emacs-flycheck-haskell
   (let ((commit "32ddff87165a7d3a35e7318bee997b5b4bd41278")
-        (version "0.8")
-        (revision "79"))
+        (revision "2"))
     (package
       (name "emacs-flycheck-haskell")
-      (version (git-version version revision commit))
+      (version (git-version "0.8" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16568,6 +16669,8 @@ unescaping of quotes.")
          ("emacs-flycheck" ,emacs-flycheck)
          ("emacs-haskell-mode" ,emacs-haskell-mode)
          ("emacs-let-alist" ,emacs-let-alist)))
+      (arguments
+       `(#:include '("\\.el$" "\\.hs$")))
       (home-page "https://github.com/flycheck/flycheck-haskell")
       (synopsis "Flycheck for Haskell")
       (description "This package configures syntax-checking for Haskell
@@ -17549,6 +17652,17 @@ corresponding Evil keys.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-shell
+             ;; Setting the SHELL environment variable is required for the tests
+             ;; to find sh.
+             (lambda _
+               (setenv "SHELL" (which "sh"))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/mamapanda/evil-traces")
       (synopsis "Visual hints for @code{evil-ex}")
       (description "This package adds visual hints to certain @code{ex}
@@ -17693,17 +17807,17 @@ connections using TLS encryption.")
 (define-public emacs-zerodark-theme
   (package
     (name "emacs-zerodark-theme")
-    (version "4.5")
+    (version "4.6")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://gitlab.petton.fr/nico/zerodark-theme.git")
+             (url "https://github.com/NicolasPetton/zerodark-theme")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0nnlxzsmhsbszqigcyxak9i1a0digrd13gv6v18ck4h760mihh1m"))))
+         "0pfyd1iqs7l2ngwgvj9n0r9k1px7yl16h8n502xdyf0pprxcs4p6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-flycheck" ,emacs-flycheck)
@@ -18060,3 +18174,90 @@ JIRA issue servers.")
        "This packages fontifies the ssh config keywords and creates
 keybindings for skipping from host section to host section.")
       (license license:gpl3+))))
+
+(define-public emacs-tao-theme
+  (let ((commit "c5107fbe7e752f4e58c2d2147ff18a1ebb12937c")
+        (revision "0"))
+    (package
+      (name "emacs-tao-theme")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/11111000000/tao-theme-emacs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07vvlglmkj87hpxz79s3bl2cjn71vain57fdxs7j9vlr5jkchxwn"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/11111000000/tao-theme-emacs")
+      (synopsis "Parameterized uncolored color themes for Emacs")
+      (description
+       "This package provides two parameterized uncolored color themes for
+Emacs: @code{tao-yin} and @code{tao-yang}.  The default
+@code{tao-theme-scale-fn} is @code{tao-theme-golden-scale}.
+
+You can customize: @code{tao-theme-scale-fn}, that returns 16 2-digit numbers;
+@code{tao-theme-scale-filter-fn}, for edge filter; and
+@code{tao-theme-use-height}.")
+      (license license:gpl3+))))
+
+(define-public emacs-doom-themes
+  (package
+    (name "emacs-doom-themes")
+    (version "2.1.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hlissner/emacs-doom-themes.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32 "042pzcdhxi2z07jcscgjbaki9nrrm0cbgbbrnymd1r4q8ckkn8l9"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'move-themes
+           (lambda _
+             ;; Move the source files to the top level, which is in the
+             ;; EMACSLOADPATH.
+             (for-each (lambda (f)
+                         (rename-file f (basename f)))
+                       (find-files "./themes" ".*\\.el$"))
+             #t)))))
+    (synopsis "Wide collection of color themes for Emacs")
+    (description "Emacs-doom-themes contains numerous popular color themes for
+Emacs that integrate with major modes like Org-mode.")
+    (home-page "https://github.com/hlissner/emacs-doom-themes")
+    (license license:expat)))
+
+(define-public emacs-elixir-mode
+  (package
+    (name "emacs-elixir-mode")
+    (version "2.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elixir-editors/emacs-elixir.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "06bi68x49v6f7flpz279mm4jpg31ll3s274givm3pvr8slcxs6xg"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-pkg-info" ,emacs-pkg-info)))
+    (home-page
+     "https://github.com/elixir-editors/emacs-elixir")
+    (synopsis "Major mode for editing Elixir files")
+    (description
+     "Elixir-Mode Provides font-locking, indentation and navigation support
+ for the Elixir programming language.")
+    (license license:gpl3+)))

@@ -6386,7 +6386,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
        (method url-fetch)
        (uri (string-append "https://github.com/nghttp2/nghttp2/"
                            "releases/download/v" version "/"
-                           name "-" version ".tar.xz"))
+                           "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
          "0fi6qg2w82636wixwkqy7bclpgxslmvg82r431hs8h6aqc4mnzwv"))))
@@ -6603,7 +6603,7 @@ Anonip can also be uses as a Python module in your own Python application.")
 (define-public poussetaches
   (package
     (name "poussetaches")
-    (version "0.0.1")
+    (version "0.0.2")
     (source
      (origin
        (method git-fetch)
@@ -6613,7 +6613,7 @@ Anonip can also be uses as a Python module in your own Python application.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "07106kfcz3a39jvrv3mlqqxlihsmdhgkrjnqznyjsij9absgvdv6"))))
+         "0kckcwvqklavd855np9aq5js6mg84isrlwchr504yigwma0sm7hm"))))
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)

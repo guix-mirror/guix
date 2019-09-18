@@ -31,6 +31,7 @@
 (define-module (gnu packages package-management)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
@@ -39,6 +40,7 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
@@ -48,6 +50,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -55,12 +58,19 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
+  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages mono)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -72,8 +82,10 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
@@ -111,8 +123,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "c902458863d1d341ffd74970b75e69c2bb848183")
-        (revision 4))
+        (commit "0ed97e69805253656df929a6ad678016aa81f08a")
+        (revision 6))
     (package
       (name "guix")
 
@@ -128,7 +140,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "0w93qjgy9n0qqyij12s7hm7fl4wb6h99bmfril4cqf4ynckpdvbb"))
+                  "1h2qlbbdqi72jslx17gp2cak5494nbm8j44rz57lnplnfcn6iwaw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -343,6 +355,19 @@ the Nix package manager.")
         #f)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'change-default-guix
+             (lambda _
+               ;; We need to tell 'guix-daemon' which 'guix' command to use.
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
+               (substitute* "nix/libstore/globals.cc"
+                 (("guixProgram = (.*)nixBinDir + \"/guix\"" _ before)
+                  (string-append "guixProgram = " before
+                                 "/var/guix/profiles/per-user/root\
+/current-guix/bin/guix")))
+               #t))
            (replace 'build
              (lambda _
                (invoke "make" "nix/libstore/schema.sql.hh")
@@ -352,19 +377,7 @@ the Nix package manager.")
            (delete 'copy-bootstrap-guile)
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install-binPROGRAMS"
-                       "install-nodist_pkglibexecSCRIPTS")
-
-               ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code root's
-               ;; current guix, which could be wrong (XXX).  Note that scripts
-               ;; like 'guix perform-download' do not run as root so we assume
-               ;; that they have access to /var/guix/profiles/per-user/root.
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* (find-files (string-append out "/libexec"))
-                   (("exec \".*/bin/guix\"")
-                    "exec \"${GUIX:-/var/guix/profiles/per-user/root/current-guix/bin/guix}\""))
-                 #t)))
+               (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
@@ -546,7 +559,7 @@ transactions from C or Python.")
     (license license:gpl2+)))
 
 (define-public diffoscope
-  (let ((version "122"))
+  (let ((version "123"))
     (package
       (name "diffoscope")
       (version version)
@@ -558,7 +571,7 @@ transactions from C or Python.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pwddknk8qyv88ba63why8vbnlc14b47434lv4ijx49m7ya3zfvg"))))
+                  "11bxms5rkhi0v4pxx29v4qgvhp3fmf0fkzci6gn5xcv4fl1zy4wj"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -574,6 +587,13 @@ transactions from C or Python.")
                     (add-after 'unpack 'remove-berkeley-test
                       (lambda _
                         (delete-file "tests/comparators/test_berkeley_db.py")
+                        #t))
+                    ;; Test is dynamically generated and may have false
+                    ;; negatives with different ocaml versions.  Further
+                    ;; background in: https://bugs.debian.org/939386
+                    (add-after 'unpack 'remove-ocaml-test
+                      (lambda _
+                        (delete-file "tests/comparators/test_ocaml.py")
                         #t))
                     (add-after 'unpack 'embed-tool-references
                       (lambda* (#:key inputs #:allow-other-keys)
@@ -594,10 +614,9 @@ transactions from C or Python.")
                         #t))
                     (add-before 'check 'writable-test-data
                       (lambda _
-                        ;; tests/comparators/test_elf.py needs write access to
-                        ;; test data
-                        (make-file-writable
-                         "tests/data/ignore_readelf_errors_expected_diff")
+                        ;; tests may need needs write access to tests
+                        ;; directory
+                        (for-each make-file-writable (find-files "tests"))
                         #t))
                     (add-before 'check 'delete-failing-test
                       (lambda _
@@ -614,7 +633,43 @@ transactions from C or Python.")
                 ("xxd" ,xxd)))
       ;; Below are modules used for tests.
       (native-inputs `(("python-pytest" ,python-pytest)
-                       ("python-chardet" ,python-chardet)))
+                       ("python-chardet" ,python-chardet)
+                       ;; test suite skips tests when tool is missing
+                       ("bdb" ,bdb)
+                       ("binutils" ,binutils)
+                       ("bzip2" ,bzip2)
+                       ("cdrtools" ,cdrtools)
+                       ("colord" ,colord)
+                       ("cpio" ,cpio)
+                       ("docx2txt" ,docx2txt)
+                       ("e2fsprogs" ,e2fsprogs)
+                       ("ffmpeg" ,ffmpeg)
+                       ("gettext" ,gettext-minimal)
+                       ("ghc" ,ghc)
+                       ("ghostscript" ,ghostscript)
+                       ("giflib:bin" ,giflib "bin")
+                       ("gnumeric" ,gnumeric)
+                       ("gnupg" ,gnupg)
+                       ("imagemagick" ,imagemagick)
+                       ("libarchive" ,libarchive)
+                       ("llvm" ,llvm)
+                       ("lz4" ,lz4)
+                       ("mono" ,mono)
+                       ("odt2txt" ,odt2txt)
+                       ;; no unversioned openjdk available
+                       ("openjdk:jdk" ,openjdk12 "jdk")
+                       ("openssh" ,openssh)
+                       ("pgpdump" ,pgpdump)
+                       ("poppler" ,poppler)
+                       ("rpm" ,rpm)
+                       ("sng" ,sng)
+                       ("sqlite" ,sqlite)
+                       ("squashfs-tools" ,squashfs-tools)
+                       ("tcpdump" ,tcpdump)
+                       ("unzip" ,unzip)
+                       ("xxd" ,xxd)
+                       ("xz" ,xz)
+                       ("zip" ,(@ (gnu packages compression) zip))))
       (home-page "https://diffoscope.org/")
       (synopsis "Compare files, archives, and directories in depth")
       (description

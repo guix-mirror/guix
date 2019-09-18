@@ -221,6 +221,7 @@ MODULES =					\
   guix/import/gnu.scm				\
   guix/import/hackage.scm			\
   guix/import/json.scm				\
+  guix/import/kde.scm				\
   guix/import/launchpad.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
@@ -402,6 +403,7 @@ SCM_TESTS =					\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\
+  tests/networking.scm				\
   tests/opam.scm				\
   tests/packages.scm				\
   tests/pack.scm				\
@@ -812,7 +814,8 @@ assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
-		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-cookbook.pot --exclude=guix-cookbook.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\

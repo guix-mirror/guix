@@ -405,7 +405,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -414,7 +414,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g0xa1mzvan0sl1p5c784j2g5mcw9kd2b7wiahy06gy0c1nmbcnp"))
+                "1wrmwh50rv8bd328r8cisrihq6h90kx2bfb0vmjfbsd3l1jvgrgm"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -1054,7 +1054,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.8")
+    (version "1.7.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1063,7 +1063,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0jwy5winrm87s6xa645fwa47x242r25m6i3rwf10x59448bd19r6"))))
+        (base32 "1i3i23xwvmck8k2fpalr49np7xjzfg507243mybqrljawlnbxvph"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

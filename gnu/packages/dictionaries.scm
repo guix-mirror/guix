@@ -218,7 +218,7 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
 (define-public grammalecte
   (package
     (name "grammalecte")
-    (version "1.3.0")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -226,10 +226,10 @@ It comes with a German-English dictionary with approximately 270,000 entries.")
                            "Grammalecte-fr-v" version ".zip"))
        (sha256
         (base32
-         "1knysfdd1rx4vc5cmmnry4jsza0cdjy26fv505m854yfmq6zrckd"))))
+         "0k30b9kcczsadjjgwja03rkm11cpcc1xi6w8l6k0qfbjfpkhsh66"))))
     (build-system python-build-system)
     (home-page "https://grammalecte.net")
-    (synopsis  "French spelling and grammar checker")
+    (synopsis "French spelling and grammar checker")
     (description "Grammalecte is a grammar checker dedicated to the French
 language, derived from Lightproof.
 

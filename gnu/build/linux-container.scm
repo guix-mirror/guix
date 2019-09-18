@@ -299,8 +299,10 @@ delete it when leaving the dynamic extent of this call."
         (false-if-exception (delete-file-recursively tmp-dir))))))
 
 (define* (call-with-container mounts thunk #:key (namespaces %namespaces)
-                              (host-uids 1) (guest-uid 0) (guest-gid 0))
-  "Run THUNK in a new container process and return its exit status.
+                              (host-uids 1) (guest-uid 0) (guest-gid 0)
+                              (process-spawned-hook (const #t)))
+  "Run THUNK in a new container process and return its exit status; call
+PROCESS-SPAWNED-HOOK with the PID of the new process that has been spawned.
 MOUNTS is a list of <file-system> objects that specify file systems to mount
 inside the container.  NAMESPACES is a list of symbols corresponding to
 the identifiers for Linux namespaces: mnt, ipc, uts, pid, user, and net.  By
@@ -329,6 +331,7 @@ load path must be adjusted as needed."
            (false-if-exception
             (kill pid SIGKILL))))
 
+       (process-spawned-hook pid)
        (match (waitpid pid)
          ((_ . status) status))))))
 

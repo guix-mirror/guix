@@ -1717,11 +1717,16 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
     (version "2.16.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://gmsh.info/src/gmsh-"
-                          version "-source.tgz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://gitlab.onelab.info/gmsh/gmsh.git")
+            (commit
+             (string-append "gmsh_"
+                            (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                        version)))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "1slf0bfkwrcgn6296wb4qhbk4ahz6i4wfb10hnim08x05vrylag8"))
+       (base32 "08rq4jajwmlpivnm9yifz2jhaivnz065lnk0h2zv773nwl9wf162"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
@@ -1747,7 +1752,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
                            "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
-    (home-page "http://www.geuz.org/gmsh/")
+    (home-page "http://gmsh.info/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
 CAD engine and post-processor.  Its design goal is to provide a fast, light
@@ -3091,6 +3096,10 @@ parts of it.")
 
 (define-public openblas
   (package
+    ;; TODO: Incorporate 'openblas/fixed-num-threads' changes on the next
+    ;; rebuild cycle.
+    (replacement openblas/fixed-num-threads)
+
     (name "openblas")
     (version "0.3.5")
     (source
@@ -3161,7 +3170,7 @@ parts of it.")
     (license license:bsd-3)))
 
 (define-public openblas-ilp64
-  (package (inherit openblas)
+  (package/inherit openblas
     (name "openblas-ilp64")
     (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
     (arguments
@@ -3171,6 +3180,24 @@ parts of it.")
                  ,flags))))
     (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
+
+(define openblas/fixed-num-threads
+  ;; TODO: Move that to 'openblas' proper on the next rebuild cycle.
+  (package
+    (inherit openblas)
+    (version (match (string-split (package-version openblas) #\.)
+               ((numbers ... (= string-length len))
+                (string-join (append numbers
+                                     (list (make-string len #\a)))
+                             "."))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags ''())
+        ;; This is the maximum number of threads OpenBLAS will ever use (that
+        ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
+        ;; is used.)  If we don't set it, the makefile sets it to the number
+        ;; of cores of the build machine, which is obviously wrong.
+        `(cons "NUM_THREADS=128" ,flags))))))
 
 (define* (make-blis implementation #:optional substitutable?)
   "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
@@ -3828,8 +3855,8 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
-       ("texlive" ,(texlive-union (list texlive-generic-xypic
-                                        texlive-fonts-xypic
+       ("texlive" ,(texlive-union (list texlive-xypic
+                                        texlive-cm
                                         texlive-latex-hyperref
                                         texlive-bibtex)))
        ("ghostscript" ,ghostscript)))

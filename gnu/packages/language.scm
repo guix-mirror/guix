@@ -2,6 +2,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 ng0 <ng0@n0.is>
+;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,13 +21,26 @@
 
 (define-module (gnu packages language)
   #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages swig)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
-  #:use-module ((guix licenses) #:select (gpl2 gpl3 perl-license))
-  #:use-module (guix download))
+  #:use-module (guix build-system python)
+  #:use-module ((guix licenses)
+                #:select
+                (bsd-3 gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 perl-license zpl2.1))
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix utils))
 
 (define-public perl-lingua-en-findnumber
   (package
@@ -406,3 +420,466 @@ string can be easily inferred by a human just by reading the identifier.")
     (description "This module is a rather incomplete implementation of work
 done by Gudrun Putze-Meier.")
     (license perl-license)))
+
+(define* (tegaki-release-uri proj version
+                             #:optional (ext "tar.gz"))
+  (string-append "https://github.com/tegaki/tegaki/releases/download"
+                 "/v" version "/" proj "-" version "." ext))
+
+(define remove-pre-compiled-files
+  (lambda exts
+    "Return snippet for removing pre-compiled files matching one of the
+extensions in EXTS."
+    `(begin (for-each delete-file
+                      (find-files "."
+                                  (lambda (name _)
+                                    (any (cut string-suffix? <> name)
+                                         (map (cut string-append "." <>)
+                                              ',exts)))))
+            #t)))
+
+;;; modules required for the above snippet
+(define remove-pre-compiled-files-modules
+  '((guix build utils)
+    (srfi srfi-1)
+    (srfi srfi-26)))
+
+(define-public python2-tegaki-wagomu
+  (package
+    (name "python2-tegaki-wagomu")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-wagomu" version))
+       (sha256
+        (base32
+         "1pzdiq4zy1nyylaj9i6v2h4h0r05klahskzpafpp367p4rysi1x9"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-recognizer
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; fix missing module and function
+             (substitute* "tegakiwagomu.py"
+               (("import Results,")
+                "import ")
+               (("def _recognize")
+                "def recognize")
+               (("Results\\(candidates\\)")
+                "candidates"))
+             #t)))))
+    (inputs
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (home-page "https://tegaki.github.io/")
+    (synopsis
+     "Chinese and Japanese Handwriting Recognition (Recognition engine)")
+    (description
+     "Tegaki is an ongoing project which aims to develop a free and open-source
+modern implementation of handwriting recognition software, specifically
+designed for Chinese (simplified and traditional) and Japanese, and that is
+suitable for both the desktop and mobile devices.")
+    (license gpl2+))) ; all files
+
+(define-public python2-tegaki-python
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-python")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-python" version))
+       (sha256
+        (base32
+         "0x93k7pw9nh0ywd97pr8pm7jv3f94nw044i5k0zvzhdpsjqvak7p"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _)
+        `(modify-phases %standard-phases
+           (add-after 'unpack 'pre-configure
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; Always convert string to unicode to avoid the following error
+               ;; when running "tegaki-build" in python2-tegaki-tools:
+               ;;
+               ;; sqlite3.ProgrammingError: You must not use 8-bit bytestrings
+               ;; unless you use a text_factory that can interpret 8-bit
+               ;; bytestrings (like text_factory = str).
+               ;; It is highly recommended that you instead just switch your
+               ;; application to Unicode strings.
+               (substitute* "tegaki/charcol.py"
+                 (("sqlite3.OptimizedUnicode")
+                  "lambda s: unicode(s, 'utf-8')"))
+               (substitute* "tegaki/engine.py"
+                 (("/usr(/local)?")
+                  (assoc-ref inputs "python2-tegaki-wagomu")))
+               #t))))))
+    ;; override inherited inputs
+    (inputs '())
+    (native-inputs '())
+    (propagated-inputs
+     `(("python2-tegaki-wagomu" ,python2-tegaki-wagomu)
+       ("python2-zinnia" ,python2-zinnia)))
+    (synopsis
+     "Chinese and Japanese Handwriting Recognition (Base python library)")
+    (license (list gpl2+ ; all files except...
+                   bsd-3 ; dictutils.py
+                   zpl2.1)))) ; minjson.py
+
+(define-public python2-tegaki-pygtk
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-pygtk")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-pygtk" version))
+       (sha256
+        (base32
+         "1cip0azxhjdj2dg2z85cp1z3lz4qwx3w1j7z4xmcm7npapmsaqs2"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _)
+        `(modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "tegakigtk/fakekey.py"
+                 (("libX11.so.6" so)
+                  (string-append (assoc-ref inputs "libx11") "/lib/" so))
+                 (("libXtst.so.6" so)
+                  (string-append (assoc-ref inputs "libxtst") "/lib/" so)))
+               #t))))))
+    (inputs ; required for sending key strokes
+     `(("libx11" ,libx11)
+       ("libxtst" ,libxtst)))
+    (native-inputs '()) ; override inherited inputs
+    (propagated-inputs
+     `(("python2-pygtk" ,python2-pygtk)
+       ("python2-tegaki-python" ,python2-tegaki-python)))
+    (synopsis "Chinese and Japanese Handwriting Recognition (Base UI library)")
+    (license gpl2+))) ; all files
+
+(define-public python2-tegaki-tools
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "python2-tegaki-tools")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri "tegaki-tools" version))
+       (sha256
+        (base32
+         "0xxv97ggh2jgldw3r7y59lv3fhz733r6l7mdn6nh4m0gvb0ja971"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "pyc"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments python2-tegaki-wagomu)
+       ((#:phases _) '%standard-phases)))
+    (inputs
+     `(("python2-tegaki-pygtk" ,python2-tegaki-pygtk)))
+    ;; override inherited inputs
+    (native-inputs '())
+    (propagated-inputs '())
+    (synopsis "Chinese and Japanese Handwriting Recognition (Advanced tools)")
+    ;; Files in gifenc/ are licensed under gpl3+ while other files are licensed
+    ;; under gpl2+. Therefore, the combined work is licensed under gpl3+.
+    (license gpl3+)))
+
+(define-public python2-tegaki-recognize
+  (let ((commit "eceec69fe651d0733c8c8752dae569d2283d0f3c")
+        (revision "1"))
+    (package
+      (inherit python2-tegaki-tools)
+      (name "python2-tegaki-recognize")
+      ;; version copied from <https://github.com/tegaki/tegaki/releases>
+      (version (git-version "0.3.1" revision commit))
+      (source
+       (origin
+         ;; We use GIT-FETCH because 'tegaki-recognize.desktop.in' and
+         ;; 'tegaki-recognize.in' are missing in the tarball.
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tegaki/tegaki.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "09mw2if9p885phbgah5f95q3fwy7s5b46qlmpxqyzfcnj6g7afr5"))
+         (file-name (git-file-name name version))
+         (modules `((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-26)
+                    ,@remove-pre-compiled-files-modules))
+         (snippet
+          `(begin
+             ;; remove unnecessary files with potentially different license
+             (for-each delete-file-recursively
+                       (scandir "."
+                                (negate (cut member <> '("tegaki-recognize"
+                                                         "." "..")))))
+             ,(remove-pre-compiled-files "pyc")
+             #t))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments python2-tegaki-tools)
+         ((#:phases _)
+          `(modify-phases %standard-phases
+             (add-after 'unpack 'chdir
+               (lambda _
+                 (chdir "tegaki-recognize")
+                 #t))
+             ;; 'setup.py' script does not support one of the Python build
+             ;; system's default flags, "--single-version-externally-managed"
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (invoke "python" "setup.py" "install"
+                         (string-append "--prefix=" (assoc-ref outputs "out"))
+                         "--root=/")
+                 #t))))))
+      (synopsis "Chinese and Japanese Handwriting Recognition (Main program)")
+      (license gpl2+)))) ; all files
+
+(define-public tegaki-zinnia-japanese
+  (package
+    (inherit python2-tegaki-wagomu)
+    (name "tegaki-zinnia-japanese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "1nmg9acxhcqly9gwkyb9m0hpy76fll91ywk4b1q4xms0ajxip1h7"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/local")
+                (assoc-ref outputs "out")))
+             #t)))))
+    ;; override inherited inputs
+    (inputs '())
+    (native-inputs
+     `(("python2-tegaki-tools" ,python2-tegaki-tools)))
+    (propagated-inputs '())
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TEGAKI_MODEL_PATH")
+            (files '("share/tegaki/models")))))
+    (synopsis "Chinese and Japanese Handwriting Recognition (Model)")
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-japanese-light
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-japanese-light")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0x0fs29ylqzxd6xvg51h7rigpbisd7q8v11df425ib2j792yfyf8"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-japanese-kyoiku
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-japanese-kyoiku")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0am94bcpmbzplxdnwn9gk15sgaizvcfhmv13mk14jjvx3419cvvx"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-japanese-joyo
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-japanese-joyo")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "1v0j40lzdyiz01ayws0b8r7fsdy2mr32658382kz4wyk883wzx2z"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-simplified-chinese
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-simplified-chinese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "18wq0jccv7lpnrfnzspyc110d6pj2v1i21xcx4fmgzz1lnln3fs5"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-simplified-chinese-light
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-simplified-chinese-light")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0v24yf0w0p03lb7fyx128a75mwzad166bigvlbrzqnad789qg1sr"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-traditional-chinese
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-traditional-chinese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "140nlp6hynrai2svs5670jjfw1za6ayflhyj2dl0bzsfgbk3447l"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-zinnia-traditional-chinese-light
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-zinnia-traditional-chinese-light")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "1m6yk6a57vs9wg5y50qciwi1ahhmklp2mgsjysbj4mnyzv6yhcr2"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-wagomu-japanese
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-wagomu-japanese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0flj5id8xwsn7csrrzqz9prdikswnwm2wms0as2vzdpxzph1az4k"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-wagomu-japanese-kyoiku
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-wagomu-japanese-kyoiku")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0v8crfh8rdf6ndp16g52s5jlrrlwh73xp38zjn5i9dlacx8kfqg1"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-wagomu-japanese-joyo
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-wagomu-japanese-joyo")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0wk8shpr963zp328g991qs6abpnacq4242003m687z2d6yp7nph2"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+(define-public tegaki-wagomu-simplified-chinese
+  (package
+    (inherit tegaki-zinnia-japanese)
+    (name "tegaki-wagomu-simplified-chinese")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (tegaki-release-uri name version "zip"))
+       (sha256
+        (base32
+         "0wqprynigqxqxv128i1smh81gxvmjj056d9qpznxa3n9f5ymlbj6"))
+       (modules remove-pre-compiled-files-modules)
+       (snippet (remove-pre-compiled-files "model"))))
+    (license lgpl2.1))) ; all files
+
+;;; Upstream does not provide the source for tegaki-wagomu-traditional-chinese.
+;;; Therefore, we use the source for tegaki-zinnia-traditional-chinese and
+;;; patch the Makefile accordingly.
+(define-public tegaki-wagomu-traditional-chinese
+  (package
+    (inherit tegaki-zinnia-traditional-chinese)
+    (name "tegaki-wagomu-traditional-chinese")
+    (arguments
+     (substitute-keyword-arguments
+         (package-arguments tegaki-zinnia-traditional-chinese)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda args
+               (let ((configure (assq-ref ,phases 'configure)))
+                 (apply configure args))
+               (substitute* "Makefile"
+                 (("zinnia") "wagomu"))
+               #t))))))
+    (license lgpl2.1))) ; all files

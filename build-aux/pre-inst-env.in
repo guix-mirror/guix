@@ -42,17 +42,9 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH
 PATH="$abs_top_builddir/scripts:$abs_top_builddir:$PATH"
 export PATH
 
-# Daemon helpers.
-
-NIX_ROOT_FINDER="$abs_top_builddir/nix/scripts/list-runtime-roots"
-NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'authenticate', etc.
-
-export NIX_ROOT_FINDER NIX_LIBEXEC_DIR
-
-NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
-@BUILD_DAEMON_OFFLOAD_TRUE@export NIX_BUILD_HOOK
-@BUILD_DAEMON_OFFLOAD_FALSE@# No offloading support.
-@BUILD_DAEMON_OFFLOAD_FALSE@unset NIX_BUILD_HOOK
+# The daemon invokes 'guix'; tell it which one to use.
+GUIX="$abs_top_builddir/scripts/guix"
+export GUIX
 
 # The following variables need only be defined when compiling Guix
 # modules, but we define them to be on the safe side in case of

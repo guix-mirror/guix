@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 Mikhail Kirillov <w96k.ru@gmail.com>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
+;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -668,6 +669,35 @@ support for stubbing and mocking.")
      "This package provides an automated way to track, and then re-run failed
 RSpec tests.")
     (home-page "https://github.com/dblock/rspec-rerun")
+    (license license:expat)))
+
+(define-public ruby-rspec-wait
+  (package
+    (name "ruby-rspec-wait")
+    (version "0.0.9")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (rubygems-uri "rspec-wait" version))
+        (sha256
+         (base32
+          "0gvj1bp5ccx001dyvcgk2j49s5sl6vs9fdaqqb08z3bd1554hsww"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "rake" "spec"))))))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (propagated-inputs
+     `(("ruby-rspec" ,ruby-rspec)))
+    (home-page "https://github.com/laserlemon/rspec-wait")
+    (synopsis "Wait for conditions in RSpec")
+    (description
+     "RSpec::Wait strives to make it easier to test asynchronous or slow
+interactions.")
     (license license:expat)))
 
 (define-public ruby-rspec

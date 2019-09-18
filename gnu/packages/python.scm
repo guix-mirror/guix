@@ -464,7 +464,7 @@ instead of @command{python3}.")))
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.10")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -473,7 +473,7 @@ instead of @command{python3}.")))
                             "/micropython-" version ".tar.gz"))
         (sha256
          (base32
-          "1g1zjip3rkx6bp16qi1bag72wivnbh56fcsl3nffanrx4j5f4z90"))
+          "0px3xhw16rl0l7qifq7jw1gq92wzlnhd17dmszv9m2c3wbzs9p9f"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -487,7 +487,7 @@ instead of @command{python3}.")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'preprare-build
+         (add-before 'build 'prepare-build
            (lambda _
              (chdir "ports/unix")
              ;; see: https://github.com/micropython/micropython/pull/4246

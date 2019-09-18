@@ -49,6 +49,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages emacs-xyz)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gettext)
@@ -1199,23 +1200,24 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.1.9")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "0w4fihf52q5qxxk0lg36x6yvjjl8vw66y60ncdjs5fvnxqn5z2vb"))))
+         "1mvpkp8cj30fwd4bwlz96x3cff7yzfbfz7iswmf77zl0a6122inh"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("cairo" ,cairo)
+       ("freetype2" ,freetype)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
-       ("r-withr" ,r-withr)))
+       ("r-systemfonts" ,r-systemfonts)))
     (home-page "https://cran.r-project.org/web/packages/gdtools")
     (synopsis "Utilities for graphical rendering")
     (description
@@ -2436,18 +2438,24 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.1.0")
+    (version "2.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "0393v7nr22gr5g9afgrhq4ab3lwbqy6fd3shnmlhdpqam5357xy1"))))
+                "05fag25mkqy13yja8x32aqr9c0ah9rbm8cfjcsmy1dv5h4j8cxa1"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
        ("r-cli" ,r-cli)
+       ("r-covr" ,r-covr)
+       ("r-crayon" ,r-crayon)
+       ("r-desc" ,r-desc)
        ("r-digest" ,r-digest)
+       ("r-dt" ,r-dt)
+       ("r-ellipsis" ,r-ellipsis)
+       ("r-glue" ,r-glue)
        ("r-git2r" ,r-git2r)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
@@ -2458,6 +2466,7 @@ informative error messages when it's not available.")
        ("r-roxygen2" ,r-roxygen2)
        ("r-remotes" ,r-remotes)
        ("r-rstudioapi" ,r-rstudioapi)
+       ("r-rversions" ,r-rversions)
        ("r-sessioninfo" ,r-sessioninfo)
        ("r-testthat" ,r-testthat)
        ("r-usethis" ,r-usethis)
@@ -2598,13 +2607,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.600.4.0")
+    (version "0.9.700.2.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "07jg2667xyhmp1fbcdi5nnhmkk81da76s9rlswfq4k2sjsmbfmr0"))))
+                "0g25w32dnqrvhnri8x4yxqawxd8qhn7w3m8d29nxxy0gybx3y8x9"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -3645,13 +3654,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.54.0")
+    (version "0.55.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "0vx00ldsg2zvdrjn49jxczk2c9iaabgvzgpdka5j02ihh7hv83cg"))))
+                "06fvx0rlaz80k0lkqq2n7v0309xpz7h7ss0m9kgyikp4xs8bvmhn"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
@@ -3748,25 +3757,28 @@ selection.")
 (define-public r-tidyr
   (package
     (name "r-tidyr")
-    (version "0.8.3")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidyr" version))
        (sha256
         (base32
-         "0dyc4b03wi65bk7j0ma0y188syh37h57wgxji82i0h8j6pn593x1"))))
+         "1403j0xd93l0r7qj738ryd5zc79hbcghrzybib3c3hrnaq5s78cj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
+       ("r-ellipsis" ,r-ellipsis)
        ("r-magrittr" ,r-magrittr)
        ("r-glue" ,r-glue)
+       ("r-lifecycle" ,r-lifecycle)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
        ("r-tidyselect" ,r-tidyselect)
        ("r-rcpp" ,r-rcpp)
        ("r-stringi" ,r-stringi)
-       ("r-tibble" ,r-tibble)))
+       ("r-tibble" ,r-tibble)
+       ("r-vctrs" ,r-vctrs)))
     (home-page "https://github.com/hadley/tidyr")
     (synopsis "Tidy data with `spread()` and `gather()` functions")
     (description

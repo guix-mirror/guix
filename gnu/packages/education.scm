@@ -2,7 +2,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages freedesktop)
@@ -36,6 +37,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages javascript)
+  #:use-module (gnu packages kde)
   #:use-module (gnu packages kde-frameworks) ; extra-cmake-modules
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -520,3 +522,101 @@ minutes.  For simpler timetables, it may take a shorter time, under
 difficult timetables, it may take a longer time, a matter of hours.")
     (license license:agpl3+)))
 
+(define-public klavaro
+  (package
+    (name "klavaro")
+    (version "3.09")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/klavaro/klavaro-"
+                            version ".tar.bz2"))
+        (sha256
+         (base32
+          "12gml7h45b1w9s318h0d5wxw92h7pgajn2kh57j0ak9saq0yb0wr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("gtk+" ,gtk+)
+       ("pango" ,pango)))
+    (home-page "https://klavaro.sourceforge.io/en/index.html")
+    (synopsis "Touch typing tutor")
+    (description
+     "Klavaro is a simple tutor to teach correct typing, almost independently of
+language and very flexible regarding to new or unknown keyboard layouts.")
+    (license license:gpl3+)))
+
+(define-public ktouch
+  (package
+    (name "ktouch")
+    (version "19.08.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/applications/"
+                            version "/src/ktouch-" version ".tar.xz"))
+        (sha256
+         (base32
+          "19rdk94pls75hdvx11hnfk3qpm6l28p9q45q5f04sknxagrfaznr"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                            (guix build qt-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefiles
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((qtdec (assoc-ref inputs "qtdeclarative")))
+               (substitute* '("src/CMakeFiles/ktouch_autogen.dir/build.make"
+                              "src/CMakeFiles/ktouch.dir/build.make")
+                 (("/gnu/store/.*qmlcachegen")
+                  (string-append qtdec "/bin/qmlcachegen"))))
+             #t))
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "ktouch"))
+             #t)))))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("kdoctools" ,kdoctools)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kcmutils" ,kcmutils)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("ki18n" ,ki18n)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("kqtquickcharts" ,kqtquickcharts)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("libxcb" ,libxcb)
+       ("libxkbfile" ,libxkbfile)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtgraphicaleffects" ,qtgraphicaleffects)
+       ("qtquickcontrols2" ,qtquickcontrols2)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (home-page "https://edu.kde.org/ktouch/")
+    (synopsis "Touch typing tutor")
+    (description
+     "KTouch is an aid for learning how to type with speed and accuracy.  It
+provides a sample text to type and indicates which fingers should be used for
+each key.  A collection of lessons are included for a wide range of different
+languages and keyboard layouts, and typing statistics are used to dynamically
+adjust the level of difficulty.")
+    (license license:gpl2)))

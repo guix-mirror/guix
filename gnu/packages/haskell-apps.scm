@@ -245,7 +245,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20190708")
+    (version "7.20190912")
     (source
      (origin
        (method url-fetch)
@@ -253,7 +253,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "18s563swrp8mx479995pdhhmn40y3xwlbm1z3w63qsnjqmj7zlij"))))
+         "1a3jvl5cx32v78s3015i10cx00jprm1391rpww4mzkk1vskzn9cv"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -337,6 +337,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
        ("ghc-http-conduit" ,ghc-http-conduit)
        ("ghc-http-types" ,ghc-http-types)
        ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-magic" ,ghc-magic)
        ("ghc-memory" ,ghc-memory)
        ("ghc-monad-control" ,ghc-monad-control)
        ("ghc-monad-logger" ,ghc-monad-logger)
@@ -374,9 +375,16 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 checking the file contents into Git.  It can store files in many places,
 such as local hard drives and cloud storage services.  It can also be
 used to keep a folder in sync between computers.")
-    ;; The web app is released under the AGPLv3+.
-    (license (list license:gpl3+
-                   license:agpl3+))))
+    ;; The main author has released all his changes under AGPLv3+ as of March
+    ;; 2019 (7.20190219-187-g40ecf58d4).  These are also licensed under the
+    ;; original GPLv3+ license, but going forward new changes will be under
+    ;; only AGPLv3+.  The other licenses below cover code written by others.
+    ;; See git-annex's COPYRIGHT file for details on each file.
+    (license (list license:agpl3+
+                   license:gpl3+
+                   license:bsd-2
+                   license:expat
+                   license:gpl2))))
 
 (define-public hlint
   (package

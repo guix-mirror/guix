@@ -444,8 +444,8 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.savannah.nongnu.org/releases/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
@@ -483,14 +483,14 @@ specification.  These are the main features:
   (package
     (inherit guile-json)
     (name "guile-json")
-    (version "3.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.savannah.nongnu.org/releases/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1yfqscz74i4vxylabd3s9l0wbdp8bg9qxnv1ixdm3b1l7zdx00z3"))))))
+                "14m6b6g2maw0mkvfm4x63rqb54vgbpn1gcqs715ijw4bikfzlqfz"))))))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.

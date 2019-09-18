@@ -212,10 +212,19 @@ with dashes."
 (define (beautify-description description)
   "Improve the package DESCRIPTION by turning a beginning sentence fragment
 into a proper sentence and by using two spaces between sentences."
-  (let ((cleaned (if (string-prefix? "A " description)
-                     (string-append "This package provides a"
-                                    (substring description 1))
-                     description)))
+  (let ((cleaned (cond
+                  ((string-prefix? "A " description)
+                   (string-append "This package provides a"
+                                  (substring description 1)))
+                  ((string-prefix? "Provides " description)
+                   (string-append "This package provides"
+                                  (substring description
+                                             (string-length "Provides"))))
+                  ((string-prefix? "Functions " description)
+                   (string-append "This package provides functions"
+                                  (substring description
+                                             (string-length "Functions"))))
+                  (else description))))
     ;; Use double spacing between sentences
     (regexp-substitute/global #f "\\. \\b"
                               cleaned 'pre ".  " 'post)))

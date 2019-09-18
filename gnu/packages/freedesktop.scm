@@ -920,15 +920,15 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.18.2")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.freedesktop.org/software/" name "/"
-                    name "-" version ".tar.xz"))
+                    "https://www.freedesktop.org/software/libmbim/"
+                    "libmbim-" version ".tar.xz"))
               (sha256
                (base32
-                "0s4jsfsydp2vykv7lnimalp9i680aas1qcx7zdpjiic64b5g48vp"))))
+                "0rm8j4zh9gnb3yi324cnxy91gdimc1vg5gv1kxc2m5lymb3wdxrc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums

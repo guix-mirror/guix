@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,8 +23,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages image))
 
 (define-public ocrad
@@ -76,3 +80,74 @@ positional information and page layout analysis.  Several image formats are
 supported through the Leptonica library.  It can also detect whether text is
 monospaced or proportional.")
     (license license:asl2.0)))
+
+(define-public zinnia
+  (let* ((commit "581faa8f6f15e4a7b21964be3a5ec36265c80e5b")
+         (revision "1")
+         ;; version copied from 'configure.in'
+         (version (git-version "0.07" revision commit)))
+    (package
+      (name "zinnia")
+      (version version)
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/taku910/zinnia.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1izjy5qw6swg0rs2ym2i72zndb90mwrfbd1iv8xbpwckbm4899lg"))
+         (file-name (git-file-name name version))
+         (modules '((guix build utils)
+                    (ice-9 ftw)
+                    (srfi srfi-26)))
+         (snippet ; remove unnecessary files with potentially different license
+          '(begin
+             (for-each delete-file-recursively
+                       (scandir "."
+                                (negate (cut member <> '("zinnia"
+                                                         "." "..")))))
+             #t))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'bootstrap
+             (lambda _
+               (chdir "zinnia")
+               (for-each make-file-writable
+                         '("config.log" "config.status"))
+               #t)))))
+      (home-page "https://taku910.github.io/zinnia/")
+      (synopsis "Online hand recognition system with machine learning")
+      (description
+       "Zinnia is a simple, customizable and portable online hand recognition
+system based on Support Vector Machines.  Zinnia simply receives user pen
+strokes as a sequence of coordinate data and outputs n-best characters sorted
+by SVM confidence.  To keep portability, Zinnia doesn't have any rendering
+functionality.  In addition to recognition, Zinnia provides training module
+that allows us to create any hand-written recognition systems with low-cost.")
+      (license (list license:bsd-3 ; all files except...
+                     (license:non-copyleft ; some autotools related files
+                      "file://zinnia/aclocal.m4")
+                     license:x11 ; 'install-sh'
+                     license:public-domain))))) ; 'install-sh'
+
+;;; python 2 bindings, license under the same terms as zinnia
+(define-public python2-zinnia
+  (package
+    (inherit zinnia)
+    (name "python2-zinnia")
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; CObject API is used, it was removed in Python 3.2
+       #:tests? #f ; avoid circular dependency on tegaki-zinnia-japanese
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _
+             (chdir "zinnia/python")
+             #t)))))
+    (inputs
+     `(("zinnia" ,zinnia)))))

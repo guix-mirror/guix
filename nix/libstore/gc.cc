@@ -339,14 +339,11 @@ Roots LocalStore::findRoots()
 
 static void addAdditionalRoots(StoreAPI & store, PathSet & roots)
 {
-    Path rootFinder = getEnv("NIX_ROOT_FINDER",
-        settings.nixLibexecDir + "/list-runtime-roots");
+    debug(format("executing `%1% gc --list-busy' to find additional roots")
+	  % settings.guixProgram);
 
-    if (rootFinder.empty()) return;
-
-    debug(format("executing `%1%' to find additional roots") % rootFinder);
-
-    string result = runProgram(rootFinder);
+    const Strings args = { "gc", "--list-busy" };
+    string result = runProgram(settings.guixProgram, false, args);
 
     StringSet paths = tokenizeString<StringSet>(result, "\n");
 

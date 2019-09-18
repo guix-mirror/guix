@@ -204,8 +204,7 @@ https://sources.debian.net/data/main/t/tipp10/2.1.0-2/debian/patches/0001-FixCom
  Name=TIPP10
  Comment=Touch Typing Tutor
  Comment[de]=10-Finger-Schreibtrainer
--Exec=tipp10
-+Exec=/usr/bin/tipp10
+ Exec=tipp10
  Icon=tipp10.png
  Terminal=false
  Type=Application

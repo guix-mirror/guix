@@ -57,6 +57,8 @@ Invoke the garbage collector.\n"))
   (display (G_ "
       --list-roots       list the user's garbage collector roots"))
   (display (G_ "
+      --list-busy        list store items used by running processes"))
+  (display (G_ "
       --optimize         optimize the store by deduplicating identical files"))
   (display (G_ "
       --list-dead        list dead paths"))
@@ -174,6 +176,10 @@ is deprecated; use '-D'~%"))
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-roots
                               (alist-delete 'action result))))
+        (option '("list-busy") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-busy
+                              (alist-delete 'action result))))
         (option '("list-dead") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-dead
@@ -265,6 +271,12 @@ is deprecated; use '-D'~%"))
                   (newline))
                 roots)))
 
+  (define (list-busy)
+    ;; List store items used by running processes.
+    (for-each (lambda (item)
+                (display item) (newline))
+              (busy-store-items)))
+
   (with-error-handling
     (let* ((opts  (parse-options))
            (store (open-connection))
@@ -305,6 +317,9 @@ is deprecated; use '-D'~%"))
         ((list-roots)
          (assert-no-extra-arguments)
          (list-roots))
+        ((list-busy)
+         (assert-no-extra-arguments)
+         (list-busy))
         ((delete)
          (delete-paths store (map direct-store-path paths)))
         ((list-references)

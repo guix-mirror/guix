@@ -401,7 +401,10 @@ manage system or application containers.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--with-polkit"
+       (list "--with-qemu"
+             "--with-qemu-user=nobody"
+             "--with-qemu-group=kvm"
+             "--with-polkit"
              (string-append "--docdir=" (assoc-ref %outputs "out") "/share/doc/"
                             ,name "-" ,version)
              "--sysconfdir=/etc"
@@ -431,23 +434,13 @@ manage system or application containers.")
              (apply invoke "make" "install"
                     "sysconfdir=/tmp/etc"
                     "localstatedir=/tmp/var"
-                    make-flags)))
-         (add-after 'install 'wrap-libvirtd
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/sbin/libvirtd")
-                 `("PATH" = (,(string-append (assoc-ref inputs "iproute")
-                                             "/sbin")
-                             ,(string-append (assoc-ref inputs "qemu")
-                                             "/bin"))))
-               #t))))))
+                    make-flags))))))
     (inputs
      `(("libxml2" ,libxml2)
        ("eudev" ,eudev)
        ("libpciaccess" ,libpciaccess)
        ("gnutls" ,gnutls)
        ("dbus" ,dbus)
-       ("qemu" ,qemu)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
        ("libuuid" ,util-linux)

@@ -40,7 +40,6 @@ struct OptimiseStats
 
 struct RunningSubstituter
 {
-    Path program;
     Pid pid;
     AutoCloseFD to, from, error;
     FdSource fromBuf;
@@ -52,8 +51,8 @@ struct RunningSubstituter
 class LocalStore : public StoreAPI
 {
 private:
-    typedef std::map<Path, RunningSubstituter> RunningSubstituters;
-    RunningSubstituters runningSubstituters;
+    /* The currently running substituter or empty.  */
+    std::unique_ptr<RunningSubstituter> runningSubstituter;
 
     Path linksDir;
 
@@ -93,8 +92,8 @@ public:
 
     PathSet querySubstitutablePaths(const PathSet & paths);
 
-    void querySubstitutablePathInfos(const Path & substituter,
-        PathSet & paths, SubstitutablePathInfos & infos);
+    void querySubstitutablePathInfos(PathSet & paths,
+        SubstitutablePathInfos & infos);
 
     void querySubstitutablePathInfos(const PathSet & paths,
         SubstitutablePathInfos & infos);
@@ -261,8 +260,7 @@ private:
 
     void removeUnusedLinks(const GCState & state);
 
-    void startSubstituter(const Path & substituter,
-        RunningSubstituter & runningSubstituter);
+    void startSubstituter(RunningSubstituter & runningSubstituter);
 
     string getLineFromSubstituter(RunningSubstituter & run);
 

@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,12 +31,15 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils))
 
 (define-public espeak
@@ -220,3 +224,236 @@ to improve their productivity with speech engines, like eSpeak.  Sonic can also
 be used by the sighted.")
     (home-page "https://github.com/waywardgeek/sonic")
     (license license:asl2.0)))
+
+(define-public festival
+  (package
+    (name "festival")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://festvox.org/packed/festival/"
+                                  (version-major+minor version)
+                                  "/festival-" version "-release.tar.gz"))
+              (sha256
+               (base32
+                "1d5415nckiv19adxisxfm1l1xxfyw88g87ckkmcr0lhjdd10g42c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there is no test target
+       #:make-flags
+       (list (string-append "RM="
+                            (assoc-ref %build-inputs "coreutils")
+                            "/bin/rm")
+             (string-append "ECHO_N="
+                            (assoc-ref %build-inputs "coreutils")
+                            "/bin/printf \"%s\""))
+       #:parallel-build? #f ; not supported
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-and-patch-speech-tools
+           (lambda* (#:key inputs #:allow-other-keys)
+             (invoke "tar" "-C" ".."
+                     "-xf" (assoc-ref inputs "speech-tools"))
+             (with-directory-excursion "../speech_tools"
+               (substitute* '("config/rules/modules.mak"
+                              "config/rules/test_make_rules.mak"
+                              "config/make_system.mak")
+                 (("/bin/sh") (which "sh"))))
+             #t))
+         (add-after 'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* '("config/test_make_rules"
+                            "config/make_system.mak")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'build 'build-speech-tools
+           (lambda* (#:key configure-flags make-flags #:allow-other-keys)
+             (with-directory-excursion "../speech_tools"
+               (apply invoke "sh" "configure"
+                      (string-append "CONFIG_SHELL=" (which "sh"))
+                      (string-append "SHELL=" (which "sh"))
+                      configure-flags)
+               (apply invoke "make" make-flags))))
+         (add-after 'build 'build-documentation
+           (lambda _
+             (with-directory-excursion "doc"
+               (invoke "make" "festival.info"))))
+         (add-after 'unpack 'set-installation-directories
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "config/project.mak"
+                 (("^FTLIBDIR.*")
+                  (string-append "FTLIBDIR=" out "/share/festival/lib")))
+               (substitute* "config/systems/default.mak"
+                 (("^INSTALL_PREFIX.*")
+                  (string-append "INSTALL_PREFIX=" out)))
+               #t)))
+         (add-after 'install 'actually-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; Install Speech Tools first
+               (with-directory-excursion "../speech_tools"
+                 ;; Target directories
+                 (for-each (lambda (dir)
+                             (mkdir-p (string-append out dir)))
+                           '("/bin"
+                             "/lib"
+                             "/include/speech_tools/"
+                             "/include/speech_tools/instantiate"
+                             "/include/speech_tools/ling_class"
+                             "/include/speech_tools/rxp"
+                             "/include/speech_tools/sigpr"
+                             "/include/speech_tools/unix"))
+                 ;; Install binaries
+                 (for-each (lambda (file)
+                             (install-file file (string-append out "/bin")))
+                           (find-files "bin" ".*"))
+                 (for-each (lambda (file)
+                             (delete-file (string-append out "/bin/" file)))
+                           '("est_gdb" "est_examples" "est_program"))
+                 ;; Install libraries
+                 (for-each (lambda (file)
+                             (install-file file (string-append out "/lib")))
+                           (find-files "lib" "lib.*\\.so.*"))
+
+                 ;; Install headers
+                 (for-each
+                  (lambda (dir)
+                    (for-each
+                     (lambda (header)
+                       (install-file header
+                                     (string-append out "/include/speech_tools/" dir)))
+                     (find-files (string-append "include/" dir)
+                                 "\\.h$")))
+                  '("." "instantiate" "ling_class" "rxp" "sigpr" "unix")))
+
+               ;; Unpack files that will be installed together with the
+               ;; Festival libraries.
+               (invoke "tar" "--strip-components=1"
+                       "-xvf" (assoc-ref inputs "festvox-cmu"))
+               (invoke "tar" "--strip-components=1"
+                       "-xvf" (assoc-ref inputs "festvox-poslex"))
+               (invoke "tar" "--strip-components=1"
+                       "-xvf" (assoc-ref inputs "default-voice"))
+
+               ;; Install Festival
+               (let ((bin (string-append out "/bin"))
+                     (incdir (string-append out "/include/festival"))
+                     (share (string-append out "/share/festival"))
+                     (info (string-append out "/share/info")))
+                 (for-each (lambda (executable)
+                             (install-file executable bin))
+                           '("src/main/festival"
+                             "src/main/festival_client"
+                             "examples/benchmark"))
+                 (let ((scripts '("examples/dumpfeats"
+                                  "examples/durmeanstd"
+                                  "examples/latest"
+                                  "examples/make_utts"
+                                  "examples/powmeanstd"
+                                  "examples/run-festival-script"
+                                  "examples/saytime"
+                                  "examples/scfg_parse_text"
+                                  "examples/text2pos"
+                                  "examples/text2wave")))
+                   (substitute* scripts
+                     (("exec /tmp/guix-build.*/bin/festival")
+                      (string-append "exec " bin "/festival")))
+                   (for-each (lambda (script)
+                               (install-file script bin))
+                             scripts))
+
+                 ;; Documentation
+                 (for-each (lambda (file)
+                             (install-file file info))
+                           (find-files "doc/info/" "festival.info.*"))
+
+                 ;; Headers
+                 (mkdir-p incdir)
+                 (for-each (lambda (header)
+                             (install-file header
+                                           (string-append incdir "/"
+                                                          (dirname header))))
+                           (find-files "src/include" "\\.h$"))
+
+                 ;; Data
+                 (mkdir-p share)
+                 (for-each (lambda (file)
+                             (install-file file
+                                           (string-append share "/"
+                                                          (dirname file))))
+                           (find-files "lib" ".*"))
+                 (for-each delete-file
+                           (append (find-files share "Makefile")
+                                   (find-files bin "Makefile")))))
+             #t))
+         (add-after 'actually-install 'install-emacs-mode
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((emacs-dir (string-append (assoc-ref outputs "out")
+                                             "/share/emacs/site-lisp")))
+               (install-file "lib/festival.el" emacs-dir)
+               (emacs-generate-autoloads ,name emacs-dir)
+               #t)))
+         ;; Rebuild the very old configure script that is confused by extra
+         ;; arguments.
+         (add-before 'configure 'bootstrap
+           (lambda _ (invoke "autoreconf" "-vif"))))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("texinfo" ,texinfo)
+       ("emacs" ,emacs-minimal)
+       ("festvox-cmu"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://festvox.org/packed/festival/"
+                               (version-major+minor version)
+                               "/festlex_CMU.tar.gz"))
+           (sha256
+            (base32
+             "01vwidqhhg2zifvk1gby91mckg1z2pv2mj6lihvdaifakf8k1561"))))
+       ("festvox-poslex"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://festvox.org/packed/festival/"
+                               (version-major+minor version)
+                               "/festlex_POSLEX.tar.gz"))
+           (sha256
+            (base32
+             "18wywilxaqwy63lc47p5g5529mpxhslibh1bjij0snxx5mjf7ip7"))))
+       ("default-voice"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://festvox.org/packed/festival/"
+                               (version-major+minor version)
+                               "/voices/festvox_kallpc16k.tar.gz"))
+           (sha256
+            (base32
+             "136hmsyiwnlg2qwa508dy0imf19mzrb5r3dmb2kg8kcyxnslm740"))))
+       ("speech-tools"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://festvox.org/packed/festival/"
+                               (version-major+minor version)
+                               "/speech_tools-" version "-release.tar.gz"))
+           (sha256
+            (base32
+             "1k2xh13miyv48gh06rgsq2vj25xwj7z6vwq9ilsn8i7ig3nrgzg4"))))))
+    (home-page "http://www.cstr.ed.ac.uk/projects/festival/")
+    (synopsis "Speech synthesis system")
+    (description "Festival offers a general framework for building speech
+synthesis systems as well as including examples of various modules.  As a
+whole it offers full text to speech through a number APIs: from shell level,
+though a Scheme command interpreter, as a C++ library, from Java, and an Emacs
+interface.  Festival is multi-lingual though English is the most advanced.
+The system is written in C++ and uses the Edinburgh Speech Tools Library for
+low level architecture and has a Scheme (SIOD) based command interpreter for
+control.")
+    (license (license:non-copyleft "file://COPYING"))))

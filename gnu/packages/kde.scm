@@ -529,16 +529,16 @@ different notification systems.")
 (define-public kdeconnect
   (package
     (name "kdeconnect")
-    (version "1.3.3")
+    (version "1.3.5")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/kdeconnect/"
-                            version "/src/kdeconnect-kde-"
+                            version "/kdeconnect-kde-"
                             version ".tar.xz"))
         (sha256
          (base32
-          "1vac0mw1myrswr61adv7lgif0c4wzw5wnsj0sqxj6msp4l4pfgsg"))))
+          "02lr3xx5s2mgddac4n3lkgr7ppf1z5m6ajs90rjix0vs8a271kp5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTING=ON")
@@ -600,4 +600,30 @@ communicate with each other.  Here's a few things KDE Connect can do:
 @item Browse your phone from the desktop
 @item Control the desktop's volume from the phone
 @end enumerate")
+    (properties `((upstream-name . "kdeconnect-kde")))
     (license (list license:gpl2 license:gpl3)))) ; dual licensed
+
+(define-public kqtquickcharts
+  (package
+    (name "kqtquickcharts")
+    (version "19.08.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/applications/"
+                            version "/src/kqtquickcharts-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1j3rivvh4sa94lsd0hi4xfvcikl05zrqd7634wxyaxs718ais6dg"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://phabricator.kde.org/source/kqtquickcharts/")
+    (synopsis "Interactive charts for Qt Quick")
+    (description
+     "Kqtquickcharts is a QtQuick plugin to render beautiful and interactive
+charts.")
+    (license license:lgpl2.1+)))

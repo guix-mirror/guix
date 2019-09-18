@@ -9,6 +9,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
+;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu artwork)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages pkg-config)
@@ -127,7 +129,7 @@ Xfce Desktop Environment.")
      '(#:phases
        ;; Run check after install phase to test dbus activation.
        (modify-phases %standard-phases
-         (add-after 'install 'check
+         (add-after 'install 'custom-check
            (lambda _
              (setenv "HOME" (getenv "TMPDIR")) ; xfconfd requires a writable HOME
              ;; Run test-suite under a dbus session.
@@ -140,8 +142,10 @@ Xfce Desktop Environment.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("glib:bin" ,glib "bin")         ;; for gdbus-codegen
-       ))
+       ("glib:bin" ,glib "bin") ;; for gdbus-codegen
+       ("gobject-introspection" ,gobject-introspection)
+       ("vala" ,vala)
+       ("dbus" ,dbus)))
     (propagated-inputs
      ;; libxfconf-0.pc refers to all these.
      `(("glib" ,glib)))
@@ -167,9 +171,13 @@ storage system.")
                (base32
                 "1npjhznmnckhnylsv3l7p1zvhckhmp9d7vifs8w12kdfmrg0fjf4"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-vendor-info=GNU Guix")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("intltool" ,intltool)))
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
     (propagated-inputs
      `(("gtk+-3" ,gtk+)    ; required by libxfce4ui-2.pc
        ;; libxfce4kbd-private-2.pc refers to all these.
@@ -276,11 +284,14 @@ merging features essential for loading menus modified with menu editors.")
     (inputs
      `(("dbus" ,dbus)
        ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo) ;; Needed for pdf thumbnails (poppler-glibc.pc)
        ("freetype" ,freetype)
        ("libjpeg" ,libjpeg)
        ("libgsf" ,libgsf)
        ("poppler" ,poppler)
-       ("gstreamer" ,gstreamer)))
+       ;; FIXME Provide gstreamer and gstreamer-tag to get video thumbnails
+       ;; ("gstreamer" ,gstreamer)
+       ))
     (home-page "https://www.xfce.org/")
     (synopsis "D-Bus service for applications to request thumbnails")
     (description
@@ -303,6 +314,15 @@ management D-Bus specification.")
                 "1x3flv86jh9vqah7mr5mmfx2991mc6icsqjygsc3j88lgsyz7y6m"))
               (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tzdata-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (string-append "plugins/clock/clock.c")
+               (("/usr/share/zoneinfo")
+                (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo")))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
@@ -311,7 +331,8 @@ management D-Bus specification.")
      `(("gtk+-3" ,gtk+)                 ; required by libxfce4panel-2.0.pc
        ("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-2.0.pc
     (inputs
-     `(("exo" ,exo)
+     `(("tzdata" ,tzdata) ;; For fix-tzdata-path phase only.
+       ("exo" ,exo)
        ("gtk+-2" ,gtk+-2)
        ("xfconf" ,xfconf)
        ("garcon" ,garcon)
@@ -621,7 +642,7 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.7")
+    (version "1.8.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
@@ -629,7 +650,7 @@ like appearance, display, keyboard and mouse settings.")
                                   "Thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "0afkp528mwwa2m18m39mvw53qgaijyynrw9wwwiyxgjiczq3l0ry"))))
+                "1fah2d7v3a7fp28xa5wv896rap1iad9q9y04qchca09mq1x8wxbs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -653,7 +674,7 @@ fast.")
 (define-public thunar-volman
   (package
     (name "thunar-volman")
-    (version "0.9.3")
+    (version "0.9.5")
     (source
      (origin
        (method url-fetch)
@@ -661,7 +682,7 @@ fast.")
                            (version-major+minor version) "/"
                            "thunar-volman-" version ".tar.bz2"))
        (sha256
-        (base32 "1sfmz40164rg77hclrkrgnbk8cb7f325qqi7lz2hh3wbvf8r0c19"))))
+        (base32 "0dqqkbhn43hhmhqyx1fnmawpvysdjzw6ln4ryf629wil6dlwd9vy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -890,7 +911,7 @@ inhibit interface which allows applications to prevent automatic sleep.")
 (define-public ristretto
   (package
     (name "ristretto")
-    (version "0.8.4")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
@@ -898,14 +919,14 @@ inhibit interface which allows applications to prevent automatic sleep.")
                                   "ristretto-" version ".tar.bz2"))
               (sha256
                (base32
-                "18nf01djwnbjc91bdlv3p0h6pwcq1kfnjgp6yaxhxv4kdi9f82rs"))))
+                "0sa75m1w6yvv4xvzrwqiif6vnqgi29hjrixrh87nxss58bbms8hn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("desktop-file-utils" ,desktop-file-utils)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxfce4ui" ,libxfce4ui)
        ("librsvg" ,librsvg)
@@ -961,6 +982,14 @@ memory usage graphically, and it can display processes as a tree.")
               (sha256
                (base32
                 "0qlhvnl2m33vfxqlbkic2nmfpwyd4mq230jzhs48cg78392amy9w"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-build-with-libical3
+           (lambda* _
+             (substitute* "src/ical-code.c" ;; .is_utc not available in libical3
+               ((".*\\.is_utc.*$") ""))
+             #t)))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1051,7 +1080,7 @@ of data to either CD/DVD/BD.")
 (define-public mousepad
   (package
     (name "mousepad")
-    (version "0.4.1")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/mousepad/"
@@ -1059,11 +1088,10 @@ of data to either CD/DVD/BD.")
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "12si6fvhp68wz4scr339c23jxqq5ywn5nf4w55jld5lxjadkg9rr"))))
+                "1myy7954r1a30dk7inwy7kwki7zvfbnnsc3a8swk72vzrbgjmh44"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-gtk3"
-                           ;; Use the GSettings keyfile backend rather than
+     '(#:configure-flags '(;; Use the GSettings keyfile backend rather than
                            ;; DConf.
                            "--enable-keyfile-settings")
        #:phases
@@ -1083,7 +1111,8 @@ of data to either CD/DVD/BD.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gtk+" ,gtk+)
-       ("gtksourceview" ,gtksourceview-3)))
+       ("gtksourceview" ,gtksourceview-3)
+       ("xfconf" ,xfconf)))
     (home-page "https://git.xfce.org/apps/mousepad/")
     (synopsis "Simple text editor for Xfce")
     (description

@@ -110,7 +110,6 @@ libstore_a_CPPFLAGS =				\
   -DNIX_STATE_DIR=\"$(localstatedir)/guix\"	\
   -DNIX_LOG_DIR=\"$(localstatedir)/log/guix\"	\
   -DGUIX_CONFIGURATION_DIRECTORY=\"$(sysconfdir)/guix\"		\
-  -DNIX_LIBEXEC_DIR=\"$(libexecdir)/guix\"	\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
   -DDEFAULT_CHROOT_DIRS="\"\""
 
@@ -153,21 +152,6 @@ noinst_HEADERS =						\
 	       (call-with-input-file \"$^\"			\
 	         (lambda (in)					\
 	           (write (get-string-all in) out)))))"
-
-nodist_pkglibexec_SCRIPTS =			\
-  %D%/scripts/list-runtime-roots		\
-  %D%/scripts/substitute			\
-  %D%/scripts/download
-
-if BUILD_DAEMON_OFFLOAD
-
-nodist_pkglibexec_SCRIPTS +=			\
-  %D%/scripts/offload
-
-endif BUILD_DAEMON_OFFLOAD
-
-nodist_pkglibexec_SCRIPTS +=			\
-  %D%/scripts/authenticate
 
 # The '.service' files for systemd.
 systemdservicedir = $(libdir)/systemd/system

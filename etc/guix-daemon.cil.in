@@ -277,9 +277,5 @@
            file (system_u object_r guix_daemon_exec_t (low low)))
   (filecon "@storedir@/.+-(guix-.+|profile)/bin/guix-daemon"
            file (system_u object_r guix_daemon_exec_t (low low)))
-  (filecon "@storedir@/.+-(guix-.+|profile)/libexec/guix-authenticate"
-           file (system_u object_r guix_daemon_exec_t (low low)))
-  (filecon "@storedir@/.+-(guix-.+|profile)/libexec/guix/(.*)?"
-           any (system_u object_r guix_daemon_exec_t (low low)))
   (filecon "@guix_localstatedir@/guix/daemon-socket/socket"
            any (system_u object_r guix_daemon_socket_t (low low))))

@@ -2,6 +2,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +76,7 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
+
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
@@ -82,11 +84,16 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
                             (_ #f))
                            (reverse opts))))
     (match args
-      ((package-name)
-       (let ((sexp (crate->guix-package package-name)))
+      ((spec)
+       (define-values (name version)
+         (package-name->name+version spec))
+
+       (let ((sexp (crate->guix-package name version)))
          (unless sexp
            (leave (G_ "failed to download meta-data for package '~a'~%")
-                  package-name))
+                  (if version
+                      (string-append name "@" version)
+                      name)))
          sexp))
       (()
        (leave (G_ "too few arguments~%")))
