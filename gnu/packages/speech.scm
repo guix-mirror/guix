@@ -350,17 +350,23 @@ be used by the sighted.")
                              (install-file executable bin))
                            '("src/main/festival"
                              "src/main/festival_client"
-                             "examples/benchmark"
-                             "examples/dumpfeats"
-                             "examples/durmeanstd"
-                             "examples/latest"
-                             "examples/make_utts"
-                             "examples/powmeanstd"
-                             "examples/run-festival-script"
-                             "examples/saytime"
-                             "examples/scfg_parse_text"
-                             "examples/text2pos"
-                             "examples/text2wave"))
+                             "examples/benchmark"))
+                 (let ((scripts '("examples/dumpfeats"
+                                  "examples/durmeanstd"
+                                  "examples/latest"
+                                  "examples/make_utts"
+                                  "examples/powmeanstd"
+                                  "examples/run-festival-script"
+                                  "examples/saytime"
+                                  "examples/scfg_parse_text"
+                                  "examples/text2pos"
+                                  "examples/text2wave")))
+                   (substitute* scripts
+                     (("exec /tmp/guix-build.*/bin/festival")
+                      (string-append "exec " bin "/festival")))
+                   (for-each (lambda (script)
+                               (install-file script bin))
+                             scripts))
 
                  ;; Documentation
                  (for-each (lambda (file)
