@@ -4835,7 +4835,9 @@ specified binaries and symlinks.
 @item docker
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-Docker Image Specification}.
+Docker Image Specification}.  The ``repository name'' as it appears in
+the output of the @command{docker images} command is computed from
+package names passed on the command line or in the manifest file.
 
 @item squashfs
 This produces a SquashFS image containing all the specified binaries and
