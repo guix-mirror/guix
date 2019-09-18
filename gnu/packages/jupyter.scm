@@ -55,3 +55,34 @@
 protocol} to be used by both clients and kernels.")
     (license license:bsd-3)
     (properties '((upstream-name . "jupyter_protocol")))))
+
+(define-public python-jupyter-kernel-mgmt
+  (package
+    (name "python-jupyter-kernel-mgmt")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jupyter_kernel_mgmt" version))
+              (sha256
+               (base32
+                "0i7a78dn89ca8h0a42giyxwcmk6y4wrdr7q8h2ax9vybb84c795q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil)
+       ("python-entrypoints" ,python-entrypoints)
+       ("python-jupyter-core" ,python-jupyter-core)
+       ("python-jupyter-protocol" ,python-jupyter-protocol)
+       ("python-pyzmq" ,python-pyzmq)
+       ("python-traitlets" ,python-traitlets)))
+    (native-inputs
+     `(("python-ipykernel" ,python-ipykernel)
+       ("python-ipython" ,python-ipython)
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://jupyter.org")
+    (synopsis "Discover, launch, and communicate with Jupyter kernels")
+    (description
+     "This package is an experimental refactoring of the machinery for
+launching and using Jupyter kernels.")
+    (license license:bsd-3)
+    (properties '((upstream-name . "jupyter_kernel_mgmt")))))
