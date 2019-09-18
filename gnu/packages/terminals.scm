@@ -460,7 +460,7 @@ should be thread-safe.")
 (define-public libvterm
   (package
     (name "libvterm")
-    (version "0.1")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -468,13 +468,12 @@ should be thread-safe.")
                            "libvterm-" version ".tar.gz"))
        (sha256
         (base32
-         "1pcxjhvdwhr2f3lyzf2rv1vp3l62bgkjm1ybhj82qf8yly7ca6g4"))))
+         "1n5maylann2anfifjy576vzyar9q5m1kzpyiz2hca2pacxy8xf4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
        (list "CC=gcc"
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:tests? #f ; XXX: some tests fail in this release
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases
