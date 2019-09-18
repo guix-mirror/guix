@@ -337,7 +337,9 @@ be used by the sighted.")
                (invoke "tar" "--strip-components=1"
                        "-xvf" (assoc-ref inputs "festvox-cmu"))
                (invoke "tar" "--strip-components=1"
-                       "-xf" (assoc-ref inputs "festvox-poslex"))
+                       "-xvf" (assoc-ref inputs "festvox-poslex"))
+               (invoke "tar" "--strip-components=1"
+                       "-xvf" (assoc-ref inputs "default-voice"))
 
                ;; Install Festival
                (let ((bin (string-append out "/bin"))
@@ -420,6 +422,15 @@ be used by the sighted.")
            (sha256
             (base32
              "18wywilxaqwy63lc47p5g5529mpxhslibh1bjij0snxx5mjf7ip7"))))
+       ("default-voice"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "http://festvox.org/packed/festival/"
+                               (version-major+minor version)
+                               "/voices/festvox_kallpc16k.tar.gz"))
+           (sha256
+            (base32
+             "136hmsyiwnlg2qwa508dy0imf19mzrb5r3dmb2kg8kcyxnslm740"))))
        ("speech-tools"
         ,(origin
            (method url-fetch)
