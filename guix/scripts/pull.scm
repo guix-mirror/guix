@@ -293,8 +293,15 @@ true, display what would be built without actually building it."
 
   ;; In 0.15.0+ we'd create ~/.config/guix/current-[0-9]*-link symlinks.  Move
   ;; them to %PROFILE-DIRECTORY.
-  (unless (string=? %profile-directory
-                    (dirname (canonicalize-profile %user-profile-directory)))
+  ;;
+  ;; XXX: Ubuntu's 'sudo' preserves $HOME by default, and thus the second
+  ;; condition below is always false when one runs "sudo guix pull".  As a
+  ;; workaround, skip this code when $SUDO_USER is set.  See
+  ;; <https://bugs.gnu.org/36785>.
+  (unless (or (getenv "SUDO_USER")
+              (string=? %profile-directory
+                        (dirname
+                         (canonicalize-profile %user-profile-directory))))
     (migrate-generations %user-profile-directory %profile-directory))
 
   ;; Make sure ~/.config/guix/current points to /var/guix/profiles/….
