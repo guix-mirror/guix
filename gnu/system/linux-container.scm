@@ -257,11 +257,13 @@ effects."
                                            (lowered-gexp-guile lowered))
                                           "/bin/guile")
                            "guile"
-                           (append (map (lambda (directory) `("-L" ,directory))
-                                        (lowered-gexp-load-path lowered))
-                                   (map (lambda (directory) `("-C" ,directory))
-                                        (lowered-gexp-load-compiled-path
-                                         lowered))
+                           (append (append-map (lambda (directory)
+                                                 `("-L" ,directory))
+                                               (lowered-gexp-load-path lowered))
+                                   (append-map (lambda (directory)
+                                                 `("-C" ,directory))
+                                               (lowered-gexp-load-compiled-path
+                                                lowered))
                                    (list "-c"
                                          (object->string
                                           (lowered-gexp-sexp lowered))))))))))))

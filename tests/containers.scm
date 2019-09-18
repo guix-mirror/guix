@@ -269,4 +269,31 @@
                       (lset= string=? (cons* "." ".." (map basename reqs))
                              (pk (call-with-input-file result read))))))))))
 
+(test-assert "eval/container, non-empty load path"
+  (call-with-temporary-directory
+   (lambda (directory)
+     (define store
+       (open-connection-for-tests))
+     (define result
+       (string-append directory "/r"))
+     (define requisites*
+       (store-lift requisites))
+
+     (mkdir result)
+     (run-with-store store
+       (mlet %store-monad ((status (eval/container
+                                    (with-imported-modules '((guix build utils))
+                                      #~(begin
+                                          (use-modules (guix build utils))
+                                          (mkdir-p "/result/a/b/c")))
+                                    #:mappings
+                                    (list (file-system-mapping
+                                           (source result)
+                                           (target "/result")
+                                           (writable? #t))))))
+         (close-connection store)
+         (return (and (zero? status)
+                      (file-is-directory?
+                       (string-append result "/a/b/c")))))))))
+
 (test-end)
