@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
@@ -86,3 +87,49 @@ protocol} to be used by both clients and kernels.")
 launching and using Jupyter kernels.")
     (license license:bsd-3)
     (properties '((upstream-name . "jupyter_kernel_mgmt")))))
+
+(define-public python-jupyter-kernel-test
+  (package
+    (name "python-jupyter-kernel-test")
+    (version "0.3")
+    (home-page "https://github.com/jupyter/jupyter_kernel_test")
+    (source (origin
+              ;; PyPI has a ".whl" file but not a proper source release.
+              ;; Thus, fetch code from Git.
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "00iy74i4i8is6axb9vlsm0b9wxkvyyxnbl8r0i4gaj3xd788jm83"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The repo doesn't contain a "setup.py" file so install files manually.
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'build)
+                  (delete 'check)
+                  (replace 'install
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (version ((@@ (guix build python-build-system)
+                                           get-python-version)
+                                       (assoc-ref inputs "python")))
+                             (pydir (string-append out "/lib/python"
+                                                   version "/site-packages/"
+                                                   "jupyter_kernel_test")))
+                        (for-each (lambda (file)
+                                    (install-file file pydir))
+                                  (find-files "jupyter_kernel_test"
+                                              "\\.py$"))
+                        #t))))))
+    (propagated-inputs
+     `(("python-jupyter-kernel-mgmt" ,python-jupyter-kernel-mgmt)
+       ("python-jupyter-protocol" ,python-jupyter-protocol)
+       ("python-jsonschema" ,python-jsonschema)))
+    (synopsis "Test Jupyter kernels")
+    (description
+     "@code{jupyter_kernel_test} is a tool for testing Jupyter kernels.  It
+tests kernels for successful code execution and conformance with the
+@uref{https://jupyter-client.readthedocs.io/en/latest/messaging.html, Jupyter
+Messaging Protocol}.")
+    (license license:bsd-3)))
