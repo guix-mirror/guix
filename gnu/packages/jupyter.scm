@@ -21,11 +21,18 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cpp)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages time))
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages time)
+  #:use-module (gnu packages tls))
 
 (define-public python-jupyter-protocol
   (package
@@ -132,4 +139,51 @@ launching and using Jupyter kernels.")
 tests kernels for successful code execution and conformance with the
 @uref{https://jupyter-client.readthedocs.io/en/latest/messaging.html, Jupyter
 Messaging Protocol}.")
+    (license license:bsd-3)))
+
+(define-public xeus
+  (package
+    (name "xeus")
+    (version "0.23.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/QuantStack/xeus.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1m1b6z1538r7mv2ggn7bdbd9570ja7cadplq64zl8rgl2c8vdi2a"))
+              (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_STATIC_LIBS=OFF"
+                           "-DDISABLE_ARCH_NATIVE=ON" ;no '-march=native'
+                           "-DBUILD_TESTING=ON")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; The following inputs are used by the test suite.
+       ("googletest" ,googletest)
+       ("python-pytest" ,python-pytest)
+       ("python" ,python-3)
+       ("python-jupyter-kernel-test" ,python-jupyter-kernel-test)
+       ("python-jupyter-client" ,python-jupyter-client)))
+    (inputs
+     `(("xtl" ,xtl)
+       ("nlohmann-json-cpp" ,nlohmann-json-cpp)
+       ("cppzmq" ,cppzmq)
+       ("zeromq" ,zeromq)
+       ("openssl" ,openssl)
+       ("util-linux" ,util-linux)))               ;libuuid
+    (home-page "https://quantstack.net/xeus")
+    (synopsis "C++ implementation of the Jupyter Kernel protocol")
+    (description
+     "@code{xeus} is a library meant to facilitate the implementation of
+kernels for Jupyter.  It takes the burden of implementing the Jupyter Kernel
+protocol so developers can focus on implementing the interpreter part of the
+kernel.
+
+Several Jupyter kernels are built upon @code{xeus}, such as @code{xeus-cling},
+a kernel for the C++ programming language, and @code{xeus-python}, an
+alternative Python kernel for Jupyter.")
     (license license:bsd-3)))
