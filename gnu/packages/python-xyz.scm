@@ -3941,6 +3941,16 @@ toolkits.")
        (substitute-keyword-arguments (package-arguments matplotlib)
          ((#:phases phases)
           `(modify-phases ,phases
+             (replace 'install-jquery-ui
+               (lambda* (#:key outputs inputs #:allow-other-keys)
+                 (let ((dir (string-append (assoc-ref outputs "out")
+                                           "/lib/python2.7/site-packages/"
+                                           "matplotlib/backends/web_backend/")))
+                   (mkdir-p dir)
+                   (invoke "unzip"
+                           (assoc-ref inputs "jquery-ui")
+                           "-d" dir))
+                 #t))
              (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
