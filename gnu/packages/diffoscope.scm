@@ -93,6 +93,9 @@
                     (add-after 'unpack 'add-known-tools
                       (lambda _
                         (substitute* "diffoscope/external_tools.py"
+                          (("'arch': 'enjarify'},")
+                           "'arch': 'enjarify', 'guix': 'enjarify'},"))
+                        (substitute* "diffoscope/external_tools.py"
                           (("'arch': 'python-jsbeautifier'},")
                            "'arch': 'python-jsbeautifier', 'guix': 'python-jsbeautifier'},"))
                         (substitute* "diffoscope/external_tools.py"
@@ -172,6 +175,7 @@
                        ("docx2txt" ,docx2txt)
                        ("dtc" ,dtc)
                        ("e2fsprogs" ,e2fsprogs)
+                       ("enjarify" ,enjarify)
                        ("ffmpeg" ,ffmpeg)
                        ("gettext" ,gettext-minimal)
                        ("ghc" ,ghc)

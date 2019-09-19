@@ -1,0 +1,19 @@
+Author: Reiner Herrmann <reiner@reiner-h.de>
+Origin: https://salsa.debian.org/android-tools-team/enjarify/blob/master/debian/patches/setup_py.patch
+Description: provides a minimal setup.py to build/install the package
+
+Index: enjarify/setup.py
+===================================================================
+--- /dev/null
++++ enjarify/setup.py
+@@ -0,0 +1,10 @@
++#!/usr/bin/env python3
++
++from setuptools import setup, find_packages
++
++setup(name='enjarify',
++      version='1.0.3',
++      url='https://github.com/google/enjarify',
++      packages=find_packages(),
++      )
++
