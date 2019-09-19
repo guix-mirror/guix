@@ -777,6 +777,11 @@ audio and video).")
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'be-permissive
+           (lambda _
+             (substitute* "SConstruct"
+               (("'-Wall'") "'-Wall', '-fpermissive'"))
+             #t))
          (add-after 'unpack 'replace-removed-scons-syntax
            (lambda _
              (substitute* "SConstruct"
