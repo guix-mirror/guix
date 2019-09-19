@@ -58,3 +58,7 @@ if guix remove -i guile-bootstrap -p "$profile" --bootstrap
 then false; else true; fi
 
 guix search '\<board\>' game | grep '^name: gnubg'
+
+guix show --version
+guix show guile
+guix show python@3 | grep "^name: python"

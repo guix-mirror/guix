@@ -241,6 +241,7 @@ MODULES =					\
   guix/scripts/remove.scm			\
   guix/scripts/upgrade.scm			\
   guix/scripts/search.scm			\
+  guix/scripts/show.scm				\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\

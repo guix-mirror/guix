@@ -2657,7 +2657,9 @@ For your convenience, we also provide the following aliases:
 @item
 @command{guix remove} is an alias for @command{guix package -r},
 @item
-and @command{guix upgrade} is an alias for @command{guix package -u}.
+@command{guix upgrade} is an alias for @command{guix package -u},
+@item
+and @command{guix show} is an alias for @command{guix package --show=}.
 @end itemize
 
 These aliases are less expressive than @command{guix package} and provide
@@ -3020,9 +3022,9 @@ version: 3.3.5
 @end example
 
 You may also specify the full name of a package to only get details about a
-specific version of it:
+specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix package --show=python@@3.4 | recsel -p name,version
+$ guix show python@@3.4 | recsel -p name,version
 name: python
 version: 3.4.3
 @end example
