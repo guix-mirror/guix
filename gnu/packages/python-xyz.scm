@@ -3937,6 +3937,11 @@ toolkits.")
          (sha256
           (base32
            "1rcc7x9ig3hpchkc4cwdvym3y451w74275fxr455zkfagrsvymbk"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments matplotlib)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
