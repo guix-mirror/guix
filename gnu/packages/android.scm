@@ -38,6 +38,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docker)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
@@ -615,7 +616,8 @@ file system.")
        ("android-libcutils" ,android-libcutils)))
     (native-inputs
      `(("android-bionic-uapi" ,android-bionic-uapi)
-       ("android-liblog" ,android-liblog)))
+       ("android-liblog" ,android-liblog)
+       ("gcc" ,gcc-5))) ; XXX: fails to build with GCC 7
     (home-page "https://developer.android.com/")
     (synopsis "Android utility library")
     (description "@code{android-libutils} provides utilities for Android NDK developers.")
