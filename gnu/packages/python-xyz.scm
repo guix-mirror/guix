@@ -3929,14 +3929,14 @@ toolkits.")
   (let ((matplotlib (package-with-python2
                      (strip-python2-variant python-matplotlib))))
     (package (inherit matplotlib)
-      (version "2.2.3")
+      (version "2.2.4")
       (source
        (origin
          (method url-fetch)
          (uri (pypi-uri "matplotlib" version))
          (sha256
           (base32
-           "1rcc7x9ig3hpchkc4cwdvym3y451w74275fxr455zkfagrsvymbk"))))
+           "09i1gnrra1590brc1f8d5rh2zvnknmfgzp613ab0462qkrwj15h2"))))
       (arguments
        (substitute-keyword-arguments (package-arguments matplotlib)
          ((#:phases phases)
