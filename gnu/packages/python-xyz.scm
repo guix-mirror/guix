@@ -8035,6 +8035,45 @@ Jupyter kernels such as IJulia and IRKernel.")
 support for rich media output.")
     (license license:bsd-3)))
 
+(define-public python-jsbeautifier
+  (package
+    (name "python-jsbeautifier")
+    (version "1.10.2")
+    (home-page "https://github.com/beautify-web/js-beautify")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url home-page)
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0wawb070ki1axb3jc9xvsrgpji52vcfif3zmjzc3z4g98m5xw4kg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      ;; The upstream Git repository contains all the code,
+                      ;; but this package only builds the python code.
+                      (chdir "python")
+                      #t))
+                  (add-after 'unpack 'patch-python-six-requirements
+                    (lambda _
+                      (substitute* "python/setup.py"
+                        (("six>=1.12.0")
+                         "six>=1.11.0"))
+                      #t)))))
+    (propagated-inputs
+     `(("python-editorconfig" ,python-editorconfig)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "JavaScript unobfuscator and beautifier")
+    (description "Beautify, unpack or deobfuscate JavaScript, leveraging
+popular online obfuscators.")
+    (license license:expat)))
+
 (define-public jupyter
   (package
     (name "jupyter")

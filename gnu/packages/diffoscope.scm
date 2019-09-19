@@ -93,6 +93,9 @@
                     (add-after 'unpack 'add-known-tools
                       (lambda _
                         (substitute* "diffoscope/external_tools.py"
+                          (("'arch': 'python-jsbeautifier'},")
+                           "'arch': 'python-jsbeautifier', 'guix': 'python-jsbeautifier'},"))
+                        (substitute* "diffoscope/external_tools.py"
                           (("'arch': 'wabt'},")
                            "'arch': 'wabt', 'guix': 'wabt'},"))))
                     ;; This test is broken because our `file` package has a
@@ -188,6 +191,7 @@
                        ("openssh" ,openssh)
                        ("pgpdump" ,pgpdump)
                        ("poppler" ,poppler)
+                       ("python-jsbeautifier" ,python-jsbeautifier)
                        ("r-minimal" ,r-minimal)
                        ("rpm" ,rpm)
                        ("sng" ,sng)
