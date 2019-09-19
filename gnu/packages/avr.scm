@@ -67,7 +67,10 @@
               (files '("avr/include")))
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
-              (files '("avr/lib"))))))))
+              (files '("avr/lib")))))
+      (native-inputs
+       `(("gcc" ,gcc-5)
+         ,@(package-native-inputs xgcc))))))
 
 (define-public avr-gcc-5
   (package
