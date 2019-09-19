@@ -3914,7 +3914,7 @@ tests = True~%"
                         (assoc-ref inputs "tcl")
                         (assoc-ref inputs "tk")))))
              #t)))))
-    (home-page "http://matplotlib.org")
+    (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
      "Matplotlib is a Python 2D plotting library which produces publication
