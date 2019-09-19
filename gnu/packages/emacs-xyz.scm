@@ -3553,6 +3553,29 @@ completion candidate when using the Company text completion framework.")
 @code{company-mode} allowing for completion of common math symbols.")
       (license license:gpl3+))))
 
+(define-public emacs-compdef
+  (let ((commit "fc08a9b049c3718fc7d6c6ee2140759aff031bc9")
+        (revision "1"))
+    (package
+      (name "emacs-compdef")
+      (version (git-version "0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jjzmajic/compdef.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1dwf4rlj19d80yp656c7nkp6hb3mabv808r6ix3hpv6rjjs38vhl"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/jjzmajic/compdef")
+      (synopsis "Set local completion backends")
+      (description "This package provides a function to cleanly set local
+completion backends according to mode, and integrates with
+@code{use-package}.")
+      (license license:gpl3+))))
+
 (define-public emacs-nswbuff
   (let ((commit "362da7f3687e2eb5bb11667347de85f4a9d002bc")
         (revision "1"))
