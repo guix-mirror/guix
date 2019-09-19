@@ -150,6 +150,7 @@
       ;; Below are modules used for tests.
       (native-inputs `(("python-pytest" ,python-pytest)
                        ("python-chardet" ,python-chardet)
+                       ("python-binwalk" ,python-binwalk)
                        ;; test suite skips tests when tool is missing
                        ("abootimg" ,abootimg)
                        ("bdb" ,bdb)
