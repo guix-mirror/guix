@@ -145,7 +145,8 @@
        ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gcc" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
