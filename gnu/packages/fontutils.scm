@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -567,27 +567,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20190413")
+   (version "20190801")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.gz"))
-            (patches (list (origin
-                             ;; This patch is required to fix a segfault on i686:
-                             ;; <https://github.com/fontforge/fontforge/issues/3780>.
-                             ;; It is a squashed version of these commits:
-                             ;; <https://github.com/fontforge/fontforge/pull/3715>.
-                             (method url-fetch)
-                             (uri (string-append
-                                   "https://github.com/fontforge/fontforge/commit/"
-                                   "570e17b82079bb46af9b2be033c6fbb6b1f16c8f.patch"))
-                             (file-name "fontforge-scripting-array-reference.patch")
-                             (sha256
-                              (base32
-                               "1w0jbbkml149xmraxwchwrllia853i51ii6jdb3s160r2qbhvggc")))))
             (sha256
-             (base32 "05v640mnk4fy4jzmxb6c4n4qm800x7hy4sl5gcdgzmm3md2s0qk7"))))
+             (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
