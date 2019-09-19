@@ -11242,8 +11242,8 @@ as well as functions for navigating between these headings.")
 
 (define-public emacs-org-super-agenda
   ;; emacs-org-sidebar depends on a newer commit than the latest release version.
-  (let ((commit "375bde4ca72494ac88a2a9738754f047fe45cc4e")
-        (revision "1"))
+  (let ((commit "f0ee7ed9766d352d16a787707d35695b48cbf153")
+        (revision "2"))
     (package
       (name "emacs-org-super-agenda")
       (version (git-version "1.1.1" revision commit))
@@ -11255,11 +11255,12 @@ as well as functions for navigating between these headings.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0hrwf02fqjm0d9gj146ax67ib76093qpqh7066dcxj2gy20625yj"))))
+                  "1b1qi96x83acv2frl94i4frx46i82vipaa8mfwpzyj2gyq2bq5zf"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)
          ("emacs-dash" ,emacs-dash)
+         ("emacs-ts" ,emacs-ts)
          ("emacs-ht" ,emacs-ht)
          ("emacs-s" ,emacs-s)))
       (home-page "https://github.com/alphapapa/org-super-agenda")
