@@ -369,7 +369,7 @@ requirements according to version 1.1 of the OpenCL specification.")
      '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
                            "-DOPENMP_TEST_C_COMPILER=clang"
                            "-DOPENMP_TEST_CXX_COMPILER=clang++")
-       #:test-target "check-libomptarget"))
+       #:test-target "check-libomp"))
     (native-inputs
      `(("clang" ,clang)
        ("llvm" ,llvm)
