@@ -96,6 +96,31 @@
             (("namespace=errnos") "pkg_namespace=errnos"))
           #t))))
     (build-system gnu-build-system)
+    (arguments
+     (if (%current-target-system)
+         `(#:modules ((ice-9 match)
+                      (guix build gnu-build-system)
+                      (guix build utils))
+           #:phases
+           (modify-phases %standard-phases
+             ;; When cross-compiling, some platform specific properties cannot
+             ;; be detected. Create a symlink to the appropriate platform
+             ;; file. See Cross-Compiling section at:
+             ;; https://github.com/gpg/libgpg-error/blob/master/README
+             (add-after 'unpack 'cross-symlinks
+               (lambda* (#:key target inputs #:allow-other-keys)
+                 (let ((triplet
+                        (match (string-take target
+                                            (string-index target #\-))
+                          ("armhf" "arm-unknown-linux-gnueabi")
+                          (x
+                           (string-append x "-unknown-linux-gnu")))))
+                   (symlink
+                    (string-append "lock-obj-pub." triplet ".h")
+                    "src/syscfg/lock-obj-pub.linux-gnu.h"))
+                 #t))))
+         '()))
+    (native-inputs `(("gettext" ,gettext-minimal)))
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
     (description
