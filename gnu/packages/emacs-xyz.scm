@@ -5180,6 +5180,9 @@ show icons as well.")
        (sha256
         (base32 "09qdni1s74i5pv8741szl5g4ynj8fxn0x65qmwa9rmfkbimnc0fs"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/abo-abo/avy")
     (synopsis "Tree-based completion for Emacs")
     (description
