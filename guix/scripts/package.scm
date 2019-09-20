@@ -764,7 +764,8 @@ processed, #f otherwise."
       (('show requested-name)
        (let-values (((name version)
                      (package-name->name+version requested-name)))
-         (match (find-packages-by-name name version)
+         (match (remove package-superseded
+                        (find-packages-by-name name version))
            (()
             (leave (G_ "~a~@[@~a~]: package not found~%") name version))
            (packages
