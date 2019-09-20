@@ -773,6 +773,27 @@ the GNOME desktop environment.")
          (home-directory "/var/lib/gdm")
          (shell (file-append shadow "/sbin/nologin")))))
 
+(define %gdm-activation
+  ;; Ensure /var/lib/gdm is owned by the "gdm" user.  This is normally the
+  ;; case but could be wrong if the "gdm" user was created, then removed, and
+  ;; then recreated under a different UID/GID: <https://bugs.gnu.org/37423>.
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (let* ((gdm (getpwnam "gdm"))
+               (uid (passwd:uid gdm))
+               (gid (passwd:gid gdm))
+               (st  (stat "/var/lib/gdm" #f)))
+          ;; Recurse into /var/lib/gdm only if it has wrong ownership.
+          (when (and st
+                     (or (not (= uid (stat:uid st)))
+                         (not (= gid (stat:gid st)))))
+            (for-each (lambda (file)
+                        (chown file uid gid))
+                      (find-files "/var/lib/gdm"
+                                  #:directories? #t)))))))
+
 (define dbus-daemon-wrapper
   (program-file
    "gdm-dbus-wrapper"
@@ -915,6 +936,8 @@ the GNOME desktop environment.")
                 (extensions
                  (list (service-extension shepherd-root-service-type
                                           gdm-shepherd-service)
+                       (service-extension activation-service-type
+                                          (const %gdm-activation))
                        (service-extension account-service-type
                                           (const %gdm-accounts))
                        (service-extension pam-root-service-type
