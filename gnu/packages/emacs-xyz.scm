@@ -5026,8 +5026,8 @@ automatically.")
   ;; The latest release version introduced a new feature, swiper-isearch, that
   ;; generally works well but had some noticeable bugs; this later commit
   ;; includes fixes for several of them.
-  (let ((commit "d3e4514fd72f217c704ae18afdf711bb9036a04d")
-        (revision "1"))
+  (let ((commit "79333e9edfee38ec3b367c33711a68bdf7783259")
+        (revision "2"))
     (package
       (name "emacs-ivy")
       (version (git-version "0.12.0" revision commit))
@@ -5040,7 +5040,7 @@ automatically.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "142axxc6vsl14cfyvzj9csiykxdn7vhw88fy955hzx7av4qfqg4x"))))
+           "0dyclc51sprhmr5fi4lylhwsrn8v1jgyblwk9ly60jj84lj6278z"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -5052,11 +5052,22 @@ automatically.")
                  (with-directory-excursion "doc"
                    (invoke "makeinfo" "ivy.texi")
                    (install-file "ivy.info" info)
-                   #t)))))))
+                   #t))))
+           (add-before 'check 'make-dummy-git-directory
+             (lambda _
+               (mkdir-p ".git")))
+           (add-after 'check 'delete-dummy-git-directory
+             (lambda _
+               (delete-file-recursively ".git"))))
+         #:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "ivy-test.el"
+                          "-f" "ivy-test-run-tests")))
       (propagated-inputs
        `(("emacs-hydra" ,emacs-hydra)))
       (native-inputs
-       `(("texinfo" ,texinfo)))
+       `(("texinfo" ,texinfo)
+         ("emacs-wgrep" ,emacs-wgrep)))
       (home-page "http://oremacs.com/swiper/")
       (synopsis "Incremental vertical completion for Emacs")
       (description
