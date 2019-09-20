@@ -5655,6 +5655,9 @@ to all the other commands, too.")
        (sha256
         (base32 "0766bbr4piia9vfr4ivd2gwi8dxah654adv6h28ylz4q8xmfzm1b"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/mooz/js2-mode/")
     (synopsis "Improved JavaScript editing mode for Emacs")
     (description
