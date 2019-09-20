@@ -11326,8 +11326,8 @@ tables of contents.")
     (license license:gpl3+)))
 
 (define-public emacs-ts
-  (let ((commit "93c074f2895a204e003e8c7f3033c37d6486fac8")
-        (revision "1"))
+  (let ((commit "395649a2f2ba79028331bb1fa9ec08b218950ff6")
+        (revision "2"))
     (package
       (name "emacs-ts")
       (version (git-version "0.1" revision commit))
@@ -11338,7 +11338,7 @@ tables of contents.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0lpyv78k04vbp9glnv14dawcfgi3m49847wlgwfmkdq5cr3fn735"))
+                  "02603wv66fplsigxd87jy23hrb5g9vigszcpdqrdv0ypaqaxlr3a"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
