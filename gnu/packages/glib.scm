@@ -65,6 +65,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
 
   ;; Export variables up-front to allow circular dependency with the 'xorg'
   ;; module.
@@ -494,6 +495,16 @@ ITS also provides an industry standard way for authors to override translation
 information in their documents, such as whether a particular element should be
 translated.")
     (license license:gpl3+)))
+
+(define-public itstool/fixed
+  ;; This variant fixes a python-libxml2 crash when processing UTF-8
+  ;; sequences: <https://bugs.gnu.org/37468>.  Since the issue is quite rare,
+  ;; create this variant here to avoid a full rebuild.
+  (package/inherit
+   itstool
+   (inputs
+    `(("python-libxml2" ,python-libxml2/fixed)
+      ,@(alist-delete "python-libxml2" (package-inputs itstool))))))
 
 (define dbus-glib
   (package

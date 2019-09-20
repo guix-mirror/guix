@@ -2167,7 +2167,7 @@ Hints specification (EWMH).")
      `(("bison" ,bison)
        ("docbook-xml" ,docbook-xml)
        ("intltool" ,intltool)
-       ("itstool" ,itstool)
+       ("itstool" ,itstool/fixed)            ;see <https://bugs.gnu.org/37468>
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnumeric.org")

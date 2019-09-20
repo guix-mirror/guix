@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -164,6 +164,7 @@ project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
 (define-public python-libxml2
+  ;; TODO: Merge with 'python-libxml2/fixed' on the next rebuild cycle.
   (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
@@ -190,6 +191,18 @@ project (but it is usable outside of the Gnome platform).")
             #t)))))
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
+
+(define-public python-libxml2/fixed
+  ;; This variant fixes a crash when processing UTF-8 sequences:
+  ;;    <https://bugs.gnu.org/37468>
+  ;; TODO: Merge with 'python-libxml2' on the next rebuild cycle.
+  (package/inherit
+   python-libxml2
+   (version (string-append (package-version python-libxml2) "-1"))
+   (source (origin
+             (inherit (package-source libxml2))
+             (patches (cons (search-patch "python-libxml2-utf8.patch")
+                            (origin-patches (package-source libxml2))))))))
 
 (define-public python2-libxml2
   (package-with-python2 python-libxml2))
