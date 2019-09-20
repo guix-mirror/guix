@@ -118,6 +118,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
@@ -6014,6 +6015,34 @@ strings, and code folding.")
                (base32
                 "1kkj888k9x5n0i7xkia177gzsa84my3g8n0n7v65281cc4f1yhk5"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("node" ,node)))
+    (native-inputs
+     `(("emacs-ert-expectations" ,emacs-ert-expectations)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell
+           ;; Setting the SHELL environment variable is required for the tests
+           ;; to find sh.
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             #t))
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((node (assoc-ref inputs "node")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (make-file-writable "nodejs-repl.el")
+               (emacs-substitute-variables
+                   "nodejs-repl.el"
+                 ("nodejs-repl-command"
+                  (string-append node "/bin/node")))))))
+       #:tests? #t
+       #:test-command '("emacs" "-Q" "--batch"
+                        "-L" "."
+                        "-l" "test/test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/abicky/nodejs-repl.el")
     (synopsis "Node.js REPL inside Emacs")
     (description
