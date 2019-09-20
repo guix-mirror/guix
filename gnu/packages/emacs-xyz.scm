@@ -5060,9 +5060,7 @@ automatically.")
              (lambda _
                (delete-file-recursively ".git"))))
          #:tests? #t
-         #:test-command '("emacs" "--batch"
-                          "-l" "ivy-test.el"
-                          "-f" "ivy-test-run-tests")))
+         #:test-command '("make" "test")))
       (propagated-inputs
        `(("emacs-hydra" ,emacs-hydra)))
       (native-inputs
