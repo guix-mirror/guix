@@ -4018,7 +4018,7 @@ something like this:
 @lisp
 (channel-news
   (version 0)
-  (entry (commit "d894ab8e9bfabcefa6c49d9ba2e834dd5a73a300")
+  (entry (tag "the-bug-fix")
          (title (en "Fixed terrible bug")
                 (fr "Oh la la"))
          (body (en "@@emph@{Good news@}!  It's fixed!")
@@ -4030,9 +4030,9 @@ something like this:
 @end lisp
 
 The file consists of a list of @dfn{news entries}.  Each entry is
-associated with a commit: it describes changes made in this commit,
-possibly in preceding commits as well.  Users see entries only the first
-time they obtain the commit the entry refers to.
+associated with a commit or tag: it describes changes made in this
+commit, possibly in preceding commits as well.  Users see entries only
+the first time they obtain the commit the entry refers to.
 
 The @code{title} field should be a one-line summary while @code{body}
 can be arbitrarily long, and both can contain Texinfo markup

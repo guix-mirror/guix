@@ -272,6 +272,7 @@
         (commit "first commit")
         (add "src/a.txt" "A")
         (commit "second commit")
+        (tag "tag-for-first-news-entry")
         (add "news.scm"
              ,(lambda (repository)
                 (let ((previous
@@ -299,7 +300,7 @@
                      (entry (commit ,(oid->string previous))
                             (title (en "Another file!"))
                             (body (en "Yeah, b.txt.")))
-                     (entry (commit ,(oid->string second))
+                     (entry (tag "tag-for-first-news-entry")
                             (title (en "Old news.")
                                    (eo "Malnovaĵoj."))
                             (body (en "For a.txt"))))))))
@@ -343,6 +344,10 @@
              (lset= string=?
                     (map channel-news-entry-commit
                          (channel-news-for-commit channel commit5 commit1))
-                    (list commit4 commit2)))))))
+                    (list commit4 commit2))
+             (lset= equal?
+                    (map channel-news-entry-tag
+                         (channel-news-for-commit channel commit5 commit1))
+                    '(#f "tag-for-first-news-entry")))))))
 
 (test-end "channels")

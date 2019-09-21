@@ -40,6 +40,7 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:autoload   (guix self) (whole-package make-config.scm)
@@ -73,6 +74,7 @@
 
             channel-news-entry?
             channel-news-entry-commit
+            channel-news-entry-tag
             channel-news-entry-title
             channel-news-entry-body
 
@@ -586,9 +588,10 @@ PROFILE is not a profile created by 'guix pull', return the empty list."
 
 ;; News entry, associated with a specific commit of the channel.
 (define-record-type <channel-news-entry>
-  (channel-news-entry commit title body)
+  (channel-news-entry commit tag title body)
   channel-news-entry?
-  (commit  channel-news-entry-commit)             ;hex string
+  (commit  channel-news-entry-commit)             ;hex string | #f
+  (tag     channel-news-entry-tag)                ;#f | string
   (title   channel-news-entry-title)              ;list of language tag/string pairs
   (body    channel-news-entry-body))              ;list of language tag/string pairs
 
@@ -598,11 +601,12 @@ PROFILE is not a profile created by 'guix pull', return the empty list."
     (cons (symbol->string language) message))
 
   (match entry
-    (('entry ('commit commit)
+    (('entry ((and (or 'commit 'tag) type) commit-or-tag)
              ('title ((? symbol? title-tags) (? string? titles)) ...)
              ('body ((? symbol? body-tags) (? string? bodies)) ...)
              _ ...)
-     (channel-news-entry commit
+     (channel-news-entry (and (eq? type 'commit) commit-or-tag)
+                         (and (eq? type 'tag) commit-or-tag)
                          (map pair title-tags titles)
                          (map pair body-tags bodies)))
     (_
@@ -633,6 +637,20 @@ record."
               (location (source-properties->location
                          (source-properties sexp)))))))))
 
+(define (resolve-channel-news-entry-tag repository entry)
+  "If ENTRY has its 'commit' field set, return ENTRY.  Otherwise, lookup
+ENTRY's 'tag' in REPOSITORY and return ENTRY with its 'commit' field set to
+the field its 'tag' refers to.  A 'git-error' exception is raised if the tag
+cannot be found."
+  (if (channel-news-entry-commit entry)
+      entry
+      (let* ((tag       (channel-news-entry-tag entry))
+             (reference (string-append "refs/tags/" tag))
+             (oid       (reference-name->oid repository reference)))
+        (channel-news-entry (oid->string oid) tag
+                            (channel-news-entry-title entry)
+                            (channel-news-entry-body entry)))))
+
 (define* (channel-news-for-commit channel new #:optional old)
   "Return a list of <channel-news-entry> for CHANNEL between commits OLD and
 NEW.  When OLD is omitted or is #f, return all the news entries of CHANNEL."
@@ -645,10 +663,14 @@ NEW.  When OLD is omitted or is #f, return all the news entries of CHANNEL."
              (news-file (and news-file
                              (string-append checkout "/" news-file))))
         (if (and news-file (file-exists? news-file))
-            (let ((entries (channel-news-entries (call-with-input-file news-file
-                                                   read-channel-news))))
-              (if old
-                  (with-repository checkout repository
+            (with-repository checkout repository
+              (let* ((news    (call-with-input-file news-file
+                                read-channel-news))
+                     (entries (map (lambda (entry)
+                                     (resolve-channel-news-entry-tag repository
+                                                                     entry))
+                                   (channel-news-entries news))))
+                (if old
                     (let* ((new     (commit-lookup repository (string->oid new)))
                            (old     (commit-lookup repository (string->oid old)))
                            (commits (list->set
@@ -657,8 +679,8 @@ NEW.  When OLD is omitted or is #f, return all the news entries of CHANNEL."
                       (filter (lambda (entry)
                                 (set-contains? commits
                                                (channel-news-entry-commit entry)))
-                              entries)))
-                  entries))
+                              entries))
+                    entries)))
             '())))
     (lambda (key error . rest)
       ;; If commit NEW or commit OLD cannot be found, then something must be
