@@ -189,7 +189,7 @@ Download and deploy the latest version of Guix.\n"))
                                current-is-newer?)
   "Display what's up in PROFILE--new packages, and all that.  If
 CURRENT-IS-NEWER? is true, assume that the current process represents the
-newest generation of PROFILE."
+newest generation of PROFILE.  Return true when there's more info to display."
   (match (memv (generation-number profile)
                (reverse (profile-generations profile)))
     ((current previous _ ...)
@@ -212,7 +212,7 @@ newest generation of PROFILE."
                                         #:concise? concise?
                                         #:heading
                                         (G_ "New in this revision:\n")))))
-    (_ #t)))
+    (_ #f)))
 
 (define (display-channel channel)
   "Display information about CHANNEL."
@@ -230,33 +230,44 @@ purposes."
   ;; Assume that the URL matters less than the name.
   (eq? (channel-name channel1) (channel-name channel2)))
 
+(define (display-news-entry-title entry language port)
+  "Display the title of ENTRY, a news entry, to PORT."
+  (define title
+    (channel-news-entry-title entry))
+
+  (format port "  ~a~%"
+          (highlight
+           (string-trim-right
+            (texi->plain-text (or (assoc-ref title language)
+                                  (assoc-ref title (%default-message-language))
+                                  ""))))))
+
 (define (display-news-entry entry language port)
   "Display ENTRY, a <channel-news-entry>, in LANGUAGE, a language code, to
 PORT."
-  (let ((title (channel-news-entry-title entry))
-        (body  (channel-news-entry-body entry)))
-    (format port "  ~a~%"
-            (highlight
+  (define body
+    (channel-news-entry-body entry))
+
+  (display-news-entry-title entry language port)
+  (format port (G_ "    commit ~a~%")
+          (channel-news-entry-commit entry))
+  (newline port)
+  (format port "    ~a~%"
+          (indented-string
+           (parameterize ((%text-width (- (%text-width) 4)))
              (string-trim-right
-              (texi->plain-text (or (assoc-ref title language)
-                                    (assoc-ref title (%default-message-language))
-                                    "")))))
-    (format port (G_ "    commit ~a~%")
-            (channel-news-entry-commit entry))
-    (newline port)
-    (format port "    ~a~%"
-            (indented-string
-             (parameterize ((%text-width (- (%text-width) 4)))
-               (string-trim-right
-                (texi->plain-text (or (assoc-ref body language)
-                                      (assoc-ref body (%default-message-language))
-                                      ""))))
-             4))))
+              (texi->plain-text (or (assoc-ref body language)
+                                    (assoc-ref body (%default-message-language))
+                                    ""))))
+           4)))
 
 (define* (display-channel-specific-news new old
-                                        #:key (port (current-output-port)))
+                                        #:key (port (current-output-port))
+                                        concise?)
   "Display channel news applicable the commits between OLD and NEW, where OLD
-and NEW are <channel> records with a proper 'commit' field."
+and NEW are <channel> records with a proper 'commit' field.  When CONCISE? is
+true, display nothing but the news titles.  Return true if there are more news
+to display."
   (let ((channel new)
         (old     (channel-commit old))
         (new     (channel-commit new)))
@@ -264,13 +275,17 @@ and NEW are <channel> records with a proper 'commit' field."
       (let ((language (current-message-language)))
         (match (channel-news-for-commit channel new old)
           (()                                     ;no news is good news
-           #t)
+           #f)
           ((entries ...)
            (newline port)
            (format port (G_ "News for channel '~a'~%")
                    (channel-name channel))
-           (for-each (cut display-news-entry <> language port) entries)
-           (newline port)))))))
+           (for-each (if concise?
+                         (cut display-news-entry-title <> language port)
+                         (cut display-news-entry <> language port))
+                     entries)
+           (newline port)
+           #t))))))
 
 (define* (display-channel-news profile
                                #:optional
@@ -317,6 +332,35 @@ and NEW are <channel> records with a proper 'commit' field."
                                      (and old (list new old)))
                                    new-channels)))))))
 
+(define* (display-channel-news-headlines profile)
+  "Display the titles of news about the channels of PROFILE compared to its
+previous generation.  Return true if there are news to display."
+  (define previous
+    (and=> (relative-generation profile -1)
+           (cut generation-file-name profile <>)))
+
+  (when previous
+    (let ((old-channels (profile-channels previous))
+          (new-channels (profile-channels profile)))
+      ;; Find the channels present in both PROFILE and PREVIOUS, and print
+      ;; their news.
+      (and (pair? old-channels) (pair? new-channels)
+           (let ((channels (filter-map (lambda (new)
+                                         (define old
+                                           (find (cut channel=? new <>)
+                                                 old-channels))
+
+                                         (and old (list new old)))
+                                       new-channels)))
+             (define more?
+               (map (match-lambda
+                      ((new old)
+                       (display-channel-specific-news new old
+                                                      #:concise? #t)))
+                    channels))
+
+             (any ->bool more?))))))
+
 (define (display-news profile)
   ;; Display profile news, with the understanding that this process represents
   ;; the newest generation.
@@ -344,7 +388,12 @@ true, display what would be built without actually building it."
                       #:dry-run? dry-run?)
       (munless dry-run?
         (return (newline))
-        (return (display-profile-news profile #:concise? #t))
+        (return
+         (let ((more? (list (display-profile-news profile #:concise? #t)
+                            (display-channel-news-headlines profile))))
+           (when (any ->bool more?)
+             (display-hint
+              (G_ "Run @command{guix pull --news} to read all the news.")))))
         (if guix-command
             (let ((new (map (cut string-append <> "/bin/guix")
                             (list (user-friendly-profile profile)
@@ -544,7 +593,9 @@ it."
   "Given the two package name/version alists ALIST1 and ALIST2, display the
 list of new and upgraded packages going from ALIST1 to ALIST2.  When ALIST1
 and ALIST2 differ, display HEADING upfront.  When CONCISE? is true, do not
-display long package lists that would fill the user's screen."
+display long package lists that would fill the user's screen.
+
+Return true when there is more package info to display."
   (define (pretty str column)
     (indented-string (fill-paragraph str (- (%text-width) 4)
                                      column)
@@ -587,10 +638,9 @@ display long package lists that would fill the user's screen."
                (pretty (list->enumeration (sort upgraded string<?))
                        35))))
 
-    (when (and concise?
-               (or (> new-count concise/max-item-count)
-                   (> upgraded-count concise/max-item-count)))
-      (display-hint (G_ "Run @command{guix pull --news} to read all the news.")))))
+    (and concise?
+         (or (> new-count concise/max-item-count)
+             (> upgraded-count concise/max-item-count)))))
 
 (define (display-profile-content-diff profile gen1 gen2)
   "Display the changes in PROFILE GEN2 compared to generation GEN1."
