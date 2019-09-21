@@ -63,7 +63,8 @@
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 (define-public diffoscope
   (let ((version "125"))
@@ -165,6 +166,22 @@
                        ("python-chardet" ,python-chardet)
                        ("python-binwalk" ,python-binwalk)
                        ;; test suite skips tests when tool is missing
+                       ,@(match (%current-system)
+                                ;; ghc is only available on x86 currently.
+                                ((or "x86_64-linux" "i686-linux")
+                                 `(("ghc" ,ghc)))
+                                (_
+                                 `()))
+                       ,@(match (%current-system)
+                                ;; openjdk and dependent packages are only
+                                ;; available on x86_64 currently.
+                                ((or "x86_64-linux")
+                                 `(("enjarify" ,enjarify)
+                                   ;; no unversioned openjdk available
+                                   ("openjdk:jdk" ,openjdk12 "jdk")
+                                   ))
+                                (_
+                                 `()))
                        ("abootimg" ,abootimg)
                        ("bdb" ,bdb)
                        ("binutils" ,binutils)
@@ -175,10 +192,8 @@
                        ("docx2txt" ,docx2txt)
                        ("dtc" ,dtc)
                        ("e2fsprogs" ,e2fsprogs)
-                       ("enjarify" ,enjarify)
                        ("ffmpeg" ,ffmpeg)
                        ("gettext" ,gettext-minimal)
-                       ("ghc" ,ghc)
                        ("ghostscript" ,ghostscript)
                        ("giflib:bin" ,giflib "bin")
                        ("gnumeric" ,gnumeric)
@@ -190,8 +205,6 @@
                        ("mono" ,mono)
                        ("ocaml" ,ocaml)
                        ("odt2txt" ,odt2txt)
-                       ;; no unversioned openjdk available
-                       ("openjdk:jdk" ,openjdk12 "jdk")
                        ("openssh" ,openssh)
                        ("pgpdump" ,pgpdump)
                        ("poppler" ,poppler)
