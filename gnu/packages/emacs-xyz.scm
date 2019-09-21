@@ -17316,6 +17316,9 @@ previewed by scrolling up and down within a @code{dired} buffer.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-ivy" ,emacs-ivy)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/redguardtoo/counsel-etags")
     (synopsis "Fast @code{Ctags}/@code{Etags} solution with @code{ivy-mode}")
     (description "This package uses @code{ivy-mode} to facilitate navigating
