@@ -89,6 +89,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
   #:use-module (gnu packages emacs)
@@ -18067,11 +18068,10 @@ invoked.")
 
 (define-public emacs-web-server
   (let ((commit "cafa5b7582c57252a0884b2c33da9b18fb678713")
-        (version "0.1.1")
         (revision "1"))
     (package
       (name "emacs-web-server")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -18083,6 +18083,19 @@ invoked.")
           (base32
            "1c0lfqmbs5hvz3fh3c8wgp6ipwmxrwx9xj264bjpj3phixd5419y"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("curl" ,curl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-shell
+             ;; Setting the SHELL environment variable is required for the tests
+             ;; to find sh.
+             (lambda _
+               (setenv "SHELL" (which "sh"))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "check")))
       (home-page "https://github.com/eschulte/emacs-web-server/")
       (synopsis "Web server with handlers in Emacs Lisp")
       (description "This package supports HTTP GET and POST requests with
