@@ -14789,6 +14789,12 @@ viewing files with long lines.")
        `(("emacs-dash" ,emacs-dash)
          ("emacs-s" ,emacs-s)
          ("emacs-ghub" ,emacs-ghub)))
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+         ("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("buttercup" "-L" "test/github-review-test.el")))
       (home-page "https://github.com/charignon/github-review")
       (synopsis "Review GitHub pull requests within Emacs")
       (description "This package provides commands to pull in, comment on, and
