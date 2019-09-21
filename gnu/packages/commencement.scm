@@ -789,6 +789,56 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     ("tcc" ,tcc-boot0)
     ,@(%boot-gash-inputs)))
 
+(define bzip2-mesboot
+  ;; The initial bzip2
+  (package
+    (inherit bzip2)
+    (name "bzip2-mesboot")
+    (version (package-version bzip2))
+    (source (bootstrap-origin (package-source bzip2)))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-tcc0-inputs))
+    (outputs '("out"))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:tests? #f            ; check is naive, also checks non-built PROGRAMS
+       #:strip-binaries? #f   ; no strip yet
+       #:make-flags (list "CC=tcc -I ." "AR=tcc -ar" "bzip2"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "Makefile"
+               (("\tln " all)
+                (string-append "\t#" all)))
+             (substitute* "bzip2.c"
+               (("struct utimbuf uTimBuf;" all)
+                (string-append "// " all))
+               (("uTimBuf[.]" all)
+                (string-append "// " all))
+               (("retVal = utime [(] dstName, &uTimBuf [)];" all)
+                (string-append "retVal = 0; // " all)))
+             #t))
+         (replace 'configure
+           (lambda _
+             (with-output-to-file "utime.h"
+               (lambda _ (display "
+#define fchown(filedes, owner, group) 0
+#define fchmod(filedes, mode) 0
+")))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "./bzip2" "--help")))
+         ;; FIXME: no compressing gzip yet
+         (delete 'compress-documentation))))))
+
 (define tcc-boot
   (package
     (inherit tcc-boot0)
