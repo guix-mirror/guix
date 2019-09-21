@@ -839,107 +839,6 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          ;; FIXME: no compressing gzip yet
          (delete 'compress-documentation))))))
 
-(define tcc-boot
-  (package
-    (inherit tcc-boot0)
-    (name "tcc-boot")
-    (version "0.9.27")
-    (source (bootstrap-origin
-             (origin
-               (inherit (package-source tcc))
-               (patches (search-patches "tcc-boot-0.9.27.patch")))))
-    (build-system gnu-build-system)
-    (inputs '())
-    (propagated-inputs '())
-    (native-inputs
-     `(("mes" ,mes-boot)
-       ("tcc" ,tcc-boot0)
-
-       ("coreutils" , %bootstrap-coreutils&co)))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:guile ,%bootstrap-guile
-
-       ;; Binutils' 'strip' b0rkes MesCC/M1/hex2 binaries, tcc-boot also comes
-       ;; with MesCC/M1/hex2-built binaries.
-       #:strip-binaries? #f
-
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref %outputs "out"))
-                    (coreutils (assoc-ref %build-inputs "coreutils"))
-                    (mes (assoc-ref %build-inputs "mes"))
-                    (tcc (assoc-ref %build-inputs "tcc"))
-                    (libc (assoc-ref %build-inputs "libc"))
-                    (interpreter (if libc
-                                     ;; also for x86_64-linux, we are still on i686-linux
-                                     (string-append libc ,(glibc-dynamic-linker "i686-linux"))
-                                     (string-append mes "/lib/mes-loader"))))
-               ;; unpack
-               (setenv "PATH" (string-append
-                               coreutils "/bin"
-                               ":" tcc "/bin"))
-               (format (current-error-port) "PATH=~s\n" (getenv "PATH"))
-               (invoke "sh" "configure"
-                       (string-append "--cc=tcc")
-                       (string-append "--cpu=i386")
-                       (string-append "--prefix=" out)
-                       (string-append "--elfinterp=" interpreter)
-                       (string-append "--crtprefix=" tcc "/lib")
-                       (string-append "--sysincludepaths=" tcc "/include")
-                       (string-append "--libpaths=" tcc "/lib")))))
-         (replace 'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref %outputs "out"))
-                    (mes (assoc-ref %build-inputs "mes"))
-                    (tcc (assoc-ref %build-inputs "tcc"))
-                    (libc (assoc-ref %build-inputs "libc"))
-                    (interpreter (if libc
-                                     ;; also for x86_64-linux, we are still on i686-linux
-                                     (string-append libc ,(glibc-dynamic-linker "i686-linux"))
-                                     (string-append mes "/lib/mes-loader"))))
-               (invoke "tcc"
-                       "-vvv"
-                       "-D" "BOOTSTRAP=1"
-                       "-D" "ONE_SOURCE=1"
-                       "-D" "TCC_TARGET_I386=1"
-                       "-D" "CONFIG_TCC_STATIC=1"
-                       "-D" "CONFIG_USE_LIBGCC=1"
-                       "-D" (string-append "CONFIG_TCCDIR=\"" out "/lib/tcc\"")
-                       "-D" (string-append "CONFIG_TCC_CRTPREFIX=\"" out "/lib:{B}/lib:.\"")
-                       "-D" (string-append "CONFIG_TCC_CRTPREFIX=\"" out
-                                           "/lib:{B}/lib:.\"")
-                       "-D" (string-append "CONFIG_TCC_ELFINTERP=\"" interpreter "\"")
-                       "-D" (string-append "CONFIG_TCC_LIBPATHS=\"" tcc "/lib:{B}/lib:.\"")
-                       "-D" (string-append "CONFIG_TCC_SYSINCLUDEPATHS=\"" tcc "/include" ":/include:{B}/include\"")
-                       "-D" (string-append "TCC_LIBGCC=\"" tcc "/lib/libc.a\"")
-                       "-o" "tcc"
-                       "tcc.c"))))
-         (replace 'check
-           (lambda _
-             ;; FIXME: add sensible check target (without depending on make)
-             ;; ./check.sh ?
-             (= 1 (status:exit-val (system* "./tcc" "--help")))))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref %outputs "out"))
-                   (tcc (assoc-ref %build-inputs "tcc")))
-               (mkdir-p (string-append out "/bin"))
-               (copy-file "tcc" (string-append out "/bin/tcc"))
-               (mkdir-p (string-append out "/lib/tcc"))
-               (copy-recursively (string-append tcc "/include")
-                                 (string-append out "/include"))
-               (copy-recursively (string-append tcc "/lib")
-                                 (string-append out "/lib"))
-               (invoke "tcc" "-D" "TCC_TARGET_I386=1" "-c" "-o" "libtcc1.o" "lib/libtcc1.c")
-               (invoke "tcc" "-ar" "rc" "libtcc1.a" "libtcc1.o")
-               (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
-               (delete-file (string-append out "/lib/tcc/libtcc1.a"))
-               (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
-               #t))))))))
-
 (define bash-mesboot0
   ;; The initial Bash
   (package
@@ -1041,6 +940,113 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (copy-file "bash" (string-append bin "/bash"))
                (copy-file "bash" (string-append bin "/sh"))
                #t))))))))
+
+(define tcc-boot
+  ;; The final tcc.
+  (package
+    (inherit tcc-boot0)
+    (name "tcc-boot")
+    (version "0.9.27")
+    (source (origin
+              (inherit (package-source tcc))
+              ;; `patches' needs XZ
+              ;; (patches (search-patches "tcc-boot-0.9.27.patch"))
+              ))
+    (build-system gnu-build-system)
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs `(;;("boot-patch" ,(search-patch "tcc-boot-0.9.27.patch"))
+                     ("bzip2" ,bzip2-mesboot)
+                     ,@(%boot-tcc0-inputs)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:validate-runpath? #f           ; no dynamic executables
+       #:strip-binaries? #f             ; no strip yet
+       #:phases
+       (modify-phases %standard-phases
+         ;; tar xvf ..bz2 gives
+         ;; bzip2: PANIC -- internal consistency error
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (copy-file source "tarball.tar.bz2")
+             (invoke "bzip2" "-d" "tarball.tar.bz2")
+             (invoke "tar" "xvf" "tarball.tar")
+             (chdir (string-append "tcc-" ,version))
+             #t))
+         ;; no patch yet
+         ;; (add-after 'unpack 'apply-boot-patch
+         ;;   (lambda* (#:key inputs #:allow-other-keys)
+         ;;     (let ((patch-file (assoc-ref inputs "boot-patch")))
+         ;;       (invoke "patch" "-p1" "-i" patch-file))))
+         (add-after 'unpack 'scripted-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "libtcc.c"
+               (("s->alacarte_link = 1;" all)
+                (string-append all "
+    s->static_link = 1;")))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (tcc (assoc-ref %build-inputs "tcc"))
+                    (libc (assoc-ref %build-inputs "libc"))
+                    (interpreter "/mes/loader"))
+               (invoke "sh" "configure"
+                       (string-append "--cc=tcc")
+                       (string-append "--cpu=i386")
+                       (string-append "--prefix=" out)
+                       (string-append "--elfinterp=" interpreter)
+                       (string-append "--crtprefix=" tcc "/lib")
+                       (string-append "--sysincludepaths=" tcc "/include")
+                       (string-append "--libpaths=" tcc "/lib")))))
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (tcc (assoc-ref %build-inputs "tcc"))
+                    (libc (assoc-ref %build-inputs "libc"))
+                    (interpreter "/mes/loader"))
+               (invoke
+                "tcc"
+                "-vvv"
+                "-D" "BOOTSTRAP=1"
+                "-D" "ONE_SOURCE=1"
+                "-D" "TCC_TARGET_I386=1"
+                "-D" "CONFIG_TCC_STATIC=1"
+                "-D" "CONFIG_USE_LIBGCC=1"
+                "-D" (string-append "CONFIG_TCCDIR=\"" out "/lib/tcc\"")
+                "-D" (string-append "CONFIG_TCC_CRTPREFIX=\"" out "/lib:{B}/lib:.\"")
+                "-D" (string-append "CONFIG_TCC_CRTPREFIX=\"" out "/lib:{B}/lib:.\"")
+                "-D" (string-append "CONFIG_TCC_ELFINTERP=\"" interpreter "\"")
+                "-D" (string-append "CONFIG_TCC_LIBPATHS=\"" tcc "/lib:{B}/lib:.\"")
+                "-D" (string-append "CONFIG_TCC_SYSINCLUDEPATHS=\""
+                                    tcc "/include" ":/include:{B}/include\"")
+                "-D" (string-append "TCC_LIBGCC=\"" tcc "/lib/libc.a\"")
+                "-o" "tcc"
+                "tcc.c"))))
+         (replace 'check
+           (lambda _
+             ;; FIXME: add sensible check target (without depending on make)
+             ;; ./check.sh ?
+             (= 1 (status:exit-val (system* "./tcc" "--help")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref %outputs "out"))
+                   (tcc (assoc-ref %build-inputs "tcc")))
+               (and
+                (mkdir-p (string-append out "/bin"))
+                (copy-file "tcc" (string-append out "/bin/tcc"))
+                (mkdir-p (string-append out "/lib/tcc"))
+                (copy-recursively (string-append tcc "/include")
+                                  (string-append out "/include"))
+                (copy-recursively (string-append tcc "/lib")
+                                  (string-append out "/lib"))
+                (invoke "tcc" "-D" "TCC_TARGET_I386=1" "-c" "-o" "libtcc1.o" "lib/libtcc1.c")
+                (invoke "tcc" "-ar" "rc" "libtcc1.a" "libtcc1.o")
+                (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
+                (delete-file (string-append out "/lib/tcc/libtcc1.a"))
+                (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
+                #t)))))))))
 
 (define diffutils-mesboot
   (package
