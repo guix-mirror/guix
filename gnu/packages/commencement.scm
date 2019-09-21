@@ -674,6 +674,61 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
             (variable "LIBRARY_PATH")
             (files '("lib")))))))
 
+(define gzip-mesboot
+  ;; The initial gzip.  We keep this scripted gzip build before building make
+  ;; to soften the dependency on Gash Core Utils gzip.
+  (package
+    (inherit gzip)
+    (version "1.2.4")
+    (name "gzip-mesboot")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gzip/gzip-" version ".tar"))
+              (sha256
+               (base32
+                "1rhgk2vvmdvnn6vygf0dja92ryyng00knl0kz5srb77k2kryjb2d"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs `(("tcc" ,tcc-boot0)
+                     ,@(%boot-gash-inputs)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:strip-binaries? #f             ; no strip yet
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "util.c"
+               (("^char [*]strlwr" all) (string-append all "_tcc_cannot_handle_dupe")))
+             #t))
+         (replace 'build
+           (lambda _
+             (let ((files '("bits" "crypt" "deflate" "getopt" "gzip"
+                            "inflate" "lzw" "trees" "unlzh" "unlzw"
+                            "unpack" "unzip" "util" "zip")))
+               (define (compile x)
+                 (invoke "tcc" "-c" "-D NO_UTIME=1" "-D HAVE_UNISTD_H=1"
+                         (string-append x ".c")))
+               (for-each compile files)
+               (apply invoke
+                      (cons* "tcc" "-o" "gzip"
+                             (map (lambda (x) (string-append x ".o")) files)))
+               (link "gzip" "gunzip"))))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "gzip" bin)
+               (install-file "gunzip" bin))))
+         (replace 'check
+           (lambda _
+             (invoke "./gzip" "--version")))
+         ;; no gzip yet
+         (delete 'compress-documentation))))))
+
 (define tcc-boot
   (package
     (inherit tcc-boot0)
