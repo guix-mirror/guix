@@ -940,6 +940,108 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
                #t))))))))
 
+(define bash-mesboot0
+  ;; The initial Bash
+  (package
+    (inherit static-bash)
+    (name "bash-mesboot0")
+    (version "2.05b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/bash/bash-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1r1z2qdw3rz668nxrzwa14vk2zcn00hw7mpjn384picck49d80xs"))))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-tcc0-inputs))
+    (outputs '("out"))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:strip-binaries? #f             ; no strip yet
+       #:configure-flags
+       (list "--build=i686-unknown-linux-gnu"
+             "--host=i686-unknown-linux-gnu"
+
+             "--without-bash-malloc"
+             "--disable-readline"
+             "--disable-history"
+             "--disable-help-builtin"
+             "--disable-progcomp"
+             "--disable-net-redirections"
+             "--disable-nls"
+
+             ;; Pretend 'dlopen' is missing so we don't build loadable
+             ;; modules and related code.
+             "ac_cv_func_dlopen=no")
+       #:make-flags '("bash")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (let* ((gash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append gash "/bin/gash")))
+               (setenv "CONFIG_SHELL" shell)
+               (setenv "SHELL" shell)
+               (setenv "CC" "tcc")
+               (setenv "LD" "tcc")
+               (setenv "AR" "tcc -ar")
+               (setenv "CFLAGS" "-D _POSIX_VERSION=1")
+               #t)))
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "Makefile.in"
+               (("mksyntax\\.c\n") "mksyntax.c -lgetopt\n")
+               (("buildversion[.]o\n") "buildversion.o -lgetopt\n")
+               ;; No size in Gash
+               (("\tsize ") "#\tsize"))
+             (substitute* "lib/sh/oslib.c"
+               (("int name, namelen;") "char *name; int namelen;"))
+             (substitute* "lib/sh/snprintf.c"
+               (("^#if (defined [(]HAVE_LOCALE_H[)])" all define) (string-append "#if 0 //" define)))
+             (substitute* "configure"
+               ((" egrep") " grep"))
+             #t))
+         (replace 'configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (let ((configure-flags (filter (lambda (x)
+                                              (and (not (string-prefix? "CONFIG_SHELL=" x))
+                                                   (not (string-prefix? "SHELL=" x))))
+                                            configure-flags)))
+               (format (current-error-port)
+                       "running ./configure ~a\n" (string-join configure-flags)))
+             (apply invoke (cons "./configure" configure-flags))))
+         (add-after 'configure 'configure-fixups
+           (lambda _
+             (substitute* "config.h"
+               (("#define GETCWD_BROKEN 1") "#undef GETCWD_BROKEN"))
+             (let ((config.h (open-file "config.h" "a")))
+               (display (string-append "
+// tcc: error: undefined symbol 'enable_hostname_completion'
+#define enable_hostname_completion(on_or_off) 0
+
+// /gnu/store/cq0cmv35s9dhilx14zaghlc08gpc0hwr-tcc-boot0-0.9.26-6.c004e9a/lib/libc.a: error: 'sigprocmask' defined twice
+#define HAVE_POSIX_SIGNALS 1
+#define endpwent(x) 0
+")
+                        config.h)
+               (close config.h))
+             #t))
+         (replace 'check
+           (lambda _
+             (invoke "./bash" "--version")))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (copy-file "bash" (string-append bin "/bash"))
+               (copy-file "bash" (string-append bin "/sh"))
+               #t))))))))
+
 (define diffutils-mesboot
   (package
     (inherit diffutils)
