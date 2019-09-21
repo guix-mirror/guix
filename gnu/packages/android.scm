@@ -984,7 +984,7 @@ main repository.")
                  (mkdir-p (string-append out "/bin/"))
                  (copy-file "enjarify.sh" (string-append out "/bin/enjarify"))
                  #t))))))
-    (native-inputs `(("openjdk:jdk" ,openjdk12 "jdk")))
+    (native-inputs `(("openjdk" ,openjdk12)))
     (synopsis "Translate Dalvik bytecode to equivalent Java bytecode")
     (description "Android applications are Java programs that run on a
 customized virtual machine, which is part of the Android operating system, the
