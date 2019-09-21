@@ -9516,8 +9516,8 @@ functions written in continuation-passing style.")
     (license license:gpl3+)))
 
 (define-public emacs-attrap
-  (let ((commit "3b092bb8f6755a97e6ecb7623b9d2dde58beba4a")
-        (revision "1"))
+  (let ((commit "18cd1f7832870a36c404e872fa83a271fe8e688d")
+        (revision "2"))
     (package
       (name "emacs-attrap")
       (version (git-version "1.0" revision commit))
@@ -9528,7 +9528,7 @@ functions written in continuation-passing style.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "05d32980saji8ja1pcv65l0s3dq7w0n5hpikbf246hciy1x067pp"))
+                  "078391949h0fgmshin8f79a1a595m06ig577rkgjqgngcp0d61l9"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
