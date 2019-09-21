@@ -729,6 +729,66 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          ;; no gzip yet
          (delete 'compress-documentation))))))
 
+(define make-mesboot0
+  ;; The initial make
+  (package
+    (inherit gnu-make)
+    (name "make-mesboot0")
+    (version "3.80")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/make/make-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pb7fb7fqf9wz9najm85qdma1xhxzf1rhj5gwrlzdsz2zm0hpcv4"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs `(("tcc" ,tcc-boot0)
+                     ,@(%boot-gash-inputs)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:configure-flags '("CC=tcc"
+                           "CPP=tcc -E"
+                           "LD=tcc"
+                           "--build=i686-unknown-linux-gnu"
+                           "--host=i686-unknown-linux-gnu"
+                           "--disable-nls")
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:strip-binaries? #f             ; no strip yet
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "build.sh.in"
+               (("@LIBOBJS@") "getloadavg.o")
+               (("@REMOTE@") "stub"))
+             #t))
+         (add-after 'configure 'configure-fixup
+           (lambda _
+             (substitute* "make.h"
+               (("^extern long int lseek.*" all) (string-append "// " all)))
+             #t))
+         (replace 'build
+           (lambda _
+             (invoke "sh" "./build.sh")))
+         (replace 'check                ; proper check needs awk
+           (lambda _
+             (invoke "./make" "--version")))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "make" bin)))))))))
+
+(define (%boot-tcc0-inputs)
+  `(("make" ,make-mesboot0)
+    ("tcc" ,tcc-boot0)
+    ,@(%boot-gash-inputs)))
+
 (define tcc-boot
   (package
     (inherit tcc-boot0)
@@ -828,53 +888,6 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (copy-file "libtcc1.a" (string-append out "/lib/libtcc1.a"))
                (delete-file (string-append out "/lib/tcc/libtcc1.a"))
                (copy-file "libtcc1.a" (string-append out "/lib/tcc/libtcc1.a"))
-               #t))))))))
-
-(define make-mesboot0
-  (package
-    (inherit gnu-make)
-    (name "make-mesboot0")
-    (version "3.80")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/make/make-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1pb7fb7fqf9wz9najm85qdma1xhxzf1rhj5gwrlzdsz2zm0hpcv4"))))
-    (supported-systems '("i686-linux" "x86_64-linux"))
-    (inputs '())
-    (propagated-inputs '())
-    (native-inputs `(("tcc" ,tcc-boot)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)))
-    (arguments
-     `(#:implicit-inputs? #f
-       #:tests? #f                                ; check depends on perl
-       #:guile ,%bootstrap-guile
-       #:configure-flags `("CC=tcc -DO_RDONLY=0"
-                           "LD=tcc"
-                           "--disable-nls")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'configure-fixup
-           (lambda _
-             (substitute* "build.sh"
-               (("^REMOTE=.*") "REMOTE=stub\n")
-               (("^extras=.*") "extras=getloadavg.c\n"))
-             (substitute* "make.h"
-               (("^extern long int lseek.*" all) (string-append "// " all)))
-             #t))
-         (delete 'patch-generated-file-shebangs)  ; no perl
-         (replace 'build
-           (lambda _
-             (invoke "sh" "./build.sh")))
-         (replace 'install
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (install-file "make" bin)
                #t))))))))
 
 (define diffutils-mesboot
