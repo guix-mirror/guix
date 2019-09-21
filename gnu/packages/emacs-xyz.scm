@@ -17239,6 +17239,9 @@ definition-jumping and type-checking on demand.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-js2-mode" ,emacs-js2-mode)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/felipeochoa/rjsx-mode")
       (synopsis "Major mode for JSX files")
       (description "This package extends the parser of @code{js2-mode} to
