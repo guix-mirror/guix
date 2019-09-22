@@ -12299,10 +12299,11 @@ until the top-level form is no longer a macro call.")
       (license license:gpl3+))))
 
 (define-public emacs-company-lua
-  (let ((commit "0be8122f3adf57ad27953bf4b03545d6298d3da4"))
+  (let ((commit "29f6819de4d691e5fd0b62893a9f4fbc1c6fcb52")
+        (revision "2"))
     (package
       (name "emacs-company-lua")
-      (version (git-version "0.1" "1" commit))
+      (version (git-version "0.1" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -12312,13 +12313,15 @@ until the top-level form is no longer a macro call.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1d9i165apgmwns7b2fd5wcpjpkah3dyj20v5sb8ynvz6qhhr5r9c"))))
+           "0ny2dcc7c585p7v3j6q0rpkbj1qmf2ismy8a5020jpr585xvz0hh"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-company" ,emacs-company)
          ("emacs-s" ,emacs-s)
          ("emacs-f" ,emacs-f)
          ("emacs-lua-mode" ,emacs-lua-mode)))
+      (arguments
+       `(#:include (cons* "^lua\\/" %default-include)))
       (home-page "https://github.com/ptrv/company-lua")
       (synopsis "Company backend for Lua")
       (description
