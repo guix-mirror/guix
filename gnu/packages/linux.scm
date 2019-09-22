@@ -3082,6 +3082,10 @@ in a digital read-out.")
        (modify-phases %standard-phases
          (replace 'configure
            (lambda* (#:key inputs #:allow-other-keys)
+             ;; Don't build with '-Werror', really.
+             (substitute* "tools/lib/bpf/Makefile"
+               (("-Werror") ""))
+
              (setenv "SHELL_PATH" (which "bash"))
              (chdir "tools/perf")
              #t)))
