@@ -4901,7 +4901,7 @@ after buffer changes.")
 (define-public emacs-realgud
   (package
     (name "emacs-realgud")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
      (origin
        (method git-fetch)
@@ -4910,7 +4910,7 @@ after buffer changes.")
              (commit version)))
        (sha256
         (base32
-         "0xnick9016wxrgi8v0lycvxhyz8l2k4nfvdpjc5yq476vwrjfzbz"))
+         "1d3s23jk0i34wpyxfajydgyyvsxnpbqrfl0mgydsq7zw2c75ylnq"))
        (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (arguments
