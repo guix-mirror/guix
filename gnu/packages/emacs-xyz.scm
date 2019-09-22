@@ -16919,11 +16919,10 @@ parent directory using @code{Eshell}.")
 
 (define-public emacs-tco-el
   (let ((commit "482db5313f090b17ed22ccd856f0e141dc75afe6")
-        (version "0.3")
         (revision "1"))
     (package
       (name "emacs-tco-el")
-      (version (git-version version revision commit))
+      (version (git-version "0.3" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -16937,6 +16936,12 @@ parent directory using @code{Eshell}.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)))
+      (native-inputs
+       `(("emacs-ert-runner" ,emacs-ert-runner)
+         ("emacs-undercover" ,emacs-undercover)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner")))
       (home-page "https://github.com/Wilfred/tco.el")
       (synopsis "Tail-call optimization for Emacs Lisp")
       (description "This package provides tail-call optimization for Emacs
