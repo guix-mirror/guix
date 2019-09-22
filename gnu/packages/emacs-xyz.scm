@@ -12021,6 +12021,12 @@ continue.")
        ("emacs-loop" ,emacs-loop)
        ("emacs-s" ,emacs-s)
        ("emacs-shut-up" ,emacs-shut-up)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)
+       ("emacs-undercover" ,emacs-undercover)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/Wilfred/elisp-refs")
     (synopsis "Find callers of elisp functions or macros")
     (description "Find references to functions, macros or variables.  Unlike a
