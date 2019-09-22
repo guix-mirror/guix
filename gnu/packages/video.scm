@@ -2515,6 +2515,10 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; libsmpeg fails to build with -std=c++11, which is the default with
+     ;; GCC 7.  Also, 'configure' does CXXFLAGS=$CFLAGS, hence this hack.
+     '(#:configure-flags '("CFLAGS=-O2 -g -std=c++03")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
