@@ -12024,12 +12024,11 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
     (license license:gpl3+)))
 
 (define-public emacs-crux
-  (let ((commit "4f5c8fefd5a6aa52e128c4a0401cc86410d6ac8f")
-        (revision "1"))
+  (let ((commit "308f17d914e2cd79cbc809de66d02b03ceb82859")
+        (revision "2"))
     (package
       (name "emacs-crux")
-      (version (string-append "0.3.0" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.3.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -12039,7 +12038,7 @@ confused by comments or @code{foo-bar} matching @code{foo}.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1fdxvv25cs01sg6fmvmzxpzvs50i6v8n2jya60lbavxqqhi0sbxd"))))
+           "0rf84finwlvmy0xpgyljjvnrijlmkzjyw9rh97svgxp9c1rzfk0x"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/bbatsov/crux")
       (synopsis "Collection of useful functions for Emacs")
