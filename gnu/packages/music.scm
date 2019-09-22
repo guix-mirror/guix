@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
@@ -2794,7 +2794,7 @@ websites such as Libre.fm.")
                   (add-before 'build 'change-directory
                     (lambda _
                       (chdir "instantmusic-0.1") #t))
-                  (add-before 'check 'fix-file-permissions
+                  (add-before 'install 'fix-file-permissions
                     (lambda _
                       ;; Fix some read-only files that would cause a build failure
                       (for-each (cut chmod <> #o644)
