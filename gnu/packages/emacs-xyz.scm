@@ -3739,6 +3739,11 @@ on context.")
        ("emacs-company" ,emacs-company)
        ("emacs-s" ,emacs-s)
        ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/tigersoldier/company-lsp")
     (synopsis "Completion for @code{lsp-mode}")
     (description
