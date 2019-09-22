@@ -5297,7 +5297,9 @@ navigate code in a tree-like fashion.")
      `(("emacs-clojure-mode" ,emacs-clojure-mode)
        ("emacs-undercover" ,emacs-undercover)))
     (arguments
-     `(#:include (cons* "\\.clj$" "\\.edn$" "\\.py$" %default-include)
+     `(#:include (cons* "^lispy-clojure\\.clj$"
+                        "^lispy-python\\.py$"
+                        %default-include)
        #:phases
        ;; XXX: one failing test involving python evaluation
        (modify-phases %standard-phases
