@@ -4421,7 +4421,7 @@ in Rust.")
     (synopsis "Wide string Rust FFI library")
     (description
      "A wide string Rust FFI library for converting to and from wide strings,
-such as those often used in Windows API or other FFI libaries.  Both UTF-16 and
+such as those often used in Windows API or other FFI libraries.  Both UTF-16 and
 UTF-32 types are provided, including support for malformed encoding.")
     (license (list license:asl2.0
                    license:expat))))
