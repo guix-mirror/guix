@@ -4968,13 +4968,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.2.1")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "15qfvw3fp05bgyspcm6gbsnxhs430p4z3fwz5kkd1z68jb90b3pj"))))
+                "0zwlffdd1m0ih33nq40xf2wwdyvr4czmns2fs90qpfnwy72xxk4m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4989,7 +4989,8 @@ deployments.")
            (lambda _
              (substitute* '("bin/varnishtest/vtc_varnish.c"
                             "bin/varnishtest/vtc_process.c"
-                            "bin/varnishd/mgt/mgt_vcc.c")
+                            "bin/varnishd/mgt/mgt_vcc.c"
+                            "bin/varnishtest/tests/u00014.vtc")
                (("/bin/sh") (which "sh")))
              (substitute* "bin/varnishd/mgt/mgt_shmem.c"
                (("rm -rf") (string-append (which "rm") " -rf")))
