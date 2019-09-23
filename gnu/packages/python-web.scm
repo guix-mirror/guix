@@ -3219,14 +3219,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "3.0.2")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32
-         "0n6pfmsq899c54plpvzi46l7zrpa3zfpm8im6h32czjw6kxky5jp"))
+        (base32 "0dv97yi5fq074q5qyqbin09pmi8ixg36caf5nkpw2bqkd8jh6pap"))
        (patches
         (search-patches "python-slugify-depend-on-unidecode.patch"))))
     (native-inputs
