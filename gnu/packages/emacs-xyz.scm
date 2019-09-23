@@ -7501,6 +7501,11 @@ procedures for emacs-lisp-mode.")
         (base32 "1p3qa7g0wa0wbviv2f8bda39cjys3naayk5xjm3nxxmqsyy8papx"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/Wilfred/ht.el")
     (synopsis "Hash table library for Emacs")
     (description
