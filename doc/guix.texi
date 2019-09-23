@@ -2918,6 +2918,25 @@ variable, even though, taken individually, neither @file{foo} nor
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
 
+@var{profile} must be the name of a file that will be created upon
+completion.  Concretely, @var{profile} will be a mere symbolic link
+(``symlink'') pointing to the actual profile where packages are
+installed:
+
+@example
+$ guix install hello -p ~/code/my-profile
+@dots{}
+$ ~/code/my-profile/bin/hello
+Hello, world!
+@end example
+
+All it takes to get rid of the profile is to remove this symlink and its
+siblings that point to specific generations:
+
+@example
+$ rm ~/code/my-profile ~/code/my-profile-*-link
+@end example
+
 @cindex collisions, in a profile
 @cindex colliding packages in profiles
 @cindex profile collisions
