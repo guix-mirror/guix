@@ -6833,7 +6833,7 @@ Emacs.
 
 In the Common LISP Object System (CLOS), a similar kind of extensibility is
 possible using the flexible multi-method dispatch mechanism.  It may even seem
-that the concept of hooks does not provide any benefits over the possibilites
+that the concept of hooks does not provide any benefits over the possibilities
 of CLOS.  However, there are some differences:
 
 @itemize
