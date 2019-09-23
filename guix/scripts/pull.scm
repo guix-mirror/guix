@@ -764,7 +764,6 @@ Use '~/.config/guix/channels.scm' instead."))
     (with-git-error-handling
      (let* ((opts     (parse-command-line args %options
                                           (list %default-options)))
-            (cache    (string-append (cache-directory) "/pull"))
             (channels (channel-list opts))
             (profile  (or (assoc-ref opts 'profile) %current-profile)))
        (cond ((assoc-ref opts 'query)
@@ -776,8 +775,7 @@ Use '~/.config/guix/channels.scm' instead."))
                 (ensure-default-profile)
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
-                                 (%graft? (assoc-ref opts 'graft?))
-                                 (%repository-cache-directory cache))
+                                 (%graft? (assoc-ref opts 'graft?)))
                     (set-build-options-from-command-line store opts)
                     (honor-x509-certificates store)
 
