@@ -347,7 +347,7 @@ many more.")
                     (lambda _
                       (chdir "IlmBase")
                       #t)))))
-    (home-page "http://www.openexr.com/")
+    (home-page "https://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
     (description
      "IlmBase provides several utility libraries for C++.  Half is a class
@@ -453,7 +453,7 @@ graphics.")
     (propagated-inputs
      `(("ilmbase" ,ilmbase)                       ;used in public headers
        ("zlib" ,zlib)))                           ;OpenEXR.pc reads "-lz"
-    (home-page "http://www.openexr.com")
+    (home-page "https://www.openexr.com/")
     (synopsis "High-dynamic range file format library")
     (description
      "OpenEXR is a high dynamic-range (HDR) image file format developed for
