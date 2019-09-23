@@ -6181,7 +6181,7 @@ package, correctly capitalized.
 
 For packages requiring shared library dependencies, you may need to write the
 @file{/deps/deps.jl} file manually. It's usually a line of @code{const
-variable = /gnu/store/libary.so} for each dependency, plus a void function
+variable = /gnu/store/library.so} for each dependency, plus a void function
 @code{check_deps() = nothing}.
 
 Some older packages that aren't using @file{Package.toml} yet, will require
