@@ -16,6 +16,7 @@
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -327,17 +328,25 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.3.0")
+    (version "2.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openexr/openexr/releases"
-                                  "/download/v" version "/ilmbase-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openexr/openexr")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "0qiq5bqq9rxhqjiym2k36sx4vq8adgrz6xf6qwizi9bqm78phsa5"))
-              (patches (search-patches "ilmbase-fix-tests.patch"))))
-    (build-system gnu-build-system)
+                "0g3rz11cvb7gnphp2np9z7bfl7v4dprq4w5hnsvx7yrasgsdyn8s"))
+              (patches (search-patches "ilmbase-fix-tests.patch"
+                                       "ilmbase-openexr-pkg-config.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'change-directory
+                    (lambda _
+                      (chdir "IlmBase")
+                      #t)))))
     (home-page "http://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
     (description
@@ -409,27 +418,26 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "2.3.0")
+    (version (package-version ilmbase))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openexr/openexr/releases"
-                                  "/download/v" version "/openexr-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "19jywbs9qjvsbkvlvzayzi81s976k53wg53vw4xj66lcgylb6v7x"))
+              (inherit (package-source ilmbase))
+              (file-name (git-file-name "openexr" version))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (substitute* (find-files "." "tmpDir\\.h")
+                  (substitute* (find-files "OpenEXR" "tmpDir\\.h")
                     (("\"/var/tmp/\"")
                      "\"/tmp/\""))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "OpenEXR")
+             #t))
+         (add-after 'change-directory 'disable-broken-test
            ;; This test fails on i686. Upstream developers suggest that
            ;; this test is broken on i686 and can be safely disabled:
            ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
