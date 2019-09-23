@@ -160,7 +160,7 @@ to providing full-strength password hashing for multi-user application.")
 system hashes passwords using a version of Bruce Schneier's Blowfish block
 cipher with modifications designed to raise the cost of off-line password
 cracking and frustrate fast hardware implementation.  The computation cost of
-the algorithm is parametised, so it can be increased as computers get faster.
+the algorithm is parametrised, so it can be increased as computers get faster.
 The intent is to make a compromise of a password database less likely to
 result in an attacker gaining knowledge of the plaintext passwords (e.g. using
 John the Ripper).")
