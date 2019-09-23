@@ -19,6 +19,8 @@
 (define-module (guix scripts search)
   #:use-module (guix ui)
   #:use-module (guix scripts package)
+  #:use-module ((guix scripts build)
+                #:select (%standard-build-options))
   #:use-module (guix scripts)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -36,6 +38,9 @@ This is an alias for 'guix package -s'.\n"))
   (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
+  (display (G_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
+  (newline)
   (show-bug-report-information))
 
 (define %options
@@ -46,7 +51,11 @@ This is an alias for 'guix package -s'.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix search")))))
+                  (show-version-and-exit "guix search")))
+
+        (find (lambda (option)
+                (member "load-path" (option-names option)))
+              %standard-build-options)))
 
 (define (guix-search . args)
   (define (handle-argument arg result)
