@@ -2442,17 +2442,13 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
-  -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
-  -drive file=guix-system.img
+  -net user -net nic,model=virtio -boot menu=on,order=d \
+  -drive file=guix-system.img \
+  -drive media=cdrom,file=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
 
-The ordering of the drives matters.  @code{-enable-kvm} is optional, but
-significantly improves performance, @pxref{Running Guix in a VM}.
-
-In the VM console, quickly press the @kbd{F12} key to enter the boot
-menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
-selection.
+@code{-enable-kvm} is optional, but significantly improves performance,
+@pxref{Running Guix in a VM}.
 
 @item
 You're now root in the VM, proceed with the installation process.
