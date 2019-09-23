@@ -12863,6 +12863,12 @@ and doesn't require memorisation of commands.
        ("emacs-f" ,emacs-f)
        ("emacs-spinner" ,emacs-spinner)
        ("emacs-shut-up" ,emacs-shut-up)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)
+       ("emacs-undercover" ,emacs-undercover)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (synopsis "Suggest Elisp functions that give the output requested")
     (description "Suggest.el will find functions that give the output
 requested.  It's a great way of exploring list, string and arithmetic
