@@ -4288,7 +4288,7 @@ including:
 @item enhanced regression diagnostic plots
 @item formula-enabled interface to @code{stats::lowess} function
 @item displaying textual data in plots
-@item baloon plots
+@item balloon plots
 @item plotting \"Venn\" diagrams
 @item displaying Open-Office style plots
 @item plotting multiple data on same region, with separate axes
