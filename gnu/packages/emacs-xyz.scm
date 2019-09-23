@@ -2704,7 +2704,7 @@ in Lisp modes.")
        `(("emacs-dash" ,emacs-dash)))
       (home-page "https://github.com/Fuco1/litable/")
       (synopsis "Dynamic evaluation replacement with Emacs")
-      (description "This packages provides dynamic evaluation in Emacs.")
+      (description "This package provides dynamic evaluation in Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-string-inflection
@@ -18337,7 +18337,7 @@ JIRA issue servers.")
       (synopsis
        "Mode for fontification of ~/.ssh/config")
       (description
-       "This packages fontifies the ssh config keywords and creates
+       "This package fontifies the ssh config keywords and creates
 keybindings for skipping from host section to host section.")
       (license license:gpl3+))))
 

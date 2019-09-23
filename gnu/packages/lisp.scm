@@ -6474,7 +6474,7 @@ Trivia.")
 quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.
 
-This packages uses fare-quasiquote with named-readtable.")))
+This package uses fare-quasiquote with named-readtable.")))
 
 (define-public sbcl-trivia.level0
   (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")

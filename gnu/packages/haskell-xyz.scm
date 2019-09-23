@@ -7801,7 +7801,7 @@ examination.")
        ("ghc-listlike" ,ghc-listlike)))
     (home-page "https://github.com/seereason/process-extras")
     (synopsis "Extra tools for managing processes")
-    (description "This packages extends
+    (description "This package extends
 @url{http://hackage.haskell.org/package/process}.  It allows you to read
 process input and output as ByteStrings or Text, or write your own
 ProcessOutput instance.  It also provides lazy process input and output,
