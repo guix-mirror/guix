@@ -909,7 +909,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
 (define-public guile-email
   (package
     (name "guile-email")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -918,7 +918,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
              version ".tar.lz"))
        (sha256
         (base32
-         "0zgvh2329zrclxfb1lh7dnqrq46jj77l0lx7j9y6y3xgbhd2d9l0"))))
+         "1ph3pb69hr3d8mj05fmbpf5rc67dlm8qnb35cc7cxz8ingvl7kv3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -926,16 +926,7 @@ tracker's SOAP service, such as @url{https://bugs.gnu.org}.")
     (inputs
      `(("guile" ,guile-2.2)))
     (arguments
-     '(#:make-flags '("GUILE_AUTO_COMPILE=0") ; to prevent guild warnings
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'patch-module-dir
-           (lambda _
-             (substitute* "Makefile.in"
-               (("^godir = ([[:graph:]]+)")
-                "godir = \
-$(libdir)/guile/@GUILE_EFFECTIVE_VERSION@/site-ccache\n"))
-             #t)))))
+     '(#:make-flags '("GUILE_AUTO_COMPILE=0"))) ; to prevent guild warnings
     (home-page "https://guile-email.systemreboot.net")
     (synopsis "Guile email parser")
     (description "guile-email is a collection of email utilities implemented
