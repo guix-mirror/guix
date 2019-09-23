@@ -95,7 +95,7 @@
               (lts-info-packages
                (stackage-lts-info-fetch lts-version))))
      "Fetch Cabal file for PACKAGE-NAME from hackage.haskell.org.  The retrieved
-vesion corresponds to the version of PACKAGE-NAME specified in the LTS-VERSION
+version corresponds to the version of PACKAGE-NAME specified in the LTS-VERSION
 release at stackage.org.  Return the `package' S-expression corresponding to
 that package, or #f on failure.  PACKAGES-INFO is the alist with the packages
 included in the Stackage LTS release."
