@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -1688,16 +1688,16 @@ temperature of the screen.")
 (define-public wl-clipboard
   (package
     (name "wl-clipboard")
-    (version "1.0.0")
+    (version "2.0.0_beta2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/bugaevc/wl-clipboard.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03h6ajcc30w6928bkd4h6xfj4iy2359ww6hdlybq8mr1zwmb2h0q"))))
+        (base32 "0wyqbaph9v1v6lwfcjf8gjhdl70icpss4wapshzfxcz3l9m1p8hv"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
