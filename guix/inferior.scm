@@ -390,7 +390,7 @@ inferior package."
   (cut inferior-package-input-field <> 'package-transitive-propagated-inputs))
 
 (define (%inferior-package-search-paths package field)
-  "Return the list of search path specificiations of PACKAGE, an inferior
+  "Return the list of search path specifications of PACKAGE, an inferior
 package."
   (define paths
     (inferior-package-field package
