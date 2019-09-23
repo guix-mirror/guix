@@ -1024,7 +1024,7 @@ audio signals.")
 @enumerate
 @item Pulse-VCO, a dirac pulse oscillator with flat amplitude spectrum
 @item Saw-VCO, a sawtooth oscillator with 1/F amplitude spectrum
-@item Rec-VCO, a square / rectange oscillator
+@item Rec-VCO, a square / rectangle oscillator
 @end enumerate\n
 
 All oscillators are low-pass filtered to provide waveforms similar to the
