@@ -1977,15 +1977,15 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90119")
+    (version "5.90124")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "1iw7x9rqk3sz2hm1bw01blz5vwm7zlljdf4xj3r8vz54f1yggzqr"))))
+         "001yk1i0xwn4v308qx15nvnp6v9qfdigdlvz1rgw5zpnq7kwnq1a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -2008,6 +2008,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
        ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
+       ("perl-perlio-utf8-strict" ,perl-perlio-utf8_strict)
        ("perl-plack" ,perl-plack)
        ("perl-plack-middleware-fixmissingbodyinredirect"
         ,perl-plack-middleware-fixmissingbodyinredirect)
