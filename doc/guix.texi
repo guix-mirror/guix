@@ -2431,7 +2431,7 @@ Create a disk image that will hold the installed system.  To make a
 qcow2-formatted disk image, use the @command{qemu-img} command:
 
 @example
-qemu-img create -f qcow2 guixsd.img 50G
+qemu-img create -f qcow2 guix-system.img 50G
 @end example
 
 The resulting file will be much smaller than 50 GB (typically less than
@@ -2444,7 +2444,7 @@ Boot the USB installation image in an VM:
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
   -net user -net nic,model=virtio -boot menu=on \
   -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
-  -drive file=guixsd.img
+  -drive file=guix-system.img
 @end example
 
 The ordering of the drives matters.  @code{-enable-kvm} is optional, but
@@ -2460,7 +2460,7 @@ You're now root in the VM, proceed with the installation process.
 @end enumerate
 
 Once installation is complete, you can boot the system that's on your
-@file{guixsd.img} image.  @xref{Running Guix in a VM}, for how to do
+@file{guix-system.img} image.  @xref{Running Guix in a VM}, for how to do
 that.
 
 @node Building the Installation Image
