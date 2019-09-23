@@ -996,18 +996,18 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.17.0")
+   (version "0.17.1")
    (source
     (origin
      (method git-fetch)
      (uri (git-reference
            (url "https://github.com/uTox/uTox.git")
-           (commit "v0.17.0")
+           (commit (string-append "v" version))
            (recursive? #t))) ;; Needed for 'minini' git submodule.
      (file-name (string-append name "-" version "-checkout"))
      (sha256
       (base32
-       "12wbq883il7ikldayh8hm0cjfrkp45vn05xx9s1jbfz6gmkidyar"))))
+       "17kwqw24iqljp2icih9k6ikx12gzr8zzqr8y5h35bg8m5s8pasq5"))))
    (build-system cmake-build-system)
    (arguments
     `(#:configure-flags '("-DENABLE_TESTS=on")
