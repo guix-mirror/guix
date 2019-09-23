@@ -799,14 +799,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2")
+    (version "4.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
+               "1m5nkc61ihgcf0b2wabm0zyqa8sj3c0w8fi6kr879lb0kdzciiyf"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
