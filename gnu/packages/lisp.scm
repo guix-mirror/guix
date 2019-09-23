@@ -6597,7 +6597,7 @@ This system contains the base level system of Trivia with a trivial optimizer.")
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
-This system contains the PPCRE extention.")))
+This system contains the PPCRE extension.")))
 
 (define-public sbcl-trivia.quasiquote
   (package
