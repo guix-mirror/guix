@@ -87,8 +87,7 @@
             (requirement `(udev ,@requirement))
 
             (modules '((ice-9 match)
-                       (srfi srfi-9 gnu)
-                       (rnrs bytevectors)))
+                       (srfi srfi-9 gnu)))
             (start
              (with-imported-modules imported-modules
                #~(lambda ()
@@ -98,8 +97,8 @@
                                                ((_ pred rest ...)
                                                 (or (pred x)
                                                     (one-of rest ...))))))
-                       (one-of symbol? string? pair? null? vector?
-                               bytevector? number? boolean?)))
+                       (one-of symbol? string? keyword? pair? null? array?
+                               number? boolean?)))
 
                    (match (primitive-fork)
                      (0
