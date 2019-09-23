@@ -2156,7 +2156,7 @@ chunks can be expressions as well as simple tokens.")
          ("libtool" ,libtool)
          ("pkg-config" ,pkg-config)))
       (home-page "https://gitlab.com/tampe/guile-persist")
-      (synopsis "Persistance programming framework for Guile")
+      (synopsis "Persistence programming framework for Guile")
       (description
        "This is a serialization library for serializing objects like classes
 and objects, closures and structs.  This currently does not support
