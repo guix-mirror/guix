@@ -91,7 +91,7 @@ and for the GLSL.std.450 extended instruction set.
             (commit (string-append "v" version))))
       (sha256
        (base32 "0zwz6qg8g8165h7cw52agryjrdb29gbmsbziw3pwiddfkyma8vvg"))
-      (file-name (string-append name "-" version "-checkout"))))
+      (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests fail.
