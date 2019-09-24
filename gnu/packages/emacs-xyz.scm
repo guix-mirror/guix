@@ -15577,6 +15577,30 @@ as better scaling of and anti aliasing of the icons.")
     (license
      (list license:expat license:gpl3+ license:silofl1.1 license:asl2.0))))
 
+(define-public emacs-wttrin
+  (let ((commit "df5427ce2a5ad4dab652dbb1c4a1834d7ddc2abc")
+        (revision "1"))
+    (package
+      (name "emacs-wttrin")
+      (version (git-version "0.2.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bcbcarl/emacs-wttrin.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1ai655f10iayb4vw0ass2j3x83f4vsv90326mnywkzfl3sxd432z"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-xterm-color" ,emacs-xterm-color)))
+      (home-page "https://github.com/bcbcarl/emacs-wttrin")
+      (synopsis "Frontend for weather web service @url{wttr.in}")
+      (description "This package provides local weather information from
+@url{wttr.in}.")
+      (license license:expat))))
+
 (define-public emacs-powerline
   (package
     (name "emacs-powerline")
