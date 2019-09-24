@@ -7467,29 +7467,31 @@ editing nginx config files.")
     (license license:gpl2+)))
 
 (define-public emacs-stream
-  (package
-    (name "emacs-stream")
-    (version "2.2.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/NicolasPetton/stream.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "10x481lmkcmjrmdnlbqvys2b3525npn4a84j6g404pv4sfwlj6ab"))))
-    (build-system emacs-build-system)
-    (arguments
-     `(#:tests? #t
-       #:test-command '("emacs" "--batch"
-                        "-l" "test/stream-tests.el"
-                        "-f" "ert-run-tests-batch-and-exit")))
-    (home-page "https://github.com/NicolasPetton/stream")
-    (synopsis "Implementation of streams for Emacs")
-    (description "This library provides an implementation of streams for Emacs.
+  (let ((commit "a3f3da155a49c133e2692bd8789b35492bfdc4f7")
+        (revision "1"))
+    (package
+      (name "emacs-stream")
+      (version (git-version "2.2.4" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/Emacsmirror/stream.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0aig0yjb9z752ijh0mzildjmh44j051inchga8qll01dr8wf7332"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "tests/stream-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/Emacsmirror/stream")
+      (synopsis "Implementation of streams for Emacs")
+      (description "This library provides an implementation of streams for Emacs.
 Streams are implemented as delayed evaluation of cons cells.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-el-search
   (let ((commit "f26277bfbb3fc3fc74beea6592f294c439796bd4")
