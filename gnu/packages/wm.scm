@@ -1436,7 +1436,7 @@ Wlroots based compositors.")
 (define-public mako
   (package
     (name "mako")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -1445,7 +1445,7 @@ Wlroots based compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17azdc37xsbmx13fkfp23vg9lznrv9fh6nhagn64wdq3nhsxm3b6"))))
+        (base32 "11ymiq6cr2ma0iva1mqybn3j6k73bsc6lv6pcbdq7hkhd4f9b7j9"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("elogind" ,elogind)
