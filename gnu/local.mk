@@ -146,7 +146,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/diffoscope.scm			\
   %D%/packages/digest.scm			\
   %D%/packages/direct-connect.scm		\
-  %D%/packages/disk.scm				\
+  %D%/packages/disk.scm			\
+  %D%/packages/distributed.scm			\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
