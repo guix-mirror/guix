@@ -7457,15 +7457,22 @@ editing nginx config files.")
   (package
     (name "emacs-stream")
     (version "2.2.0")
-    (home-page "https://github.com/NicolasPetton/stream")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.gz"))
-       (uri (string-append home-page "/archive/"version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/NicolasPetton/stream.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "03ql4nqfz5pn55mjly6clhvc3g7x2d28kj7mrlqmigvjbql39xxc"))))
+        (base32 "10x481lmkcmjrmdnlbqvys2b3525npn4a84j6g404pv4sfwlj6ab"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "test/stream-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
+    (home-page "https://github.com/NicolasPetton/stream")
     (synopsis "Implementation of streams for Emacs")
     (description "This library provides an implementation of streams for Emacs.
 Streams are implemented as delayed evaluation of cons cells.")
