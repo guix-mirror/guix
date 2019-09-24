@@ -1126,12 +1126,19 @@ test environments.")
 (define-public glibc-utf8-locales
   (make-glibc-utf8-locales glibc))
 
-(define-public glibc-locales-2.27
-  (package (inherit (make-glibc-locales glibc-2.27))
-           (name "glibc-locales-2.27")))
+;; Packages provided to ease use of binaries linked against the previous libc.
+(define-public glibc-locales-2.28
+  (package (inherit (make-glibc-locales glibc-2.28))
+           (name "glibc-locales-2.28")))
+(define-public glibc-utf8-locales-2.28
+  (package (inherit (make-glibc-utf8-locales glibc-2.28))
+           (name "glibc-utf8-locales-2.28")))
+
+;; These should no longer be needed.
 (define-public glibc-utf8-locales-2.27
-  (package (inherit (make-glibc-utf8-locales glibc-2.27))
-           (name "glibc-utf8-locales-2.27")))
+  (deprecated-package "glibc-utf8-locales-2.27" glibc-utf8-locales-2.28))
+(define-public glibc-locales-2.27
+  (deprecated-package "glibc-locales-2.27" glibc-locales-2.28))
 
 (define-public which
   (package
