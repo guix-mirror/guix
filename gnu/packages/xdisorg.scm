@@ -817,6 +817,7 @@ Guile will work for XBindKeys.")
        (uri (git-reference
              (url "https://github.com/baskerville/sxhkd")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0j7bl2l06r0arrjzpz7al9j6cwzc730knbsijp7ixzz96pq7xa2h"))))
     (build-system gnu-build-system)
