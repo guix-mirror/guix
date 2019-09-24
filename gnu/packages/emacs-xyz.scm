@@ -6184,16 +6184,21 @@ completion, interactive development and more.")
     (name "emacs-rainbow-delimiters")
     (version "2.1.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://raw.githubusercontent.com/Fanael"
-                                  "/rainbow-delimiters/" version
-                                  "/rainbow-delimiters.el"))
-              (file-name (string-append "rainbow-delimiters-" version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Fanael/rainbow-delimiters.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b3kampwsjabhcqdp0khgff13wc5jqhy3rbvaa12vnv7qy22l9ck"))))
+                "0vs9pf8lqq5p5qz1770pxgw47ym4xj8axxmwamn66br59mykdhv0"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/Fanael/rainbow-delimiters")
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "-Q" "-batch"
+                        "-l" "rainbow-delimiters-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (synopsis "Highlight brackets according to their depth")
     (description
      "Rainbow-delimiters is a \"rainbow parentheses\"-like mode for Emacs which
