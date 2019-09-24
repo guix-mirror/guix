@@ -5822,14 +5822,14 @@ provides the following features:
     (name "emacs-markdown-mode")
     (version "2.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://raw.githubusercontent.com/jrblevin"
-                                  "/markdown-mode/v" version
-                                  "/markdown-mode.el"))
-              (file-name (string-append "markdown-mode-" version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jrblevin/markdown-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "152whyrq3dqlqy5wv4mdd94kmal19hs5kwaxjcp2gp2r97lsmdmi"))))
+                "1zm1j4w0f3h01bmmpsv4j4mh6i13nnl8fcqlj2hsa1ncy1lgi8q7"))))
     (build-system emacs-build-system)
     (home-page "http://jblevins.org/projects/markdown-mode/")
     (synopsis "Emacs Major mode for Markdown files")
