@@ -17884,27 +17884,24 @@ commands in @code{evil-mode}.")
       (license license:gpl3+))))
 
 (define-public emacs-xterm-color
-  (let ((commit "a452ab38a7cfae97078062ff8885b5d74fd1e5a6")
-        (version "1.8")
-        (revision "1"))
-    (package
-      (name "emacs-xterm-color")
-      (version (git-version version revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/atomontage/xterm-color.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "02kpajb993yshhjhsizpfcbrcndyzkf4dqfipifhxxng50dhp95i"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (home-page "https://github.com/atomontage/xterm-color")
-      (synopsis "ANSI & xterm-256 color text property translator for Emacs")
-      (description "@code{xterm-color.el} is an ANSI control sequence to
+  (package
+    (name "emacs-xterm-color")
+    (version "1.9")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/atomontage/xterm-color.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0i9ivc5xhl5y5v0l18kbhfg8s2abb9zaimyx951b8bc0f5as68xm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/atomontage/xterm-color")
+    (synopsis "ANSI & xterm-256 color text property translator for Emacs")
+    (description "@code{xterm-color.el} is an ANSI control sequence to
 text-property translator.")
-      (license license:bsd-2))))
+    (license license:bsd-2)))
 
 (define-public emacs-org-noter
   (package
