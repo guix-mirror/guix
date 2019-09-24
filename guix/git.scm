@@ -28,6 +28,7 @@
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix gexp)
+  #:use-module (guix sets)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -37,8 +38,10 @@
   #:export (%repository-cache-directory
             honor-system-x509-certificates!
 
+            with-repository
             update-cached-checkout
             latest-repository-commit
+            commit-difference
 
             git-checkout
             git-checkout?
@@ -220,6 +223,21 @@ dynamic extent of EXP."
               (G_ "Support for submodules is missing; \
 please upgrade Guile-Git.~%"))))
 
+(define (reference-available? repository ref)
+  "Return true if REF, a reference such as '(commit . \"cabba9e\"), is
+definitely available in REPOSITORY, false otherwise."
+  (match ref
+    (('commit . commit)
+     (catch 'git-error
+       (lambda ()
+         (->bool (commit-lookup repository (string->oid commit))))
+       (lambda (key error . rest)
+         (if (= GIT_ENOTFOUND (git-error-code error))
+             #f
+             (apply throw key error rest)))))
+    (_
+     #f)))
+
 (define* (update-cached-checkout url
                                  #:key
                                  (ref '(branch . "master"))
@@ -254,7 +272,8 @@ When RECURSIVE? is true, check out submodules as well, if any."
                              (repository-open cache-directory)
                              (clone* url cache-directory))))
      ;; Only fetch remote if it has not been cloned just before.
-     (when cache-exists?
+     (when (and cache-exists?
+                (not (reference-available? repository ref)))
        (remote-fetch (remote-lookup repository "origin")))
      (when recursive?
        (update-submodules repository #:log-port log-port))
@@ -322,6 +341,43 @@ Log progress and checkout info to LOG-PORT."
              (git-error-message error)))))
 
 (set-exception-printer! 'git-error print-git-error)
+
+
+;;;
+;;; Commit difference.
+;;;
+
+(define (commit-closure commit)
+  "Return the closure of COMMIT as a set."
+  (let loop ((commits (list commit))
+             (visited (setq)))
+    (match commits
+      (()
+       visited)
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail visited)
+           (loop (append (commit-parents head) tail)
+                 (set-insert head visited)))))))
+
+(define (commit-difference new old)
+  "Return the list of commits between NEW and OLD, where OLD is assumed to be
+an ancestor of NEW.
+
+Essentially, this computes the set difference between the closure of NEW and
+that of OLD."
+  (let loop ((commits (list new))
+             (result '())
+             (visited (commit-closure old)))
+    (match commits
+      (()
+       (reverse result))
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (loop (append (commit-parents head) tail)
+                 (cons head result)
+                 (set-insert head visited)))))))
 
 
 ;;;

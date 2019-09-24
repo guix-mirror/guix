@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1060,3 +1061,49 @@ For example, two shapes can be combined by uniting them, by intersecting them,
 or by subtracting one shape from the other.")
       (home-page "http://www.opencsg.org/")
       (license license:gpl2))))
+
+(define-public coin3D
+  (package
+    (name "coin3D")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://bitbucket.org/Coin3D/coin/downloads/coin-"
+             version "-src.zip"))
+       (sha256
+        (base32
+         "1mqwlqzvc9ydfxi0bfskwlil16mbnkphfz36p0zl2mvw6h05aqh0"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (for-each delete-file
+                     '("cfg/csubst.exe"
+                       "cfg/wrapmsvc.exe"))
+           #t))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (inputs
+     `(("boost" ,boost)
+       ("freeglut" ,freeglut)
+       ("glew" ,glew)))
+    (arguments
+     `(#:configure-flags
+       (list
+        "-DCOIN_BUILD_DOCUMENTATION_MAN=ON"
+        (string-append "-DBOOST_ROOT="
+                       (assoc-ref %build-inputs "boost")))))
+    (home-page "https://bitbucket.org/Coin3D/coin/wiki/Home")
+    (synopsis
+     "High-level 3D visualization library with Open Inventor 2.1 API")
+    (description
+     "Coin is a 3D graphics library with an Application Programming Interface
+based on the Open Inventor 2.1 API.  For those who are not familiar with
+Open Inventor, it is a scene-graph based retain-mode rendering and model
+interaction library, written in C++, which has become the de facto
+standard graphics library for 3D visualization and visual simulation
+software in the scientific and engineering community.")
+    (license license:bsd-3)))

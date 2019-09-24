@@ -286,14 +286,14 @@ detection.")
 (define-public js-datatables
   (package
     (name "js-datatables")
-    (version "1.10.15")
+    (version "1.10.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://datatables.net/releases/DataTables-"
                                   version ".zip"))
               (sha256
                (base32
-                "1y9xqyqyz7x1ls3ska71pshl2hpiy3qnw1f7wygyslbhy4ssgf57"))))
+                "0cff8a1g7pjwbjdqq0yzqd963ar7pfi4splmm6rwdzganr77rkhb"))))
     (build-system minify-build-system)
     (arguments
      `(#:javascript-files '("media/js/dataTables.bootstrap.js"

@@ -7259,9 +7259,9 @@ GLib/GObject code.")
     (version "3.26.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgnomekbd/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgnomekbd-" version ".tar.xz"))
               (sha256
                (base32
                 "0y962ykn3rr9gylj0pwpww7bi20lmhvsw6qvxs5bisbn2mih5jpp"))))

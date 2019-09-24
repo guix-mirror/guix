@@ -40,6 +40,7 @@
   #:use-module (gnu packages docker)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
@@ -936,3 +937,60 @@ these same tools to create your own additional or alternative repository for
 publishing, or to assist in creating, testing and submitting metadata to the
 main repository.")
     (license license:agpl3+)))
+
+(define-public enjarify
+  (package
+    (name "enjarify")
+    (version "1.0.3")
+    (home-page "https://github.com/Storyyeller/enjarify")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url home-page)
+            (commit version)))
+      (file-name (git-file-name name version))
+      (patches
+       (search-patches "enjarify-setup-py.patch"))
+      (sha256
+       (base32
+        "1nam7h1g4f1h6jla4qcjjagnyvd24dv6d5445w04q8hx07nxdapk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enjarify-wrapper-inherit-pythonpath
+           ;; enjarify sets PYTHONPATH from a shell script, overwriting
+           ;; PYTHONPATH set from guix. Comment out this line.
+           (lambda _
+             (substitute* "enjarify.sh"
+               (("export PYTHONPATH") "# export PYTHONPATH"))
+             #t))
+         (add-before 'check 'fixup-expected-test-results
+           ;; Upstream adjusted this test in commit:
+           ;; 3ae884a6485af82d300515813f537685b08dd800
+           (lambda _
+             (substitute* "tests/test2/expected.txt"
+               (("^20") "0"))
+             #t))
+         (add-before 'check 'drop-java-xss-argument
+           ;; Upstream removed this argument in order to support 32-bit
+           ;; architectures.  commit: 4be0111d879aa95fdc0d9f24fe529f8c664d4093
+           (lambda _
+             (substitute* "enjarify/runtests.py"
+               (("java -Xss515m") "java "))
+             #t))
+         (add-after 'install 'install-enjarify-wrapper
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out")))
+                 (mkdir-p (string-append out "/bin/"))
+                 (copy-file "enjarify.sh" (string-append out "/bin/enjarify"))
+                 #t))))))
+    (native-inputs `(("openjdk" ,openjdk12)))
+    (synopsis "Translate Dalvik bytecode to equivalent Java bytecode")
+    (description "Android applications are Java programs that run on a
+customized virtual machine, which is part of the Android operating system, the
+Dalvik VM.  Their bytecode differs from the bytecode of normal Java
+applications.  Enjarify can translate the Dalvik bytecode back to equivalent
+Java bytecode, which simplifies the analysis of Android applications.")
+    (license license:asl2.0)))

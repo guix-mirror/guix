@@ -17,7 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix repl)
-  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (send-repl-response
             machine-repl))
@@ -37,9 +36,8 @@
                             ((_ pred rest ...)
                              (or (pred x)
                                  (one-of rest ...))))))
-    (one-of symbol? string? pair? null? vector?
-            bytevector? number? boolean?)))
-
+    (one-of symbol? string? keyword? pair? null? array?
+            number? boolean?)))
 
 (define (send-repl-response exp output)
   "Write the response corresponding to the evaluation of EXP to PORT, an

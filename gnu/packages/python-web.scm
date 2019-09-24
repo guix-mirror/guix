@@ -306,16 +306,24 @@ other HTTP libraries.")
 (define-public python-html2text
   (package
     (name "python-html2text")
-    (version "2018.1.9")
+    (version "2019.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "html2text" version))
        (sha256
         (base32
-         "1m6d7ciq30adc3d1n8g6r46072n7q8kdy039pqvnnmp763xi8xb2"))))
+         "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm"))))
     (build-system python-build-system)
-    (home-page "https://pypi.org/project/html2text/")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "test/"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/Alir3z4/html2text")
     (synopsis "Convert HTML into plain text")
     (description "html2text takes HTML and converts it into plain ASCII text
 which is also valid markdown.  html2text was originally written by Aaron
@@ -3219,14 +3227,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "3.0.2")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32
-         "0n6pfmsq899c54plpvzi46l7zrpa3zfpm8im6h32czjw6kxky5jp"))
+        (base32 "0dv97yi5fq074q5qyqbin09pmi8ixg36caf5nkpw2bqkd8jh6pap"))
        (patches
         (search-patches "python-slugify-depend-on-unidecode.patch"))))
     (native-inputs

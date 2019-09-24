@@ -19,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix channels)
+  #:use-module (git)
   #:use-module (guix git)
   #:use-module (guix records)
   #:use-module (guix gexp)
@@ -29,6 +30,7 @@
   #:use-module (guix derivations)
   #:use-module (guix combinators)
   #:use-module (guix diagnostics)
+  #:use-module (guix sets)
   #:use-module (guix store)
   #:use-module (guix i18n)
   #:use-module ((guix utils)
@@ -38,6 +40,7 @@
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:autoload   (guix self) (whole-package make-config.scm)
@@ -67,7 +70,15 @@
             %channel-profile-hooks
             channel-instances->derivation
 
-            profile-channels))
+            profile-channels
+
+            channel-news-entry?
+            channel-news-entry-commit
+            channel-news-entry-tag
+            channel-news-entry-title
+            channel-news-entry-body
+
+            channel-news-for-commit))
 
 ;;; Commentary:
 ;;;
@@ -110,10 +121,11 @@
   (checkout  channel-instance-checkout))
 
 (define-record-type <channel-metadata>
-  (channel-metadata directory dependencies)
+  (channel-metadata directory dependencies news-file)
   channel-metadata?
   (directory     channel-metadata-directory)      ;string with leading slash
-  (dependencies  channel-metadata-dependencies))  ;list of <channel>
+  (dependencies  channel-metadata-dependencies)   ;list of <channel>
+  (news-file     channel-metadata-news-file))     ;string | #f
 
 (define (channel-reference channel)
   "Return the \"reference\" for CHANNEL, an sexp suitable for
@@ -129,12 +141,13 @@ if valid metadata could not be read from PORT."
   (match (read port)
     (('channel ('version 0) properties ...)
      (let ((directory    (and=> (assoc-ref properties 'directory) first))
-           (dependencies (or (assoc-ref properties 'dependencies) '())))
+           (dependencies (or (assoc-ref properties 'dependencies) '()))
+           (news-file    (and=> (assoc-ref properties 'news-file) first)))
        (channel-metadata
-        (cond ((not directory) "/")
+        (cond ((not directory) "/")               ;directory
               ((string-prefix? "/" directory) directory)
               (else (string-append "/" directory)))
-        (map (lambda (item)
+        (map (lambda (item)                       ;dependencies
                (let ((get (lambda* (key #:optional default)
                             (or (and=> (assoc-ref item key) first) default))))
                  (and-let* ((name (get 'name))
@@ -145,7 +158,8 @@ if valid metadata could not be read from PORT."
                     (branch branch)
                     (url url)
                     (commit (get 'commit))))))
-             dependencies))))
+             dependencies)
+        news-file)))                              ;news-file
     ((and ('channel ('version version) _ ...) sexp)
      (raise (condition
              (&message (message "unsupported '.guix-channel' version"))
@@ -169,7 +183,7 @@ doesn't exist."
         read-channel-metadata))
     (lambda args
       (if (= ENOENT (system-error-errno args))
-          (channel-metadata "/" '())
+          (channel-metadata "/" '() #f)
           (apply throw args)))))
 
 (define (channel-instance-metadata instance)
@@ -560,3 +574,118 @@ PROFILE is not a profile created by 'guix pull', return the empty list."
               ;; Show most recently installed packages last.
               (reverse
                (manifest-entries (profile-manifest profile)))))
+
+
+;;;
+;;; News.
+;;;
+
+;; Channel news.
+(define-record-type <channel-news>
+  (channel-news entries)
+  channel-news?
+  (entries channel-news-entries))                 ;list of <channel-news-entry>
+
+;; News entry, associated with a specific commit of the channel.
+(define-record-type <channel-news-entry>
+  (channel-news-entry commit tag title body)
+  channel-news-entry?
+  (commit  channel-news-entry-commit)             ;hex string | #f
+  (tag     channel-news-entry-tag)                ;#f | string
+  (title   channel-news-entry-title)              ;list of language tag/string pairs
+  (body    channel-news-entry-body))              ;list of language tag/string pairs
+
+(define (sexp->channel-news-entry entry)
+  "Return the <channel-news-entry> record corresponding to ENTRY, an sexp."
+  (define (pair language message)
+    (cons (symbol->string language) message))
+
+  (match entry
+    (('entry ((and (or 'commit 'tag) type) commit-or-tag)
+             ('title ((? symbol? title-tags) (? string? titles)) ...)
+             ('body ((? symbol? body-tags) (? string? bodies)) ...)
+             _ ...)
+     (channel-news-entry (and (eq? type 'commit) commit-or-tag)
+                         (and (eq? type 'tag) commit-or-tag)
+                         (map pair title-tags titles)
+                         (map pair body-tags bodies)))
+    (_
+     (raise (condition
+             (&message (message "invalid channel news entry"))
+             (&error-location
+              (location (source-properties->location
+                         (source-properties entry)))))))))
+
+(define (read-channel-news port)
+  "Read a channel news feed from PORT and return it as a <channel-news>
+record."
+  (match (false-if-exception (read port))
+    (('channel-news ('version 0) entries ...)
+     (channel-news (map sexp->channel-news-entry entries)))
+    (('channel-news ('version version) _ ...)
+     ;; This is an unsupported version from the future.  There's nothing wrong
+     ;; with that (the user may simply need to upgrade the 'guix' channel to
+     ;; be able to read it), so silently ignore it.
+     (channel-news '()))
+    (#f
+     (raise (condition
+             (&message (message "syntactically invalid channel news file")))))
+    (sexp
+     (raise (condition
+             (&message (message "invalid channel news file"))
+             (&error-location
+              (location (source-properties->location
+                         (source-properties sexp)))))))))
+
+(define (resolve-channel-news-entry-tag repository entry)
+  "If ENTRY has its 'commit' field set, return ENTRY.  Otherwise, lookup
+ENTRY's 'tag' in REPOSITORY and return ENTRY with its 'commit' field set to
+the field its 'tag' refers to.  A 'git-error' exception is raised if the tag
+cannot be found."
+  (if (channel-news-entry-commit entry)
+      entry
+      (let* ((tag       (channel-news-entry-tag entry))
+             (reference (string-append "refs/tags/" tag))
+             (oid       (reference-name->oid repository reference)))
+        (channel-news-entry (oid->string oid) tag
+                            (channel-news-entry-title entry)
+                            (channel-news-entry-body entry)))))
+
+(define* (channel-news-for-commit channel new #:optional old)
+  "Return a list of <channel-news-entry> for CHANNEL between commits OLD and
+NEW.  When OLD is omitted or is #f, return all the news entries of CHANNEL."
+  (catch 'git-error
+    (lambda ()
+      (let* ((checkout  (update-cached-checkout (channel-url channel)
+                                                #:ref `(commit . ,new)))
+             (metadata  (read-channel-metadata-from-source checkout))
+             (news-file (channel-metadata-news-file metadata))
+             (news-file (and news-file
+                             (string-append checkout "/" news-file))))
+        (if (and news-file (file-exists? news-file))
+            (with-repository checkout repository
+              (let* ((news    (call-with-input-file news-file
+                                read-channel-news))
+                     (entries (map (lambda (entry)
+                                     (resolve-channel-news-entry-tag repository
+                                                                     entry))
+                                   (channel-news-entries news))))
+                (if old
+                    (let* ((new     (commit-lookup repository (string->oid new)))
+                           (old     (commit-lookup repository (string->oid old)))
+                           (commits (list->set
+                                     (map (compose oid->string commit-id)
+                                          (commit-difference new old)))))
+                      (filter (lambda (entry)
+                                (set-contains? commits
+                                               (channel-news-entry-commit entry)))
+                              entries))
+                    entries)))
+            '())))
+    (lambda (key error . rest)
+      ;; If commit NEW or commit OLD cannot be found, then something must be
+      ;; wrong (for example, the history of CHANNEL was rewritten and these
+      ;; commits no longer exist upstream), so quietly return the empty list.
+      (if (= GIT_ENOTFOUND (git-error-code error))
+          '()
+          (apply throw key error rest)))))

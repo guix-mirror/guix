@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -159,14 +159,14 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password required")
-                    #:input-hide-checkbox? #t)))
+                    #:input-visibility-checkbox? #t)))
                 (password-confirm-page
                  (lambda ()
                    (run-input-page
                     (format #f (G_ "Please confirm the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password confirmation required")
-                    #:input-hide-checkbox? #t))))
+                    #:input-visibility-checkbox? #t))))
            (if crypt-label
                (let loop ()
                  (let ((password (password-page))

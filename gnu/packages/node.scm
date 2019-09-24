@@ -90,7 +90,6 @@
        (modify-phases %standard-phases
          (add-before 'configure 'patch-files
            (lambda* (#:key inputs #:allow-other-keys)
-
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
                             "lib/internal/v8_prof_polyfill.js"

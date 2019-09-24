@@ -1363,7 +1363,7 @@ maintaining each reference encountered.")
      "This module provides an XPath engine, that can be re-used by other
 modules/classes that implement trees.
 
-In order to use the XPath engine, nodes in the user module need to mimick DOM
+In order to use the XPath engine, nodes in the user module need to mimic DOM
 nodes.  The degree of similitude between the user tree and a DOM dictates how
 much of the XPath features can be used.  A module implementing all of the DOM
 should be able to use this module very easily (you might need to add the

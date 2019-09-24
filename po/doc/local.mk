@@ -23,9 +23,13 @@ DOC_PO_FILES=					\
   %D%/guix-manual.ru.po				\
   %D%/guix-manual.zh_CN.po
 
+DOC_COOKBOOK_PO_FILES=
+
 EXTRA_DIST = \
   %D%/guix-manual.pot \
-  $(DOC_PO_FILES)
+  %D%/guix-cookbook.pot \
+  $(DOC_PO_FILES) \
+  $(DOC_COOKBOOK_PO_FILES)
 
 POT_OPTIONS = --package-name "guix" --package-version "$(VERSION)" \
 	          --copyright-holder "Ludovic Courtès" \
@@ -35,6 +39,27 @@ doc-po-update-%:
 	@lang=`echo "$@" | sed -e's/^doc-po-update-//'` ; \
 	output="$(srcdir)/po/doc/guix-manual.$$lang.po" ; \
 	input="$(srcdir)/po/doc/guix-manual.pot" ; \
+	if test -f "$$output"; then \
+	  test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
+	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $$output $$input"; \
+	  cd $(srcdir) \
+	    && { case `$(MSGMERGE_UPDATE) --version | sed 1q | sed -e 's,^[^0-9]*,,'` in \
+	        '' | 0.[0-9] | 0.[0-9].* | 0.1[0-7] | 0.1[0-7].*) \
+	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) "$$output" "$$input";; \
+	        *) \
+	          $(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} "$$output" "$$input";; \
+	      esac; \
+	    }; \
+	  touch "$$output"; \
+	else \
+	     echo "File $$output does not exist.  If you are a translator, you can create it with 'msginit'." 1>&2; \
+	     exit 1; \
+	fi
+
+doc-po-update-cookbook-%:
+	@lang=`echo "$@" | sed -e's/^doc-po-update-//'` ; \
+	output="$(srcdir)/po/doc/guix-cookbook.$$lang.po" ; \
+	input="$(srcdir)/po/doc/guix-cookbook.pot" ; \
 	if test -f "$$output"; then \
 	  test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
 	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $(MSGMERGE_OPTIONS) --lang=$${lang} $$output $$input"; \
@@ -64,6 +89,7 @@ doc-pot-update:
 		$(MAKE) $(srcdir)/po/doc/guix.pot-update; \
 		$(MAKE) $(srcdir)/po/doc/contributing.pot-update; \
 	done
+	$(MAKE) $(srcdir)/po/doc/guix-cookbook.pot-update;
 	msgcat $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES)) > $(srcdir)/po/doc/guix-manual.pot
 	rm -f $(addprefix $(srcdir)/po/doc/, $(TMP_POT_FILES))
 
@@ -72,5 +98,10 @@ doc-po-update: doc-pot-update
 	  lang="`echo "$$f" | $(SED) -es'|.*/guix-manual\.\(.*\)\.po$$|\1|g'`";	\
 	  $(MAKE) "doc-po-update-$$lang";					\
 	done
+	for f in $(DOC_COOKBOOK_PO_FILES); do						\
+	  lang="`echo "$$f" | $(SED) -es'|.*/guix-cookbook\.\(.*\)\.po$$|\1|g'`";	\
+	  $(MAKE) "doc-po-update-cookbook-$$lang";						\
+	done
+
 
 .PHONY: doc-po-update doc-pot-update

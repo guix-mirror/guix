@@ -123,6 +123,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages re2c)
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
@@ -859,6 +860,45 @@ for efficient socket-like bidirectional reliable communication channels.")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
     (license license:lgpl2.1)))
+
+(define-public wabt
+  (package
+    (name "wabt")
+    (version "1.0.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/WebAssembly/wabt")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0hn88vlqyclpk79v3wg3lrssd9vwhjdgvb41g03jqakygxxgnmp5"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:configure-flags '("-DBUILD_TESTS=OFF")
+       #:tests? #f))
+    (inputs `(("python" ,python-2)
+              ("re2c" ,re2c)))
+    (home-page "https://github.com/WebAssembly/wabt")
+    (synopsis "WebAssembly Binary Toolkit")
+    (description "WABT (pronounced: wabbit) is a suite of tools for
+WebAssembly, including:
+
+* wat2wasm: translate from WebAssembly text format to the WebAssembly binary
+  format
+* wasm2wat: the inverse of wat2wasm, translate from the binary format back
+  to the text format (also known as a .wat)
+* wasm-objdump: print information about a wasm binary.  Similar to objdump.
+* wasm-interp: decode and run a WebAssembly binary file using a stack-based
+  interpreter
+* wat-desugar: parse .wat text form as supported by the spec interpreter
+  (s-expressions, flat syntax, or mixed) and print canonical flat format
+* wasm2c: convert a WebAssembly binary file to a C source and header
+
+These tools are intended for use in (or for development of) toolchains or
+other systems that want to manipulate WebAssembly files.")
+    (license license:asl2.0)))
 
 (define-public websocketpp
   (package

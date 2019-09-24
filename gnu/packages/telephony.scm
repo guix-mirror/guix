@@ -284,7 +284,7 @@ supporting cryptographic kernel.")
     (home-page "https://www.linphone.org")
     (synopsis "Utilities library for linphone software")
     (description "BCtoolbox is a utilities library used by Belledonne
-Communications softwares like linphone.")
+Communications software like linphone.")
     (license license:gpl2+)))
 
 (define-public ortp

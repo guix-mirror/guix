@@ -65,6 +65,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -901,6 +902,27 @@ messages in color.")
 
 (define-public python2-coloredlogs
   (package-with-python2 python-coloredlogs))
+
+(define-public python-editorconfig
+  (package
+    (name "python-editorconfig")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "EditorConfig" version))
+       (sha256
+        (base32
+         "0v55z351p9qkyp3bbspwywwn28sbcknhirngjbj779n3z52z63hv"))))
+    (build-system python-build-system)
+    (home-page "https://editorconfig.org/")
+    (synopsis "EditorConfig bindings for python")
+    (description "The EditorConfig project consists of a file format for
+defining coding styles and a collection of text editor plugins that enable
+editors to read the file format and adhere to defined styles.  EditorConfig
+files are easily readable and they work nicely with version control systems.")
+    ;; "fnmatch.py" and "ini.py" are licensed under psfl, the rest is bsd-2.
+    (license (list license:bsd-2 license:psfl))))
 
 (define-public python-et-xmlfile
   (package
@@ -3962,7 +3984,7 @@ tests = True~%"
                         (assoc-ref inputs "tcl")
                         (assoc-ref inputs "tk")))))
              #t)))))
-    (home-page "http://matplotlib.org")
+    (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
      "Matplotlib is a Python 2D plotting library which produces publication
@@ -3977,14 +3999,29 @@ toolkits.")
   (let ((matplotlib (package-with-python2
                      (strip-python2-variant python-matplotlib))))
     (package (inherit matplotlib)
-      (version "2.2.3")
+      (version "2.2.4")
       (source
        (origin
          (method url-fetch)
          (uri (pypi-uri "matplotlib" version))
          (sha256
           (base32
-           "1rcc7x9ig3hpchkc4cwdvym3y451w74275fxr455zkfagrsvymbk"))))
+           "09i1gnrra1590brc1f8d5rh2zvnknmfgzp613ab0462qkrwj15h2"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments matplotlib)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'install-jquery-ui
+               (lambda* (#:key outputs inputs #:allow-other-keys)
+                 (let ((dir (string-append (assoc-ref outputs "out")
+                                           "/lib/python2.7/site-packages/"
+                                           "matplotlib/backends/web_backend/")))
+                   (mkdir-p dir)
+                   (invoke "unzip"
+                           (assoc-ref inputs "jquery-ui")
+                           "-d" dir))
+                 #t))
+             (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
@@ -8009,6 +8046,45 @@ Jupyter kernels such as IJulia and IRKernel.")
 support for rich media output.")
     (license license:bsd-3)))
 
+(define-public python-jsbeautifier
+  (package
+    (name "python-jsbeautifier")
+    (version "1.10.2")
+    (home-page "https://github.com/beautify-web/js-beautify")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url home-page)
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0wawb070ki1axb3jc9xvsrgpji52vcfif3zmjzc3z4g98m5xw4kg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      ;; The upstream Git repository contains all the code,
+                      ;; but this package only builds the python code.
+                      (chdir "python")
+                      #t))
+                  (add-after 'unpack 'patch-python-six-requirements
+                    (lambda _
+                      (substitute* "python/setup.py"
+                        (("six>=1.12.0")
+                         "six>=1.11.0"))
+                      #t)))))
+    (propagated-inputs
+     `(("python-editorconfig" ,python-editorconfig)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "JavaScript unobfuscator and beautifier")
+    (description "Beautify, unpack or deobfuscate JavaScript, leveraging
+popular online obfuscators.")
+    (license license:expat)))
+
 (define-public jupyter
   (package
     (name "jupyter")
@@ -10864,6 +10940,42 @@ binary or text.")
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
+
+(define-public python-binwalk
+  (let ((commit "64201acfb5b0a9cdd9faa58c40a36dcff8612e29")
+        (revision "0"))
+    (package
+      (name "python-binwalk")
+      (version (git-version "2.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ReFirmLabs/binwalk")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1z7ca6rfp887hw5jc3sb45mm4fa0xid4lsp2z8g4r590dr7k7w15"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'set-pythonpath
+             (lambda _
+               (setenv "PYTHONPATH"
+                       (string-append
+                        (getcwd) "/src/"
+                        ":" (getenv "PYTHONPATH")))
+               (setenv "HOME" "")
+               #t)))))
+      (native-inputs
+       `(("python-coverage" ,python-coverage)
+         ("python-nose" ,python-nose)))
+      (home-page "https://github.com/ReFirmLabs/binwalk")
+      (synopsis "Firmware analysis tool")
+      (description "Binwalk is a tool for analyzing, reverse engineering, and extracting firmware images")
+      (license license:expat))))
 
 (define-public python-nltk
   (package
@@ -16264,3 +16376,24 @@ ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
 For lxml.etree this package can be useful for providing XPath 2.0 selectors,
 because lxml.etree already has it's own implementation of XPath 1.0.")
     (license license:expat)))
+
+(define-public python-bibtexparser
+  (package
+    (name "python-bibtexparser")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bibtexparser" version))
+       (sha256
+        (base32
+         "0zwhfkrzf3n5847dbnfng92k7ak199l9v6x6ax3dgdidfpm6d2fz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)))
+    (native-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/sciunto-org/python-bibtexparser")
+    (synopsis "Python library to parse BibTeX files")
+    (description "BibtexParser is a Python library to parse BibTeX files.")
+    (license (list license:bsd-3 license:lgpl3))))

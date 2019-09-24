@@ -38,7 +38,7 @@
 
 (define (show-help)
   (display (G_ "Usage: guix container exec PID COMMAND [ARGS...]
-Execute COMMMAND within the container process PID.\n"))
+Execute COMMAND within the container process PID.\n"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))

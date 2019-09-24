@@ -2657,7 +2657,9 @@ For your convenience, we also provide the following aliases:
 @item
 @command{guix remove} is an alias for @command{guix package -r},
 @item
-and @command{guix upgrade} is an alias for @command{guix package -u}.
+@command{guix upgrade} is an alias for @command{guix package -u},
+@item
+and @command{guix show} is an alias for @command{guix package --show=}.
 @end itemize
 
 These aliases are less expressive than @command{guix package} and provide
@@ -2916,6 +2918,25 @@ variable, even though, taken individually, neither @file{foo} nor
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
 
+@var{profile} must be the name of a file that will be created upon
+completion.  Concretely, @var{profile} will be a mere symbolic link
+(``symlink'') pointing to the actual profile where packages are
+installed:
+
+@example
+$ guix install hello -p ~/code/my-profile
+@dots{}
+$ ~/code/my-profile/bin/hello
+Hello, world!
+@end example
+
+All it takes to get rid of the profile is to remove this symlink and its
+siblings that point to specific generations:
+
+@example
+$ rm ~/code/my-profile ~/code/my-profile-*-link
+@end example
+
 @cindex collisions, in a profile
 @cindex colliding packages in profiles
 @cindex profile collisions
@@ -3020,9 +3041,9 @@ version: 3.3.5
 @end example
 
 You may also specify the full name of a package to only get details about a
-specific version of it:
+specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix package --show=python@@3.4 | recsel -p name,version
+$ guix show python@@3.4 | recsel -p name,version
 name: python
 version: 3.4.3
 @end example
@@ -3673,11 +3694,20 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 @xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
-This @code{~/.config/guix/current} profile works like any other profile
-created by @command{guix package} (@pxref{Invoking guix package}).  That
+This @code{~/.config/guix/current} profile works exactly like the profiles
+created by @command{guix package} (@pxref{Invoking guix package}). That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
+@example
+$ guix pull --roll-back
+switched from generation 3 to 2
+$ guix pull --delete-generations=1
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
+@end example
+
+You can also use @command{guix package} (@pxref{Invoking guix package})
+to manage the profile by naming it explicitly:
 @example
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
@@ -3709,13 +3739,16 @@ Read the list of channels from @var{file} instead of
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
+@cindex channel news
 @item --news
 @itemx -N
-Display the list of packages added or upgraded since the previous generation.
+Display the list of packages added or upgraded since the previous
+generation, as well as, occasionally, news written by channel authors
+for their users (@pxref{Channels, Writing Channel News}).
 
-This is the same information as displayed upon @command{guix pull} completion,
-but without ellipses; it is also similar to the output of @command{guix pull
--l} for the last generation (see below).
+The package information is the same as displayed upon @command{guix
+pull} completion, but without ellipses; it is also similar to the output
+of @command{guix pull -l} for the last generation (see below).
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
@@ -3723,6 +3756,40 @@ List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
 is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
+
+@item --roll-back
+@cindex rolling back
+@cindex undoing transactions
+@cindex transactions, undoing
+Roll back to the previous @dfn{generation} of @file{~/.config/guix/current}---i.e.,
+undo the last transaction.
+
+@item --switch-generation=@var{pattern}
+@itemx -S @var{pattern}
+@cindex generations
+Switch to a particular generation defined by @var{pattern}.
+
+@var{pattern} may be either a generation number or a number prefixed
+with ``+'' or ``-''.  The latter means: move forward/backward by a
+specified number of generations.  For example, if you want to return to
+the latest generation after @code{--roll-back}, use
+@code{--switch-generation=+1}.
+
+@item --delete-generations[=@var{pattern}]
+@itemx -d [@var{pattern}]
+When @var{pattern} is omitted, delete all generations except the current
+one.
+
+This command accepts the same patterns as @option{--list-generations}.
+When @var{pattern} is specified, delete the matching generations.  When
+@var{pattern} specifies a duration, generations @emph{older} than the
+specified duration match.  For instance, @code{--delete-generations=1m}
+deletes generations that are more than one month old.
+
+If the current generation matches, it is @emph{not} deleted.
+
+Note that deleting generations prevents rolling back to them.
+Consequently, this command must be used with care.
 
 @xref{Invoking guix describe}, for a way to display information about the
 current generation only.
@@ -3945,6 +4012,68 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex news, for channels
+@subsection Writing Channel News
+
+Channel authors may occasionally want to communicate to their users
+information about important changes in the channel.  You'd send them all
+an email, but that's not convenient.
+
+Instead, channels can provide a @dfn{news file}; when the channel users
+run @command{guix pull}, that news file is automatically read and
+@command{guix pull --news} can display the announcements that correspond
+to the new commits that have been pulled, if any.
+
+To do that, channel authors must first declare the name of the news file
+in their @file{.guix-channel} file:
+
+@lisp
+(channel
+  (version 0)
+  (news-file "etc/news.txt"))
+@end lisp
+
+The news file itself, @file{etc/news.txt} in this example, must look
+something like this:
+
+@lisp
+(channel-news
+  (version 0)
+  (entry (tag "the-bug-fix")
+         (title (en "Fixed terrible bug")
+                (fr "Oh la la"))
+         (body (en "@@emph@{Good news@}!  It's fixed!")
+               (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
+         (title (en "Added a great package")
+                (ca "Què vol dir guix?"))
+         (body (en "Don't miss the @@code@{hello@} package!"))))
+@end lisp
+
+The file consists of a list of @dfn{news entries}.  Each entry is
+associated with a commit or tag: it describes changes made in this
+commit, possibly in preceding commits as well.  Users see entries only
+the first time they obtain the commit the entry refers to.
+
+The @code{title} field should be a one-line summary while @code{body}
+can be arbitrarily long, and both can contain Texinfo markup
+(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
+a list of language tag/message tuples, which allows @command{guix pull}
+to display news in the language that corresponds to the user's locale.
+
+If you want to translate news using a gettext-based workflow, you can
+extract translatable strings with @command{xgettext} (@pxref{xgettext
+Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
+you write news entries in English first, the command below creates a PO
+file containing the strings to translate:
+
+@example
+xgettext -o news.po -l scheme -ken etc/news.scm
+@end example
+
+To sum up, yes, you could use your channel as a blog.  But beware, this
+is @emph{not quite} what your users might expect.
 
 @subsection Replicating Guix
 
@@ -4835,7 +4964,9 @@ specified binaries and symlinks.
 @item docker
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-Docker Image Specification}.
+Docker Image Specification}.  The ``repository name'' as it appears in
+the output of the @command{docker images} command is computed from
+package names passed on the command line or in the manifest file.
 
 @item squashfs
 This produces a SquashFS image containing all the specified binaries and
@@ -6050,7 +6181,7 @@ package, correctly capitalized.
 
 For packages requiring shared library dependencies, you may need to write the
 @file{/deps/deps.jl} file manually. It's usually a line of @code{const
-variable = /gnu/store/libary.so} for each dependency, plus a void function
+variable = /gnu/store/library.so} for each dependency, plus a void function
 @code{check_deps() = nothing}.
 
 Some older packages that aren't using @file{Package.toml} yet, will require
@@ -13038,6 +13169,33 @@ objects}).
 The ip6tables rules to use.  It will be passed to @code{ip6tables-restore}.
 This may be any ``file-like'' object (@pxref{G-Expressions, file-like
 objects}).
+@end table
+@end deftp
+
+@cindex nftables
+@defvr {Scheme Variable} nftables-service-type
+This is the service type to set up a nftables configuration.  nftables is a
+netfilter project that aims to replace the existing iptables, ip6tables,
+arptables and ebtables framework.  It provides a new packet filtering
+framework, a new user-space utility @command{nft}, and a compatibility layer
+for iptables.  This service comes with a default ruleset
+@code{%default-nftables-ruleset} that rejecting all incomming connections
+except those to the ssh port 22.  To use it, simply write:
+
+@lisp
+(service nftables-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} nftables-configuration
+The data type representing the configuration of nftables.
+
+@table @asis
+@item @code{package} (default: @code{nftables})
+The nftables package that provides @command{nft}.
+@item @code{ruleset} (default: @code{%default-nftables-ruleset})
+The nftables ruleset to use.  This may be any ``file-like'' object
+(@pxref{G-Expressions, file-like objects}).
 @end table
 @end deftp
 

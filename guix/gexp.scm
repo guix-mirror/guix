@@ -994,6 +994,15 @@ references; otherwise, return only non-native references."
                      (target (%current-target-system)))
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
+  (define (self-quoting? x)
+    (letrec-syntax ((one-of (syntax-rules ()
+                              ((_) #f)
+                              ((_ pred rest ...)
+                               (or (pred x)
+                                   (one-of rest ...))))))
+      (one-of symbol? string? keyword? pair? null? array?
+              number? boolean?)))
+
   (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref
@@ -1023,8 +1032,10 @@ and in the current monad setting (system type, etc.)"
                                                   #:target target)))
              ;; OBJ must be either a derivation or a store file name.
              (return (expand thing obj output)))))
-        (($ <gexp-input> x)
+        (($ <gexp-input> (? self-quoting? x))
          (return x))
+        (($ <gexp-input> x)
+         (raise (condition (&gexp-input-error (input x)))))
         (x
          (return x)))))
 
@@ -1032,19 +1043,6 @@ and in the current monad setting (system type, etc.)"
       ((args (mapm %store-monad
                    reference->sexp (gexp-references exp))))
     (return (apply (gexp-proc exp) args))))
-
-(define (syntax-location-string s)
-  "Return a string representing the source code location of S."
-  (let ((props (syntax-source s)))
-    (if props
-        (let ((file   (assoc-ref props 'filename))
-              (line   (and=> (assoc-ref props 'line) 1+))
-              (column (assoc-ref props 'column)))
-          (if file
-              (simple-format #f "~a:~a:~a"
-                             file line column)
-              (simple-format #f "~a:~a" line column)))
-        "<unknown location>")))
 
 (define-syntax-rule (define-syntax-parameter-once name proc)
   ;; Like 'define-syntax-parameter' but ensure the top-level binding for NAME

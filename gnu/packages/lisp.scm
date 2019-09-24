@@ -2485,7 +2485,7 @@ new fiends in addition to old friends like @command{aif} and
   (let ((commit "7d49a66c62759535624037826891152223d4206c"))
     (package
       (name "sbcl-lift")
-      (version (git-version "0.0.0" "1" commit))
+      (version (git-version "1.7.1" "1" commit))
       (source
        (origin
          (method git-fetch)
@@ -6474,7 +6474,7 @@ Trivia.")
 quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.
 
-This packages uses fare-quasiquote with named-readtable.")))
+This package uses fare-quasiquote with named-readtable.")))
 
 (define-public sbcl-trivia.level0
   (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
@@ -6597,7 +6597,7 @@ This system contains the base level system of Trivia with a trivial optimizer.")
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.
 
-This system contains the PPCRE extention.")))
+This system contains the PPCRE extension.")))
 
 (define-public sbcl-trivia.quasiquote
   (package
@@ -6833,7 +6833,7 @@ Emacs.
 
 In the Common LISP Object System (CLOS), a similar kind of extensibility is
 possible using the flexible multi-method dispatch mechanism.  It may even seem
-that the concept of hooks does not provide any benefits over the possibilites
+that the concept of hooks does not provide any benefits over the possibilities
 of CLOS.  However, there are some differences:
 
 @itemize
@@ -6934,3 +6934,429 @@ classes and cyclic data structures are supported.")
 
 (define-public ecl-cl-prevalence
   (sbcl-package->ecl-package sbcl-cl-prevalence))
+
+(define-public sbcl-series
+  (let ((commit "da9061b336119d1e5214aff9117171d494d5a58a")
+        (revision "1"))
+    (package
+      (name "sbcl-series")
+      (version (git-version "2.2.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "git://git.code.sf.net/p/series/series")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "07hk2lhfx42zk018pxqvn4gs77vd4n4g8m4xxbqaxgca76mifwfw"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       ;; Disable the tests, they are apparently buggy and I didn't find
+       ;; a simple way to make them run and pass.
+       '(#:tests? #f))
+      (synopsis "Series data structure for Common Lisp")
+      (description
+       "This Common Lisp library provides a series data structure much like
+a sequence, with similar kinds of operations.  The difference is that in many
+situations, operations on series may be composed functionally and yet execute
+iteratively, without the need to construct intermediate series values
+explicitly.  In this manner, series provide both the clarity of a functional
+programming style and the efficiency of an iterative programming style.")
+      (home-page "http://series.sourceforge.net/")
+      (license license:expat))))
+
+(define-public cl-series
+  (sbcl-package->cl-source-package sbcl-series))
+
+(define-public ecl-series
+  (sbcl-package->ecl-package sbcl-series))
+
+(define-public sbcl-periods
+  (let ((commit "983d4a57325db3c8def942f163133cec5391ec28")
+        (revision "1"))
+    (package
+      (name "sbcl-periods")
+      (version (git-version "0.0.2" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/periods.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0z30jr3lxz3cmi019fsl4lgcgwf0yqpn95v9zkkkwgymdrkd4lga"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("local-time" ,sbcl-local-time)))
+      (synopsis "Common Lisp library for manipulating date/time objects")
+      (description
+       "Periods is a Common Lisp library providing a set of utilities for
+manipulating times, distances between times, and both contiguous and
+discontiguous ranges of time.")
+      (home-page "https://github.com/jwiegley/periods")
+      (license license:bsd-3))))
+
+(define-public cl-periods
+  (sbcl-package->cl-source-package sbcl-periods))
+
+(define-public ecl-periods
+  (sbcl-package->ecl-package sbcl-periods))
+
+(define-public sbcl-periods-series
+  (package
+    (inherit sbcl-periods)
+    (name "sbcl-periods-series")
+    (inputs
+     `(("periods" ,sbcl-periods)
+       ("series" ,sbcl-series)))
+    (arguments
+     '(#:asd-file "periods-series.asd"
+       #:asd-system-name "periods-series"))
+    (description
+     "Periods-series is an extension of the periods Common Lisp library
+providing functions compatible with the series Common Lisp library.")))
+
+(define-public cl-periods-series
+  (sbcl-package->cl-source-package sbcl-periods-series))
+
+(define-public ecl-periods-series
+  (sbcl-package->ecl-package sbcl-periods-series))
+
+(define-public sbcl-metatilities-base
+  (let ((commit "6eaa9e3ff0939a93a92109dd0fcd218de85417d5")
+        (revision "1"))
+    (package
+      (name "sbcl-metatilities-base")
+      (version (git-version "0.6.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/metatilities-base.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0xpa86pdzlnf4v5g64j3ifaplx71sx2ha8b7vvakswi652679ma0"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (synopsis "Core of the metatilities Common Lisp library")
+      (description
+       "Metatilities-base is the core of the metatilities Common Lisp library
+which implements a set of utilities.")
+      (home-page "https://common-lisp.net/project/metatilities-base/")
+      (license license:expat))))
+
+(define-public cl-metatilities-base
+  (sbcl-package->cl-source-package sbcl-metatilities-base))
+
+(define-public ecl-metatilities-base
+  (sbcl-package->ecl-package sbcl-metatilities-base))
+
+(define-public sbcl-cl-containers
+  (let ((commit "810927e19d933bcf38ffeb7a23ce521efc432d45")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-containers")
+      (version (git-version "0.12.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/gwkkwg/cl-containers.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1s9faxw7svhbjpkhfrz2qxgjm3cvyjb8wpyb4m8dx4i5g7vvprkv"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("lift" ,sbcl-lift)))
+      (inputs
+       `(("metatilities-base" ,sbcl-metatilities-base)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'relax-version-checks
+             (lambda _
+               (substitute* "cl-containers.asd"
+                 (("\\(:version \"metatilities-base\" \"0\\.6\\.6\"\\)")
+                  "\"metatilities-base\""))
+               (substitute* "cl-containers-test.asd"
+                 (("\\(:version \"lift\" \"1\\.7\\.0\"\\)")
+                  "\"lift\""))
+               #t)))))
+      (synopsis "Container library for Common Lisp")
+      (description
+       "Common Lisp ships with a set of powerful built in data structures
+including the venerable list, full featured arrays, and hash-tables.
+CL-containers enhances and builds on these structures by adding containers
+that are not available in native Lisp (for example: binary search trees,
+red-black trees, sparse arrays and so on), and by providing a standard
+interface so that they are simpler to use and so that changing design
+decisions becomes significantly easier.")
+      (home-page "https://common-lisp.net/project/cl-containers/")
+      (license license:expat))))
+
+(define-public cl-containers
+  (sbcl-package->cl-source-package sbcl-cl-containers))
+
+(define-public ecl-cl-containers
+  (sbcl-package->ecl-package sbcl-cl-containers))
+
+(define-public sbcl-xlunit
+  (let ((commit "3805d34b1d8dc77f7e0ee527a2490194292dd0fc")
+        (revision "1"))
+    (package
+      (name "sbcl-xlunit")
+      (version (git-version "0.6.3" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://git.kpe.io/xlunit.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0argfmp9nghs4sihyj3f8ch9qfib2b7ll07v5m9ziajgzsfl5xw3"))))
+      (build-system asdf-build-system/sbcl)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "xlunit.asd"
+                 ((" :force t") ""))
+               #t)))))
+      (synopsis "Unit testing package for Common Lisp")
+      (description
+       "The XLUnit package is a toolkit for building test suites.  It is based
+on the XPTest package by Craig Brozensky and the JUnit package by Kent Beck.")
+      (home-page "http://quickdocs.org/xlunit/")
+      (license license:bsd-3))))
+
+(define-public cl-xlunit
+  (sbcl-package->cl-source-package sbcl-xlunit))
+
+(define-public ecl-xlunit
+  (sbcl-package->ecl-package sbcl-xlunit))
+
+(define-public sbcl-fprog
+  (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
+        (revision "1"))
+    (package
+      (name "sbcl-fprog")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/jwiegley/cambl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "103mry04j2k9vznsxm7wcvccgxkil92cdrv52miwcmxl8daa4jiz"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Functional programming utilities for Common Lisp")
+      (description
+       "@code{fprog} is a Common Lisp library allowing iteration over
+immutable lists sharing identical sublists.")
+      (home-page "https://github.com/jwiegley/cambl")
+      (license license:bsd-3))))
+
+(define-public cl-fprog
+  (sbcl-package->cl-source-package sbcl-fprog))
+
+(define-public ecl-fprog
+  (sbcl-package->ecl-package sbcl-fprog))
+
+(define-public sbcl-cambl
+  (let ((commit "7016d1a98215f82605d1c158e7a16504ca1f4636")
+        (revision "1"))
+    (package
+      (inherit sbcl-fprog)
+      (name "sbcl-cambl")
+      (version (git-version "4.0.0" revision commit))
+      (native-inputs
+       `(("xlunit" ,sbcl-xlunit)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-containers" ,sbcl-cl-containers)
+         ("local-time" ,sbcl-local-time)
+         ("periods" ,sbcl-periods)
+         ("fprog" ,sbcl-fprog)))
+      (synopsis "Commoditized amounts and balances for Common Lisp")
+      (description
+       "CAMBL is a Common Lisp library providing a convenient facility for
+working with commoditized values.  It does not allow compound units (and so is
+not suited for scientific operations) but does work rather nicely for the
+purpose of financial calculations."))))
+
+(define-public cl-cambl
+  (sbcl-package->cl-source-package sbcl-cambl))
+
+(define-public ecl-cambl
+  (sbcl-package->ecl-package sbcl-cambl))
+
+(define-public sbcl-cl-ledger
+  (let ((commit "08e0be41795e804cd36142e51756ad0b1caa377b")
+        (revision "1"))
+    (package
+      (name "sbcl-cl-ledger")
+      (version (git-version "4.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ledger/cl-ledger.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1via0qf6wjcyxnfbmfxjvms0ik9j8rqbifgpmnhrzvkhrq9pv8h1"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("cambl" ,sbcl-cambl)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("local-time" ,sbcl-local-time)
+         ("periods-series" ,sbcl-periods-series)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-system-definition
+             (lambda _
+               (substitute* "cl-ledger.asd"
+                 (("  :build-operation program-op") "")
+                 (("  :build-pathname \"cl-ledger\"") "")
+                 (("  :entry-point \"ledger::main\"") ""))
+               #t)))))
+      (synopsis "Common Lisp port of the Ledger accounting system")
+      (description
+       "CL-Ledger is a Common Lisp port of the Ledger double-entry accounting
+system.")
+      (home-page "https://github.com/ledger/cl-ledger")
+      (license license:bsd-3))))
+
+(define-public cl-ledger
+  (sbcl-package->cl-source-package sbcl-cl-ledger))
+
+(define-public ecl-cl-ledger
+  (sbcl-package->ecl-package sbcl-cl-ledger))
+
+(define-public sbcl-bst
+  (let ((commit "34f9c7e8e0a9f2c952fe310ab36cb630d5d9c15a")
+        (revision "1"))
+    (package
+      (name "sbcl-bst")
+      (version (git-version "1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/bst.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1amxns7hvvh4arwbh8ciwfzplg127vh37dnbamv1m1kmmnmihfc8"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("fiveam" ,sbcl-fiveam)))
+      (synopsis "Binary search tree for Common Lisp")
+      (description
+       "BST is a Common Lisp library for working with binary search trees that
+can contain any kind of values.")
+      (home-page "https://github.com/glv2/bst")
+      (license license:gpl3))))
+
+(define-public cl-bst
+  (sbcl-package->cl-source-package sbcl-bst))
+
+(define-public ecl-bst
+  (sbcl-package->ecl-package sbcl-bst))
+
+(define-public sbcl-cl-octet-streams
+  (package
+    (name "sbcl-cl-octet-streams")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/glv2/cl-octet-streams.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1d7mn6ydv0j2x4r7clpc9ijjwrnfpxmvhifv8n5j7jh7s744sf8d"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("fiveam" ,sbcl-fiveam)))
+    (inputs
+     `(("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "In-memory octet streams for Common Lisp")
+    (description
+     "CL-octet-streams is a library implementing in-memory octet
+streams for Common Lisp.  It was inspired by the trivial-octet-streams and
+cl-plumbing libraries.")
+    (home-page "https://github.com/glv2/cl-octet-streams")
+    (license license:gpl3+)))
+
+(define-public cl-octet-streams
+  (sbcl-package->cl-source-package sbcl-cl-octet-streams))
+
+(define-public ecl-cl-octet-streams
+  (sbcl-package->ecl-package sbcl-cl-octet-streams))
+
+(define-public sbcl-lzlib
+  (let ((commit "0de1db7129fef9a58a059d35a2fa2ecfc5b47b47")
+        (revision "1"))
+    (package
+      (name "sbcl-lzlib")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/cl-lzlib.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "12ny7vj52fgnd8hb8fc8mry92vq4c1x72x2350191m4476j95clz"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("cffi" ,sbcl-cffi)
+         ("cl-octet-streams" ,sbcl-cl-octet-streams)
+         ("lzlib" ,lzlib)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/lzlib.lisp"
+                 (("liblz\\.so")
+                  (string-append (assoc-ref inputs "lzlib") "/lib/liblz.so")))
+               #t)))))
+      (synopsis "Common Lisp library for lzip (de)compression")
+      (description
+       "This Common Lisp library provides functions for lzip (LZMA)
+compression/decompression using bindings to the lzlib C library.")
+      (home-page "https://github.com/glv2/cl-lzlib")
+      (license license:gpl3+))))
+
+(define-public cl-lzlib
+  (sbcl-package->cl-source-package sbcl-lzlib))
+
+(define-public ecl-lzlib
+  (sbcl-package->ecl-package sbcl-lzlib))

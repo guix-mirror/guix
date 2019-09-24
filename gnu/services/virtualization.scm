@@ -313,7 +313,7 @@ be logged:
 Multiple filters can be defined in a single filters statement, they just
 need to be separated by spaces.")
   (log-outputs
-    (string "3:stderr")
+    (string "3:syslog:libvirtd")
     "Logging outputs.
 
 An output is one of the places to save logging information

@@ -160,7 +160,7 @@ to providing full-strength password hashing for multi-user application.")
 system hashes passwords using a version of Bruce Schneier's Blowfish block
 cipher with modifications designed to raise the cost of off-line password
 cracking and frustrate fast hardware implementation.  The computation cost of
-the algorithm is parametised, so it can be increased as computers get faster.
+the algorithm is parametrised, so it can be increased as computers get faster.
 The intent is to make a compromise of a password database less likely to
 result in an attacker gaining knowledge of the plaintext passwords (e.g. using
 John the Ripper).")
@@ -845,13 +845,13 @@ in userspace)
 (define-public python-m2crypto
   (package
     (name "python-m2crypto")
-    (version "0.30.1")
+    (version "0.35.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "M2Crypto" version))
        (sha256
-        (base32 "1iizrpkn4c2n70nvcjqlmnk6fz3vddkrjmwavz1zlsnwv8f7bcm1"))))
+        (base32 "09yirf3w77w6f49q6nxhrjm9c3a4y9s30s1k09chqrw8zdgx8sjc"))))
     (build-system python-build-system)
     (inputs `(("openssl" ,openssl)))
     (home-page "https://gitlab.com/m2crypto/m2crypto")

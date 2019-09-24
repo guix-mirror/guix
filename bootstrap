@@ -4,7 +4,7 @@
 set -e -x
 
 # Generate stubs for translations.
-langs=`find po/doc -type f -name '*.po' \
+langs=`find po/doc -type f -name 'guix-manual*.po' \
         | sed -e 's,guix-manual\.,,' \
         | xargs -n 1 -I{} basename {} .po`
 for lang in ${langs}; do
@@ -13,6 +13,16 @@ for lang in ${langs}; do
 	echo "@include version-${lang}.texi" >> "doc/guix.${lang}.texi"
 	# Ensure .po file is newer.
 	touch "po/doc/guix-manual.${lang}.po"
+    fi
+done
+langs=`find po/doc -type f -name 'guix-cookbook*.po' \
+        | sed -e 's,guix-manual\.,,' \
+        | xargs -n 1 -I{} basename {} .po`
+for lang in ${langs}; do
+    if [ ! -e "doc/guix-cookbook.${lang}.texi" ]; then
+	echo "@setfilename guix-cookbook.${lang}.info" > "doc/guix-cookbook.${lang}.texi"
+	# Ensure .po file is newer.
+	touch "po/doc/guix-cookbook.${lang}.po"
     fi
 done
 

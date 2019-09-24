@@ -65,7 +65,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.22.4")
+    (version "1.22.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,7 +73,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "084ihxy6g86yczhln5vn1amxi4qzqhvk4lpz9005kx92i6wh4h25"))))
+                "1cjk56z0whpzcqwg3xdq23kyp1g83xa67m9dlp7ywmb36bn4ca59"))))
     (outputs '("out"       ; 53 MB
                "include")) ; 21 MB
     (build-system gnu-build-system)

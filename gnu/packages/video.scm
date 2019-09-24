@@ -1495,8 +1495,8 @@ access to mpv's powerful playback capabilities.")
     (version "2019.09.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/rg3/youtube-dl/releases/"
-                                  "download/" version "/youtube-dl-"
+              (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
+                                  "releases/download/" version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -2297,7 +2297,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "23.0.2")
+    (version "24.0.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2306,7 +2306,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c0a5vy4h3qwz69qw3bydyk7r651ib5a9jna4yj6c25p3p9isdvp"))))
+                "056s0hs1ds3c57sc0gy39dxaxvwlakl3w25jxgawh0fs99211ar5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests
@@ -2326,6 +2326,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
        ("speex" ,speex)
        ("v4l-utils" ,v4l-utils)

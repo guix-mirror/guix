@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix scripts search)
+(define-module (guix scripts show)
   #:use-module (guix ui)
   #:use-module (guix scripts package)
   #:use-module ((guix scripts build)
@@ -25,13 +25,13 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
-  #:export (guix-search))
+  #:export (guix-show))
 
 (define (show-help)
-  (display (G_ "Usage: guix search [OPTION] REGEXPS...
-Search for packages matching REGEXPS."))
+  (display (G_ "Usage: guix show [OPTION] PACKAGE...
+Show details about PACKAGE."))
   (display (G_"
-This is an alias for 'guix package -s'.\n"))
+This is an alias for 'guix package --show='.\n"))
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -51,16 +51,16 @@ This is an alias for 'guix package -s'.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix search")))
+                  (show-version-and-exit "guix show")))
 
         (find (lambda (option)
                 (member "load-path" (option-names option)))
               %standard-build-options)))
 
-(define (guix-search . args)
+(define (guix-show . args)
   (define (handle-argument arg result)
     ;; Treat all non-option arguments as regexps.
-    (cons `(query search ,(or arg ""))
+    (cons `(query show ,arg)
           result))
 
   (define opts
@@ -71,6 +71,6 @@ This is an alias for 'guix package -s'.\n"))
                 '()))
 
   (unless (assoc-ref opts 'query)
-    (leave (G_ "missing arguments: no regular expressions to search for~%")))
+    (leave (G_ "missing arguments: no package to show~%")))
 
   (guix-package* opts))
