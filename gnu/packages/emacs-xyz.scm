@@ -7493,6 +7493,29 @@ editing nginx config files.")
 Streams are implemented as delayed evaluation of cons cells.")
       (license license:gpl3+))))
 
+(define-public emacs-cl-print
+  (let ((commit "1a70c553dfb04352afb5b8696fe0cef8acc8f991")
+        (revision "1"))
+    (package
+      (name "emacs-cl-print")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacsmirror/cl-print.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "164zbnsi5mssvcpy0158fm7fw5cmd1r5nkpn29fmd2b2scy3gm79"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/emacsmirror/cl-print")
+      (synopsis "CL-style generic printing")
+      (description "This package provides a generic function,
+@code{cl-print-object}, to which the programmer can add any method they
+please.")
+      (license license:gpl3+))))
+
 (define-public emacs-el-search
   (let ((commit "f26277bfbb3fc3fc74beea6592f294c439796bd4")
         (revision "1"))
