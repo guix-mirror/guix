@@ -1754,7 +1754,7 @@ package is in maintenance mode.")
 (define-public java-dom4j
   (package
     (name "java-dom4j")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1763,7 +1763,7 @@ package is in maintenance mode.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1827jljs8mps489fm7xw63cakdqwc5grilrr5n9spr2rlk76jpx3"))
+                "0q907srj9v4hwicpcrn4slyld5npf2jv7hzchsgrg29q2xmbwkdl"))
               (modules '((guix build utils)))
               (snippet
                 '(begin ;; Delete bundled jar archives.
