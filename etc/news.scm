@@ -9,6 +9,21 @@
 (channel-news
  (version 0)
 
+ (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
+        (title (en "GNU C Library upgraded"))
+        (body
+         (en "The GNU C Library (glibc) has been upgraded to version 2.29.  To
+run previously-installed programs linked against glibc 2.28, you need to
+install locale data for version 2.28 in addition to locale data for 2.29:
+
+@example
+guix install glibc-locales glibc-locales-2.28
+@end example
+
+On Guix System, you can adjust the @code{locale-libcs} field of your
+@code{operating-system} form.  Run @code{info \"(guix) Locales\"}, for more
+info.")))
+
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
         (title (en "New reduced binary seed bootstrap"))
         (body
