@@ -7517,24 +7517,25 @@ please.")
       (license license:gpl3+))))
 
 (define-public emacs-el-search
-  (let ((commit "f26277bfbb3fc3fc74beea6592f294c439796bd4")
-        (revision "1"))
+  (let ((commit "07bed84dd8ae9e4c6c648834224b1d33fdbd51e0")
+        (revision "2"))
     (package
       (name "emacs-el-search")
-      ;; No ufficial release.
-      (version (string-append "0.0-" revision "." (string-take commit 7)))
-      (home-page "https://github.com/emacsmirror/el-search")
+      (version (git-version "1.12.6.1" revision commit))
       (source
        (origin
          (method git-fetch)
-         (file-name (string-append name "-" version ".tar.gz"))
          (uri (git-reference
-               (commit commit)
-               (url (string-append home-page ".git"))))
+               (url "https://github.com/emacsmirror/el-search.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
-          (base32 "12xf40h9sb7xxg2r97gsia94q02543mgiiiw46fzh1ac7b7993g6"))))
+          (base32 "10w1ldgijdhfsrazp0y3bm76jv5wvdn94k1yp0pmc2m1896b58ak"))))
       (build-system emacs-build-system)
-      (inputs `(("emacs-stream" ,emacs-stream)))
+      (inputs
+       `(("emacs-stream" ,emacs-stream)
+         ("emacs-cl-print" ,emacs-cl-print)))
+      (home-page "https://github.com/emacsmirror/el-search")
       (synopsis "Expression based interactive search for emacs-lisp-mode")
       (description "This package provides expression based interactive search
 procedures for emacs-lisp-mode.")
