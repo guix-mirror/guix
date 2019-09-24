@@ -39,6 +39,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:autoload   (guix describe) (package-provenance)
+  #:autoload   (guix store roots) (gc-roots)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
@@ -359,6 +360,8 @@ Install, remove, or upgrade packages in a single transaction.\n"))
                          switch to a generation matching PATTERN"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
+  (display (G_ "
+      --list-profiles    list the user's profiles"))
   (newline)
   (display (G_ "
       --allow-collisions do not treat collisions in the profile as an error"))
@@ -456,6 +459,11 @@ command-line option~%")
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result arg-handler)
                    (values (cons `(query list-generations ,arg)
+                                 result)
+                           #f)))
+         (option '("list-profiles") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query list-profiles #t)
                                  result)
                            #f)))
          (option '(#\d "delete-generations") #f #t
@@ -749,6 +757,19 @@ processed, #f otherwise."
                             (((name1 . _) (name2 . _))
                              (string<? name1 name2))))))
          #t))
+
+      (('list-profiles _)
+       (let ((profiles (delete-duplicates
+                        (filter-map (lambda (root)
+                                      (and (or (zero? (getuid))
+                                               (user-owned? root))
+                                           (generation-profile root)))
+                                    (gc-roots)))))
+         (leave-on-EPIPE
+          (for-each (lambda (profile)
+                      (display (user-friendly-profile profile))
+                      (newline))
+                    (sort profiles string<?)))))
 
       (('search _)
        (let* ((patterns (filter-map (match-lambda

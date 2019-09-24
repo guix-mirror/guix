@@ -2933,6 +2933,19 @@ siblings that point to specific generations:
 $ rm ~/code/my-profile ~/code/my-profile-*-link
 @end example
 
+@item --list-profiles
+List all the user's profiles:
+
+@example
+$ guix package --list-profiles
+/home/charlie/.guix-profile
+/home/charlie/code/my-profile
+/home/charlie/code/devel-profile
+/home/charlie/tmp/test
+@end example
+
+When running as root, list all the profiles of all the users.
+
 @cindex collisions, in a profile
 @cindex colliding packages in profiles
 @cindex profile collisions
