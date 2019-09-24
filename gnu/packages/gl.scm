@@ -858,3 +858,26 @@ MojoShader provides both a simple API to convert bytecode to various profiles,
 and (optionally) basic glue to rendering APIs to abstract the management of
 the shaders at runtime.")
       (license license:zlib))))
+
+(define-public mojoshader-with-viewport-flip
+  ;; Changeset c586d4590241 replaced glProgramViewportFlip with
+  ;; glProgramViewportInfo.
+  ;; https://hg.icculus.org/icculus/mojoshader/rev/c586d4590241
+  (let ((changeset "2e37299b13d8"))
+    (package
+      (inherit mojoshader)
+      (name "mojoshader-with-viewport-flip")
+      (version (string-append "20190725" "-" changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://hg.icculus.org/icculus/mojoshader/")
+               (changeset changeset)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ffws7cqbskxwc3hjsnnzq4r2bbf008kdr3b11pa3kr7dsi50y6i"))))
+      (synopsis "Work with Direct3D shaders on alternate 3D APIs (with viewport flip)")
+      (description "This is the last version of the mojoshader library with
+the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
+      (license license:zlib))))
