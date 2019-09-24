@@ -22,7 +22,19 @@ guix install glibc-locales glibc-locales-2.28
 
 On Guix System, you can adjust the @code{locale-libcs} field of your
 @code{operating-system} form.  Run @code{info \"(guix) Locales\"}, for more
-info.")))
+info.")
+         (de "Die GNU-C-Bibliothek (glibc) wurde auf Version 2.29
+aktualisiert. Um zuvor installierte Programme, die an glibc 2.28 gebunden
+worden sind, weiter benutzen zu können, müssen Sie Locale-Daten für Version
+2.28 zusätzlich zu den Locale-Daten für 2.29 installieren:
+
+@example
+guix install glibc-locales glibc-locales-2.28
+@end example
+
+Auf Guix System genügt es, das @code{locale-libcs}-Feld Ihrer
+@code{operating-system}-Form anzupassen. Führen Sie @code{info \"(guix.de)
+Locales\"} aus, um weitere Informationen dazu zu erhalten.")))
 
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
         (title (en "New reduced binary seed bootstrap"))
@@ -31,7 +43,13 @@ info.")))
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
 packages are built now weighs in at approximately 130 MiB, half of what it
 used to be.  Run @code{info \"(guix) Bootstrapping\"} to learn more, or watch
-the talk at @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")))
+the talk at @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")
+         (de "Der Paketgraph auf x86_64 und i686 hat jetzt eine @dfn{kleinere
+Menge an binären Seeds}. Das heißt, die ursprüngliche Menge an Binärdateien,
+aus denen heraus Pakete erstellt werden, machen nun ungefähr 130 MiB aus, halb
+so viel wie früher. Führen Sie @code{info \"(guix.de) Bootstrapping\"} aus, um
+mehr zu erfahren, oder schauen Sie sich den Vortrag auf
+@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/} an.")))
 
  (entry (commit "dcc90d15581189dbc30e201db2b807273d6484f0")
         (title (en "New channel news mechanism")
