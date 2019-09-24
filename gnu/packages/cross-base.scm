@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
@@ -190,13 +190,16 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                               '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
                   #t))))))))))
 
-(define (cross-gcc-patches target)
-  "Return GCC patches needed for TARGET."
+(define (cross-gcc-patches xgcc target)
+  "Return GCC patches needed for XGCC and TARGET."
   (cond ((string-prefix? "xtensa-" target)
          ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
          (search-patches "ath9k-htc-firmware-gcc.patch"))
         ((target-mingw? target)
-         (search-patches "gcc-4.9.3-mingw-gthr-default.patch"))
+         (append (search-patches "gcc-4.9.3-mingw-gthr-default.patch")
+                 (if (version>=? (package-version xgcc) "7.0")
+                     (search-patches "gcc-7-cross-mingw.patch")
+                    '())))
         (else '())))
 
 (define (cross-gcc-snippet target)
@@ -229,7 +232,7 @@ target that libc."
                        ((version>=? (package-version xgcc) "8.0") (search-patch "gcc-8-cross-environment-variables.patch"))
                        ((version>=? (package-version xgcc) "6.0") (search-patch "gcc-6-cross-environment-variables.patch"))
                        (else  (search-patch "gcc-cross-environment-variables.patch")))
-                      (cross-gcc-patches target))))
+                      (cross-gcc-patches xgcc target))))
               (modules '((guix build utils)))
               (snippet
                (cross-gcc-snippet target))))
