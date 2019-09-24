@@ -771,32 +771,45 @@ supports type hints, definition-jumping, completion, and more.")
       (license license:gpl3+))))
 
 (define-public emacs-flycheck
-  (package
-    (name "emacs-flycheck")
-    (version "31")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/flycheck/flycheck/releases/download/"
-                    version "/flycheck-" version ".tar"))
-              (sha256
-               (base32
-                "01rnwan16m7cyyrfca3c5c60mbj2r3knkpzbhji2fczsf0wns240"))
-              (modules '((guix build utils)))
-              (snippet `(begin
-                          ;; Change 'flycheck-version' so that it does not
-                          ;; attempt to get its version from pkg-info.el.
-                          (substitute* "flycheck.el"
-                            (("\\(pkg-info-version-info 'flycheck\\)")
-                             (string-append "\"" ,version "\"")))
-                          #t))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)))
-    (home-page "https://www.flycheck.org")
-    (synopsis "On-the-fly syntax checking")
-    (description
-     "This package provides on-the-fly syntax checking for GNU Emacs.  It is a
+  ;; last release version was more than 300 commits ago
+  (let ((commit "0006a59259ebd02c9199ddc87f0e3ce22793a2ea")
+        (revision "1"))
+    (package
+      (name "emacs-flycheck")
+      (version (git-version "31" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/flycheck/flycheck/")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "09q3h6ldpg528cfbmsbb1x2vf5hmzgm3fshqn6kdy144jxcdjlf1"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-dash" ,emacs-dash)))
+      (native-inputs
+       `(("emacs-shut-up" ,emacs-shut-up)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'change-flycheck-version
+             (lambda _
+               (substitute* "flycheck.el"
+                 (("\\(pkg-info-version-info 'flycheck\\)")
+                  (string-append "\"" ,version "\"")))
+               #t)))
+         ;; TODO: many failing tests
+         #:tests? #f
+         #:test-command '("emacs" "-Q" "--batch" "-L" "."
+                          "--load" "test/flycheck-test"
+                          "--load" "test/run.el"
+                          "-f" "flycheck-run-tests-main")))
+      (home-page "https://www.flycheck.org")
+      (synopsis "On-the-fly syntax checking")
+      (description
+       "This package provides on-the-fly syntax checking for GNU Emacs.  It is a
 replacement for the older Flymake extension which is part of GNU Emacs, with
 many improvements and additional features.
 
@@ -804,7 +817,7 @@ Flycheck provides fully-automatic, fail-safe, on-the-fly background syntax
 checking for over 30 programming and markup languages with more than 70
 different tools.  It highlights errors and warnings inline in the buffer, and
 provides an optional IDE-like error list.")
-    (license license:gpl3+)))                     ;+GFDLv1.3+ for the manual
+      (license license:gpl3+))))                     ;+GFDLv1.3+ for the manual
 
 (define-public emacs-a
   (package
