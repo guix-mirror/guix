@@ -810,7 +810,7 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
@@ -818,7 +818,7 @@ Guile will work for XBindKeys.")
              (url "https://github.com/baskerville/sxhkd")
              (commit version)))
        (sha256
-        (base32 "1cz4vkm7fqd51ly9qjkf5q76kdqdzfhaajgvrs4anz5dyzrdpw68"))))
+        (base32 "0j7bl2l06r0arrjzpz7al9j6cwzc730knbsijp7ixzz96pq7xa2h"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
