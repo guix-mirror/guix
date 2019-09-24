@@ -808,7 +808,7 @@ network.")
   (let ((changeset "5887634ea695"))
     (package
       (name "mojoshader")
-      (version changeset)
+      (version (string-append "20190825" "-" changeset))
       (source
        (origin
          (method hg-fetch)
@@ -821,7 +821,9 @@ network.")
       (arguments
        ;; Tests only for COMPILER_SUPPORT=ON.
        `(#:tests? #f
-         #:configure-flags '("-DBUILD_SHARED=ON")
+         #:configure-flags '("-DBUILD_SHARED=ON"
+                             "-DFLIP_VIEWPORT=ON"
+                             "-DDEPTH_CLIPPING=ON")
          #:phases
          (modify-phases %standard-phases
            (replace 'install
