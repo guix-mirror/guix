@@ -1109,6 +1109,40 @@ of use.")
                '("ogre"))))
     (synopsis "Fast, flexible and simple GUI (OpenGL backend)")))
 
+(define openmw-openscenegraph
+  ;; OpenMW prefers its own fork of openscenegraph:
+  ;; https://wiki.openmw.org/index.php?title=Development_Environment_Setup#OpenSceneGraph.
+  (let ((commit "36a962845a2c87a6671fd822157e0729d164e940"))
+    (package
+      (inherit openscenegraph)
+      (version (git-version "3.6" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/OpenMW/osg/")
+               (commit commit)))
+         (file-name (git-file-name (package-name openscenegraph) version))
+         (sha256
+          (base32
+           "05yhgq3qm5q277y32n5sf36vx5nv5qd3zlhz4csgd3a6190jrnia"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments openscenegraph)
+         ((#:configure-flags flags)
+          ;; As per the above wiki link, the following plugins are enough:
+          `(append
+            '("-DBUILD_OSG_PLUGINS_BY_DEFAULT=0"
+              "-DBUILD_OSG_PLUGIN_OSG=1"
+              "-DBUILD_OSG_PLUGIN_DDS=1"
+              "-DBUILD_OSG_PLUGIN_TGA=1"
+              "-DBUILD_OSG_PLUGIN_BMP=1"
+              "-DBUILD_OSG_PLUGIN_JPEG=1"
+              "-DBUILD_OSG_PLUGIN_PNG=1"
+              "-DBUILD_OSG_DEPRECATED_SERIALIZERS=0"
+              ;; The jpeg plugin requires conversion between integers and booleans
+              "-DCMAKE_CXX_FLAGS=-fpermissive")
+            ,flags)))))))
+
 (define-public openmw
   (package
     (name "openmw")
@@ -1137,7 +1171,7 @@ of use.")
        ("libxt" ,libxt)
        ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph)
+       ("openscenegraph" ,openmw-openscenegraph)
        ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("unshield" ,unshield)))
