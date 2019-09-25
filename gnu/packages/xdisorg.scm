@@ -999,7 +999,8 @@ Wacom tablet applet.")
        (method url-fetch)
        (uri (string-append
              "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
-             name "-" version "/" name "-" version ".tar.bz2"))
+             "xf86-input-wacom-" version "/"
+             "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
         (base32
          "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
