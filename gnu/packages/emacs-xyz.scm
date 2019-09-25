@@ -16280,6 +16280,32 @@ mode for editing gnuplot scripts.  It provides syntax highlighting,
 indentation and a command to plot the file.")
     (license license:gpl3+)))
 
+(define-public emacs-cmake-font-lock
+  (let ((commit "e0ceaaae19c13b66f781512e3295bfc6707b56f4")
+        (revision "1"))
+    (package
+      (name "emacs-cmake-font-lock")
+      (version (git-version "0.1.5" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Lindydancer/cmake-font-lock.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "03gsyn95dlmsn15bl353bphi3qy7ccn5bss3f7n97kf38bllh0yf"))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-faceup" ,emacs-faceup)))
+      (arguments
+       `(#:include (cons "^admin\\/" %default-include)))
+      (home-page "https://github.com/Lindydancer/cmake-font-lock")
+      (synopsis "Advanced type-aware syntax-highlighting for CMake")
+      (description "This package highlights function arguments in CMake
+according to their use.")
+      (license license:gpl3+))))
+
 (define-public emacs-dtrt-indent
   (package
     (name "emacs-dtrt-indent")
