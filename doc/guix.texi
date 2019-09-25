@@ -11694,10 +11694,14 @@ update time on the in-memory version of the file inode), and
 Manual}, for more information on these flags.
 
 @item @code{options} (default: @code{#f})
-This is either @code{#f}, or a string denoting mount options passed to the
-file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C Library
-Reference Manual}, for details and run @command{man 8 mount} for options for
-various file systems.
+This is either @code{#f}, or a string denoting mount options passed to
+the file system driver.  @xref{Mount-Unmount-Remount,,, libc, The GNU C
+Library Reference Manual}, for details and run @command{man 8 mount} for
+options for various file systems.  Note that the
+@code{file-system-options->alist} and @code{alist->file-system-options}
+procedures from @code{(gnu system file-systems)} can be used to convert
+file system options given as an association list to the string
+representation, and vice-versa.
 
 @item @code{mount?} (default: @code{#t})
 This value indicates whether to automatically mount the file system when

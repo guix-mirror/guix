@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2020 Jakub Kądziołka <kuba@kadziolka.net>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +39,9 @@
             file-system-needed-for-boot?
             file-system-flags
             file-system-options
+            file-system-options->alist
+            alist->file-system-options
+
             file-system-mount?
             file-system-check?
             file-system-create-mount-point?
@@ -250,6 +254,33 @@ UUID-TYPE, a symbol such as 'dce or 'iso9660."
          (uuid->string device)))
     ((? string?)
      device)))
+
+(define (file-system-options->alist string)
+  "Translate the option string format of a <file-system> record into an
+association list of options or option/value pairs."
+  (if string
+      (let ((options (string-split string #\,)))
+        (map (lambda (param)
+               (let ((=index (string-index param #\=)))
+                 (if =index
+                     (cons (string-take param =index)
+                           (string-drop param (1+ =index)))
+                     param)))
+             options))
+      '()))
+
+(define (alist->file-system-options options)
+  "Return the string representation of OPTIONS, an association list.  The
+string obtained can be used as the option field of a <file-system> record."
+  (if (null? options)
+      #f
+      (string-join (map (match-lambda
+                          ((key . value)
+                           (string-append key "=" value))
+                          (key
+                           key))
+                        options)
+                   ",")))
 
 (define (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it holds the

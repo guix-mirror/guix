@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,5 +64,23 @@
           (('gnu 'packages _ ..1) #t)
           (_ #f))
         (source-module-closure '((gnu system file-systems)))))
+
+(test-equal "file-system-options->alist"
+  '("autodefrag" ("subvol" . "home") ("compress" . "lzo"))
+  (file-system-options->alist "autodefrag,subvol=home,compress=lzo"))
+
+(test-equal "file-system-options->alist (#f)"
+  '()
+  (file-system-options->alist #f))
+
+(test-equal "alist->file-system-options"
+  "autodefrag,subvol=root,compress=lzo"
+  (alist->file-system-options '("autodefrag"
+                                ("subvol" . "root")
+                                ("compress" . "lzo"))))
+
+(test-equal "alist->file-system-options (null)"
+  #f
+  (alist->file-system-options '()))
 
 (test-end)
