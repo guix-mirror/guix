@@ -12389,7 +12389,7 @@ The following example showcases how we can use an existing rule file.
 @lisp
 (use-modules (guix download)     ;for url-fetch
              (guix packages)     ;for origin
-             ;; @dots{})
+             @dots{})
 
 (define %android-udev-rules
   (file->udev-rule
@@ -12423,7 +12423,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
              (gnu system shadow)     ;for user-group
-             ;; @dots{})
+             @dots{})
 
 (operating-system
   ;; @dots{}
@@ -12431,8 +12431,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 ;; @dots{}
                 (supplementary-groups
                  '("adbusers"   ;for adb
-                   "wheel" "netdev" "audio" "video"))
-                ;; @dots{})))
+                   "wheel" "netdev" "audio" "video")))))
 
   (groups (cons (user-group (system? #t) (name "adbusers"))
                 %base-groups))
