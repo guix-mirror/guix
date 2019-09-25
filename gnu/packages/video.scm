@@ -204,6 +204,32 @@ In fact, there is no graphical output possible.  AA-lib replaces those
 old-fashioned output methods with powerful ascii-art renderer.")
     (license license:lgpl2.0+)))
 
+(define-public celluloid
+  (package
+    (name "celluloid")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
+                           "/download/v" version "/celluloid-" version ".tar.xz"))
+       (sha256
+        (base32 "0a3bhvs38gxjplygb0q9cx5djl5y0bmnxgaq0sd65j610a60f5h0"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libepoxy" ,libepoxy)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/celluloid-player/celluloid")
+    (synopsis "GTK+ frontend for the mpv media player")
+    (description "Celluloid is a simple GTK+ frontend for the mpv media player.
+It interacts with mpv via the client API exported by libmpv, allowing access to
+mpv's powerful playback capabilities.")
+    (license license:gpl3+)))
+
 (define-public liba52
   (package
     (name "liba52")
@@ -1404,32 +1430,7 @@ projects while introducing many more.")
     (license license:gpl2+)))
 
 (define-public gnome-mpv
-  (package
-    (name "gnome-mpv")
-    (version "0.16")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/gnome-mpv/gnome-mpv/releases"
-                           "/download/v" version "/gnome-mpv-" version
-                           ".tar.xz"))
-       (sha256
-        (base32
-         "0jzdzvhcqp5jp1inwk2466zf7r8iimk3x69066gl8mzaay98mk92"))))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("libepoxy" ,libepoxy)
-       ("mpv" ,mpv)))
-    (build-system glib-or-gtk-build-system)
-    (home-page "https://github.com/gnome-mpv/gnome-mpv")
-    (synopsis "GTK+ frontend for the mpv media player")
-    (description "GNOME MPV is a simple GTK+ frontend for the mpv media player.
-GNOME MPV interacts with mpv via the client API exported by libmpv, allowing
-access to mpv's powerful playback capabilities.")
-    (license license:gpl3+)))
+  (deprecated-package "gnome-mpv" celluloid))
 
 (define-public libvpx
   (package
