@@ -97,7 +97,7 @@
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.5")
+    (version "0.9.9")
     (source
      (origin
        (method git-fetch)
@@ -106,7 +106,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09h3g1rxxjyw861mk32lj774nmwkx8cwxq4wfgmf4dpbizymvhhr"))))
+        (base32 "1i7crmljk1vra1r6alxvj6lqqailjjcv0llyg7a0gm23rbv4a42g"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
