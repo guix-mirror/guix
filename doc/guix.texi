@@ -19819,13 +19819,12 @@ can do something along these lines:
 
 @lisp
 (define %gnu-mirror
-  (plain-file
-   "gnu.vcl"
-   "vcl 4.1;
-backend gnu @{ .host = "www.gnu.org"; @}"))
+  (plain-file "gnu.vcl"
+              "vcl 4.1;
+backend gnu @{ .host = \"www.gnu.org\"; @}"))
 
 (operating-system
-  ...
+  ;; @dots{}
   (services (cons (service varnish-service-type
                            (varnish-configuration
                             (listen '(":80"))
