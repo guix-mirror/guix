@@ -7112,6 +7112,9 @@ pasting into and from @code{tmux} paste buffers.")
          "1r8shfdddys9vqvrxf7s6z83ydqx9xhqs9sa7klbsajryqcp50b7"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/redguardtoo/evil-nerd-commenter")
     (synopsis "Comment and uncomment lines efficiently")
     (description
