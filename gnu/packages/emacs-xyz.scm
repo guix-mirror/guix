@@ -16695,10 +16695,10 @@ and code peeking.")
          ("emacs-lsp-mode" ,emacs-lsp-mode)
          ("emacs-dash" ,emacs-dash)))
       (home-page "https://github.com/emacs-lsp/helm-lsp")
-      (synopsis "Convert keyboard macros to Emacs Lisp")
+      (synopsis "Provide LSP-enhanced completion for symbols")
       (description
-       "This package displays keyboard macros or latest interactive commands
-as Emacs Lisp.")
+       "This package provides completion for symbols from workspaces with a
+LSP-compliant server running.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-notmuch
