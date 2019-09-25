@@ -17095,16 +17095,15 @@ compatible with Emacs' shell modes.")
 
 (define-public emacs-vdiff
   (let ((commit "09e15fc932bfd2febe1d4a65780a532394562b07")
-        (version "0.2.3")
         (revision "1"))
     (package
       (name "emacs-vdiff")
-      (version (git-version version revision commit))
+      (version (git-version "0.2.3" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/justbur/emacs-vdiff/")
+               (url "https://github.com/justbur/emacs-vdiff.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -17113,6 +17112,11 @@ compatible with Emacs' shell modes.")
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-hydra" ,emacs-hydra)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "-Q" "-batch" "-L" "."
+                          "-l" "vdiff-test.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
       (home-page "https://github.com/justbur/emacs-vdiff/")
       (synopsis "Frontend for diffing based on vimdiff")
       (description "This package permits comparisons of two or three buffers
