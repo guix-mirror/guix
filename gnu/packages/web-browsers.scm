@@ -331,7 +331,7 @@ GUI.  It is based on PyQt5 and QtWebKit.")
 (define-public vimb
   (package
     (name "vimb")
-    (version "3.3.0")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -339,12 +339,11 @@ GUI.  It is based on PyQt5 and QtWebKit.")
              (url "https://github.com/fanglingsu/vimb/")
              (commit version)))
        (sha256
-        (base32
-         "1qg18z2gnsli9qgrqfhqfrsi6g9mcgr90w8yab28nxrq4aha6brf"))
+        (base32 "13q7mk1hhjri0s30a98r8ncy0skf6m6lrnbqaf0jimf6sbwgiirf"))
        (file-name (git-file-name name version))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           "DESTDIR="
                           (string-append "PREFIX=" %output))
