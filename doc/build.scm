@@ -215,6 +215,58 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                          (ice-9 match)
                          (ice-9 threads))
 
+            (define (pair-open/close lst)
+              ;; Pair 'open' and 'close' tags produced by 'highlights' and
+              ;; produce nested 'paren' tags instead.
+              (let loop ((lst lst)
+                         (level 0)
+                         (result '()))
+                (match lst
+                  ((('open open) rest ...)
+                   (call-with-values
+                       (lambda ()
+                         (loop rest (+ 1 level) '()))
+                     (lambda (inner close rest)
+                       (loop rest level
+                             (cons `(paren ,level ,open ,inner ,close)
+                                   result)))))
+                  ((('close str) rest ...)
+                   (if (> level 0)
+                       (values (reverse result) str rest)
+                       (begin
+                         (format (current-error-port)
+                                 "warning: extra closing paren; context:~% ~y~%"
+                                 (reverse result))
+                         (loop rest 0 (cons `(close ,str) result)))))
+                  ((item rest ...)
+                   (loop rest level (cons item result)))
+                  (()
+                   (when (> level 0)
+                     (format (current-error-port)
+                             "warning: missing ~a closing parens; context:~% ~y%"
+                             level (reverse result)))
+                   (values (reverse result) "" '())))))
+
+            (define (highlights->sxml* highlights)
+              ;; Like 'highlights->sxml', but handle nested 'paren tags.  This
+              ;; allows for paren matching highlights via appropriate CSS
+              ;; "hover" properties.
+              (define (tag->class tag)
+                (string-append "syntax-" (symbol->string tag)))
+
+              (map (match-lambda
+                     ((? string? str) str)
+                     (('paren level open (body ...) close)
+                      `(span (@ (class ,(string-append "syntax-paren"
+                                                       (number->string level))))
+                             ,open
+                             (span (@ (class "syntax-symbol"))
+                                   ,@(highlights->sxml* body))
+                             ,close))
+                     ((tag text)
+                      `(span (@ (class ,(tag->class tag))) ,text)))
+                   highlights))
+
             (define entity->string
               (match-lambda
                 ("rArr"   "⇒")
@@ -252,9 +304,10 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
                                  (href #$syntax-css-url)))))
                 (('pre ('@ ('class "lisp")) code-snippet ...)
                  `(pre (@ (class "lisp"))
-                       ,(highlights->sxml
-                         (highlight lex-scheme
-                                    (concatenate-snippets code-snippet)))))
+                       ,@(highlights->sxml*
+                          (pair-open/close
+                           (highlight lex-scheme
+                                      (concatenate-snippets code-snippet))))))
                 ((tag ('@ attributes ...) body ...)
                  `(,tag (@ ,@attributes) ,@(map syntax-highlight body)))
                 ((tag body ...)
