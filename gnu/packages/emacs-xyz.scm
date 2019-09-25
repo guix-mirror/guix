@@ -9965,6 +9965,12 @@ database of references on life sciences.")
         (base32
          "1dgrf7na6r6mmkknphzshlbd5fnzisg0qn0j7vfpa38wgsymaq52"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       ;; TODO: also enable websocket-functional-test.el
+       #:test-command '("emacs" "--batch"
+                        "-l" "websocket-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "http://elpa.gnu.org/packages/websocket.html")
     (synopsis "Emacs WebSocket client and server")
     (description "This is an Elisp library for WebSocket clients to talk to
