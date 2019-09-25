@@ -9853,12 +9853,11 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
     (license license:gpl3+)))
 
 (define-public emacs-make-it-so
-  (let ((commit "bc3b01d6b9ed6ff66ebbd524234f9d6df60dd4be")
-        (version "0.1.0")
-        (revision "1"))
+  (let ((commit "b73dfb640588123c9eece230ad72b37604f5c126")
+        (revision "2"))
     (package
       (name "emacs-make-it-so")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -9867,7 +9866,7 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
                (commit commit)))
          (sha256
           (base32
-           "0833bzlscpnkvjnrg3g54yr246afbjwri8n5wxk8drnsq6acvd8z"))))
+           "0p6xhyinzzkrwzbpxqfm8hlii0ikvmmylya240bwsa77w0g1k6xq"))))
       (build-system emacs-build-system)
       (arguments
        `(#:include (cons "^recipes/" %default-include)))
