@@ -5021,7 +5021,7 @@ protocol.")
       (origin
         (method url-fetch)
         (uri (string-append "https://xcb.freedesktop.org/dist/"
-                            name "-" version ".tar.bz2"))
+                            "libxcb-" version ".tar.bz2"))
         (sha256
           (base32
            "1ahxhmdqp4bhb90zmc275rmf5wixqra4bnw9pqnzyl1w3598g30q"))))
