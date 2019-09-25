@@ -6360,15 +6360,16 @@ that uses the standard completion function completing-read.")
 (define-public emacs-yaml-mode
   (package
     (name "emacs-yaml-mode")
-    (version "0.0.13")
+    (version "0.0.14")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://raw.githubusercontent.com/yoshiki"
-                                  "/yaml-mode/v" version "/yaml-mode.el"))
-              (file-name (string-append "yaml-mode-" version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/yoshiki/yaml-mode.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0im88sk9dqw03x6d6zaspgvg9i0pfpgb8f2zygrmbifh2w4pwmvj"))))
+                "18g064ardqi1f3xz7j6rs1x9fvv9sn0iq9vgid8c6qvxq7gwj00r"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yoshiki/yaml-mode")
     (synopsis "Major mode for editing YAML files")
