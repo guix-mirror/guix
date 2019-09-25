@@ -1493,7 +1493,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.09.12")
+    (version "2019.09.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1501,7 +1501,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wmc0rl4l08hnz3agh69ld1pcmjs7czg0d2k7mnnlxhwlwi38w56"))))
+                "0h7v81kcxcpy82wq9b1aiz2zg6hg7rnlcfmzd13j6k8yhr7ah9yf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
