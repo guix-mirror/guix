@@ -2203,7 +2203,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.12.0")
+    (version "6.16.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2212,7 +2212,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pzm3mjbbdl2rkbswgyfkx552xlxh2qrwzsi2a4dicfr92rfgq6w"))))
+                "1362fv63p34kza9v4b71b6wakgvsa2vdx9y0g28x3yh4cp4k97kx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
