@@ -9470,7 +9470,7 @@ that Guix uses, as in this example:
   ;; @dots{}
   ;; CPE calls this package "grub2".
   (properties '((cpe-name . "grub2")
-                (cpe-version . "2.3")))
+                (cpe-version . "2.3"))))
 @end lisp
 
 @c See <https://www.openwall.com/lists/oss-security/2017/03/15/3>.
