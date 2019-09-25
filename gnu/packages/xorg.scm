@@ -215,7 +215,7 @@ which can be read by any architecture.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto/"
-                                  name "-" version ".tar.bz2"))
+                                  "xorgproto-" version ".tar.bz2"))
               (sha256
                (base32
                 "180mqkp70i44rkmj430pmn9idssvffrgv4y5h19fm698a7h8bs7y"))))
