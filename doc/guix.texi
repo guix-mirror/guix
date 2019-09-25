@@ -2755,7 +2755,7 @@ As an example, @var{file} might contain a definition like this
 (@pxref{Defining Packages}):
 
 @lisp
-@verbatiminclude package-hello.scm
+@include package-hello.scm
 @end lisp
 
 Developers may find it useful to include such a @file{guix.scm} file
@@ -8231,7 +8231,7 @@ As an example, @var{file} might contain a package definition like this
 (@pxref{Defining Packages}):
 
 @lisp
-@verbatiminclude package-hello.scm
+@include package-hello.scm
 @end lisp
 
 @item --expression=@var{expr}
