@@ -6411,13 +6411,14 @@ via @code{gitlab-ci-lint}.")
     (name "emacs-web-mode")
     (version "16")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://raw.githubusercontent.com/fxbois"
-                                  "/web-mode/v" version "/web-mode.el"))
-              (file-name (string-append "web-mode-" version ".el"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/fxbois/web-mode.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hs5w7kdvcyn4ihyw1kfjg48djn5p7lz4rlbhzzdqv1g56xqx3gw"))))
+                "17dw6a8d0p304f2sa4f9zwd8r48w2wbkc3fvbmxwlg4w12h7cwf0"))))
     (build-system emacs-build-system)
     (synopsis "Major mode for editing web templates")
     (description "Web-mode is an Emacs major mode for editing web templates
