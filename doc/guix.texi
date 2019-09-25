@@ -13349,7 +13349,7 @@ gateway @code{hostname}:
              (program (file-append openssh "/bin/ssh"))
              (arguments
               '("ssh" "-qT" "-i" "/path/to/ssh_key"
-                "-W" "smtp-server:25" "user@@hostname")))))
+                "-W" "smtp-server:25" "user@@hostname")))))))
 @end lisp
 
 See below for more details about @code{inetd-configuration}.
