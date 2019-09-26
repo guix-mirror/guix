@@ -883,7 +883,7 @@ coding footprint.")
 (define-public dehydrated
   (package
     (name "dehydrated")
-    (version "0.6.2")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -891,7 +891,7 @@ coding footprint.")
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
-                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))))
+                "0dgskgbdd95p13jx6s13p77y15wngb5cm6p4305cf2s54w0bvahh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
