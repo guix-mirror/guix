@@ -2858,7 +2858,7 @@ Songs can be searched by artist, name or even by a part of the song text.")
        ("python-mutagen" ,python-mutagen)
        ("python-pyyaml" ,python-pyyaml)
        ("python-unidecode" ,python-unidecode)))
-    (home-page "http://beets.io")
+    (home-page "https://beets.io")
     (synopsis "Music organizer")
     (description "The purpose of beets is to get your music collection right
 once and for all.  It catalogs your collection, automatically improving its
