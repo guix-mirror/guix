@@ -157,7 +157,6 @@ namespace, in addition to essential bind-mounts such /proc."
                               (lambda ()
                                 (mkdir-p "/var/run")
                                 (clean-up pid-file)
-                                (clean-up log-file)
 
                                 (exec-command command
                                               #:user user
