@@ -15379,10 +15379,11 @@ News homepage.")
       (license license:gpl3))))
 
 (define-public emacs-youtube-dl
-  (let ((commit "7c9d7a7d05b72a7d1b1257a36c5e2b2567b185dd"))
+  (let ((commit "af877b5bc4f01c04fccfa7d47a2c328926f20ef4")
+        (revision "2"))
     (package
       (name "emacs-youtube-dl")
-      (version (git-version "1.0" "1" commit))
+      (version (git-version "1.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -15392,7 +15393,7 @@ News homepage.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0mh4s089a4x8s380agzb2306kdp1hl204px1n5rrrrdcls7imnh6"))))
+           "0zkl9jkjbx0lmp9ylv4rqg1zwqibk053s4rp7s1h0i18nzk7vn8j"))))
       (build-system emacs-build-system)
       (inputs
        `(("youtube-dl" ,youtube-dl)))
