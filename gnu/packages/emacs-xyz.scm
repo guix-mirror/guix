@@ -17590,12 +17590,11 @@ Dash docsets.")
       (license license:gpl3+))))
 
 (define-public emacs-counsel-dash
-  (let ((commit "07fa74a94ff4da5b6c8c4810f5e143e701b480d2")
-        (version "0.1.3")
-        (revision "3"))
+  (let ((commit "24d370be9e94e90d045c49967e19484b9903fce9")
+        (revision "2"))
     (package
       (name "emacs-counsel-dash")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.3" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -17605,11 +17604,10 @@ Dash docsets.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "17h2m9zsadq270mkq12kmdzmpbfjiwjbg8n1rg2apqnm1ndgcwf8"))))
+           "18gp7hhgng271c7bh06k9p24zqic0f64j5cicivljmyk9c3nh7an"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-helm-dash" ,emacs-helm-dash)
-         ("emacs-dash" ,emacs-dash)
+       `(("emacs-dash-docs" ,emacs-dash-docs)
          ("emacs-ivy" ,emacs-ivy)))
       (home-page "https://github.com/nathankot/counsel-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
