@@ -35,6 +35,7 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -85,6 +86,34 @@
      "@code{libwpe} is a small library that defines programming interfaces
 for use by WebKit, and provides a mechanism for loading a platform-specific
 backend which implements them.")
+    (license license:bsd-2)))
+
+(define-public wpebackend-fdo
+  (package
+    (name "wpebackend-fdo")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wpewebkit.org/releases/"
+                                  "wpebackend-fdo-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1bwbs47v4nlzhsqrw9fpyny5m3n9ry0kfzsvk90zjif4bd5cl6d9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libwpe" ,libwpe)
+       ("mesa" ,mesa)
+       ("wayland" ,wayland)))
+    (home-page "https://wpewebkit.org/")
+    (synopsis "Wayland WPE backend")
+    (description
+     "This package provides a backend implementation for the WPE WebKit
+engine that uses Wayland for graphics output.")
     (license license:bsd-2)))
 
 (define-public webkitgtk
