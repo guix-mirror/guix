@@ -17564,25 +17564,25 @@ copied into @code{org-mode} buffers.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-dash
-  (let ((commit "192b862185df661439a06de644791171e899348a")
-        (version "1.3.0")
-        (revision "18"))
+  (let ((commit "7f853bd34da666f0e9a883011c80f451b06f6c59")
+        (revision "2"))
     (package
       (name "emacs-helm-dash")
-      (version (git-version version revision commit))
+      (version (git-version "1.3.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/areina/helm-dash")
+               (url "https://github.com/areina/helm-dash.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "06am5vnr4hsxkvh2b8q8kb80y5x1h3qyv7gwggswwhfa7w2vba3w"))))
+           "0r192vzry1212ihabg9pgw9xar8zdgnbgy0vsgvfm8s5wj6ny7jp"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-helm" ,emacs-helm)))
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-dash-docs" ,emacs-dash-docs)))
       (home-page "https://github.com/areina/helm-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
       (description "This package uses Helm to install and navigate through
