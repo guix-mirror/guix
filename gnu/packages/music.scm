@@ -4534,7 +4534,7 @@ controller.")
 (define-public fmit
   (package
     (name "fmit")
-    (version "1.2.6")
+    (version "1.2.13")
     (source (origin
 	      (method git-fetch)
 	      (uri (git-reference
@@ -4543,7 +4543,7 @@ controller.")
               (file-name (git-file-name name version))
 	      (sha256
                (base32
-                "03nzkig5mw2rqwhwmg0qvc5cnk9bwh2wp13jh0mdrr935w0587mz"))))
+                "1qyskam053pvlap1av80rgp12pzhr92rs88vqs6s0ia3ypnixcc6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
