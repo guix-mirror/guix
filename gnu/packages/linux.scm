@@ -36,6 +36,7 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5969,3 +5970,43 @@ have to construct the archives directly, without using the archiver.")
     (description "inputattach dispatches input events from several device
 types and interfaces and translates so that the X server can use them.")
     (license license:gpl2+)))
+
+(define-public ell
+  (package
+    (name "ell")
+    (version "0.23")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.org/pub/scm/libs/ell/ell.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1qhlcwhn0gj877yss2ymx1aczghlddzb5v9mm1dgp2zliii3jy10"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-dbus-tests
+           (lambda _
+             (substitute* '("unit/test-dbus-message-fds.c"
+                            "unit/test-dbus-properties.c"
+                            "unit/test-dbus.c")
+               (("/usr/bin/dbus-daemon") (which "dbus-daemon")))
+             #t)))))
+    (inputs
+     `(("dbus" ,dbus)
+       ("libtool" ,libtool)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkgconfig" ,pkg-config)
+       ("automake" ,automake)))
+    (home-page "https://01.org/ell")
+    (synopsis "Embedded Linux Library")
+    (description "The Embedded Linux* Library (ELL) provides core, low-level
+functionality for system daemons.  It typically has no dependencies other than
+the Linux kernel, C standard library, and libdl (for dynamic linking).  While
+ELL is designed to be efficient and compact enough for use on embedded Linux
+platforms, it is not limited to resource-constrained systems.")
+    (license license:lgpl2.1+)))
