@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,37 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
+
+(define-public libwpe
+  (package
+    (name "libwpe")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://wpewebkit.org/releases/libwpe-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1221vs72zs87anrzhbm6pf8jnii7s6ms7mkzj6nlds9zqd7lklz2"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("mesa" ,mesa)))
+    (propagated-inputs
+     `(;; In Requires of wpe-1.0.pc.
+       ("libxkbcommon" ,libxkbcommon)))
+    (home-page "https://wpewebkit.org/")
+    (synopsis "Platform agnostic WebKit interfaces")
+    (description
+     "@code{libwpe} is a small library that defines programming interfaces
+for use by WebKit, and provides a mechanism for loading a platform-specific
+backend which implements them.")
+    (license license:bsd-2)))
 
 (define-public webkitgtk
   (package
