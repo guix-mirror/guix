@@ -14185,10 +14185,11 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
   (deprecated-package "emacs-evil-ediff" emacs-evil-collection))
 
 (define-public emacs-evil-magit
-  (let ((commit "e2fec5877994c0c19f0c25fa01f3d22cb0ab38ba"))
+  (let ((commit "4b66a1db8285457147a5436f209391016a819ea1")
+        (revision "3"))
     (package
       (name "emacs-evil-magit")
-      (version (git-version "0.4.2" "2" commit))
+      (version (git-version "0.4.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -14198,11 +14199,17 @@ Org-mode file, and citations of Zotero items in Pandoc Markdown files.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "134v7s03jvbhm70mavwab85r09i68g2a5bvriirh0chz1av2y16v"))))
+           "0kkmbswfh34k3amfl3v140vsnz1gq4n4mg9g4khjd9yjph3zms4h"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
          ("magit" ,emacs-magit)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "-Q" "-batch"
+                          "-L" "."
+                          "-l" "evil-magit-tests"
+                          "-f" "ert-run-tests-batch-and-exit")))
       (home-page
        "https://github.com/emacs-evil/evil-magit")
       (synopsis "Evil-based key bindings for Magit")
