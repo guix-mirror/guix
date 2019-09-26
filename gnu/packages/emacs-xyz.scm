@@ -9998,7 +9998,7 @@ value of the access token.")
 (define-public emacs-circe
   (package
     (name "emacs-circe")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method git-fetch)
@@ -10007,8 +10007,7 @@ value of the access token.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "10gi14kwxd81blddpvqh95lgmpbfgp0m955naxix3bs3r6a75n4s"))))
+        (base32 "0cr9flk310yn2jgvj4hbqw9nj5wlfi0fazdkqafzidgz6iq150wd"))))
     (build-system emacs-build-system)
     (arguments
      `(#:tests? #t
