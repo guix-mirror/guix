@@ -398,7 +398,7 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk-2.24)))
+       ("webkitgtk" ,webkitgtk-2.26)))
     (native-inputs
      `(("gcc-7" ,gcc-7)   ; needed because webkitgtk-2.24 and above are compiled with gcc-7
        ("pkg-config" ,pkg-config)))

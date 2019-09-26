@@ -48,6 +48,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libreoffice)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages virtualization)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -225,22 +227,27 @@ HTML/CSS applications to full-fledged web browsers.")
 ;; newer version of GCC than our default compiler, and this causes problems
 ;; when linked with C++ libraries built using our default compiler.  For now,
 ;; we use this newer webkitgtk only for selected packages, e.g. epiphany.
-(define-public webkitgtk-2.24
+(define-public webkitgtk-2.26
   (package/inherit webkitgtk
     (name "webkitgtk")
-    (version "2.24.4")
+    (version "2.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1n3x5g1z6rg9n1ssna7wi0z6zlprjm4wzk544v14wqi6q0lv2s46"))))
+                "0mfikjfjhwcnrxbzdyh3fl9bbs2azgbdnx8h5910h41b3n022jvb"))))
     (native-inputs
      `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
        ,@(package-native-inputs webkitgtk)))
     (inputs
-     `(("openjpeg" ,openjpeg)
+     `(("bubblewrap" ,bubblewrap)
+       ("libseccomp" ,libseccomp)
+       ("libwpe" ,libwpe)
+       ("openjpeg" ,openjpeg)
+       ("wpebackend-fdo" ,wpebackend-fdo)
+       ("xdg-dbus-proxy" ,xdg-dbus-proxy)
        ,@(package-inputs webkitgtk)))
     (arguments
      (substitute-keyword-arguments (package-arguments webkitgtk)
