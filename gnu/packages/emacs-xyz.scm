@@ -17516,6 +17516,53 @@ and searching through @code{Ctags} files.")
 copied into @code{org-mode} buffers.")
       (license license:gpl3+))))
 
+(define-public emacs-dash-docs
+  (let ((commit "111fd9b97001f1ad887b45e5308a14ddd68ce70a")
+        (revision "1"))
+    (package
+      (name "emacs-dash-docs")
+      (version (git-version "1.4.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/dash-docs-el/dash-docs.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0sckb7z0ylflva212bns7iq9mfnffgjghi0qspsbfwra35zb9xng"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-async" ,emacs-async)))
+      (native-inputs
+       `(("emacs-undercover" ,emacs-undercover)
+         ("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("ert-runner")
+         #:phases
+         ;; this test requires network access, so remove it
+         (modify-phases %standard-phases
+           (add-before 'check 'make-tests-writable
+             (lambda _
+               (make-file-writable "test/dash-docs-test.el")
+               #t))
+           (add-before 'check 'delete-test
+             (lambda _
+               (emacs-batch-edit-file "test/dash-docs-test.el"
+                 `(progn (progn
+                          (goto-char (point-min))
+                          (re-search-forward "ert-deftest dash-docs-official-docsets-test")
+                          (beginning-of-line)
+                          (kill-sexp))
+                         (basic-save-buffer)))
+               #t)))))
+      (home-page "https://github.com/dash-docs-el/dash-docs")
+      (synopsis "Offline documentation browser for APIs using Dash docsets")
+      (description "This package exposes functionality to work with Dash docsets.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-dash
   (let ((commit "192b862185df661439a06de644791171e899348a")
         (version "1.3.0")
