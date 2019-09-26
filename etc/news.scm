@@ -10,7 +10,8 @@
  (version 0)
 
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
-        (title (en "GNU C Library upgraded"))
+        (title (en "GNU C Library upgraded")
+	       (fr "Mise à jour de la bibliothèque C de GNU"))
         (body
          (en "The GNU C Library (glibc) has been upgraded to version 2.29.  To
 run previously-installed programs linked against glibc 2.28, you need to
@@ -34,10 +35,22 @@ guix install glibc-locales glibc-locales-2.28
 
 Auf Guix System genügt es, das @code{locale-libcs}-Feld Ihrer
 @code{operating-system}-Form anzupassen. Führen Sie @code{info \"(guix.de)
-Locales\"} aus, um weitere Informationen dazu zu erhalten.")))
+Locales\"} aus, um weitere Informationen dazu zu erhalten.")
+         (fr "La bibliothèque C de GNU (glibc) a été mise à jour en version
+2.29.  Pour pouvoir lancer tes programmes déjà installés et liés à glibc 2.28,
+tu dois installer les données pour la version 2.28 en plus des données de
+régionalisation pour la version 2.29 :
 
+@example
+guix install glibc-locales glibc-locales-2.28
+@end example
+
+Sur le système Guix, tu peux ajuster le champ @code{locale-libcs} de ta forme
+@code{operating-system}.  Lance @code{info \"(guix.fr) Régionalisation\"} pour
+plus de détails.")))
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
-        (title (en "New reduced binary seed bootstrap"))
+        (title (en "New reduced binary seed bootstrap")
+	       (fr "Nouvel ensemble de binaires de bootstrap réduit"))
         (body
          (en "The package graph on x86_64 and i686 is now rooted in a
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
@@ -49,7 +62,13 @@ Menge an binären Seeds}. Das heißt, die ursprüngliche Menge an Binärdateien,
 aus denen heraus Pakete erstellt werden, machen nun ungefähr 130 MiB aus, halb
 so viel wie früher. Führen Sie @code{info \"(guix.de) Bootstrapping\"} aus, um
 mehr zu erfahren, oder schauen Sie sich den Vortrag auf
-@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/} an.")))
+@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/} an.")
+         (fr "Le graphe des paquets sur x86_64 et i686 prend maintenant sa
+source dans un @dfn{ensemble réduit de binaires}.  L'ensemble initial des
+binaires à partir desquels les paquets sont construits pèse maintenant environ
+130 Mio, soit la moitié par rapport à l'ensemble précédent.  Tu peux lancer
+@code{info \"(guix) Bootstrapping\"} pour plus de détails, ou regarder la
+présentation sur @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")))
 
  (entry (commit "dcc90d15581189dbc30e201db2b807273d6484f0")
         (title (en "New channel news mechanism")
