@@ -14790,21 +14790,21 @@ file.")
   (deprecated-package "emacs-wgrep-helm" emacs-wgrep))
 
 (define-public emacs-mu4e-conversation
-  (let ((commit "e7d4bfcb0d392b0aed1f705ccac2419a168d1f5e"))
+  (let ((commit "98110bb9c300fc9866dee8e0023355f9f79c9b96")
+        (revision "5"))
     (package
       (name "emacs-mu4e-conversation")
-      (version (git-version "20181126" "4" commit))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://gitlab.com/Ambrevar/mu4e-conversation/"
-               "repository/archive.tar.gz?ref="
-               commit))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/Ambrevar/mu4e-conversation.git")
+               (commit commit)))
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0b52hf9rm2afba9pvgink9bwqm705sk0y5qikp0ff5sk53wqvy29"))))
+           "080s96jkcw2p288sp1vgds91rgl693iz6hi2dv56p2ih0nnivwlg"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("mu" ,mu)))
