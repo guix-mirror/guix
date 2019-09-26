@@ -150,7 +150,10 @@ namespace, in addition to essential bind-mounts such /proc."
     (when log-file
       ;; Create LOG-FILE so we can map it in the container.
       (unless (file-exists? log-file)
-        (call-with-output-file log-file (const #t))))
+        (call-with-output-file log-file (const #t))
+        (when user
+          (let ((pw (getpwnam user)))
+            (chown log-file (passwd:uid pw) (passwd:gid pw))))))
 
     (let ((pid (run-container container-directory
                               mounts namespaces 1
