@@ -423,7 +423,7 @@ Resources file.")
 (define-public encodings
   (package
     (name "encodings")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -432,8 +432,7 @@ Resources file.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0ffmaw80vmfwdgvdkp6495xgsqszb6s0iira5j0j6pd4i0lk3mnf"))))
+          (base32 "0caafx0yqqnqyvbalxhh3mb0r9v36xmcy5zjhygb2i508dhy35mx"))))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontscale" ,mkfontscale)))
