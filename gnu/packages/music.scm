@@ -2813,14 +2813,13 @@ Songs can be searched by artist, name or even by a part of the song text.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.4.7")
+    (version "1.4.9")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "beets" version))
-              (patches (search-patches "beets-python-3.7-fix.patch"))
               (sha256
                (base32
-                "0w3gz69s9gf5ih69d4sddgh7ndj7658m621bp742zldvjakdncrs"))))
+                "0m40rjimvfgy1dv04p8f8d5dvi2855v4ix99a9xr900cmcn476yj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -2828,12 +2827,6 @@ Songs can be searched by artist, name or even by a part of the song text.")
          (add-after 'unpack 'set-HOME
            (lambda _
              (setenv "HOME" (string-append (getcwd) "/tmp"))
-             #t))
-         (add-after 'unpack 'make-python3.7-compatible
-           (lambda _
-             ;; See <https://github.com/beetbox/beets/issues/2978>.
-             (substitute* "beets/autotag/hooks.py"
-              (("re\\._pattern_type") "re.Pattern"))
              #t))
          (replace 'check
            (lambda _
