@@ -387,6 +387,32 @@ certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
 
+(define-public python-boolean.py
+  (package
+    (name "python-boolean.py")
+    (version "3.6")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastikr/boolean.py")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wc89y73va58cj7dsx6c199zpxsy9q53dsffsdj6zmc90inqz6qs"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/bastikr/boolean.py")
+    (synopsis "Boolean algebra in one Python module")
+    (description
+     "This is a small Python library that implements boolean algebra.
+It defines two base elements, @code{TRUE} and @code{FALSE}, and a
+@code{Symbol} class that can take on one of these two values.  Calculations
+are done only in terms of @code{AND}, @code{OR}, and @code{NOT}---other
+compositions like @code{XOR} and @code{NAND} are emulated on top of them.
+Expressions are constructed from parsed strings or directly in Python.")
+    (license license:bsd-2)))
+
 (define-public python-hdf4
   (package
    (name "python-hdf4")
