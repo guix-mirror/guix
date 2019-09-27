@@ -23,6 +23,7 @@
 (define-module (gnu packages markup)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -227,12 +228,13 @@ for parsing and rendering CommonMark.")
     (version "1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Gottox/smu/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Gottox/smu.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "194kc08070g70ax9lg7jcr6iancbmgfgims8zfkpj9lnb3wiifzk"))))
+        (base32 "1jm7lhnzjx4q7gcwlkvsbffcy0zppywyh50d71ami6dnq182vvcc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
