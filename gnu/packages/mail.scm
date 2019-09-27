@@ -1441,7 +1441,7 @@ hashing schemes plugin for @code{Dovecot}.")
     (inputs
      `(("bdb" ,bdb)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("zlib" ,zlib)))
     (home-page "http://isync.sourceforge.net/")
     (synopsis "Mailbox synchronization program")
