@@ -936,7 +936,7 @@ map display.  Downloads map data from a number of websites, including
 (define-public xygrib
   (package
     (name "xygrib")
-    (version "1.2.6")
+    (version "1.2.6.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -945,7 +945,7 @@ map display.  Downloads map data from a number of websites, including
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0qzaaavil2c7mkkai5mg54cv8r452i7psy7cg75qjja96d2d7rbd"))
+                "0xzsm8pr0zjk3f8j880fg5n82jyxn8xf1330qmmq1fqv7rsrg9ia"))
               (modules '((guix build utils)))
               (snippet
                '(begin (delete-file-recursively "data/fonts") #t))))
