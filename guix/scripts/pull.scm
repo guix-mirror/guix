@@ -249,7 +249,7 @@ PORT."
     (channel-news-entry-body entry))
 
   (display-news-entry-title entry language port)
-  (format port (G_ "    commit ~a~%")
+  (format port (dim (G_ "    commit ~a~%"))
           (channel-news-entry-commit entry))
   (newline port)
   (format port "    ~a~%"

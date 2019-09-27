@@ -18,13 +18,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages license)
-  #:use-module (guix licenses)
   #:use-module (gnu packages)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system perl)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check))
+  #:use-module (gnu packages perl-check)
+  #:use-module (guix build-system perl)
+  #:use-module (guix download)
+  #:use-module (guix licenses)
+  #:use-module (guix packages))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.

@@ -44,6 +44,17 @@
                   (substitute* "build/common.inc"
                     (("export tbb_build_prefix.+$")
                      "export tbb_build_prefix?=guix\n"))
+
+                  ;; Don't capture the build time and kernel version.
+                  (substitute* "build/version_info_linux.sh"
+                    (("uname -srv") "uname -s")
+                    (("`date -u`") "01 Jan 1970"))
+
+                  (substitute* "build/linux.inc"
+                    (("os_kernel_version:=.*")
+                     "os_kernel_version:=5\n")
+                    (("os_version:=.*")
+                     "os_version:=1\n"))
                   #t))))
     (outputs '("out" "doc"))
     (build-system gnu-build-system)

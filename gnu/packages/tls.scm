@@ -122,16 +122,15 @@ in intelligent transportation networks.")
 (define-public p11-kit
   (package
     (name "p11-kit")
-    (version "0.23.15")
+    (version "0.23.17")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://github.com/p11-glue/p11-kit/releases/"
                           "download/" version "/p11-kit-" version ".tar.gz"))
-      (patches (search-patches "p11-kit-jks-timestamps.patch"))
       (sha256
        (base32
-        "166pwj00cffv4qq4dvx0k53zka0b0r1fa0whc49007vsqyh3khgp"))))
+        "07kwdlw07jk9833k43kkhv0q9gkll3vmd25wwp68cpy0crfv4isl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -828,7 +827,7 @@ then ported to the GNU / Linux environment.")
 (define-public mbedtls-apache
   (package
     (name "mbedtls-apache")
-    (version "2.16.2")
+    (version "2.16.3")
     (source
      (origin
        (method url-fetch)
@@ -838,7 +837,7 @@ then ported to the GNU / Linux environment.")
                            version "-apache.tgz"))
        (sha256
         (base32
-         "1906hbwlkq32075hca4vjad03dcc36aycvmaz8yvhr3ygg6lz0x6"))))
+         "0qd65lnr63vmx2gxla6lcmm5gawlnaj4wy4h4vmdc3h9h9nyw6zc"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -876,7 +875,7 @@ coding footprint.")
 (define-public dehydrated
   (package
     (name "dehydrated")
-    (version "0.6.2")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -884,7 +883,7 @@ coding footprint.")
                     "v" version "/dehydrated-" version ".tar.gz"))
               (sha256
                (base32
-                "03p80yj6bnzjc6dkp5hb9wpplmlrla8n5src71cnzw4rj53q8cqn"))))
+                "0dgskgbdd95p13jx6s13p77y15wngb5cm6p4305cf2s54w0bvahh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

@@ -286,6 +286,11 @@ developers consider to have good quality code and correct functionality.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: 13 of 53 tests fail
+
+       ;; FIXME: OpenEXR 2.4.0 requires C++ 11 or later.  Remove when the
+       ;; default compiler is >= GCC 5.
+       #:make-flags '("CXXFLAGS=-std=gnu++11")
+
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")

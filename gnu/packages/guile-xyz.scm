@@ -12,7 +12,7 @@
 ;;; Copyright © 2016, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2017 David Thompson <davet@gnu.org>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -1024,7 +1024,7 @@ microblogging service.")
 (define-public guile-parted
   (package
     (name "guile-parted")
-    (version "0.0.1")
+    (version "0.0.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1033,7 +1033,7 @@ microblogging service.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1q7425gpjlwi2wvhzq7kw046yyx7v6j6jyzkd1cr861iz34mjwiq"))))
+                "01qmv6xnbbq3wih0dl9bscvca2d7zx7bjiqf35y6dkaqsp8nvdxf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags

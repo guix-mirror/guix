@@ -180,14 +180,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.49")
+    (version "2.53")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "1vljhq68gyc2503l9fj76rk1q4a4db9a1sp3fdfagqqmirnmybp5"))))
+                "0ysj6b3ffifbraflkixh19hmdh3qjij26wyj4z66085qw17v7qkw"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
@@ -199,6 +199,8 @@ colors, styles, options and details.")
        ("texinfo" ,texinfo)           ;For generating documentation
        ;; For the manual and the tests.
        ("texlive" ,(texlive-union (list texlive-amsfonts
+                                        texlive-epsf
+                                        texlive-latex-base
                                         texlive-latex-geometry
                                         texlive-latex-graphics
                                         texlive-latex-oberdiek ; for ifluatex

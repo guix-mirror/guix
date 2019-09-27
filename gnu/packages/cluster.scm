@@ -35,7 +35,7 @@
 (define-public keepalived
   (package
     (name "keepalived")
-    (version "2.0.5")
+    (version "2.0.18")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -43,7 +43,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "021a7c1lq4aqx7dbwhlm5km6w039hapfzp5hf6wb5bfq79s25g38"))))
+                "1l2g0bzzbah9svfpwa0b9dgvwfv85r2y3qdr54822hg5p2qs48ql"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -52,7 +52,7 @@
            (lambda _
              (invoke "make" "-C" "doc" "texinfo")
              ;; Put images in a subdirectory as recommended by 'texinfo'.
-             (install-file "doc/build/texinfo/software_design.png"
+             (install-file "doc/source/images/software_design.png"
                            "doc/build/texinfo/keepalived-figures")
              (substitute* "doc/build/texinfo/keepalived.texi"
                (("@image\\{software_design,")
@@ -63,7 +63,7 @@
              (let* ((out (assoc-ref outputs "out"))
                     (infodir (string-append out "/share/info")))
                (install-file "doc/build/texinfo/keepalived.info" infodir)
-               (install-file "doc/build/texinfo/software_design.png"
+               (install-file "doc/source/images/software_design.png"
                              (string-append infodir "/keepalived-figures"))
                #t))))))
     (native-inputs
@@ -74,7 +74,7 @@
      `(("openssl" ,openssl)
        ("libnfnetlink" ,libnfnetlink)
        ("libnl" ,libnl)))
-    (home-page "http://www.keepalived.org/")
+    (home-page "https://www.keepalived.org/")
     (synopsis "Load balancing and high-availability frameworks")
     (description
      "Keepalived provides frameworks for both load balancing and high

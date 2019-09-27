@@ -3552,15 +3552,15 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.5")
+    (version "0.9.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/g-truc/glm/releases/download/"
                            version  "/glm-" version ".zip"))
        (sha256
-        (base32
-         "1vmg7hb4xvsa77zpbwiw6lqc7pyaj56dihx6xriny5b9rrh4iqsg"))))
+        (base32 "1l0pi1qi37mk6s0yrkrw07lspv4gcqnr9ryg3521hrl77ff37dwx"))
+       (patches (search-patches "glm-restore-install-target.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

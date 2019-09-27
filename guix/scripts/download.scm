@@ -33,6 +33,7 @@
   #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-14)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (rnrs bytevectors)
@@ -54,9 +55,23 @@
        (url-fetch url file #:mirrors %mirrors)))
     file))
 
+(define (ensure-valid-store-file-name name)
+  "Replace any character not allowed in a stror name by an underscore."
+
+  (define valid
+    ;; according to nix/libstore/store-api.cc
+    (string->char-set (string-append "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                     "abcdefghijklmnopqrstuvwxyz"
+                                     "0123456789" "+-._?=")))
+  (string-map (lambda (c)
+                (if (char-set-contains? valid c) c #\_))
+              name))
+
+
 (define* (download-to-store* url #:key (verify-certificate? #t))
   (with-store store
     (download-to-store store url
+                       (ensure-valid-store-file-name (basename url))
                        #:verify-certificate? verify-certificate?)))
 
 (define %default-options

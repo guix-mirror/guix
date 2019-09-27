@@ -359,8 +359,9 @@ the last argument of `mknod'."
 (define* (mount-root-file-system root type
                                  #:key volatile-root?)
   "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
-is true, mount ROOT read-only and make it a overlay with a writable tmpfs
-using the kernel build-in overlayfs."
+is true, mount ROOT read-only and make it an overlay with a writable tmpfs
+using the kernel built-in overlayfs."
+
   (if volatile-root?
       (begin
         (mkdir-p "/real-root")

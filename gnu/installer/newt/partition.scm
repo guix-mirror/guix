@@ -587,7 +587,6 @@ edit it."
                                           disks))
                      (new-user-partitions
                       (remove-user-partition-by-disk user-partitions item)))
-                (disk-destroy item)
                 `((disks . ,(cons new-disk other-disks))
                   (user-partitions . ,new-user-partitions)))
               `((disks . ,disks)
@@ -625,7 +624,7 @@ edit it."
                                       info-text)))
           (case result
             ((1)
-             (disk-delete-all item)
+             (disk-remove-all-partitions item)
              `((disks . ,disks)
                (user-partitions
                 . ,(remove-user-partition-by-disk user-partitions item))))
@@ -649,7 +648,7 @@ edit it."
                  (let ((new-user-partitions
                         (remove-user-partition-by-partition user-partitions
                                                             item)))
-                   (disk-delete-partition disk item)
+                   (disk-remove-partition* disk item)
                    `((disks . ,disks)
                      (user-partitions . ,new-user-partitions))))
                 (else
@@ -696,9 +695,7 @@ by pressing the Exit button.~%~%")))
                        #f))
                  (check-user-partitions user-partitions))))
           (if user-partitions-ok?
-              (begin
-                (for-each (cut disk-destroy <>) disks)
-                user-partitions)
+              user-partitions
               (run-disk-page disks user-partitions
                              #:guided? guided?)))
         (let* ((result-disks (assoc-ref result 'disks))

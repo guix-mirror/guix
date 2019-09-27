@@ -164,7 +164,7 @@ different programming languages.")
 (define-public fmt
   (package
     (name "fmt")
-    (version "5.3.0")
+    (version "6.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -172,7 +172,7 @@ different programming languages.")
                     version "/fmt-" version ".zip"))
               (sha256
                (base32
-                "0p51nhmvjniqlffmmb9djhprnclvm448f2vkdxymvxw307hl21sc"))))
+                "0h148anbaqgch6n69pxsvs1c9wmykgd052wmzgdia7qpz8w6p8dl"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

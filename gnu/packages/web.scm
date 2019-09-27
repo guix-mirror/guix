@@ -56,6 +56,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix cvs-download)
   #:use-module (guix hg-download)
@@ -77,6 +78,8 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages emacs-xyz)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -209,14 +212,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.3")
+    (version "1.17.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0g0g9prwjy0rnv6n5smny5yl5dhnmflqdr3hwgyj5jpr5hfgx11v"))))
+                "0mg521bxh8pysmy20x599m252ici9w97kk7qy7s0wrv6bqv4p1b2"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -864,7 +867,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public wabt
   (package
     (name "wabt")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
      (origin
        (method git-fetch)
@@ -873,7 +876,7 @@ for efficient socket-like bidirectional reliable communication channels.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hn88vlqyclpk79v3wg3lrssd9vwhjdgvb41g03jqakygxxgnmp5"))))
+        (base32 "1zlv3740wkqj4mn6sr84h0x6wk2lcp4pwwmqsh5yyqp1j1glbsa0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTS=OFF")
@@ -4017,6 +4020,98 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
 (define-public python2-feedparser
   (package-with-python2 python-feedparser))
 
+(define-public guix-data-service
+  (let ((commit "bb94f6dd05a33135fa661b86d35d203c0c099dba")
+        (revision "1"))
+    (package
+      (name "guix-data-service")
+      (version (string-append "0.0.1-" revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.gnu.org/git/guix/data-service.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1y6s4igjvi0293z4d4hbgwifs8avcam71qhis9z4f8mjz6w7vcpb"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f                    ; TODO Tests require PostgreSQL
+         #:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (ice-9 rdelim)
+                    (ice-9 popen))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-paths 'set-GUIX_ENVIRONMENT
+             (lambda* (#:key inputs #:allow-other-keys)
+               ;; This means guix.el finds the Emacs modules
+               (setenv "GUIX_ENVIRONMENT"
+                       (assoc-ref inputs "emacs-with-modules"))
+               #t))
+           (add-before 'build 'set-GUILE_AUTO_COMPILE
+             (lambda _
+               ;; To avoid errors relating to guild
+               (setenv "GUILE_AUTO_COMPILE" "0")
+               #t))
+           (add-after 'install 'wrap-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (guile (assoc-ref inputs "guile"))
+                      (guile-effective-version
+                       (read-line
+                        (open-pipe* OPEN_READ
+                                    (string-append guile "/bin/guile")
+                                    "-c" "(display (effective-version))")))
+                      (scm (string-append out "/share/guile/site/"
+                                          guile-effective-version))
+                      (go  (string-append out "/lib/guile/"
+                                          guile-effective-version
+                                          "/site-ccache")))
+                 (for-each
+                  (lambda (file)
+                    (wrap-program (string-append bin "/" file)
+                      `("PATH" ":" prefix
+                        (,bin))
+                      `("GUILE_LOAD_PATH" ":" prefix
+                        (,scm ,(getenv "GUILE_LOAD_PATH")))
+                      `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                        (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
+                  '("guix-data-service"
+                    "guix-data-service-process-branch-updated-email"
+                    "guix-data-service-process-job"
+                    "guix-data-service-process-jobs"
+                    "guix-data-service-query-build-servers"))
+                 #t)))
+           (delete 'strip))))           ; As the .go files aren't compatible
+      (inputs
+       `(("guix" ,guix)
+         ("guile-fibers" ,guile-fibers)
+         ("guile-json" ,guile-json-3)
+         ("guile-email" ,guile-email)
+         ("guile-squee" ,guile-squee)
+         ("postgresql" ,postgresql)
+         ("sqitch" ,sqitch)))
+      (native-inputs
+       `(("guile" ,guile-2.2)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("emacs-with-modules" ,(directory-union
+                                 "emacs-union"
+                                 (list emacs-no-x
+                                       emacs-htmlize)))
+         ("pkg-config" ,pkg-config)))
+      (synopsis "Store and provide data about GNU Guix")
+      (description
+       "The Guix Data Service stores data about GNU Guix, and provides this
+through a web interface.  It supports listening to the guix-commits mailing
+list to find out about new revisions, then loads the data from these in to a
+PostgreSQL database.")
+      (home-page "http://data.guix.gnu.org/")
+      (license license:agpl3+))))
+
 (define-public gumbo-parser
   (package
     (name "gumbo-parser")
@@ -4972,13 +5067,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.2.1")
+    (version "6.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "15qfvw3fp05bgyspcm6gbsnxhs430p4z3fwz5kkd1z68jb90b3pj"))))
+                "0zwlffdd1m0ih33nq40xf2wwdyvr4czmns2fs90qpfnwy72xxk4m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -4993,7 +5088,8 @@ deployments.")
            (lambda _
              (substitute* '("bin/varnishtest/vtc_varnish.c"
                             "bin/varnishtest/vtc_process.c"
-                            "bin/varnishd/mgt/mgt_vcc.c")
+                            "bin/varnishd/mgt/mgt_vcc.c"
+                            "bin/varnishtest/tests/u00014.vtc")
                (("/bin/sh") (which "sh")))
              (substitute* "bin/varnishd/mgt/mgt_shmem.c"
                (("rm -rf") (string-append (which "rm") " -rf")))

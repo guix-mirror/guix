@@ -204,6 +204,32 @@ In fact, there is no graphical output possible.  AA-lib replaces those
 old-fashioned output methods with powerful ascii-art renderer.")
     (license license:lgpl2.0+)))
 
+(define-public celluloid
+  (package
+    (name "celluloid")
+    (version "0.17")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/celluloid-player/celluloid/releases"
+                           "/download/v" version "/celluloid-" version ".tar.xz"))
+       (sha256
+        (base32 "0a3bhvs38gxjplygb0q9cx5djl5y0bmnxgaq0sd65j610a60f5h0"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libepoxy" ,libepoxy)
+       ("mpv" ,mpv)))
+    (home-page "https://github.com/celluloid-player/celluloid")
+    (synopsis "GTK+ frontend for the mpv media player")
+    (description "Celluloid is a simple GTK+ frontend for the mpv media player.
+It interacts with mpv via the client API exported by libmpv, allowing access to
+mpv's powerful playback capabilities.")
+    (license license:gpl3+)))
+
 (define-public liba52
   (package
     (name "liba52")
@@ -799,14 +825,14 @@ operate properly.")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "4.2")
+    (version "4.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1mgcxm7sqkajx35px05szsmn9mawwm03cfpmk3br7bcp3a1i0gq2"))))
+               "1m5nkc61ihgcf0b2wabm0zyqa8sj3c0w8fi6kr879lb0kdzciiyf"))))
     (build-system gnu-build-system)
     (inputs
      `(("dav1d" ,dav1d)
@@ -1404,32 +1430,7 @@ projects while introducing many more.")
     (license license:gpl2+)))
 
 (define-public gnome-mpv
-  (package
-    (name "gnome-mpv")
-    (version "0.16")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/gnome-mpv/gnome-mpv/releases"
-                           "/download/v" version "/gnome-mpv-" version
-                           ".tar.xz"))
-       (sha256
-        (base32
-         "0jzdzvhcqp5jp1inwk2466zf7r8iimk3x69066gl8mzaay98mk92"))))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("gtk+" ,gtk+)
-       ("libepoxy" ,libepoxy)
-       ("mpv" ,mpv)))
-    (build-system glib-or-gtk-build-system)
-    (home-page "https://github.com/gnome-mpv/gnome-mpv")
-    (synopsis "GTK+ frontend for the mpv media player")
-    (description "GNOME MPV is a simple GTK+ frontend for the mpv media player.
-GNOME MPV interacts with mpv via the client API exported by libmpv, allowing
-access to mpv's powerful playback capabilities.")
-    (license license:gpl3+)))
+  (deprecated-package "gnome-mpv" celluloid))
 
 (define-public libvpx
   (package
@@ -1492,7 +1493,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.09.12")
+    (version "2019.09.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1500,7 +1501,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wmc0rl4l08hnz3agh69ld1pcmjs7czg0d2k7mnnlxhwlwi38w56"))))
+                "0h7v81kcxcpy82wq9b1aiz2zg6hg7rnlcfmzd13j6k8yhr7ah9yf"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1631,7 +1632,7 @@ other site that youtube-dl supports.")
 (define-public you-get
   (package
     (name "you-get")
-    (version "0.4.1328")
+    (version "0.4.1355")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1640,7 +1641,7 @@ other site that youtube-dl supports.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1r9qffwvxmp74byva12h2jsn3n33vyim052sx9lykv5dygibbp65"))))
+                "0xq7z04hvw3b3npiahlpzhbxsjvam9n9dynplyrkn84dx6k9ajbj"))))
     (build-system python-build-system)
     (inputs
      `(("ffmpeg" ,ffmpeg)))             ; for multi-part and >=1080p videos
@@ -2203,7 +2204,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.12.0")
+    (version "6.16.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2212,7 +2213,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0pzm3mjbbdl2rkbswgyfkx552xlxh2qrwzsi2a4dicfr92rfgq6w"))))
+                "1362fv63p34kza9v4b71b6wakgvsa2vdx9y0g28x3yh4cp4k97kx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

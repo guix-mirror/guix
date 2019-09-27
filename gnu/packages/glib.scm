@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -973,4 +974,38 @@ safe to use from any GObject-Introspectable language.
 
 Template-GLib allows you to access properties on GObjects as well as call
 simple methods via GObject-Introspection.")
+    (license license:lgpl2.1+)))
+
+(define-public xdg-dbus-proxy
+  (package
+    (name "xdg-dbus-proxy")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/flatpak/xdg-dbus-proxy"
+                                  "/releases/download/" version
+                                  "/xdg-dbus-proxy-" version ".tar.xz"))
+              (sha256
+               (base32
+                "03sj1h0c2l08xa8phw013fnxr4fgav7l2mkjhzf9xk3dykwxcj8p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("dbus" ,dbus)
+
+       ;; These are required to build the manual.
+       ("docbook-xml" ,docbook-xml-4.3)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page "https://github.com/flatpak/xdg-dbus-proxy")
+    (synopsis "D-Bus connection proxy")
+    (description
+     "xdg-dbus-proxy is a filtering proxy for D-Bus connections.  It can be
+used to create D-Bus sockets inside a Linux container that forwards requests
+to the host system, optionally with filters applied.")
     (license license:lgpl2.1+)))

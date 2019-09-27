@@ -810,15 +810,16 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/baskerville/sxhkd")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1cz4vkm7fqd51ly9qjkf5q76kdqdzfhaajgvrs4anz5dyzrdpw68"))))
+        (base32 "0j7bl2l06r0arrjzpz7al9j6cwzc730knbsijp7ixzz96pq7xa2h"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -998,7 +999,8 @@ Wacom tablet applet.")
        (method url-fetch)
        (uri (string-append
              "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
-             name "-" version "/" name "-" version ".tar.bz2"))
+             "xf86-input-wacom-" version "/"
+             "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
         (base32
          "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
@@ -1177,7 +1179,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.5.3")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1185,7 +1187,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "0y78ya2va2lg3ww17n11y9awn8lhcp1px2d8gxaimxfqlxczs8la"))))
+                "1nslmyqyzhfr4hxd4llqkkkb8ap8apkdna32rllvar7r576059ci"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)

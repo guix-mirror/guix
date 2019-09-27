@@ -181,33 +181,33 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.2
   (linux-libre-deblob-scripts
-   "5.2.10"
+   "5.2.17"
    (base32 "076fwxlm6jq6z4vg1xq3kr474zz7qk71r90sf9dnfia3rw2pb4fa")
    (base32 "0d3pp1bqchqc7vnxr1a56km5r0hzjiiipzz2xc3wgjwfi51k9kxc")))
 
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.68"
+   "4.19.75"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1fyacg28aym6virxyn7wk99qil2fjbks3iwm7p3hxy51pccn34za")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.140"
+   "4.14.146"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.190"
+   "4.9.194"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.190"
+   "4.4.194"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
-   (base32 "1x40lbiaizksy8z38ax7wpqr9ldgq7qvkxbb0ca98vd1axpklb10")))
+   (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
 (define* (computed-origin-method gexp-promise hash-algo hash
                                  #:optional (name "source")
@@ -349,42 +349,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.16")
+(define-public linux-libre-5.2-version "5.2.17")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "0xg5jnkmc7b552jrhi200ck7q4hql3az2fpjfwxj3ay8xp4n280c")))
+        (hash (base32 "1y9d218w83qgd6wima6h6n4zbj1rxz15yb6hdlhv8dm9kv88lfvv")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.71")
+(define-public linux-libre-4.19-version "4.19.75")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1bjwkb7k82l646ryyy0jbwsnygm2qsxgcwli8bdrj844skzynlqz")))
+        (hash (base32 "0y0vcmxyfg98mm63vaqq6n2bmxkbmrnvigm5zdh1al74w53p2pnx")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.142")
+(define-public linux-libre-4.14-version "4.14.146")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1wwhnm1n1b6yzsd2zzzf9i3n4hlvgnph70p67cwahw0ik4ssayz6")))
+        (hash (base32 "1x9343pvlxdgx0zbsn12mcfhf6r8d9p57h6l5cw7krm3gs44pid3")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.191")
+(define-public linux-libre-4.9-version "4.9.194")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1g5p736p8zx5rmxaj56yw93jp768npl868jsn8973dny0rsbim6y")))
+        (hash (base32 "1qy20vw5bhnsfbh95sdhjbk6y94js8m4ryd3m7xg2qg4hisvpx6m")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.191")
+(define-public linux-libre-4.4-version "4.4.194")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0x3lnq4xyj5v6r1cz4jizm4vdspws1nb806f5qczwi3yil5nm6bh")))
+        (hash (base32 "0kvlp2v4nvkilaanhpgwf8dkyfj24msaw0m38rbc4y51y69yhqvz")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1701,7 +1701,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "5.2.0")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1709,7 +1709,7 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1a2dywa2kam24951byv9pl32mb9z6klh7d4vp8fwfgrm4vn5vfd5"))))
+                "0gvv269wjn4279hxr5zzwsk2c5qgswr47za3hm1x4frsk52iw76b"))))
     (build-system gnu-build-system)
     (arguments
      `( ;; There is a test suite, but it wants network namespaces and sudo.
@@ -1734,7 +1734,8 @@ that the Ethernet protocol is much simpler than the IP protocol.")
                       #t)))))
     (inputs
      `(("db4" ,bdb)
-       ("iptables" ,iptables)))
+       ("iptables" ,iptables)
+       ("libmnl" ,libmnl)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)

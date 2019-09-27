@@ -875,30 +875,31 @@ the Raspberry Pi chip.")
       (description "This package provides @code{gcc} for VideoCore IV,
 the Raspberry Pi chip."))))
 
-(define-public python2-libmpsse
+(define-public python-libmpsse
   (package
-    (name "python2-libmpsse")
-    (version "1.3")
+    (name "python-libmpsse")
+    (version "1.4")
     (source
       (origin
-        (method url-fetch)
-        (uri (string-append "https://storage.googleapis.com/"
-                            "google-code-archive-downloads/v2/"
-                            "code.google.com/libmpsse/"
-                            "libmpsse-" version ".tar.gz"))
+        (method git-fetch)
+        (uri (git-reference
+              (url "https://github.com/daym/libmpsse.git")
+              (commit (string-append "v" version))))
+        (file-name "libmpsse-checkout")
         (sha256
           (base32
-            "0jq7nhqq3na8675jnpfcar3pd3dp3adhhc4lw900swkla01a1wh8"))))
+            "14f1kiiia4kfd9mzwx4h63aa8bpz9aknbrrr7mychnsp3arw0z25"))))
     (build-system gnu-build-system)
     (inputs
      `(("libftdi" ,libftdi)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("swig" ,swig)
        ("which" ,base:which)))
     (arguments
      `(#:tests? #f ; No tests exist.
+       #:parallel-build? #f  ; Would be buggy.
        #:make-flags
        (list (string-append "CFLAGS=-Wall -fPIC -fno-strict-aliasing -g -O2 "
                             "$(shell pkg-config --cflags libftdi1)"))
@@ -906,28 +907,20 @@ the Raspberry Pi chip."))))
        (modify-phases %standard-phases
          (add-after 'unpack 'set-environment-up
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (chdir "src")
-             (setenv "PYDEV" (string-append (assoc-ref inputs "python")
-                             "/include/python2.7"))
-             #t))
-         (add-after 'unpack 'patch-global-variable
-           (lambda _
-             ;; fast_rw_buf was defined in a header file which was making
-             ;; the build not reproducible.
-             (substitute* "src/fast.c"
-               (("^int fast_build_block_buffer") "
-
-unsigned char fast_rw_buf[SPI_RW_SIZE + CMD_SIZE];
-int fast_build_block_buffer"))
-             (substitute* "src/mpsse.h"
-               (("unsigned char fast_rw_buf.*") "
-"))
-             #t))
+             (let ((python (assoc-ref inputs "python")))
+               (chdir "src")
+               (setenv "PYDEV" (string-append python
+                               "/include/python"
+                               ,(version-major+minor (package-version python))
+                               "m"))
+               #t)))
          (replace 'install
-           (lambda* (#:key outputs make-flags #:allow-other-keys #:rest args)
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys #:rest args)
              (let* ((out (assoc-ref outputs "out"))
                     (out-python (string-append out
-                                               "/lib/python2.7/site-packages"))
+                                               "/lib/python"
+                                               ,(version-major+minor (package-version python))
+                                               "/site-packages"))
                     (install (assoc-ref %standard-phases 'install)))
                (install #:make-flags (cons (string-append "PYLIB=" out-python)
                                            make-flags))))))))
@@ -937,6 +930,36 @@ int fast_build_block_buffer"))
 MPSSE (Multi-Protocol Synchronous Serial Engine) adapter by FTDI that can do
 SPI, I2C, JTAG.")
     (license license:gpl2+)))
+
+(define-public python2-libmpsse
+  (package
+    (inherit python-libmpsse)
+    (name "python2-libmpsse")
+    (arguments
+     (substitute-keyword-arguments (package-arguments python-libmpsse)
+      ((#:phases phases)
+       `(modify-phases ,phases
+         (replace 'set-environment-up
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((python (assoc-ref inputs "python")))
+               (chdir "src")
+               (setenv "PYDEV" (string-append python
+                               "/include/python"
+                               ,(version-major+minor (package-version python-2))))
+               #t)))
+         (replace 'install
+           (lambda* (#:key inputs outputs make-flags #:allow-other-keys #:rest args)
+             (let* ((out (assoc-ref outputs "out"))
+                    (out-python (string-append out
+                                               "/lib/python"
+                                               ,(version-major+minor (package-version python-2))
+                                               "/site-packages"))
+                    (install (assoc-ref %standard-phases 'install)))
+               (install #:make-flags (cons (string-append "PYLIB=" out-python)
+                                           make-flags)))))))))
+    (inputs
+     (alist-replace "python" (list python-2)
+                    (package-inputs python-libmpsse)))))
 
 (define-public picprog
   (package

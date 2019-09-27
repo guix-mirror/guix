@@ -15610,3 +15610,30 @@ deprecated, and defunct).  It makes it easy to insert badges corresponding to
 these stages in your documentation.  Usage of deprecated functions are
 signalled with increasing levels of non-invasive verbosity.")
     (license license:gpl3)))
+
+(define-public r-assertable
+  (package
+    (name "r-assertable")
+    (version "0.2.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "assertable" version))
+       (sha256
+        (base32
+         "0jjd6ylh26fykzzv1q2lbajzfj07lyxwb3b3xmr2zdg2fp5b2w4c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-data-table" ,r-data-table)))
+    (home-page "https://cran.r-project.org/web/packages/assertable/")
+    (synopsis "Verbose assertions for tabular data (data.frames and data.tables)")
+    (description "This package provides simple, flexible assertions on
+data.frame or data.table objects with verbose output for vetting.  While other
+assertion packages apply towards more general use-cases, @code{assertable} is
+tailored towards tabular data.  It includes functions to check variable names
+and values, whether the dataset contains all combinations of a given set of
+unique identifiers, and whether it is a certain length.  In addition,
+@code{assertable} includes utility functions to check the existence of target
+files and to efficiently import multiple tabular data files into one
+data.table.")
+    (license license:gpl3)))

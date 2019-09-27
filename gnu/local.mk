@@ -146,7 +146,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/diffoscope.scm			\
   %D%/packages/digest.scm			\
   %D%/packages/direct-connect.scm		\
-  %D%/packages/disk.scm				\
+  %D%/packages/disk.scm			\
+  %D%/packages/distributed.scm			\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
@@ -534,6 +535,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/getmail.scm				\
+  %D%/services/guix.scm			\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
@@ -598,6 +600,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/docker.scm				\
+  %D%/tests/guix.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
@@ -707,7 +710,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
-  %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
@@ -763,6 +765,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
   %D%/packages/patches/dealii-mpi-deprecations.patch		\
+  %D%/packages/patches/debops-constants-for-external-program-names.patch \
+  %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
@@ -824,9 +828,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
-  %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
-  %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
-  %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
@@ -901,10 +902,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\
   %D%/packages/patches/glibc-2.28-git-fixes.patch		\
-  %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
   %D%/packages/patches/glibc-2.29-git-updates.patch     	\
-  %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glibc-2.27-supported-locales.patch     	\
+  %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
+  %D%/packages/patches/glibc-supported-locales.patch     	\
+  %D%/packages/patches/glm-restore-install-target.patch		\
   %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
@@ -972,8 +974,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
-  %D%/packages/patches/idris-test-no-node.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
+  %D%/packages/patches/ilmbase-openexr-pkg-config.patch		\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
@@ -1180,7 +1182,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/owncloud-disable-updatecheck.patch	\
-  %D%/packages/patches/p11-kit-jks-timestamps.patch		\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\

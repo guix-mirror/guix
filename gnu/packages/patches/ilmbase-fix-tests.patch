@@ -22,10 +22,8 @@ Date: Wed, 24 Feb 2016 01:04:11 +0000
 
 Also fix a pre-existing typo.
 
-Index: ilmbase/ImathTest/testBoxAlgo.cpp
-===================================================================
---- ilmbase.orig/ImathTest/testBoxAlgo.cpp
-+++ ilmbase/ImathTest/testBoxAlgo.cpp
+--- a/IlmBase/ImathTest/testBoxAlgo.cpp
++++ b/IlmBase/ImathTest/testBoxAlgo.cpp
 @@ -886,10 +886,11 @@ boxMatrixTransform ()
  
      assert (approximatelyEqual (b2.min, b4.min, e));
@@ -54,10 +52,8 @@ On 32-bit x86, allow even greater discrepency at double
 precision, due to possible double-rounding.  See
 https://lists.nongnu.org/archive/html/openexr-devel/2015-12/msg00001.html
 
-Index: ilmbase/ImathTest/testBox.cpp
-===================================================================
---- ilmbase.orig/ImathTest/testBox.cpp
-+++ ilmbase/ImathTest/testBox.cpp
+--- a/IlmBase/ImathTest/testBox.cpp
++++ b/IlmBase/ImathTest/testBox.cpp
 @@ -47,6 +47,58 @@ using namespace IMATH_INTERNAL_NAMESPACE
  
  namespace {

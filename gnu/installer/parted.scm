@@ -64,13 +64,7 @@
             user-partition-parted-object
 
             find-esp-partition
-            data-partition?
-            metadata-partition?
-            freespace-partition?
             small-freespace-partition?
-            normal-partition?
-            extended-partition?
-            logical-partition?
             esp-partition?
             boot-partition?
             default-esp-mount-point
@@ -172,24 +166,6 @@
   "Find and return the ESP partition among PARTITIONS."
   (find esp-partition? partitions))
 
-(define (data-partition? partition)
-  "Return #t if PARTITION is a partition dedicated to data (by opposition to
-freespace, metadata and protected partition types), return #f otherwise."
-  (let ((type (partition-type partition)))
-    (not (any (lambda (flag)
-                (member flag type))
-              '(free-space metadata protected)))))
-
-(define (metadata-partition? partition)
-  "Return #t if PARTITION is a metadata partition, #f otherwise."
-  (let ((type (partition-type partition)))
-    (member 'metadata type)))
-
-(define (freespace-partition? partition)
-  "Return #t if PARTITION is a free-space partition, #f otherwise."
-  (let ((type (partition-type partition)))
-    (member 'free-space type)))
-
 (define* (small-freespace-partition? device
                                      partition
                                      #:key (max-size MEBIBYTE-SIZE))
@@ -199,21 +175,6 @@ inferior to MAX-SIZE, #f otherwise."
         (max-sector-size (/ max-size
                             (device-sector-size device))))
     (< size max-sector-size)))
-
-(define (normal-partition? partition)
-  "return #t if partition is a normal partition, #f otherwise."
-  (let ((type (partition-type partition)))
-    (member 'normal type)))
-
-(define (extended-partition? partition)
-  "return #t if partition is an extended partition, #f otherwise."
-  (let ((type (partition-type partition)))
-    (member 'extended type)))
-
-(define (logical-partition? partition)
-  "Return #t if PARTITION is a logical partition, #f otherwise."
-  (let ((type (partition-type partition)))
-    (member 'logical type)))
 
 (define (partition-user-type partition)
   "Return the type of PARTITION, to be stored in the TYPE field of
@@ -813,7 +774,7 @@ cause them to cross."
 (define (rmpart disk number)
   "Remove the partition with the given NUMBER on DISK."
   (let ((partition (disk-get-partition disk number)))
-    (disk-remove-partition disk partition)))
+    (disk-remove-partition* disk partition)))
 
 
 ;;
@@ -928,12 +889,12 @@ exists."
 
     (if has-extended?
         ;; msdos - remove everything.
-        (disk-delete-all disk)
+        (disk-remove-all-partitions disk)
         ;; gpt - remove everything but esp if it exists.
         (for-each
          (lambda (partition)
            (and (data-partition? partition)
-                (disk-remove-partition disk partition)))
+                (disk-remove-partition* disk partition)))
          non-boot-partitions))
 
     (let* ((start-partition
@@ -1348,7 +1309,7 @@ USER-PARTITIONS, or return nothing."
 
 (define (init-parted)
   "Initialize libparted support."
-  (probe-all-devices)
+  (probe-all-devices!)
   (exception-set-handler (lambda (exception)
                            EXCEPTION-OPTION-UNHANDLED)))
 
@@ -1364,7 +1325,6 @@ the devices not to be used before returning."
   ;; https://mail.gnome.org/archives/commits-list/2013-March/msg18423.html.
   (let ((device-file-names (map device-path devices)))
     (for-each force-device-sync devices)
-    (free-all-devices)
     (for-each (lambda (file-name)
                 (let ((in-use? (with-delay-device-in-use? file-name)))
                   (and in-use?

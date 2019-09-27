@@ -438,7 +438,7 @@ cat > "$module_dir/foo.scm"<<EOF
     (version "dummy-version")
     (outputs '("out" "dummy-output"))
     (source #f)
-    ;; Without a real build system, the "guix pacakge -s" command will fail.
+    ;; Without a real build system, the "guix package -s" command will fail.
     (build-system trivial-build-system)
     (synopsis "dummy-synopsis")
     (description "dummy-description")
@@ -448,3 +448,7 @@ EOF
 guix package -L "$module_dir" -s dummy-output > /tmp/out
 test "`guix package -L "$module_dir" -s dummy-output | grep ^name:`" = "name: dummy-package"
 rm -rf "$module_dir"
+
+# Make sure we can see user profiles.
+guix package --list-profiles | grep "$profile"
+guix package --list-profiles | grep '\.guix-profile'
