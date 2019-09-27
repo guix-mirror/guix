@@ -3552,27 +3552,31 @@ for the current function or variable in the minibuffer.")
     (license license:gpl3+)))
 
 (define-public emacs-company-quickhelp
-  (package
-    (name "emacs-company-quickhelp")
-    (version "2.3.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/expez/company-quickhelp.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "08ccsfvwdpzpj0gai3xrdb2bv1nl6myjkxsc5774pbvlq9nkfdvr"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-pos-tip" ,emacs-pos-tip)
-       ("emacs-company" ,emacs-company)))
-    (home-page "https://github.com/expez/company-quickhelp")
-    (synopsis "Popup documentation for completion candidates")
-    (description "@code{company-quickhelp} shows documentation for the
+  ;; XXX: release version 2.3.0 is on an unmaintained branch for some reason,
+  ;; so we use the latest 2.2.0 commit instead
+  (let ((commit "479676cade80a9f03802ca3d956591820ed5c537")
+        (revision "1"))
+    (package
+      (name "emacs-company-quickhelp")
+      (version (git-version "2.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/expez/company-quickhelp.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0hbqpnaf4hnin3nmdzmfj3v22kk9a97b6zssqs96ns36d9h52xcp"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-pos-tip" ,emacs-pos-tip)
+         ("emacs-company" ,emacs-company)))
+      (home-page "https://github.com/expez/company-quickhelp")
+      (synopsis "Popup documentation for completion candidates")
+      (description "@code{company-quickhelp} shows documentation for the
 completion candidate when using the Company text completion framework.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-math-symbol-lists
   (let ((commit "dc7531cff0c845d5470a50c24d5d7309b2ced7eb")
