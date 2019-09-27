@@ -866,7 +866,7 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public wabt
   (package
     (name "wabt")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
      (origin
        (method git-fetch)
@@ -875,7 +875,7 @@ for efficient socket-like bidirectional reliable communication channels.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0hn88vlqyclpk79v3wg3lrssd9vwhjdgvb41g03jqakygxxgnmp5"))))
+        (base32 "1zlv3740wkqj4mn6sr84h0x6wk2lcp4pwwmqsh5yyqp1j1glbsa0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DBUILD_TESTS=OFF")
