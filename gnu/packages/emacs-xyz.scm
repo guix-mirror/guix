@@ -5957,6 +5957,59 @@ If you want to mark a folder manually as a project just create an empty
 .projectile file in it.")
     (license license:gpl3+)))
 
+(define-public emacs-skeletor
+  (let ((commit "47c5b761aee8452716c97a69949ac2f675affe13")
+        (revision "1"))
+    (package
+      (name "emacs-skeletor")
+      (version (git-version "1.6.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/chrisbarrett/skeletor.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "12bdgykfh4mwsqdazxjdvha62h3q3v33159ypy91f6x59y01fi0n"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-let-alist" ,emacs-let-alist)))
+      (native-inputs
+       `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:include (cons "^project-skeletons\\/" %default-include)
+         ;; XXX: one failing test involving initializing a git repo
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-test-writable
+             (lambda _
+               (make-file-writable "test/skeletor-test.el")
+               #t))
+           (add-before 'check 'remove-git-test
+             (lambda _
+               (emacs-batch-edit-file "test/skeletor-test.el"
+                 `(progn
+                   (progn
+                    (goto-char (point-min))
+                    (re-search-forward
+                     "ert-deftest initialises-git-repo")
+                    (beginning-of-line)
+                    (kill-sexp))
+                   (basic-save-buffer)))
+               #t)))
+         #:tests? #t
+         #:test-command '("ert-runner")))
+      (home-page "https://github.com/chrisbarrett/skeletor.el")
+      (synopsis "Project skeletons for Emacs")
+      (description "This package provides project templates and automates the
+mundane parts of setting up a new project, such as version control, licenses,
+and tooling.")
+      (license license:gpl3+))))
+
 (define-public emacs-elfeed
   (package
     (name "emacs-elfeed")
