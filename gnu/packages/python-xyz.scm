@@ -609,6 +609,29 @@ to users of that module.")
 (define-public python2-netcdf4
   (package-with-python2 python-netcdf4))
 
+(define-public python-license-expression
+  (package
+    (name "python-license-expression")
+    (version "0.999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "license-expression" version))
+       (sha256
+        (base32 "08ppb0bxbrsxazy88sgpl9yffvdsabw6dkk1nc332wcz2mphwwyf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-boolean.py" ,python-boolean.py)))
+    (home-page "https://github.com/nexB/license-expression")
+    (synopsis "Apply boolean logic to license expressions")
+    (description
+     "This Python module defines a tiny language to evaluate and compare
+license expressions using boolean logic.  Logical combinations of licenses can
+be tested for equality, containment, and equivalence.  They can be normalised
+and simplified.  It supports SPDX license expressions as well as other naming
+conventions and aliases in the same expression.")
+    (license license:gpl2+)))
+
 (define-public python-lockfile
   (package
     (name "python-lockfile")
