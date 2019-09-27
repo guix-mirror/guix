@@ -60,11 +60,11 @@ packages are built now weighs in at approximately 130 MiB, half of what it
 used to be.  Run @code{info \"(guix) Bootstrapping\"} to learn more, or watch
 the talk at @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")
          (de "Der Paketgraph auf x86_64 und i686 hat jetzt eine @dfn{kleinere
-Menge an binären Seeds}. Das heißt, die ursprüngliche Menge an Binärdateien,
-aus denen heraus Pakete erstellt werden, machen nun ungefähr 130 MiB aus, halb
-so viel wie früher. Führen Sie @code{info \"(guix.de) Bootstrapping\"} aus, um
-mehr zu erfahren, oder schauen Sie sich den Vortrag auf
-@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/} an.")
+Menge an binären Seeds} als Wurzel. Das heißt, die ursprüngliche Menge an
+Binärdateien, aus denen heraus Pakete erstellt werden, machen nun ungefähr
+130 MiB aus, halb so viel wie früher. Führen Sie @code{info \"(guix.de)
+Bootstrapping\"} aus, um mehr zu erfahren, oder schauen Sie sich den Vortrag
+auf @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/} an.")
          (fr "Le graphe des paquets sur x86_64 et i686 prend maintenant sa
 source dans un @dfn{ensemble réduit de binaires}.  L'ensemble initial des
 binaires à partir desquels les paquets sont construits pèse maintenant environ
