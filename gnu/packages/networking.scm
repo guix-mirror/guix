@@ -2321,7 +2321,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.15")
+    (version "0.9.16")
     (source
      (origin
        (method git-fetch)
@@ -2330,7 +2330,7 @@ SNMP v3 using both IPv4 and IPv6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fl07zyall04map6v2l1bclqh8y3rrhsx61s2v0sr8b00j201jg4"))))
+        (base32 "1bind7ylgxs743vfdmpdrpp4iamy461bc3i7nxza91kj7hyyjz6h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
