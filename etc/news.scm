@@ -11,7 +11,8 @@
 
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
-	       (fr "Mise à jour de la bibliothèque C de GNU"))
+               (de "GNU-C-Bibliothek aktualisiert")
+               (fr "Mise à jour de la bibliothèque C de GNU"))
         (body
          (en "The GNU C Library (glibc) has been upgraded to version 2.29.  To
 run previously-installed programs linked against glibc 2.28, you need to
@@ -50,7 +51,8 @@ Sur le système Guix, tu peux ajuster le champ @code{locale-libcs} de ta forme
 plus de détails.")))
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
         (title (en "New reduced binary seed bootstrap")
-	       (fr "Nouvel ensemble de binaires de bootstrap réduit"))
+               (de "Neues Bootstrapping mit kleinerem Seed")
+               (fr "Nouvel ensemble de binaires de bootstrap réduit"))
         (body
          (en "The package graph on x86_64 and i686 is now rooted in a
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
