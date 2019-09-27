@@ -12,7 +12,8 @@
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
                (de "GNU-C-Bibliothek aktualisiert")
-               (fr "Mise à jour de la bibliothèque C de GNU"))
+               (fr "Mise à jour de la bibliothèque C de GNU")
+               (nl "GNU C-bibliotheek bijgewerkt"))
         (body
          (en "The GNU C Library (glibc) has been upgraded to version 2.29.  To
 run previously-installed programs linked against glibc 2.28, you need to
@@ -48,11 +49,24 @@ guix install glibc-locales glibc-locales-2.28
 
 Sur le système Guix, tu peux ajuster le champ @code{locale-libcs} de ta forme
 @code{operating-system}.  Lance @code{info \"(guix.fr) Régionalisation\"} pour
-plus de détails.")))
+plus de détails.")
+         (nl "De GNU C-bibliotheek (glibc) werd bijgewerkt naar versie 2.29.
+Om gebruik te maken van reeds geïnstalleerde programma's die aan glibc 2.28
+gebonden zijn, moet u de regionale informatie van versie 2.28 naast die van
+versie 2.29 installeren:
+
+@example
+guix install glibc-locales glibc-locales-2.28
+@end example
+
+Op Guix System kunt u het @code{locale-libcs}-veld van uw
+@code{operating-system}-vorm aanpassen.   Voer @code{info \"(guix) Locales\"}
+uit voor verdere uitleg." )))
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
         (title (en "New reduced binary seed bootstrap")
                (de "Neues Bootstrapping mit kleinerem Seed")
-               (fr "Nouvel ensemble de binaires de bootstrap réduit"))
+               (fr "Nouvel ensemble de binaires de bootstrap réduit")
+               (nl "Nieuwe bootstrap met verkleinde binaire kiem"))
         (body
          (en "The package graph on x86_64 and i686 is now rooted in a
 @dfn{reduced set of binary seeds}.  The initial set of binaries from which
@@ -70,12 +84,19 @@ source dans un @dfn{ensemble réduit de binaires}.  L'ensemble initial des
 binaires à partir desquels les paquets sont construits pèse maintenant environ
 130 Mio, soit la moitié par rapport à l'ensemble précédent.  Tu peux lancer
 @code{info \"(guix) Bootstrapping\"} pour plus de détails, ou regarder la
-présentation sur @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")))
+présentation sur @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")
+         (nl "Het netwerk van pakketten voor x86_64 en i686 is nu geworteld in
+een @dfn{verkleinde verzameling van binaire kiemen}.  Die beginverzameling
+van binaire bestanden waaruit pakketten gebouwd worden is nu zo'n 130 MiB
+groot; nog maar half zo groot als voorheen.  Voer @code{info \"(guix)
+Bootstrapping\"} uit voor meer details, of bekijk de presentatie op
+@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")))
 
  (entry (commit "dcc90d15581189dbc30e201db2b807273d6484f0")
         (title (en "New channel news mechanism")
                (de "Neuer Mechanismus, um Neuigkeiten über Kanäle anzuzeigen.")
-               (fr "Nouveau mécanisme d'information sur les canaux"))
+               (fr "Nouveau mécanisme d'information sur les canaux")
+               (nl "Nieuw mechanisme voor nieuwsberichten per kanaal"))
         (body
          (en "You are reading this message through the new channel news
 mechanism, congratulations!  This mechanism allows channel authors to provide
@@ -91,4 +112,9 @@ von guix pull\"} aus, um weitere Informationen zu erhalten.")
 des canaux, bravo !  Ce mécanisme permet aux auteur·rice·s de canaux de
 fournir des informations qu'on peut visualiser avec @command{guix pull
 --news}.  Tape @command{info \"(guix.fr) Invoquer guix pull\"} pour plus de
-détails."))))
+détails.")
+         (nl "U leest dit bericht door een nieuw mechanisme om per kanaal
+@dfn{nieuwsberichten} te verspreiden.  Proficiat!  Hiermee kunnen kanaalauteurs
+mededelingen uitzenden die hun gebruikers met @command{guix pull --news} kunnen
+lezen.  Voer @command{info \"(guix) Invoking guix pull\"} uit voor meer
+informatie."))))
