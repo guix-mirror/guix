@@ -1,0 +1,28 @@
+Patches taken from https://gitweb.gentoo.org/repo/gentoo.git/tree/media-sound/supercollider/files/supercollider-3.10.2-boost-1.70.patch?id=a420618dc766bba0654dbe0ef67008fdc5e901c6 to fix supercollider build with boost 1.70.
+
+diff --git a/server/supernova/sc/sc_osc_handler.cpp b/server/supernova/sc/sc_osc_handler.cpp
+index 5116a1be87..96e937ec25 100644
+--- a/server/supernova/sc/sc_osc_handler.cpp
++++ b/server/supernova/sc/sc_osc_handler.cpp
+@@ -728,7 +728,8 @@ void sc_osc_handler::tcp_connection::handle_message() {
+ 
+ 
+ void sc_osc_handler::start_tcp_accept(void) {
+-    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
++    tcp_connection::pointer new_connection =
++        tcp_connection::create((boost::asio::io_context&)tcp_acceptor_.get_executor().context());
+ 
+     tcp_acceptor_.async_accept(
+         new_connection->socket(),
+diff --git a/server/supernova/utilities/utils.hpp b/server/supernova/utilities/utils.hpp
+index 35b8ab5ad..a7c191f2d 100644
+--- a/server/supernova/utilities/utils.hpp
++++ b/server/supernova/utilities/utils.hpp
+@@ -23,6 +23,7 @@
+ 
+ #include <type_traits>
+ 
++#include <boost/checked_delete.hpp>
+ #include <boost/intrusive_ptr.hpp>
+ #include <boost/noncopyable.hpp>
+ #include <boost/detail/atomic_count.hpp>

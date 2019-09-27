@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2177,16 +2178,18 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (patches
+               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
+                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2198,12 +2201,6 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-boost-1.68
-           (lambda _
-             (substitute* "server/supernova/utilities/time_tag.hpp"
-               (("(time_duration offset = .+ microseconds\\().*" _ m)
-                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
-             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
