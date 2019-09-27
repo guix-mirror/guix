@@ -17661,7 +17661,7 @@ Dash docsets.")
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/nathankot/counsel-dash")
+               (url "https://github.com/dash-docs-el/counsel-dash.git")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
@@ -17671,7 +17671,7 @@ Dash docsets.")
       (propagated-inputs
        `(("emacs-dash-docs" ,emacs-dash-docs)
          ("emacs-ivy" ,emacs-ivy)))
-      (home-page "https://github.com/nathankot/counsel-dash")
+      (home-page "https://github.com/dash-docs-el/counsel-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
       (description "This package uses @code{ivy-mode} to install and navigate
 through Dash docsets.")
