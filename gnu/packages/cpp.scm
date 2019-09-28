@@ -246,7 +246,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.4")
+    (version "0.6.7")
     (source (origin
               (method git-fetch)
               (uri
@@ -255,7 +255,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "0rwdw43fq7c581m6frzsd06h71sf7abk7danwa3cp6wd6cgkwdbk"))
+                "0dds2fzyis42b1c3biqr3ir9l96csyyfkwrkm3fqjksdhgdklzmj"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
