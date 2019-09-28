@@ -3685,9 +3685,9 @@ queries upon that data.")
     (version "1.4.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgnome-games-support/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgnome-games-support-" version ".tar.xz"))
               (sha256
                (base32
                 "1zkbmnrn161p74qg6jhsn9f66yjjzxfm13pl1klv9av8k1bax9pq"))))
