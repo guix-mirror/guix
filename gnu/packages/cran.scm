@@ -12880,14 +12880,14 @@ datum transformations.")
 (define-public r-spdep
   (package
     (name "r-spdep")
-    (version "1.1-2")
+    (version "1.1-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spdep" version))
        (sha256
         (base32
-         "06mk81kc1ml2wjc8wwwgr0wasjcr4mwrxpfa8vfc373bmnha635s"))))
+         "1f8cjffqqc6rnb3n4qym70ca6nz2kvrsd3g587wrqdr79nnbwnrk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-boot" ,r-boot)
