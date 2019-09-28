@@ -12556,7 +12556,7 @@ key again.")
 
 (define-public emacs-mbsync
   (let ((commit "8f80c267cab1acb0d5bdd5b0059f5d1790d499ff")
-        (revision "2"))
+        (revision "3"))
     (package
       (name "emacs-mbsync")
       (version (git-version "0.1.2" revision commit))
