@@ -472,9 +472,6 @@ specification.  These are the main features:
   ;; This is the 1.x branch of Guile-JSON.
   guile-json)
 
-(define-public guile2.2-json
-  (deprecated-package "guile2.2-json" guile-json))
-
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json))
 
@@ -543,9 +540,6 @@ Guile's foreign function interface.")
 
 (define-public guile2.0-gdbm-ffi
   (package-for-guile-2.0 guile-gdbm-ffi))
-
-(define-public guile2.2-gdbm-ffi
-  (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (package

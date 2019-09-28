@@ -340,9 +340,6 @@ programs written in GNU Guile interpreter.  It is a wrapper to the underlying
 libssh library.")
     (license license:gpl3+)))
 
-(define-public guile2.2-ssh
-  (deprecated-package "guile2.2-ssh" guile-ssh))
-
 (define-public guile2.0-ssh
   (package
     (inherit guile-ssh)
