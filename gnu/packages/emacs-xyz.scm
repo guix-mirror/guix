@@ -15337,16 +15337,14 @@ was called.")
 (define-public emacs-dired-du
   (package
     (name "emacs-dired-du")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://elpa.gnu.org/packages/dired-du-"
-             version ".tar"))
+             "https://elpa.gnu.org/packages/dired-du-" version ".tar"))
        (sha256
-        (base32
-         "1091scnrjh0a4gja4z6jxic6ghy1yryv46qk9c76pmh50cpw6766"))))
+        (base32 "0vhph7vcicsiq28b10h3b4dvnhckcy4gccpdgsad5j7pwa5k26m1"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/dired-du.html")
     (synopsis "Dired with recursive directory sizes")
