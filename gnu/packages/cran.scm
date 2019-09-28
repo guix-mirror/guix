@@ -4166,21 +4166,20 @@ generation, and 2D/3D network visualization.")
 (define-public r-ttr
   (package
     (name "r-ttr")
-    (version "0.23-4")
+    (version "0.23-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "TTR" version))
        (sha256
         (base32
-         "18mzyv6cmxmqyqsfwlx2b2k055887mfgc2jgj8xkn8c6m56n05zb"))))
+         "0fxipnyxaz55n4camrk9cs71x9w4dsmjrihysv8i1s6khf825rg6"))))
     (properties `((upstream-name . "TTR")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
        ("r-xts" ,r-xts)
        ("r-zoo" ,r-zoo)))
-    (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://github.com/joshuaulrich/TTR")
     (synopsis "Technical trading rules")
     (description
