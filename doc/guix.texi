@@ -794,22 +794,6 @@ GNU Coding Standards}).  The @command{configure} script protects against
 unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
-@cindex Nix, compatibility
-When a working installation of @url{https://nixos.org/nix/, the Nix package
-manager} is available, you
-can instead configure Guix with @code{--disable-daemon}.  In that case,
-Nix replaces the three dependencies above.
-
-Guix is compatible with Nix, so it is possible to share the same store
-between both.  To do so, you must pass @command{configure} not only the
-same @code{--with-store-dir} value, but also the same
-@code{--localstatedir} value.  The latter is essential because it
-specifies where the database that stores metadata about the store is
-located, among other things.  The default values for Nix are
-@code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
-Note that @code{--disable-daemon} is not required if
-your goal is to share the store with Nix.
-
 @node Running the Test Suite
 @section Running the Test Suite
 
