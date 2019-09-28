@@ -15614,14 +15614,14 @@ signalled with increasing levels of non-invasive verbosity.")
 (define-public r-assertable
   (package
     (name "r-assertable")
-    (version "0.2.6")
+    (version "0.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "assertable" version))
        (sha256
         (base32
-         "0jjd6ylh26fykzzv1q2lbajzfj07lyxwb3b3xmr2zdg2fp5b2w4c"))))
+         "1npks9rcrnchmd0silq6qrvqkmdkp9fwjkyyvvp1lqjclyxk6vkk"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-data-table" ,r-data-table)))
