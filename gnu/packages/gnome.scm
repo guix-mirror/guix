@@ -3431,9 +3431,9 @@ throughout GNOME for API documentation).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/cogl/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "cogl-" version ".tar.xz"))
        (sha256
         (base32
          "03f0ha3qk7ca0nnkkcr1garrm1n1vvfqhkz9lwjm592fnv6ii9rr"))))
