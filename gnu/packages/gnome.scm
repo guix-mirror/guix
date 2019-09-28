@@ -4607,9 +4607,9 @@ wraps things up in a developer-friendly way.")
     (version "0.20.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgee/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgee-" version ".tar.xz"))
               (sha256
                (base32
                 "0c26x8gi3ivmhlbqcmiag4jwrkvcy28ld24j55nqr3jikb904a5v"))))
