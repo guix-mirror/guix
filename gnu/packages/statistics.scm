@@ -2438,13 +2438,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "05fag25mkqy13yja8x32aqr9c0ah9rbm8cfjcsmy1dv5h4j8cxa1"))))
+                "0i2f549hxkn0j1x1avkhwy68c9r48v9284j7x9cak2q6dfsqz61f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -2463,8 +2463,9 @@ informative error messages when it's not available.")
        ("r-pkgbuild" ,r-pkgbuild)
        ("r-pkgload" ,r-pkgload)
        ("r-rcmdcheck" ,r-rcmdcheck)
-       ("r-roxygen2" ,r-roxygen2)
        ("r-remotes" ,r-remotes)
+       ("r-rlang" ,r-rlang)
+       ("r-roxygen2" ,r-roxygen2)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-rversions" ,r-rversions)
        ("r-sessioninfo" ,r-sessioninfo)
