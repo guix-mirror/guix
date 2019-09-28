@@ -6249,14 +6249,14 @@ vice versa), or to deal with multiple declared missing values.")
 (define-public r-sjmisc
   (package
     (name "r-sjmisc")
-    (version "2.8.1")
+    (version "2.8.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjmisc" version))
        (sha256
         (base32
-         "1a30n3cyd9h9ilaiai9ywy53f03nikafc47rvpws2c2vghc8mbn7"))))
+         "0rl0bmk91wc4dxdgy008fl0dwkx3ffvys30vgpnr78lb4pk45nb2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dplyr" ,r-dplyr)
@@ -6264,7 +6264,8 @@ vice versa), or to deal with multiple declared missing values.")
        ("r-magrittr" ,r-magrittr)
        ("r-purrr" ,r-purrr)
        ("r-rlang" ,r-rlang)
-       ("r-sjlabelled" ,r-sjlabelled)))
+       ("r-sjlabelled" ,r-sjlabelled)
+       ("r-tidyselect" ,r-tidyselect)))
     (home-page "https://github.com/strengejacke/sjmisc")
     (synopsis "Data and variable transformation functions")
     (description
