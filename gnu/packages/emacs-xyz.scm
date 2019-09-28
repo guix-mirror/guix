@@ -13692,7 +13692,7 @@ using user-provided rules.")
 (define-public emacs-on-screen
   (package
     (name "emacs-on-screen")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -13700,11 +13700,9 @@ using user-provided rules.")
              "http://elpa.gnu.org/packages/on-screen-" version ".el"))
        (file-name (string-append name "-" version ".el"))
        (sha256
-        (base32
-         "15d18mjgv1pnwl6kf3pr5w64q1322p1l1qlfvnckglwmzy5sl2qv"))))
+        (base32 "0ga4hw23ki583li2z2hr7l6hk1nc2kdg4afndg06cm9jn158wza7"))))
     (build-system emacs-build-system)
-    (home-page
-     "https://github.com/michael-heerdegen/on-screen.el")
+    (home-page "https://github.com/michael-heerdegen/on-screen.el")
     (synopsis "Guide your eyes while scrolling")
     (description
      "Scrolling can be distracting because your eyes may lose
