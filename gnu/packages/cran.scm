@@ -98,14 +98,14 @@ the system clipboards.")
 (define-public r-ellipsis
   (package
     (name "r-ellipsis")
-    (version "0.2.0.1")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ellipsis" version))
        (sha256
         (base32
-         "0hx9l043433bwm1np9sypph77c7y9dddpz0wrhbkcv01x32jhr8f"))))
+         "01z9gq311nzwv3a0sa49jhm5ylqd59srip4vjkrf23hzgb5i9y0b"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rlang" ,r-rlang)))
