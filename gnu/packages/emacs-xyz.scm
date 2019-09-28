@@ -16724,10 +16724,10 @@ constant expressions.")
 
 (define-public emacs-dockerfile-mode
   ;; Latest upstream release is too old.
-  (let ((commit "7223d92718f78fa3ab15667cdb2ed90cfeb579e7"))
+  (let ((commit "ed73e82dcc636dad00d1a8c3b32a49136d25ee60"))
     (package
       (name "emacs-dockerfile-mode")
-      (version (git-version "1.2" "1" commit))
+      (version (git-version "1.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -16737,7 +16737,7 @@ constant expressions.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0hmipgl4rk6aih11i8mnspwdijjiwk2y0wns6lzs8bgkvy3c064r"))))
+           "0lri2rnx4lr23vqfphkpq39cd4xfgzkvz1xsz7ccdvl4qj0k7fdl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-s" ,emacs-s)))
