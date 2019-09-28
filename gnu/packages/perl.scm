@@ -802,15 +802,14 @@ Perl.")
 (define-public perl-carp-clan
   (package
     (name "perl-carp-clan")
-    (version "6.07")
+    (version "6.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Carp-Clan-" version ".tar.gz"))
        (sha256
-        (base32
-         "0gaa4ygd9q8lp2fn5d9s7miiwxz92a2lqs7j6smwmifq6w3mc20a"))))
+        (base32 "0237xx3rqa72sr4vdvws9r1m453h5f25bl85mdjmmk128kir4py7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
