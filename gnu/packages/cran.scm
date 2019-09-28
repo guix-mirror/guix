@@ -12772,14 +12772,14 @@ univariate class intervals for mapping or other graphics purposes.")
 (define-public r-spdata
   (package
     (name "r-spdata")
-    (version "0.3.0")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spData" version))
        (sha256
         (base32
-         "162cqb331ki43jx4r8lpkjpn2l712figd896rnawg9j1jmjyl96y"))))
+         "190msrrpn226x27pcnck4ac34f9k4xcn26cyz2apdri2nzkr6zbw"))))
     (properties `((upstream-name . "spData")))
     (build-system r-build-system)
     (home-page "https://github.com/Nowosad/spData")
