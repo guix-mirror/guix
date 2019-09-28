@@ -2948,13 +2948,13 @@ plotted and compared with the asymptotic curve.")
 (define-public r-lambda-r
   (package
     (name "r-lambda-r")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lambda.r" version))
               (sha256
                (base32
-                "0cc6pszs6yccn0hgjpyn9gspv9aiva9d91ba0640i5m0l5xy7n0c"))))
+                "1mh1g0gsd58gng0hb29vww2yqb2jfs07kba5kxnnqck5j3izwlnj"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
     (propagated-inputs
