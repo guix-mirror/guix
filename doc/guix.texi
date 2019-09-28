@@ -26004,12 +26004,10 @@ The object of the operating system configuration to deploy.
 
 @item @code{environment}
 An @code{environment-type} describing how the machine should be provisioned.
-At the moment, the only supported value is
-@code{managed-host-environment-type}.
 
 @item @code{configuration} (default: @code{#f})
 An object describing the configuration for the machine's @code{environment}.
-If the @code{environment} has a default configuration, @code{#f} maybe used.
+If the @code{environment} has a default configuration, @code{#f} may be used.
 If @code{#f} is used for an environment with no default configuration,
 however, an error will be thrown.
 @end table
@@ -26034,6 +26032,26 @@ keyring.
 @item @code{identity} (default: @code{#f})
 If specified, the path to the SSH private key to use to authenticate with the
 remote host.
+@end table
+@end deftp
+
+@deftp {Data Type} digital-ocean-configuration
+This is the data type describing the Droplet that should be created for a
+machine with an @code{environment} of @code{digital-ocean-environment-type}.
+
+@table @asis
+@item @code{ssh-key}
+The path to the SSH private key to use to authenticate with the remote
+host. In the future, this field may not exist.
+@item @code{tags}
+A list of string ``tags'' that uniquely identify the machine. Must be given
+such that no two machines in the deployment have the same set of tags.
+@item @code{region}
+A Digital Ocean region slug, such as @code{"nyc3"}.
+@item @code{size}
+A Digital Ocean size slug, such as @code{"s-1vcpu-1gb"}
+@item @code{enable-ipv6}
+Whether or not the droplet should be created with IPv6 networking.
 @end table
 @end deftp
 

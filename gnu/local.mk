@@ -580,6 +580,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/machine.scm				\
+  %D%/machine/digital-ocean.scm			\
   %D%/machine/ssh.scm				\
 						\
   %D%/build/accounts.scm			\
