@@ -14591,6 +14591,11 @@ on-line service.")
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
        ("emacs-company" ,emacs-company)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
     (synopsis "Helm interface for company-mode")
     (description
