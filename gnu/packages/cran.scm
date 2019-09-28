@@ -615,13 +615,13 @@ LaTeX.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "4.0")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "0wb1j87fa2nd4a9x1w2nmc453nzvx6qiq8dviwc4jr36hsf9ra89"))))
+                "0xh227gvb056wlipjxxbf555z1i1qcs7rr1igvs6k6645y9irrlp"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
