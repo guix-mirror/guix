@@ -17610,12 +17610,11 @@ and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
 (define-public emacs-org-download
-  (let ((commit "ac72bf8fce3e855da60687027b6b8601cf1de480")
-        (version "0.1.0")
-        (revision "1"))
+  (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
+        (revision "2"))
     (package
       (name "emacs-org-download")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -17623,7 +17622,7 @@ and searching through @code{Ctags} files.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0ax5wd44765wnwabkam1g2r62gq8crx2qq733s2mg1z72cfvwxqb"))
+                  "0i8wlx1i7y1vn5lqwjifvymvszg28a07vwqcm4jslf1v2ajs1lsl"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
