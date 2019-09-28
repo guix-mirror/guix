@@ -3129,7 +3129,7 @@ permission from user.")
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/geocode-glib/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "geocode-glib-" version ".tar.xz"))
               (sha256
                (base32
                 "1vmydxs5xizcmaxpkfrq75xpj6pqrpdjizxyb30m00h54yqqch7a"))))
