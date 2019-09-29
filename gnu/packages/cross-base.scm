@@ -144,6 +144,7 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-libatomic"
                                "--disable-libmudflap"
                                "--disable-libgomp"
+                               "--disable-libmpx"
                                "--disable-libssp"
                                "--disable-libquadmath"
                                "--disable-decimal-float" ;would need libc
