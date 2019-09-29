@@ -1722,6 +1722,12 @@ See http://minikanren.org/ for more on miniKanren generally.")
     (name "guile2.0-minikanren")
     (native-inputs `(("guile" ,guile-2.0)))))
 
+(define-public guile3.0-minikanren
+  (package
+    (inherit guile-minikanren)
+    (name "guile3.0-minikanren")
+    (native-inputs `(("guile" ,guile-next)))))
+
 (define-public guile-irregex
   (package
     (name "guile-irregex")
@@ -1767,6 +1773,12 @@ inspired by the SCSH regular expression system.")
     (inherit guile-irregex)
     (name "guile2.0-irregex")
     (native-inputs `(("guile" ,guile-2.0)))))
+
+(define-public guile3.0-irregex
+  (package
+    (inherit guile-irregex)
+    (name "guile3.0-irregex")
+    (native-inputs `(("guile" ,guile-next)))))
 
 (define-public haunt
   (package
