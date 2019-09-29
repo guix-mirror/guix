@@ -1091,7 +1091,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
-  %D%/packages/patches/mame-rapidjson-fix.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
