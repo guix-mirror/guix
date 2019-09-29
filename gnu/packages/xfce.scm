@@ -434,7 +434,7 @@ matching them against regular expressions.")
                                     "/include/dbus-1.0" ":"
                                     (assoc-ref inputs "dbus")
                                     "/include/dbus-1.0" ":"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    (or (getenv "C_INCLUDE_PATH") "")))
              #t)))))
     (native-inputs
      `(("intltool" ,intltool)
