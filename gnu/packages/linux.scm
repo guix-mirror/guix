@@ -181,6 +181,12 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "deblob-check"))
           (sha256 deblob-check-hash))))
 
+(define deblob-scripts-5.3
+  (linux-libre-deblob-scripts
+   "5.3.1"
+   (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
+   (base32 "1av9ykv714cnl0clls8rhwa8rwflz6ivg17gharj1x650qp6vnw3")))
+
 (define deblob-scripts-5.2
   (linux-libre-deblob-scripts
    "5.2.17"
@@ -351,6 +357,14 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
+(define-public linux-libre-5.3-version "5.3.1")
+(define-public linux-libre-5.3-pristine-source
+  (let ((version linux-libre-5.3-version)
+        (hash (base32 "0n7qjakglzh6rpbjdjqr4fgp8f8fd3qgb5as0hfj25nk16lvb44q")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.3)))
+
 (define-public linux-libre-5.2-version "5.2.17")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
@@ -418,6 +432,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (inherit source)
     (patches (append (origin-patches source)
                      patches))))
+
+(define-public linux-libre-5.3-source
+  (source-with-patches linux-libre-5.3-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.2-source
   (source-with-patches linux-libre-5.2-pristine-source
@@ -510,6 +529,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.3
+  (make-linux-libre-headers* linux-libre-5.3-version
+                             linux-libre-5.3-source))
 
 (define-public linux-libre-headers-5.2
   (make-linux-libre-headers* linux-libre-5.2-version
@@ -755,6 +778,12 @@ It has been modified to remove all non-free binary blobs.")
 ;;;
 ;;; Generic kernel packages.
 ;;;
+
+(define-public linux-libre-5.3
+  (make-linux-libre* linux-libre-5.3-version
+                     linux-libre-5.3-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     #:configuration-file kernel-config))
 
 (define-public linux-libre-5.2
   (make-linux-libre* linux-libre-5.2-version
