@@ -633,45 +633,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("mescc-tools" ,%mescc-tools-static)))))
 
-;; (define-public %mes-minimal-stripped
-;;   ;; A minimal Mes without documentation dependencies, for bootstrap.
-;;   (let ((triplet "i686-unknown-linux-gnu"))
-;;     (package
-;;       (inherit mes)
-;;       (name "mes-minimal-stripped")
-;;       (native-inputs
-;;        `(("guile" ,guile-2.2)))
-;;       (arguments
-;;        `(#:system "i686-linux"
-;;          #:strip-binaries? #f
-;;          #:configure-flags '("--mes")
-;;          #:phases
-;;          (modify-phases %standard-phases
-;;            (delete 'patch-shebangs)
-;;            (add-after 'install 'strip-install
-;;              (lambda _
-;;                (let* ((out (assoc-ref %outputs "out"))
-;;                       (share (string-append out "/share")))
-;;                  (delete-file-recursively (string-append out "/lib/guile"))
-;;                  (delete-file-recursively (string-append share "/guile"))
-;;                  (delete-file-recursively (string-append share "/mes/scaffold"))
-
-;;                  (for-each delete-file
-;;                            (find-files
-;;                             (string-append share "/mes/lib") "\\.(h|c)"))
-
-;;                  (for-each (lambda (dir)
-;;                              (for-each remove-store-references
-;;                                        (find-files (string-append out "/" dir)
-;;                                                    ".*")))
-;;                            '("bin" "share/mes")))))))))))
-
 ;; Two packages: first build static, bare minimum content.
 (define-public %mes-minimal
   ;; A minimal Mes without documentation.
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
-      (inherit mes)
+      (inherit mes-0.19)
       (name "mes-minimal")
       (native-inputs
        `(("guile" ,guile-2.2)))

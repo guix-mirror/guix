@@ -38,6 +38,7 @@
   #:use-module (guix utils))
 
 (define-public nyacc-0.86
+  ;; Nyacc used for bootstrap.
   (package
     (name "nyacc")
     (version "0.86.0")
@@ -91,22 +92,23 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (inputs
      `(("guile" ,guile-2.2)))))
 
-(define-public mes
+(define-public mes-0.19
+  ;; Mes used for bootstrap.
   (package
     (name "mes")
-    (version "0.20")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs
-     `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)))
+     `(("mescc-tools" ,mescc-tools-0.5.2)
+       ("nyacc" ,nyacc-0.86)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)
@@ -134,6 +136,21 @@ interpreter in C and a Nyacc-based C compiler in Scheme and is compatible with
 Guile.")
     (home-page "https://gnu.org/software/mes")
     (license gpl3+)))
+
+(define-public mes
+  (package
+    (inherit mes-0.19)
+    (version "0.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+    (propagated-inputs
+     `(("mescc-tools" ,mescc-tools)
+       ("nyacc" ,nyacc)))))
 
 (define-public mescc-tools-0.5.2
   ;; Mescc-tools used for bootstrap.
