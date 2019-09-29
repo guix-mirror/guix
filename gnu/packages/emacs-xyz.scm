@@ -4740,7 +4740,7 @@ them easier to distinguish from other, less important buffers.")
 (define-public emacs-prescient
   (package
     (name "emacs-prescient")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4749,7 +4749,7 @@ them easier to distinguish from other, less important buffers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d60h4rfm5jcf8cf11z91wjqp0xcrviskqzyqhfliqvy2i2yl6ks"))))
+                "1wqk1g8fjpcbpiz32k7arnisncd4n9zs84dn3qn9y8ggjzldqy91"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
