@@ -11642,7 +11642,7 @@ timestamps by providing a @code{ts} struct.")
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11650,7 +11650,7 @@ timestamps by providing a @code{ts} struct.")
                     (commit version)))
               (sha256
                (base32
-                "0mq0aj0a3a5gi9nz0ncpzsh731d92n86b0iinvx1m45dcal06h9y"))
+                "1xyabg9fhpip6426za6wjrn0msnaf10c5fzzaawwagk7zmjf9b48"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
