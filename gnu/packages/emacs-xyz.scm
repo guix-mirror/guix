@@ -1856,7 +1856,7 @@ single buffer.")
 (define-public emacs-tablist
   (package
     (name "emacs-tablist")
-    (version "0.70")
+    (version "1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1865,7 +1865,7 @@ single buffer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gy9hxm7bca0l1hfy2pzn86avpifrz3bs8xzpicj4kxw5wi4ygns"))))
+                "0pzsdg0rm59daw34ppss79cg05z9wnr8nkmdcc48nkd0p69ip2yy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/politza/tablist")
     (synopsis "Extension for @code{tabulated-list-mode}")
