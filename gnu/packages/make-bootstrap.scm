@@ -594,34 +594,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
-;; One package: build + remove store references
-;; (define %mescc-tools-static-stripped
-;;   ;; A statically linked Mescc Tools with store references removed, for
-;;   ;; bootstrap.
-;;   (package
-;;     (inherit mescc-tools)
-;;     (name "mescc-tools-static-stripped")
-;;     (arguments
-;;      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-;;                           "CC=gcc -static")
-;;        #:test-target "test"
-;;        #:phases (modify-phases %standard-phases
-;;                   (delete 'configure)
-;;                   (add-after 'install 'strip-store-references
-;;                     (lambda _
-;;                       (let* ((out (assoc-ref %outputs "out"))
-;;                              (bin (string-append out "/bin")))
-;;                         (for-each (lambda (file)
-;;                                  (let ((target (string-append bin "/" file)))
-;;                                    (format #t "strippingg `~a'...~%" target)
-;;                                    (remove-store-references target)))
-;;                                   '( "M1" "blood-elf" "hex2"))))))))))
-
 ;; Two packages: first build static, bare minimum content.
 (define %mescc-tools-static
   ;; A statically linked MesCC Tools.
   (package
-    (inherit mescc-tools)
+    (inherit mescc-tools-0.5.2)
     (name "mescc-tools-static")
     (arguments
      `(#:system "i686-linux"

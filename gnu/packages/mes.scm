@@ -34,7 +34,8 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public nyacc-0.86
   (package
@@ -134,7 +135,8 @@ Guile.")
     (home-page "https://gnu.org/software/mes")
     (license gpl3+)))
 
-(define-public mescc-tools
+(define-public mescc-tools-0.5.2
+  ;; Mescc-tools used for bootstrap.
   (let ((commit "bb062b0da7bf2724ca40f9002b121579898d4ef7")
         (revision "0")
         (version "0.5.2"))
@@ -166,9 +168,9 @@ get_machine.")
     (home-page "https://savannah.nongnu.org/projects/mescc-tools")
     (license gpl3+))))
 
-(define-public mescc-tools-0.6.1
+(define-public mescc-tools
   (package
-    (inherit mescc-tools)
+    (inherit mescc-tools-0.5.2)
     (name "mescc-tools")
     (version "0.6.1")
     (source (origin
@@ -180,4 +182,9 @@ get_machine.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))))
+                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
+       ((#:make-flags _)
+        `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc"))))))
