@@ -169,7 +169,7 @@ minimalist than ntpd.")
                       ;; received from servers.
                       (setenv "COMPILE_DATE" (number->string 1530144000))
                       (invoke "sh" "autogen.sh"))))))
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("openssl" ,openssl-1.0)
               ("libevent" ,libevent)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("autoconf" ,autoconf)
