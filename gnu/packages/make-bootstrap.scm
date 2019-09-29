@@ -164,7 +164,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (source (origin
               (inherit (package-source static-bash))
               (patches
-               (cons (search-patch "bash-4.4-linux-pgrp-pipe.patch")
+               (cons (search-patch "bash-reproducible-linux-pgrp-pipe.patch")
                      (origin-patches (package-source static-bash))))))))
 
 (define %static-inputs
