@@ -26,6 +26,7 @@
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages bison)
   #:use-module (ice-9 match))
 
@@ -1321,6 +1323,46 @@ actions, a built-in clock, a battery monitor and a system tray.")
 program for X11.  It was designed to be fast, tiny and scriptable in any language.")
      (home-page "https://github.com/robm/dzen")
      (license license:expat))))
+
+(define-public xftwidth
+  (package
+    (name "xftwidth")
+    (version "20170402")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	     (url "http://github.com/vixus0/xftwidth")
+	     (commit "35ff963908d41a8a6a7101c434c88255728025ee")))
+       (sha256
+	(base32
+	 "1jwl25785li24kbp0m1wxfwk4dgxkliynn03nsj813cjr34kq16h"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (inputs `(("freetype" ,freetype)
+              ("libx11" ,libx11)
+              ("fontconfig" ,fontconfig)
+              ("libxft" ,libxft)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile ; /usr/bin doesn't show up in PATH
+           (lambda _ (substitute* "Makefile" (("usr/") "")) #t))
+         (delete 'check) ; no check included in Makefile
+         (delete 'configure))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "DESTDIR=" out)))))
+    (synopsis "Calculator for determining pixel widths of displayed text using Xft fonts")
+    (description "xftwidth is a small C program for calculating the pixel
+widths of displayed text using Xft fonts. It is especially useful in scripts
+for displaying text in graphical panels, menus, popups, and notification
+windows generated using dzen. These scripts are often used in conjunction with
+minimalistic tiling window managers such as herbstluftwm and bspwm.")
+    (home-page "http://github.com/vixus0/xftwidth")
+    (license license:expat)))
 
 (define-public xcb-util-xrm
   (package
