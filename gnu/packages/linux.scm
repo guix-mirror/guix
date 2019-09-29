@@ -564,6 +564,13 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
 (define %default-extra-linux-options
   `(;; Some very mild hardening.
     ("CONFIG_SECURITY_DMESG_RESTRICT" . #t)
+    ;; All kernels should have NAMESPACES options enabled
+    ("CONFIG_NAMESPACES" . #t)
+    ("CONFIG_UTS_NS" . #t)
+    ("CONFIG_IPC_NS" . #t)
+    ("CONFIG_USER_NS" . #t)
+    ("CONFIG_PID_NS" . #t)
+    ("CONFIG_NET_NS" . #t)
     ;; Modules required for initrd:
     ("CONFIG_NET_9P" . m)
     ("CONFIG_NET_9P_VIRTIO" . m)
