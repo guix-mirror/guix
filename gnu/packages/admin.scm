@@ -2852,11 +2852,10 @@ you are running, what theme or icon set you are using, etc.")
     (license license:expat)))
 
 (define-public screenfetch
-  ;; First commit supporting current Guix System.
-  (let ((commit "e3ec82dd464e81e4d10bef218b3016e3044c766c"))
+  (let ((commit "e7b94fc3c529b9b97f32b71fd4bc05fb1d0f5864"))
     (package
       (name "screenfetch")
-      (version (git-version "3.8.0" "1" commit))
+      (version (git-version "3.8.0" "2" commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2865,7 +2864,7 @@ you are running, what theme or icon set you are using, etc.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1lzs1l5xgj9mn4b59lhkfgqnyiivf8svd1iwjabzrax90rdmxfwj"))))
+                  "13i7dczbqwhws08zzrdraki1zkqv0qkbgx9c1r8vmg5qr9f7hfzg"))))
       (build-system trivial-build-system)
       (arguments
        `(#:modules ((guix build utils))
