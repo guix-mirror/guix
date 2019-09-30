@@ -3627,8 +3627,8 @@ completion candidate when using the Company text completion framework.")
       (license license:gpl3+))))
 
 (define-public emacs-compdef
-  (let ((commit "fc08a9b049c3718fc7d6c6ee2140759aff031bc9")
-        (revision "1"))
+  (let ((commit "67104a38763cc819644f711248b170a43bce151b")
+        (revision "2"))
     (package
       (name "emacs-compdef")
       (version (git-version "0.2" revision commit))
@@ -3640,7 +3640,7 @@ completion candidate when using the Company text completion framework.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1dwf4rlj19d80yp656c7nkp6hb3mabv808r6ix3hpv6rjjs38vhl"))))
+          (base32 "1f6y6cr67gps9jp5hd20xszfd3k26v70g6z4g5db6wdkvlnc2wkg"))))
       (build-system emacs-build-system)
       (home-page "https://gitlab.com/jjzmajic/compdef")
       (synopsis "Set local completion backends")
