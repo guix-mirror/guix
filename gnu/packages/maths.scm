@@ -4332,6 +4332,15 @@ analysed.")
     (home-page "https://mcrl2.org")
     (license license:boost1.0)))
 
+(define-public mcrl2-minimal
+  (package
+    (inherit mcrl2)
+    (name "mcrl2-minimal")
+    (inputs
+     `(("boost" ,boost)))
+    (arguments
+     '(#:configure-flags '("-DMCRL2_ENABLE_GUI_TOOLS=OFF")))))
+
 (define-public r-subplex
   (package
     (name "r-subplex")
