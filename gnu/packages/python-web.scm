@@ -13,7 +13,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -63,6 +63,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -3300,4 +3301,37 @@ library to create slugs from unicode strings while keeping it DRY.")
     (synopsis "Generate complex HTML+JS pages with Python")
     (description "Generate complex HTML+JS pages with Python")
     (license license:expat)))
+
+(define-public python-tinycss2
+  (package
+    (name "python-tinycss2")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tinycss2" version))
+       (sha256
+        (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-webencodings" ,python-webencodings)))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://tinycss2.readthedocs.io/")
+    (synopsis "Low-level CSS parser for Python")
+    (description "@code{tinycss2} can parse strings, return Python objects
+representing tokens and blocks, and generate CSS strings corresponding to
+these objects.
+
+Based on the CSS Syntax Level 3 specification, @code{tinycss2} knows the
+grammar of CSS but doesn’t know specific rules, properties or values supported
+in various CSS modules.")
+    (license license:bsd-3)))
 
