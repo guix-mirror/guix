@@ -16627,3 +16627,22 @@ SVG parser, trying to follow the SVG 1.1 recommendation from the W3C.  Once
 parsed, the result is drawn to a Cairo surface that can be exported to
 qvarious formats: PDF, PostScript, PNG and even SVG.")
     (license license:lgpl3+)))
+
+(define-public python-pyphen
+  (package
+    (name "python-pyphen")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyphen" version))
+       (sha256
+        (base32 "08c9y69ry9d6m4zalhnalg86lsp9v2j5n1ziw5vxfmiihx83lqrv"))))
+    (build-system python-build-system)
+    ;; TODO: Use the Guix system hyphenation packages hyphen-* rather than the
+    ;; embedded set provided by upstream - like Debian does.
+    (home-page "https://github.com/Kozea/Pyphen")
+    (synopsis "Pure Python module to hyphenate text")
+    (description "Pyphen is a pure Python module to hyphenate text using
+existing Hunspell hyphenation dictionaries.")
+    (license (list license:gpl2 license:lgpl2.1 license:mpl1.1))))
