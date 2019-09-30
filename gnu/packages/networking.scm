@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2578,3 +2579,61 @@ communication.")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes
 protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
     (license license:gpl2+)))
+
+(define-public iwd
+  (package
+    (name "iwd")
+    (version "0.21")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "001dikinsa6kshwscjbvwipavzwpqnpvx9fpshcn63gbvbhyd393"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dbus" ,dbus)
+       ("libtool" ,libtool)
+       ("ell" ,ell)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkgconfig" ,pkg-config)
+       ("python" ,python)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (let ((dbus (assoc-ref %outputs "out")))
+         (list "--disable-systemd-service"
+               "--enable-external-ell"
+               "--enable-hwsim"
+               "--enable-tools"
+               "--enable-wired"
+               "--enable-docs"
+               "--localstatedir=/var"
+               (string-append "--with-dbus-datadir=" dbus "/share/")
+               (string-append "--with-dbus-busdir="
+                              dbus "/share/dbus-1/system-services")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'pre-bootstrap
+           (lambda _
+             (substitute* "Makefile.am"
+               ;; Test disabled because it needs the kernel module
+               ;; 'pkcs8_key_parser' loaded.
+               (("unit\\/test-eapol.*? ") "")
+               ;; Don't try to 'mkdir /var'.
+               (("\\$\\(MKDIR_P\\) -m 700") "true"))
+             #t)))))
+    (home-page "https://git.kernel.org/pub/scm/network/wireless/iwd.git/")
+    (synopsis "Internet Wireless Daemon")
+    (description "iwd is a wireless daemon for Linux that aims to replace WPA
+Supplicant.  It optimizes resource utilization by not depending on any external
+libraries and instead utilizing features provided by the Linux kernel to the
+maximum extent possible.")
+    (license license:lgpl2.1+)))
