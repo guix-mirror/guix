@@ -3335,3 +3335,36 @@ grammar of CSS but doesn’t know specific rules, properties or values supported
 in various CSS modules.")
     (license license:bsd-3)))
 
+(define-public python-cssselect2
+  (package
+    (name "python-cssselect2")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cssselect2" version))
+       (sha256
+        (base32 "0skymzb4ncrm2zdsy80f53vi0arf776lvbp51hzh4ayp1il5lj3h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://cssselect2.readthedocs.io/")
+    (synopsis "CSS selectors for Python ElementTree")
+    (description "@code{cssselect2} is a straightforward implementation of
+CSS3 Selectors for markup documents (HTML, XML, etc.) that can be read by
+ElementTree-like parsers (including cElementTree, lxml, html5lib, etc.).
+
+Unlike the Python package @code{cssselect}, it does not translate selectors to
+XPath and therefore does not have all the correctness corner cases that are
+hard or impossible to fix in cssselect.")
+    (license license:bsd-3)))
