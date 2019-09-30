@@ -1997,35 +1997,18 @@ transparently through a bridge.")
                  "/libnl-doc-" version ".tar.gz"))
            (sha256
             (base32 "19p5y8q3cm5wqvamqc4s5syxnnkvzxy3gw8ivxk6fv9ybn8jm35h"))))))
-    (inputs
-     `(("python-2" ,python-2)
-       ("python-3" ,python-3)))
-    (outputs '("out" "doc" "python2" "python3"))
+    (outputs `("out" "doc"))
     (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'install 'install-python
-           (lambda* (#:key outputs #:allow-other-keys)
-             (define (python-inst python)
-               (invoke python "setup.py" "build")
-               (invoke python "setup.py" "install"
-                       (string-append "--prefix="
-                                      (assoc-ref %outputs python)))
-               (invoke python "setup.py" "clean"))
-             (setenv "LDFLAGS" (format #f "-Wl,-rpath=~a/lib"
-                                       (assoc-ref %outputs "out")))
-             (with-directory-excursion "./python"
-               (for-each python-inst '("python2" "python3")))
-             #t))
          (add-after 'install 'install-doc
-           (lambda* (#:key inputs outputs #:allow-other-keys)
+           (lambda* (#:key inputs native-inputs outputs #:allow-other-keys)
              (let ((dest (string-append (assoc-ref outputs "doc")
                                         "/share/doc/libnl")))
                (mkdir-p dest)
-               (invoke "tar" "xf" (assoc-ref inputs "libnl3-doc")
+               (invoke "tar" "xf" (assoc-ref
+                                   (or native-inputs inputs)
+                                   "libnl3-doc")
                        "--strip-components=1" "-C" dest)))))))
     (home-page "https://www.infradead.org/~tgr/libnl/")
     (synopsis "NetLink protocol library suite")
@@ -2039,6 +2022,43 @@ configuration and monitoring interfaces.")
     ;; Most files are LGPLv2.1-only, but some are GPLv2-only (like
     ;; 'nl-addr-add.c'), so the result is GPLv2-only.
     (license license:gpl2)))
+
+;; libnl python extensions used to be outputs of libnl. However, as
+;; cross-compiling python extensions is currently broken, create separate
+;; packages for libnl python extensions.
+(define (libnl-python-package python)
+  (let ((name (string-append "libnl-" python)))
+    (package
+      (inherit libnl)
+      (name name)
+      (inputs `(,@(cond
+                   ((string=? python "python2")
+                    `(("python-2" ,python-2)))
+                   ((string=? python "python3")
+                    `(("python-3" ,python-3))))))
+      (propagated-inputs `(("libnl" ,libnl)))
+      (outputs '("out"))
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-1))
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (define (python-inst python)
+                 (invoke python "setup.py" "build")
+                 (invoke python "setup.py" "install"
+                         (string-append "--prefix="
+                                        (assoc-ref %outputs "out")))
+                 (invoke python "setup.py" "clean"))
+               (setenv "LDFLAGS" (format #f "-Wl,-rpath=~a/lib"
+                                         (assoc-ref inputs "libnl")))
+               (with-directory-excursion "./python" (python-inst ,python))
+               #t))))))))
+
+(define-public libnl-python2 (libnl-python-package "python2"))
+(define-public libnl-python3 (libnl-python-package "python3"))
 
 (define-public iw
   (package
