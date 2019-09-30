@@ -16592,3 +16592,38 @@ It is the recommended replacement for Python's original
 @code{distro} also provides a command-line interface to output the platform
 information in various formats.")
     (license license:asl2.0)))
+
+(define-public python-cairosvg
+  (package
+    (name "python-cairosvg")
+    (version "2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "CairoSVG" version))
+       (sha256
+        (base32 "1bb7irxbaxxb9ahm3z5wsx1q96mm5gzskc7b6q07h9ikcnb8yrjf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-cairocffi" ,python-cairocffi)
+       ("python-cssselect2" ,python-cssselect2)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-pillow" ,python-pillow)
+       ("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://cairosvg.org/")
+    (synopsis "SVG to PDF/PS/PNG converter based on Cairo")
+    (description "CairoSVG is a SVG converter based on Cairo.  It can export
+SVG files to PDF, PostScript and PNG files.  The main part of CairoSVG is a
+SVG parser, trying to follow the SVG 1.1 recommendation from the W3C.  Once
+parsed, the result is drawn to a Cairo surface that can be exported to
+qvarious formats: PDF, PostScript, PNG and even SVG.")
+    (license license:lgpl3+)))
