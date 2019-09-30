@@ -6,6 +6,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -245,7 +246,7 @@ and a Python library.")
 (define-public translate-shell
   (package
     (name "translate-shell")
-    (version "0.9.6.10")
+    (version "0.9.6.11")
     (source
       (origin
         (method git-fetch)
@@ -254,7 +255,7 @@ and a Python library.")
                (commit (string-append "v" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32 "1dmh3flldfhnqfay3a6c5hanqcjwrmbly1bq8mlk022qfi1fv33y"))))
+         (base32 "137fz3ahzf65hfqcs4k7hhrmfjlhlw7wr3gfsvk88bnyqkyw44sm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
