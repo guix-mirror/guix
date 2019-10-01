@@ -9083,6 +9083,16 @@ The crate importer also allows you to specify a version string:
 guix import crate constant-time-eq@@0.1.0
 @end example
 
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item opam
 @cindex OPAM
 @cindex OCaml
