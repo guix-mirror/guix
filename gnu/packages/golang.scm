@@ -3716,6 +3716,34 @@ can be used to build a client and/or a server.")
       (description "This package provides a SASL library written in Go.")
       (license license:expat))))
 
+(define-public go-github-com-emersion-go-imap-idle
+  (let ((commit "2704abd7050ed7f2143753554ee23affdf847bd9")
+        (revision "0"))
+    (package
+      (name "go-github-com-emersion-go-imap-idle")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/emersion/go-imap-idle")
+                (commit commit)))
+          (sha256
+           (base32
+            "0blwcadmxgqsdwgr9m4jqfbpfa2viw5ah19xbybpa1z1z4aj5cbc"))
+          (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/emersion/go-imap-idle"))
+      (native-inputs
+       `(("go-github-com-emersion-go-imap" ,go-github-com-emersion-go-imap)
+         ("go-github-com-emersion-go-sasl" ,go-github-com-emersion-go-sasl)
+         ("go-golang-org-x-text" ,go-golang-org-x-text)))
+      (home-page "https://github.com/emersion/go-imap-idle")
+      (synopsis "IDLE extension for go-imap")
+      (description "This package provides an IDLE extension for go-imap.")
+      (license license:expat))))
+
 (define-public go-github-com-fatih-color
   (package
     (name "go-github-com-fatih-color")
