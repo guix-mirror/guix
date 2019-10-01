@@ -3615,6 +3615,31 @@ sensors).")
       (home-page "https://github.com/shirou/gopsutil")
       (license license:bsd-3))))
 
+(define-public go-github-com-danwakefield-fnmatch
+  (let ((commit "cbb64ac3d964b81592e64f957ad53df015803288")
+        (revision "0"))
+    (package
+     (name "go-github-com-danwakefield-fnmatch")
+     (version (git-version "0.0.0" revision commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/danwakefield/fnmatch")
+             (commit commit)))
+       (sha256
+        (base32
+         "0cbf511ppsa6hf59mdl7nbyn2b2n71y0bpkzbmfkdqjhanqh1lqz"))
+       (file-name (git-file-name name version))))
+     (build-system go-build-system)
+     (arguments
+      '(#:import-path "github.com/danwakefield/fnmatch"))
+     (home-page "https://github.com/danwakefield/fnmatch")
+     (synopsis "Updated clone of kballards golang fnmatch gist")
+     (description "This package provides an updated clone of kballards golang
+fnmatch gist (https://gist.github.com/kballard/272720).")
+     (license license:bsd-2))))
+
 (define-public go-github-com-fatih-color
   (package
     (name "go-github-com-fatih-color")
