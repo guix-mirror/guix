@@ -304,7 +304,7 @@ to display."
                (new
                 (let ((count (length new)))
                   (format (current-error-port)
-                          (N_ "  ~*One new channel:~%"
+                          (N_ "  ~a new channel:~%"
                               "  ~a new channels:~%" count)
                           count)
                   (for-each display-channel new))))
