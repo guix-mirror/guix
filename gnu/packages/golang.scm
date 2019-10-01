@@ -1840,6 +1840,31 @@ terminal.")
 makes it possible to handle ANSI color escapes on Windows.")
       (license license:expat))))
 
+(define-public go-github-com-mattn-go-pointer
+  (let ((commit "a0a44394634f41e4992b173b24f14fecd3318a67")
+        (revision "1"))
+    (package
+      (name "go-github-com-mattn-go-pointer")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/mattn/go-pointer")
+               (commit commit)))
+         (sha256
+          (base32
+           "09w7hcyc0zz2g23vld6jbcmq4ar27xakp1ldjvh549i5izf2anhz"))
+         (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/mattn/go-pointer"))
+      (home-page "https://github.com/mattn/go-pointer")
+      (synopsis "Utility for cgo")
+      (description
+       "This package allows for a cgo argument to be passed a Go pointer.")
+      (license license:expat))))
+
 (define-public go-github-com-mgutz-ansi
   (let ((commit "9520e82c474b0a04dd04f8a40959027271bab992")
         (revision "0"))
