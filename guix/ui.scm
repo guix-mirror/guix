@@ -867,6 +867,17 @@ warning."
     ('profile-hook #t)
     (_ #f)))
 
+(define (colorize-store-file-name file)
+  "Colorize FILE, a store file name, such that the hash part is less prominent
+that the rest."
+  (let ((len    (string-length file))
+        (prefix (+ (string-length (%store-prefix)) 32 2)))
+    (if (< len prefix)
+        file
+        (string-append (colorize-string (string-take file prefix)
+                                        (color DARK))
+                       (string-drop file prefix)))))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -889,6 +900,11 @@ check and report what is prerequisites are available for download."
     (if use-substitutes?
         (substitution-oracle store inputs #:mode mode)
         (const #f)))
+
+  (define colorized-store-item
+    (if (color-output? (current-error-port))
+        colorize-store-file-name
+        identity))
 
   (let*-values (((build download)
                  (derivation-build-plan store inputs
@@ -935,7 +951,7 @@ check and report what is prerequisites are available for download."
                   (N_ "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
-                  (null? build) build)
+                  (null? build) (map colorized-store-item build))
           (if display-download-size?
               (format (current-error-port)
                       ;; TRANSLATORS: "MB" is for "megabyte"; it should be
@@ -943,29 +959,31 @@ check and report what is prerequisites are available for download."
                       (G_ "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]")
                       (null? download)
                       download-size
-                      (map substitutable-path download))
+                      (map (compose colorized-store-item substitutable-path)
+                           download))
               (format (current-error-port)
                       (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
                           "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download)))
+                      (map (compose colorized-store-item substitutable-path)
+                           download)))
           (format (current-error-port)
                   (N_ "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft)
+                  (null? graft) (map colorized-store-item graft))
           (format (current-error-port)
                   (N_ "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
                       "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
                       (length hook))
-                  (null? hook) hook))
+                  (null? hook) (map colorized-store-item hook)))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
-                  (null? build) build)
+                  (null? build) (map colorized-store-item build))
           (if display-download-size?
               (format (current-error-port)
                       ;; TRANSLATORS: "MB" is for "megabyte"; it should be
@@ -973,23 +991,25 @@ check and report what is prerequisites are available for download."
                       (G_ "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]")
                       (null? download)
                       download-size
-                      (map substitutable-path download))
+                      (map (compose colorized-store-item substitutable-path)
+                           download))
               (format (current-error-port)
                       (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
                           "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download)))
+                      (map (compose colorized-store-item substitutable-path)
+                           download)))
           (format (current-error-port)
                   (N_ "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft)
+                  (null? graft) (map colorized-store-item graft))
           (format (current-error-port)
                   (N_ "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
                       (length hook))
-                  (null? hook) hook)))
+                  (null? hook) (map colorized-store-item hook))))
 
     (check-available-space installed-size)
 
