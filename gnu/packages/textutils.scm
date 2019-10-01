@@ -89,18 +89,14 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7.5")
+    (version "3.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rrthomas/recode/releases/"
                            "download/v" version "/recode-" version ".tar.gz"))
        (sha256
-        (base32 "1sl99dfx2b76paq86wv3a0lcy66f1hylf6iy04rzwxj7ccwpsk30"))
-       (modules '((guix build utils)))
-       (snippet '(begin
-                   (delete-file "tests/Recode.c")
-                   #t))))
+        (base32 "0m59sd1ca0zw1aydpc3m8sw03nc885knmccqryg7byzmqs585ia6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python)

@@ -1856,7 +1856,7 @@ single buffer.")
 (define-public emacs-tablist
   (package
     (name "emacs-tablist")
-    (version "0.70")
+    (version "1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1865,7 +1865,7 @@ single buffer.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gy9hxm7bca0l1hfy2pzn86avpifrz3bs8xzpicj4kxw5wi4ygns"))))
+                "0pzsdg0rm59daw34ppss79cg05z9wnr8nkmdcc48nkd0p69ip2yy"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/politza/tablist")
     (synopsis "Extension for @code{tabulated-list-mode}")
@@ -3627,8 +3627,8 @@ completion candidate when using the Company text completion framework.")
       (license license:gpl3+))))
 
 (define-public emacs-compdef
-  (let ((commit "fc08a9b049c3718fc7d6c6ee2140759aff031bc9")
-        (revision "1"))
+  (let ((commit "67104a38763cc819644f711248b170a43bce151b")
+        (revision "2"))
     (package
       (name "emacs-compdef")
       (version (git-version "0.2" revision commit))
@@ -3640,13 +3640,38 @@ completion candidate when using the Company text completion framework.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1dwf4rlj19d80yp656c7nkp6hb3mabv808r6ix3hpv6rjjs38vhl"))))
+          (base32 "1f6y6cr67gps9jp5hd20xszfd3k26v70g6z4g5db6wdkvlnc2wkg"))))
       (build-system emacs-build-system)
       (home-page "https://gitlab.com/jjzmajic/compdef")
       (synopsis "Set local completion backends")
       (description "This package provides a function to cleanly set local
 completion backends according to mode, and integrates with
 @code{use-package}.")
+      (license license:gpl3+))))
+
+(define-public emacs-handle
+  (let ((commit "0180a33c92b53d042c3e248a047e15337122d922")
+        (revision "1"))
+    (package
+      (name "emacs-handle")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jjzmajic/handle.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ldrdfxspkq0m07l98hhj9nydgj9qi557mnnpd3v4xrwqwhyr4nc"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/jjzmajic/handle")
+      (synopsis "Handle generic functions across related major modes")
+      (description "This package provides generic functions that specialize on
+major modes and intended purpose rather than on arguments.  Different
+callables for tasks like expression evaluation, definition-jumping, and more
+can now be grouped accordingly and tried in sequence until one of them
+succeeds.")
       (license license:gpl3+))))
 
 (define-public emacs-nswbuff
@@ -4740,7 +4765,7 @@ them easier to distinguish from other, less important buffers.")
 (define-public emacs-prescient
   (package
     (name "emacs-prescient")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -4749,7 +4774,7 @@ them easier to distinguish from other, less important buffers.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d60h4rfm5jcf8cf11z91wjqp0xcrviskqzyqhfliqvy2i2yl6ks"))))
+                "1wqk1g8fjpcbpiz32k7arnisncd4n9zs84dn3qn9y8ggjzldqy91"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-company" ,emacs-company)
@@ -5086,6 +5111,9 @@ fully-functional one.")
         (base32
          "0fapvhmhgc9kppf3bvkgry0cd7gyilg7sfvlscfrfjxpx4xvwsfy"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
     (home-page "https://github.com/abo-abo/hydra")
     (synopsis "Make Emacs bindings that stick around")
     (description
@@ -5956,6 +5984,59 @@ Currently git, mercurial and bazaar repos are considered projects by default.
 If you want to mark a folder manually as a project just create an empty
 .projectile file in it.")
     (license license:gpl3+)))
+
+(define-public emacs-skeletor
+  (let ((commit "47c5b761aee8452716c97a69949ac2f675affe13")
+        (revision "1"))
+    (package
+      (name "emacs-skeletor")
+      (version (git-version "1.6.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/chrisbarrett/skeletor.el.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "12bdgykfh4mwsqdazxjdvha62h3q3v33159ypy91f6x59y01fi0n"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)
+         ("emacs-dash" ,emacs-dash)
+         ("emacs-let-alist" ,emacs-let-alist)))
+      (native-inputs
+       `(("emacs-ert-runner" ,emacs-ert-runner)))
+      (arguments
+       `(#:include (cons "^project-skeletons\\/" %default-include)
+         ;; XXX: one failing test involving initializing a git repo
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'make-test-writable
+             (lambda _
+               (make-file-writable "test/skeletor-test.el")
+               #t))
+           (add-before 'check 'remove-git-test
+             (lambda _
+               (emacs-batch-edit-file "test/skeletor-test.el"
+                 `(progn
+                   (progn
+                    (goto-char (point-min))
+                    (re-search-forward
+                     "ert-deftest initialises-git-repo")
+                    (beginning-of-line)
+                    (kill-sexp))
+                   (basic-save-buffer)))
+               #t)))
+         #:tests? #t
+         #:test-command '("ert-runner")))
+      (home-page "https://github.com/chrisbarrett/skeletor.el")
+      (synopsis "Project skeletons for Emacs")
+      (description "This package provides project templates and automates the
+mundane parts of setting up a new project, such as version control, licenses,
+and tooling.")
+      (license license:gpl3+))))
 
 (define-public emacs-elfeed
   (package
@@ -11586,7 +11667,7 @@ timestamps by providing a @code{ts} struct.")
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
-    (version "0.2")
+    (version "0.2.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -11594,7 +11675,7 @@ timestamps by providing a @code{ts} struct.")
                     (commit version)))
               (sha256
                (base32
-                "0mq0aj0a3a5gi9nz0ncpzsh731d92n86b0iinvx1m45dcal06h9y"))
+                "1xyabg9fhpip6426za6wjrn0msnaf10c5fzzaawwagk7zmjf9b48"))
               (file-name (git-file-name name version))))
     (build-system emacs-build-system)
     (propagated-inputs
@@ -12502,8 +12583,8 @@ key again.")
     (license license:gpl3+)))
 
 (define-public emacs-mbsync
-  (let ((commit "f549eccde6033449d24cd5b6148599484850c403")
-        (revision "2"))
+  (let ((commit "8f80c267cab1acb0d5bdd5b0059f5d1790d499ff")
+        (revision "3"))
     (package
       (name "emacs-mbsync")
       (version (git-version "0.1.2" revision commit))
@@ -12516,7 +12597,7 @@ key again.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1pdj41rq3pq4jdb5pma5j495xj7w7jgn8pnz1z1zwg75pn7ydfp0"))))
+           "1dwlpcczsa6b7bwv5149by0qmk8v2y7bjad02k4fy25yxznqzci9"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
@@ -13636,7 +13717,7 @@ using user-provided rules.")
 (define-public emacs-on-screen
   (package
     (name "emacs-on-screen")
-    (version "1.3.2")
+    (version "1.3.3")
     (source
      (origin
        (method url-fetch)
@@ -13644,11 +13725,9 @@ using user-provided rules.")
              "http://elpa.gnu.org/packages/on-screen-" version ".el"))
        (file-name (string-append name "-" version ".el"))
        (sha256
-        (base32
-         "15d18mjgv1pnwl6kf3pr5w64q1322p1l1qlfvnckglwmzy5sl2qv"))))
+        (base32 "0ga4hw23ki583li2z2hr7l6hk1nc2kdg4afndg06cm9jn158wza7"))))
     (build-system emacs-build-system)
-    (home-page
-     "https://github.com/michael-heerdegen/on-screen.el")
+    (home-page "https://github.com/michael-heerdegen/on-screen.el")
     (synopsis "Guide your eyes while scrolling")
     (description
      "Scrolling can be distracting because your eyes may lose
@@ -14538,6 +14617,11 @@ on-line service.")
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
        ("emacs-company" ,emacs-company)))
+    (native-inputs
+     `(("emacs-ert-runner" ,emacs-ert-runner)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("ert-runner")))
     (home-page "https://github.com/Sodel-the-Vociferous/helm-company")
     (synopsis "Helm interface for company-mode")
     (description
@@ -15276,18 +15360,16 @@ was called.")
 (define-public emacs-dired-du
   (package
     (name "emacs-dired-du")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://elpa.gnu.org/packages/dired-du-"
-             version ".tar"))
+             "https://elpa.gnu.org/packages/dired-du-" version ".tar"))
        (sha256
-        (base32
-         "1091scnrjh0a4gja4z6jxic6ghy1yryv46qk9c76pmh50cpw6766"))))
+        (base32 "0vhph7vcicsiq28b10h3b4dvnhckcy4gccpdgsad5j7pwa5k26m1"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/dired-du.html")
+    (home-page "https://elpa.gnu.org/packages/dired-du.html")
     (synopsis "Dired with recursive directory sizes")
     (description
      "Display the recursive size of directories in Dired.
@@ -16640,7 +16722,7 @@ constant expressions.")
 (define-public emacs-docker
   (package
     (name "emacs-docker")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -16649,7 +16731,7 @@ constant expressions.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "15kd86kaq1x6giz855q9w6zvnyc742j309j0pmm86rwx398g4rq1"))))
+                "1g8r1faqp0z0vqp9qrl8m84pa0v2ddvc91klphdkfmldwv7rfipw"))))
     (inputs
      `(("emacs-undercover" ,emacs-undercover)))
     (propagated-inputs
@@ -16671,10 +16753,10 @@ constant expressions.")
 
 (define-public emacs-dockerfile-mode
   ;; Latest upstream release is too old.
-  (let ((commit "7223d92718f78fa3ab15667cdb2ed90cfeb579e7"))
+  (let ((commit "ed73e82dcc636dad00d1a8c3b32a49136d25ee60"))
     (package
       (name "emacs-dockerfile-mode")
-      (version (git-version "1.2" "1" commit))
+      (version (git-version "1.2" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -16684,7 +16766,7 @@ constant expressions.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0hmipgl4rk6aih11i8mnspwdijjiwk2y0wns6lzs8bgkvy3c064r"))))
+           "0lri2rnx4lr23vqfphkpq39cd4xfgzkvz1xsz7ccdvl4qj0k7fdl"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-s" ,emacs-s)))
@@ -17557,12 +17639,11 @@ and searching through @code{Ctags} files.")
     (license license:gpl3+)))
 
 (define-public emacs-org-download
-  (let ((commit "ac72bf8fce3e855da60687027b6b8601cf1de480")
-        (version "0.1.0")
-        (revision "1"))
+  (let ((commit "10c9d7c8eed928c88a896310c882e3af4d8d0f61")
+        (revision "2"))
     (package
       (name "emacs-org-download")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -17570,7 +17651,7 @@ and searching through @code{Ctags} files.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0ax5wd44765wnwabkam1g2r62gq8crx2qq733s2mg1z72cfvwxqb"))
+                  "0i8wlx1i7y1vn5lqwjifvymvszg28a07vwqcm4jslf1v2ajs1lsl"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs

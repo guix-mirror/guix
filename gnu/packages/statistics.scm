@@ -612,14 +612,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-28")
+   (version "1.8-29")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "1snkpnkkigwrj9zm31j1nlivv9ls56imz263cv167hnmghiahpmm"))))
+       "1236gz25nap1aprbvcrqvmmnl6f8cvbjy8dcl4j968cpalqax5ww"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -805,13 +805,13 @@ effects of different types of color-blindness.")
 (define-public r-digest
   (package
     (name "r-digest")
-    (version "0.6.20")
+    (version "0.6.21")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "digest" version))
        (sha256
-        (base32 "1irhk2jaj9cg57cxprgyn1if06x121xwcxh1fzzn3148bl5lnrq5"))))
+        (base32 "0qycqchmv59fb6jp369d82mcx9xgbv70m18qzam0vrs8zkmajb17"))))
     (build-system r-build-system)
     ;; Vignettes require r-knitr, which requires r-digest, so we have to
     ;; disable them and the tests.
@@ -1451,13 +1451,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.24")
+    (version "1.25")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "12bvs9fd61m7k7bq321qzrh2ccl9rq653s1anrvfb9s5ni1j0378"))))
+                "0lsc201a4f6xksmsklhr6gmhl0mxih0xhlcdvhs2ypzcx1pvkpnv"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -1503,13 +1503,13 @@ from knitr Rmarkdown.")
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
-    (version "1.4-6")
+    (version "1.4-7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "microbenchmark" version))
               (sha256
                (base32
-                "1sn1fxgzakm5iqbgc35g3k4yi0iqrkmwz33cvdrphrzh1lxnmi3s"))))
+                "1xl4m4yl4h2zcjiz8wsa7f3sh55qg2xr3sgpvz18rlix6b3173r6"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/microbenchmark/")
     (synopsis "Accurate timing functions for R")
@@ -2438,13 +2438,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "2.2.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "05fag25mkqy13yja8x32aqr9c0ah9rbm8cfjcsmy1dv5h4j8cxa1"))))
+                "0i2f549hxkn0j1x1avkhwy68c9r48v9284j7x9cak2q6dfsqz61f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -2463,8 +2463,9 @@ informative error messages when it's not available.")
        ("r-pkgbuild" ,r-pkgbuild)
        ("r-pkgload" ,r-pkgload)
        ("r-rcmdcheck" ,r-rcmdcheck)
-       ("r-roxygen2" ,r-roxygen2)
        ("r-remotes" ,r-remotes)
+       ("r-rlang" ,r-rlang)
+       ("r-roxygen2" ,r-roxygen2)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-rversions" ,r-rversions)
        ("r-sessioninfo" ,r-sessioninfo)
@@ -2780,13 +2781,13 @@ and draw tables.")
 (define-public r-pkgconfig
   (package
     (name "r-pkgconfig")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "pkgconfig" version))
               (sha256
                (base32
-                "1jk9ip549xphb3anfixqv1yx5kidnndqgy9v3qjpmgmds5a7g695"))))
+                "0l1qph8zyi2sic3k2qcd7vlfl7rzfh1q7z7zvjkl5f7y1x2fy3rk"))))
     (build-system r-build-system)
     (home-page "https://github.com/gaborcsardi/pkgconfig")
     (synopsis "Private configuration for R packages")
@@ -2947,13 +2948,13 @@ plotted and compared with the asymptotic curve.")
 (define-public r-lambda-r
   (package
     (name "r-lambda-r")
-    (version "1.2.3")
+    (version "1.2.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "lambda.r" version))
               (sha256
                (base32
-                "0cc6pszs6yccn0hgjpyn9gspv9aiva9d91ba0640i5m0l5xy7n0c"))))
+                "1mh1g0gsd58gng0hb29vww2yqb2jfs07kba5kxnnqck5j3izwlnj"))))
     (properties `((upstream-name . "lambda.r")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3174,13 +3175,13 @@ using the multicore functionality of the parallel package.")
 (define-public r-dt
   (package
     (name "r-dt")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DT" version))
               (sha256
                (base32
-                "08cfmv3d5awvd9h8648bvidcg2ak5pvl2p6vqwqwy1l82ia506ch"))))
+                "17han4560jv8mmfn4f8adrwh0x25fxz2qwd0sv7vv4iky5and8a7"))))
     (properties
      `((upstream-name . "DT")))
     (build-system r-build-system)

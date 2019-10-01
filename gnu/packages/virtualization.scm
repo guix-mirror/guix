@@ -1050,7 +1050,7 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.3.1")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/projectatomic/bubblewrap/"
@@ -1058,7 +1058,7 @@ virtual machines.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1y2bdlxnlr84xcbf31lzirc292c5ak9bd2wvcvh4ppsliih6pjny"))))
+                "1zsd6rxryg97dkkhibr0fvq16x3s75qj84rvhdv8p42ag58mz966"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1078,6 +1078,9 @@ virtual machines.")
                  ;; Some tests try to access /usr, but that doesn't exist.
                  ;; Give them /gnu instead.
                  (("/usr") "/gnu")
+                 (("--ro-bind /bin /bin") "--ro-bind /gnu /bin")
+                 (("--ro-bind /sbin /sbin") "--ro-bind /gnu /sbin")
+                 (("--ro-bind /lib /lib") "--ro-bind /gnu /lib")
                  (("  */bin/bash") (which "bash"))
                  (("/bin/sh") (which "sh"))
                  (("findmnt") (which "findmnt"))))

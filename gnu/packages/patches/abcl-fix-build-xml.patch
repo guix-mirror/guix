@@ -1,0 +1,50 @@
+ABCL's build calls the hostname command, and needs the internet to download
+JUnit. Neither of these are really required, though, so we can patch them out
+to make it build.
+
+We also remove the Implemetation-Build property that ends up in the manifest
+file, because it stores information about the time of the build, which makes
+it non-deterministic.
+
+--- a/build.xml
++++ b/build.xml
+@@ -327,7 +327,7 @@ from ${abcl.home.dir}
+     <property name="abcl.build.path"
+               value="${build.classes.dir}/org/armedbear/lisp/build"/>
+     <target name="abcl.stamp" 
+-            depends="abcl.compile,abcl.stamp.version,abcl.stamp.hostname">
++            depends="abcl.compile,abcl.stamp.version">
+       <mkdir dir="${abcl.build.path}/.."/>
+       <loadfile property="abcl.version"
+                 srcFile="${abcl.version.path}"/>
+@@ -455,11 +455,6 @@ from ${abcl.home.dir}
+                 value="${abcl.version}-${abcl.version.src}"/>
+     </target>
+ 
+-    <target name="abcl.stamp.hostname" if="unix">
+-      <exec executable="hostname" outputproperty="abcl.hostname"/>
+-      <echo>abcl.hostname: ${abcl.hostname}</echo>
+-    </target>
+-
+     <target name="abcl.system.uptodate">
+       <condition property="abcl.system.needs-update.p">
+         <and>
+@@ -500,8 +495,6 @@ from ${abcl.home.dir}
+                        value="ABCL"/>
+             <attribute name="Implementation-Version"  
+                        value="${abcl.implementation.version}"/>
+-            <attribute name="Implementation-Build" 
+-                       value="${build}"/>
+           </section>
+         </manifest>
+         <metainf dir="${src.dir}/META-INF"> 
+@@ -1019,8 +1012,7 @@ ${basedir}/../cl-bench
+       </unzip>
+     </target>
+         
+-    <target name="abcl.test.compile" 
+-            depends="abcl.test.pre-compile">
++    <target name="abcl.test.compile" >
+       <mkdir dir="${abcl.test.classes.dir}"/>
+       <javac destdir="${abcl.test.classes.dir}"
+              classpathref="abcl.test.compile.classpath"

@@ -513,6 +513,7 @@ ready to use it.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 * Application Setup::           Application-specific setup.
+* Upgrading Guix::              Upgrading Guix and its build daemon.
 @end menu
 
 @node Binary Installation
@@ -793,22 +794,6 @@ script (@pxref{Directory Variables, @code{localstatedir},, standards,
 GNU Coding Standards}).  The @command{configure} script protects against
 unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
-
-@cindex Nix, compatibility
-When a working installation of @url{https://nixos.org/nix/, the Nix package
-manager} is available, you
-can instead configure Guix with @code{--disable-daemon}.  In that case,
-Nix replaces the three dependencies above.
-
-Guix is compatible with Nix, so it is possible to share the same store
-between both.  To do so, you must pass @command{configure} not only the
-same @code{--with-store-dir} value, but also the same
-@code{--localstatedir} value.  The latter is essential because it
-specifies where the database that stores metadata about the store is
-located, among other things.  The default values for Nix are
-@code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
-Note that @code{--disable-daemon} is not required if
-your goal is to share the store with Nix.
 
 @node Running the Test Suite
 @section Running the Test Suite
@@ -1776,6 +1761,40 @@ passed to the linker, add corresponding @code{-rpath} arguments, and
 invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
 @code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
+
+@node Upgrading Guix
+@section Upgrading Guix
+
+@cindex Upgrading Guix, on a foreign distro
+
+To upgrade Guix, run:
+
+@example
+guix pull
+@end example
+
+@xref{Invoking guix pull}, for more information.
+
+@cindex upgrading Guix for the root user, on a foreign distro
+@cindex upgrading the Guix daemon, on a foreign distro
+@cindex @command{guix pull} for the root user, on a foreign distro
+
+On a foreign distro, you can upgrade the build daemon by running:
+
+@example
+sudo -i guix pull
+@end example
+
+@noindent
+followed by (assuming your distro uses the systemd service management
+tool):
+
+@example
+systemctl restart guix-daemon.service
+@end example
+
+On Guix System, upgrading the daemon is achieved by reconfiguring the
+system (@pxref{Invoking guix system, @code{guix system reconfigure}}).
 
 @c TODO What else?
 

@@ -7367,13 +7367,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.18.2")
+    (version "2.18.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "0dc35844c1mfj07hvy6yn4wag6qdggbgl9gjcg3wpkh9hkm60a5n"))))
+                "05rw2b2bwns443n7d6lf97zdv1jbqdii2nprhs6x852w73m2a2g3"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -7731,13 +7731,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "1nv5idyjk75mvl4np5sig0xa6qygm1ivj33k041ffyj19q8jf7ij"))))
+                "0wzp5vsmqs7h44r7lcw8fnz5x9bcdcfiqq8d3h62wwibyk2lg0w1"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -8283,14 +8283,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "178zbrm221rwhbjk7j2v9g5ra44k0xg7c5abhd810m3g7snma8k8"))))
+         "07qaqj2hypmrg40m3pci082bzar6wi10dh77r4a8x74dfppcwdzf"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
@@ -9165,14 +9165,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.18.0")
+    (version "2.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "0g5r6yk4gyz0xdwlmrcij4zv7apdgsgygr043095l33hard6nsl5"))
+         "1pr1pcrg3r3pccm5ag6l8ic6rpqbk9jnlb9mm7g4ak5jwrajbzjq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9193,7 +9193,8 @@ proteomics packages.")
 -lboost_iostreams -lboost_thread -lboost_filesystem -lboost_chrono\n")))
              #t)))))
     (inputs
-     `(;; XXX Boost 1.69 will not work here.
+     `(;; Our default boost package won't work here, unfortunately, even with
+       ;; mzR version 2.18.1.
        ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
        ("zlib" ,zlib)))
     (propagated-inputs
@@ -10267,14 +10268,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.28.1")
+    (version "1.28.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "0chsb3ijwd8zh588s1vqgfassn2rzax5rhqrhl0ini6pi4ilchp2"))))
+         "0347r1ly0vzpilflzbyzsjdf4cday294lw3fxzx61clblrmws1ki"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs

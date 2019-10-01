@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
@@ -1116,3 +1116,45 @@ presentation.  The input files processed by pdfpc are PDF documents.")
 rendering of the file.  The rendering is done by creating outline curves
 through the Pango @code{ft2} backend.")
       (license license:lgpl2.0+))))
+
+(define-public stapler
+  (package
+    (name "stapler")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hellerbarde/stapler")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "06w7xanzr7cicqik62g7zqs57j4y6fc7hflrc1rlmphxx40hkg6r"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-pypdf2" ,python2-pypdf2)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pypdf-version-requirement
+           ;; A PyPDF2 version requirement of 1.25.1 is hard-coded in
+           ;; setup.py. Relax it to work with any version of PyPDF2.
+           (lambda _
+             (substitute* "setup.py"
+               (("PyPDF2==1.25.1") "PyPDF2"))
+             #t)))))
+    (home-page "https://github.com/hellerbarde/stapler")
+    (synopsis "PDF manipulation tool")
+    (description "Stapler is a pure Python alternative to PDFtk, a tool for
+manipulating PDF documents from the command line.  It supports
+
+@itemize
+@item cherry-picking pages and concatenating them into a new file
+@item splitting a PDF document into single pages each in its own file
+@item merging PDF documents with their pages interleaved
+@item displaying metadata in a PDF document
+@item displaying the mapping between logical and physical page numbers
+@end itemize")
+    (license license:bsd-3)))

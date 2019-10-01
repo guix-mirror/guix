@@ -1183,7 +1183,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.212")
+    (version "0.214")
     (source
      (origin
        (method git-fetch)
@@ -1193,11 +1193,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0p3zcb9l624dsy2gyv23ppp1k1iwd1vrg8cbn5v4fx1s44mx7f5c"))
-       (patches
-       ;; FIXME: Remove once 0.213 is out.  Applied upstream as
-       ;; 0b5b13cf1e28550b49c387dec93f9801f029e313.
-        (search-patches "mame-rapidjson-fix.patch"))
+         "129yk3ybcviscy2xk1mkkzxm4h4nh5p6ndfgqbmcx547p1s6hbja"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

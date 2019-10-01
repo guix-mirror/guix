@@ -1648,7 +1648,7 @@ HookReply DerivationGoal::tryBuildHook()
     set<int> fds;
     fds.insert(hook->fromHook.readSide);
     fds.insert(hook->builderOut.readSide);
-    worker.childStarted(shared_from_this(), hook->pid, fds, false, false);
+    worker.childStarted(shared_from_this(), hook->pid, fds, false, true);
 
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ build-started %1% - %2% %3% %4%")

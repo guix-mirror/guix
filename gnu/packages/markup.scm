@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
 (define-module (gnu packages markup)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -224,22 +225,22 @@ for parsing and rendering CommonMark.")
 (define-public smu
   (package
     (name "smu")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Gottox/smu/archive/v"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Gottox/smu.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0iazl45rkz8ngsb5hpykl76w0ngvdvqqhym1qz5wykgmrzk293rp"))))
+        (base32 "1jm7lhnzjx4q7gcwlkvsbffcy0zppywyh50d71ami6dnq182vvcc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc"
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out")))
-       #:tests? #f ;No tests included
+       #:tests? #f                      ; no tests included
        #:phases
        (modify-phases %standard-phases
          (delete 'configure))))

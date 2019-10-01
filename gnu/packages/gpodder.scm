@@ -31,12 +31,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages video))
 
 (define-public gpodder
   (package
     (name "gpodder")
-    (version "3.10.9")
+    (version "3.10.10")
     (source
      (origin
        (method git-fetch)
@@ -45,7 +46,7 @@
              (commit version)))
        (sha256
         (base32
-         "1sdmr1sq1d4p492zp9kq3npl7p56yr0pr470z9r6xxcylax5mhfq"))
+         "1phgd3xly6ddrxpx5glgfs1ya4xq2qbcx5d9l3d6i4dlhji1dmja"))
        (file-name (git-file-name name version))))
     (build-system python-build-system)
     (native-inputs
@@ -58,6 +59,7 @@
        ("python-html5lib" ,python-html5lib)
        ("python-mygpoclient" ,python-mygpoclient)
        ("python-podcastparser" ,python-podcastparser)
+       ("youtube-dl" ,youtube-dl)
        ("xdg-utils" ,xdg-utils)))
     (arguments
      '(#:phases

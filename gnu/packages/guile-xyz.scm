@@ -1591,9 +1591,6 @@ many readers as needed).")
     (home-page "https://www.nongnu.org/guile-reader/")
     (license license:gpl3+)))
 
-(define-public guile2.2-reader
-  (deprecated-package "guile2.2-reader" guile-reader))
-
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
@@ -1689,9 +1686,6 @@ for Guile\".")
     (name "guile2.0-lib")
     (inputs `(("guile" ,guile-2.0)))))
 
-(define-public guile2.2-lib
-  (deprecated-package "guile2.2-lib" guile-lib))
-
 (define-public guile-minikanren
   (package
     (name "guile-minikanren")
@@ -1728,8 +1722,11 @@ See http://minikanren.org/ for more on miniKanren generally.")
     (name "guile2.0-minikanren")
     (native-inputs `(("guile" ,guile-2.0)))))
 
-(define-public guile2.2-minikanren
-  (deprecated-package "guile2.2-minikanren" guile-minikanren))
+(define-public guile3.0-minikanren
+  (package
+    (inherit guile-minikanren)
+    (name "guile3.0-minikanren")
+    (native-inputs `(("guile" ,guile-next)))))
 
 (define-public guile-irregex
   (package
@@ -1777,8 +1774,11 @@ inspired by the SCSH regular expression system.")
     (name "guile2.0-irregex")
     (native-inputs `(("guile" ,guile-2.0)))))
 
-(define-public guile2.2-irregex
-  (deprecated-package "guile2.2-irregex" guile-irregex))
+(define-public guile3.0-irregex
+  (package
+    (inherit guile-irregex)
+    (name "guile3.0-irregex")
+    (native-inputs `(("guile" ,guile-next)))))
 
 (define-public haunt
   (package
@@ -1850,9 +1850,6 @@ interface for reading articles in any format.")
     (name "guile2.0-haunt")
     (inputs `(("guile" ,guile-2.0)))))
 
-(define-public guile2.2-haunt
-  (deprecated-package "guile2.2-haunt" haunt))
-
 (define-public guile-redis
   (package
     (name "guile-redis")
@@ -1882,9 +1879,6 @@ key-value cache and store.")
     (native-inputs `(("guile" ,guile-2.0)
                      ,@(alist-delete "guile"
                                      (package-native-inputs guile-redis))))))
-
-(define-public guile2.2-redis
-  (deprecated-package "guile2.2-redis" guile-redis))
 
 (define-public guile-commonmark
   (package
@@ -1918,9 +1912,6 @@ is no support for parsing block and inline level HTML.")
     (inherit guile-commonmark)
     (name "guile2.0-commonmark")
     (inputs `(("guile" ,guile-2.0)))))
-
-(define-public guile2.2-commonmark
-  (deprecated-package "guile2.2-commonmark" guile-commonmark))
 
 (define-public mcron
   (package

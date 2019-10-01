@@ -169,11 +169,12 @@ BUILD-DIRECTORY, using up to WORKERS parallel workers.  The resulting object
 files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
   (define progress-lock (make-mutex))
   (define total (length files))
-  (define completed 0)
+  (define progress 0)
 
   (define (build file)
     (with-mutex progress-lock
-      (report-compilation file total completed))
+      (report-compilation file total progress)
+      (set! progress (+ 1 progress)))
 
     ;; Exit as soon as something goes wrong.
     (exit-on-exception
@@ -185,9 +186,7 @@ files are for HOST, a GNU triplet such as \"x86_64-linux-gnu\"."
                          #:output-file (string-append build-directory "/"
                                                       (scm->go relative))
                          #:opts (append warning-options
-                                        (optimization-options relative)))))))
-    (with-mutex progress-lock
-      (set! completed (+ 1 completed))))
+                                        (optimization-options relative))))))))
 
   (with-augmented-search-path %load-path source-directory
     (with-augmented-search-path %load-compiled-path build-directory

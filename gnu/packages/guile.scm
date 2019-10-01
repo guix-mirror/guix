@@ -357,6 +357,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
   (package-input-rewriting `((,guile-2.2 . ,guile-2.0))
                            (guile-variant-package-name "guile2.0")))
 
+(define package-for-guile-3.0
+  (package-input-rewriting `((,guile-2.2 . ,guile-next))
+                           (guile-variant-package-name "guile3.0")))
+
 (define-public guile-for-guile-emacs
   (package (inherit guile-2.2)
     (name "guile-for-guile-emacs")
@@ -433,9 +437,6 @@ specification.  These are the main features:
   ;; This is the 1.x branch of Guile-JSON.
   guile-json)
 
-(define-public guile2.2-json
-  (deprecated-package "guile2.2-json" guile-json))
-
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json))
 
@@ -452,6 +453,9 @@ specification.  These are the main features:
               (sha256
                (base32
                 "14m6b6g2maw0mkvfm4x63rqb54vgbpn1gcqs715ijw4bikfzlqfz"))))))
+
+(define-public guile3.0-json
+  (package-for-guile-3.0 guile-json-3))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -505,8 +509,8 @@ Guile's foreign function interface.")
 (define-public guile2.0-gdbm-ffi
   (package-for-guile-2.0 guile-gdbm-ffi))
 
-(define-public guile2.2-gdbm-ffi
-  (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
+(define-public guile3.0-gdbm-ffi
+  (package-for-guile-3.0 guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (package
@@ -568,6 +572,9 @@ type system, elevating types to first-class status.")
 
 (define-public guile2.0-bytestructures
   (package-for-guile-2.0 guile-bytestructures))
+
+(define-public guile3.0-bytestructures
+  (package-for-guile-3.0 guile-bytestructures))
 
 (define-public guile-git
   (package

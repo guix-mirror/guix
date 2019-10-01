@@ -1001,14 +1001,14 @@ SPI, I2C, JTAG.")
 (define-public fc-host-tools
   (package
     (name "fc-host-tools")
-    (version "10")
+    (version "11")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.freecalypso.org/pub/GSM/"
                                   "FreeCalypso/fc-host-tools-r" version ".tar.bz2"))
               (sha256
                (base32
-                "0ybjqkz1cpnxni66p3valv1bva39vpwzdcc4040lqzx6py9h7h8b"))))
+                "0s87lp6gd8i8ivrdd7mnnalysr65035nambcm992rgla7sk76sj1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; No tests exist.
@@ -1017,12 +1017,7 @@ SPI, I2C, JTAG.")
              (string-append "INCLUDE_INSTALL_DIR=" %output "include/rvinterf"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'handle-tarbomb
-           (lambda _
-             (chdir "..") ; url-fetch/tarbomb doesn't work for some reason.
-             #t))
-         (add-after 'handle-tarbomb 'patch-installation-paths
+         (add-after 'unpack 'patch-installation-paths
            (lambda* (#:key outputs #:allow-other-keys)
              (substitute* '("Makefile"
                             "rvinterf/etmsync/fsiomain.c"
@@ -1039,13 +1034,16 @@ SPI, I2C, JTAG.")
                 (string-append (assoc-ref outputs "out") "/lib/freecalypso/loadtools"))
                (("\\$\\{INSTALL_PREFIX\\}/loadtools")
                 (string-append (assoc-ref outputs "out") "/lib/freecalypso/loadtools"))
+               (("\\$\\{INSTALL_PREFIX\\}/target-bin")
+                (string-append (assoc-ref outputs "out") "/lib/freecalypso/target-bin"))
                (("/opt/freecalypso")
                 (assoc-ref outputs "out")))
-             #t)))))
+             #t))
+         (delete 'configure))))
     (inputs
      `(("libx11" ,libx11)))
     (synopsis "Freecalypso host tools")
-    (description "This package provides some tools for debugging Freecalypso phones.
+    (description "This package provides some tools for debugging FreeCalypso phones and the FreeCalypso FCDEV3B dev board.
 
 @enumerate
 @item fc-e1decode: Decodes a binary Melody E1 file into an ASCII source file.
@@ -1120,10 +1118,10 @@ feeding melodies to be played to it.
 that can be issued through the RVTMUX (debug trace) serial channel.
 This program is our test mode shell for sending Test Mode commands to targets
 and displaying decoded target responses.
-@item fcup-smsend Send a short message via SMS
-@item fcup-smsendmult Send multiple short messages via SMS in one go
-@item fcup-smsendpdu Send multiple short messages given in PDU format via SMS
-@item sms-pdu-decode Decode PDU format messages
+@item fcup-smsend: Send a short message via SMS
+@item fcup-smsendmult: Send multiple short messages via SMS in one go
+@item fcup-smsendpdu: Send multiple short messages given in PDU format via SMS
+@item sms-pdu-decode: Decode PDU format messages
 @end enumerate")
     (home-page "https://www.freecalypso.org/")
     (license license:public-domain)))
