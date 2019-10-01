@@ -3649,6 +3649,31 @@ completion backends according to mode, and integrates with
 @code{use-package}.")
       (license license:gpl3+))))
 
+(define-public emacs-handle
+  (let ((commit "0180a33c92b53d042c3e248a047e15337122d922")
+        (revision "1"))
+    (package
+      (name "emacs-handle")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/jjzmajic/handle.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ldrdfxspkq0m07l98hhj9nydgj9qi557mnnpd3v4xrwqwhyr4nc"))))
+      (build-system emacs-build-system)
+      (home-page "https://gitlab.com/jjzmajic/handle")
+      (synopsis "Handle generic functions across related major modes")
+      (description "This package provides generic functions that specialize on
+major modes and intended purpose rather than on arguments.  Different
+callables for tasks like expression evaluation, definition-jumping, and more
+can now be grouped accordingly and tried in sequence until one of them
+succeeds.")
+      (license license:gpl3+))))
+
 (define-public emacs-nswbuff
   (let ((commit "362da7f3687e2eb5bb11667347de85f4a9d002bc")
         (revision "1"))
