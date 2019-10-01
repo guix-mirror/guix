@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
+;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,8 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
-  #:use-module (gnu packages pulseaudio))
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages wm))
 
 (define-public gtk-xfce-engine
   (package
@@ -1198,3 +1200,32 @@ A plugin for the Xfce panel is also available.")
      "Xfce Screensaver is a screen saver and locker that aims to have simple,
  sane, secure defaults and be well integrated with the Xfce desktop. ")
     (license gpl2+)))
+
+(define-public xfce4-volumed-pulse
+  (package
+    (name "xfce4-volumed-pulse")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1q639iwwj7q2plgz0wdgdbi5wkgaq177ca9rnnlrnbdmid5z5fqk"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xfconf" ,xfconf)
+       ("libnotify" ,libnotify)
+       ("pulseaudio" ,pulseaudio)
+       ("keybinder-3.0" ,keybinder-3.0)
+       ("gtk+" ,gtk+)))
+    (home-page "https://goodies.xfce.org/projects/applications/xfce4-volumed")
+    (synopsis "XFCE volume keys daemon")
+    (description
+     "This is a volume keys control daemon for Xfce Desktop environment. It controls
+ the volume using multimedia keys. It also provides volume change notifications.")
+    (license gpl3+)))
