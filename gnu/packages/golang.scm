@@ -811,6 +811,33 @@ time.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
       (license license:bsd-3))))
 
+(define-public go-golang-org-x-oauth2
+  (let ((commit "0f29369cfe4552d0e4bcddc57cc75f4d7e672a33")
+        (revision "1"))
+    (package
+      (name "go-golang-org-x-oauth2")
+      (version (git-version "0.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://go.googlesource.com/oauth2")
+                      (commit commit)))
+                (file-name (string-append "go.googlesource.com-oauth2-"
+                                          version "-checkout"))
+                (sha256
+                 (base32
+                  "06jwpvx0x2gjn2y959drbcir5kd7vg87k0r1216abk6rrdzzrzi2"))))
+      (build-system go-build-system)
+      (arguments
+       `(#:import-path "golang.org/x/oauth2"))
+      (propagated-inputs
+       `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (home-page "https://go.googlesource.com/oauth2")
+      (synopsis "Client implementation of the OAuth 2.0 spec")
+      (description "This package contains a client implementation for OAuth 2.0
+ spec in Go.")
+      (license license:bsd-3))))
+
 (define-public go-github-com-burntsushi-toml
   (package
     (name "go-github-com-burntsushi-toml")
