@@ -314,7 +314,7 @@ to display."
                (removed
                 (let ((count (length removed)))
                   (format (current-error-port)
-                          (N_ "  ~*One channel removed:~%"
+                          (N_ "  ~a channel removed:~%"
                               "  ~a channels removed:~%" count)
                           count)
                   (for-each display-channel removed))))
