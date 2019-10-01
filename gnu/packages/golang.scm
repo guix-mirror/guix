@@ -3640,6 +3640,33 @@ sensors).")
 fnmatch gist (https://gist.github.com/kballard/272720).")
      (license license:bsd-2))))
 
+(define-public go-github-com-ddevault-go-libvterm
+  (let ((commit "b7d861da381071e5d3701e428528d1bfe276e78f")
+        (revision "0"))
+    (package
+      (name "go-github-com-ddevault-go-libvterm")
+      (version (git-version "0.0.0" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/ddevault/go-libvterm")
+                (commit commit)))
+          (sha256
+           (base32
+            "06vv4pgx0i6hjdjcar4ch18hp9g6q6687mbgkvs8ymmbacyhp7s6"))
+          (file-name (git-file-name name version))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/ddevault/go-libvterm"))
+      (propagated-inputs
+       `(("go-github-com-mattn-go-pointer" ,go-github-com-mattn-go-pointer)))
+      (home-page "https://github.com/ddevault/go-libvterm")
+      (synopsis "Go binding to libvterm")
+      (description
+       "This is a fork of another go-libvterm library for use with aerc.")
+      (license license:expat))))
+
 (define-public go-github-com-fatih-color
   (package
     (name "go-github-com-fatih-color")
