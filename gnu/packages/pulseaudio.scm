@@ -50,7 +50,8 @@
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xorg))
 
 (define-public libsndfile
   (package
@@ -182,6 +183,13 @@ rates.")
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
+
+       ;; For the optional X11 modules.
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libxcb" ,libxcb)
+       ("libxtst" ,libxtst)
+
        ("eudev" ,eudev)))         ;for the detection of hardware audio devices
     (native-inputs
      `(("check" ,check)
