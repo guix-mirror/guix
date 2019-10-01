@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
+;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -999,6 +1000,34 @@ all of them.  Currently supported window managers include:
 Keybinder works with GTK-based applications using the X Window System.")
     (home-page "https://github.com/kupferlauncher/keybinder")
     (license license:gpl2+)))
+
+(define-public keybinder-3.0
+  (package
+    (name "keybinder-3.0")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/kupferlauncher/keybinder"
+                           "/releases/download/" name "-v" version "/" name "-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0830ihwnalw59pp1xzrp37dn58n8vwb8zasnm4a1h81v3x7dxqz6"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Library for registering global keyboard shortcuts, Gtk3 version")
+    (description
+     "Keybinder is a library for registering global keyboard shortcuts.
+Keybinder works with GTK-based applications using the X Window System.")
+    (home-page "https://github.com/kupferlauncher/keybinder")
+    (license license:x11)))
 
 (define-public spectrwm
   (package
