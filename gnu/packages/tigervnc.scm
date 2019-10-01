@@ -140,7 +140,7 @@ application which is needed to connect to VNC servers.")
                    "--disable-xorg"
                    "--disable-dmx"
                    "--disable-xwin"
-                   "--disable-xephyr"   ; Is this necessary? (*)
+                   "--disable-xephyr"
                    "--disable-kdrive"
                    ;; "--disable-config-dbus" ; This was a warning.
                    "--disable-config-hal"
@@ -148,7 +148,7 @@ application which is needed to connect to VNC servers.")
                    "--disable-dri2"
                    ;; "--enable-install-libxf86config" ; This, too, was a warning.
                    "--enable-glx")
-                 (delete "--enable-xephyr" ,flags))) ; Is this necessary? (*)
+                 (delete "--enable-xephyr" ,flags)))
        ((#:modules modules)
         `(append '((ice-9 ftw)
                    (ice-9 match)
