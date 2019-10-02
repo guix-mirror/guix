@@ -278,7 +278,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.23.0")
+    (version "0.23.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -286,7 +286,7 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "1y7x594gvyvl5zbb1rnf3clj2pm6j97n8wl5mp9x6xjmhx0d1idq"))
+                "0d1cyl07w9pvi2pf029kablazks2q9aislzl46b6fq5m1465jc75"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
