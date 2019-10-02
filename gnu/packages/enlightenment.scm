@@ -536,7 +536,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.2.3")
+    (version "0.2.6")
     (source
       (origin
         (method url-fetch)
@@ -544,7 +544,7 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "1lj62n896kablsl687c66yxrwajrh6ralb3y6nmcqv34pglnigca"))))
+          "1rg3kri6j8nmab0kdljnmcc096c8ibgwzvbhqr0b25xpmrq8bcac"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f   ; no tests
