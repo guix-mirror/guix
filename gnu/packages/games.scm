@@ -253,7 +253,7 @@ mouse and joystick control, and original music.")
 (define-public alex4
   (package
     (name "alex4")
-    (version "1.2-alpha")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -262,27 +262,17 @@ mouse and joystick control, and original music.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "104nlhdsv1sg9g08fh5adwazw80400081awy7jsrn842srca0q1f"))))
+        (base32 "098wy72mh4lsvq3gm0rhamjssf9l1hp6hhkpzrv7klpb97cwwc3h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
        #:make-flags
-       (list "-Csrc"
-             "CC=gcc"
+       (list "CC=gcc"
              "CFLAGS=-D_FILE_OFFSET_BITS=64"
-             (string-append "DATADIR=" (assoc-ref %outputs "out")
-                            "/share/" ,name)
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (substitute* '("src/main.c"
-                            "src/shooter.c")
-               (("fcos") "fixcos")
-               (("fmul") "fixmul")
-               (("fsin") "fixsin"))
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out")
