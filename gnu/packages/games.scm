@@ -7117,7 +7117,7 @@ simulator.")
 (define-public jumpnbump
   (package
     (name "jumpnbump")
-    (version "1.60")
+    (version "1.61")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7126,7 +7126,7 @@ simulator.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gwi58ck4magvdim8wmxdqnsi0fqdpvqia9kcc7q73nqf34jjz3v"))))
+                "12lwl5sl5n009nb83r8l4lakb9286csqdf1ynpmwwydy17giqsdp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
