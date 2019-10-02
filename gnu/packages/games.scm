@@ -256,14 +256,16 @@ mouse and joystick control, and original music.")
     (version "1.2-alpha")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/carstene1ns/alex4/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/carstene1ns/alex4.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0jj1g3v1a6lyfwp5g2ly0n9z65ryqck8jxvzr01kaqjj3lsfkrhg"))))
+        (base32 "104nlhdsv1sg9g08fh5adwazw80400081awy7jsrn842srca0q1f"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags
        (list "-Csrc"
              "CC=gcc"
