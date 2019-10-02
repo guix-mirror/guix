@@ -16831,6 +16831,33 @@ like @code{company}, @code{flycheck}, and @code{projectile}.")
 and code peeking.")
     (license license:gpl3+)))
 
+(define-public emacs-lsp-ivy
+  (let ((commit "6fd55316dd62d290429c25ea9b0c1f66069b2f37")
+        (revision "1"))
+    (package
+      (name "emacs-lsp-ivy")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-lsp/lsp-ivy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hx9rs66ahl2rqgnmyiyrwk12v7iv8c6gnn7b66985mxjqyyh94r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-lsp-mode" ,emacs-lsp-mode)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/emacs-lsp/lsp-ivy")
+      (synopsis "Provide LSP-enhanced completion for symbols")
+      (description
+       "This package enhances @code{ivy} with completion for symbols from
+workspaces with a LSP-compliant server running.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-lsp
   (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
         (revision "1"))
