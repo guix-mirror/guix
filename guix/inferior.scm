@@ -125,19 +125,21 @@ it's an old Guix."
 
           ;; Older versions of Guix didn't have a 'guix repl' command, so
           ;; emulate it.
-          (open-pipe* OPEN_BOTH "guile"
-                      "-L" (string-append directory "/share/guile/site/"
-                                          (effective-version))
-                      "-C" (string-append directory "/share/guile/site/"
-                                          (effective-version))
-                      "-C" (string-append directory "/lib/guile/"
-                                          (effective-version) "/site-ccache")
-                      "-c"
-                      (object->string
-                       `(begin
-                          (primitive-load ,(search-path %load-path
-                                                        "guix/repl.scm"))
-                          ((@ (guix repl) machine-repl))))))
+          (with-error-to-port error-port
+            (lambda ()
+              (open-pipe* OPEN_BOTH "guile"
+                          "-L" (string-append directory "/share/guile/site/"
+                                              (effective-version))
+                          "-C" (string-append directory "/share/guile/site/"
+                                              (effective-version))
+                          "-C" (string-append directory "/lib/guile/"
+                                              (effective-version) "/site-ccache")
+                          "-c"
+                          (object->string
+                           `(begin
+                              (primitive-load ,(search-path %load-path
+                                                            "guix/repl.scm"))
+                              ((@ (guix repl) machine-repl))))))))
         pipe)))
 
 (define* (port->inferior pipe #:optional (close close-port))
