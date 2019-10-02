@@ -1733,14 +1733,13 @@ ellipses, circles, cylinders, arrows, ...")
 (define-public r-globaloptions
   (package
     (name "r-globaloptions")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GlobalOptions" version))
        (sha256
-        (base32
-         "1wlyqz1yhmhjwslrd7q69jbd9vsbjkjfc01g60kl3cdpyr8hlyjn"))))
+        (base32 "0x89hfz80avq4zcskxl71i4zi0mgniqqxfrvz050aa2189wfyja2"))))
     (properties `((upstream-name . "GlobalOptions")))
     (build-system r-build-system)
     (home-page "https://github.com/jokergoo/GlobalOptions")
