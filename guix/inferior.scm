@@ -110,11 +110,11 @@
   (packages inferior-package-promise)            ;promise of inferior packages
   (table    inferior-package-table))             ;promise of vhash
 
-(define (inferior-pipe directory command)
+(define* (inferior-pipe directory command error-port)
   "Return an input/output pipe on the Guix instance in DIRECTORY.  This runs
 'DIRECTORY/COMMAND repl' if it exists, or falls back to some other method if
 it's an old Guix."
-  (let ((pipe (with-error-to-port (%make-void-port "w")
+  (let ((pipe (with-error-to-port error-port
                 (lambda ()
                   (open-pipe* OPEN_BOTH
                               (string-append directory "/" command)
@@ -161,11 +161,13 @@ inferior."
     (_
      #f)))
 
-(define* (open-inferior directory #:key (command "bin/guix"))
+(define* (open-inferior directory
+                        #:key (command "bin/guix")
+                        (error-port (%make-void-port "w")))
   "Open the inferior Guix in DIRECTORY, running 'DIRECTORY/COMMAND repl' or
 equivalent.  Return #f if the inferior could not be launched."
   (define pipe
-    (inferior-pipe directory command))
+    (inferior-pipe directory command error-port))
 
   (port->inferior pipe close-pipe))
 
