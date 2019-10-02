@@ -6548,6 +6548,17 @@ beautifying border effects.")
         (base32
          "06f736spn20s7qjsz00xw44v8r8bjhyrz1v3bix6v416jc5jp6ia"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-glib-minimum-version
+                    (lambda _
+                      ;; Change the minimum required GLib version so that
+                      ;; 'valac' is passed '--target-glib 2.60.0'; failing to
+                      ;; do that, it complains that "55" is not an even
+                      ;; number.  See <https://bugs.gnu.org/37503>.
+                      (substitute* "editor/meson.build"
+                        (("2\\.55\\.1") "2.60.0"))
+                      #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
        ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
