@@ -264,14 +264,14 @@ over the Internet in an HTTP and CDN friendly way;
 (define-public rclone
   (package
     (name "rclone")
-    (version "1.49.3")
+    (version "1.49.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rclone/rclone/releases/download/"
                            "v" version "/rclone-v" version ".tar.gz"))
        (sha256
-        (base32 "04blngspm2hzi6d37bd3v19lpcvq0wlk38a9q0a4diwfwp2ab20n"))))
+        (base32 "1bs7b3iy39igli1jqrgjzh32zzzhp1yj8rybsx8i34p9wj2zq2h7"))))
     ;; FIXME: Rclone bundles some libraries Guix already provides.  Need to
     ;; un-bundle them.
     (build-system go-build-system)
