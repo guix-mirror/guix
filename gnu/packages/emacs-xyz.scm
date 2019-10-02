@@ -16881,8 +16881,8 @@ workspaces with a LSP-compliant server running.")
       (home-page "https://github.com/emacs-lsp/helm-lsp")
       (synopsis "Provide LSP-enhanced completion for symbols")
       (description
-       "This package provides completion for symbols from workspaces with a
-LSP-compliant server running.")
+       "This package enhances @code{helm} with completion for symbols from
+workspaces with a LSP-compliant server running.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-notmuch
