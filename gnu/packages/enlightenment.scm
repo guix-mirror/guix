@@ -113,6 +113,7 @@
      `(("avahi" ,avahi)
        ("bullet" ,bullet)
        ("dbus" ,dbus)
+       ("elogind" ,elogind)
        ("eudev" ,eudev)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -142,6 +143,8 @@
                            ;(string-append "-Ddictionaries-hyphen-dir="
                            ;               (assoc-ref %build-inputs "hyphen")
                            ;               "/share/hyphen")
+                           "-Delogind=true"
+                           "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
                                 '("-opengl=es-egl"))
