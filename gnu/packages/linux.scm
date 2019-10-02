@@ -116,6 +116,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
@@ -482,6 +483,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                      ,@(if (version>=? version "4.16")
                            `(("flex" ,flex)
                              ("bison" ,bison))
+                           '())
+                     ,@(if (version>=? version "5.3")
+                           `(("rsync" ,rsync))
                            '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
