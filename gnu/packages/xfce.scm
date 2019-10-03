@@ -1495,6 +1495,34 @@ The string can also contain markup to displayed an image, a bar, a
 button and a personalized tooltip.")
     (license gpl2+)))
 
+(define-public xfce4-kbdleds-plugin
+  (package
+   (name "xfce4-kbdleds-plugin")
+   (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-kbdleds-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-kbdleds-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1k810asjjxwix1c7ixl7bqr97zc4j2mw7797gk49rjvv43bhla3d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-kbdleds-plugin")
+    (synopsis "Display keyboard LEDs in the Xfce panel")
+    (description "This plugin shows the state of your keyboard LEDs:
+Caps, Scroll and Num Lock in Xfce panel.")
+    (license gpl2+)))
+
 (define-public xfce4-mpc-plugin
   (package
    (name "xfce4-mpc-plugin")
