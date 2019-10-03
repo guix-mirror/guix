@@ -1956,3 +1956,42 @@ format.")
 
 (define-public ecl-cl-libsvm-format
   (sbcl-package->ecl-package sbcl-cl-libsvm-format))
+
+(define-public sbcl-cl-online-learning
+  (let ((commit "fc7a34f4f161cd1c7dd747d2ed8f698947781423")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-online-learning")
+      (version (git-version "0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-online-learning.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14x95rlg80ay5hv645ki57pqvy12v28hz4k1w0f6bsfi2rmpxchq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (inputs
+       `(("cl-libsvm-format" ,sbcl-cl-libsvm-format)
+         ("cl-store" ,sbcl-cl-store)))
+      (arguments
+       `(;; FIXME: Tests pass but then the check phase crashes
+         #:tests? #f))
+      (synopsis "Online Machine Learning for Common Lisp")
+      (description
+       "This library contains a collection of machine learning algorithms for
+online linear classification written in Common Lisp.")
+      (home-page "https://github.com/masatoi/cl-online-learning")
+      (license license:expat))))
+
+(define-public cl-online-learning
+  (sbcl-package->cl-source-package sbcl-cl-online-learning))
+
+(define-public ecl-cl-online-learning
+  (sbcl-package->ecl-package sbcl-cl-online-learning))
