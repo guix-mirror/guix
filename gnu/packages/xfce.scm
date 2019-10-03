@@ -1290,6 +1290,35 @@ core or CPU.")
 watch your every step.")
     (license gpl2+)))
 
+(define-public xfce4-equake-plugin
+   (package
+   (name "xfce4-equake-plugin")
+   (version "1.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-equake-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-equake-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "09b9k0n5xm115k44x74w4ad0xqklilyfh0hglsps7zj97pd7a5a3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-equake-plugin")
+    (synopsis "Earthquake monitor for the Xfce panel")
+    (description "Equake is a panel plugin for the XFCE desktop
+environment.  Equake monitors earthquakes and will display an update
+each time a new earthquake occurs.")
+    (license gpl2+)))
+
 (define-public xfce4-datetime-plugin
   (package
    (name "xfce4-datetime-plugin")
