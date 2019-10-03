@@ -63,6 +63,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages wm))
 
 (define-public gtk-xfce-engine
@@ -1966,3 +1967,34 @@ for the Xfce panel.  It supports several features, such as:
     (description "This plugin is used to display stats from a wireless
 lan interface (signal state, signal quality, network name (SSID)).")
     (license bsd-2)))
+
+(define-public xfce4-weather-plugin
+  (package
+   (name "xfce4-weather-plugin")
+   (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-weather-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-weather-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0wlm80panxyn86l9qm3mbliqj7gkf2zyzak3w041zz9hg31a08s4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libsoup" ,libsoup)
+       ("libxfce4ui" ,libxfce4ui)
+       ("libxml2" ,libxml2)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-weather-plugin")
+    (synopsis "Show information about local weather in the Xfce panel")
+    (description "This Xfce panel plugin shows information about your
+local weather in the panel, using forecast data provided by the
+@uref{https://met.no, Norwegian Meteorological Institute}.")
+    (license gpl2+)))
