@@ -8418,6 +8418,13 @@ library implementing most of the pipeline's features.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'find-RCAS
+           ;; The configure script can't find non-1.3.x versions of RCAS because
+           ;; its R expression ‘1.10.1 >= 1.3.4’ evaluates to false.
+           (lambda _
+             (substitute* "configure"
+               (("1\\.3\\.4") "0.0.0"))
+             #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
