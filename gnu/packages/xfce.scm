@@ -1689,6 +1689,48 @@ mounted or when unmounting fails.")
 interfaces of your choice in the panel.")
     (license gpl2+)))
 
+(define-public xfce4-places-plugin
+  (package
+   (name "xfce4-places-plugin")
+   (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-places-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-places-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1chac4ki70axgvkmhw94m0srsv0pwiwqrqbh8di0y9n90fgj24gj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gtk+-2" ,gtk+-2)
+       ("exo" ,exo)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-places-plugin")
+    (synopsis "Gnome-like Places menu for the Xfce panel")
+    (description "This plugin provides a menu with quick access to folders,
+documents, and removable media.  The places plugin brings much of the
+functionality of GNOME's Places menu to Xfce.
+
+The plugin puts a simple button on the panel.  Clicking on this button
+opens up a menu with the following:
+
+@itemize
+@item System-defined directories (home folder, trash, desktop, file system)
+@item Removable media (using thunar-vfs)
+@item User-defined bookmarks (reads @file{~/.gtk-bookmarks})
+@item Search program launcher (optional)
+@item Recent documents submenu
+@end itemize")
+    (license gpl2+)))
+
 (define-public xfce4-smartbookmark-plugin
   (package
    (name "xfce4-smartbookmark-plugin")
