@@ -1230,6 +1230,34 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-smartbookmark-plugin
+  (package
+   (name "xfce4-smartbookmark-plugin")
+   (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-smartbookmark-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-smartbookmark-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "001nf2bqly8vm868qvafzgihc9463c488mkim24iw9g2s9ygna1y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-smartbookmark-plugin")
+    (synopsis "Perform custom searches in your browser from the Xfce panel")
+    (description "This plugin allows you to send search requests
+directly to your browser, such that you can search through your
+favorite search engine or bug tracker right from the Xfce panel.")
+    (license gpl2+)))
+
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
