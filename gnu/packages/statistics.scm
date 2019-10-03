@@ -2727,7 +2727,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
-    (home-page "http://rmarkdown.rstudio.com")
+    (home-page "https://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
      "This package provides tools to convert R Markdown documents into a
