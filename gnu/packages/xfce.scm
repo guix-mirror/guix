@@ -1290,6 +1290,33 @@ core or CPU.")
 watch your every step.")
     (license gpl2+)))
 
+(define-public xfce4-datetime-plugin
+  (package
+   (name "xfce4-datetime-plugin")
+   (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-datetime-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-datetime-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1m7bmpvbmiz2xdffpg675qn80zx2n0cnlf842ppvh1q7zz18ndfd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-datetime-plugin")
+    (synopsis "Display date and time inside the Xfce panel")
+    (description "This plugin shows the date and time in the panel,
+and a calendar appears when you left-click on it.")
+    (license gpl2+)))
+
 (define-public xfce4-embed-plugin
   (package
    (name "xfce4-embed-plugin")
