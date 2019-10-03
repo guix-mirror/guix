@@ -1995,3 +1995,56 @@ online linear classification written in Common Lisp.")
 
 (define-public ecl-cl-online-learning
   (sbcl-package->ecl-package sbcl-cl-online-learning))
+
+(define-public sbcl-cl-random-forest
+  (let ((commit "85fbdd4596d40e824f70f1b7cf239cf544e49d51")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-random-forest")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-random-forest.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "097xv60i1ndz68sg9p4pc7c5gvyp9i1xgw966b4wwfq3x6hbz421"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-libsvm-format" ,sbcl-cl-libsvm-format)
+         ("cl-online-learning" ,sbcl-cl-online-learning)
+         ("lparallel" ,sbcl-lparallel)))
+      (arguments
+       `(;; The tests download data from the Internet
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'add-sb-cltl2-dependency
+             (lambda _
+               ;; sb-cltl2 is required by lparallel when using sbcl, but it is
+               ;; not loaded automatically.
+               (substitute* "cl-random-forest.asd"
+                 (("\\(in-package :cl-user\\)")
+                  "(in-package :cl-user) #+sbcl (require :sb-cltl2)"))
+               #t)))))
+      (synopsis "Random Forest and Global Refinement for Common Lisp")
+      (description
+       "CL-random-forest is an implementation of Random Forest for multiclass
+classification and univariate regression written in Common Lisp.  It also
+includes an implementation of Global Refinement of Random Forest.")
+      (home-page "https://github.com/masatoi/cl-random-forest")
+      (license license:expat))))
+
+(define-public cl-random-forest
+  (sbcl-package->cl-source-package sbcl-cl-random-forest))
+
+(define-public ecl-cl-random-forest
+  (sbcl-package->ecl-package sbcl-cl-random-forest))
