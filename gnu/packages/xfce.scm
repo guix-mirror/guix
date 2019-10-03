@@ -1434,6 +1434,36 @@ or timer.  Combining with Xfce's ability to auto-hide panels can make
 this very convenient.")
     (license gpl2+)))
 
+(define-public xfce4-fsguard-plugin
+  (package
+   (name "xfce4-fsguard-plugin")
+   (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-fsguard-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-fsguard-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05nmfkrmifm76bsywqmbjd1qdvzagv5cbvnwbkb57156j055vl6n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-fsguard-plugin")
+    (synopsis "Xfce panel plugin to monitor free disk space")
+    (description "The panel plugin checks free space on a chosen mount
+point frequently and displays a message when a limit is reached.  There
+are two limits: a warning limit where only the icon changes, and an
+urgent limit that advise the user with a message.  The icon button can
+be clicked to open the chosen mount point.")
+    (license bsd-2)))
+
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
