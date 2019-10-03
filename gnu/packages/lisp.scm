@@ -7402,3 +7402,35 @@ threads.")
          ;; Disable the tests for now, as the SEND-SEQUENCE test seems to
          ;; never end.
          ((#:tests? _ #f) #f))))))
+
+(define-public sbcl-cl-store
+  (let ((commit "cd01f2610d3360dc01ab972bd9317407aaea7745")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-store")
+      (version (git-version "0.8.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skypher/cl-store.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05b7kh5af2ax7vlmphpac4vbqr84j5ivppj96qzb64fxpjpqglm4"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("rt" ,sbcl-rt)))
+      (synopsis "Common Lisp library to serialize data")
+      (description
+       "CL-STORE is a portable serialization package which should give you the
+ability to store all Common Lisp data types into streams.")
+      (home-page "http://www.common-lisp.net/project/cl-store/")
+      (license license:expat))))
+
+(define-public cl-store
+  (sbcl-package->cl-source-package sbcl-cl-store))
+
+(define-public ecl-cl-store
+  (sbcl-package->ecl-package sbcl-cl-store))
