@@ -9574,17 +9574,17 @@ manipulate tree data.")
 (define-public r-rvcheck
   (package
     (name "r-rvcheck")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvcheck" version))
        (sha256
-        (base32
-         "1i2g6gyiqyd1pn6y0h6vmlcmg1qb5pv7rym8mkw8jnyc3in9hn8b"))))
+        (base32 "15222q3sglq0mad5q806p99fhrb96qizmpqw35fa1rb148f95paf"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rlang" ,r-rlang)))
+     `(("r-biocmanager" ,r-biocmanager)
+       ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/rvcheck")
     (synopsis "R package version check")
     (description
