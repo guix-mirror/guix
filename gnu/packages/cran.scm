@@ -20863,3 +20863,24 @@ explaining the meaning of @code{HTTP} status codes.  Functions are included for
 searching for codes by full or partial number, by message, and to get
 appropriate dog and cat images for many status codes.")
     (license license:expat)))
+
+(define-public r-latex2exp
+  (package
+    (name "r-latex2exp")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "latex2exp" version))
+              (sha256
+               (base32
+                "12nbcgfmv13k6sc6m326ras9bcvy380b7rxcxphn06r3cfkby0zw"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-stringr" ,r-stringr)
+       ("r-magrittr", r-magrittr)))
+    (home-page "https://github.com/stefano-meschiari/latex2exp/")
+    (synopsis "Use LaTeX expressions in plots")
+    (description "@code{latex2exp} parses and converts LaTeX math formulas to
+R's plotmath expressions, used to enter mathematical formulas and symbols to be
+rendered as text, axis labels, etc. throughout R's plotting system.")
+    (license license:expat)))
