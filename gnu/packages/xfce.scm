@@ -1317,6 +1317,34 @@ watch your every step.")
 and a calendar appears when you left-click on it.")
     (license gpl2+)))
 
+(define-public xfce4-calculator-plugin
+  (package
+   (name "xfce4-calculator-plugin")
+   (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-calculator-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-calculator-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1scx7z5ijg2fpcqrzv1nxhpj9vrqic7pyghig70f2n5hgaaanl3v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-calculator-plugin")
+    (synopsis "Calculator for the Xfce panel")
+    (description "This plugin is a calculator for the Xfce4 panel.  It
+supports common mathematical operators (+, -, *, /, ^) with usual
+precedence rules, and the following functions and common constants.")
+    (license gpl2+)))
+
 (define-public xfce4-embed-plugin
   (package
    (name "xfce4-embed-plugin")
