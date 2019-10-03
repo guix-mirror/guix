@@ -1230,6 +1230,39 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-cpugraph-plugin
+  (package
+   (name "xfce4-cpugraph-plugin")
+   (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-cpugraph-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "193bj1p54l4zrvgdjj0pvjn161d6dn82jh9invcy09sqwlj0mkiy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpugraph-plugin")
+    (synopsis "Display CPU load as a graph in the Xfce panel")
+    (description "This panel plugin offers multiple display
+modes (LED, gradient, fire, etc…) to show the current CPU load of the
+system.  Various appearance options, like colors or size, are
+customizable.
+
+On multi core or multi CPU systems, CPU Graph can either track and
+display all of them at once, or at the user's option only a specific
+core or CPU.")
+    (license gpl2+)))
+
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
