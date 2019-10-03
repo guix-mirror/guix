@@ -4329,17 +4329,16 @@ and busy().")
 (define-public perl-io-pager
   (package
     (name "perl-io-pager")
-    (version "0.4")
+    (version "0.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-"
              version
-             "0.tgz"))
+             ".tgz"))
        (sha256
-        (base32
-         "1vzdypsr7vkj8nnda9ccrksci6pqj5awwmi89l7x3mbpq36gad87"))))
+        (base32 "0h52gplhc3rij18xc4ngpg5kqv6mylxfzig18xll1aqda8iwa8kl"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
