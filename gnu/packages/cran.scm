@@ -20844,3 +20844,22 @@ as possible (with tests to prove it).")
 carrying out convergence diagnostics and statistical and graphical analysis of
 @dfn{Markov chain Monte Carlo} (MCMC) sampling output.")
     (license license:gpl2+)))
+
+(define-public r-httpcode
+  (package
+    (name "r-httpcode")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "httpcode" version))
+              (sha256
+               (base32
+                "06k853ihwzkcx4z3jzazpb03p91frqkwz18jy4fwr8j2nwyqbhgv"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/sckott/httpcode")
+    (synopsis "HTTP status code helper")
+    (description "@code{httpcode} provides functionality for finding and
+explaining the meaning of @code{HTTP} status codes.  Functions are included for
+searching for codes by full or partial number, by message, and to get
+appropriate dog and cat images for many status codes.")
+    (license license:expat)))
