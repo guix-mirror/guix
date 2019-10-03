@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix svn-download)
+  #:use-module (guix build-system asdf)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -1918,3 +1921,38 @@ that:
 @item Runs seamlessly on CPU and GPU.
 @end itemize\n")
     (license license:expat)))
+
+(define-public sbcl-cl-libsvm-format
+  (let ((commit "3300f84fd8d9f5beafc114f543f9d83417c742fb")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-libsvm-format")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-libsvm-format.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0284aj84xszhkhlivaigf9qj855fxad3mzmv3zfr0qzb5k0nzwrg"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (synopsis "LibSVM data format reader for Common Lisp")
+      (description
+       "This Common Lisp library provides a fast reader for data in LibSVM
+format.")
+      (home-page "https://github.com/masatoi/cl-libsvm-format")
+      (license license:expat))))
+
+(define-public cl-libsvm-format
+  (sbcl-package->cl-source-package sbcl-cl-libsvm-format))
+
+(define-public ecl-cl-libsvm-format
+  (sbcl-package->ecl-package sbcl-cl-libsvm-format))
