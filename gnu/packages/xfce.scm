@@ -1230,6 +1230,35 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-mount-plugin
+  (package
+   (name "xfce4-mount-plugin")
+   (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mount-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mount-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "07lijjhimjrcyrhasr2299km6wm22xcd3fazdfpqvisbk1mvvrda"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin")
+    (synopsis "Mount/unmount plugin for the Xfce panel")
+    (description "The plugin will display a list of items representing
+your various devices.  If you click on an unmounted devices it will
+mount it and vice versa.  There is a warning in case a device can't be
+mounted or when unmounting fails.")
+    (license gpl2+)))
+
 (define-public xfce4-smartbookmark-plugin
   (package
    (name "xfce4-smartbookmark-plugin")
