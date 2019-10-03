@@ -217,7 +217,8 @@ interface to the Tk widget system.")
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(#:tests? #t
+     '(#:configure-flags '("--without-rt")
+       #:tests? #t
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
