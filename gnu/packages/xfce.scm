@@ -1595,6 +1595,33 @@ mount it and vice versa.  There is a warning in case a device can't be
 mounted or when unmounting fails.")
     (license gpl2+)))
 
+(define-public xfce4-netload-plugin
+  (package
+   (name "xfce4-netload-plugin")
+   (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-netload-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-netload-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p91875n6s8n88l7wb4w9prqly3wvkyilnr7zq0ppq71rwjh9r12"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-netload-plugin")
+    (synopsis "Netload plugin for the Xfce Panel")
+    (description "This plugin displays the current load of the network
+interfaces of your choice in the panel.")
+    (license gpl2+)))
+
 (define-public xfce4-smartbookmark-plugin
   (package
    (name "xfce4-smartbookmark-plugin")
