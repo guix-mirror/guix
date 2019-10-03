@@ -1230,6 +1230,34 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-timer-plugin
+  (package
+   (name "xfce4-timer-plugin")
+   (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-timer-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-timer-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "16vypwwjwfk7nn4n16rfgn0z78jqrmbgxmc1r46269lrwd1m6kif"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-timer-plugin")
+    (synopsis "Simple countdown and alarm plugin for the Xfce panel")
+    (description "This is a simple plugin that lets the user run an
+alarm at a specified time or at the end of a specified countdown
+period.")
+    (license gpl2+)))
+
 (define-public xfce4-verve-plugin
   (package
    (name "xfce4-verve-plugin")
