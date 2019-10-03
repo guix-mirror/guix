@@ -1464,6 +1464,49 @@ urgent limit that advise the user with a message.  The icon button can
 be clicked to open the chosen mount point.")
     (license bsd-2)))
 
+(define-public xfce4-mpc-plugin
+  (package
+   (name "xfce4-mpc-plugin")
+   (version "0.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mpc-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mpc-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0q3pysdp85b3c7g3b59y3c69g4nw6bvbf518lnri4lxrnsvpizpf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-mpc-plugin")
+    (synopsis "Music Player Daemon plugin for the Xfce panel")
+    (description "This is a simple client plugin for Music Player Daemon.
+
+Features:
+@itemize
+@item send Play/Stop/Next/Previous command to MPD.
+@item uses media icons names from icon-naming-spec (at least nuvola,
+tango and rodent themes provides these icons)
+@item decrease/increase volume using the mouse wheel.
+@item show the current volume, status and title as a tooltip when
+hovering the mouse over the plugin.
+@item show a simple playlist window upon middle-click, permitting to
+select a track to play
+@item configurable MPD host/port/password.
+@item toggles repeat/random features + enable/disable MPD outputs in
+the right-click menu.
+@item launch configurable client (gmpc, xterm -e ncmpc,..) through
+right-click menu
+@item configurable markup for tooltip and playlist, using a gmpc-like markup
+@end itemize")
+    (license isc)))
+
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
