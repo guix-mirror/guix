@@ -1523,6 +1523,44 @@ button and a personalized tooltip.")
 Caps, Scroll and Num Lock in Xfce panel.")
     (license gpl2+)))
 
+(define-public xfce4-mailwatch-plugin
+  (package
+   (name "xfce4-mailwatch-plugin")
+   (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mailwatch-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mailwatch-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bfw3smwivr9mzdyq768biqrl4aq94zqi3xjzq6kqnd8561cqjk2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("exo" ,exo)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-mailwatch-plugin")
+    (synopsis "Mail watch plugin for the Xfce panel")
+    (description "The Xfce4 Mailwatch Plugin is a multi-protocol,
+multi-mailbox mail watcher.  Currently, the protocols supported are:
+
+@itemize
+@item IMAP (SSL/TLS and cleartext, CRAM-MD5)
+@item POP3 (SSL/TLS and cleartext, CRAM-MD5)
+@item Mbox mail spool (local)
+@item Maildir mail spool (local)
+@item MH-Maildir mail spool (local)
+@item Google Mail (GMail) mailbox (remote) (requires gnutls)
+@end itemize")
+    (license gpl2)))
+
 (define-public xfce4-mpc-plugin
   (package
    (name "xfce4-mpc-plugin")
