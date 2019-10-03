@@ -20884,3 +20884,29 @@ appropriate dog and cat images for many status codes.")
 R's plotmath expressions, used to enter mathematical formulas and symbols to be
 rendered as text, axis labels, etc. throughout R's plotting system.")
     (license license:expat)))
+
+(define-public r-oai
+  (package
+    (name "r-oai")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "oai" version))
+              (sha256
+               (base32
+                "1ipw9bq3ra66d1ddj1rylyyd20mlcb2i7phzhywra53s1fdifq1g"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-xml2" ,r-xml2)
+       ("r-httr" ,r-httr)
+       ("r-plyr" ,r-plyr)
+       ("r-stringr" ,r-stringr)
+       ("r-tibble" ,r-tibble)))
+    (home-page "https://github.com/ropensci/oai/")
+    (synopsis "General purpose OAI-PMH services client")
+    (description "@code{oai} provides a general purpose client to work with
+any @dfn{Open Archives Initiative Protocol for 'Metadata' Harvesting} (OAI-PMH)
+service.  Functions are provided to work with the OAI-PMH verbs:
+@code{GetRecord}, @code{Identify}, @code{ListIdentifiers},
+@code{ListMetadataFormats}, @code{ListRecords}, and @code{ListSets}.")
+    (license license:expat)))
