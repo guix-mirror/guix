@@ -44,6 +44,11 @@ else
     test $? = 42
 fi
 
+# Make sure '--preserve' is honored.
+result="`FOOBAR=42; export FOOBAR; guix environment -C --ad-hoc --bootstrap \
+   guile-bootstrap -E ^FOO -- guile -c '(display (getenv \"FOOBAR\"))'`"
+test "$result" = "42"
+
 # By default, the UID inside the container should be the same as outside.
 uid="`id -u`"
 inner_uid="`guix environment -C --ad-hoc --bootstrap guile-bootstrap \

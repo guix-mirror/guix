@@ -452,7 +452,7 @@ regexps in WHITE-LIST."
 
 (define* (launch-environment/container #:key command bash user user-mappings
                                        profile manifest link-profile? network?
-                                       map-cwd?)
+                                       map-cwd? (white-list '()))
   "Run COMMAND within a container that features the software in PROFILE.
 Environment variables are set according to the search paths of MANIFEST.
 The global shell is BASH, a file name for a GNU Bash binary in the
@@ -461,7 +461,10 @@ USER-MAPPINGS, a list of file system mappings, contains the user-specified
 host file systems to mount inside the container.  If USER is not #f, each
 target of USER-MAPPINGS will be re-written relative to '/home/USER', and USER
 will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
-~/.guix-profile to the environment profile."
+~/.guix-profile to the environment profile.
+
+Preserve environment variables whose name matches the one of the regexps in
+WHILE-LIST."
   (define (optional-mapping->fs mapping)
     (and (file-exists? (file-system-mapping-source mapping))
          (file-system-mapping->bind-mount mapping)))
@@ -487,6 +490,11 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                             (group-entry (gid 65534) ;the overflow GID
                                          (name "overflow"))))
             (home-dir (password-entry-directory passwd))
+            (environ  (filter (match-lambda
+                                ((variable . value)
+                                 (find (cut regexp-exec <> variable)
+                                       white-list)))
+                              (get-environment-variables)))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
@@ -554,6 +562,12 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             (chdir (if map-cwd?
                        (override-user-dir user home cwd)
                        home-dir))
+
+            ;; Set environment variables that match WHITE-LIST.
+            (for-each (match-lambda
+                        ((variable . value)
+                         (setenv variable value)))
+                      environ)
 
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
@@ -759,6 +773,7 @@ message if any test fails."
                                                     #:user-mappings mappings
                                                     #:profile profile
                                                     #:manifest manifest
+                                                    #:white-list white-list
                                                     #:link-profile? link-prof?
                                                     #:network? network?
                                                     #:map-cwd? (not no-cwd?))))
