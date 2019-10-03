@@ -1230,6 +1230,34 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-systemload-plugin
+  (package
+   (name "xfce4-systemload-plugin")
+   (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-systemload-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-systemload-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0x87a8h5l3ashz1ksfaxcpn9a392jzlsbx5n5pga8g90fp2hf905"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-systemload-plugin")
+    (synopsis "System load display plugin for the Xfce panel")
+    (description "A system load plugin for the Xfce4 desktop
+environment.  It displays the current CPU load, the memory in use, the
+swap space and the system uptime in the Xfce4 panel.")
+    (license bsd-2)))
+
 (define-public xfce4-timer-plugin
   (package
    (name "xfce4-timer-plugin")
