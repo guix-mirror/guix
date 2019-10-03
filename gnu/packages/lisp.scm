@@ -701,10 +701,10 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
 
 (define-public sbcl-alexandria
   (let ((revision "1")
-        (commit "926a066611b7b11cb71e26c827a271e500888c30"))
+        (commit "3b849bc0116ea70f215ee6b2fbf354e862aaa9dd"))
     (package
       (name "sbcl-alexandria")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -713,9 +713,11 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
                (commit commit)))
          (sha256
           (base32
-           "18yncicdkh294j05rhgm23gzi36y9qy6vrfba8vg69jrxjp1hx8l"))
-         (file-name (string-append "alexandria-" version "-checkout"))))
+           "04amwvx2vl691f0plcfbqqwxgib9zimih7jrn5zl7mbwvrxy022b"))
+         (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("rt" ,sbcl-rt)))
       (synopsis "Collection of portable utilities for Common Lisp")
       (description
        "Alexandria is a collection of portable utilities.  It does not contain
