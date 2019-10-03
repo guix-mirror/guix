@@ -1372,6 +1372,33 @@ precedence rules, and the following functions and common constants.")
 governor and frequencies supported and used by your system.")
     (license gpl2+)))
 
+(define-public xfce4-diskperf-plugin
+  (package
+   (name "xfce4-diskperf-plugin")
+   (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-diskperf-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-diskperf-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0i4nrsvwcn15g5gmnba9p07sad3c96x517l2lybdw8jqv91rhbpx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-diskperf-plugin")
+    (synopsis "Display disk performance in the Xfce panel")
+    (description "This Xfce panel plugin displays instant disk/partition
+performance (bytes transfered per second).")
+    (license gpl2+)))
+
 (define-public xfce4-embed-plugin
   (package
    (name "xfce4-embed-plugin")
