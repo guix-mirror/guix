@@ -1650,6 +1650,38 @@ directly to your browser, such that you can search through your
 favorite search engine or bug tracker right from the Xfce panel.")
     (license gpl2+)))
 
+(define-public xfce4-statusnotifier-plugin
+  (package
+   (name "xfce4-statusnotifier-plugin")
+   (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-statusnotifier-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-statusnotifier-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "154b0q9pmlbjh30vvx4c48msdfxp4pq8x4mbn71mk7pibk018hsj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("libdbusmenu" ,libdbusmenu)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-statusnotifier-plugin")
+    (synopsis "Xfce panel plugin for status notifier items")
+(description "This plugin provides a panel area for status
+notifier items (application indicators).  Applications may use these
+items to display their status and interact with the user.  This
+technology is a modern alternative to systray and follows the
+freedesktop.org specification.")
+    (license gpl2+)))
+
 (define-public xfce4-stopwatch-plugin
   (package
    (name "xfce4-stopwatch-plugin")
