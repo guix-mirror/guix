@@ -1706,26 +1706,23 @@ consistent across multiple Common Lisp implementations.")
   (sbcl-package->ecl-package sbcl-trivial-features))
 
 (define-public sbcl-hu.dwim.asdf
-  (let ((commit "170b0e4fdde3df0bc537327e7600575daac9e141"))
-    (package
-      (name "sbcl-hu.dwim.asdf")
-      (version (git-version "0.0.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri
-          (git-reference
-           (url "https://github.com/nixeagle/hu.dwim.asdf")
-           (commit commit)))
-         (sha256
-          (base32 "10ax7p8y6vjqxzcq125p62kf68zi455a65ysgk0kl1f2v839c33v"))
-         (file-name (git-file-name "hu.dwim.asdf" version))))
-      (build-system asdf-build-system/sbcl)
-      (home-page "https://hub.darcs.net/hu.dwim/hu.dwim.asdf")
-      (synopsis "Extensions to ASDF")
-      (description "Various ASDF extensions such as attached test and
+  (package
+    (name "sbcl-hu.dwim.asdf")
+    (version "20190521")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/hu.dwim.asdf/"
+                           "2019-05-21/hu.dwim.asdf-" version "-darcs.tgz"))
+       (sha256
+        (base32
+         "0rsbv71vyszy8w35yjwb5h6zcmknjq223hkzir79y72qdsc6sabn"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://hub.darcs.net/hu.dwim/hu.dwim.asdf")
+    (synopsis "Extensions to ASDF")
+    (description "Various ASDF extensions such as attached test and
 documentation system, explicit development support, etc.")
-      (license license:public-domain))))
+    (license license:public-domain)))
 
 (define-public cl-hu.dwim.asdf
   (sbcl-package->cl-source-package sbcl-hu.dwim.asdf))
