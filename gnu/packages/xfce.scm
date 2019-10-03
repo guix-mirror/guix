@@ -1229,3 +1229,30 @@ A plugin for the Xfce panel is also available.")
      "This is a volume keys control daemon for Xfce Desktop environment. It controls
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
+
+(define-public xfce4-wavelan-plugin
+  (package
+   (name "xfce4-wavelan-plugin")
+   (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-wavelan-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-wavelan-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05zdiq1igr1fcvnwlivg8g3szvxmlr3yc7jfj3bwgqrs0vm827zl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-wavelan-plugin")
+    (synopsis "Show stats from WLAN interface in Xfce panel")
+    (description "This plugin is used to display stats from a wireless
+lan interface (signal state, signal quality, network name (SSID)).")
+    (license bsd-2)))
