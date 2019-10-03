@@ -1464,6 +1464,37 @@ urgent limit that advise the user with a message.  The icon button can
 be clicked to open the chosen mount point.")
     (license bsd-2)))
 
+(define-public xfce4-genmon-plugin
+  (package
+   (name "xfce4-genmon-plugin")
+   (version "4.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-genmon-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-genmon-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ai3pwgv61nv7i2dyrvncnc63r8kdjbkp40vp51vzak1dx924v15"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-genmon-plugin")
+    (synopsis "Generic program output monitor for the Xfce panel")
+    (description "This plugin cyclically spawns the indicated
+script/program, captures its output (stdout) and displays the
+resulting string into the panel.
+
+The string can also contain markup to displayed an image, a bar, a
+button and a personalized tooltip.")
+    (license gpl2+)))
+
 (define-public xfce4-mpc-plugin
   (package
    (name "xfce4-mpc-plugin")
