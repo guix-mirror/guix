@@ -789,16 +789,16 @@ It has been modified to remove all non-free binary blobs.")
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
 
+(define-public linux-libre-version         linux-libre-5.3-version)
+(define-public linux-libre-pristine-source linux-libre-5.3-pristine-source)
+(define-public linux-libre-source          linux-libre-5.3-source)
+(define-public linux-libre                 linux-libre-5.3)
+
 (define-public linux-libre-5.2
   (make-linux-libre* linux-libre-5.2-version
                      linux-libre-5.2-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.2-version)
-(define-public linux-libre-pristine-source linux-libre-5.2-pristine-source)
-(define-public linux-libre-source          linux-libre-5.2-source)
-(define-public linux-libre                 linux-libre-5.2)
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
