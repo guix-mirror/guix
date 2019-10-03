@@ -1230,6 +1230,40 @@ A plugin for the Xfce panel is also available.")
  the volume using multimedia keys. It also provides volume change notifications.")
     (license gpl3+)))
 
+(define-public xfce4-verve-plugin
+  (package
+   (name "xfce4-verve-plugin")
+   (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-verve-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-verve-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ljcmgc8ixrbz134ggxbbh4zzdnp7mhi9ay6s5hgrz28djx10rcy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-verve-plugin")
+    (synopsis "Command line for the Xfce panel")
+    (description "The Verve plugin provides a comfortable command line
+for the Xfce panel.  It supports several features, such as:
+@itemize
+@item Opens URLs, e-mail addresses, directories, and programs
+@item Command history
+@item Auto-completion (including command history)
+@item Focus grabbing via D-BUS (so you can bind a shortcut to it)
+@item Custom input field width
+@end itemize")
+    (license gpl2+)))
+
 (define-public xfce4-wavelan-plugin
   (package
    (name "xfce4-wavelan-plugin")
