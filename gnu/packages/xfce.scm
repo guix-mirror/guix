@@ -1290,6 +1290,41 @@ core or CPU.")
 watch your every step.")
     (license gpl2+)))
 
+(define-public xfce4-embed-plugin
+  (package
+   (name "xfce4-embed-plugin")
+   (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-embed-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-embed-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0a72kqsjjh45swimqlpyrahdnplp0383v0i4phr4n6g8c1ixyry7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)
+       ("gtk+-2" ,gtk+-2)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-embed-plugin")
+    (synopsis "Embed arbitary applications inside the Xfce panel")
+    (description "This plugin enables the embedding of arbitrary
+application windows into the Xfce panel.  The window is resized into
+the panel space available, and the associated program can be
+automatically launched if it is not open.
+
+Example uses include embedding an instant messaging buddy list, a mail
+client's new mail ticker, a simple media application, or a fancy clock
+or timer.  Combining with Xfce's ability to auto-hide panels can make
+this very convenient.")
+    (license gpl2+)))
+
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
