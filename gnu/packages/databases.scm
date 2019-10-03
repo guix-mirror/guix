@@ -84,6 +84,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -544,7 +545,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.23")
+    (version "5.7.27")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -556,7 +557,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
+               "1fhv16zr46pxm1j8vb8x8mh3nwzglg01arz8gnazbmjqldr5idpq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -593,12 +594,15 @@ RDBMS systems (which are deep in functionality).")
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
+       ("libtirpc" ,libtirpc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
        ("zlib" ,zlib)))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
