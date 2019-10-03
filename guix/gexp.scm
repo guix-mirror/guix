@@ -1527,24 +1527,37 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
                                                       #:module-path path
                                                       #:system system
                                                       #:target target)))
-        (return (gexp (eval-when (expand load eval)
-                        (set! %load-path
-                          (cons (ungexp modules)
-                                (append (map (lambda (extension)
-                                               (string-append extension
-                                                              "/share/guile/site/"
-                                                              (effective-version)))
-                                             '((ungexp-native-splicing extensions)))
-                                        %load-path)))
-                        (set! %load-compiled-path
-                          (cons (ungexp compiled)
-                                (append (map (lambda (extension)
-                                               (string-append extension
-                                                              "/lib/guile/"
-                                                              (effective-version)
-                                                              "/site-ccache"))
-                                             '((ungexp-native-splicing extensions)))
-                                        %load-compiled-path)))))))))
+        (return
+         (gexp (eval-when (expand load eval)
+                 ;; Augment the load paths and delete duplicates.  Do that
+                 ;; without loading (srfi srfi-1) or anything.
+                 (let ((extensions '((ungexp-native-splicing extensions)))
+                       (prepend (lambda (items lst)
+                                  ;; This is O(N²) but N is typically small.
+                                  (let loop ((items items)
+                                             (lst lst))
+                                    (if (null? items)
+                                        lst
+                                        (loop (cdr items)
+                                              (cons (car items)
+                                                    (delete (car items) lst))))))))
+                   (set! %load-path
+                     (prepend (cons (ungexp modules)
+                                    (map (lambda (extension)
+                                           (string-append extension
+                                                          "/share/guile/site/"
+                                                          (effective-version)))
+                                         extensions))
+                              %load-path))
+                   (set! %load-compiled-path
+                     (prepend (cons (ungexp compiled)
+                                    (map (lambda (extension)
+                                           (string-append extension
+                                                          "/lib/guile/"
+                                                          (effective-version)
+                                                          "/site-ccache"))
+                                         extensions))
+                              %load-compiled-path)))))))))
 
 (define* (gexp->script name exp
                        #:key (guile (default-guile))
