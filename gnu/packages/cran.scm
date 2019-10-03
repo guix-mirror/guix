@@ -15061,14 +15061,13 @@ customize styles using a readable syntax.")
 (define-public r-glasso
   (package
     (name "r-glasso")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glasso" version))
        (sha256
-        (base32
-         "0nshpx14v2yny7lr8ll6nnz71n0f02sddh2c2dglfprbk89p9yp6"))))
+        (base32 "02p3612rpydk195n2qr77lp1j2w8zsw1ckkk98c8angm4r5q8dsc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "http://www-stat.stanford.edu/~tibs/glasso")
