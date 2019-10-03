@@ -1345,6 +1345,33 @@ supports common mathematical operators (+, -, *, /, ^) with usual
 precedence rules, and the following functions and common constants.")
     (license gpl2+)))
 
+(define-public xfce4-cpufreq-plugin
+  (package
+   (name "xfce4-cpufreq-plugin")
+   (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-cpufreq-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-cpufreq-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1dgmx3ygil51s1az298ly0gybcw8ln1dz8q8y9k207a0vk049q65"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpufreq-plugin")
+    (synopsis "Xfce panel plugin for displaying CPU frequency")
+    (description "This panel plugin shows information about the CPU
+governor and frequencies supported and used by your system.")
+    (license gpl2+)))
+
 (define-public xfce4-embed-plugin
   (package
    (name "xfce4-embed-plugin")
