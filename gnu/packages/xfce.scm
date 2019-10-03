@@ -1650,6 +1650,35 @@ directly to your browser, such that you can search through your
 favorite search engine or bug tracker right from the Xfce panel.")
     (license gpl2+)))
 
+(define-public xfce4-stopwatch-plugin
+  (package
+   (name "xfce4-stopwatch-plugin")
+   (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-stopwatch-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-stopwatch-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "07dadvgivly44w7qj74i2w60nk01h8567paxrli8vzmhb3p6xi2h"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; test fails in po/ directory
+     `(#:tests? #f))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-stopwatch-plugin")
+    (synopsis "Stopwatch plugin for the Xfce panel")
+    (description "This Xfce panel plugin keeps track of elapsed time.")
+    (license bsd-2)))
+
 (define-public xfce4-systemload-plugin
   (package
    (name "xfce4-systemload-plugin")
