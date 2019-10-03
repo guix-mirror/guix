@@ -1592,6 +1592,36 @@ environment.  It displays the current CPU load, the memory in use, the
 swap space and the system uptime in the Xfce4 panel.")
     (license bsd-2)))
 
+(define-public xfce4-time-out-plugin
+  (package
+   (name "xfce4-time-out-plugin")
+   (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-time-out-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-time-out-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0sqggsnkj40337v0c9vgakyh1zjzri6if38l85gcrnc39rlx973z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-time-out-plugin")
+    (synopsis "Xfce panel plugin that encourages periodical breaks")
+    (description "This plugin encourages to take periodical
+breaks from the computer every X minutes.  During breaks it locks your
+screen.  It optionally allows you to postpone breaks for a certain
+time.")
+    (license gpl2+)))
+
 (define-public xfce4-timer-plugin
   (package
    (name "xfce4-timer-plugin")
