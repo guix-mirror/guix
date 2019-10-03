@@ -1263,6 +1263,33 @@ display all of them at once, or at the user's option only a specific
 core or CPU.")
     (license gpl2+)))
 
+(define-public xfce4-eyes-plugin
+  (package
+   (name "xfce4-eyes-plugin")
+   (version "4.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-eyes-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-eyes-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "17gj6fbvvrdzvz61czmia8hqynllsnmhk61fs4aml443cc1h1bpx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-eyes-plugin")
+    (synopsis "Display a pair of eyes for the Xfce panel")
+    (description "Eyes is a toy Xfce panel plugin that adds eyes which
+watch your every step.")
+    (license gpl2+)))
+
 (define-public xfce4-mount-plugin
   (package
    (name "xfce4-mount-plugin")
