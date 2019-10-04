@@ -2118,6 +2118,31 @@ code written in the D programming language.  This mode is currently known to
 work with Emacs 24 and 25.")
     (license license:gpl2+)))
 
+(define-public emacs-extempore-mode
+  ;; Use the latest commit at time of packaging.  There are no releases or tags.
+  (let ((commit "848ad0084f27b92d1cf98dabffbad29f959a642d")
+        (revision "1"))
+    (package
+      (name "emacs-extempore-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/extemporelang/extempore-emacs-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00wr025php7nl33x541s9rjm99hj0jbdcmnw9ljx5hqpm04aqm7c"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/extemporelang/extempore-emacs-mode")
+      (synopsis "Emacs major mode for Extempore source files")
+      (description
+       "This package provides a major mode for editing Extempore code.  It can
+create an Extempore REPL, connect the current @code{extempore-mode} buffer to a
+running Extempore process, and more.")
+      (license license:bsd-2))))
+
 (define-public emacs-keyfreq
   (package
     (name "emacs-keyfreq")
