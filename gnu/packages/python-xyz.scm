@@ -5052,14 +5052,13 @@ older Python versions.")
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "0.18")
+    (version "0.23")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32
-         "1nqj6vj2z4byi8flzf2lbldhqgicsz9mkpv4k69kjd8p8qxy4vnb"))))
+        (base32 "09mdqdfv5rdrwz80jh9m379gxmvk2vhjfz0fg53hid00icvxf65a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-configparser" ,python-configparser)
