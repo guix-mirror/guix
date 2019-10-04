@@ -663,6 +663,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1)
+                  (srfi srfi-26)
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
@@ -679,6 +680,18 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              ,@(if (%current-target-system)
                    '((unsetenv "CROSS_CPATH"))
                    '())
+
+             ;; On AArch64 (at least), we need to remove glibc headers from CPATH
+             ;; (they are still available as "system headers"), so that the kernel
+             ;; can override uint64_t.  See <https://bugs.gnu.org/37593>.
+             (setenv "CPATH"
+                     (string-join
+                      (remove (cut string-prefix? (assoc-ref inputs "libc") <>)
+                              (string-split (getenv "CPATH") #\:))
+                      ":"))
+             (format #t "environment variable `CPATH' changed to `~a'~%"
+                     (getenv "CPATH"))
+
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
