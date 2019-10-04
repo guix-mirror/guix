@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -997,3 +998,37 @@ XyGrib is the continuation of the zyGrib software package with a new team of
 volunteers.")
     (home-page "https://opengribs.org")
     (license license:gpl3+)))
+
+(define-public libspatialindex
+  (package
+    (name "libspatialindex")
+    (version "1.8.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.osgeo.org/libspatialindex/"
+                           "spatialindex-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vxzm7kczwnb6qdmc0hb00z8ykx11zk3sb68gc7rch4vrfi4dakw"))))
+    (build-system gnu-build-system)
+    (home-page "https://libspatialindex.org")
+    (synopsis "Spatial indexing library")
+    (description "The purpose of this library is to provide:
+
+@itemize
+ @item An extensible framework that will support robust spatial indexing
+methods.
+ @item Support for sophisticated spatial queries.  Range, point location,
+ nearest neighbor and k-nearest neighbor as well as parametric queries (defined
+by spatial constraints) should be easy to deploy and run.
+ @item Easy to use interfaces for inserting, deleting and updating information.
+ @item Wide variety of customization capabilities.  Basic index and storage
+characteristics like the page size, node capacity, minimum fan-out, splitting
+algorithm, etc. should be easy to customize.
+ @item Index persistence.  Internal memory and external memory structures
+should be supported.  Clustered and non-clustered indices should be easy to be
+persisted.
+@end itemize
+")
+    (license license:expat)))
