@@ -37,7 +37,7 @@
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
                                 (version-major+minor version)
-                                "/" name "-" version ".tar.xz"))
+                                "/cryptsetup-" version ".tar.xz"))
             (sha256
              (base32
               "1gail831j826lmpdx2gsc83lp3br6wfnwh3vqwxaa1nn1lfwsc1b"))))
