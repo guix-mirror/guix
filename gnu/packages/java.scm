@@ -186,10 +186,14 @@ language.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
+                            (assoc-ref %build-inputs "classpath"))
+             "--disable-int-caching"
+             "--enable-runtime-reloc-checks"
+             "--enable-ffi")))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
+       ("libffi" ,libffi)
        ("zlib" ,zlib)))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
