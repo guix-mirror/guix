@@ -438,7 +438,7 @@
                            addresses-and-ports
                            contents)
                         `(,(string-append
-                            "<VirtualHost " addresses-and-ports ">\n")
+                            "\n<VirtualHost " addresses-and-ports ">\n")
                           ,@contents
                           "\n</VirtualHost>\n"))
                        ((? string? x)
