@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,8 @@ files).  This assumes LIBRARY uses Libtool."
      '(#:configure-flags '("--disable-shared"
                            "--enable-static-cryptsetup"
 
+                           "--disable-veritysetup"
+
                            ;; 'libdevmapper.a' pulls in libpthread, libudev and libm.
                            "LIBS=-ludev -pthread -lm")
 
@@ -94,8 +97,7 @@ files).  This assumes LIBRARY uses Libtool."
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'remove-cruft
                     (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Remove everything except the 'cryptsetup' command and
-                      ;; its friend.
+                      ;; Remove everything except the 'cryptsetup' command.
                       (let ((out (assoc-ref outputs "out")))
                         (with-directory-excursion out
                           (let ((dirs (scandir "."
@@ -109,7 +111,7 @@ files).  This assumes LIBRARY uses Libtool."
                                                                     ".static")
                                                      file)
                                         (remove-store-references file))
-                                      '("sbin/cryptsetup" "sbin/veritysetup"))
+                                      '("sbin/cryptsetup"))
                             #t))))))))
     (inputs
      (let ((libgcrypt-static
