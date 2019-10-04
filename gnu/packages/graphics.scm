@@ -17,6 +17,7 @@
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -913,28 +914,25 @@ rendering SVG graphics.")
 (define-public python-pastel
   (package
     (name "python-pastel")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pastel" version))
        (sha256
         (base32
-         "1hqbm934n5yjwn31aq8h7shrr0rcy326wrqfc856vyn0gr0sy21i"))))
+         "1qxcrcl8pzh66l8s6hym153mijdhwna0afcsmgca0bj4n80ijfxz"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "pastel" "tests/"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/sdispater/pastel")
     (synopsis "Library to colorize strings in your terminal")
     (description "Pastel is a simple library to help you colorize strings in
-your terminal.  It comes bundled with predefined styles:
-@enumerate
-@item info: green
-@item comment: yellow
-@item question: black on cyan
-@item error: white on red
-@end enumerate
-")
+your terminal.")
     (license license:expat)))
 
 (define-public python2-pastel
