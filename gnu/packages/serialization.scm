@@ -170,15 +170,16 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public lua-libmpack
   (package (inherit libmpack)
     (name "lua-libmpack")
+    (version "1.0.8")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/libmpack/libmpack-lua.git")
-             (commit (package-version libmpack))))
-       (file-name (git-file-name name (package-version libmpack)))
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "10zx4biyi9gmk90aa6674vvqsrz74jy74fxqlcrx66c8sl8yxr92"))))
+        (base32 "1ijvzgq5hvib03w5rghv31wi7byamwg7qdx5pawvhvnflaii8ivw"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: tests require "busted", which is not yet available in Guix.
