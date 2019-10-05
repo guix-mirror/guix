@@ -1186,7 +1186,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1195,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i7axg7vmivrkzsahyg79my584myvzxv0922k4000bdwnhzd0kzh"))))
+        (base32 "0d2wih4zxn2zm7kxd9dnf5nlp838km3vz6wv80fa3m51609fb24i"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
