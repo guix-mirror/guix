@@ -1762,27 +1762,27 @@ QMatrixClient project.")
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.3")
+    (version "0.0.9.4c")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/QMatrixClient/Quaternion")
-              (commit (string-append "v" version))))
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hr9zqf301rg583n9jv256vzj7y57d8qgayk7c723bfknf1s6hh3"))))
+        (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -1804,8 +1804,8 @@ QMatrixClient project.")
 messaging protocol.  It uses libqmatrixclient and is its reference client
 implementation.  Quaternion and libqmatriclient together form the
 QMatrixClient project.")
-    (license (list license:gpl3+ ; all source code
-                   license:lgpl3+)))) ; icons/breeze
+    (license (list license:gpl3+        ; all source code
+                   license:lgpl3+))))   ; icons/breeze
 
 (define-public hangups
   (package
