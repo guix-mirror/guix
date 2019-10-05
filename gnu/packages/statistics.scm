@@ -158,14 +158,14 @@ simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
 (define-public libxls
   (package
     (name "libxls")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/libxls/libxls/releases/download/"
                            "v" version "/libxls-" version ".tar.gz"))
        (sha256
-        (base32 "00j2lrcvvhclmh3z9vy7myqq1br1jnnqkz2wzgk4a1gbg8c5afn5"))))
+        (base32 "0dam8qgbc5ykzaxmrjhpmfm8lnlcdk6cbpzyaya91qwwa80qbj1v"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/libxls/libxls")
     (synopsis "Read binary (.xls) Excel spreadsheet files")
