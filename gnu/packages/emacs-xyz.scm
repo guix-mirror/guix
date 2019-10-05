@@ -4513,8 +4513,8 @@ organizer.")
     (license license:gpl3+)))
 
 (define-public emacs-org-tanglesync
-  (let ((commit "ab76a3eaaed263677d2e029d43f6c4de8fc21418")
-        (revision "1"))
+  (let ((commit "d99181f173b4e55b4e835d99fcd415e62beb047f")
+        (revision "2"))
     (package
       (name "emacs-org-tanglesync")
       (version (git-version "0.6" revision commit))
@@ -4526,7 +4526,7 @@ organizer.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "14ify3yirq2qmi9isk8kcbwx8pbclv1fyg49kraz4srhgf2fssgf"))))
+          (base32 "0x94gy1bgfd1f3p9w2bfrqj11bwy9ql0cpi1gw6srpj7kykx0lml"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)))
