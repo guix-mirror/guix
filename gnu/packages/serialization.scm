@@ -8,7 +8,7 @@
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -141,14 +141,15 @@ serialization.")
   (package
     (name "libmpack")
     (version "1.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tarruda/libmpack/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ml922gv8y99lbldqb9ykpjndla0hlprdjyl79yskkhwv2ai7sac"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tarruda/libmpack.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rai5djdkjz7bsn025k5489in7r1amagw1pib0z4qns6b52kiar2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -205,10 +206,9 @@ that implements both the msgpack and msgpack-rpc specifications.")
              ;; prerequisites are added to the inputs of the gcc invocation.
              (substitute* "Makefile"
                (("\\$\\(MPACK\\): mpack-src") "$(MPACK): "))
-             (mkdir-p "mpack-src")
-             (zero? (system* "tar" "-C" "mpack-src"
-                             "--strip-components=1"
-                             "-xvf" (assoc-ref inputs "libmpack"))))))))
+             (copy-recursively (assoc-ref inputs "libmpack")
+                               "mpack-src")
+             #t)))))
     (inputs
      `(("lua" ,lua)))
     (native-inputs
