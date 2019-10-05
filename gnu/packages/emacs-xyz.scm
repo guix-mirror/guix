@@ -13865,12 +13865,11 @@ interactive loop.")
     (license license:gpl3+)))
 
 (define-public emacs-eros
-  (let ((commit "a42e45c9b2397156c684330b0fc90ee0eba773f5")
-        (revision "1"))
+  (let ((commit "dd8910279226259e100dab798b073a52f9b4233a")
+        (revision "2"))
     (package
       (name "emacs-eros")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13880,7 +13879,7 @@ interactive loop.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0whlsq90v13fz69k3wjrwcwb9gkpfxqjd75mg3nrp85j9nwhb5i4"))))
+           "08chj3a0lw4ygi2sv7wj0i6ihfbi8jhylr8p92inif8b88r6wg3k"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/xiongtx/eros")
       (synopsis "Evaluation result overlays")
