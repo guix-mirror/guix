@@ -367,7 +367,7 @@ driven and does not detract you from your daily work.")
 (define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method git-fetch)
@@ -378,7 +378,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "0vxjihldvif147l2kjd83kk1wcs4ixgv1yxjnpn3wgg8306pgnlh"))
+         "00iqv4xarabl98gdl1rzqkc5v0vfljx1nawsxqsx9x3a9mnxmgxi"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
