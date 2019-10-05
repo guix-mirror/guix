@@ -3674,8 +3674,8 @@ completion backends according to mode, and integrates with
       (license license:gpl3+))))
 
 (define-public emacs-handle
-  (let ((commit "0180a33c92b53d042c3e248a047e15337122d922")
-        (revision "1"))
+  (let ((commit "51c050bc1c6e5caf0eb47ecd985daea1db7241ab")
+        (revision "2"))
     (package
       (name "emacs-handle")
       (version (git-version "0.1" revision commit))
@@ -3687,8 +3687,10 @@ completion backends according to mode, and integrates with
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0ldrdfxspkq0m07l98hhj9nydgj9qi557mnnpd3v4xrwqwhyr4nc"))))
+          (base32 "14f15qzfmwdslml4rv37zb5d1lsjf0jibriz636hb7q7knx1n4sg"))))
       (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-parent-mode" ,emacs-parent-mode)))
       (home-page "https://gitlab.com/jjzmajic/handle")
       (synopsis "Handle generic functions across related major modes")
       (description "This package provides generic functions that specialize on
