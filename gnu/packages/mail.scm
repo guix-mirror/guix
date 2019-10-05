@@ -491,7 +491,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -499,7 +499,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "04bk7rqs5slpvlvqf11i6s37s8b2xn6acls8smyl9asjnpp7a23a"))))
+                "096hh4g6z343kncw9svcrzv05d41n4v2q5k9jsm6gc40w30ag7i4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
