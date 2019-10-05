@@ -4017,8 +4017,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "e00aabde4388c014778475966da2b7021dfef560")
-        (revision "2"))
+  (let ((commit "8019d2e6878908f40cb6b047f60d2e4fd3c6712e")
+        (revision "3"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4030,7 +4030,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0nd73bhir4c6a0smvgz7dfc6m6sbxd8v6amwpgk3c8m27g8chk5b"))))
+                  "06xv43az1aklrdb5y0if17xdqc80qnfdlyjiww8zmv4m3qnvj607"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; TODO Tests require PostgreSQL
