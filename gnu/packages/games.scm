@@ -43,6 +43,7 @@
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6187,7 +6188,7 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.8")
+    (version "0.9.10")
     (source
       (origin
         (method git-fetch)
@@ -6197,7 +6198,7 @@ your score gets higher, you level up and the blocks fall faster.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0i36lawypikbq8vvzfis1dn7yf6q0d2s1cllshfn7kmjb6pqfi6c"))))
+          "1wax9qhxakydg6bs92d1jy2fki1n9r0wkps1np02y0pvm1fl189i"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
