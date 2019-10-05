@@ -11503,31 +11503,33 @@ object @code{nil} corresponds 1:1 with @code{NULL} in the database.")
     (license license:gpl3+)))
 
 (define-public emacs-closql
-  (package
-    (name "emacs-closql")
-    (version "1.0.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/emacscollective/closql.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32
-         "1xhpfjjkjqfc1k2rj77cscclz5r7gpvv3hi202x178vdcpipjwar"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-emacsql" ,emacs-emacsql)))
-    (home-page "https://github.com/emacscollective/closql")
-    (synopsis "Store EIEIO objects using EmacSQL")
-    (description
-     "This package allows to store uniform EIEIO objects in an EmacSQL
+  ;; Take a commit newer than 1.0.0 release because of Emacs upgrade to 26.3.
+  (let ((commit "70b98dbae53611d10a461d9b4a6f71086910dcef"))
+    (package
+      (name "emacs-closql")
+      (version (git-version "1.0.0" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacscollective/closql.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1wvhrihg663f61yzc7f0vha2abjdnlwbk0gjcwakdfk1bhwf5ikh"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-emacsql" ,emacs-emacsql)))
+      (home-page "https://github.com/emacscollective/closql")
+      (synopsis "Store EIEIO objects using EmacSQL")
+      (description
+       "This package allows to store uniform EIEIO objects in an EmacSQL
 database.  SQLite is used as backend.  This library imposes some restrictions
 on what kind of objects can be stored; it isn't intended to store arbitrary
 objects.  All objects have to share a common superclass and subclasses cannot
 add any additional instance slots.")
-    (license license:gpl3)))
+      (license license:gpl3))))
 
 (define-public emacs-epkg
   ;; The release version is to old for the current database scheme.
