@@ -567,6 +567,19 @@
   (let ((result (call-with-input-file "/var/run/utmpx" read-utmpx)))
     (or (utmpx? result) (eof-object? result))))
 
+(when (zero? (getuid))
+  (test-skip 1))
+(test-equal "add-to-entropy-count"
+  EPERM
+  (call-with-output-file "/dev/urandom"
+    (lambda (port)
+      (catch 'system-error
+        (lambda ()
+          (add-to-entropy-count port 77)
+          #f)
+        (lambda args
+          (system-error-errno args))))))
+
 (test-end)
 
 (false-if-exception (delete-file temp-file))
