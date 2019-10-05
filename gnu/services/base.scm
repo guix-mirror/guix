@@ -573,7 +573,13 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
                         (lambda (seed)
                           (call-with-output-file "/dev/urandom"
                             (lambda (urandom)
-                              (dump-port seed urandom))))))
+                              (dump-port seed urandom)
+
+                              ;; Writing SEED to URANDOM isn't enough: we must
+                              ;; also tell the kernel to account for these
+                              ;; extra bits of entropy.
+                              (let ((bits (* 8 (stat:size (stat seed)))))
+                                (add-to-entropy-count urandom bits)))))))
 
                     ;; Try writing from /dev/hwrng into /dev/urandom.
                     ;; It seems that the file /dev/hwrng always exists, even
@@ -590,7 +596,9 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
                       (when buf
                         (call-with-output-file "/dev/urandom"
                           (lambda (urandom)
-                            (put-bytevector urandom buf)))))
+                            (put-bytevector urandom buf)
+                            (let ((bits (* 8 (bytevector-length buf))))
+                              (add-to-entropy-count urandom bits))))))
 
                     ;; Immediately refresh the seed in case the system doesn't
                     ;; shut down cleanly.
