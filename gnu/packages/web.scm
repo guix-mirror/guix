@@ -2599,14 +2599,14 @@ composed of HTML::Element style components.")
 (define-public perl-html-form
   (package
     (name "perl-html-form")
-    (version "6.04")
+    (version "6.05")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "HTML-Form-" version ".tar.gz"))
        (sha256
-        (base32 "100090bdsr5kapv8h0wxzwlzfbfqn57rq9gzrvg9i6hvnsl5gmcw"))))
+        (base32 "14i4ldyvdvhdhvfhh9kiq6z853q2f84biq8vcpv1k5w2r80wdiin"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
