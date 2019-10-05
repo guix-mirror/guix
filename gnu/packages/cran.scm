@@ -12497,14 +12497,13 @@ extensions.")
 (define-public r-wgaim
   (package
     (name "r-wgaim")
-    (version "2.0-0")
+    (version "2.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "wgaim" version))
        (sha256
-        (base32
-         "0wnb10vibgq8h1ly6lq8kzymf30vx0j0g8fc2zidblbvwag9ka1g"))))
+        (base32 "1qiyfkpsbzjr9xsq5kqq6rlqpndngkn2irdfh3gyi45h6hn118j4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
