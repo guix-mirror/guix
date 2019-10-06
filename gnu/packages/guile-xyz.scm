@@ -1994,8 +1994,8 @@ The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
 
 (define-public guile-studio
-  (let ((commit "e2da64f014942a73996286c4abe3c3b1f8bd220c")
-        (revision "1"))
+  (let ((commit "4d63f3d684f61bf83566745e8572496cdf6daad0")
+        (revision "2"))
     (package
       (name "guile-studio")
       (version (git-version "0" revision commit))
@@ -2006,7 +2006,7 @@ The picture values can directly be displayed in Geiser.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "10v3kw41bzd8c2a6vxgrwbvl216d0k8f5s9h6pm8hahpd03jl7lm"))))
+                  "1d3hhw3c3mk5i87xvfqa643674f08j1jd1rc1pl534gydz529vd5"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                      ; there are none
