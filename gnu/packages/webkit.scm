@@ -165,6 +165,13 @@ engine that uses Wayland for graphics output.")
                                            "/xml/dtd/docbook/docbookx.dtd"))))
                        (find-files "Source" "\\.sgml$"))
              #t))
+         (add-after 'unpack 'embed-absolute-wpebackend-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((wpebackend-fdo (assoc-ref inputs "wpebackend-fdo")))
+               (substitute* "Source/WebKit/UIProcess/glib/WebProcessPoolGLib.cpp"
+                 (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
+                  (string-append wpebackend-fdo "/lib/" all)))
+               #t)))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
