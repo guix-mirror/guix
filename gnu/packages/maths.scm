@@ -1766,12 +1766,14 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public maxflow
   (package
     (name "maxflow")
-    (version "3.04")
+    ;; Versioning is ambiguous: the git tag matching this commit is ‘3.0.5’,
+    ;; which matches CMakeLists.txt, but README.md and CHANGES say ‘3.04’.
+    (version "3.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/gerddie/maxflow.git")
-                    (commit "42401fa54823d16b9da47716f04e5d9ef1605875")))
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
