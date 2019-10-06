@@ -1133,6 +1133,60 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
          ;; FIXME: no compressing gzip yet
          (delete 'compress-documentation))))))
 
+(define sed-mesboot0
+  ;; The initial sed.
+  (package
+    (inherit sed)
+    (name "sed-mesboot0")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/sed/sed-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1hyv7i82jd0q18xcql51ylc8jwadp3gb3irgcqlis3v61p35jsv2"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-tcc0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:configure-flags '("CC=tcc")
+       #:make-flags '("CC=tcc" "extra_objs=" "DEFS=-D HAVE_BCOPY")
+       #:strip-binaries? #f             ; no strip yet
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (substitute* "configure"
+                 (("/bin/sh") shell))
+               #t)))
+         (replace 'check
+           (lambda _
+             (invoke "./sed" "--version")))
+         (replace 'install
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "sed" bin)
+               #t))))))))
+
+(define (%boot-tcc-inputs)
+  `(("bash" ,bash-mesboot0)
+    ("bzip2" ,bzip2-mesboot)
+    ("diffutils" ,diffutils-mesboot)
+    ("gzip" ,gzip-mesboot)
+    ("patch" ,patch-mesboot)
+    ("sed" ,sed-mesboot0)
+    ("tcc" ,tcc-boot)
+    ,@(alist-delete "tcc" (%boot-tcc0-inputs))))
+
 (define binutils-mesboot0
   (package
     (inherit binutils)
