@@ -2429,15 +2429,14 @@ system for OpenSSL.")
 (define-public rust-openssl-sys
   (package
     (name "rust-openssl-sys")
-    (version "0.9.49")
+    (version "0.9.50")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "openssl-sys" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32
-          "1168vivyqbzaxl48bvv9r1x714c03f5c1za8pv5x8fyj9gjxkypl"))))
+         (base32 "1dn3capgiz77s6rpmc2sf8gadwkmhwgfd6mw4rcnnm9jp36dqhic"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
