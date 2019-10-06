@@ -1772,7 +1772,7 @@ ASCII text files using Gmsh's own scripting language.")
               (uri (git-reference
                     (url "https://github.com/gerddie/maxflow.git")
                     (commit "42401fa54823d16b9da47716f04e5d9ef1605875")))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0rll38whw55h0vcjrrwdnh9ascvxby0ph7n1l0d12z17cg215kkb"))))
