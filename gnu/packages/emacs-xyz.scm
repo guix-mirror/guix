@@ -11715,6 +11715,26 @@ tables of contents.")
 timestamps by providing a @code{ts} struct.")
       (license license:gpl3+))))
 
+(define-public emacs-peg
+  (package
+    (name "emacs-peg")
+    (version "0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacsmirror/peg")
+                    (commit version)))
+              (sha256
+               (base32
+                "0kjz7ch4bn0m4v9zgqyqcrsasnqc5c5drv2hp22j7rnbb7ny0q3n"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsmirror/peg/")
+    (synopsis "Parsing Expression Grammars in Elisp")
+    (description "This package provides a macro that parses the current buffer
+according to a parsing expression grammar.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
