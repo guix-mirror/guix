@@ -5354,14 +5354,14 @@ exchanging spatial objects with other R packages.")
 (define-public r-later
   (package
     (name "r-later")
-    (version "0.8.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "later" version))
        (sha256
         (base32
-         "08g503xjxrfxvrzj0cavsrz4m8ykbha64344j1w2r6v17js2hakb"))))
+         "11xjavj7siz0xv2ffq1ld4bwl35jyrcfpvvs4p3ilpifxx49hyr7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
