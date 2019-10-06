@@ -1972,15 +1972,14 @@ file IO.")
 (define-public rust-miniz-oxide
   (package
     (name "rust-miniz-oxide")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "miniz_oxide" version))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32
-          "041s41l5w7z8pkp93pdzn8rngxr93q4wxp034pr0cvc7bgway23i"))))
+         (base32 "1bmanbbcdmssfbgik3fs323g7vljc5wkjz7s61jsbbz2kg0nckrh"))))
     (build-system cargo-build-system)
     (arguments
      `(#:cargo-inputs
