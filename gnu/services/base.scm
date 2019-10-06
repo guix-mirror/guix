@@ -1996,64 +1996,67 @@ item of @var{packages}."
          (requirement '(root-file-system))
 
          (documentation "Populate the /dev directory, dynamically.")
-         (start #~(lambda ()
-                    (define udevd
-                      ;; 'udevd' from eudev.
-                      #$(file-append udev "/sbin/udevd"))
+         (start
+          (with-imported-modules (source-module-closure
+                                  '((gnu build linux-boot)))
+            #~(lambda ()
+                (define udevd
+                  ;; 'udevd' from eudev.
+                  #$(file-append udev "/sbin/udevd"))
 
-                    (define (wait-for-udevd)
-                      ;; Wait until someone's listening on udevd's control
-                      ;; socket.
-                      (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
-                        (let try ()
-                          (catch 'system-error
-                            (lambda ()
-                              (connect sock PF_UNIX "/run/udev/control")
-                              (close-port sock))
-                            (lambda args
-                              (format #t "waiting for udevd...~%")
-                              (usleep 500000)
-                              (try))))))
+                (define (wait-for-udevd)
+                  ;; Wait until someone's listening on udevd's control
+                  ;; socket.
+                  (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                    (let try ()
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock PF_UNIX "/run/udev/control")
+                          (close-port sock))
+                        (lambda args
+                          (format #t "waiting for udevd...~%")
+                          (usleep 500000)
+                          (try))))))
 
-                    ;; Allow udev to find the modules.
-                    (setenv "LINUX_MODULE_DIRECTORY"
-                            "/run/booted-system/kernel/lib/modules")
+                ;; Allow udev to find the modules.
+                (setenv "LINUX_MODULE_DIRECTORY"
+                        "/run/booted-system/kernel/lib/modules")
 
-                    ;; The first one is for udev, the second one for eudev.
-                    (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                    (setenv "EUDEV_RULES_DIRECTORY"
-                            #$(file-append rules "/lib/udev/rules.d"))
+                ;; The first one is for udev, the second one for eudev.
+                (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                (setenv "EUDEV_RULES_DIRECTORY"
+                        #$(file-append rules "/lib/udev/rules.d"))
 
-                    (let* ((kernel-release
-                            (utsname:release (uname)))
-                           (linux-module-directory
-                            (getenv "LINUX_MODULE_DIRECTORY"))
-                           (directory
-                            (string-append linux-module-directory "/"
-                                           kernel-release))
-                           (old-umask (umask #o022)))
-                      ;; If we're in a container, DIRECTORY might not exist,
-                      ;; for instance because the host runs a different
-                      ;; kernel.  In that case, skip it; we'll just miss a few
-                      ;; nodes like /dev/fuse.
-                      (when (file-exists? directory)
-                        (make-static-device-nodes directory))
-                      (umask old-umask))
+                (let* ((kernel-release
+                        (utsname:release (uname)))
+                       (linux-module-directory
+                        (getenv "LINUX_MODULE_DIRECTORY"))
+                       (directory
+                        (string-append linux-module-directory "/"
+                                       kernel-release))
+                       (old-umask (umask #o022)))
+                  ;; If we're in a container, DIRECTORY might not exist,
+                  ;; for instance because the host runs a different
+                  ;; kernel.  In that case, skip it; we'll just miss a few
+                  ;; nodes like /dev/fuse.
+                  (when (file-exists? directory)
+                    (make-static-device-nodes directory))
+                  (umask old-umask))
 
-                    (let ((pid (fork+exec-command (list udevd))))
-                      ;; Wait until udevd is up and running.  This appears to
-                      ;; be needed so that the events triggered below are
-                      ;; actually handled.
-                      (wait-for-udevd)
+                (let ((pid (fork+exec-command (list udevd))))
+                  ;; Wait until udevd is up and running.  This appears to
+                  ;; be needed so that the events triggered below are
+                  ;; actually handled.
+                  (wait-for-udevd)
 
-                      ;; Trigger device node creation.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "trigger" "--action=add")
+                  ;; Trigger device node creation.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "trigger" "--action=add")
 
-                      ;; Wait for things to settle down.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "settle")
-                      pid)))
+                  ;; Wait for things to settle down.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "settle")
+                  pid))))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
@@ -2061,7 +2064,7 @@ item of @var{packages}."
          ;; Thus, make sure it is not respawned.
          (respawn? #f)
          ;; We need additional modules.
-         (modules `((gnu build linux-boot)
+         (modules `((gnu build linux-boot)        ;'make-static-device-nodes'
                     ,@%default-modules))
 
          (actions (list (shepherd-action
