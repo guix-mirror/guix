@@ -732,14 +732,13 @@ Ledger Nano as a hardware SSH/GPG agent.")
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
-    (version "0.18")
+    (version "0.19")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mnemonic" version))
         (sha256
-          (base32
-            "07bzfa5di6nv5xwwcwbypnflpj50wlfczhh6q6hg8w13g5m319q2"))))
+          (base32 "0cd9prmdj8wzdmc7lxbf9lz0xrlkvak5ignag406mmfbn81fndsf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pbkdf2" ,python-pbkdf2)))
