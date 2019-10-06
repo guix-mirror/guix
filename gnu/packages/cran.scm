@@ -525,31 +525,18 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.3.6")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "18k8r1s8sz1jy7dkz35n69wj20xhmllr53xmwb4pdzf2z61gpbs4"))))
+                "06l17d8jkf438yk2mchpsp4j90bynnapz3nabh5vkcc324p5a62v"))))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; See https://github.com/rstudio/htmltools/pull/68
-         ;; The resource files are in the store and have mode 444.  After
-         ;; copying the files R fails to remove them again because it doesn't
-         ;; have write access to them.
-         (add-after 'unpack 'copy-files-without-mode
-           (lambda _
-             (substitute* "R/html_dependency.R"
-               (("file.copy\\(from, to, " prefix)
-                (string-append prefix
-                               "copy.mode = FALSE, ")))
-             #t)))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
     (description
