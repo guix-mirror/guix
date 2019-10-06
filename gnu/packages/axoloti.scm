@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ant)
@@ -64,20 +66,21 @@
   (package
     (name "axoloti-runtime")
     (version "1.0.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/axoloti/axoloti/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1dynk6h0nixp4zihpirpqa4vi8fq1lhm443jsmvhk135ykhf364p"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove pre-built Java binaries.
-                  (delete-file-recursively "lib/")
-                  #t))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/axoloti/axoloti.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "05hyr9qx9dplp0gkx4v34i17972b3f512qndnarzy4wzfpnp0s3b"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove pre-built Java binaries.
+           (delete-file-recursively "lib/")
+           #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -231,6 +234,10 @@ runtime.")
                            ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (delete 'configure)
          (replace 'build
            (lambda* (#:key inputs #:allow-other-keys)

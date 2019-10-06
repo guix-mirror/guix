@@ -8,7 +8,7 @@
 ;;; Copyright © 2016 doncatnip <gnopap@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2016 José Miguel Sánchez García <jmi2k@openmailbox.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -454,7 +454,7 @@ Grammars (PEGs).")
 (define (make-lua-luv name lua)
   (package
     (name name)
-    (version "1.30.1-0")
+    (version "1.30.1-1")
     (source (origin
               ;; The release tarball includes the sources of libuv but does
               ;; not include the pkg-config files.
@@ -465,10 +465,10 @@ Grammars (PEGs).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lfzzyphpim28kw33k7zylcyxnf40ckhdg6hbqyzb5hszdf2hbka"))))
+                "0b2zxrsjxzhzwfp28lchplrp272v6zkbpq1ddz7a0rf20l7dbls1"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ; there are none
+     `(#:tests? #f                      ; there are none
        #:configure-flags
        '("-DWITH_LUA_ENGINE=Lua"
          "-DWITH_SHARED_LIBUV=On"

@@ -1734,23 +1734,23 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.4.0")
+    (version "0.5.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/QMatrixClient/libqmatrixclient")
-              (commit (string-append "v" version))))
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1llzqjagvp91kcg26q5c4qw9aaz7wna3rh6k06rc3baivrjqf3cn"))))
+        (base32 "1bhlqfs7251fss4icx794ka614npr6zyrpp4qwc4q5408ykfm7lr"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)))
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
-       #:tests? #f)) ; No tests
+       #:tests? #f))                    ; no tests
     (home-page "https://matrix.org/docs/projects/sdk/libqmatrixclient.html")
     (synopsis "Qt5 client library for the Matrix instant messaging protocol")
     (description "libqmatrixclient is a Qt5 library to write clients for the
@@ -1762,27 +1762,27 @@ QMatrixClient project.")
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.3")
+    (version "0.0.9.4c")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/QMatrixClient/Quaternion")
-              (commit (string-append "v" version))))
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hr9zqf301rg583n9jv256vzj7y57d8qgayk7c723bfknf1s6hh3"))))
+        (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -1804,8 +1804,8 @@ QMatrixClient project.")
 messaging protocol.  It uses libqmatrixclient and is its reference client
 implementation.  Quaternion and libqmatriclient together form the
 QMatrixClient project.")
-    (license (list license:gpl3+ ; all source code
-                   license:lgpl3+)))) ; icons/breeze
+    (license (list license:gpl3+        ; all source code
+                   license:lgpl3+))))   ; icons/breeze
 
 (define-public hangups
   (package

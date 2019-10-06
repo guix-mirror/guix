@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017, 2018 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Raoul Bonnal <ilpuccio.febo@gmail.com>
 ;;; Copyright © 2018 Vijayalakshmi Vedantham <vijimay12@gmail.com>
 ;;; Copyright © 2018 Sahithi Yarlagadda <sahi@swecha.net>
@@ -1492,14 +1492,13 @@ error stream.")
 (define-public r-pls
   (package
     (name "r-pls")
-    (version "2.7-1")
+    (version "2.7-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pls" version))
        (sha256
-        (base32
-         "0jw3zl5z06023zxr74phnvwax8m3i4a4i6lsqiq6j15aq9zq3zgq"))))
+        (base32 "121byimd6bg7jbrq5wz5fpi0vxq0vh8g724vkhnjzszbvcv1xsb7"))))
     (build-system r-build-system)
     (home-page "http://mevik.net/work/software/pls.html")
     (synopsis "Partial Least Squares and Principal Component Regression")
@@ -1693,14 +1692,13 @@ is provided.")
 (define-public r-calibrate
   (package
     (name "r-calibrate")
-    (version "1.7.2")
+    (version "1.7.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "calibrate" version))
        (sha256
-        (base32
-         "010nb1nb9y7zhw2k6d2i2drwy5brp7b83mjj2w7i3wjp9xb6l1kq"))))
+        (base32 "1s423nr176l2sc66wp7hzgqkv7c2bq8d2bjrrvrrm5qa9y3zdx1k"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-mass" ,r-mass)))
@@ -1733,14 +1731,13 @@ ellipses, circles, cylinders, arrows, ...")
 (define-public r-globaloptions
   (package
     (name "r-globaloptions")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "GlobalOptions" version))
        (sha256
-        (base32
-         "1wlyqz1yhmhjwslrd7q69jbd9vsbjkjfc01g60kl3cdpyr8hlyjn"))))
+        (base32 "0x89hfz80avq4zcskxl71i4zi0mgniqqxfrvz050aa2189wfyja2"))))
     (properties `((upstream-name . "GlobalOptions")))
     (build-system r-build-system)
     (home-page "https://github.com/jokergoo/GlobalOptions")
@@ -3903,14 +3900,13 @@ iVAT).")
 (define-public r-xfun
   (package
     (name "r-xfun")
-    (version "0.9")
+    (version "0.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "xfun" version))
        (sha256
-        (base32
-         "1c3wmy6s4ck821mwl7i2g8cxd31g30llbpivbgq21g1rxs4zwlyl"))))
+        (base32 "065ygh046ah43p5aqyrkv2vkxcnvnb4j7blfdygysg6hmqzp4pbv"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/xfun")
     (synopsis "Miscellaneous functions")
@@ -8301,14 +8297,13 @@ results using @code{ggplot2}.")
 (define-public r-sjplot
   (package
     (name "r-sjplot")
-    (version "2.7.1")
+    (version "2.7.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "sjPlot" version))
        (sha256
-        (base32
-         "14shypabpahf68hd66rb1dpqhiyl3i0yx1yc85wamdvljh9fdymb"))))
+        (base32 "1kx1qqgp4fhwwwpqn9mv8m1pnpjxfs7ww36ns7j1ja4a7ydwn2hp"))))
     (properties `((upstream-name . "sjPlot")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9578,17 +9573,17 @@ manipulate tree data.")
 (define-public r-rvcheck
   (package
     (name "r-rvcheck")
-    (version "0.1.3")
+    (version "0.1.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvcheck" version))
        (sha256
-        (base32
-         "1i2g6gyiqyd1pn6y0h6vmlcmg1qb5pv7rym8mkw8jnyc3in9hn8b"))))
+        (base32 "15222q3sglq0mad5q806p99fhrb96qizmpqw35fa1rb148f95paf"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-rlang" ,r-rlang)))
+     `(("r-biocmanager" ,r-biocmanager)
+       ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/rvcheck")
     (synopsis "R package version check")
     (description
@@ -11804,14 +11799,13 @@ such software by imputing dropout events.")
 (define-public r-gamlss-dist
   (package
     (name "r-gamlss-dist")
-    (version "5.1-4")
+    (version "5.1-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gamlss.dist" version))
        (sha256
-        (base32
-         "0zi87lgigr83l35zqq1y1g4cdq6ssjamripzz7yis74aznh6qg1l"))))
+        (base32 "1rl7hzdg5xpvaq3yyzwxhsaqzzs0qidi3ibv454fisijgv8l4vqw"))))
     (properties `((upstream-name . "gamlss.dist")))
     (build-system r-build-system)
     (propagated-inputs `(("r-mass" ,r-mass)))
@@ -12502,14 +12496,13 @@ extensions.")
 (define-public r-wgaim
   (package
     (name "r-wgaim")
-    (version "2.0-0")
+    (version "2.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "wgaim" version))
        (sha256
-        (base32
-         "0wnb10vibgq8h1ly6lq8kzymf30vx0j0g8fc2zidblbvwag9ka1g"))))
+        (base32 "1qiyfkpsbzjr9xsq5kqq6rlqpndngkn2irdfh3gyi45h6hn118j4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)
@@ -12954,14 +12947,13 @@ also provided to illustrate various methods.")
 (define-public r-pegas
   (package
     (name "r-pegas")
-    (version "0.11")
+    (version "0.12")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pegas" version))
        (sha256
-        (base32
-         "0l21bapzbjcvblbvks3jh9rpy9hng1ccd7f0glhqw695lc737bpx"))))
+        (base32 "0sb8cmz4d238mcb56hv9fa0cagm00k82r7aj4cj4lxa1flxlpy8p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-adegenet" ,r-adegenet)
@@ -13062,14 +13054,13 @@ either PDF/EPS files.")
 (define-public r-polspline
   (package
     (name "r-polspline")
-    (version "1.1.15")
+    (version "1.1.16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "polspline" version))
        (sha256
-        (base32
-         "19zs4kpagsrzhng1byjbz1c4jxnfk58h4rgr096ml1bjwrgamnwc"))))
+        (base32 "0d49h7if8h6d784nsnqqxakg19kvl8cmz8k53901m2h0c0amlfxa"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/polspline/")
@@ -13319,13 +13310,13 @@ SELECT or UPDATE queries to an end-point.")
 (define-public r-bookdown
   (package
     (name "r-bookdown")
-    (version "0.13")
+    (version "0.14")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "bookdown" version))
               (sha256
                (base32
-                "15r9scgnq68hmfcfxvjk286hpbr825bib1d2kgh0lv3dgz2i2bg1"))))
+                "1jiq2d292y0l3f4npyfzfpnmb0sqxsl212kkjfbjg5301h0na762"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -15065,14 +15056,13 @@ customize styles using a readable syntax.")
 (define-public r-glasso
   (package
     (name "r-glasso")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "glasso" version))
        (sha256
-        (base32
-         "0nshpx14v2yny7lr8ll6nnz71n0f02sddh2c2dglfprbk89p9yp6"))))
+        (base32 "02p3612rpydk195n2qr77lp1j2w8zsw1ckkk98c8angm4r5q8dsc"))))
     (build-system r-build-system)
     (native-inputs `(("gfortran" ,gfortran)))
     (home-page "http://www-stat.stanford.edu/~tibs/glasso")
@@ -15529,14 +15519,13 @@ effect size.")
 (define-public r-rgdal
   (package
     (name "r-rgdal")
-    (version "1.4-4")
+    (version "1.4-6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgdal" version))
        (sha256
-        (base32
-         "1my56hdc9x40ynxx1qwqwqxjvjxybmm00w4xg5gi8zgj19pffci5"))))
+        (base32 "0lj1dax56dxxsj1hindxcvgz169p9dxd0y4wjypbyr01nja8rz4d"))))
     (properties `((upstream-name . "rgdal")))
     (build-system r-build-system)
     (inputs

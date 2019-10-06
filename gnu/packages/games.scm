@@ -43,6 +43,7 @@
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -253,34 +254,26 @@ mouse and joystick control, and original music.")
 (define-public alex4
   (package
     (name "alex4")
-    (version "1.2-alpha")
+    (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/carstene1ns/alex4/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/carstene1ns/alex4.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0jj1g3v1a6lyfwp5g2ly0n9z65ryqck8jxvzr01kaqjj3lsfkrhg"))))
+        (base32 "098wy72mh4lsvq3gm0rhamjssf9l1hp6hhkpzrv7klpb97cwwc3h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags
-       (list "-Csrc"
-             "CC=gcc"
+       (list "CC=gcc"
              "CFLAGS=-D_FILE_OFFSET_BITS=64"
-             (string-append "DATADIR=" (assoc-ref %outputs "out")
-                            "/share/" ,name)
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (substitute* '("src/main.c"
-                            "src/shooter.c")
-               (("fcos") "fixcos")
-               (("fmul") "fixmul")
-               (("fsin") "fixsin"))
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out")
@@ -6193,7 +6186,7 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.8")
+    (version "0.9.10")
     (source
       (origin
         (method git-fetch)
@@ -6203,7 +6196,7 @@ your score gets higher, you level up and the blocks fall faster.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0i36lawypikbq8vvzfis1dn7yf6q0d2s1cllshfn7kmjb6pqfi6c"))))
+          "1wax9qhxakydg6bs92d1jy2fki1n9r0wkps1np02y0pvm1fl189i"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -7126,7 +7119,7 @@ simulator.")
 (define-public jumpnbump
   (package
     (name "jumpnbump")
-    (version "1.60")
+    (version "1.61")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7135,7 +7128,7 @@ simulator.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gwi58ck4magvdim8wmxdqnsi0fqdpvqia9kcc7q73nqf34jjz3v"))))
+                "12lwl5sl5n009nb83r8l4lakb9286csqdf1ynpmwwydy17giqsdp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

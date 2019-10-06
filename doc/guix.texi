@@ -9083,6 +9083,16 @@ The crate importer also allows you to specify a version string:
 guix import crate constant-time-eq@@0.1.0
 @end example
 
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item opam
 @cindex OPAM
 @cindex OCaml
@@ -19409,13 +19419,13 @@ Other services can also extend the @code{httpd-service-type} to add to
 the configuration.
 
 @lisp
-(simple-service 'my-extra-server httpd-service-type
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
 @end lisp
 @end deffn
 
@@ -19549,13 +19559,13 @@ This data type represents a virtualhost configuration block for the httpd servic
 These should be added to the extra-config for the httpd-service.
 
 @lisp
-(simple-service 'my-extra-server httpd-service-type
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
 @end lisp
 
 @table @asis

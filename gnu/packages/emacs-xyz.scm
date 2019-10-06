@@ -976,15 +976,14 @@ optional minor mode which can apply this command automatically on save.")
 (define-public emacs-relint
   (package
     (name "emacs-relint")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://elpa.gnu.org/packages/relint-" version ".el"))
+             "https://elpa.gnu.org/packages/relint-" version ".tar"))
        (sha256
-        (base32
-         "1l0lh4pkksw7brmhhbaikwzs4zkgd2962ks1zy7m262dvkhxjfv8"))))
+        (base32 "0c7d35kp5k11fnyjrq9cg8i2r005gs57pmb3rvpf8ilwv0scn1m7"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-xr" ,emacs-xr)))
     (home-page "https://github.com/mattiase/relint")
@@ -2118,6 +2117,31 @@ evaluations.  The entry point is @code{M-x build-farm} command.")
 code written in the D programming language.  This mode is currently known to
 work with Emacs 24 and 25.")
     (license license:gpl2+)))
+
+(define-public emacs-extempore-mode
+  ;; Use the latest commit at time of packaging.  There are no releases or tags.
+  (let ((commit "848ad0084f27b92d1cf98dabffbad29f959a642d")
+        (revision "1"))
+    (package
+      (name "emacs-extempore-mode")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/extemporelang/extempore-emacs-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "00wr025php7nl33x541s9rjm99hj0jbdcmnw9ljx5hqpm04aqm7c"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/extemporelang/extempore-emacs-mode")
+      (synopsis "Emacs major mode for Extempore source files")
+      (description
+       "This package provides a major mode for editing Extempore code.  It can
+create an Extempore REPL, connect the current @code{extempore-mode} buffer to a
+running Extempore process, and more.")
+      (license license:bsd-2))))
 
 (define-public emacs-keyfreq
   (package
@@ -3650,8 +3674,8 @@ completion backends according to mode, and integrates with
       (license license:gpl3+))))
 
 (define-public emacs-handle
-  (let ((commit "0180a33c92b53d042c3e248a047e15337122d922")
-        (revision "1"))
+  (let ((commit "51c050bc1c6e5caf0eb47ecd985daea1db7241ab")
+        (revision "2"))
     (package
       (name "emacs-handle")
       (version (git-version "0.1" revision commit))
@@ -3663,8 +3687,10 @@ completion backends according to mode, and integrates with
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "0ldrdfxspkq0m07l98hhj9nydgj9qi557mnnpd3v4xrwqwhyr4nc"))))
+          (base32 "14f15qzfmwdslml4rv37zb5d1lsjf0jibriz636hb7q7knx1n4sg"))))
       (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-parent-mode" ,emacs-parent-mode)))
       (home-page "https://gitlab.com/jjzmajic/handle")
       (synopsis "Handle generic functions across related major modes")
       (description "This package provides generic functions that specialize on
@@ -4487,8 +4513,8 @@ organizer.")
     (license license:gpl3+)))
 
 (define-public emacs-org-tanglesync
-  (let ((commit "ab76a3eaaed263677d2e029d43f6c4de8fc21418")
-        (revision "1"))
+  (let ((commit "d99181f173b4e55b4e835d99fcd415e62beb047f")
+        (revision "2"))
     (package
       (name "emacs-org-tanglesync")
       (version (git-version "0.6" revision commit))
@@ -4500,7 +4526,7 @@ organizer.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "14ify3yirq2qmi9isk8kcbwx8pbclv1fyg49kraz4srhgf2fssgf"))))
+          (base32 "0x94gy1bgfd1f3p9w2bfrqj11bwy9ql0cpi1gw6srpj7kykx0lml"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)))
@@ -13839,12 +13865,11 @@ interactive loop.")
     (license license:gpl3+)))
 
 (define-public emacs-eros
-  (let ((commit "a42e45c9b2397156c684330b0fc90ee0eba773f5")
-        (revision "1"))
+  (let ((commit "dd8910279226259e100dab798b073a52f9b4233a")
+        (revision "2"))
     (package
       (name "emacs-eros")
-      (version (string-append "0.0.1" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.0.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13854,7 +13879,7 @@ interactive loop.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0whlsq90v13fz69k3wjrwcwb9gkpfxqjd75mg3nrp85j9nwhb5i4"))))
+           "08chj3a0lw4ygi2sv7wj0i6ihfbi8jhylr8p92inif8b88r6wg3k"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/xiongtx/eros")
       (synopsis "Evaluation result overlays")
@@ -14348,8 +14373,8 @@ defaults.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-mc
-  (let ((commit "5205fe671803465149e578849bbbe803c23a8e4e")
-        (revision "1"))
+  (let ((commit "1cabb869fe70cef49f7dc06f015c3ade1a969c8c")
+        (revision "2"))
     (package
       (name "emacs-evil-mc")
       (version (git-version "0.0.3" revision commit))
@@ -14361,7 +14386,7 @@ defaults.")
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "03pxpjjxbai4dwp84bgxh52ahh0f6ac58xi2mds1kl4v93nm7v42"))))
+          (base32 "0p83p90faq1p02lmsfs7zrnky3cyzgy8z4m83a81r9kakjzhkrnb"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
@@ -15503,10 +15528,11 @@ files) are provided.")
       (license license:gpl2+))))
 
 (define-public emacs-hackernews
-  (let ((commit "916c3da8da45c757f5ec2faeed57fa370513d4ac"))
+  (let ((commit "2362d7b00e59da7caddc8c0adc24dccb42fddef9")
+        (revision "2"))
     (package
       (name "emacs-hackernews")
-      (version (git-version "0.5.0" "1" commit))
+      (version (git-version "0.5.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -15516,7 +15542,7 @@ files) are provided.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "09bxaaczana1cfvxyk9aagjvdszkj0j1yldl5r4xa60b59lxihsg"))))
+           "1hcc5b173yzcvvd2ls3jxrmsw2w9bi21m9hcpcirkn0nh93ywadv"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/clarete/hackernews.el")
       (synopsis "Hacker News client for Emacs")
@@ -16832,6 +16858,33 @@ like @code{company}, @code{flycheck}, and @code{projectile}.")
 and code peeking.")
     (license license:gpl3+)))
 
+(define-public emacs-lsp-ivy
+  (let ((commit "6fd55316dd62d290429c25ea9b0c1f66069b2f37")
+        (revision "1"))
+    (package
+      (name "emacs-lsp-ivy")
+      (version (git-version "0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/emacs-lsp/lsp-ivy.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0hx9rs66ahl2rqgnmyiyrwk12v7iv8c6gnn7b66985mxjqyyh94r"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)
+         ("emacs-lsp-mode" ,emacs-lsp-mode)
+         ("emacs-dash" ,emacs-dash)))
+      (home-page "https://github.com/emacs-lsp/lsp-ivy")
+      (synopsis "Provide LSP-enhanced completion for symbols")
+      (description
+       "This package enhances @code{ivy} with completion for symbols from
+workspaces with a LSP-compliant server running.")
+      (license license:gpl3+))))
+
 (define-public emacs-helm-lsp
   (let ((commit "3a58ca4cfd94b9ab1e15e819d3b16ef568e8889b")
         (revision "1"))
@@ -16855,8 +16908,8 @@ and code peeking.")
       (home-page "https://github.com/emacs-lsp/helm-lsp")
       (synopsis "Provide LSP-enhanced completion for symbols")
       (description
-       "This package provides completion for symbols from workspaces with a
-LSP-compliant server running.")
+       "This package enhances @code{helm} with completion for symbols from
+workspaces with a LSP-compliant server running.")
       (license license:gpl3+))))
 
 (define-public emacs-helm-notmuch
@@ -16990,8 +17043,8 @@ packages with a consistent way to use them.")
       (license license:gpl3+))))
 
 (define-public emacs-undo-propose-el
-  (let ((commit "47b7df0c97ad0099537d1ade21c4c52f0618a945")
-        (revision "2"))
+  (let ((commit "f80baee566807d733fbacbab08a897bcd62579c3")
+        (revision "3"))
     (package
       (name "emacs-undo-propose-el")
       (version (git-version "3.0.0" revision commit))
@@ -17004,8 +17057,11 @@ packages with a consistent way to use them.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "078bs8lk9f0lklxqh15976fffayg5z5386y59nxxfhm27lmwgka9"))))
+           "00rqz63bhh66q78l646q3w16gydygj8h4d8np0dpbifgzciak90b"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/jackkamm/undo-propose-el")
       (synopsis "Simple and safe navigation of @code{undo} history")
       (description "This package permits navigation of @code{undo} history in a

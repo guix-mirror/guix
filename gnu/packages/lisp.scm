@@ -217,7 +217,8 @@ interface to the Tk widget system.")
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(#:tests? #t
+     '(#:configure-flags '("--without-rt")
+       #:tests? #t
        #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
@@ -700,10 +701,10 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
 
 (define-public sbcl-alexandria
   (let ((revision "1")
-        (commit "926a066611b7b11cb71e26c827a271e500888c30"))
+        (commit "3b849bc0116ea70f215ee6b2fbf354e862aaa9dd"))
     (package
       (name "sbcl-alexandria")
-      (version (string-append "0.0.0-" revision "." (string-take commit 7)))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -712,9 +713,11 @@ libraries for Machine Learning, Neural Nets and statistical estimation.")
                (commit commit)))
          (sha256
           (base32
-           "18yncicdkh294j05rhgm23gzi36y9qy6vrfba8vg69jrxjp1hx8l"))
-         (file-name (string-append "alexandria-" version "-checkout"))))
+           "04amwvx2vl691f0plcfbqqwxgib9zimih7jrn5zl7mbwvrxy022b"))
+         (file-name (git-file-name name version))))
       (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("rt" ,sbcl-rt)))
       (synopsis "Collection of portable utilities for Common Lisp")
       (description
        "Alexandria is a collection of portable utilities.  It does not contain
@@ -1703,26 +1706,23 @@ consistent across multiple Common Lisp implementations.")
   (sbcl-package->ecl-package sbcl-trivial-features))
 
 (define-public sbcl-hu.dwim.asdf
-  (let ((commit "170b0e4fdde3df0bc537327e7600575daac9e141"))
-    (package
-      (name "sbcl-hu.dwim.asdf")
-      (version (git-version "0.0.0" "1" commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri
-          (git-reference
-           (url "https://github.com/nixeagle/hu.dwim.asdf")
-           (commit commit)))
-         (sha256
-          (base32 "10ax7p8y6vjqxzcq125p62kf68zi455a65ysgk0kl1f2v839c33v"))
-         (file-name (git-file-name "hu.dwim.asdf" version))))
-      (build-system asdf-build-system/sbcl)
-      (home-page "https://hub.darcs.net/hu.dwim/hu.dwim.asdf")
-      (synopsis "Extensions to ASDF")
-      (description "Various ASDF extensions such as attached test and
+  (package
+    (name "sbcl-hu.dwim.asdf")
+    (version "20190521")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://beta.quicklisp.org/archive/hu.dwim.asdf/"
+                           "2019-05-21/hu.dwim.asdf-" version "-darcs.tgz"))
+       (sha256
+        (base32
+         "0rsbv71vyszy8w35yjwb5h6zcmknjq223hkzir79y72qdsc6sabn"))))
+    (build-system asdf-build-system/sbcl)
+    (home-page "https://hub.darcs.net/hu.dwim/hu.dwim.asdf")
+    (synopsis "Extensions to ASDF")
+    (description "Various ASDF extensions such as attached test and
 documentation system, explicit development support, etc.")
-      (license license:public-domain))))
+    (license license:public-domain)))
 
 (define-public cl-hu.dwim.asdf
   (sbcl-package->cl-source-package sbcl-hu.dwim.asdf))
@@ -2327,42 +2327,27 @@ writing code that contains string literals that contain code themselves.")
 (define-public ecl-pythonic-string-reader
   (sbcl-package->ecl-package sbcl-pythonic-string-reader))
 
-(define-public sbcl-slime-swank
+;; SLIME does not have a ASDF system definition to build all of Swank.  As a
+;; result, the asdf-build-system/sbcl will produce an almost empty package.
+;; Some work was done to fix this at
+;; https://github.com/sionescu/slime/tree/swank-asdf but it was never merged
+;; and is now lagging behind.  Building SBCL fasls might not be worth the
+;; hassle, so let's just ship the source then.
+(define-public cl-slime-swank
   (package
-    (name "sbcl-slime-swank")
-    (version "2.22")
+    (name "cl-slime-swank")
+    (version "2.24")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
        (method git-fetch)
        (uri (git-reference
-             ;; (url "https://github.com/slime/slime/")
-             ;; (commit "841f61467c03dea9f38ff9d5af0e21a8aa29e8f7")
-             ;; REVIEW: Do we need sionescu's patch to package SWANK?
-             (url "https://github.com/sionescu/slime/")
-             ;; (commit "swank-asdf")
-             (commit "2f7c3fcb3ac7d50d844d5c6ca0e89b52a45e1d3a")))
+             (url "https://github.com/slime/slime/")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         ;; "065bc4y6iskazdfwlhgcjlzg9bi2hyjbhmyjw3461506pgkj08vi"
-         "0pkmg94wn4ii1zhlrncn44mdc5i6c5v0i9gbldx4dwl2yy7ibz5c"))
-       (modules '((guix build utils)))
-       (snippet
-        '(begin
-           (substitute* "contrib/swank-listener-hooks.lisp"
-             ((":compile-toplevel :load-toplevel ") ""))
-           (substitute* "contrib/swank-presentations.lisp"
-             ((":compile-toplevel :load-toplevel ") ""))
-           (substitute* "swank.asd"
-             ((":file \"packages\".*" all)
-              (string-append all "(:file \"swank-loader-asdf\")\n")))
-           (substitute* "swank-loader-asdf.lisp"
-             ((":common-lisp" all) (string-append all " #:asdf")))
-           #t))))
-    (build-system asdf-build-system/sbcl)
-    (arguments
-     `(#:asd-file "swank.asd"
-       #:asd-system-name "swank"))
+         "0js24x42m7b5iymb4rxz501dff19vav5pywnzv50b673rbkaaqvh"))))
+    (build-system asdf-build-system/source)
     (home-page "https://github.com/slime/slime")
     (synopsis "Common Lisp Swank server")
     (description
@@ -2370,6 +2355,9 @@ writing code that contains string literals that contain code themselves.")
 processes that doesn't run under Emacs.  Lisp processes created by
 @command{M-x slime} automatically start the server.")
     (license (list license:gpl2+ license:public-domain))))
+
+(define-public sbcl-slime-swank
+  (deprecated-package "sbcl-slime-swank" cl-slime-swank))
 
 (define-public sbcl-mgl-pax
   (let ((commit "818448418d6b9de74620f606f5b23033c6082769"))
@@ -2395,7 +2383,7 @@ processes that doesn't run under Emacs.  Lisp processes created by
          ("ironclad" ,sbcl-ironclad)
          ("named-readtables" ,sbcl-named-readtables)
          ("pythonic-string-reader" ,sbcl-pythonic-string-reader)
-         ("swank" ,sbcl-slime-swank)))
+         ("swank" ,cl-slime-swank)))
       (synopsis "Exploratory programming environment and documentation generator")
       (description
        "PAX provides an extremely poor man's Explorable Programming
@@ -7360,3 +7348,143 @@ compression/decompression using bindings to the lzlib C library.")
 
 (define-public ecl-lzlib
   (sbcl-package->ecl-package sbcl-lzlib))
+
+(define-public sbcl-chanl
+  (let ((commit "2362b57550c2c9238cc882d03553aaa1040b7340")
+        (revision "0"))
+    (package
+      (name "sbcl-chanl")
+      (version (git-version "0.4.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/zkat/chanl.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0ag3wz7yrqwp0s5069wwda98z3rrqd25spg8sa8rdqghj084w28w"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("bordeaux-threads" ,sbcl-bordeaux-threads)))
+      (synopsis "Portable channel-based concurrency for Common Lisp")
+      (description "Common Lisp library for channel-based concurrency.  In
+a nutshell, you create various threads sequentially executing tasks you need
+done, and use channel objects to communicate and synchronize the state of these
+threads.")
+      (home-page "https://github.com/zkat/chanl")
+      (license (list license:expat license:bsd-3)))))
+
+(define-public cl-chanl
+  (sbcl-package->cl-source-package sbcl-chanl))
+
+(define-public ecl-chanl
+  (let ((base (sbcl-package->ecl-package sbcl-chanl)))
+    (package
+      (inherit base)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ;; The CHANL.ACTORS package uses the :ARGUMENTS option of
+         ;; DEFINE-METHOD-COMBINATION, which is not implemented in ECL yet
+         ;; (see https://gitlab.com/embeddable-common-lisp/ecl/issues/305).
+         ;; So let's disable it for now, as it allows compiling the library
+         ;; and using the rest of it.
+         ((#:phases phases '%standard-phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'disable-chanl-actors
+               (lambda _
+                 (substitute* "chanl.asd"
+                   (("\\(:file \"actors\"\\)") ""))
+                 #t))))
+         ;; Disable the tests for now, as the SEND-SEQUENCE test seems to
+         ;; never end.
+         ((#:tests? _ #f) #f))))))
+
+(define-public sbcl-cl-store
+  (let ((commit "cd01f2610d3360dc01ab972bd9317407aaea7745")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-store")
+      (version (git-version "0.8.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/skypher/cl-store.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "05b7kh5af2ax7vlmphpac4vbqr84j5ivppj96qzb64fxpjpqglm4"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("rt" ,sbcl-rt)))
+      (synopsis "Common Lisp library to serialize data")
+      (description
+       "CL-STORE is a portable serialization package which should give you the
+ability to store all Common Lisp data types into streams.")
+      (home-page "http://www.common-lisp.net/project/cl-store/")
+      (license license:expat))))
+
+(define-public cl-store
+  (sbcl-package->cl-source-package sbcl-cl-store))
+
+(define-public ecl-cl-store
+  (sbcl-package->ecl-package sbcl-cl-store))
+
+(define-public sbcl-cl-gobject-introspection
+  (let ((commit "7b703e2384945ea0ac39d9b766de434a08d81560")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-gobject-introspection")
+      (version (git-version "0.3" revision commit))
+      (home-page "https://github.com/andy128k/cl-gobject-introspection")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zcqd2qj14f6b38vys8gr89s6cijsp9r8j43xa8lynilwva7bwyh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("iterate" ,sbcl-iterate)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("glib" ,glib)
+         ("gobject-introspection" ,gobject-introspection)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       ;; TODO: Tests fail, see
+       ;; https://github.com/andy128k/cl-gobject-introspection/issues/70.
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after (quote unpack) (quote fix-paths)
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/init.lisp"
+                 (("libgobject-2\\.0\\.so")
+                  (string-append (assoc-ref inputs "glib") "/lib/libgobject-2.0.so"))
+                 (("libgirepository-1\\.0\\.so")
+                  (string-append (assoc-ref inputs "gobject-introspection")
+                                 "/lib/libgirepository-1.0.so")))
+               #t)))))
+      (synopsis "Common Lisp bindings to GObject Introspection")
+      (description
+       "This library is a bridge between Common Lisp and GObject
+Introspection, which enables Common Lisp programs to access the full interface
+of C+GObject libraries without the need of writing dedicated bindings.")
+      (license (list license:bsd-3
+                     ;; Tests are under a different license.
+                     license:llgpl)))))
+
+(define-public cl-gobject-introspection
+  (sbcl-package->cl-source-package sbcl-cl-gobject-introspection))

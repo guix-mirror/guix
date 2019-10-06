@@ -350,7 +350,8 @@ also known as DXTn or DXTC) for Mesa.")
              (substitute* "src/intel/genxml/gen_pack_header.py"
                (("/usr/bin/env python2") (which "python")))
              #t))
-         ,@(if (string-prefix? "i686" (%current-system))
+         ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                          (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
                ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                `((add-after 'unpack 'disable-failing-test

@@ -851,14 +851,14 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.9.0")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06bhydl4vr4z9c3vahl76f2j96z1fbrcl7wwismgs4sris08inrf"))))
+                "153h1378diqyc27jjgz6gg5nxmb4ddk006d9xg69nqavgiikflk3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -879,14 +879,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.9.2")
+    (version "4.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ygy0layzqaj838r5xd613iraz09wlfgpyh7pc6cwclql8v3b2vr"))))
+                "0434vdcnbqaia672rggjzdn4bb8p8dchz559yiszzdk0sjrprm1c"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -1723,7 +1723,7 @@ track changes in important system configuration files.")
 (define-public libcap-ng
   (package
     (name "libcap-ng")
-    (version "0.7.9")
+    (version "0.7.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1731,7 +1731,7 @@ track changes in important system configuration files.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0a0k484kwv0zilry2mbl9k56cnpdhsjxdxin17jas6kkyfy345aa"))))
+                "1gzzy12agfa9ddipdf72h9y68zqqnvsjjylv4vnq6hj4w2safk58"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2852,61 +2852,60 @@ you are running, what theme or icon set you are using, etc.")
     (license license:expat)))
 
 (define-public screenfetch
-  (let ((commit "e7b94fc3c529b9b97f32b71fd4bc05fb1d0f5864"))
-    (package
-      (name "screenfetch")
-      (version (git-version "3.8.0" "2" commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/KittyKatt/screenFetch")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "13i7dczbqwhws08zzrdraki1zkqv0qkbgx9c1r8vmg5qr9f7hfzg"))))
-      (build-system trivial-build-system)
-      (arguments
-       `(#:modules ((guix build utils))
-         #:builder
-         (begin
-           (use-modules (guix build utils))
-           (let ((source (assoc-ref %build-inputs "source"))
-                 (out    (assoc-ref %outputs "out")))
-             (mkdir-p (string-append out "/bin/"))
-             (copy-file (string-append source "/screenfetch-dev")
-                        (string-append out "/bin/screenfetch"))
-             (install-file (string-append source "/screenfetch.1")
-                           (string-append out "/man/man1/"))
-             (install-file (string-append source "/COPYING")
-                           (string-append out "/share/doc/" ,name "-" ,version))
-             (substitute* (string-append out "/bin/screenfetch")
-               (("/usr/bin/env bash")
-                (string-append (assoc-ref %build-inputs "bash")
-                               "/bin/bash")))
-             (wrap-program
+  (package
+    (name "screenfetch")
+    (version "3.9.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/KittyKatt/screenFetch")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13i7dczbqwhws08zzrdraki1zkqv0qkbgx9c1r8vmg5qr9f7hfzg"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (out    (assoc-ref %outputs "out")))
+           (mkdir-p (string-append out "/bin/"))
+           (copy-file (string-append source "/screenfetch-dev")
+                      (string-append out "/bin/screenfetch"))
+           (install-file (string-append source "/screenfetch.1")
+                         (string-append out "/man/man1/"))
+           (install-file (string-append source "/COPYING")
+                         (string-append out "/share/doc/" ,name "-" ,version))
+           (substitute* (string-append out "/bin/screenfetch")
+             (("/usr/bin/env bash")
+              (string-append (assoc-ref %build-inputs "bash")
+                             "/bin/bash")))
+           (wrap-program
                (string-append out "/bin/screenfetch")
-               `("PATH" ":" prefix
-                 (,(string-append (assoc-ref %build-inputs "bc") "/bin:"
-                                  (assoc-ref %build-inputs "scrot") "/bin:"
-                                  (assoc-ref %build-inputs "xdpyinfo") "/bin"
-                                  (assoc-ref %build-inputs "xprop") "/bin"))))
-             (substitute* (string-append out "/bin/screenfetch")
-               (("#!#f")
-                (string-append "#!" (assoc-ref %build-inputs "bash")
-                               "/bin/bash")))))))
-      (inputs
-       `(("bash" ,bash)
-         ("bc" ,bc)
-         ("scrot" ,scrot)
-         ("xdpyinfo" ,xdpyinfo)
-         ("xprop" ,xprop)))
-      (home-page "https://github.com/KittyKatt/screenFetch")
-      (synopsis "System information script")
-      (description "Bash screenshot information tool which can be used to
+             `("PATH" ":" prefix
+               (,(string-append (assoc-ref %build-inputs "bc") "/bin:"
+                                (assoc-ref %build-inputs "scrot") "/bin:"
+                                (assoc-ref %build-inputs "xdpyinfo") "/bin"
+                                (assoc-ref %build-inputs "xprop") "/bin"))))
+           (substitute* (string-append out "/bin/screenfetch")
+             (("#!#f")
+              (string-append "#!" (assoc-ref %build-inputs "bash")
+                             "/bin/bash")))))))
+    (inputs
+     `(("bash" ,bash)
+       ("bc" ,bc)
+       ("scrot" ,scrot)
+       ("xdpyinfo" ,xdpyinfo)
+       ("xprop" ,xprop)))
+    (home-page "https://github.com/KittyKatt/screenFetch")
+    (synopsis "System information script")
+    (description "Bash screenshot information tool which can be used to
 generate those nifty terminal theme information and ASCII distribution logos in
 everyone's screenshots nowadays.")
-      (license license:gpl3))))
+    (license license:gpl3)))
 
 (define-public nnn
   (package

@@ -158,14 +158,14 @@ simulation not wholly unlike BUGS.  JAGS was written with three aims in mind:
 (define-public libxls
   (package
     (name "libxls")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/libxls/libxls/releases/download/"
                            "v" version "/libxls-" version ".tar.gz"))
        (sha256
-        (base32 "00j2lrcvvhclmh3z9vy7myqq1br1jnnqkz2wzgk4a1gbg8c5afn5"))))
+        (base32 "0dam8qgbc5ykzaxmrjhpmfm8lnlcdk6cbpzyaya91qwwa80qbj1v"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/libxls/libxls")
     (synopsis "Read binary (.xls) Excel spreadsheet files")
@@ -1848,14 +1848,16 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.12.2")
+    (version "1.12.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "1x929lwhai6nkppm4zvicyw5qh5va5sizp86r30qnfkh1n7w2mfv"))))
+                "0zdcbr4nixvl8ga4mp9pw1dfww35dzhzpb6ixajqasiri824m7i9"))))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
@@ -2706,14 +2708,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.15")
+    (version "1.16")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32
-            "0fkfzxkvakc6bb1s2lx7sxmnfff8q1m9isihynhiyqh4x8yikcmw"))))
+          (base32 "1p11g9lma604ndrhvyvriqxxp91lardc543nmvmr49n1m7309qvz"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2728,7 +2729,7 @@ certain criterion, e.g., it contains a certain regular file.")
        ("r-xfun" ,r-xfun)
        ("r-yaml" ,r-yaml)
        ("ghc-pandoc" ,ghc-pandoc)))
-    (home-page "http://rmarkdown.rstudio.com")
+    (home-page "https://rmarkdown.rstudio.com")
     (synopsis "Convert R Markdown documents into a variety of formats")
     (description
      "This package provides tools to convert R Markdown documents into a

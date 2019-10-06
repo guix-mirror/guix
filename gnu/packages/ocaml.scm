@@ -1186,7 +1186,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
 (define-public ocaml-qcheck
   (package
     (name "ocaml-qcheck")
-    (version "0.10")
+    (version "0.11")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1195,7 @@ GNU CC attributes.  It provides also a C pretty printer as an example of use.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1i7axg7vmivrkzsahyg79my584myvzxv0922k4000bdwnhzd0kzh"))))
+        (base32 "0d2wih4zxn2zm7kxd9dnf5nlp838km3vz6wv80fa3m51609fb24i"))))
     (build-system dune-build-system)
     (arguments
      `(#:test-target "."))
@@ -3123,7 +3123,7 @@ instead of bindings to a C library.")
 (define-public ocaml-utop
   (package
     (name "ocaml-utop")
-    (version "2.4.1")
+    (version "2.4.2")
     (source
      (origin
        (method git-fetch)
@@ -3132,7 +3132,7 @@ instead of bindings to a C library.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1jm3sagissbw8012mnppknsxl9dqd9514b891b64disqhdb5awg3"))))
+        (base32 "0z8klqwqmq5i111p4awzvlvirhm1dxp0mbfagwfiwq1wg72v6zdm"))))
     (build-system dune-build-system)
     (arguments
      `(#:jbuild? #t

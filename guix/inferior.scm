@@ -136,8 +136,8 @@ it's an old Guix."
                       (object->string
                        `(begin
                           (primitive-load ,(search-path %load-path
-                                                        "guix/scripts/repl.scm"))
-                          ((@ (guix scripts repl) machine-repl))))))
+                                                        "guix/repl.scm"))
+                          ((@ (guix repl) machine-repl))))))
         pipe)))
 
 (define* (port->inferior pipe #:optional (close close-port))

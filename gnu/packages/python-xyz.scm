@@ -394,6 +394,32 @@ certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
 
+(define-public python-boolean.py
+  (package
+    (name "python-boolean.py")
+    (version "3.6")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastikr/boolean.py")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wc89y73va58cj7dsx6c199zpxsy9q53dsffsdj6zmc90inqz6qs"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/bastikr/boolean.py")
+    (synopsis "Boolean algebra in one Python module")
+    (description
+     "This is a small Python library that implements boolean algebra.
+It defines two base elements, @code{TRUE} and @code{FALSE}, and a
+@code{Symbol} class that can take on one of these two values.  Calculations
+are done only in terms of @code{AND}, @code{OR}, and @code{NOT}---other
+compositions like @code{XOR} and @code{NAND} are emulated on top of them.
+Expressions are constructed from parsed strings or directly in Python.")
+    (license license:bsd-2)))
+
 (define-public python-hdf4
   (package
    (name "python-hdf4")
@@ -589,6 +615,29 @@ to users of that module.")
 
 (define-public python2-netcdf4
   (package-with-python2 python-netcdf4))
+
+(define-public python-license-expression
+  (package
+    (name "python-license-expression")
+    (version "0.999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "license-expression" version))
+       (sha256
+        (base32 "08ppb0bxbrsxazy88sgpl9yffvdsabw6dkk1nc332wcz2mphwwyf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-boolean.py" ,python-boolean.py)))
+    (home-page "https://github.com/nexB/license-expression")
+    (synopsis "Apply boolean logic to license expressions")
+    (description
+     "This Python module defines a tiny language to evaluate and compare
+license expressions using boolean logic.  Logical combinations of licenses can
+be tested for equality, containment, and equivalence.  They can be normalised
+and simplified.  It supports SPDX license expressions as well as other naming
+conventions and aliases in the same expression.")
+    (license license:gpl2+)))
 
 (define-public python-lockfile
   (package
@@ -5051,14 +5100,13 @@ older Python versions.")
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "0.18")
+    (version "0.23")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32
-         "1nqj6vj2z4byi8flzf2lbldhqgicsz9mkpv4k69kjd8p8qxy4vnb"))))
+        (base32 "09mdqdfv5rdrwz80jh9m379gxmvk2vhjfz0fg53hid00icvxf65a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-configparser" ,python-configparser)
@@ -5222,14 +5270,14 @@ away.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.3.2")
+    (version "4.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "0dbq7sx26xqz5ixs711k5nc88p8a0nqyz6162pwks5dpcz9d4jww"))))
+         "1xsrwgivpkxlbr4dfndfsi098s29yqgswgjc1qqn69yxklvfw8yh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5237,7 +5285,7 @@ away.")
          (replace 'check (lambda _ (invoke "pytest" "-vv" "traitlets"))))))
     (propagated-inputs
      `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-decorator" ,python-decorator)))    ;not needed for >4.3.2
+       ("python-decorator" ,python-decorator)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (properties `((python2-variant . ,(delay python2-traitlets))))

@@ -115,6 +115,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages rsync)
   #:use-module (gnu packages selinux)
   #:use-module (gnu packages swig)
   #:use-module (guix build-system cmake)
@@ -179,6 +180,12 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
                               "/pub/linux-libre/releases/" version "-gnu/"
                               "deblob-check"))
           (sha256 deblob-check-hash))))
+
+(define deblob-scripts-5.3
+  (linux-libre-deblob-scripts
+   "5.3.1"
+   (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
+   (base32 "1av9ykv714cnl0clls8rhwa8rwflz6ivg17gharj1x650qp6vnw3")))
 
 (define deblob-scripts-5.2
   (linux-libre-deblob-scripts
@@ -350,18 +357,26 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.2-version "5.2.17")
+(define-public linux-libre-5.3-version "5.3.2")
+(define-public linux-libre-5.3-pristine-source
+  (let ((version linux-libre-5.3-version)
+        (hash (base32 "0szw21mpp94gp3zn2fgllbv6fdjjf20njgrcjay7vjmm7farq7rn")))
+   (make-linux-libre-source version
+                            (%upstream-linux-source version hash)
+                            deblob-scripts-5.3)))
+
+(define-public linux-libre-5.2-version "5.2.18")
 (define-public linux-libre-5.2-pristine-source
   (let ((version linux-libre-5.2-version)
-        (hash (base32 "1y9d218w83qgd6wima6h6n4zbj1rxz15yb6hdlhv8dm9kv88lfvv")))
+        (hash (base32 "0q6akmhcdj52lhvs5fjxrr25r0hyklh7115hg0zl0fcpdj30y2bd")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.2)))
 
-(define-public linux-libre-4.19-version "4.19.75")
+(define-public linux-libre-4.19-version "4.19.76")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "0y0vcmxyfg98mm63vaqq6n2bmxkbmrnvigm5zdh1al74w53p2pnx")))
+        (hash (base32 "0rhyjw5r3xdnj37dd6wrpihdqc3zn5ih6hcpa4x2cjvk0acx4kds")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
@@ -418,6 +433,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (patches (append (origin-patches source)
                      patches))))
 
+(define-public linux-libre-5.3-source
+  (source-with-patches linux-libre-5.3-pristine-source
+                       (list %boot-logo-patch
+                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
+
 (define-public linux-libre-5.2-source
   (source-with-patches linux-libre-5.2-pristine-source
                        (list (search-patch "linux-libre-active-entropy.patch")
@@ -463,6 +483,9 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                      ,@(if (version>=? version "4.16")
                            `(("flex" ,flex)
                              ("bison" ,bison))
+                           '())
+                     ,@(if (version>=? version "5.3")
+                           `(("rsync" ,rsync))
                            '())))
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -510,6 +533,10 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
     (license license:gpl2)))
+
+(define-public linux-libre-headers-5.3
+  (make-linux-libre-headers* linux-libre-5.3-version
+                             linux-libre-5.3-source))
 
 (define-public linux-libre-headers-5.2
   (make-linux-libre-headers* linux-libre-5.2-version
@@ -765,16 +792,22 @@ It has been modified to remove all non-free binary blobs.")
 ;;; Generic kernel packages.
 ;;;
 
+(define-public linux-libre-5.3
+  (make-linux-libre* linux-libre-5.3-version
+                     linux-libre-5.3-source
+                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                     #:configuration-file kernel-config))
+
+(define-public linux-libre-version         linux-libre-5.3-version)
+(define-public linux-libre-pristine-source linux-libre-5.3-pristine-source)
+(define-public linux-libre-source          linux-libre-5.3-source)
+(define-public linux-libre                 linux-libre-5.3)
+
 (define-public linux-libre-5.2
   (make-linux-libre* linux-libre-5.2-version
                      linux-libre-5.2-source
                      '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                      #:configuration-file kernel-config))
-
-(define-public linux-libre-version         linux-libre-5.2-version)
-(define-public linux-libre-pristine-source linux-libre-5.2-pristine-source)
-(define-public linux-libre-source          linux-libre-5.2-source)
-(define-public linux-libre                 linux-libre-5.2)
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version

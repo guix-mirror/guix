@@ -4329,17 +4329,16 @@ and busy().")
 (define-public perl-io-pager
   (package
     (name "perl-io-pager")
-    (version "0.4")
+    (version "0.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-"
              version
-             "0.tgz"))
+             ".tgz"))
        (sha256
-        (base32
-         "1vzdypsr7vkj8nnda9ccrksci6pqj5awwmi89l7x3mbpq36gad87"))))
+        (base32 "0h52gplhc3rij18xc4ngpg5kqv6mylxfzig18xll1aqda8iwa8kl"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -7320,15 +7319,14 @@ and @code{deserialize_regexp}.")
 (define-public perl-role-tiny-2
   (package
     (inherit perl-role-tiny)
-    (version "2.000006")
+    (version "2.001001")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Role-Tiny-" version ".tar.gz"))
        (sha256
-        (base32
-         "10p3sc639c0nj56bb77a2wg8samyyl8sqpliv3n8c0jaj2642wyc"))))))
+        (base32 "16yryg3cr14xw201gm8k8ci00hs60fy8lk2xhnaqa85n5m68flk8"))))))
 
 (define-public perl-safe-isa
   (package
@@ -7897,7 +7895,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.006003")
+    (version "2.006006")
     (source
      (origin
        (method url-fetch)
@@ -7905,7 +7903,7 @@ return value is the sub.")
              "mirror://cpan/authors/id/H/HA/HAARG/Sub-Quote-"
              version ".tar.gz"))
        (sha256
-        (base32 "0xl1w55qilqc3xdqvmjzs5vjnjdc0d4633yw7hh1yd9zfxpkl7xy"))))
+        (base32 "17fq4iskrisnqs96amrz493vxikwvqbj9s7014k6vyl84gs2lkkf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))

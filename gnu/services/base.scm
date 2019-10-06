@@ -947,36 +947,38 @@ the message of the day, among other things."
 (define (default-serial-port)
   "Return a gexp that determines a reasonable default serial port
 to use as the tty.  This is primarily useful for headless systems."
-  #~(begin
-      ;; console=device,options
-      ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
-      ;; options: BBBBPNF. P n|o|e, N number of bits,
-      ;; F flow control (r RTS)
-      (let* ((not-comma (char-set-complement (char-set #\,)))
-             (command (linux-command-line))
-             (agetty-specs (find-long-options "agetty.tty" command))
-             (console-specs (filter (lambda (spec)
-                                     (and (string-prefix? "tty" spec)
-                                          (not (or
-                                                (string-prefix? "tty0" spec)
-                                                (string-prefix? "tty1" spec)
-                                                (string-prefix? "tty2" spec)
-                                                (string-prefix? "tty3" spec)
-                                                (string-prefix? "tty4" spec)
-                                                (string-prefix? "tty5" spec)
-                                                (string-prefix? "tty6" spec)
-                                                (string-prefix? "tty7" spec)
-                                                (string-prefix? "tty8" spec)
-                                                (string-prefix? "tty9" spec)))))
-                                    (find-long-options "console" command)))
-             (specs (append agetty-specs console-specs)))
-        (match specs
-         (() #f)
-         ((spec _ ...)
-          ;; Extract device name from first spec.
-          (match (string-tokenize spec not-comma)
-           ((device-name _ ...)
-            device-name)))))))
+  (with-imported-modules (source-module-closure
+                          '((gnu build linux-boot))) ;for 'find-long-options'
+    #~(begin
+        ;; console=device,options
+        ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+        ;; options: BBBBPNF. P n|o|e, N number of bits,
+        ;; F flow control (r RTS)
+        (let* ((not-comma (char-set-complement (char-set #\,)))
+               (command (linux-command-line))
+               (agetty-specs (find-long-options "agetty.tty" command))
+               (console-specs (filter (lambda (spec)
+                                        (and (string-prefix? "tty" spec)
+                                             (not (or
+                                                   (string-prefix? "tty0" spec)
+                                                   (string-prefix? "tty1" spec)
+                                                   (string-prefix? "tty2" spec)
+                                                   (string-prefix? "tty3" spec)
+                                                   (string-prefix? "tty4" spec)
+                                                   (string-prefix? "tty5" spec)
+                                                   (string-prefix? "tty6" spec)
+                                                   (string-prefix? "tty7" spec)
+                                                   (string-prefix? "tty8" spec)
+                                                   (string-prefix? "tty9" spec)))))
+                                      (find-long-options "console" command)))
+               (specs (append agetty-specs console-specs)))
+          (match specs
+            (() #f)
+            ((spec _ ...)
+             ;; Extract device name from first spec.
+             (match (string-tokenize spec not-comma)
+               ((device-name _ ...)
+                device-name))))))))
 
 (define agetty-shepherd-service
   (match-lambda
@@ -1486,7 +1488,7 @@ information on the configuration file syntax."
                               (module "pam_limits.so")
                               (arguments '("conf=/etc/security/limits.conf")))))
              (if (member (pam-service-name pam)
-                         '("login" "su" "slim"))
+                         '("login" "su" "slim" "gdm-password"))
                  (pam-service
                   (inherit pam)
                   (session (cons pam-limits
@@ -2002,64 +2004,67 @@ item of @var{packages}."
          (requirement '(root-file-system))
 
          (documentation "Populate the /dev directory, dynamically.")
-         (start #~(lambda ()
-                    (define udevd
-                      ;; 'udevd' from eudev.
-                      #$(file-append udev "/sbin/udevd"))
+         (start
+          (with-imported-modules (source-module-closure
+                                  '((gnu build linux-boot)))
+            #~(lambda ()
+                (define udevd
+                  ;; 'udevd' from eudev.
+                  #$(file-append udev "/sbin/udevd"))
 
-                    (define (wait-for-udevd)
-                      ;; Wait until someone's listening on udevd's control
-                      ;; socket.
-                      (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
-                        (let try ()
-                          (catch 'system-error
-                            (lambda ()
-                              (connect sock PF_UNIX "/run/udev/control")
-                              (close-port sock))
-                            (lambda args
-                              (format #t "waiting for udevd...~%")
-                              (usleep 500000)
-                              (try))))))
+                (define (wait-for-udevd)
+                  ;; Wait until someone's listening on udevd's control
+                  ;; socket.
+                  (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                    (let try ()
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock PF_UNIX "/run/udev/control")
+                          (close-port sock))
+                        (lambda args
+                          (format #t "waiting for udevd...~%")
+                          (usleep 500000)
+                          (try))))))
 
-                    ;; Allow udev to find the modules.
-                    (setenv "LINUX_MODULE_DIRECTORY"
-                            "/run/booted-system/kernel/lib/modules")
+                ;; Allow udev to find the modules.
+                (setenv "LINUX_MODULE_DIRECTORY"
+                        "/run/booted-system/kernel/lib/modules")
 
-                    ;; The first one is for udev, the second one for eudev.
-                    (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                    (setenv "EUDEV_RULES_DIRECTORY"
-                            #$(file-append rules "/lib/udev/rules.d"))
+                ;; The first one is for udev, the second one for eudev.
+                (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                (setenv "EUDEV_RULES_DIRECTORY"
+                        #$(file-append rules "/lib/udev/rules.d"))
 
-                    (let* ((kernel-release
-                            (utsname:release (uname)))
-                           (linux-module-directory
-                            (getenv "LINUX_MODULE_DIRECTORY"))
-                           (directory
-                            (string-append linux-module-directory "/"
-                                           kernel-release))
-                           (old-umask (umask #o022)))
-                      ;; If we're in a container, DIRECTORY might not exist,
-                      ;; for instance because the host runs a different
-                      ;; kernel.  In that case, skip it; we'll just miss a few
-                      ;; nodes like /dev/fuse.
-                      (when (file-exists? directory)
-                        (make-static-device-nodes directory))
-                      (umask old-umask))
+                (let* ((kernel-release
+                        (utsname:release (uname)))
+                       (linux-module-directory
+                        (getenv "LINUX_MODULE_DIRECTORY"))
+                       (directory
+                        (string-append linux-module-directory "/"
+                                       kernel-release))
+                       (old-umask (umask #o022)))
+                  ;; If we're in a container, DIRECTORY might not exist,
+                  ;; for instance because the host runs a different
+                  ;; kernel.  In that case, skip it; we'll just miss a few
+                  ;; nodes like /dev/fuse.
+                  (when (file-exists? directory)
+                    (make-static-device-nodes directory))
+                  (umask old-umask))
 
-                    (let ((pid (fork+exec-command (list udevd))))
-                      ;; Wait until udevd is up and running.  This appears to
-                      ;; be needed so that the events triggered below are
-                      ;; actually handled.
-                      (wait-for-udevd)
+                (let ((pid (fork+exec-command (list udevd))))
+                  ;; Wait until udevd is up and running.  This appears to
+                  ;; be needed so that the events triggered below are
+                  ;; actually handled.
+                  (wait-for-udevd)
 
-                      ;; Trigger device node creation.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "trigger" "--action=add")
+                  ;; Trigger device node creation.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "trigger" "--action=add")
 
-                      ;; Wait for things to settle down.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "settle")
-                      pid)))
+                  ;; Wait for things to settle down.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "settle")
+                  pid))))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
@@ -2067,7 +2072,7 @@ item of @var{packages}."
          ;; Thus, make sure it is not respawned.
          (respawn? #f)
          ;; We need additional modules.
-         (modules `((gnu build linux-boot)
+         (modules `((gnu build linux-boot)        ;'make-static-device-nodes'
                     ,@%default-modules))
 
          (actions (list (shepherd-action

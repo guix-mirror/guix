@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Pkill -9 <pkill9@runbox.com>
 ;;; Copyright © 2019 L  p R n  d n <guix@lprndn.info>
+;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,9 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
-  #:use-module (gnu packages pulseaudio))
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages wm))
 
 (define-public gtk-xfce-engine
   (package
@@ -1197,4 +1200,801 @@ A plugin for the Xfce panel is also available.")
     (description
      "Xfce Screensaver is a screen saver and locker that aims to have simple,
  sane, secure defaults and be well integrated with the Xfce desktop. ")
+    (license gpl2+)))
+
+(define-public xfce4-volumed-pulse
+  (package
+    (name "xfce4-volumed-pulse")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1q639iwwj7q2plgz0wdgdbi5wkgaq177ca9rnnlrnbdmid5z5fqk"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xfconf" ,xfconf)
+       ("libnotify" ,libnotify)
+       ("pulseaudio" ,pulseaudio)
+       ("keybinder-3.0" ,keybinder-3.0)
+       ("gtk+" ,gtk+)))
+    (home-page "https://goodies.xfce.org/projects/applications/xfce4-volumed")
+    (synopsis "XFCE volume keys daemon")
+    (description
+     "This is a volume keys control daemon for Xfce Desktop environment. It controls
+ the volume using multimedia keys. It also provides volume change notifications.")
+    (license gpl3+)))
+
+(define-public xfce4-cpugraph-plugin
+  (package
+   (name "xfce4-cpugraph-plugin")
+   (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-cpugraph-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-cpugraph-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "193bj1p54l4zrvgdjj0pvjn161d6dn82jh9invcy09sqwlj0mkiy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpugraph-plugin")
+    (synopsis "Display CPU load as a graph in the Xfce panel")
+    (description "This panel plugin offers multiple display
+modes (LED, gradient, fire, etc…) to show the current CPU load of the
+system.  Various appearance options, like colors or size, are
+customizable.
+
+On multi core or multi CPU systems, CPU Graph can either track and
+display all of them at once, or at the user's option only a specific
+core or CPU.")
+    (license gpl2+)))
+
+(define-public xfce4-eyes-plugin
+  (package
+   (name "xfce4-eyes-plugin")
+   (version "4.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-eyes-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-eyes-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "17gj6fbvvrdzvz61czmia8hqynllsnmhk61fs4aml443cc1h1bpx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-eyes-plugin")
+    (synopsis "Display a pair of eyes for the Xfce panel")
+    (description "Eyes is a toy Xfce panel plugin that adds eyes which
+watch your every step.")
+    (license gpl2+)))
+
+(define-public xfce4-equake-plugin
+   (package
+   (name "xfce4-equake-plugin")
+   (version "1.3.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-equake-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-equake-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "09b9k0n5xm115k44x74w4ad0xqklilyfh0hglsps7zj97pd7a5a3"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-equake-plugin")
+    (synopsis "Earthquake monitor for the Xfce panel")
+    (description "Equake is a panel plugin for the XFCE desktop
+environment.  Equake monitors earthquakes and will display an update
+each time a new earthquake occurs.")
+    (license gpl2+)))
+
+(define-public xfce4-datetime-plugin
+  (package
+   (name "xfce4-datetime-plugin")
+   (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-datetime-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-datetime-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1m7bmpvbmiz2xdffpg675qn80zx2n0cnlf842ppvh1q7zz18ndfd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-datetime-plugin")
+    (synopsis "Display date and time inside the Xfce panel")
+    (description "This plugin shows the date and time in the panel,
+and a calendar appears when you left-click on it.")
+    (license gpl2+)))
+
+(define-public xfce4-calculator-plugin
+  (package
+   (name "xfce4-calculator-plugin")
+   (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-calculator-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-calculator-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1scx7z5ijg2fpcqrzv1nxhpj9vrqic7pyghig70f2n5hgaaanl3v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-calculator-plugin")
+    (synopsis "Calculator for the Xfce panel")
+    (description "This plugin is a calculator for the Xfce4 panel.  It
+supports common mathematical operators (+, -, *, /, ^) with usual
+precedence rules, and the following functions and common constants.")
+    (license gpl2+)))
+
+(define-public xfce4-cpufreq-plugin
+  (package
+   (name "xfce4-cpufreq-plugin")
+   (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-cpufreq-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-cpufreq-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1dgmx3ygil51s1az298ly0gybcw8ln1dz8q8y9k207a0vk049q65"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-cpufreq-plugin")
+    (synopsis "Xfce panel plugin for displaying CPU frequency")
+    (description "This panel plugin shows information about the CPU
+governor and frequencies supported and used by your system.")
+    (license gpl2+)))
+
+(define-public xfce4-diskperf-plugin
+  (package
+   (name "xfce4-diskperf-plugin")
+   (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-diskperf-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-diskperf-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0i4nrsvwcn15g5gmnba9p07sad3c96x517l2lybdw8jqv91rhbpx"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-diskperf-plugin")
+    (synopsis "Display disk performance in the Xfce panel")
+    (description "This Xfce panel plugin displays instant disk/partition
+performance (bytes transfered per second).")
+    (license gpl2+)))
+
+(define-public xfce4-embed-plugin
+  (package
+   (name "xfce4-embed-plugin")
+   (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-embed-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-embed-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0a72kqsjjh45swimqlpyrahdnplp0383v0i4phr4n6g8c1ixyry7"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)
+       ("gtk+-2" ,gtk+-2)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-embed-plugin")
+    (synopsis "Embed arbitary applications inside the Xfce panel")
+    (description "This plugin enables the embedding of arbitrary
+application windows into the Xfce panel.  The window is resized into
+the panel space available, and the associated program can be
+automatically launched if it is not open.
+
+Example uses include embedding an instant messaging buddy list, a mail
+client's new mail ticker, a simple media application, or a fancy clock
+or timer.  Combining with Xfce's ability to auto-hide panels can make
+this very convenient.")
+    (license gpl2+)))
+
+(define-public xfce4-fsguard-plugin
+  (package
+   (name "xfce4-fsguard-plugin")
+   (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-fsguard-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-fsguard-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05nmfkrmifm76bsywqmbjd1qdvzagv5cbvnwbkb57156j055vl6n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-fsguard-plugin")
+    (synopsis "Xfce panel plugin to monitor free disk space")
+    (description "The panel plugin checks free space on a chosen mount
+point frequently and displays a message when a limit is reached.  There
+are two limits: a warning limit where only the icon changes, and an
+urgent limit that advise the user with a message.  The icon button can
+be clicked to open the chosen mount point.")
+    (license bsd-2)))
+
+(define-public xfce4-genmon-plugin
+  (package
+   (name "xfce4-genmon-plugin")
+   (version "4.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-genmon-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-genmon-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ai3pwgv61nv7i2dyrvncnc63r8kdjbkp40vp51vzak1dx924v15"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-genmon-plugin")
+    (synopsis "Generic program output monitor for the Xfce panel")
+    (description "This plugin cyclically spawns the indicated
+script/program, captures its output (stdout) and displays the
+resulting string into the panel.
+
+The string can also contain markup to displayed an image, a bar, a
+button and a personalized tooltip.")
+    (license gpl2+)))
+
+(define-public xfce4-kbdleds-plugin
+  (package
+   (name "xfce4-kbdleds-plugin")
+   (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-kbdleds-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-kbdleds-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1k810asjjxwix1c7ixl7bqr97zc4j2mw7797gk49rjvv43bhla3d"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-kbdleds-plugin")
+    (synopsis "Display keyboard LEDs in the Xfce panel")
+    (description "This plugin shows the state of your keyboard LEDs:
+Caps, Scroll and Num Lock in Xfce panel.")
+    (license gpl2+)))
+
+(define-public xfce4-mailwatch-plugin
+  (package
+   (name "xfce4-mailwatch-plugin")
+   (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mailwatch-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mailwatch-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bfw3smwivr9mzdyq768biqrl4aq94zqi3xjzq6kqnd8561cqjk2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("exo" ,exo)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-mailwatch-plugin")
+    (synopsis "Mail watch plugin for the Xfce panel")
+    (description "The Xfce4 Mailwatch Plugin is a multi-protocol,
+multi-mailbox mail watcher.  Currently, the protocols supported are:
+
+@itemize
+@item IMAP (SSL/TLS and cleartext, CRAM-MD5)
+@item POP3 (SSL/TLS and cleartext, CRAM-MD5)
+@item Mbox mail spool (local)
+@item Maildir mail spool (local)
+@item MH-Maildir mail spool (local)
+@item Google Mail (GMail) mailbox (remote) (requires gnutls)
+@end itemize")
+    (license gpl2)))
+
+(define-public xfce4-mpc-plugin
+  (package
+   (name "xfce4-mpc-plugin")
+   (version "0.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mpc-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mpc-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0q3pysdp85b3c7g3b59y3c69g4nw6bvbf518lnri4lxrnsvpizpf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page "https://goodies.xfce.org/projects/panel-plugins/xfce4-mpc-plugin")
+    (synopsis "Music Player Daemon plugin for the Xfce panel")
+    (description "This is a simple client plugin for Music Player Daemon.
+
+Features:
+@itemize
+@item send Play/Stop/Next/Previous command to MPD.
+@item uses media icons names from icon-naming-spec (at least nuvola,
+tango and rodent themes provides these icons)
+@item decrease/increase volume using the mouse wheel.
+@item show the current volume, status and title as a tooltip when
+hovering the mouse over the plugin.
+@item show a simple playlist window upon middle-click, permitting to
+select a track to play
+@item configurable MPD host/port/password.
+@item toggles repeat/random features + enable/disable MPD outputs in
+the right-click menu.
+@item launch configurable client (gmpc, xterm -e ncmpc,..) through
+right-click menu
+@item configurable markup for tooltip and playlist, using a gmpc-like markup
+@end itemize")
+    (license isc)))
+
+(define-public xfce4-mount-plugin
+  (package
+   (name "xfce4-mount-plugin")
+   (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-mount-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-mount-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "07lijjhimjrcyrhasr2299km6wm22xcd3fazdfpqvisbk1mvvrda"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-mount-plugin")
+    (synopsis "Mount/unmount plugin for the Xfce panel")
+    (description "The plugin will display a list of items representing
+your various devices.  If you click on an unmounted devices it will
+mount it and vice versa.  There is a warning in case a device can't be
+mounted or when unmounting fails.")
+    (license gpl2+)))
+
+(define-public xfce4-netload-plugin
+  (package
+   (name "xfce4-netload-plugin")
+   (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-netload-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-netload-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0p91875n6s8n88l7wb4w9prqly3wvkyilnr7zq0ppq71rwjh9r12"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-netload-plugin")
+    (synopsis "Netload plugin for the Xfce Panel")
+    (description "This plugin displays the current load of the network
+interfaces of your choice in the panel.")
+    (license gpl2+)))
+
+(define-public xfce4-places-plugin
+  (package
+   (name "xfce4-places-plugin")
+   (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-places-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-places-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1chac4ki70axgvkmhw94m0srsv0pwiwqrqbh8di0y9n90fgj24gj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("gtk+-2" ,gtk+-2)
+       ("exo" ,exo)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-places-plugin")
+    (synopsis "Gnome-like Places menu for the Xfce panel")
+    (description "This plugin provides a menu with quick access to folders,
+documents, and removable media.  The places plugin brings much of the
+functionality of GNOME's Places menu to Xfce.
+
+The plugin puts a simple button on the panel.  Clicking on this button
+opens up a menu with the following:
+
+@itemize
+@item System-defined directories (home folder, trash, desktop, file system)
+@item Removable media (using thunar-vfs)
+@item User-defined bookmarks (reads @file{~/.gtk-bookmarks})
+@item Search program launcher (optional)
+@item Recent documents submenu
+@end itemize")
+    (license gpl2+)))
+
+(define-public xfce4-smartbookmark-plugin
+  (package
+   (name "xfce4-smartbookmark-plugin")
+   (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-smartbookmark-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-smartbookmark-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "001nf2bqly8vm868qvafzgihc9463c488mkim24iw9g2s9ygna1y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-smartbookmark-plugin")
+    (synopsis "Perform custom searches in your browser from the Xfce panel")
+    (description "This plugin allows you to send search requests
+directly to your browser, such that you can search through your
+favorite search engine or bug tracker right from the Xfce panel.")
+    (license gpl2+)))
+
+(define-public xfce4-statusnotifier-plugin
+  (package
+   (name "xfce4-statusnotifier-plugin")
+   (version "0.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-statusnotifier-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-statusnotifier-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "154b0q9pmlbjh30vvx4c48msdfxp4pq8x4mbn71mk7pibk018hsj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("libdbusmenu" ,libdbusmenu)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-statusnotifier-plugin")
+    (synopsis "Xfce panel plugin for status notifier items")
+(description "This plugin provides a panel area for status
+notifier items (application indicators).  Applications may use these
+items to display their status and interact with the user.  This
+technology is a modern alternative to systray and follows the
+freedesktop.org specification.")
+    (license gpl2+)))
+
+(define-public xfce4-stopwatch-plugin
+  (package
+   (name "xfce4-stopwatch-plugin")
+   (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-stopwatch-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-stopwatch-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "07dadvgivly44w7qj74i2w60nk01h8567paxrli8vzmhb3p6xi2h"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; test fails in po/ directory
+     `(#:tests? #f))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-stopwatch-plugin")
+    (synopsis "Stopwatch plugin for the Xfce panel")
+    (description "This Xfce panel plugin keeps track of elapsed time.")
+    (license bsd-2)))
+
+(define-public xfce4-systemload-plugin
+  (package
+   (name "xfce4-systemload-plugin")
+   (version "1.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-systemload-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-systemload-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0x87a8h5l3ashz1ksfaxcpn9a392jzlsbx5n5pga8g90fp2hf905"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-systemload-plugin")
+    (synopsis "System load display plugin for the Xfce panel")
+    (description "A system load plugin for the Xfce4 desktop
+environment.  It displays the current CPU load, the memory in use, the
+swap space and the system uptime in the Xfce4 panel.")
+    (license bsd-2)))
+
+(define-public xfce4-time-out-plugin
+  (package
+   (name "xfce4-time-out-plugin")
+   (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-time-out-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-time-out-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0sqggsnkj40337v0c9vgakyh1zjzri6if38l85gcrnc39rlx973z"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-time-out-plugin")
+    (synopsis "Xfce panel plugin that encourages periodical breaks")
+    (description "This plugin encourages to take periodical
+breaks from the computer every X minutes.  During breaks it locks your
+screen.  It optionally allows you to postpone breaks for a certain
+time.")
+    (license gpl2+)))
+
+(define-public xfce4-timer-plugin
+  (package
+   (name "xfce4-timer-plugin")
+   (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-timer-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-timer-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "16vypwwjwfk7nn4n16rfgn0z78jqrmbgxmc1r46269lrwd1m6kif"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-timer-plugin")
+    (synopsis "Simple countdown and alarm plugin for the Xfce panel")
+    (description "This is a simple plugin that lets the user run an
+alarm at a specified time or at the end of a specified countdown
+period.")
+    (license gpl2+)))
+
+(define-public xfce4-verve-plugin
+  (package
+   (name "xfce4-verve-plugin")
+   (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-verve-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-verve-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ljcmgc8ixrbz134ggxbbh4zzdnp7mhi9ay6s5hgrz28djx10rcy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-verve-plugin")
+    (synopsis "Command line for the Xfce panel")
+    (description "The Verve plugin provides a comfortable command line
+for the Xfce panel.  It supports several features, such as:
+@itemize
+@item Opens URLs, e-mail addresses, directories, and programs
+@item Command history
+@item Auto-completion (including command history)
+@item Focus grabbing via D-BUS (so you can bind a shortcut to it)
+@item Custom input field width
+@end itemize")
+    (license gpl2+)))
+
+(define-public xfce4-wavelan-plugin
+  (package
+   (name "xfce4-wavelan-plugin")
+   (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-wavelan-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-wavelan-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "05zdiq1igr1fcvnwlivg8g3szvxmlr3yc7jfj3bwgqrs0vm827zl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxfce4ui" ,libxfce4ui)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-wavelan-plugin")
+    (synopsis "Show stats from WLAN interface in Xfce panel")
+    (description "This plugin is used to display stats from a wireless
+lan interface (signal state, signal quality, network name (SSID)).")
+    (license bsd-2)))
+
+(define-public xfce4-weather-plugin
+  (package
+   (name "xfce4-weather-plugin")
+   (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  "xfce4-weather-plugin/"
+                                  (version-major+minor version)
+                                  "/xfce4-weather-plugin-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0wlm80panxyn86l9qm3mbliqj7gkf2zyzak3w041zz9hg31a08s4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libsoup" ,libsoup)
+       ("libxfce4ui" ,libxfce4ui)
+       ("libxml2" ,libxml2)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page
+     "https://goodies.xfce.org/projects/panel-plugins/xfce4-weather-plugin")
+    (synopsis "Show information about local weather in the Xfce panel")
+    (description "This Xfce panel plugin shows information about your
+local weather in the panel, using forecast data provided by the
+@uref{https://met.no, Norwegian Meteorological Institute}.")
     (license gpl2+)))

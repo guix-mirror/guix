@@ -197,10 +197,14 @@ language.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
+                            (assoc-ref %build-inputs "classpath"))
+             "--disable-int-caching"
+             "--enable-runtime-reloc-checks"
+             "--enable-ffi")))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
+       ("libffi" ,libffi)
        ("zlib" ,zlib)))
     ;; When built with a recent GCC and glibc the configure step of icedtea-6
     ;; fails with an invalid instruction error.
@@ -1402,7 +1406,12 @@ bootstrapping purposes.")
            (add-after 'install 'install-libjvm
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((lib-path (string-append (assoc-ref outputs "out")
-                                               "/lib/amd64")))
+                                               "/lib/"
+                                               ,(match (%current-system)
+                                                  ("i686-linux"
+                                                   "i386")
+                                                  ("x86_64-linux"
+                                                   "amd64")))))
                  (symlink (string-append lib-path "/server/libjvm.so")
                           (string-append lib-path "/libjvm.so")))
                #t))

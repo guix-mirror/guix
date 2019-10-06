@@ -2603,14 +2603,14 @@ composed of HTML::Element style components.")
 (define-public perl-html-form
   (package
     (name "perl-html-form")
-    (version "6.04")
+    (version "6.05")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/O/OA/OALDERS/"
                            "HTML-Form-" version ".tar.gz"))
        (sha256
-        (base32 "100090bdsr5kapv8h0wxzwlzfbfqn57rq9gzrvg9i6hvnsl5gmcw"))))
+        (base32 "14i4ldyvdvhdhvfhh9kiq6z853q2f84biq8vcpv1k5w2r80wdiin"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
@@ -3639,14 +3639,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
-    (version "2.19")
+    (version "2.21")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
                            "Test-TCP-" version ".tar.gz"))
        (sha256
-        (base32 "14ahzklq3xgmwj58p9vdcfgpggrmh3nigq5mzqk4wakbb6fjs0fx"))))
+        (base32 "1djnaw1yli0kcd7azchqnp59l62f6mp13q50xyrjirpaxhd51j32"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
@@ -4021,8 +4021,8 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
   (package-with-python2 python-feedparser))
 
 (define-public guix-data-service
-  (let ((commit "bb94f6dd05a33135fa661b86d35d203c0c099dba")
-        (revision "1"))
+  (let ((commit "8019d2e6878908f40cb6b047f60d2e4fd3c6712e")
+        (revision "3"))
     (package
       (name "guix-data-service")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -4034,7 +4034,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1y6s4igjvi0293z4d4hbgwifs8avcam71qhis9z4f8mjz6w7vcpb"))))
+                  "06xv43az1aklrdb5y0if17xdqc80qnfdlyjiww8zmv4m3qnvj607"))))
       (build-system gnu-build-system)
       (arguments
        '(#:tests? #f                    ; TODO Tests require PostgreSQL
@@ -4081,6 +4081,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                         (,go ,(getenv "GUILE_LOAD_COMPILED_PATH")))))
                   '("guix-data-service"
                     "guix-data-service-process-branch-updated-email"
+                    "guix-data-service-process-branch-updated-mbox"
                     "guix-data-service-process-job"
                     "guix-data-service-process-jobs"
                     "guix-data-service-query-build-servers"))
