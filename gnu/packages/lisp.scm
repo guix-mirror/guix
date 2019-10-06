@@ -7434,3 +7434,57 @@ ability to store all Common Lisp data types into streams.")
 
 (define-public ecl-cl-store
   (sbcl-package->ecl-package sbcl-cl-store))
+
+(define-public sbcl-cl-gobject-introspection
+  (let ((commit "7b703e2384945ea0ac39d9b766de434a08d81560")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-gobject-introspection")
+      (version (git-version "0.3" revision commit))
+      (home-page "https://github.com/andy128k/cl-gobject-introspection")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1zcqd2qj14f6b38vys8gr89s6cijsp9r8j43xa8lynilwva7bwyh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cffi" ,sbcl-cffi)
+         ("iterate" ,sbcl-iterate)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("glib" ,glib)
+         ("gobject-introspection" ,gobject-introspection)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (arguments
+       ;; TODO: Tests fail, see
+       ;; https://github.com/andy128k/cl-gobject-introspection/issues/70.
+       '(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after (quote unpack) (quote fix-paths)
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "src/init.lisp"
+                 (("libgobject-2\\.0\\.so")
+                  (string-append (assoc-ref inputs "glib") "/lib/libgobject-2.0.so"))
+                 (("libgirepository-1\\.0\\.so")
+                  (string-append (assoc-ref inputs "gobject-introspection")
+                                 "/lib/libgirepository-1.0.so")))
+               #t)))))
+      (synopsis "Common Lisp bindings to GObject Introspection")
+      (description
+       "This library is a bridge between Common Lisp and GObject
+Introspection, which enables Common Lisp programs to access the full interface
+of C+GObject libraries without the need of writing dedicated bindings.")
+      (license (list license:bsd-3
+                     ;; Tests are under a different license.
+                     license:llgpl)))))
+
+(define-public cl-gobject-introspection
+  (sbcl-package->cl-source-package sbcl-cl-gobject-introspection))
