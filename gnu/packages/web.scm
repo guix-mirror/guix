@@ -3635,14 +3635,14 @@ either mocked HTTP or a locally spawned server.")
 (define-public perl-test-tcp
   (package
     (name "perl-test-tcp")
-    (version "2.19")
+    (version "2.21")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+       (uri (string-append "mirror://cpan/authors/id/K/KA/KAZUHO/"
                            "Test-TCP-" version ".tar.gz"))
        (sha256
-        (base32 "14ahzklq3xgmwj58p9vdcfgpggrmh3nigq5mzqk4wakbb6fjs0fx"))))
+        (base32 "1djnaw1yli0kcd7azchqnp59l62f6mp13q50xyrjirpaxhd51j32"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-test-sharedfork" ,perl-test-sharedfork)))
