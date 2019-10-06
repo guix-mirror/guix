@@ -1848,14 +1848,16 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.12.2")
+    (version "1.12.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "1x929lwhai6nkppm4zvicyw5qh5va5sizp86r30qnfkh1n7w2mfv"))))
+                "0zdcbr4nixvl8ga4mp9pw1dfww35dzhzpb6ixajqasiri824m7i9"))))
     (build-system r-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
