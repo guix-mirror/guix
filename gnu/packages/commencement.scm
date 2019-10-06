@@ -1406,6 +1406,74 @@ ac_cv_c_float_format='IEEE (little-endian)'
                (copy-recursively headers out)
                #t))))))))
 
+(define gawk-mesboot0
+  ;; The initial Gawk.
+  (package
+    (inherit gawk)
+    (name "gawk-mesboot0")
+    (version "3.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gawk/gawk-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "087s7vpc8zawn3l7bwv9f44bf59rc398hvaiid63klw6fkbvabr3"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-tcc-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:configure-flags '("--build=i686-unknown-linux-gnu"
+                           "--host=i686-unknown-linux-gnu"
+                           "--disable-nls")
+       #:make-flags '("gawk")
+       #:parallel-build? #f
+       #:parallel-tests? #f
+       #:strip-binaries? #f             ; no strip yet
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             (substitute* "Makefile.in"
+               (("date ") "echo today ")
+               ((" autoheader") "true")
+               ((" -lm ") " "))
+             (substitute* "test/Makefile.in"
+               (("^bigtest:.*") "bigtest: basic\n")
+               (("( |\t)(childin|convfmt|fflush|longwrds|math|negexp)" all sep) sep))))
+         (add-before 'configure 'setenv
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (setenv "CONFIG_SHELL" shell)
+               (setenv "SHELL" shell)
+               (setenv "CC" "tcc")
+               (setenv "CPP" "tcc -E")
+               (setenv "LD" "tcc")
+               (setenv "ac_cv_func_getpgrp_void" "yes")
+               (setenv "ac_cv_func_tzset" "yes"))
+             #t))
+         (replace 'configure           ; needs classic invocation of configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref %outputs "out"))
+                    (configure-flags
+                     `(,@configure-flags
+                       ,(string-append "--prefix=" out))))
+               (format (current-error-port) "running ./configure ~a\n" (string-join configure-flags))
+               (system* "touch" "configure") ; aclocal.m4 is newer than configure
+               (apply invoke (cons "./configure" configure-flags)))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "gawk" bin)
+               (symlink "gawk" (string-append bin "/awk"))
+               #t))))))))
+
 (define glibc-mesboot0
   ;; GNU C Library 2.2.5 is the most recent glibc that we managed to build
   ;; using gcc-2.95.3.  Newer versions (2.3.x, 2.6, 2.1x) seem to need a newer
