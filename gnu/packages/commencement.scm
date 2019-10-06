@@ -1188,50 +1188,65 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
     ,@(alist-delete "tcc" (%boot-tcc0-inputs))))
 
 (define binutils-mesboot0
+  ;; The initial Binutils
   (package
     (inherit binutils)
     (name "binutils-mesboot0")
-    (version "2.20.1a")
-    (source (bootstrap-origin
-             (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnu/binutils/binutils-"
-                                   version ".tar.bz2"))
-               (patches (search-patches "binutils-boot-2.20.1a.patch"))
-               (sha256
-                (base32
-                 "0r7dr0brfpchh5ic0z9r4yxqn4ybzmlh25sbp30cacqk8nb7rlvi")))))
+    (version "2.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/binutils/binutils-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1w8xp7k44bkijr974x9918i4p1sw4g2fcd5mxvspkjpg38m214ds"))))
     (inputs '())
     (propagated-inputs '())
-    (native-inputs `(("tcc" ,tcc-boot)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("make" ,make-mesboot0)))
+    (native-inputs (%boot-tcc-inputs))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
-       #:tests? #f                                ; runtest: command not found
+       #:tests? #f                      ; runtest: command not found
        #:parallel-build? #f
-       #:strip-binaries? #f                       ; no strip yet
+       #:strip-binaries? #f             ; no strip yet
        #:configure-flags
-       (let ((cppflags (string-append " -D __GLIBC_MINOR__=6"
-                                      " -D MES_BOOTSTRAP=1"))
-             (bash (assoc-ref %build-inputs "bash")))
-         `(,(string-append "CONFIG_SHELL=" bash "/bin/sh")
-           ,(string-append "CPPFLAGS=" cppflags)
-           "AR=tcc -ar"
-           "CXX=false"
-           "RANLIB=true"
-           ,(string-append "CC=tcc" cppflags)
-           "--disable-nls"
+       (let ((out (assoc-ref %outputs "out")))
+         `("--disable-nls"
            "--disable-shared"
            "--disable-werror"
-           "--build=i686-unknown-linux-gnu"
-           "--host=i686-unknown-linux-gnu"
-           "--with-sysroot=/"))))))
+           "--build=i386-unknown-linux"
+           "--host=i386-unknown-linux"
+           "--target=i386-unknown-linux"
+           "--with-sysroot=/"
+           ,(string-append "--prefix=" out)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'setenv
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash")))
+               (setenv "CONFIG_SHELL" shell)
+               (setenv "SHELL" shell)
+               (setenv "AR" "tcc -ar")
+               (setenv "RANLIB" "true")
+               (setenv "CC" "tcc -D __GLIBC_MINOR__=6")
+               #t)))
+         (add-after 'unpack 'scripted-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bfd/configure"
+               (("^sed -e '/SRC-POTFILES.*" all)
+                "echo -e 'all:\\n\\ttrue\\n\\ninstall:\\n\\ttrue\\n' > po/Makefile\n"))
+             #t))
+         (replace 'configure           ; needs classic invocation of configure
+           (lambda* (#:key configure-flags #:allow-other-keys)
+             (format (current-error-port)
+                     "running ./configure ~a\n" (string-join configure-flags))
+             (apply system* "./configure" configure-flags)
+             (substitute* "config.status"
+               (("[.]//dev/null") "/dev/null"))
+             (invoke "sh" "./config.status"))))))))
 
 (define gcc-core-mesboot
   ;; Gcc-2.95.3 is the most recent GCC that is supported by what the Mes C
