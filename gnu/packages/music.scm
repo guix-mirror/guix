@@ -4585,3 +4585,43 @@ with error and volume history, and advanced features.")
     ;; Most of the code is under GPL2+, but some abstract or helper classes
     ;; are under LGPL2.1.
     (license (list license:gpl2+ license:lgpl2.1))))
+
+(define-public mloop
+  (let ((commit "adebff98b0b4dc5872a03acb82e89c77cb29c127")
+        (revision "0"))
+    (package
+      (name "mloop")
+      (version (git-version "0.0.1" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://git.fuzzle.org/mloop")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "175gxvg5slq0bllcx1c381rjlq3xpxww8c3kpiw5i2kfr4m52myz"))))
+      (build-system waf-build-system)
+      (arguments
+       `(#:python ,python-2
+         #:tests? #f))                     ; no "check" target
+      (inputs
+       `(("jack" ,jack-1)
+         ("ncurses" ,ncurses)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (home-page "https://fuzzle.org/~petern/mloop.html")
+      (synopsis "Live MIDI looper")
+      (description "mloop is a live MIDI looping system, using jack-midi.
+Loops are recorded, optionally with beat quantization, and can then be played
+back, either once or looping.  A 'note cache' system is implemented to
+remember which notes are pressed and their velocities.  This allows for a loop
+to start off with the currently pressed notes, making seamless loops much
+easier to perform.  Features include:
+
+@itemize
+@item Quantisation; end a loop on a beat exactly.
+@item Delayed recording; wait for a MIDI event before starting a loop record.
+@item Adjust tempo; Playback speed of loops can be adjusted on the fly.
+@end itemize\n")
+      (license license:gpl2))))
