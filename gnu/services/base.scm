@@ -939,36 +939,38 @@ the message of the day, among other things."
 (define (default-serial-port)
   "Return a gexp that determines a reasonable default serial port
 to use as the tty.  This is primarily useful for headless systems."
-  #~(begin
-      ;; console=device,options
-      ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
-      ;; options: BBBBPNF. P n|o|e, N number of bits,
-      ;; F flow control (r RTS)
-      (let* ((not-comma (char-set-complement (char-set #\,)))
-             (command (linux-command-line))
-             (agetty-specs (find-long-options "agetty.tty" command))
-             (console-specs (filter (lambda (spec)
-                                     (and (string-prefix? "tty" spec)
-                                          (not (or
-                                                (string-prefix? "tty0" spec)
-                                                (string-prefix? "tty1" spec)
-                                                (string-prefix? "tty2" spec)
-                                                (string-prefix? "tty3" spec)
-                                                (string-prefix? "tty4" spec)
-                                                (string-prefix? "tty5" spec)
-                                                (string-prefix? "tty6" spec)
-                                                (string-prefix? "tty7" spec)
-                                                (string-prefix? "tty8" spec)
-                                                (string-prefix? "tty9" spec)))))
-                                    (find-long-options "console" command)))
-             (specs (append agetty-specs console-specs)))
-        (match specs
-         (() #f)
-         ((spec _ ...)
-          ;; Extract device name from first spec.
-          (match (string-tokenize spec not-comma)
-           ((device-name _ ...)
-            device-name)))))))
+  (with-imported-modules (source-module-closure
+                          '((gnu build linux-boot))) ;for 'find-long-options'
+    #~(begin
+        ;; console=device,options
+        ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+        ;; options: BBBBPNF. P n|o|e, N number of bits,
+        ;; F flow control (r RTS)
+        (let* ((not-comma (char-set-complement (char-set #\,)))
+               (command (linux-command-line))
+               (agetty-specs (find-long-options "agetty.tty" command))
+               (console-specs (filter (lambda (spec)
+                                        (and (string-prefix? "tty" spec)
+                                             (not (or
+                                                   (string-prefix? "tty0" spec)
+                                                   (string-prefix? "tty1" spec)
+                                                   (string-prefix? "tty2" spec)
+                                                   (string-prefix? "tty3" spec)
+                                                   (string-prefix? "tty4" spec)
+                                                   (string-prefix? "tty5" spec)
+                                                   (string-prefix? "tty6" spec)
+                                                   (string-prefix? "tty7" spec)
+                                                   (string-prefix? "tty8" spec)
+                                                   (string-prefix? "tty9" spec)))))
+                                      (find-long-options "console" command)))
+               (specs (append agetty-specs console-specs)))
+          (match specs
+            (() #f)
+            ((spec _ ...)
+             ;; Extract device name from first spec.
+             (match (string-tokenize spec not-comma)
+               ((device-name _ ...)
+                device-name))))))))
 
 (define agetty-shepherd-service
   (match-lambda
