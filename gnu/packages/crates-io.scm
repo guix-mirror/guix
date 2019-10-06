@@ -476,31 +476,6 @@ depending on a large number of #[cfg] parameters.  Structured like an
 colorization.")
     (license license:expat)))
 
-(define-public rust-clippy
-  (package
-    (name "rust-clippy")
-    (version "0.0.302")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (crate-uri "clippy" version))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
-        (sha256
-          (base32
-            "1562x3sq9mgmc8j39gd34wqm7ybrdvpmj7cc1n450gwsawayw4fr"))))
-    (build-system cargo-build-system)
-    (arguments
-      `(#:cargo-inputs
-        (("rust-term" ,rust-term))))
-    (home-page "https://github.com/rust-lang/rust-clippy")
-    (synopsis
-      "A bunch of helpful lints to avoid common pitfalls in Rust.")
-    (description
-      "This package provides a bunch of helpful lints to avoid common pitfalls in Rust.")
-    (license (list license:asl2.0
-                   license:expat))))
-
 (define-public rust-cloudabi
   (package
     (name "rust-cloudabi")
