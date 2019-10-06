@@ -825,7 +825,12 @@ use 'plain-file' instead~%")
           (file-append inetutils "/bin/ping6")
           (file-append sudo "/bin/sudo")
           (file-append sudo "/bin/sudoedit")
-          (file-append fuse "/bin/fusermount"))))
+          (file-append fuse "/bin/fusermount")
+
+          ;; To allow mounts with the "user" option, "mount" and "umount" must
+          ;; be setuid-root.
+          (file-append util-linux "/bin/mount")
+          (file-append util-linux "/bin/umount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
