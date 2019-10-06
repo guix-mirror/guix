@@ -15528,10 +15528,11 @@ files) are provided.")
       (license license:gpl2+))))
 
 (define-public emacs-hackernews
-  (let ((commit "916c3da8da45c757f5ec2faeed57fa370513d4ac"))
+  (let ((commit "2362d7b00e59da7caddc8c0adc24dccb42fddef9")
+        (revision "2"))
     (package
       (name "emacs-hackernews")
-      (version (git-version "0.5.0" "1" commit))
+      (version (git-version "0.5.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -15541,7 +15542,7 @@ files) are provided.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "09bxaaczana1cfvxyk9aagjvdszkj0j1yldl5r4xa60b59lxihsg"))))
+           "1hcc5b173yzcvvd2ls3jxrmsw2w9bi21m9hcpcirkn0nh93ywadv"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/clarete/hackernews.el")
       (synopsis "Hacker News client for Emacs")
