@@ -15,6 +15,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -665,15 +666,15 @@ eye-candy, customizable, and reasonably lightweight.")
 (define-public sakura
   (package
     (name "sakura")
-    (version "3.6.0")
+    (version "3.7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/" name "/trunk/"
                                   version "/+download/" name "-" version
-                                  ".tar.bz2"))
+                                  ".tar.gz"))
               (sha256
                (base32
-                "1q463qm41ym7jb3kbzjz7b6x549vmgkb70arpkhsf86yxly1y5m1"))))
+                "15gskj5yv5qs3cj4ps43735kfx2nzjlhq4dk9ghirl8lvhhxsm5m"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f))                    ; no check phase
