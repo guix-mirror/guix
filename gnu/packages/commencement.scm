@@ -1097,6 +1097,42 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (install-file "diff" bin)
                #t))))))))
 
+(define patch-mesboot
+  ;; The initial patch.
+  (package
+    (inherit patch)
+    (name "patch-mesboot")
+    (version "2.5.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/patch/patch-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "12nv7jx3gxfp50y11nxzlnmqqrpicjggw6pcsq0wyavkkm3cddgc"))))
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (inputs '())
+    (propagated-inputs '())
+    (native-inputs (%boot-tcc0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:parallel-build? #f
+       #:tests? #f            ; check is naive, also checks non-built PROGRAMS
+       #:strip-binaries? #f   ; no strip yet
+       #:configure-flags '("AR=tcc -ar" "CC=tcc" "LD-tcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'scripted-patch
+           (lambda _
+             ;; avoid another segfault
+             (substitute* "pch.c"
+               (("while [(]p_end >= 0[)]" all)
+                "p_end = -1;\nwhile (0)"))
+             #t))
+         ;; FIXME: no compressing gzip yet
+         (delete 'compress-documentation))))))
+
 (define binutils-mesboot0
   (package
     (inherit binutils)
