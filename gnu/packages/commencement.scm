@@ -1248,36 +1248,32 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                (("[.]//dev/null") "/dev/null"))
              (invoke "sh" "./config.status"))))))))
 
-(define gcc-core-mesboot
+(define gcc-core-mesboot0
   ;; Gcc-2.95.3 is the most recent GCC that is supported by what the Mes C
   ;; Library v0.16 offers.  Gcc-3.x (and 4.x) place higher demands on a C
   ;; library, such as dir.h/struct DIR/readdir, locales, signals...  Also,
-  ;; with gcc-2.95.3, binutils-boot-2.20.1a and glibc-2.2.5 we found a GNU
-  ;; toolchain triplet "that works".
+  ;; with gcc-2.95.3, binutils (2.14.0, 2.20.1a) and glibc-2.2.5 we found a
+  ;; GNU toolchain triplet "that works".
   (package
     (inherit gcc)
-    (name "gcc-core-mesboot")
+    (name "gcc-core-mesboot0")
     (version "2.95.3")
-    (source (bootstrap-origin
-             (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnu/gcc/gcc-2.95.3/gcc-core-"
-                                   version
-                                   ".tar.gz"))
-               (patches (search-patches "gcc-boot-2.95.3.patch"))
-               (sha256
-                (base32
-                 "1xvfy4pqhrd5v2cv8lzf63iqg92k09g6z9n2ah6ndd4h17k1x0an")))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-2.95.3/gcc-core-"
+                                  version
+                                  ".tar.gz"))
+              ;; `patches' needs XZ
+              ;; (patches (search-patches "gcc-boot-2.95.3.patch"))
+              (sha256
+               (base32
+                "1xvfy4pqhrd5v2cv8lzf63iqg92k09g6z9n2ah6ndd4h17k1x0an"))))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
-    (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("tcc" ,tcc-boot)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
-                     ("make" ,make-mesboot0)))
+    (native-inputs `(("boot-patch" ,(search-patch "gcc-boot-2.95.3.patch"))
+                     ("binutils" ,binutils-mesboot0)
+                     ,@(%boot-tcc-inputs)))
     (outputs '("out"))
     (arguments
      `(#:implicit-inputs? #f
@@ -1293,32 +1289,37 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
            "--build=i686-unknown-linux-gnu"
            "--host=i686-unknown-linux-gnu"
            ,(string-append "--prefix=" out)))
-       #:make-flags (list
-                     "CC=tcc -static -D __GLIBC_MINOR__=6"
-                     "OLDCC=tcc -static -D __GLIBC_MINOR__=6"
-                     "CC_FOR_BUILD=tcc -static -D __GLIBC_MINOR__=6"
-                     "AR=ar"
-                     "RANLIB=ranlib"
-                     (string-append "LIBGCC2_INCLUDES=-I "
-                                    (assoc-ref %build-inputs "tcc")
-                                    "/include")
-                     "LANGUAGES=c"
-                     (string-append "BOOT_LDFLAGS="
-                                    " -B" (assoc-ref %build-inputs "tcc")
-                                    "/lib/"))
+       #:make-flags
+       `("CC=tcc -static -D __GLIBC_MINOR__=6"
+         "OLDCC=tcc -static -D __GLIBC_MINOR__=6"
+         "CC_FOR_BUILD=tcc -static -D __GLIBC_MINOR__=6"
+         "AR=ar"
+         "RANLIB=ranlib"
+         ,(string-append "LIBGCC2_INCLUDES=-I "
+                         (assoc-ref %build-inputs "tcc")
+                         "/include")
+         "LANGUAGES=c"
+         ,(string-append "BOOT_LDFLAGS="
+                         " -B" (assoc-ref %build-inputs "tcc")
+                         "/lib/"))
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
-         ;; gcc-2.95.3 needs more traditional configure
+         (add-after 'unpack 'apply-boot-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((patch-file (assoc-ref inputs "boot-patch")))
+               (system* "patch" "--force" "-p1" "-i" patch-file)
+               #t)))
          (add-before 'configure 'setenv
            (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (bash (assoc-ref %build-inputs "bash"))
-                   (tcc (assoc-ref %build-inputs "tcc"))
-                   (cppflags " -D __GLIBC_MINOR__=6"))
-               (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
+             (let* ((out (assoc-ref outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash"))
+                    (tcc (assoc-ref %build-inputs "tcc"))
+                    (cppflags " -D __GLIBC_MINOR__=6"))
+               (setenv "CONFIG_SHELL" shell)
                (setenv "CPPFLAGS" cppflags)
                (setenv "CC" (string-append "tcc" cppflags))
                (setenv "CC_FOR_BUILD" (string-append "tcc" cppflags))
@@ -1327,9 +1328,9 @@ $MES -e '(mescc)' module/mescc.scm -- \"$@\"
                  (lambda _
                    (display "
 ac_cv_c_float_format='IEEE (little-endian)'
-")))
-               #t)))
-         (replace 'configure
+"))))))
+         ;; gcc-2.95.3
+         (replace 'configure           ; needs classic invocation of configure
            (lambda* (#:key configure-flags  #:allow-other-keys)
              (format (current-error-port)
                      "running ./configure ~a\n" (string-join configure-flags))
@@ -1347,18 +1348,18 @@ ac_cv_c_float_format='IEEE (little-endian)'
                     (gcc-dir (string-append
                               out "/lib/gcc-lib/i686-unknown-linux-gnu/2.95.3")))
                (mkdir-p "tmp")
-               (zero? (system (string-append "set -x; cd tmp && ar x ../gcc/libgcc2.a")))
-               (zero? (system (string-append "set -x; cd tmp && ar r " gcc-dir "/libgcc.a *.o")))
+               (with-directory-excursion "tmp"
+                 (invoke "ar" "x" (string-append "../gcc/libgcc2.a"))
+                 (invoke "ar" "x" (string-append tcc "/lib/libtcc1.a"))
+                 (apply invoke "ar" "r" (string-append gcc-dir "/libgcc.a")
+                        (find-files "." "\\.o")))
                (copy-file "gcc/libgcc2.a" (string-append out "/lib/libgcc2.a"))
                (copy-file (string-append tcc "/lib/libtcc1.a")
                           (string-append out "/lib/libtcc1.a"))
+               (invoke "ar" "x" (string-append tcc "/lib/libtcc1.a"))
+               (invoke "ar" "x" (string-append tcc "/lib/libc.a"))
                (invoke "ar" "r" (string-append gcc-dir "/libc.a")
-                       (string-append tcc-lib "/libc+gnu.o")
-                       (string-append tcc-lib "/libtcc1.o"))
-               (invoke "ar" "r" (string-append out "/lib/libc.a")
-                       (string-append tcc-lib "/libc+gnu.o")
-                       (string-append tcc-lib "/libtcc1.o"))
-               (invoke "ls" "-ltrF" gcc-dir)
+                       "libc.o" "libtcc1.o")
                #t))))))
     (native-search-paths
      (list (search-path-specification
@@ -1370,6 +1371,12 @@ ac_cv_c_float_format='IEEE (little-endian)'
            (search-path-specification
             (variable "LIBRARY_PATH")
             (files '("lib")))))))
+
+(define (%boot-mesboot-core-inputs)
+  `(("binutils" ,binutils-mesboot0)
+    ("gawk" ,gawk-mesboot0)
+    ("gcc" ,gcc-core-mesboot0)
+    ,@(alist-delete "tcc" (%boot-tcc-inputs))))
 
 (define mesboot-headers
   (package
@@ -1421,7 +1428,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
     (inputs '())
     (propagated-inputs '())
     (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("gcc" ,gcc-core-mesboot)
+                     ("gcc" ,gcc-core-mesboot0)
 
                      ("bash" ,%bootstrap-coreutils&co)
                      ("coreutils" ,%bootstrap-coreutils&co)
@@ -1483,7 +1490,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
 
 (define gcc-mesboot0
   (package
-    (inherit gcc-core-mesboot)
+    (inherit gcc-core-mesboot0)
     (name "gcc-mesboot0")
     (native-inputs `(("binutils" ,binutils-mesboot0)
 
@@ -1491,14 +1498,14 @@ ac_cv_c_float_format='IEEE (little-endian)'
                      ;; #include_next purposes.
                      ("libc" ,glibc-mesboot0)
                      ("kernel-headers" ,%bootstrap-linux-libre-headers)
-                     ("gcc" ,gcc-core-mesboot)
+                     ("gcc" ,gcc-core-mesboot0)
 
                      ("bash" ,%bootstrap-coreutils&co)
                      ("coreutils" ,%bootstrap-coreutils&co)
                      ("diffutils" ,diffutils-mesboot)
                      ("make" ,make-mesboot0)))
     (arguments
-     (substitute-keyword-arguments (package-arguments gcc-core-mesboot)
+     (substitute-keyword-arguments (package-arguments gcc-core-mesboot0)
        ((#:phases phases)
         `(modify-phases ,phases
            (replace 'setenv
@@ -1645,7 +1652,7 @@ ac_cv_c_float_format='IEEE (little-endian)'
                      ("diffutils" ,diffutils-mesboot)
                      ("make" ,make-mesboot)))
     (arguments
-     (substitute-keyword-arguments (package-arguments gcc-core-mesboot)
+     (substitute-keyword-arguments (package-arguments gcc-core-mesboot0)
        ((#:make-flags make-flags)
         `(let* ((libc (assoc-ref %build-inputs "libc"))
                 (ldflags (string-append
