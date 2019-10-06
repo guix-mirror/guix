@@ -11799,14 +11799,13 @@ such software by imputing dropout events.")
 (define-public r-gamlss-dist
   (package
     (name "r-gamlss-dist")
-    (version "5.1-4")
+    (version "5.1-5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gamlss.dist" version))
        (sha256
-        (base32
-         "0zi87lgigr83l35zqq1y1g4cdq6ssjamripzz7yis74aznh6qg1l"))))
+        (base32 "1rl7hzdg5xpvaq3yyzwxhsaqzzs0qidi3ibv454fisijgv8l4vqw"))))
     (properties `((upstream-name . "gamlss.dist")))
     (build-system r-build-system)
     (propagated-inputs `(("r-mass" ,r-mass)))
