@@ -1482,33 +1482,31 @@ ac_cv_c_float_format='IEEE (little-endian)'
     (inherit glibc)
     (name "glibc-mesboot0")
     (version "2.2.5")
-    (source (bootstrap-origin
-             (origin
-               (method url-fetch)
-               (uri (string-append "mirror://gnu/glibc/glibc-"
-                                   version
-                                   ".tar.gz"))
-               (patches (search-patches "glibc-boot-2.2.5.patch"))
-               (sha256
-                (base32
-                 "1vl48i16gx6h68whjyhgnn1s57vqq32f9ygfa2fls7pdkbsqvp2q")))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version
+                                  ".tar.gz"))
+              ;; Patch needs XZ
+              ;; (patches (search-patches "glibc-boot-2.2.5.patch"))
+              (sha256
+               (base32
+                "1vl48i16gx6h68whjyhgnn1s57vqq32f9ygfa2fls7pdkbsqvp2q"))))
     (supported-systems '("i686-linux" "x86_64-linux"))
     (inputs '())
     (propagated-inputs '())
-    (native-inputs `(("binutils" ,binutils-mesboot0)
-                     ("gcc" ,gcc-core-mesboot0)
-
-                     ("bash" ,%bootstrap-coreutils&co)
-                     ("coreutils" ,%bootstrap-coreutils&co)
-                     ("diffutils" ,diffutils-mesboot)
+    (native-inputs `(("boot-patch" ,(search-patch "glibc-boot-2.2.5.patch"))
+                     ("system-patch" ,(search-patch "glibc-bootstrap-system-2.2.5.patch"))
                      ("headers" ,mesboot-headers)
-                     ("make" ,make-mesboot0)))
+                     ,@(%boot-mesboot-core-inputs)
+                     ("gash" ,gash-boot)))
     (outputs '("out"))
     (arguments
      `(#:implicit-inputs? #f
        #:guile ,%bootstrap-guile
        #:tests? #f
        #:strip-binaries? #f
+       #:validate-runpath? #f   ; no dynamic executables
        #:parallel-build? #f     ; gcc-2.95.3 ICEs on massively parallel builds
        #:make-flags (list (string-append
                            "SHELL="
@@ -1517,25 +1515,31 @@ ac_cv_c_float_format='IEEE (little-endian)'
        #:configure-flags
        (let ((out (assoc-ref %outputs "out"))
              (headers (assoc-ref %build-inputs "headers")))
-         (list
-          "--disable-shared"
-          "--enable-static"
-          "--disable-sanity-checks"
-          "--build=i686-unknown-linux-gnu"
-          "--host=i686-unknown-linux-gnu"
-          (string-append "--with-headers=" headers "/include")
-          "--enable-static-nss"
-          "--without-__thread"
-          "--without-cvs"
-          "--without-gd"
-          "--without-tls"
-          (string-append "--prefix=" out)))
+         `("--disable-shared"
+           "--enable-static"
+           "--disable-sanity-checks"
+           "--build=i686-unknown-linux-gnu"
+           "--host=i686-unknown-linux-gnu"
+           ,(string-append "--with-headers=" headers "/include")
+           "--enable-static-nss"
+           "--without-__thread"
+           "--without-cvs"
+           "--without-gd"
+           "--without-tls"
+           ,(string-append "--prefix=" out)))
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'apply-boot-patch
+           (lambda* (#:key inputs #:allow-other-keys)
+             (and (let ((patch (assoc-ref inputs "boot-patch")))
+                    (invoke "patch" "--force" "-p1" "-i" patch))
+                  (let ((patch (assoc-ref inputs "system-patch")))
+                    (invoke "patch" "--force" "-p1" "-i" patch)))))
          (add-before 'configure 'setenv
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash"))
                     (gcc (assoc-ref %build-inputs "gcc"))
                     (headers (assoc-ref %build-inputs "headers"))
                     (cppflags (string-append
@@ -1543,18 +1547,43 @@ ac_cv_c_float_format='IEEE (little-endian)'
                                " -D MES_BOOTSTRAP=1"
                                " -D BOOTSTRAP_GLIBC=1"))
                     (cflags (string-append " -L " (getcwd))))
-               (setenv "CONFIG_SHELL" (string-append bash "/bin/sh"))
-               (setenv "SHELL" (getenv "CONFIG_SHELL"))
+               (setenv "CONFIG_SHELL" shell)
+               (setenv "SHELL" shell)
                (setenv "CPP" (string-append gcc "/bin/gcc -E " cppflags))
                (setenv "CC" (string-append gcc "/bin/gcc " cppflags cflags))
                #t)))
-         ;; glibc-2.2.5 needs a more classic invocation of configure
-         ;; configure: warning: CONFIG_SHELL=/gnu/store/…-bash-minimal-4.4.12/bin/bash: invalid host type
-         (replace 'configure
+         (replace 'configure           ; needs classic invocation of configure
            (lambda* (#:key configure-flags #:allow-other-keys)
              (format (current-error-port)
                      "running ./configure ~a\n" (string-join configure-flags))
-             (apply invoke "./configure" configure-flags))))))))
+             (apply invoke "./configure" configure-flags)))
+         (add-after 'configure 'fixup-configure
+           (lambda _
+             (let* ((out (assoc-ref %outputs "out"))
+                    (bash (assoc-ref %build-inputs "bash"))
+                    (shell (string-append bash "/bin/bash"))
+                    (gash (assoc-ref %build-inputs "gash"))
+                    (gash (string-append gash "/bin/gash")))
+               (substitute* "config.make"
+                 (("INSTALL = scripts/") "INSTALL = $(..)./scripts/"))
+               (substitute* "config.make"
+                 (("INSTALL = scripts/") "INSTALL = $(..)./scripts/")
+                 (("BASH = ") (string-append
+                               "SHELL = " shell "
+BASH = ")))
+               ;; XXX: make-syscalls.sh does not run correctly with
+               ;; bash-mesboot0, producing a wrong sysd-syscalls.
+
+               ;; This leads to posix/uname.c getting compiled where it
+               ;; shouldn't:
+
+               ;; ../sysdeps/generic/uname.c:25: config-name.h: error 02
+               (substitute* "sysdeps/unix/make-syscalls.sh"
+                 (("#!/gnu/store.*/bin/bash") (string-append "#! " gash)))
+
+               (substitute* "sysdeps/unix/Makefile"
+                 (("	  [{] [$][(]SHELL[)]") (string-append "	  { " gash))))
+             #t)))))))
 
 (define gcc-mesboot0
   (package
