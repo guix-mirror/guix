@@ -6700,7 +6700,7 @@ for search-based navigation of buffers.")
         (revision "1"))
     (package
       (name "emacs-helm-ag")
-      (version "0.58")
+      (version (git-version "0.58" revision commit))
       (source
        (origin
          (method git-fetch)
