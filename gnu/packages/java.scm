@@ -1376,18 +1376,17 @@ bootstrapping purposes.")
            (add-after 'install 'install-libjvm
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((lib-path (string-append (assoc-ref outputs "out")
-                                               "/lib/"
                                                ;; See 'INSTALL_ARCH_DIR' in
                                                ;; 'configure'.
                                                ,(match (%current-system)
                                                   ("i686-linux"
-                                                   "i386")
+                                                   "/lib/i386")
                                                   ("x86_64-linux"
-                                                   "amd64")
+                                                   "/lib/amd64")
                                                   ("armhf-linux"
-                                                   "arm")
+                                                   "/lib/arm")
                                                   ("aarch64-linux"
-                                                   "aarch64")))))
+                                                   "/lib/aarch64")))))
                  (symlink (string-append lib-path "/server/libjvm.so")
                           (string-append lib-path "/libjvm.so")))
                #t))
