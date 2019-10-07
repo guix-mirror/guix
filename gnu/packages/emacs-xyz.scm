@@ -8197,7 +8197,7 @@ memoizing functions.")
 (define-public emacs-linum-relative
   (package
     (name "emacs-linum-relative")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method git-fetch)
@@ -8206,7 +8206,7 @@ memoizing functions.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "11bjnqqwvr9zrvz5dlm8a0yw4zg9ysh3jdiq5a6iw09d3f0h1v2s"))))
+        (base32 "0b3n1gk2w1p72x0zfdz9l70winq2fnjpjrgq0awxx730xk7ypp5n"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/coldnew/linum-relative")
     (synopsis "Relative line numbering for Emacs")
