@@ -1779,7 +1779,7 @@ ASCII text files using Gmsh's own scripting language.")
                (base32
                 "0rll38whw55h0vcjrrwdnh9ascvxby0ph7n1l0d12z17cg215kkb"))))
     (build-system cmake-build-system)
-    (home-page "http://pub.ist.ac.at/~vnk/software.html")
+    (home-page "https://pub.ist.ac.at/~vnk/software.html")
     (synopsis "Library implementing Maxflow algorithm")
     (description "An implementation of the maxflow algorithm described in
 @cite{An Experimental Comparison of Min-Cut/Max-Flow Algorithms for
