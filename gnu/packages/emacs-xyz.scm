@@ -18204,8 +18204,8 @@ corresponding Evil keys.")
       (license license:expat))))
 
 (define-public emacs-evil-traces
-  (let ((commit "b41b7432b8110378c199a3d25af464083777f453")
-        (revision "1"))
+  (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
+        (revision "2"))
     (package
       (name "emacs-evil-traces")
       (version (git-version "0.0.1" revision commit))
@@ -18217,7 +18217,7 @@ corresponding Evil keys.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0a15f2saynz9fws1h5s7py3cshsk4xs1kwgwj1m5rsin36g0j6hc"))))
+                  "12p9lfxscs182vbd4dy0m5gacs3d4kyprbz5yndpwvl8g2qsqplz"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))
