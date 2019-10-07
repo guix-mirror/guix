@@ -1532,7 +1532,7 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.12")
+    (version "1.9.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jackaudio/jack2/releases/"
@@ -1541,40 +1541,38 @@ synchronous execution of all clients, and low latency operation.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0crf4y9a5j9miw8r5ji4l3w5w0y2frrf7xyfsfdgacnw6vwy5vyy"))))
+               "1d1d403jn4366mqig6g8ghr8057b3rn7gs26b5p3rkal34j20qw2"))))
     (build-system waf-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f  ; no check target
+     `(#:tests? #f  ; no check target
        #:configure-flags '("--dbus"
                            "--alsa")
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-linkflags
-          (lambda _
-            ;; Add $libdir to the RUNPATH of all the binaries.
-            (substitute* "wscript"
-              ((".*CFLAGS.*-Wall.*" m)
-               (string-append m
-                              "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n")))
-            #t))
+         (add-before 'configure 'set-linkflags
+           (lambda _
+             ;; Add $libdir to the RUNPATH of all the binaries.
+             (substitute* "wscript"
+               ((".*CFLAGS.*-Wall.*" m)
+                (string-append m
+                               "    conf.env.append_unique('LINKFLAGS',"
+                               "'-Wl,-rpath=" %output "/lib')\n")))
+             #t))
          (add-after 'install 'wrap-python-scripts
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
-              (wrap-program (string-append out "/bin/jack_control")
-                `("PYTHONPATH" ":" prefix (,path))))
-            #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/jack_control")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("libsamplerate" ,libsamplerate)
        ("opus" ,opus)
-       ("python2-dbus" ,python2-dbus)
+       ("python-dbus" ,python-dbus)
        ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
