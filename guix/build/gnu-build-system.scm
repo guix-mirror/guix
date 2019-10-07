@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2020 Brendan Tildesley <mail@brendan.scot>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,12 +174,16 @@ working directory."
 \"autoreconf\".  Otherwise do nothing."
   ;; Note: Run that right after 'unpack' so that the generated files are
   ;; visible when the 'patch-source-shebangs' phase runs.
-  (if (not (file-exists? "configure"))
+  (define (script-exists? file)
+    (and (file-exists? file)
+         (not (file-is-directory? file))))
+
+  (if (not (script-exists? "configure"))
 
       ;; First try one of the BOOTSTRAP-SCRIPTS.  If none exists, and it's
       ;; clearly an Autoconf-based project, run 'autoreconf'.  Otherwise, do
       ;; nothing (perhaps the user removed or overrode the 'configure' phase.)
-      (let ((script (find file-exists? bootstrap-scripts)))
+      (let ((script (find script-exists? bootstrap-scripts)))
         ;; GNU packages often invoke the 'git-version-gen' script from
         ;; 'configure.ac' so make sure it has a valid shebang.
         (false-if-file-not-found
