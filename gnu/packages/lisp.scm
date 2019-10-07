@@ -6490,6 +6490,19 @@ This package uses fare-quasiquote with named-readtable.")))
 (define-public cl-fare-quasiquote-readtable
   (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
 
+;; TODO: Add support for component-less system in asdf-build-system/sbcl.
+(define-public cl-fare-quasiquote-extras
+  (package
+    (inherit cl-fare-quasiquote)
+    (name "cl-fare-quasiquote-extras")
+    (build-system asdf-build-system/source)
+    (propagated-inputs
+     `(("fare-quasiquote" ,cl-fare-quasiquote)
+       ("fare-quasiquote-optima" ,cl-fare-quasiquote-optima)
+       ("fare-quasiquote-readtable" ,cl-fare-quasiquote-readtable)))
+    (description "This library combines @code{fare-quasiquote-readtable} and
+@code{fare-quasiquote-optima}.")))
+
 (define-public sbcl-trivia.level0
   (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
         (revision "1"))
