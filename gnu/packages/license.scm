@@ -38,7 +38,7 @@
 (define-public perl-regexp-pattern-license
   (package
     (name "perl-regexp-pattern-license")
-    (version "3.1.92")
+    (version "3.1.94")
     (source
      (origin
        (method url-fetch)
@@ -46,8 +46,7 @@
              "mirror://cpan/authors/id/J/JO/JONASS/Regexp-Pattern-License-"
              "v" version ".tar.gz"))
        (sha256
-        (base32
-         "0gxv8wpvlllmvhkpixv5x23ywn1s6zs7ypcs38s7nfh4phamyixh"))))
+        (base32 "0kznpv628jrndn4nw646f6pl7yqvmacwljlygvsjfdkyh0i4sr2k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
