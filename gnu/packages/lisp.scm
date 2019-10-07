@@ -7632,3 +7632,35 @@ size of a file in bytes, using system calls when possible.")
 
 (define-public ecl-trivial-file-size
   (sbcl-package->ecl-package sbcl-trivial-file-size))
+
+(define-public sbcl-trivial-macroexpand-all
+  (let ((commit "933270ac7107477de1bc92c1fd641fe646a7a8a9")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-macroexpand-all")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/cbaggers/trivial-macroexpand-all")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "191hnn4b5j4i3crydmlzbm231kj0h7l8zj6mzj69r1npbzkas4bd"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Portable macroexpand-all for Common Lisp")
+      (description
+       "This library provides a macroexpand-all function that calls the
+implementation specific equivalent.")
+      (license license:unlicense))))
+
+(define-public cl-trivial-macroexpand-all
+  (sbcl-package->cl-source-package sbcl-trivial-macroexpand-all))
+
+(define-public ecl-trivial-macroexpand-all
+  (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))
