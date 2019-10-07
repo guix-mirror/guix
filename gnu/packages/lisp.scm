@@ -6487,6 +6487,9 @@ Trivia.
 
 This package uses fare-quasiquote with named-readtable.")))
 
+(define-public cl-fare-quasiquote-readtable
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
+
 (define-public sbcl-trivia.level0
   (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
         (revision "1"))
