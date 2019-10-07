@@ -6454,6 +6454,26 @@ Trivia.")
 (define-public cl-fare-quasiquote
   (sbcl-package->cl-source-package sbcl-fare-quasiquote))
 
+(define-public sbcl-fare-quasiquote-optima
+  (package
+    (inherit sbcl-fare-quasiquote)
+    (name "sbcl-fare-quasiquote-optima")
+    (inputs
+     `(("optima" ,sbcl-optima)
+       ("fare-quasiquote" ,sbcl-fare-quasiquote)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-requirement
+           (lambda _
+             (substitute* "fare-quasiquote-optima.asd"
+               (("\\(:version \"optima\" \"1\\.0\"\\)")
+                "\"optima\""))
+             #t)))))))
+
+(define-public cl-fare-quasiquote-optima
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote-optima))
+
 (define-public sbcl-fare-quasiquote-readtable
   (package
     (inherit sbcl-fare-quasiquote)
