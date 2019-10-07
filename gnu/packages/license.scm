@@ -113,7 +113,7 @@ statements and serializes in normalized format.")
 (define-public licensecheck
   (package
     (name "licensecheck")
-    (version "3.0.36")
+    (version "3.0.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -121,7 +121,7 @@ statements and serializes in normalized format.")
                     "v" version ".tar.gz"))
               (sha256
                (base32
-                "0y14ppq6f9hc0rc0syhfgms1r7fd51vpgfx5va6b2v84y8anb6g1"))))
+                "12l83zf85zagpagizmzy3bwkc659sbzqf18cycx8g4h6d3mc5kqw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
