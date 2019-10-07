@@ -1816,7 +1816,7 @@ simulations are also supported.")
 (define-public qucs-s
   (package
     (name "qucs-s")
-    (version "0.0.20")
+    (version "0.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ra3xdh/qucs_s/archive/"
@@ -1824,7 +1824,7 @@ simulations are also supported.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01dizf4rjciqc8x7bmv3kbhdlz90bm6n9m9fz7dbzqcwvszcs1hx"))))
+                "12m1jwhb9qwvb141qzyskbxnw3wn1x22d02z4b4862p7xvccl5h7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
