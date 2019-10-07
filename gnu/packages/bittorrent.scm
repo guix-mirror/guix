@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -262,16 +262,15 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.34.0")
+    (version "1.35.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
-                                  "releases/download/release-" version "/"
-                                  name "-" version ".tar.xz"))
-              (patches (search-patches "aria2-CVE-2019-3500.patch"))
+              (uri (string-append "https://github.com/aria2/aria2/releases/"
+                                  "download/release-" version
+                                  "/aria2-" version ".tar.xz"))
               (sha256
                (base32
-                "18vpgr430vxlwbcc3598rr1srfmwypls6wp1m4wf21hncc1ahi1s"))))
+                "1zbxc517d97lb96f15xcy4l7b66grxrp3h2ids2jiwkaip87yaqy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
