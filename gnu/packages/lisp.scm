@@ -6388,7 +6388,7 @@ the return type of a function.")
     (package
       (name "sbcl-optima")
       (build-system asdf-build-system/sbcl)
-      (version (git-version "0.1" revision commit))
+      (version (git-version "1.0" revision commit))
       (home-page "https://github.com/m2ym/optima")
       (source
        (origin
