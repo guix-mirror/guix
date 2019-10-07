@@ -7557,3 +7557,40 @@ trees to dispatch on string equality.")
 
 (define-public ecl-string-case
   (sbcl-package->ecl-package sbcl-string-case))
+
+(define-public sbcl-global-vars
+  (let ((commit "c749f32c9b606a1457daa47d59630708ac0c266e")
+        (revision "0"))
+    (package
+      (name "sbcl-global-vars")
+      (version (git-version "1.0.0" revision commit))
+      (home-page "https://github.com/lmj/global-vars")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06m3xc8l3pgsapl8fvsi9wf6y46zs75cp9zn7zh6dc65v4s5wz3d"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Efficient global variables in Common Lisp")
+      (description
+       "In Common Lisp, a special variable that is never dynamically bound
+typically serves as a stand-in for a global variable.  The @code{global-vars}
+library provides true global variables that are implemented by some compilers.
+An attempt to rebind a global variable properly results in a compiler error.
+That is, a global variable cannot be dynamically bound.
+
+Global variables therefore allow us to communicate an intended usage that
+differs from special variables.  Global variables are also more efficient than
+special variables, especially in the presence of threads.")
+      (license license:expat))))
+
+(define-public cl-global-vars
+  (sbcl-package->cl-source-package sbcl-global-vars))
+
+(define-public ecl-global-vars
+  (sbcl-package->ecl-package sbcl-global-vars))
