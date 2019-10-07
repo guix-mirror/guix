@@ -7527,3 +7527,33 @@ of C+GObject libraries without the need of writing dedicated bindings.")
 
 (define-public cl-gobject-introspection
   (sbcl-package->cl-source-package sbcl-cl-gobject-introspection))
+
+(define-public sbcl-string-case
+  (let ((commit "718c761e33749e297cd2809c7ba3ade1985c49f7")
+        (revision "0"))
+    (package
+      (name "sbcl-string-case")
+      (version (git-version "0.0.2" revision commit))
+      (home-page "https://github.com/pkhuong/string-case")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1n5i3yh0h5s636rcnwn7jwqy3rjflikra04lymimhpcshhjsk0md"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Efficient string= case in Common Lisp")
+      (description
+       "@code{string-case} is a Common Lisp macro that generates specialised decision
+trees to dispatch on string equality.")
+      (license license:bsd-3))))
+
+(define-public cl-string-case
+  (sbcl-package->cl-source-package sbcl-string-case))
+
+(define-public ecl-string-case
+  (sbcl-package->ecl-package sbcl-string-case))
