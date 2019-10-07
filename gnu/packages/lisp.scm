@@ -7594,3 +7594,41 @@ special variables, especially in the presence of threads.")
 
 (define-public ecl-global-vars
   (sbcl-package->ecl-package sbcl-global-vars))
+
+(define-public sbcl-trivial-file-size
+  (let ((commit "1c1d672a01a446ba0391dbb4ffc40be3b0476f23")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-file-size")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/ruricolist/trivial-file-size")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17pp86c9zs4y7i1sh7q9gbfw9iqv6655k7fz8qbj9ly1ypgxp4qs"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Size of a file in bytes in Common Lisp")
+      (description
+       "The canonical way to determine the size of a file in bytes, using Common Lisp,
+is to open the file with an element type of (unsigned-byte 8) and then
+calculate the length of the stream.  This is less than ideal.  In most cases
+it is better to get the size of the file from its metadata, using a system
+call.
+
+This library exports a single function, file-size-in-octets.  It returns the
+size of a file in bytes, using system calls when possible.")
+      (license license:expat))))
+
+(define-public cl-trivial-file-size
+  (sbcl-package->cl-source-package sbcl-trivial-file-size))
+
+(define-public ecl-trivial-file-size
+  (sbcl-package->ecl-package sbcl-trivial-file-size))
