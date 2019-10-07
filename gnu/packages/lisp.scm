@@ -6451,6 +6451,9 @@ quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.")
     (license license:expat)))
 
+(define-public cl-fare-quasiquote
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote))
+
 (define-public sbcl-fare-quasiquote-readtable
   (package
     (inherit sbcl-fare-quasiquote)
