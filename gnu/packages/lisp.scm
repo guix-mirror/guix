@@ -6388,7 +6388,7 @@ the return type of a function.")
     (package
       (name "sbcl-optima")
       (build-system asdf-build-system/sbcl)
-      (version (git-version "0.1" revision commit))
+      (version (git-version "1.0" revision commit))
       (home-page "https://github.com/m2ym/optima")
       (source
        (origin
@@ -6451,6 +6451,29 @@ quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.")
     (license license:expat)))
 
+(define-public cl-fare-quasiquote
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote))
+
+(define-public sbcl-fare-quasiquote-optima
+  (package
+    (inherit sbcl-fare-quasiquote)
+    (name "sbcl-fare-quasiquote-optima")
+    (inputs
+     `(("optima" ,sbcl-optima)
+       ("fare-quasiquote" ,sbcl-fare-quasiquote)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-requirement
+           (lambda _
+             (substitute* "fare-quasiquote-optima.asd"
+               (("\\(:version \"optima\" \"1\\.0\"\\)")
+                "\"optima\""))
+             #t)))))))
+
+(define-public cl-fare-quasiquote-optima
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote-optima))
+
 (define-public sbcl-fare-quasiquote-readtable
   (package
     (inherit sbcl-fare-quasiquote)
@@ -6463,6 +6486,22 @@ quasiquote is enable matching of quasiquoted patterns, using Optima or
 Trivia.
 
 This package uses fare-quasiquote with named-readtable.")))
+
+(define-public cl-fare-quasiquote-readtable
+  (sbcl-package->cl-source-package sbcl-fare-quasiquote-readtable))
+
+;; TODO: Add support for component-less system in asdf-build-system/sbcl.
+(define-public cl-fare-quasiquote-extras
+  (package
+    (inherit cl-fare-quasiquote)
+    (name "cl-fare-quasiquote-extras")
+    (build-system asdf-build-system/source)
+    (propagated-inputs
+     `(("fare-quasiquote" ,cl-fare-quasiquote)
+       ("fare-quasiquote-optima" ,cl-fare-quasiquote-optima)
+       ("fare-quasiquote-readtable" ,cl-fare-quasiquote-readtable)))
+    (description "This library combines @code{fare-quasiquote-readtable} and
+@code{fare-quasiquote-optima}.")))
 
 (define-public sbcl-trivia.level0
   (let ((commit "902e0c65602bbfe96ae82e679330b3771ddc7603")
@@ -7488,3 +7527,140 @@ of C+GObject libraries without the need of writing dedicated bindings.")
 
 (define-public cl-gobject-introspection
   (sbcl-package->cl-source-package sbcl-cl-gobject-introspection))
+
+(define-public sbcl-string-case
+  (let ((commit "718c761e33749e297cd2809c7ba3ade1985c49f7")
+        (revision "0"))
+    (package
+      (name "sbcl-string-case")
+      (version (git-version "0.0.2" revision commit))
+      (home-page "https://github.com/pkhuong/string-case")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1n5i3yh0h5s636rcnwn7jwqy3rjflikra04lymimhpcshhjsk0md"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Efficient string= case in Common Lisp")
+      (description
+       "@code{string-case} is a Common Lisp macro that generates specialised decision
+trees to dispatch on string equality.")
+      (license license:bsd-3))))
+
+(define-public cl-string-case
+  (sbcl-package->cl-source-package sbcl-string-case))
+
+(define-public ecl-string-case
+  (sbcl-package->ecl-package sbcl-string-case))
+
+(define-public sbcl-global-vars
+  (let ((commit "c749f32c9b606a1457daa47d59630708ac0c266e")
+        (revision "0"))
+    (package
+      (name "sbcl-global-vars")
+      (version (git-version "1.0.0" revision commit))
+      (home-page "https://github.com/lmj/global-vars")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "06m3xc8l3pgsapl8fvsi9wf6y46zs75cp9zn7zh6dc65v4s5wz3d"))))
+      (build-system asdf-build-system/sbcl)
+      (synopsis "Efficient global variables in Common Lisp")
+      (description
+       "In Common Lisp, a special variable that is never dynamically bound
+typically serves as a stand-in for a global variable.  The @code{global-vars}
+library provides true global variables that are implemented by some compilers.
+An attempt to rebind a global variable properly results in a compiler error.
+That is, a global variable cannot be dynamically bound.
+
+Global variables therefore allow us to communicate an intended usage that
+differs from special variables.  Global variables are also more efficient than
+special variables, especially in the presence of threads.")
+      (license license:expat))))
+
+(define-public cl-global-vars
+  (sbcl-package->cl-source-package sbcl-global-vars))
+
+(define-public ecl-global-vars
+  (sbcl-package->ecl-package sbcl-global-vars))
+
+(define-public sbcl-trivial-file-size
+  (let ((commit "1c1d672a01a446ba0391dbb4ffc40be3b0476f23")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-file-size")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/ruricolist/trivial-file-size")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "17pp86c9zs4y7i1sh7q9gbfw9iqv6655k7fz8qbj9ly1ypgxp4qs"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Size of a file in bytes in Common Lisp")
+      (description
+       "The canonical way to determine the size of a file in bytes, using Common Lisp,
+is to open the file with an element type of (unsigned-byte 8) and then
+calculate the length of the stream.  This is less than ideal.  In most cases
+it is better to get the size of the file from its metadata, using a system
+call.
+
+This library exports a single function, file-size-in-octets.  It returns the
+size of a file in bytes, using system calls when possible.")
+      (license license:expat))))
+
+(define-public cl-trivial-file-size
+  (sbcl-package->cl-source-package sbcl-trivial-file-size))
+
+(define-public ecl-trivial-file-size
+  (sbcl-package->ecl-package sbcl-trivial-file-size))
+
+(define-public sbcl-trivial-macroexpand-all
+  (let ((commit "933270ac7107477de1bc92c1fd641fe646a7a8a9")
+        (revision "0"))
+    (package
+      (name "sbcl-trivial-macroexpand-all")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/cbaggers/trivial-macroexpand-all")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "191hnn4b5j4i3crydmlzbm231kj0h7l8zj6mzj69r1npbzkas4bd"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (synopsis "Portable macroexpand-all for Common Lisp")
+      (description
+       "This library provides a macroexpand-all function that calls the
+implementation specific equivalent.")
+      (license license:unlicense))))
+
+(define-public cl-trivial-macroexpand-all
+  (sbcl-package->cl-source-package sbcl-trivial-macroexpand-all))
+
+(define-public ecl-trivial-macroexpand-all
+  (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))

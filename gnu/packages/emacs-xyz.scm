@@ -6621,7 +6621,7 @@ ack, ag, helm and pt.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "3.3")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -6630,7 +6630,7 @@ ack, ag, helm and pt.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fqhw7r9fcsja5d3pgbipw7pkw9nj534faav6hi45413hc3gyv92"))))
+        (base32 "07bijcnfkv60l3swasxv53x32l6glds05mxnbb3xbnmkgm1pm9if"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
@@ -6646,6 +6646,31 @@ considered to be its successor.  Helm sets out to clean up the legacy code in
 @code{anything.el} and provide a cleaner, leaner and more modular tool, that's
 not tied in the trap of backward compatibility.")
     (license license:gpl3+)))
+
+(define-public emacs-helm-org
+  (let ((commit "542dda7bc9a3b9dfb439e4f8a1e5f60cfb6cc256")
+        (revision "1"))
+    (package
+      (name "emacs-helm-org")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/emacs-helm/helm-org.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1xa32w80icrykpyfb89fhb0s4l7ysi0sc7f7lfwqz5najwbgqipl"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)))
+      (home-page "https://github.com/emacs-helm/helm-org")
+      (synopsis "Helm interface to the Silver Searcher")
+      (description
+       "This package provides a frontend for grepping tools like ag and ack,
+as well as features for editing search results.")
+      (license license:gpl3+))))
 
 (define-public emacs-helm-swoop
   (package
@@ -6675,7 +6700,7 @@ for search-based navigation of buffers.")
         (revision "1"))
     (package
       (name "emacs-helm-ag")
-      (version "0.58")
+      (version (git-version "0.58" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -7267,7 +7292,7 @@ pasting into and from @code{tmux} paste buffers.")
 (define-public emacs-evil-nerd-commenter
   (package
     (name "emacs-evil-nerd-commenter")
-    (version "3.3.7")
+    (version "3.3.8")
     (source
      (origin
        (method git-fetch)
@@ -7277,7 +7302,7 @@ pasting into and from @code{tmux} paste buffers.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1r8shfdddys9vqvrxf7s6z83ydqx9xhqs9sa7klbsajryqcp50b7"))))
+         "0qd5a89mzvdyhd8lm13iwp220vzpd6dajwx54frlc5bzsxdmg6vc"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-evil" ,emacs-evil)))
     (arguments
@@ -11690,6 +11715,26 @@ tables of contents.")
 timestamps by providing a @code{ts} struct.")
       (license license:gpl3+))))
 
+(define-public emacs-peg
+  (package
+    (name "emacs-peg")
+    (version "0.6")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacsmirror/peg")
+                    (commit version)))
+              (sha256
+               (base32
+                "0kjz7ch4bn0m4v9zgqyqcrsasnqc5c5drv2hp22j7rnbb7ny0q3n"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/emacsmirror/peg/")
+    (synopsis "Parsing Expression Grammars in Elisp")
+    (description "This package provides a macro that parses the current buffer
+according to a parsing expression grammar.")
+    (license license:gpl3+)))
+
 (define-public emacs-org-ql
   (package
     (name "emacs-org-ql")
@@ -12609,8 +12654,8 @@ key again.")
     (license license:gpl3+)))
 
 (define-public emacs-mbsync
-  (let ((commit "8f80c267cab1acb0d5bdd5b0059f5d1790d499ff")
-        (revision "3"))
+  (let ((commit "b62491c0e0d89eb9c66261a16d7ac81231c9c453")
+        (revision "4"))
     (package
       (name "emacs-mbsync")
       (version (git-version "0.1.2" revision commit))
@@ -12623,7 +12668,7 @@ key again.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1dwlpcczsa6b7bwv5149by0qmk8v2y7bjad02k4fy25yxznqzci9"))))
+           "1zlih37mkqjn2czl12zn7lgxxljvrwhqqpbksj9c91zn0f0rm3mz"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/dimitri/mbsync-el")
       (synopsis "Interface to mbsync for Emacs")
@@ -15082,10 +15127,8 @@ accept and reject GitHub pull requests.")
       (license license:gpl3+))))
 
 (define-public emacs-deadgrep
-  ;; We prefer a newer commit (four commits newer than release) because of a
-  ;; bugfix for globbing.
-  (let ((commit "329119c65126f7917d3910bc584f4191ba8f21ac")
-        (revision "1"))
+  (let ((commit "3fc7ca1f58e190f0c80da455a0e40187e673020e")
+        (revision "2"))
     (package
       (name "emacs-deadgrep")
       (version (git-version "0.8" revision commit))
@@ -15098,7 +15141,7 @@ accept and reject GitHub pull requests.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0fxf7gq9sjfkgpdfqx10w3l3nd4rwa8kv9plyxk1fqacb3s5m6ai"))))
+           "016gwqxd9aqzjw3hqv3vdf8cs6la8r65g6azg5rlmjqwfx3vsaha"))))
       (build-system emacs-build-system)
       (inputs
        `(("emacs-dash" ,emacs-dash)
@@ -18161,8 +18204,8 @@ corresponding Evil keys.")
       (license license:expat))))
 
 (define-public emacs-evil-traces
-  (let ((commit "b41b7432b8110378c199a3d25af464083777f453")
-        (revision "1"))
+  (let ((commit "1931e3ea2c64b4aec393a9c25063c330deff55e3")
+        (revision "2"))
     (package
       (name "emacs-evil-traces")
       (version (git-version "0.0.1" revision commit))
@@ -18174,7 +18217,7 @@ corresponding Evil keys.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0a15f2saynz9fws1h5s7py3cshsk4xs1kwgwj1m5rsin36g0j6hc"))))
+                  "12p9lfxscs182vbd4dy0m5gacs3d4kyprbz5yndpwvl8g2qsqplz"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)))

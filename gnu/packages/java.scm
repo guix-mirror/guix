@@ -1406,12 +1406,17 @@ bootstrapping purposes.")
            (add-after 'install 'install-libjvm
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((lib-path (string-append (assoc-ref outputs "out")
-                                               "/lib/"
+                                               ;; See 'INSTALL_ARCH_DIR' in
+                                               ;; 'configure'.
                                                ,(match (%current-system)
                                                   ("i686-linux"
-                                                   "i386")
+                                                   "/lib/i386")
                                                   ("x86_64-linux"
-                                                   "amd64")))))
+                                                   "/lib/amd64")
+                                                  ("armhf-linux"
+                                                   "/lib/arm")
+                                                  ("aarch64-linux"
+                                                   "/lib/aarch64")))))
                  (symlink (string-append lib-path "/server/libjvm.so")
                           (string-append lib-path "/libjvm.so")))
                #t))
@@ -1559,6 +1564,10 @@ bootstrapping purposes.")
       (description
        "This package provides the Java development kit OpenJDK built with the
 IcedTea build harness.")
+
+      ;; 'configure' lists "mips" and "mipsel", but not "mips64el'.
+      (supported-systems (delete "mips64el-linux" %supported-systems))
+
       ;; IcedTea is released under the GPL2 + Classpath exception, which is the
       ;; same license as both GNU Classpath and OpenJDK.
       (license license:gpl2+))))

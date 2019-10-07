@@ -112,14 +112,14 @@
 (define-public nss-pam-ldapd
   (package
     (name "nss-pam-ldapd")
-    (version "0.9.10")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthurdejong.org/nss-pam-ldapd/"
                                   "nss-pam-ldapd-" version ".tar.gz"))
               (sha256
                (base32
-                "1cqamcr6qpgwxijlr6kg7jspjamjra8w0haan0qssn0yxn95d7c0"))))
+                "1dna3r0q6sjhhlkhcp8x2zkslrd4y7701kk6fl5r940sdph1pmyh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -146,7 +146,7 @@
      `(("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
        ("mit-krb5" ,mit-krb5)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (home-page "https://arthurdejong.org/nss-pam-ldapd")
     (synopsis "NSS and PAM modules for LDAP")
     (description "nss-pam-ldapd provides a @dfn{Name Service Switch} (NSS)

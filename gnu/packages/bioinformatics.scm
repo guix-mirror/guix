@@ -7647,13 +7647,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.40.4")
+    (version "2.40.5")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "0dj51qkxm7bh24b3bs1di7lic6zgi7g5gf9iqkqhrwkbm7sqvn0v"))))
+                "1kjvxnkpsx3j2hji3cg3ka2gv8a9mg117lzzxyqjb7qa4zw7dipx"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7731,13 +7731,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.0.1")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "0wzp5vsmqs7h44r7lcw8fnz5x9bcdcfiqq8d3h62wwibyk2lg0w1"))))
+                "188k5g40lbli7dxr96hldyvg9r9hmlbh2fp0qs5nnd12b8zbf338"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -9454,13 +9454,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.1.0")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "0icxndnnkkmmr9hhd01dv3w8pih7x9r0rlp3fq9pk3qajp9gmlyq"))))
+                "084lr2fjdksshsmv1ww82bgn3a9mml7kswsidjrs89snabgvn360"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9473,6 +9473,7 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggrepel" ,r-ggrepel)
        ("r-ggridges" ,r-ggridges)
+       ("r-httr" ,r-httr)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)

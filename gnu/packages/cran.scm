@@ -525,31 +525,18 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.3.6")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "18k8r1s8sz1jy7dkz35n69wj20xhmllr53xmwb4pdzf2z61gpbs4"))))
+                "06l17d8jkf438yk2mchpsp4j90bynnapz3nabh5vkcc324p5a62v"))))
     (build-system r-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; See https://github.com/rstudio/htmltools/pull/68
-         ;; The resource files are in the store and have mode 444.  After
-         ;; copying the files R fails to remove them again because it doesn't
-         ;; have write access to them.
-         (add-after 'unpack 'copy-files-without-mode
-           (lambda _
-             (substitute* "R/html_dependency.R"
-               (("file.copy\\(from, to, " prefix)
-                (string-append prefix
-                               "copy.mode = FALSE, ")))
-             #t)))))
     (propagated-inputs
      `(("r-digest" ,r-digest)
-       ("r-rcpp" ,r-rcpp)))
+       ("r-rcpp" ,r-rcpp)
+       ("r-rlang" ,r-rlang)))
     (home-page "https://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
     (description
@@ -559,13 +546,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.3")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "04jsdh14l2zifbjpbbh23w7bxz1wpsas0zb2gy2zwv4yqamzzr7i"))))
+                "1h2sj5h9vcssb73nz63gmw5bajs73m9q807fsypvr621gb1s124i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -5339,14 +5326,14 @@ simple method for converting between file types.")
 (define-public r-maptools
   (package
     (name "r-maptools")
-    (version "0.9-5")
+    (version "0.9-8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "maptools" version))
        (sha256
         (base32
-         "1pbvcn9xfx0hxq1ppbfg9xm5j04q4c15nj983yjmg7dlkzq135ax"))))
+         "1ix3cg74w0w6cj8nwi0r9n3y5q9ljc21hm8xq6yqqngs57prvn2x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-foreign" ,r-foreign)
@@ -5367,14 +5354,14 @@ exchanging spatial objects with other R packages.")
 (define-public r-later
   (package
     (name "r-later")
-    (version "0.8.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "later" version))
        (sha256
         (base32
-         "08g503xjxrfxvrzj0cavsrz4m8ykbha64344j1w2r6v17js2hakb"))))
+         "11xjavj7siz0xv2ffq1ld4bwl35jyrcfpvvs4p3ilpifxx49hyr7"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -5390,14 +5377,14 @@ time after the current time, after the R execution stack has emptied.")
 (define-public r-promises
   (package
     (name "r-promises")
-    (version "1.0.1")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "promises" version))
        (sha256
         (base32
-         "0n2mlv6bvfb4yhgcml696l9vkbw21pz0smqylivr606z99rwgny2"))))
+         "01l0ydjvvy6afcg5d6pzvk1ikd3djq8n2flv8c831ksn68z0zsn8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-later" ,r-later)
@@ -5860,14 +5847,14 @@ results to the user.")
 (define-public r-hdf5r
   (package
     (name "r-hdf5r")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hdf5r" version))
        (sha256
         (base32
-         "10gynjwaaxks8y9c2fl8k040j0nbwn372nil70009yfk9wrkx0aq"))))
+         "1pq12vkfqxvcaznwaxvjdg3acimk5a20m8h18sixvxc34vnqxw8f"))))
     (build-system r-build-system)
     (inputs
      `(("hdf5" ,hdf5)
@@ -8960,14 +8947,14 @@ package provides a minimal R interface by relying on the Rcpp package.")
 (define-public r-rcppparallel
   (package
     (name "r-rcppparallel")
-    (version "4.4.3")
+    (version "4.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppParallel" version))
        (sha256
         (base32
-         "1ym0bzs9g6bsg2lz24fisxxa3gypr6xcvrczn304czmrrag9413s"))))
+         "0p13f2mywjr7gmskf8ri4y8p5yr1bvr4xrpw2w11vdvafwz1vcia"))))
     (properties `((upstream-name . "RcppParallel")))
     (build-system r-build-system)
     (home-page "http://rcppcore.github.io/RcppParallel")
@@ -10317,14 +10304,14 @@ and manipulating sets of ontological terms.")
 (define-public r-gargle
   (package
     (name "r-gargle")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gargle" version))
        (sha256
         (base32
-         "0vqgp4w03sdyj0q96gxkybqflzzbaw84zifsbi7pxk5y08fimj2v"))))
+         "08zhfk2sl342w35i5n2c93ayypg3z0kbl0020l3y9adqka1vazgx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-fs" ,r-fs)

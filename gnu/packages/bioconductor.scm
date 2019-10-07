@@ -1192,14 +1192,14 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.16.4")
+    (version "1.16.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "0xzk057h6nkr3rvd412prxgnkpq625b90laj1kwb0i5q8j5ch760"))))
+         "12x7sh5d8y549hqz4qjb2j3ak22l79w9l0vdbv4gn0bwi5206k8h"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5343,14 +5343,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.8.4")
+    (version "6.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "0lw4c9lxcm83xrvl4y120i1z710qjbdqginhrw738azpr1f82hcg"))))
+         "0s93ai5d7li8pnxd87n12j9gypvac5zfahsk68j7zjv68dglj8s7"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -6010,19 +6010,20 @@ arrays based on fast wavelet-based functional models.")
 (define-public r-variancepartition
   (package
     (name "r-variancepartition")
-    (version "1.14.0")
+    (version "1.14.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "variancePartition" version))
        (sha256
         (base32
-         "1ycapwb2mq57xibrzzjz9zwxqz4nwz9f3n5gskhlr5vcs7irkjd6"))))
+         "0w4kri2389x1082xppx7l6xl1a5g74fyp02iwb4938x3gzwqwbjd"))))
     (properties
      `((upstream-name . "variancePartition")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biobase" ,r-biobase)
+       ("r-biocparallel" ,r-biocparallel)
        ("r-colorramps" ,r-colorramps)
        ("r-doparallel" ,r-doparallel)
        ("r-foreach" ,r-foreach)
