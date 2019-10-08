@@ -3106,10 +3106,6 @@ parts of it.")
 
 (define-public openblas
   (package
-    ;; TODO: Incorporate 'openblas/fixed-num-threads' changes on the next
-    ;; rebuild cycle.
-    (replacement openblas/fixed-num-threads)
-
     (name "openblas")
     (version "0.3.6")
     (source
@@ -3137,6 +3133,13 @@ parts of it.")
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
              "MAKE_NB_JOBS=0"           ;use jobserver for submakes
+
+             ;; This is the maximum number of threads OpenBLAS will ever use (that
+             ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
+             ;; is used.)  If we don't set it, the makefile sets it to the number
+             ;; of cores of the build machine, which is obviously wrong.
+             "NUM_THREADS=128"
+
              ;; Build the library for all supported CPUs.  This allows
              ;; switching CPU targets at runtime with the environment variable
              ;; OPENBLAS_CORETYPE=<type>, where "type" is a supported CPU type.
@@ -3190,24 +3193,6 @@ parts of it.")
                  ,flags))))
     (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
-
-(define openblas/fixed-num-threads
-  ;; TODO: Move that to 'openblas' proper on the next rebuild cycle.
-  (package
-    (inherit openblas)
-    (version (match (string-split (package-version openblas) #\.)
-               ((numbers ... (= string-length len))
-                (string-join (append numbers
-                                     (list (make-string len #\a)))
-                             "."))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments openblas)
-       ((#:make-flags flags ''())
-        ;; This is the maximum number of threads OpenBLAS will ever use (that
-        ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
-        ;; is used.)  If we don't set it, the makefile sets it to the number
-        ;; of cores of the build machine, which is obviously wrong.
-        `(cons "NUM_THREADS=128" ,flags))))))
 
 (define* (make-blis implementation #:optional substitutable?)
   "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
