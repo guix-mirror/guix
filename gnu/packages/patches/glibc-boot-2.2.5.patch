@@ -1,0 +1,251 @@
+This patch enables building glibc-2.2.5 using TCC and GNU Make 4.x and Mes C Library.
+
+  * Makefile: Do not assemble from stdin, use file indirection.
+  * Makefile: Add new target: install-lib-all.
+  * Makefile: Avoid building stub DOC.
+  * [_LIBC_REENTRANT]: Add missing guarding.
+  * [MES_BOOTSTRAP]: Disable some GCC extensions.
+  * [MES_BOOTSTRAP]: Add missing GCC div/mod defines.
+
+Upstream status: Not presented upstream.
+
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/config.h.in glibc-2.2.5/config.h.in
+--- ../glibc-2.2.5/config.h.in	2001-11-16 02:02:56.000000000 +0100
++++ glibc-2.2.5/config.h.in	2018-06-17 21:30:02.313029074 +0200
+@@ -1,3 +1,10 @@
++#if MES_BOOTSTRAP && BOOTSTRAP_GLIBC
++#undef __umoddi3
++#define __umoddi3(a,b) ((a)%(b))
++#undef __udivdi3
++#define __udivdi3(a,b) ((a)/(b))
++#endif
++
+ #if !defined ASSEMBLER && !defined _ISOMAC && !defined __OPTIMIZE__
+ # error "glibc cannot be compiled without optimization"
+ #endif
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/configure glibc-2.2.5/configure
+--- ../glibc-2.2.5/configure	2002-01-08 23:16:44.000000000 +0100
++++ glibc-2.2.5/configure	2018-06-07 20:47:26.608895319 +0200
+@@ -1530,7 +1530,7 @@ echo "configure:1530: checking version o
+   ac_prog_version=`$MAKE --version 2>&1 | sed -n 's/^.*GNU Make[^0-9]*\([0-9][0-9.]*\).*$/\1/p'`
+   case $ac_prog_version in
+     '') ac_prog_version="v. ?.??, bad"; ac_verc_fail=yes;;
+-    3.79* | 3.[89]*)
++    3.79* | 3.[89]* | 4.*)
+        ac_prog_version="$ac_prog_version, ok"; ac_verc_fail=no;;
+     *) ac_prog_version="$ac_prog_version, bad"; ac_verc_fail=yes;;
+ 
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/Makeconfig glibc-2.2.5/Makeconfig
+--- ../glibc-2.2.5/Makeconfig	2001-09-12 20:49:45.000000000 +0200
++++ glibc-2.2.5/Makeconfig	2018-06-20 16:33:35.472167202 +0200
+@@ -400,7 +400,7 @@ ifndef +link
+ 						     $(start-installed-name))\
+ 			   $(+preinit) $(link-extra-libs) \
+ 			   $(common-objpfx)libc% $(+postinit),$^) \
+-	      $(link-extra-libs) $(link-libc) $(+postctor) $(+postinit)
++	      $(link-extra-libs) $(link-libc) $(+postctor) $(+postinit) -lc -lgcc2
+ endif
+ # Command for statically linking programs with the C library.
+ ifndef +link-static
+@@ -412,7 +412,7 @@ ifndef +link-static
+ 						     $(start-installed-name))\
+ 			   $(+preinit) $(link-extra-libs-static) \
+ 			   $(common-objpfx)libc% $(+postinit),$^) \
+-	      $(link-extra-libs-static) $(link-libc-static) $(+postctor) $(+postinit)
++	      $(link-extra-libs-static) $(link-libc-static) $(+postctor) $(+postinit) -lc -lgcc2
+ endif
+ # Command for statically linking bounded-pointer programs with the C library.
+ ifndef +link-bounded
+@@ -424,7 +424,7 @@ ifndef +link-bounded
+ 						     $(start-installed-name))\
+ 			   $(+preinit) $(link-extra-libs-bounded) \
+ 			   $(common-objpfx)libc% $(+postinit),$^) \
+-	      $(link-extra-libs-bounded) $(link-libc-bounded) $(+postctor) $(+postinit)
++	      $(link-extra-libs-bounded) $(link-libc-bounded) $(+postctor) $(+postinit) -lc -lgcc2
+ endif
+ ifndef config-LDFLAGS
+ ifeq (yesyes,$(build-shared)$(elf))
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/Makerules glibc-2.2.5/Makerules
+--- ../glibc-2.2.5/Makerules	2001-11-16 02:02:19.000000000 +0100
++++ glibc-2.2.5/Makerules	2018-06-10 15:03:42.390329860 +0200
+@@ -748,6 +748,18 @@ endef
+ installed-libcs := $(foreach o,$(filter-out .os,$(object-suffixes-for-libc)),\
+ 			     $(inst_libdir)/$(patsubst %,$(libtype$o),\
+ 						     $(libprefix)$(libc-name)))
++
++ifeq (yes,$(build-shared))
++install-lib-all: $(inst_libdir)/libc.a \
++                $(inst_slibdir)/libc.so$(libc.so-version) \
++		$(inst_slibdir)/libc-$(version).so \
++		$(inst_libdir)/libc.so \
++	install-lib
++else
++install-lib-all: $(inst_libdir)/libc.a \
++	install-lib
++endif
++
+ install: $(installed-libcs)
+ $(installed-libcs): $(inst_libdir)/lib$(libprefix)%: lib $(+force)
+ 	$(make-target-directory)
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/misc/syslog.c glibc-2.2.5/misc/syslog.c
+--- ../glibc-2.2.5/misc/syslog.c	2001-08-31 01:13:49.000000000 +0200
++++ glibc-2.2.5/misc/syslog.c	2018-06-09 09:01:20.008918690 +0200
+@@ -216,9 +216,11 @@ vsyslog(pri, fmt, ap)
+ 
+ 	/* Prepare for multiple users.  We have to take care: open and
+ 	   write are cancellation points.  */
++#if _LIBC_REENTRANT
+ 	__libc_cleanup_region_start (1, (void (*) (void *)) cancel_handler,
+ 				     &oldaction_ptr);
+ 	__libc_lock_lock (syslog_lock);
++#endif
+ 
+ 	/* Prepare for a broken connection.  */
+  	memset (&action, 0, sizeof (action));
+@@ -268,9 +270,11 @@ vsyslog(pri, fmt, ap)
+ 	if (sigpipe == 0)
+ 		__sigaction (SIGPIPE, &oldaction, (struct sigaction *) NULL);
+ 
++#if _LIBC_REENTRANT
+ 	/* End of critical section.  */
+ 	__libc_cleanup_region_end (0);
+ 	__libc_lock_unlock (syslog_lock);
++#endif
+ 
+ 	free (buf);
+ }
+@@ -326,16 +330,20 @@ openlog_internal(const char *ident, int
+ void
+ openlog (const char *ident, int logstat, int logfac)
+ {
++#if _LIBC_REENTRANT
+   /* Protect against multiple users.  */
+   __libc_cleanup_region_start (1,
+ 			       (void (*) __P ((void *))) __libc_mutex_unlock,
+ 			       &syslog_lock);
+   __libc_lock_lock (syslog_lock);
++#endif
+ 
+   openlog_internal (ident, logstat, logfac);
+ 
++#if _LIBC_REENTRANT
+   /* Free the lock.  */
+   __libc_cleanup_region_end (1);
++#endif
+ }
+ 
+ static void
+@@ -358,18 +366,22 @@ closelog_internal()
+ void
+ closelog ()
+ {
++#if _LIBC_REENTRANT
+   /* Protect against multiple users.  */
+   __libc_cleanup_region_start (1,
+ 			       (void (*) __P ((void *))) __libc_mutex_unlock,
+ 			       &syslog_lock);
+   __libc_lock_lock (syslog_lock);
++#endif
+ 
+   closelog_internal ();
+   LogTag = NULL;
+   LogType = SOCK_DGRAM; /* this is the default */
+ 
++#if _LIBC_REENTRANT
+   /* Free the lock.  */
+   __libc_cleanup_region_end (1);
++#endif
+ }
+ 
+ #ifdef _LIBC_REENTRANT
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/Rules glibc-2.2.5/Rules
+--- ../glibc-2.2.5/Rules	2001-08-30 00:44:35.000000000 +0200
++++ glibc-2.2.5/Rules	2018-06-09 08:15:54.880683675 +0200
+@@ -218,7 +218,7 @@ endif
+ 	fopen_max=`sed -n 's/^#define OPEN_MAX //1p' $(@:st=hT)`; 	\
+ 	filename_max=`sed -n 's/^#define PATH_MAX //1p' $(@:st=hT)`;	\
+ 	iov_max=`sed -n 's/^#define UIO_MAXIOV //p' $(@:st=hT)`;	\
+-	fopen_max=$${fopen_max:-16};					\
++	fopen_max=$${fu_fopen_max:-16};					\
+ 	filename_max=$${filename_max:-1024};				\
+ 	if [ -z $$iov_max ]; then					\
+ 	  define_iov_max="# undef IOV_MAX";				\
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/stdio-common/perror.c glibc-2.2.5/stdio-common/perror.c
+--- ../glibc-2.2.5/stdio-common/perror.c	2001-09-01 07:33:01.000000000 +0200
++++ glibc-2.2.5/stdio-common/perror.c	2018-06-09 10:42:25.909899529 +0200
+@@ -48,6 +48,9 @@ perror_internal (FILE *fp, const char *s
+ }
+ 
+ 
++#if MES_BOOTSTRAP
++#define fileno_unlocked(x) 1
++#endif
+ /* Print a line on stderr consisting of the text in S, a colon, a space,
+    a message describing the meaning of the contents of `errno' and a newline.
+    If S is NULL or "", the colon and space are omitted.  */
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/sysdeps/i386/fpu/ftestexcept.c glibc-2.2.5/sysdeps/i386/fpu/ftestexcept.c
+--- ../glibc-2.2.5/sysdeps/i386/fpu/ftestexcept.c	2001-07-06 06:55:53.000000000 +0200
++++ glibc-2.2.5/sysdeps/i386/fpu/ftestexcept.c	2018-06-09 09:45:13.363031424 +0200
+@@ -25,8 +25,10 @@ fetestexcept (int excepts)
+ {
+   int temp;
+ 
++#if !MES_BOOTSTRAP
+   /* Get current exceptions.  */
+   __asm__ ("fnstsw %0" : "=a" (temp));
++#endif
+ 
+   return temp & excepts & FE_ALL_EXCEPT;
+ }
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/sysdeps/unix/make-syscalls.sh glibc-2.2.5/sysdeps/unix/make-syscalls.sh
+--- ../glibc-2.2.5/sysdeps/unix/make-syscalls.sh	2001-09-13 00:19:30.000000000 +0200
++++ glibc-2.2.5/sysdeps/unix/make-syscalls.sh	2018-06-20 15:16:01.813004453 +0200
+@@ -173,7 +173,7 @@ shared-only-routines += $file
+   done
+ 
+   # And finally, pipe this all into the compiler.
+-  echo '	) | $(COMPILE.S) -x assembler-with-cpp -o $@ -'
++  echo '	) > stdin.c; $(COMPILE.S) -x assembler-with-cpp -o $@ stdin.c'
+ 
+   case $weak in
+   *@*)
+@@ -284,7 +284,7 @@ shared-only-routines += $file
+     echo "\
+ 	 echo ''; \\
+ 	 echo '#include <bp-thunks.h>'; \\
+-	) | \$(COMPILE.c) -x c -o \$@ -"
++	) > stdin.c; \$(COMPILE.c) -x c -o \$@ stdin.c"
+ ### Use this for debugging intermediate output:
+ ### 	) >\$(@:.ob=.c)
+ ### 	\$(subst -c,-E,\$(COMPILE.c)) -o \$(@:.ob=.ib) \$(@:.ob=.c)
+diff -purN -x .git -x fubar -x fubar.c -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC -x texis -x '*.info*' ../glibc-2.2.5/sysdeps/unix/sysv/linux/sys/timex.h glibc-2.2.5/sysdeps/unix/sysv/linux/sys/timex.h
+--- ../glibc-2.2.5/sysdeps/unix/sysv/linux/sys/timex.h	2001-07-06 06:56:21.000000000 +0200
++++ glibc-2.2.5/sysdeps/unix/sysv/linux/sys/timex.h	2018-06-09 20:09:07.713806647 +0200
+@@ -54,10 +54,12 @@ struct timex
+   long int errcnt;	/* calibration errors (ro) */
+   long int stbcnt;	/* stability limit exceeded (ro) */
+ 
++#if !MES_BOOTSTRAP
+   /* ??? */
+   int  :32; int  :32; int  :32; int  :32;
+   int  :32; int  :32; int  :32; int  :32;
+   int  :32; int  :32; int  :32; int  :32;
++#endif
+ };
+ 
+ /* Mode codes (timex.mode) */
+--- ../glibc-2.2.5/manual/Makefile	2001-08-28 10:05:40.000000000 +0200
++++ glibc-2.2.5/manual/Makefile	2018-06-09 10:13:03.093633660 +0200
+@@ -247,7 +247,11 @@
+ .PHONY: stubs
+ stubs: $(objpfx)stubs
+ endif
+-$(objpfx)stubs ../po/manual.pot $(objpfx)stamp%:
++po/manual.pot $(objpfx)stubs:
++	$(make-target-directory)
++	touch $@
++
++$(objpfx)stamp%:
+ 	$(make-target-directory)
+ 	touch $@
+ 

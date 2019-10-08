@@ -37,41 +37,34 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages golang)
   #:use-module (gnu packages groff)
-  #:use-module (gnu packages gsasl)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages kerberos)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages ssh)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
 
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.65.0)
-   (version "7.63.0")
+   (version "7.65.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1i38v49233jirzlfqd8fy6jyf80assa953hk7w6qmysbg562604n"))))
+              "1sjz4fq7jg96mpmpqq82nd61njna6jp3c4m9yrbx2j1rh5a8ingj"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
    (inputs `(("gnutls" ,gnutls)
-             ("gss" ,gss)
              ("libidn" ,libidn)
-             ;; TODO XXX <https://bugs.gnu.org/34927>
-             ;; Curl doesn't actually use or refer to libssh2 because the build
-             ;; is not configured with '--with-libssh2'.  Remove this input when
-             ;; a mass rebuild is appropriate (e.g. core-updates).
-             ("libssh2" ,libssh2-1.8.0)
              ("openldap" ,openldap)
+             ("mit-krb5" ,mit-krb5)
              ("nghttp2" ,nghttp2 "lib")
              ("zlib" ,zlib)))
    (native-inputs
@@ -79,7 +72,7 @@
        ;; to enable the --manual option and make test 1026 pass
        ("groff" ,groff)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python-wrapper)))
    (native-search-paths
     ;; Note: This search path is respected by the `curl` command-line tool only.
     ;; Ideally we would bake this into libcurl itself so other users can benefit,
@@ -90,8 +83,10 @@
            (separator #f)                         ;single entry
            (files '("etc/ssl/certs/ca-certificates.crt")))))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi"
-                          "--disable-static")
+    `(#:configure-flags (list "--with-gnutls"
+                              (string-append "--with-gssapi="
+                                             (assoc-ref %build-inputs "mit-krb5"))
+                              "--disable-static")
       ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
       #:phases
       (modify-phases %standard-phases
@@ -146,19 +141,6 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
-
-(define-public curl-7.65.0
-  (package
-    (inherit curl)
-    (version "7.65.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://curl.haxx.se/download/curl-"
-                            version ".tar.xz"))
-        (sha256
-         (base32
-          "1kb6p510m0n0y1c8fjxbcs6dyaqgm8i54pjvj29zc14lj9ix4rkp"))))))
 
 (define-public kurly
   (package

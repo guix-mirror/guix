@@ -733,6 +733,7 @@ Info manual."
                  (filter-map (match-lambda
                                (('guix 'scripts _ ..1) #f)
                                (('guix 'man-db) #f)
+                               (('guix 'tests _ ...) #f)
                                (name name))
                              (scheme-modules* source "guix"))
                  (list *core-modules*)

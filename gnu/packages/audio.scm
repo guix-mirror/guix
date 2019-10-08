@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
@@ -143,7 +146,8 @@
        ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gcc" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
@@ -1593,15 +1597,7 @@ synchronous execution of all clients, and low latency operation.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'configure 'set-flags
-          (lambda _
-            ;; Compile with C++11, required by gtkmm.
-            (setenv "CXXFLAGS" "-std=c++11")
-            #t)))))
+       #:python ,python-2))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
@@ -1682,7 +1678,12 @@ to be plugged into a wide range of audio synthesis and recording packages.")
                 "12z1vx3krrzsfccpah9xjs68900xvr7bw92wx8np5871i2yv47iw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(;; Glibc no longer includes Sun RPC support, so tell the build system
+       ;; to use libtirpc instead.
+       #:make-flags (list (string-append "CFLAGS=-I"
+                                         (assoc-ref %build-inputs "libtirpc")
+                                         "/include/tirpc -ltirpc"))
+       #:phases
        (modify-phases %standard-phases
          ;; lashd embeds an ancient version of sigsegv so we just skip it
          (add-after 'unpack 'skip-lashd
@@ -1695,6 +1696,7 @@ to be plugged into a wide range of audio synthesis and recording packages.")
      `(("bdb" ,bdb)
        ("gtk" ,gtk+-2)
        ("jack" ,jack-1)
+       ("libtirpc" ,libtirpc)
        ("readline" ,readline)
        ("python" ,python-2)))
     ;; According to pkg-config, packages depending on lash also need to have
@@ -1947,22 +1949,7 @@ software.")
        #:configure-flags
        (list (string-append "--boost-includes="
                             (assoc-ref %build-inputs "boost")
-                            "/include"))
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'set-flags
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     ;; See e.g. https://github.com/lvtk/lvtk/issues/21
-                     (setenv "LDFLAGS"
-                             (string-append
-                              "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system"))
-                     ;; Needed for gtkmm
-                     (substitute* '("src/wscript_build"
-                                    "examples/wscript_build")
-                       (("cxxflags.*= \\[" line)
-                        (string-append line "\"-std=c++11\", ")))
-                     #t)))))
+                            "/include"))))
     (inputs
      `(("boost" ,boost)
        ("gtkmm" ,gtkmm-2)
@@ -2010,6 +1997,13 @@ lv2-c++-tools.")
                               "/lib/libasound.so.2"
                               "\")")))
             #t)))))
+    (native-inputs
+     `(;; FIXME: On i686-linux, GCC 7 hits an internal compiler error
+       ;; upon building utils/makehrtf.c:3281:
+       ;; "internal compiler error: in gen_rtx_SUBREG, at emit-rtl.c:908"
+       ;; https://ci.guix.gnu.org/log/r2fjx9m75m9rifg2yjbnn853wqy2547n-openal-1.19.1
+       ;; Remove this when the default compiler is GCC 9 or later.
+       ("gcc" ,gcc-9)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
@@ -2182,16 +2176,18 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (patches
+               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
+                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2203,12 +2199,6 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-boost-1.68
-           (lambda _
-             (substitute* "server/supernova/utilities/time_tag.hpp"
-               (("(time_duration offset = .+ microseconds\\().*" _ m)
-                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
-             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following

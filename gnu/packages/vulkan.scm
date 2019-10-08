@@ -32,7 +32,6 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages pkg-config)
@@ -95,18 +94,10 @@ and for the GLSL.std.450 extended instruction set.
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; FIXME: Tests fail.
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'fixgcc7
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t)))
        #:configure-flags (list (string-append "-DSPIRV-Headers_SOURCE_DIR="
                                (assoc-ref %build-inputs "spirv-headers")))))
     (inputs `(("spirv-headers" ,spirv-headers)))
-    (native-inputs `(("gcc" ,gcc-7)
-                     ("pkg-config" ,pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python)))
     (home-page "https://github.com/KhronosGroup/SPIRV-Tools")
     (synopsis "API and commands for processing SPIR-V modules")
@@ -347,7 +338,7 @@ API.")
      `(("googletest" ,googletest)
        ("python" ,python)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("glslang-source" ,(package-source glslang))
        ("pkg-config" ,pkg-config)
        ("spirv-headers-source" ,(package-source spirv-headers))

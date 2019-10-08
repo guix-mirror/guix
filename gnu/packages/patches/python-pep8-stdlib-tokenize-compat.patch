@@ -1,0 +1,35 @@
+From 397463014fda3cdefe8d6c9d117ae16d878dc494 Mon Sep 17 00:00:00 2001
+From: Michael Hudson-Doyle <michael.hudson@canonical.com>
+Date: Tue, 25 Sep 2018 14:58:57 +1200
+Subject: [PATCH] Keep compability with stdlib tokenize.py changes
+
+https://github.com/python/cpython/commit/c4ef4896eac86a6759901c8546e26de4695a1389
+is not yet part of any release of Python but has been backported to all
+versions in Git (includeing 2.7!). It causes the tokenize.py module to
+emit a synthetic NEWLINE token for files that do not in fact end with a
+newline, which confuses pycodestyle's checks for blank lines at the end
+of a file. Fortunately the synthetic NEWLINE tokens are easy to detect
+(the token text is "").
+
+Fixes #786
+---
+ pycodestyle.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/pycodestyle.py b/pycodestyle.py
+index 0d725d27..fbc3dca3 100755
+--- a/pep8.py
++++ b/pep8.py
+@@ -258,10 +258,10 @@ def trailing_blank_lines(physical_line, lines, line_number, total_lines):
+     """
+     if line_number == total_lines:
+         stripped_last_line = physical_line.rstrip()
+-        if not stripped_last_line:
++        if physical_line and not stripped_last_line:
+             return 0, "W391 blank line at end of file"
+         if stripped_last_line == physical_line:
+-            return len(physical_line), "W292 no newline at end of file"
++            return len(lines[-1]), "W292 no newline at end of file"
+ 
+ 
+ @register_check

@@ -305,7 +305,7 @@ Japanese language input in most graphical applications.")
 (define-public librime
   (package
     (name "librime")
-    (version "1.4.0")
+    (version "1.5.3")
     (source
      (origin
        (method git-fetch)
@@ -315,7 +315,7 @@ Japanese language input in most graphical applications.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1zkx1wfbd94v55gfycyd2b94jxclfyk2zl7yw35pyjx63qdlb6sd"))
+         "0xskhdhk7dgpc71r39pfzxi5vrlzy90aqj1gzv8nnapq91p2awhv"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -677,7 +677,7 @@ Method Engine.")
        ("librime" ,librime)
        ("rime-data" ,rime-data)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("pkg-config" ,pkg-config)))
     (home-page "https://rime.im/")
     (synopsis "Rime Input Method Engine for IBus")

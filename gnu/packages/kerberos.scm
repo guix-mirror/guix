@@ -49,7 +49,7 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.16.2")
+    (version "1.17")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -61,7 +61,7 @@
                                    "/krb5-" version ".tar.gz")))
               (sha256
                (base32
-                "09zhhzj19bmjjxsvxdrysabql8n72kjivis08wbikhlkwlgiwwlz"))))
+                "1xc1ly09697b7g2vngvx76szjqy9769kpgn27lnp1r9xln224vjs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -116,9 +116,19 @@ cryptography.")
     (build-system gnu-build-system)
     (arguments
      '(;; This is required since we patch some of the build scripts.
-       ;; Remove for the next Shishi release after 1.0.2 or when
-       ;; removing 'shishi-fix-libgcrypt-detection.patch'.
-       #:configure-flags '("ac_cv_libgcrypt=yes" "--disable-static")))
+       ;; Remove first two items for the next Shishi release after 1.0.2 or
+       ;; when removing 'shishi-fix-libgcrypt-detection.patch'.
+       #:configure-flags
+       '("ac_cv_libgcrypt=yes" "--disable-static"
+         "--with-key-dir=/etc/shishi" "--with-db-dir=/var/shishi")
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'configure 'disable-automatic-key-generation
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "Makefile"
+             (("^install-data-hook:")
+              "install-data-hook:\nx:\n"))
+            #t)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
@@ -132,7 +142,10 @@ cryptography.")
     (description
      "GNU Shishi is a free implementation of the Kerberos 5 network security
 system.  It is used to allow non-secure network nodes to communicate in a
-secure manner through client-server mutual authentication via tickets.")
+secure manner through client-server mutual authentication via tickets.
+
+After installation, the system administrator should generate keys using
+@code{shisa -a /etc/shishi/shishi.keys}.")
     (license license:gpl3+)))
 
 (define-public heimdal

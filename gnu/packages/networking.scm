@@ -277,13 +277,13 @@ transparently check connection attempts against an access control list.")
   (package
     (name "zeromq")
     (version "4.3.2")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/zeromq/libzmq/releases/"
-                           "download/v" version "/zeromq-" version ".tar.gz"))
-       (sha256
-        (base32 "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/zeromq/libzmq/releases"
+                                  "/download/v" version "/zeromq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
     (build-system gnu-build-system)
     (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
@@ -299,7 +299,7 @@ more.")
 (define-public czmq
   (package
     (name "czmq")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -308,21 +308,19 @@ more.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1h5hrcsc30fcwb032vy5gxkq4j4vv1y4dj460rfs1hhxi0cz83zh"))))
+                "1szciz62sk3fm4ga9qjpxz0n0lazvphm32km95bq92ncng12kayg"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; TODO Tests fail for some reason:
-       ;;  * zauth: OK
-       ;;  * zbeacon: OK (skipping test, no UDP broadcasting)
-       ;; E: (czmq_selftest) 18-02-24 16:25:52 No broadcast interface found, (ZSYS_INTERFACE=lo)
-       ;; make[2]: *** [Makefile:2245: check-local] Segmentation fault
-       ;; make[2]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make[1]: *** [Makefile:2032: check-am] Error 2
-       ;; make[1]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make: *** [Makefile:1588: check-recursive] Error 1
-       ;; phase `check' failed after 19.4 seconds
-       #:tests? #f
-       #:configure-flags '("--enable-drafts")))
+     '(#:configure-flags '("--enable-drafts")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'patch-tests
+                    (lambda _
+                      ;; XXX FIXME: Disable the zproc test, which fails on some
+                      ;; hardware: <https://github.com/zeromq/czmq/issues/2007>.
+                      (substitute* "src/czmq_selftest.c"
+                        (("\\{ \"zproc\", zproc_test.*")
+                         ""))
+                      #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
     (home-page "http://zeromq.org")
@@ -1727,7 +1725,7 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     (arguments
      `(#:tests? #f)) ; No tests are included
     (inputs
-     `(("openssl" ,openssl))) ; For the DES library
+     `(("openssl" ,openssl-1.0)))       ;for the DES library
     (home-page "https://www.lysator.liu.se/~pen/pidentd/")
     (synopsis "Small Ident Daemon")
     (description
@@ -2119,6 +2117,12 @@ remotely.")
                (base32
                 "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Ensure the kernel headers are treated as system headers to suppress
+       ;; harmless -Werror=pedantic warnings.
+       #:make-flags (list (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "kernel-headers")
+                                         "/include"))))
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
               ("libsodium" ,libsodium)))
@@ -2390,8 +2394,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
                      (string-append (assoc-ref inputs "curl") "/include:"
                                     (assoc-ref inputs "libpcap") "/include:"
                                     (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include:"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    (assoc-ref inputs "zlib") "/include"))
              #t)))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")

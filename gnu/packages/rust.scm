@@ -387,7 +387,7 @@ test = { path = \"../libtest\" }
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
        ("gdb" ,gdb)   ; For the tests
        ("procps" ,procps) ; For the tests
@@ -399,7 +399,7 @@ test = { path = \"../libtest\" }
     (inputs
      `(("jemalloc" ,jemalloc-4.5.0)
        ("llvm" ,llvm-3.9.1)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("libssh2" ,libssh2) ; For "cargo"
        ("libcurl" ,curl)))  ; For "cargo"
 
@@ -408,10 +408,7 @@ test = { path = \"../libtest\" }
     ;; modules (see <https://bugs.gnu.org/31392>).
     (native-search-paths
      (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
+            (variable "CPATH")
             (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")

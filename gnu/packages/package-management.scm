@@ -527,7 +527,6 @@ symlinks to the files in a common directory such as /usr/local.")
        ("nss" ,nss)
        ("nspr" ,nspr)
        ("libarchive" ,libarchive)
-       ("nettle" ,nettle)            ;XXX: actually a dependency of libarchive
        ("file" ,file)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
@@ -711,8 +710,7 @@ This package provides Conda as a library.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (target (string-append out "/lib/python"
-                                             ((@@ (guix build python-build-system)
-                                                  get-python-version)
+                                             (python-version
                                               (assoc-ref inputs "python"))
                                              "/site-packages/")))
                  ;; The installer aborts if the target directory is not on
@@ -879,7 +877,6 @@ for packaging and deployment of cross-compiled Windows applications.")
        ("gpgme" ,gpgme)
        ("libarchive" ,libarchive)
        ("libsoup" ,libsoup)
-       ("nettle" ,nettle)               ; required by 'libarchive.la'
        ("util-linux" ,util-linux)))
     (home-page "https://ostree.readthedocs.io/en/latest/")
     (synopsis "Operating system and container binary deployment and upgrades")
@@ -939,7 +936,6 @@ the boot loader configuration.")
              ("libsoup" ,libsoup)
              ("libxau" ,libxau)
              ("libxml2" ,libxml2)
-             ("nettle" ,nettle)
              ("util-linux" ,util-linux)))
    (home-page "https://flatpak.org")
    (synopsis "System for building, distributing, and running sandboxed desktop

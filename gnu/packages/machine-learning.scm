@@ -213,8 +213,7 @@ classification.")
              (assoc-ref %standard-phases 'check))
            (add-before 'check 'fix-PYTHONPATH
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((python-version ((@@ (guix build python-build-system)
-                                           get-python-version)
+               (let ((python-version (python-version
                                       (assoc-ref inputs "python"))))
                  (setenv "PYTHONPATH"
                          (string-append (getenv "PYTHONPATH")
@@ -1146,16 +1145,16 @@ written in C++.")
            (replace 'configure
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((glib (assoc-ref inputs "glib")))
-                 (setenv "CXXFLAGS" "-std=c++11 -fPIC")
+                 (setenv "CXXFLAGS" "-fPIC")
                  (setenv "CPLUS_INCLUDE_PATH"
                          (string-append glib "/include/glib-2.0:"
                                         glib "/lib/glib-2.0/include:"
                                         (assoc-ref inputs "gstreamer")
-                                        "/include/gstreamer-1.0:"
-                                        (getenv "CPLUS_INCLUDE_PATH"))))
+                                        "/include/gstreamer-1.0")))
                (substitute* "Makefile"
                  (("include \\$\\(KALDI_ROOT\\)/src/kaldi.mk") "")
-                 (("\\$\\(error Cannot find") "#"))))
+                 (("\\$\\(error Cannot find") "#"))
+               #t))
            (add-before 'build 'build-depend
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "depend" make-flags)))
@@ -1299,7 +1298,7 @@ Python.")
              "-DgRPC_SSL_PROVIDER=package"
              "-DgRPC_PROTOBUF_PROVIDER=package")))
     (inputs
-     `(("c-ares" ,c-ares-next)
+     `(("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1611,6 +1610,9 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("protobuf:native" ,protobuf-next) ; protoc
        ("protobuf:src" ,(package-source protobuf-next))
        ("eigen:src" ,(package-source eigen-for-tensorflow))
+       ;; install_pip_packages.sh wants setuptools 39.1.0 specifically.
+       ("python-setuptools" ,python-setuptools-for-tensorflow)
+
        ;; The commit hashes and URLs for third-party source code are taken
        ;; from "tensorflow/workspace.bzl".
        ("boringssl-src"
@@ -1738,7 +1740,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("python-termcolo" ,python-termcolor)
        ("python-wheel" ,python-wheel)))
     (inputs
-     `(("c-ares" ,c-ares-next)
+     `(("c-ares" ,c-ares)
        ("eigen" ,eigen-for-tensorflow)
        ("gemmlowp" ,gemmlowp-for-tensorflow)
        ("lmdb" ,lmdb)
@@ -1857,6 +1859,7 @@ with image data, text data, and sequence data.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Keras" version))
+       (patches (search-patches "python-keras-integration-test.patch"))
        (sha256
         (base32
          "1j8bsqzh49vjdxy6l1k4iwax5vpjzniynyd041xjavdzvfii1dlh"))))

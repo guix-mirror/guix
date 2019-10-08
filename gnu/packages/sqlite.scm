@@ -46,8 +46,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (replacement sqlite-3.26.0)
-   (version "3.24.0")
+   (version "3.28.0")
    (source (origin
             (method url-fetch)
             (uri (let ((numeric-version
@@ -59,19 +58,21 @@
                                             (map (cut string-pad <> 2 #\0)
                                                  other-digits))
                                            6 #\0))))))
-                   (string-append "https://sqlite.org/2018/sqlite-autoconf-"
+                   (string-append "https://sqlite.org/2019/sqlite-autoconf-"
                                   numeric-version ".tar.gz")))
             (sha256
              (base32
-              "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr"))))
+              "1hxpi45crbqp6lacl7z611lna02k956m9bsy2bjzrbb2y23546yn"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
     `(#:configure-flags
-      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_UNLOCK_NOTIFY and
-      ;; -DSQLITE_ENABLE_DBSTAT_VTAB to CFLAGS.  GNU Icecat will refuse
-      ;; to use the system SQLite unless these options are enabled.
+      ;; Add -DSQLITE_SECURE_DELETE, -DSQLITE_ENABLE_FTS3,
+      ;; -DSQLITE_ENABLE_UNLOCK_NOTIFY and -DSQLITE_ENABLE_DBSTAT_VTAB
+      ;; to CFLAGS.  GNU Icecat will refuse to use the system SQLite
+      ;; unless these options are enabled.
       (list (string-append "CFLAGS=-O2 -DSQLITE_SECURE_DELETE "
+                           "-DSQLITE_ENABLE_FTS3 "
                            "-DSQLITE_ENABLE_UNLOCK_NOTIFY "
                            "-DSQLITE_ENABLE_DBSTAT_VTAB"))))
    (home-page "https://www.sqlite.org/")
@@ -82,26 +83,6 @@ zero-configuration, transactional SQL database engine.  SQLite is the most
 widely deployed SQL database engine in the world.  The source code for SQLite
 is in the public domain.")
    (license license:public-domain)))
-
-(define-public sqlite-3.26.0
-  (package (inherit sqlite)
-    (version "3.26.0")
-    (source (origin
-              (method url-fetch)
-              (uri (let ((numeric-version
-                          (match (string-split version #\.)
-                            ((first-digit other-digits ...)
-                             (string-append first-digit
-                                            (string-pad-right
-                                             (string-concatenate
-                                              (map (cut string-pad <> 2 #\0)
-                                                   other-digits))
-                                             6 #\0))))))
-                     (string-append "https://sqlite.org/2018/sqlite-autoconf-"
-                                    numeric-version ".tar.gz")))
-              (sha256
-               (base32
-                "0pdzszb4sp73hl36siiv3p300jvfvbcdxi2rrmkwgs6inwznmajx"))))))
 
 ;; This is used by Qt.
 (define-public sqlite-with-column-metadata

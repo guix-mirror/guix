@@ -2517,6 +2517,10 @@ Other features include a live preview and live streaming.")
                (base32
                 "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; libsmpeg fails to build with -std=c++11, which is the default with
+     ;; GCC 7.  Also, 'configure' does CXXFLAGS=$CFLAGS, hence this hack.
+     '(#:configure-flags '("CFLAGS=-O2 -g -std=c++03")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)))
@@ -2633,14 +2637,14 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.1.2")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "0bny0hwlr55g2c69rsamv0xvwmfh1s4a582b9vq20xv5ly84m6ms"))
+                "03clkknaq3mz84p85cvr21gsy9b8vv2g4vvyfz44hz8la253jfqi"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for
@@ -2654,11 +2658,13 @@ supported players in addition to this package.")
                     ;; which would lead to fetching and building of these
                     ;; libraries.  Use our own instead.
                     (("MODULES \\+= contrib") "# MODULES += contrib"))
-                  #t))))
+                  #t))
+              (patches (search-patches "handbrake-opt-in-nvenc.patch"))))
     (build-system  glib-or-gtk-build-system)
     (native-inputs
      `(("automake" ,automake)           ;gui subpackage must be bootstrapped
        ("autoconf" ,autoconf)
+       ("cmake" ,cmake-minimal) ;TODO: could probably strip check from make/configure.py
        ("curl" ,curl)                   ;not actually used, but tested for
        ("intltool" ,intltool)
        ("libtool" ,libtool)
@@ -2691,12 +2697,14 @@ supported players in addition to this package.")
        ("libvpx" ,libvpx)
        ("libxml2" ,libxml2)
        ("libx264" ,libx264)
+       ("speex" ,speex)
        ("x265" ,x265)
        ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f             ;tests require Ruby and claim to be unsupported
        #:configure-flags
-       (list (string-append "CPPFLAGS=-I"
+       (list "--disable-gtk-update-checks"
+             (string-append "CPPFLAGS=-I"
                             (assoc-ref %build-inputs "libxml2")
                             "/include/libxml2")
              "LDFLAGS=-lx265")
@@ -2823,6 +2831,7 @@ post-processing of video formats like MPEG2, H.264/AVC, and VC-1.")
                            "code-archive-downloads/v2/"
                            "code.google.com/mp4v2/mp4v2-" version ".tar.bz2"))
        (file-name (string-append name "-" version ".tar.bz2"))
+       (patches (search-patches "libmp4v2-c++11.patch"))
        (sha256
         (base32
          "0f438bimimsvxjbdp4vsr8hjw2nwggmhaxgcw07g2z361fkbj683"))))

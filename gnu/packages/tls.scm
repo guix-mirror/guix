@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017, 2018 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
@@ -70,7 +70,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.13")
+    (version "4.14")
     (source
      (origin
       (method url-fetch)
@@ -78,7 +78,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jlc1iahj8k3haz28j55nzg7sgni5h41vqy461i1bpbx6668wlky"))))
+        "025sqnlzji78ss2fi78dajc0v0h5fi02wp39hws41sn8qnjlnq4y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-static")))
@@ -162,7 +162,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.6.5")
+    (version "3.6.9")
     (source (origin
              (method url-fetch)
              (uri
@@ -174,16 +174,7 @@ living in the same process.")
              (patches (search-patches "gnutls-skip-trust-store-test.patch"))
              (sha256
               (base32
-               "0ddvg97dyrh8dkffv1mdc0knxx5my3qdbzv97s4a6jggmk9wwgh7"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 ;; XXX: The generated configure script in GnuTLS 3.6.5
-                 ;; apparently does not know about Guile 2.2.
-                 (substitute* "configure"
-                   (("guile_versions_to_search=\"2\\.0 1\\.8\"")
-                    "guile_versions_to_search=\"2.2 2.0 1.8\""))
-                 #t))))
+               "1jqz5s3lv8sa53348cfi9nr5pw5l55n8m40b8msdvv0pb2jzqca3"))))
     (build-system gnu-build-system)
     (arguments
      `(; Ensure we don't keep a reference to this buggy software.
@@ -200,6 +191,15 @@ living in the same process.")
              ;; fallback, and users have to configure each program
              ;; independently.  This seems suboptimal.
              "--with-default-trust-store-dir=/etc/ssl/certs"
+
+             ;; Tell the build system that we want Guile bindings installed to
+             ;; the output instead of Guiles own module directory.
+             (string-append "--with-guile-site-dir="
+                            "$(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)")
+             (string-append "--with-guile-site-ccache-dir="
+                            "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache")
+             (string-append "--with-guile-extension-dir="
+                            "$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/extensions")
 
              ;; FIXME: Temporarily disable p11-kit support since it is not
              ;; working on mips64el.
@@ -266,8 +266,8 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (replacement openssl/fixed)
-   (version "1.0.2p")
+   (version "1.1.1c")
+   (replacement openssl-1.1.1d)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -279,13 +279,12 @@ required structures.")
                                        "/openssl-" version ".tar.gz")))
              (sha256
               (base32
-               "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah"))
-             (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-c-rehash-in.patch"))))
+               "142c7zdlz06hjrrvinb9f276czc78bnkyhd9xma621qmmmwk1yzn"))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
-              "doc"                               ;1.5MiB of man3 pages
-              "static"))                          ;6MiB of .a files
+              "doc"         ;6.8 MiB of man3 pages and full HTML documentation
+              "static"))    ;6.4 MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
     `(#:disallowed-references (,perl)
@@ -298,41 +297,27 @@ required structures.")
       #:disallowed-references ,(list (canonical-package perl))
       #:phases
       (modify-phases %standard-phases
-        (add-before
-         'configure 'patch-Makefile.org
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; The default MANDIR is some unusual place.  Fix that.
-           (let ((out (assoc-ref outputs "out")))
-             (patch-makefile-SHELL "Makefile.org")
-             (substitute* "Makefile.org"
-               (("^MANDIR[[:blank:]]*=.*$")
-                (string-append "MANDIR = " out "/share/man\n")))
-             #t)))
-        (replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (invoke "./config"
-                     "shared"                 ;build shared libraries
-                     "--libdir=lib"
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (lib (string-append out "/lib")))
+              ;; It's not a shebang so patch-source-shebangs misses it.
+              (substitute* "config"
+                (("/usr/bin/env")
+                 (string-append (assoc-ref %build-inputs "coreutils")
+                                "/bin/env")))
+              (invoke "./config"
+                      "shared"       ;build shared libraries
+                      "--libdir=lib"
 
-                     ;; The default for this catch-all directory is
-                     ;; PREFIX/ssl.  Change that to something more
-                     ;; conventional.
-                     (string-append "--openssldir=" out
-                                    "/share/openssl-" ,version)
+                      ;; The default for this catch-all directory is
+                      ;; PREFIX/ssl.  Change that to something more
+                      ;; conventional.
+                      (string-append "--openssldir=" out
+                                     "/share/openssl-" ,version)
 
-                     (string-append "--prefix=" out)))))
-        (add-after
-         'install 'make-libraries-writable
-         (lambda* (#:key outputs #:allow-other-keys)
-           ;; Make libraries writable so that 'strip' does its job.
-           (let ((out (assoc-ref outputs "out")))
-             (for-each (lambda (file)
-                         (chmod file #o644))
-                       (find-files (string-append out "/lib")
-                                   "\\.so"))
-             #t)))
+                      (string-append "--prefix=" out)
+                      (string-append "-Wl,-rpath," lib)))))
         (add-after 'install 'move-static-libraries
           (lambda* (#:key outputs #:allow-other-keys)
             ;; Move static libraries to the "static" output.
@@ -345,31 +330,20 @@ required structures.")
                           (delete-file file))
                         (find-files lib "\\.a$"))
               #t)))
-        (add-after 'install 'move-man3-pages
+        (add-after 'install 'move-extra-documentation
           (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move section 3 man pages to "doc".
-            (let* ((out    (assoc-ref outputs "out"))
-                   (man3   (string-append out "/share/man/man3"))
-                   (doc    (assoc-ref outputs "doc"))
-                   (target (string-append doc "/share/man/man3")))
-              (mkdir-p target)
-              (for-each (lambda (file)
-                          (rename-file file
-                                       (string-append target "/"
-                                                      (basename file))))
-                        (find-files man3))
-              (delete-file-recursively man3)
-              #t)))
-        (add-before
-         'patch-source-shebangs 'patch-tests
-         (lambda* (#:key inputs native-inputs #:allow-other-keys)
-           (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
-             (substitute* (find-files "test" ".*")
-               (("/bin/sh")
-                (string-append bash "/bin/sh"))
-               (("/bin/rm")
-                "rm"))
-             #t)))
+               ;; Move man3 pages and full HTML documentation to "doc".
+               (let* ((out    (assoc-ref outputs "out"))
+                      (man3   (string-append out "/share/man/man3"))
+                      (html (string-append out "/share/doc/openssl"))
+                      (doc    (assoc-ref outputs "doc"))
+                      (man-target (string-append doc "/share/man/man3"))
+                      (html-target (string-append doc "/share/doc/openssl")))
+                 (copy-recursively man3 man-target)
+                 (delete-file-recursively man3)
+                 (copy-recursively html html-target)
+                 (delete-file-recursively html)
+                 #t)))
         (add-after
          'install 'remove-miscellany
          (lambda* (#:key outputs #:allow-other-keys)
@@ -395,21 +369,11 @@ required structures.")
    (license license:openssl)
    (home-page "https://www.openssl.org/")))
 
-(define-public openssl/fixed
-  (hidden-package
-   (package
-     (inherit openssl)
-     (source (origin
-               (inherit (package-source openssl))
-               (patches (append (origin-patches (package-source openssl))
-                                (search-patches "openssl-CVE-2019-1559.patch"))))))))
-
-(define-public openssl-next
-  (package
-    (inherit openssl)
-    (name "openssl")
-    (version "1.1.1d")
-    (source (origin
+(define openssl-1.1.1d
+  (package/inherit
+   openssl
+   (version "1.1.1d")
+   (source (origin
              (method url-fetch)
              (uri (list (string-append "https://www.openssl.org/source/openssl-"
                                        version ".tar.gz")
@@ -418,58 +382,86 @@ required structures.")
                         (string-append "ftp://ftp.openssl.org/source/old/"
                                        (string-trim-right version char-set:letter)
                                        "/openssl-" version ".tar.gz")))
-              (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+             (patches (search-patches "openssl-1.1-c-rehash-in.patch"))
+             (sha256
+              (base32
+               "1whinyw402z3b9xlb3qaxv4b9sk4w1bgh9k0y8df1z4x3yy92fhy"))))))
+
+(define-public openssl-1.0
+  (package
+    (inherit openssl)
+    (name "openssl")
+    (version "1.0.2s")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
               (sha256
                (base32
-                "1whinyw402z3b9xlb3qaxv4b9sk4w1bgh9k0y8df1z4x3yy92fhy"))))
+                "15mbmg8hf7s12vr3v2bdc0pi9y4pdbnsxhzk4fyyap42jaa5rgfa"))
+              (patches (search-patches "openssl-runpath.patch"
+                                       "openssl-c-rehash-in.patch"))))
     (outputs '("out"
-               "doc"        ; 6.8 MiB of man3 pages and full HTML documentation
-               "static"))   ; 6.4 MiB of .a files
+               "doc"                    ;1.5MiB of man3 pages
+               "static"))               ;6MiB of .a files
     (arguments
      (substitute-keyword-arguments (package-arguments openssl)
        ((#:phases phases)
         `(modify-phases ,phases
-           (delete 'patch-tests)          ; These two phases are not needed by
-           (delete 'patch-Makefile.org)   ; OpenSSL 1.1.
-
-           ;; Override configure phase since -rpath is now a configure option.
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (lib (string-append out "/lib")))
-                 ;; It's not a shebang so patch-source-shebangs misses it.
-                 (substitute* "config"
-                   (("/usr/bin/env")
-                    (string-append (assoc-ref %build-inputs "coreutils")
-                                   "/bin/env")))
-                 (invoke "./config"
-                         "shared"       ;build shared libraries
-                         "--libdir=lib"
-
-                         ;; The default for this catch-all directory is
-                         ;; PREFIX/ssl.  Change that to something more
-                         ;; conventional.
-                         (string-append "--openssldir=" out
-                                        "/share/openssl-" ,version)
-
-                         (string-append "--prefix=" out)
-                         (string-append "-Wl,-rpath," lib)))))
-
-           (delete 'move-man3-pages)
-           (add-after 'install 'move-extra-documentation
-             (lambda* (#:key outputs #:allow-other-keys)
-               ;; Move man3 pages and full HTML documentation to "doc".
-               (let* ((out    (assoc-ref outputs "out"))
-                      (man3   (string-append out "/share/man/man3"))
-                      (html (string-append out "/share/doc/openssl"))
-                      (doc    (assoc-ref outputs "doc"))
-                      (man-target (string-append doc "/share/man/man3"))
-                      (html-target (string-append doc "/share/doc/openssl")))
-                 (copy-recursively man3 man-target)
-                 (delete-file-recursively man3)
-                 (copy-recursively html html-target)
-                 (delete-file-recursively html)
+           (add-before 'patch-source-shebangs 'patch-tests
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (let ((bash (assoc-ref (or native-inputs inputs) "bash")))
+                 (substitute* (find-files "test" ".*")
+                   (("/bin/sh")
+                    (string-append bash "/bin/sh"))
+                   (("/bin/rm")
+                    "rm"))
                  #t)))
+           (add-before 'configure 'patch-Makefile.org
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; The default MANDIR is some unusual place.  Fix that.
+               (let ((out (assoc-ref outputs "out")))
+                 (patch-makefile-SHELL "Makefile.org")
+                 (substitute* "Makefile.org"
+                   (("^MANDIR[[:blank:]]*=.*$")
+                    (string-append "MANDIR = " out "/share/man\n")))
+                 #t)))
+        (replace 'configure
+          ;; Override this phase because OpenSSL 1.0 does not understand -rpath.
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (invoke "./config"
+                      "shared"                 ;build shared libraries
+                      "--libdir=lib"
+
+                      ;; The default for this catch-all directory is
+                      ;; PREFIX/ssl.  Change that to something more
+                      ;; conventional.
+                      (string-append "--openssldir=" out
+                                     "/share/openssl-" ,version)
+
+                      (string-append "--prefix=" out)))))
+        (delete 'move-extra-documentation)
+        (add-after 'install 'move-man3-pages
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move section 3 man pages to "doc".
+            (let* ((out    (assoc-ref outputs "out"))
+                   (man3   (string-append out "/share/man/man3"))
+                   (doc    (assoc-ref outputs "doc"))
+                   (target (string-append doc "/share/man/man3")))
+              (mkdir-p target)
+              (for-each (lambda (file)
+                          (rename-file file
+                                       (string-append target "/"
+                                                      (basename file))))
+                        (find-files man3))
+              (delete-file-recursively man3)
+              #t)))
            ;; XXX: Duplicate this phase to make sure 'version' evaluates
            ;; in the current scope and not the inherited one.
            (replace 'remove-miscellany

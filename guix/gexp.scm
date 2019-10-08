@@ -663,8 +663,7 @@ names and file names suitable for the #:allowed-references argument to
                      (guile-for-build (%guile-for-build))
                      (effective-version "2.2")
 
-                     deprecation-warnings
-                     (pre-load-modules? #t))      ;transitional
+                     deprecation-warnings)
   "*Note: This API is subject to change; use at your own risk!*
 
 Lower EXP, a gexp, instantiating it for SYSTEM and TARGET.  Return a
@@ -731,8 +730,6 @@ derivations--e.g., code evaluated for its side effects."
                                                        #:module-path module-path
                                                        #:extensions extensions
                                                        #:guile guile
-                                                       #:pre-load-modules?
-                                                       pre-load-modules?
                                                        #:deprecation-warnings
                                                        deprecation-warnings)
                                      (return #f))))
@@ -776,12 +773,6 @@ derivations--e.g., code evaluated for its side effects."
                            leaked-env-vars
                            local-build? (substitutable? #t)
                            (properties '())
-
-                           ;; TODO: This parameter is transitional; it's here
-                           ;; to avoid a full rebuild.  Remove it on the next
-                           ;; rebuild cycle.
-                           (pre-load-modules? #t)
-
                            deprecation-warnings
                            (script-name (string-append name "-builder")))
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
@@ -865,9 +856,7 @@ The other arguments are as for 'derivation'."
                                               #:effective-version
                                               effective-version
                                               #:deprecation-warnings
-                                              deprecation-warnings
-                                              #:pre-load-modules?
-                                              pre-load-modules?))
+                                              deprecation-warnings))
 
                        (graphs   (if references-graphs
                                      (lower-reference-graphs references-graphs
@@ -1349,11 +1338,7 @@ last one is created from the given <scheme-file> object."
                            (guile (%guile-for-build))
                            (module-path %load-path)
                            (extensions '())
-                           (deprecation-warnings #f)
-
-                           ;; TODO: This flag is here to prevent a full
-                           ;; rebuild.  Remove it on the next rebuild cycle.
-                           (pre-load-modules? #t))
+                           (deprecation-warnings #f))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other.  When TARGET is true, cross-compile MODULES for
@@ -1393,11 +1378,8 @@ TARGET, a GNU triplet."
                (let* ((base   (basename entry ".scm"))
                       (output (string-append output "/" base ".go")))
                  (format #t "[~2@a/~2@a] Compiling '~a'...~%"
-                         (+ 1 processed
-                              (ungexp-splicing (if pre-load-modules?
-                                                   (gexp ((ungexp total)))
-                                                   (gexp ()))))
-                         (ungexp (* total (if pre-load-modules? 2 1)))
+                         (+ 1 processed (ungexp total))
+                         (ungexp (* total 2))
                          entry)
 
                  (ungexp-splicing
@@ -1419,6 +1401,26 @@ TARGET, a GNU triplet."
                                (scandir directory regular?))))
              (fold (cut process-entry <> output <>)
                    processed
+                   entries)))
+
+         (define* (load-from-directory directory
+                                       #:optional (loaded 0))
+           "Load all the source files found in DIRECTORY."
+           ;; XXX: This works around <https://bugs.gnu.org/15602>.
+           (let ((entries (map (cut string-append directory "/" <>)
+                               (scandir directory regular?))))
+             (fold (lambda (file loaded)
+                     (if (file-is-directory? file)
+                         (load-from-directory file loaded)
+                         (begin
+                           (format #t "[~2@a/~2@a] Loading '~a'...~%"
+                                   (+ 1 loaded) (ungexp (* 2 total))
+                                   file)
+                           (save-module-excursion
+                            (lambda ()
+                              (primitive-load file)))
+                           (+ 1 loaded))))
+                   loaded
                    entries)))
 
          (setvbuf (current-output-port)
@@ -1456,32 +1458,7 @@ TARGET, a GNU triplet."
          (mkdir (ungexp output))
          (chdir (ungexp modules))
 
-         (ungexp-splicing
-          (if pre-load-modules?
-              (gexp ((define* (load-from-directory directory
-                                                   #:optional (loaded 0))
-                       "Load all the source files found in DIRECTORY."
-                       ;; XXX: This works around <https://bugs.gnu.org/15602>.
-                       (let ((entries (map (cut string-append directory "/" <>)
-                                           (scandir directory regular?))))
-                         (fold (lambda (file loaded)
-                                 (if (file-is-directory? file)
-                                     (load-from-directory file loaded)
-                                     (begin
-                                       (format #t "[~2@a/~2@a] Loading '~a'...~%"
-                                               (+ 1 loaded)
-                                               (ungexp (* 2 total))
-                                               file)
-                                       (save-module-excursion
-                                        (lambda ()
-                                          (primitive-load file)))
-                                       (+ 1 loaded))))
-                               loaded
-                               entries)))
-
-                     (load-from-directory ".")))
-              (gexp ())))
-
+         (load-from-directory ".")
          (process-directory "." (ungexp output) 0))))
 
     ;; TODO: Pass MODULES as an environment variable.

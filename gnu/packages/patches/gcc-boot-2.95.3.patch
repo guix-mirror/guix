@@ -1,0 +1,137 @@
+This patch enables building gcc-2.95.3 using TCC and Mes C Library.
+
+  * Disable building DOC
+  * Avoid running `fixproto'.
+  * Force running `fixinc'.
+  * Replace Makefile trickery of creating an libgcc1.a archive, then
+    extracting the .o files later to create a new libgcc2.a archive.
+    Instead, keep temporary .o files.
+
+Upstream status: Not presented upstream.
+
+diff -purN -x foo.c -x BOOT -x BOOT-2 -x BOOT-strict -x .git -x Makefile -x config.status -x config.h -x BOOT -x BOOT-GCC ../gcc-2.95.3/gcc/Makefile.in gcc-2.95.3/gcc/Makefile.in
+--- ../gcc-2.95.3/gcc/Makefile.in	2001-01-25 15:02:58.000000000 +0100
++++ gcc-2.95.3/gcc/Makefile.in	2018-06-23 11:46:03.525159181 +0200
+@@ -221,7 +221,7 @@ RANLIB_TEST_FOR_TARGET = \
+ SYSTEM_HEADER_DIR = /usr/include
+ 
+ # Control whether to run fixproto.
+-STMP_FIXPROTO = stmp-fixproto
++# STMP_FIXPROTO = stmp-fixproto
+ 
+ # Test to see whether <limits.h> exists in the system header files.
+ LIMITS_H_TEST = [ -f $(SYSTEM_HEADER_DIR)/limits.h ]
+@@ -958,6 +958,7 @@ libgcc1.cross:
+ # fragments.
+ libgcc1.a: libgcc1.c $(CONFIG_H) $(LIB1FUNCS_EXTRA) config.status
+ 	-rm -f tmplibgcc1.a
++	mkdir -p libgcc1-o
+ # Actually build it in tmplibgcc1.a, then rename at end,
+ # so that libgcc1.a itself remains nonexistent if compilation is aborted.
+ # -e causes any failing command to make this rule fail.
+@@ -974,6 +975,7 @@ libgcc1.a: libgcc1.c $(CONFIG_H) $(LIB1F
+ 	  if [ $$? -eq 0 ] ; then true; else exit 1; fi; \
+ 	  mv libgcc1$(objext) $${name}$(objext); \
+ 	  $(OLDAR) $(OLDAR_FLAGS) tmplibgcc1.a $${name}$(objext); \
++	  mv $${name}$(objext) libgcc1-o; \
+ 	  rm -f $${name}$(objext); \
+ 	done
+ # Some shells crash when a loop has no items.
+@@ -994,6 +996,7 @@ libgcc1.a: libgcc1.c $(CONFIG_H) $(LIB1F
+ 	    if [ $$? -eq 0 ] ; then true; else exit 1; fi; \
+ 	    $(OLDAR) $(OLDAR_FLAGS) tmplibgcc1.a $${name}$(objext); \
+ 	    if [ $$? -eq 0 ] ; then true; else exit 1; fi; \
++	    mv $${name}$(objext) libgcc1-o; \
+ 	    rm -f $${name}.s $${name}$(objext); \
+ 	  else true; \
+ 	  fi; \
+@@ -1024,6 +1027,7 @@ libgcc1-asm.a: libgcc2.ready config.stat
+ 	  if [ $$? -eq 0 ] ; then true; else exit 1; fi; \
+ 	  mv libgcc1$(objext) $${name}$(objext); \
+ 	  $(AR_FOR_TARGET) $(AR_FLAGS_FOR_TARGET) tmplibgcc1.a $${name}$(objext); \
++	  mv $${name}$(objext) libgcc1-o; \
+ 	  rm -f $${name}$(objext); \
+ 	done
+ 	-rm -f libgcc1.S
+@@ -1062,6 +1066,7 @@ libgcc2.a: libgcc2.c libgcc2.ready $(CON
+ # Actually build it in tmplibgcc2.a, then rename at end,
+ # so that libgcc2.a itself remains nonexistent if compilation is aborted.
+ 	-rm -f tmplibgcc2.a
++	mkdir -p libgcc2-o
+ # -e causes any failing command to make this rule fail.
+ # -e doesn't work in certain shells, so we test $$? as well.
+ # lynx has a broken ar, it always complains when the initial library is
+@@ -1139,6 +1144,7 @@ libgcc2.a: libgcc2.c libgcc2.ready $(CON
+ 	    $(GCC_FOR_TARGET) $(LIBGCC2_CFLAGS) $(INCLUDES) -c $${file}; \
+ 	    if [ $$? -eq 0 ] ; then true; else exit 1; fi; \
+ 	    $(AR_FOR_TARGET) $(AR_FLAGS_FOR_TARGET) tmplibgcc2.a $${oname}$(objext); \
++	    mv $${oname}$(objext) libgcc2-o;\
+ 	    rm -f $${name}.s $${oname}$(objext); \
+ 	  fi; \
+ 	done
+@@ -1156,7 +1162,7 @@ libgcc.a: $(LIBGCC1) $(LIBGCC2)
+ 	-rm -rf tmplibgcc.a libgcc.a tmpcopy
+ 	mkdir tmpcopy
+ 	-if [ x$(LIBGCC1) != x ];			\
+-	then (cd tmpcopy; $(AR_FOR_TARGET) x ../$(LIBGCC1));	\
++	then cp -v libgcc1-o/*.o tmpcopy;		\
+ 	else true;					\
+ 	fi
+ # Some versions of ar (specifically the one in RISC/os 5.x), create an
+@@ -1164,7 +1170,7 @@ libgcc.a: $(LIBGCC1) $(LIBGCC2)
+ # the second ar command tries to overwrite this file.  To avoid the error
+ # message from ar, we make sure all files are writable.
+ 	-(cd tmpcopy; chmod +w * > /dev/null 2>&1)
+-	(cd tmpcopy; $(AR_FOR_TARGET) x ../$(LIBGCC2))
++	cp -v libgcc2-o/*.o tmpcopy
+ 	(cd tmpcopy; $(AR_FOR_TARGET) $(AR_FLAGS_FOR_TARGET) ../tmplibgcc.a *$(objext))
+ 	rm -rf tmpcopy
+ 	-if $(RANLIB_TEST_FOR_TARGET) ; then \
+@@ -2093,14 +2099,18 @@ gcov$(exeext): $(GCOV_OBJS) $(LIBDEPS)
+ # s-* so that mostlyclean does not force the include directory to
+ # be rebuilt.
+ 
++# STMP_FIXINC = @STMP_FIXINC@
++STMP_FIXINC = stmp-fixinc
++
+ # Build the include directory including float.h (which no longer depends upon
+ # enquire).
+-stmp-int-hdrs: stmp-fixinc $(USER_H) xlimits.h
++stmp-int-hdrs: $(STMP_FIXINC) $(USER_H) xlimits.h
+ # Copy in the headers provided with gcc.
+ # The sed command gets just the last file name component;
+ # this is necessary because VPATH could add a dirname.
+ # Using basename would be simpler, but some systems don't have it.
+ # The touch command is here to workaround an AIX/Linux NFS bug.
++	-if [ -d include ] ; then true; else mkdir include; chmod a+rx include; fi
+ 	for file in .. $(USER_H); do \
+ 	  if [ X$$file != X.. ]; then \
+ 	    realfile=`echo $$file | sed -e 's|.*/\([^/]*\)$$|\1|'`; \
+@@ -2265,16 +2275,17 @@ stmp-fixproto: fixhdr.ready fixproto stm
+ #
+ # Remake the info files.
+ 
+-doc: info
+-info: cpp.info gcc.info lang.info
+-
+-cpp.info: $(srcdir)/cpp.texi
+-	$(MAKEINFO) $(MAKEINFOFLAGS) -I$(srcdir) -o cpp.info $(srcdir)/cpp.texi
+-
+-gcc.info: $(srcdir)/gcc.texi $(srcdir)/extend.texi $(srcdir)/install.texi \
+-	  $(srcdir)/invoke.texi $(srcdir)/md.texi $(srcdir)/rtl.texi \
+-	  $(srcdir)/tm.texi $(srcdir)/gcov.texi
+-	$(MAKEINFO) $(MAKEINFOFLAGS) -I$(srcdir) -o gcc.info $(srcdir)/gcc.texi
++doc:
++# doc: info
++# info: cpp.info gcc.info lang.info
++
++# cpp.info: $(srcdir)/cpp.texi
++# 	$(MAKEINFO) $(MAKEINFOFLAGS) -I$(srcdir) -o cpp.info $(srcdir)/cpp.texi
++
++# gcc.info: $(srcdir)/gcc.texi $(srcdir)/extend.texi $(srcdir)/install.texi \
++# 	  $(srcdir)/invoke.texi $(srcdir)/md.texi $(srcdir)/rtl.texi \
++# 	  $(srcdir)/tm.texi $(srcdir)/gcov.texi
++# 	$(MAKEINFO) $(MAKEINFOFLAGS) -I$(srcdir) -o gcc.info $(srcdir)/gcc.texi
+ 
+ dvi: gcc.dvi cpp.dvi lang.dvi
+ 

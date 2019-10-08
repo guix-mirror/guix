@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
@@ -102,7 +102,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "1.4.2")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
@@ -118,13 +118,10 @@ such as compact binary encodings, XML, or JSON.")
            #t))
        (sha256
         (base32
-         "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))
-    (build-system gnu-build-system)
+         "1zhsap7d9zqdm9h1qnpaw78v1sh3rx2if7gk4dszs5m3cg1jiapv"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("googletest" ,googletest)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("zlib" ,zlib))) ;; Msgpack installs two headers (zbuffer.h,

@@ -52,6 +52,7 @@
               (uri (string-append "https://media.inkscape.org/dl/"
                                   "resources/file/"
                                   "inkscape-" version ".tar.bz2"))
+              (patches (search-patches "inkscape-poppler-0.76.patch"))
               (sha256
                (base32
                 "0pjinhjibfsz1aywdpgpj3k23xrsszpj4a1ya5562dkv2yl2vv2p"))))
@@ -86,6 +87,13 @@
            (lambda _
              (substitute* "share/icons/application/CMakeLists.txt"
               (("gtk-update-icon-cache") "true"))
+             #t))
+         (add-before 'configure 'dont-use-system-includes
+           (lambda _
+             ;; Don't add redundant -isystem includes which confuses GCC7.
+             (substitute* "CMakeScripts/DefineDependsandFlags.cmake"
+               (("include_directories\\(SYSTEM")
+                "include_directories("))
              #t)))))
     (home-page "https://inkscape.org/")
     (synopsis "Vector graphics editor")

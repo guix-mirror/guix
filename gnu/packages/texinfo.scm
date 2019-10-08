@@ -32,15 +32,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "6.5")
+    (version "6.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                   version ".tar.xz"))
-              (patches (search-patches "texinfo-perl-compat.patch"))
               (sha256
                (base32
-                "0qjzvbvnv9003xdrcpi3jp7y68j4hq2ciw9frh2hghh698zlnxvp"))))
+                "0rixv4c301djr0d0cnsxs8c1wjndi6bf9vi5axz6mwjkv80cmfcv"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)))

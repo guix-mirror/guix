@@ -27,6 +27,7 @@
   #:use-module (guix discovery)
   #:use-module (guix monads)
   #:use-module (guix profiles)
+  #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix combinators)
   #:use-module (guix diagnostics)
@@ -47,6 +48,7 @@
   #:autoload   (guix inferior) (gexp->derivation-in-inferior) ;FIXME: circular dep
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
+  #:use-module ((ice-9 rdelim) #:select (read-string))
   #:export (channel
             channel?
             channel-name
@@ -306,6 +308,46 @@ to '%package-module-path'."
 
     (gexp->derivation-in-inferior name build core)))
 
+(define (syscalls-reexports-local-variables? source)
+  "Return true if (guix build syscalls) contains the bug described at
+<https://bugs.gnu.org/36723>."
+  (catch 'system-error
+    (lambda ()
+      (define content
+        (call-with-input-file (string-append source
+                                             "/guix/build/syscalls.scm")
+          read-string))
+
+      ;; The faulty code would use the 're-export' macro, causing the
+      ;; 'AT_SYMLINK_NOFOLLOW' local variable to be re-exported when using
+      ;; Guile > 2.2.4.
+      (string-contains content "(re-export variable)"))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          #f
+          (apply throw args)))))
+
+(define (guile-2.2.4)
+  (module-ref (resolve-interface '(gnu packages guile))
+              'guile-2.2.4))
+
+(define %quirks
+  ;; List of predicate/package pairs.  This allows us provide information
+  ;; about specific Guile versions that old Guix revisions might need to use
+  ;; just to be able to build and run the trampoline in %SELF-BUILD-FILE.  See
+  ;; <https://bugs.gnu.org/37506>
+  `((,syscalls-reexports-local-variables? . ,guile-2.2.4)))
+
+(define* (guile-for-source source #:optional (quirks %quirks))
+  "Return the Guile package to use when building SOURCE or #f if the default
+'%guile-for-build' should be good enough."
+  (let loop ((quirks quirks))
+    (match quirks
+      (()
+       #f)
+      (((predicate . guile) rest ...)
+       (if (predicate source) (guile) (loop rest))))))
+
 (define* (build-from-source name source
                             #:key core verbose? commit
                             (dependencies '()))
@@ -327,15 +369,19 @@ package modules under SOURCE using CORE, an instance of Guix."
                       ;; about it.
                       (parameterize ((guix-warning-port
                                       (%make-void-port "w")))
-                        (primitive-load script))))))
+                        (primitive-load script)))))
+            (guile (guile-for-source source)))
         ;; BUILD must be a monadic procedure of at least one argument: the
         ;; source tree.
         ;;
         ;; Note: BUILD can return #f if it does not support %PULL-VERSION.  In
         ;; the future we'll fall back to a previous version of the protocol
         ;; when that happens.
-        (build source #:verbose? verbose? #:version commit
-               #:pull-version %pull-version))
+        (mbegin %store-monad
+          (mwhen guile
+            (set-guile-for-build guile))
+          (build source #:verbose? verbose? #:version commit
+                 #:pull-version %pull-version)))
 
       ;; Build a set of modules that extend Guix using the standard method.
       (standard-module-derivation name source core dependencies)))

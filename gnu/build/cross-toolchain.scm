@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,11 +38,8 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
-  '("C_INCLUDE_PATH"
-    "CPLUS_INCLUDE_PATH"
-    "OBJC_INCLUDE_PATH"
-    "OBJCPLUS_INCLUDE_PATH"))
+  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
+  '("CPATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.

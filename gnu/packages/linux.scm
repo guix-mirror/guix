@@ -91,7 +91,6 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
-  #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ninja)
   #:use-module (gnu packages nss)
@@ -441,7 +440,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.2-source
   (source-with-patches linux-libre-5.2-pristine-source
-                       (list %boot-logo-patch
+                       (list (search-patch "linux-libre-active-entropy.patch")
+                             %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-4.19-source
@@ -560,11 +560,11 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 ;; The following package is used in the early bootstrap, and thus must be kept
 ;; stable and with minimal build requirements.
-(define-public linux-libre-headers-4.14.67
-  (make-linux-libre-headers "4.14.67"
-                            "050zvdxjy6sc64q75pr1gxsmh49chwav2pwxz8xlif39bvahnrpg"))
+(define-public linux-libre-headers-4.19.56
+  (make-linux-libre-headers "4.19.56"
+                            "1zqiic55viy065lhnkmhn33sz3bbbr2ykbm5f92yzd8lpc9zl7yx"))
 
-(define-public linux-libre-headers linux-libre-headers-4.14.67)
+(define-public linux-libre-headers linux-libre-headers-4.19.56)
 
 
 ;;;
@@ -672,10 +672,6 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
        ("flex" ,flex)
        ("bison" ,bison)
 
-       ;; Build with GCC-7 for full retpoline support.
-       ;; FIXME: Remove this when our default compiler has retpoline support.
-       ("gcc" ,gcc-7)
-
        ;; These are needed to compile the GCC plugins.
        ("gmp" ,gmp)
        ("mpfr" ,mpfr)
@@ -694,6 +690,7 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1)
+                  (srfi srfi-26)
                   (ice-9 match))
        #:phases
        (modify-phases %standard-phases
@@ -710,6 +707,18 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              ,@(if (%current-target-system)
                    '((unsetenv "CROSS_CPATH"))
                    '())
+
+             ;; On AArch64 (at least), we need to remove glibc headers from CPATH
+             ;; (they are still available as "system headers"), so that the kernel
+             ;; can override uint64_t.  See <https://bugs.gnu.org/37593>.
+             (setenv "CPATH"
+                     (string-join
+                      (remove (cut string-prefix? (assoc-ref inputs "libc") <>)
+                              (string-split (getenv "CPATH") #\:))
+                      ":"))
+             (format #t "environment variable `CPATH' changed to `~a'~%"
+                     (getenv "CPATH"))
+
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
              (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
@@ -1058,7 +1067,7 @@ providing the system administrator with some help in common tasks.")
 (define-public util-linux
   (package
     (name "util-linux")
-    (version "2.32.1")
+    (version "2.34")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
@@ -1066,7 +1075,7 @@ providing the system administrator with some help in common tasks.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ck7d8srw5szpjq7v0gpmjahnjs6wgqzm311ki4gazww6xx71rl6"))
+                "1db2kydkwjmvgd1glkcba3adhidxw0f1x735dcjdpdjjf869sgvl"))
               (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
@@ -1883,7 +1892,7 @@ configuration (iptunnel, ipmaddr).")
 (define-public libcap
   (package
     (name "libcap")
-    (version "2.25")
+    (version "2.27")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1891,7 +1900,7 @@ configuration (iptunnel, ipmaddr).")
                    "libcap2/libcap-" version ".tar.xz"))
              (sha256
               (base32
-               "0qjiqc5pknaal57453nxcbz3mn1r4hkyywam41wfcglq3v2qlg39"))))
+               "0sj8kidl7qgf2qwxcbw1vadnlb30y4zvjzxswsmfdghq04npkhfs"))))
     (build-system gnu-build-system)
     (arguments '(#:phases
                  (modify-phases %standard-phases
@@ -3134,6 +3143,11 @@ in a digital read-out.")
              #t)))
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out"))
+                          ;; Make sure the kernel headers are treated as system
+                          ;; headers to suppress warnings from those.
+                          (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "kernel-headers")
+                                         "/include")
                           "WERROR=0"
 
                           ;; By default, 'config/Makefile' uses lib64 on
@@ -3244,7 +3258,6 @@ thanks to the use of namespaces.")
     (inputs
      `(("libarchive" ,libarchive)
        ("python" ,python-wrapper)
-       ("nettle" ,nettle)
        ("zlib" ,zlib)
        ("squashfs-tools" ,squashfs-tools)))
     (home-page "https://singularity.lbl.gov/")
@@ -3617,6 +3630,12 @@ arrays when needed.")
                           (string-append "DESTDIR="
                                          (assoc-ref %outputs "out"))
                           "SYSTEMDPATH=lib"
+                          ;; Add the libaio headers to GCCs system header
+                          ;; search path to suppress -Werror=cast-qual on
+                          ;; the included headers.
+                          (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "libaio")
+                                         "/include")
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
                                          "/lib"))
@@ -4285,7 +4304,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "14")
+    (version "22.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -4293,7 +4312,7 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0w03zd49k96bmly44qc8l0s9l671sd26k4wrilsp13xaspy048kd"))))
+                "0jgp1xh328x0kr6lkn4vq71cc627zd05wczr74b3j3151flhj828"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -4838,7 +4857,14 @@ under OpenGL graphics workloads.")
                           (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (delete 'configure))))
+         (delete 'configure)
+         (add-before 'build 'kernel-headers-are-system-headers
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((kernel-headers (assoc-ref inputs "kernel-headers")))
+               ;; Make sure the kernel headers are treated as system headers
+               ;; to suppress a conflict between "util.h" and <linux/fs.h>.
+             (setenv "C_INCLUDE_PATH" (string-append kernel-headers "/include"))
+             #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -4871,7 +4897,12 @@ interface to the variable facility of UEFI boot firmware.")
                           ;; installed (known as OS_VENDOR in the code).
                           ;; GRUB overrides this, as such it's only used if
                           ;; nothing else is specified on the command line.
-                          "EFIDIR=gnu")
+                          "EFIDIR=gnu"
+                          ;; Treat kernel headers as system headers to prevent
+                          ;; warnings about conflicting types.
+                          (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "kernel-headers")
+                                         "/include"))
        #:phases (modify-phases %standard-phases (delete 'configure))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))

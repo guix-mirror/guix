@@ -17,7 +17,7 @@
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
 ;;; Copyright © 2018 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Gabriel Hondet <gabrielhondet@gmail.com>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
@@ -777,6 +777,11 @@ audio and video).")
        #:tests? #f ; no "check" target
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'be-permissive
+           (lambda _
+             (substitute* "SConstruct"
+               (("'-Wall'") "'-Wall', '-fpermissive'"))
+             #t))
          (add-after 'unpack 'replace-removed-scons-syntax
            (lambda _
              (substitute* "SConstruct"
@@ -1024,14 +1029,6 @@ Guile.")
                                                        (%current-system))))
                      '("--disable-sse")
                      '()))
-         #:phases
-         (modify-phases %standard-phases
-           (add-before
-            'configure 'set-flags
-            (lambda _
-              ;; Compile with C++11, required by libsigc++.
-              (setenv "CXXFLAGS" "-std=c++11")
-              #t)))
          #:python ,python-2))
       (inputs
        `(("jack" ,jack-1)
@@ -2797,7 +2794,7 @@ websites such as Libre.fm.")
                   (add-before 'build 'change-directory
                     (lambda _
                       (chdir "instantmusic-0.1") #t))
-                  (add-before 'check 'fix-file-permissions
+                  (add-before 'install 'fix-file-permissions
                     (lambda _
                       ;; Fix some read-only files that would cause a build failure
                       (for-each (cut chmod <> #o644)
@@ -2991,8 +2988,7 @@ with a number of bugfixes and changes to improve IT playback.")
               (patches (search-patches "sooperlooper-build-with-wx-30.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-sigc++-includes
            (lambda* (#:key inputs #:allow-other-keys)
@@ -3004,7 +3000,8 @@ with a number of bugfixes and changes to improve IT playback.")
                                       sig "/lib/sigc++-2.0/include:"
                                       xml "/include/libxml2/:"
                                       cwd "/libs/pbd:"
-                                      cwd "/libs/midi++")))
+                                      cwd "/libs/midi++:"
+                                      (or (getenv "CPATH") ""))))
              (substitute* '("src/control_osc.hpp"
                             "src/gui/app_frame.hpp"
                             "src/gui/config_panel.hpp"

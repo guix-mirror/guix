@@ -48,7 +48,7 @@
 
   ;; Do not use `@' to avoid introducing circular dependencies.
   (let ((module (resolve-interface '(gnu packages cmake))))
-    (module-ref module 'cmake)))
+    (module-ref module 'cmake-minimal)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

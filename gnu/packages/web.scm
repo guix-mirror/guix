@@ -771,6 +771,7 @@ current version of any major web browser.")
               (sha256
                (base32
                 "1jixgb8w97l9gdh3inihz7avz7i770gy2j2irvvlyrq3wi41f5ab"))
+              (patches (search-patches "rapidjson-gcc-compat.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -949,11 +950,13 @@ high performance.")
                 "04pfagb7ppq3yibx4lhazd1v9nwkxdfkyy2rgcrmrf3mldsirga1"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+
+       ;; For tests.
+       ("python" ,python-wrapper)))
     (inputs
      `(("libidn2" ,libidn2)
-       ("libunistring" ,libunistring)
-       ("python-2" ,python-2)))
+       ("libunistring" ,libunistring)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
@@ -2017,15 +2020,15 @@ MIME type directly to the browser, without being processed through Catalyst.")
 (define-public perl-catalyst-runtime
   (package
     (name "perl-catalyst-runtime")
-    (version "5.90119")
+    (version "5.90124")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
+       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
                            "Catalyst-Runtime-" version ".tar.gz"))
        (sha256
         (base32
-         "1iw7x9rqk3sz2hm1bw01blz5vwm7zlljdf4xj3r8vz54f1yggzqr"))))
+         "001yk1i0xwn4v308qx15nvnp6v9qfdigdlvz1rgw5zpnq7kwnq1a"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))
@@ -2048,6 +2051,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
        ("perl-moosex-methodattributes" ,perl-moosex-methodattributes)
        ("perl-namespace-clean" ,perl-namespace-clean)
        ("perl-path-class" ,perl-path-class)
+       ("perl-perlio-utf8-strict" ,perl-perlio-utf8_strict)
        ("perl-plack" ,perl-plack)
        ("perl-plack-middleware-fixmissingbodyinredirect"
         ,perl-plack-middleware-fixmissingbodyinredirect)
@@ -2136,15 +2140,15 @@ table based report in a variety of formats (CSV, HTML, etc.).")
 (define-public perl-catalyst-view-json
   (package
     (name "perl-catalyst-view-json")
-    (version "0.36")
+    (version "0.37")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/J/JJ/JJNAPIORK/"
+       (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Catalyst-View-JSON-" version ".tar.gz"))
        (sha256
         (base32
-         "0x943j1n2r0zqanyzdrs1xsnn8ayn2wqskn7h144xcqa6v6gcisl"))))
+         "1v4xkzazs743sc7cd1kxkbi99cf00a4dadyyancckcbpi9p3znn5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-install" ,perl-module-install)
@@ -6517,7 +6521,7 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
 (define-public nghttp2
   (package
     (name "nghttp2")
-    (version "1.35.1")
+    (version "1.39.1")
     (source
      (origin
        (method url-fetch)
@@ -6526,13 +6530,12 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                            "nghttp2-" version ".tar.xz"))
        (sha256
         (base32
-         "0fi6qg2w82636wixwkqy7bclpgxslmvg82r431hs8h6aqc4mnzwv"))))
+         "0j0lk37k8k3f61r9nw647hg4b22z1753l36n3xrp9x01civ614b7"))))
     (build-system gnu-build-system)
     (outputs (list "out"
                    "lib"))              ; only libnghttp2
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gcc" ,gcc-7)                   ; 1.35.0 requires GCC6 or later
 
        ;; Required by tests.
        ("cunit" ,cunit)
@@ -6564,9 +6567,6 @@ derivation by David Revoy from the original MonsterID by Andreas Gohr.")
                (("@prefix@")
                 (assoc-ref outputs "lib")))
              #t))
-         (add-before 'configure 'work-around-bug-30756
-           (lambda _
-             (for-each unsetenv '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH")) #t))
          (add-before 'check 'set-timezone-directory
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "TZDIR" (string-append (assoc-ref inputs "tzdata")

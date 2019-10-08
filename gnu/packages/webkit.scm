@@ -121,14 +121,14 @@ engine that uses Wayland for graphics output.")
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.20.5")
+    (version "2.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "147r7an41920zl4x9srdva7fxvw2znjin5ldjkhay1cndv9gih0m"))))
+                "0mfikjfjhwcnrxbzdyh3fl9bbs2azgbdnx8h5910h41b3n022jvb"))))
     (build-system cmake-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -165,6 +165,13 @@ engine that uses Wayland for graphics output.")
                                            "/xml/dtd/docbook/docbookx.dtd"))))
                        (find-files "Source" "\\.sgml$"))
              #t))
+         (add-after 'unpack 'embed-absolute-wpebackend-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((wpebackend-fdo (assoc-ref inputs "wpebackend-fdo")))
+               (substitute* "Source/WebKit/UIProcess/glib/WebProcessPoolGLib.cpp"
+                 (("libWPEBackend-fdo-([\\.0-9]+)\\.so" all version)
+                  (string-append wpebackend-fdo "/lib/" all)))
+               #t)))
          (add-after 'install 'move-doc-files
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -181,7 +188,7 @@ engine that uses Wayland for graphics output.")
        ("gperf" ,gperf)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("python" ,python-wrapper)
        ("gtk-doc" ,gtk-doc) ; For documentation generation
        ("docbook-xml" ,docbook-xml) ; For documentation generation
        ("ruby" ,ruby)))
@@ -190,6 +197,7 @@ engine that uses Wayland for graphics output.")
        ("libsoup" ,libsoup)))
     (inputs
      `(("at-spi2-core" ,at-spi2-core)
+       ("bubblewrap" ,bubblewrap)
        ("enchant" ,enchant)
        ("geoclue" ,geoclue)
        ("gst-plugins-base" ,gst-plugins-base)
@@ -201,15 +209,20 @@ engine that uses Wayland for graphics output.")
        ("libjpeg" ,libjpeg)
        ("libnotify" ,libnotify)
        ("libpng" ,libpng)
+       ("libseccomp" ,libseccomp)
        ("libsecret" ,libsecret)
        ("libtasn1" ,libtasn1)
        ("libwebp" ,libwebp)
+       ("libwpe" ,libwpe)
        ("libxcomposite" ,libxcomposite)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("libxt" ,libxt)
        ("mesa" ,mesa)
-       ("sqlite" ,sqlite)))
+       ("openjpeg" ,openjpeg)
+       ("sqlite" ,sqlite)
+       ("wpebackend-fdo" ,wpebackend-fdo)
+       ("xdg-dbus-proxy" ,xdg-dbus-proxy)))
     (home-page "https://www.webkitgtk.org/")
     (synopsis "Web content engine for GTK+")
     (description
@@ -222,41 +235,3 @@ HTML/CSS applications to full-fledged web browsers.")
                    license:lgpl2.1+
                    license:bsd-2
                    license:bsd-3))))
-
-;; This version of webkitgtk needs to be kept separate, because it requires a
-;; newer version of GCC than our default compiler, and this causes problems
-;; when linked with C++ libraries built using our default compiler.  For now,
-;; we use this newer webkitgtk only for selected packages, e.g. epiphany.
-(define-public webkitgtk-2.26
-  (package/inherit webkitgtk
-    (name "webkitgtk")
-    (version "2.26.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://www.webkitgtk.org/releases/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0mfikjfjhwcnrxbzdyh3fl9bbs2azgbdnx8h5910h41b3n022jvb"))))
-    (native-inputs
-     `(("gcc" ,gcc-7)  ; webkitgtk-2.22 requires gcc-6 or newer
-       ,@(package-native-inputs webkitgtk)))
-    (inputs
-     `(("bubblewrap" ,bubblewrap)
-       ("libseccomp" ,libseccomp)
-       ("libwpe" ,libwpe)
-       ("openjpeg" ,openjpeg)
-       ("wpebackend-fdo" ,wpebackend-fdo)
-       ("xdg-dbus-proxy" ,xdg-dbus-proxy)
-       ,@(package-inputs webkitgtk)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments webkitgtk)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-before 'configure 'work-around-gcc-7-include-path-issue
-             ;; FIXME: Work around a problem with gcc-7 includes (see
-             ;; <https://bugs.gnu.org/30756>).
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))))))))

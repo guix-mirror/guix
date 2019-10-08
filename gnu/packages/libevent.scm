@@ -43,19 +43,19 @@
     (name "libevent")
     (version "2.1.11")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://github.com/libevent/libevent/releases/download/release-"
-                   version "-stable/libevent-" version "-stable.tar.gz"))
-             (sha256
-              (base32
-               "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/libevent/libevent/releases/download/release-"
+                    version "-stable/libevent-" version "-stable.tar.gz"))
+              (sha256
+               (base32
+                "0g988zqm45sj1hlhhz4il5z4dpi5dl74hzjwzl4md37a09iaqnx6"))))
     (build-system gnu-build-system)
     (arguments
-      ;; This skips some of the tests which fail on armhf and aarch64.
+     ;; This skips some of the tests which fail on armhf and aarch64.
      '(#:configure-flags '("--disable-libevent-regress")))
     (inputs
-     `(("python" ,python-2)))           ; for 'event_rpcgen.py'
+     `(("python" ,python-wrapper)))     ;for 'event_rpcgen.py'
     (native-inputs
      `(("which" ,which)))
     (home-page "https://libevent.org/")
@@ -75,7 +75,7 @@ loop.")
 (define-public libev
   (package
     (name "libev")
-    (version "4.24")
+    (version "4.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
@@ -83,7 +83,7 @@ loop.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "08gqsza1czx0nf62nkk183jb0946yzjsymaacxbzdgcs8z9r6dcp"))))
+                "1295q0lkkbrlpd5dl5i48bh1rm8mjzh9y795jlvjz3bp4wf7wxbq"))))
     (build-system gnu-build-system)
     (home-page "http://software.schmorp.de/pkg/libev.html")
     (synopsis "Event loop loosely modelled after libevent")
@@ -99,14 +99,14 @@ limited support for fork events.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.24.0")
+    (version "1.30.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dist.libuv.org/dist/v" version
                                   "/libuv-v" version ".tar.gz"))
               (sha256
                (base32
-                "01pg0zsfr8mxlpipkbpw0dpsl26x5s966f5br7dx9ac29abk419q"))))
+                "12s7ifwgbfxblhv46inqa8c2lsnl8cgmvd37y4a4248xhkx1d0s6"))))
     (build-system gnu-build-system)
     (arguments
      '(;; XXX: Some tests want /dev/tty, attempt to make connections, etc.

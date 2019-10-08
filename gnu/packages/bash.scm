@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2017 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
@@ -45,7 +45,7 @@
 
 (define (patch-url seqno)
   "Return the URL of Bash patch number SEQNO."
-  (format #f "mirror://gnu/bash/bash-4.4-patches/bash44-~3,'0d" seqno))
+  (format #f "mirror://gnu/bash/bash-5.0-patches/bash50-~3,'0d" seqno))
 
 (define (bash-patch seqno sha256)
   "Return the origin of Bash patch SEQNO, with expected hash SHA256"
@@ -58,33 +58,17 @@
   (list (bash-patch seqno (base32 hash))
         ...))
 
-(define %patch-series-4.4
-  ;; This is the current patches series for 4.4, generated using
+(define %patch-series-5.0
+  ;; This is the current patches series for 5.0, generated using
   ;; 'download-patches' below.
   (patch-series
-   (1 "03vzy7qwjdd5qvl3ydg99naazas2qmyd0yhnrflgjbbm64axja1y")
-   (2 "0lrwq6vyqism3yqv9s7kzaf3dsl4q5w9r5svcqz279qp7qca083h")
-   (3 "1chqww2rj6g42b8s60q5zlzy0jzp684jkpsbrbfy1vzxja8mmpsi")
-   (4 "1cy8abf96hkrjhw921ndr0shlcnc52bg45rn6xri4v5clhq0l25d")
-   (5 "0a8515kyk4zsgmvlqvlganjfr7pq0j6kzpr4d6xx02kpbdr4n7i2")
-   (6 "1f24wgqngmj2mrj9yibwvc2zvlmn5xi53mnw777g3l40c4m2x3ka")
-   (7 "1bzdsnqaf05gdbqpsixhan8vygjxpcxlz1dd8d9f5jdznw3wq76y") ;CVE-2017-5932
-   (8 "1firw915mjm03hbbw9a70ch3cpgrgnvqjpllgdnn6csr8q04f546")
-   (9 "0g1l56kvw61rpw7dqa9fcl9llkl693h73g631hrhxlm030ddssqb")
-   (10 "01lfhrkdsdkdz8ypzapr614ras23x7ckjnr60aa5bzkaqprccrc4")
-   (11 "038p7mhnq9m65g505hi3827jkf9f35nd1cy00w8mwafpyxp44mnx")
-   (12 "0gh6lbb1rwpk44pvbamm6vzdfi50xnwkqd9v7s8cjwk3pz973hps")
-   (13 "1djkx0w9v62q78gz3jsvamj1jq53i6hbfrfhhsw86ihwpjnfy98v")
-   (14 "0z5ikcq9zyxw79d0z36r5p0mspnb5piavbv03jmlan1wnknmrxx7")
-   (15 "09n307fi1j257abhm295k6ksmnzw47ka2zhnr0i5lbdnpvn04xnk")
-   (16 "1cgi1y6mifm8hsgv4avj5ih76535js3qba1sqwbfvp7si76927sh")
-   (17 "0w6jpj2giakji1ir83rpkx1y7n7xqppah3j748m6dm38hywr0gvp")
-   (18 "1k58h4wxbsg7r4rwhrvzx5hfbapba2nxjysbhh6qp6ki5ys99i2v")
-   (19 "07n1i5610lbs672x1s8g82qn3qfj06s0ip3z80sri0g8vxp0s5r7")
-   (20 "0b2jk5n1af1vh590qfc52hv65mafb4vl1xv26s8j5a3byb5y4h0q")
-   (21 "1hblcd2xmqqlp0idnavw66570n7m0yv5rbbr873c2gkn982mk3xx")
-   (22 "0yfbjzr79vzjs2hyi5m8iy2b38fq7vikdfa4zqdvjsp36q4iycs5")
-   (23 "1dlism6qdx60nvzj0v7ndr7lfahl4a8zmzckp13hqgdx7xpj7v2g")))
+    (1 "12bjfdy6bg8nhyw27bdgxn7h4paylx8d927skfmi9pxd1wgrxzpj")
+    (2 "01w7yrzmz10mw06ys0546vhl7isv2v402ziyvfd7k67588spvs47")
+    (3 "0ny81ridp5n0j69hb8ixrc7dmxybby54jbsz5hikly8kgg1wvssf")
+    (4 "021gqqvgydixkrmqss64b6srfdlkvnx88lyfzpxfrn5d6bc7li0l")
+    (5 "0xl2kyzm84nlyklrqzkn73ixabhzfhn9x91lzcmis89cppclvxav")
+    (6 "0844749ixk1z60437nkznzms1f0nzh9an62kj7sny6r0zyk2k1fn")
+    (7 "16xg37gp1b8zlj5969w8mcrparwqlcbj9695vn3qhgb7wdz1xd0p")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -120,7 +104,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                " -Wl,-rpath -Wl,"
                (assoc-ref %build-inputs "ncurses")
                "/lib")))
-         (version "4.4"))
+         (version "5.0"))
     (package
      (name "bash")
      (source (origin
@@ -129,11 +113,10 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "1jyz6snd63xjn6skk7za6psgidsd53k05cr3lksqybi0q6936syq"))
+                "0kgvfwqdcd90waczf4gx39xnrxzijhjrzyzv7s8v4w31qqm0za5l"))
               (patch-flags '("-p0"))
-              (patches %patch-series-4.4)))
-     (version (string-append version "."
-                             (number->string (length %patch-series-4.4))))
+              (patches %patch-series-5.0)))
+     (version (string-append version "." (number->string (length %patch-series-5.0))))
      (build-system gnu-build-system)
 
      (outputs '("out"

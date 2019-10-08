@@ -3,7 +3,8 @@
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -105,20 +106,52 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 
   (define (native-inputs)
     (if (%current-target-system)
-        (let ((target (%current-target-system)))
-          `(("cross-gcc"      ,(cross-gcc target
-                                          #:xbinutils (cross-binutils target)
-                                          #:libc (cross-bootstrap-libc)))
+        (let* ((target (%current-target-system))
+               (xgcc (cross-gcc
+                      target
+                      #:xbinutils (cross-binutils target)
+                      #:libc (cross-bootstrap-libc))))
+          `(("cross-gcc" ,(package
+                            (inherit xgcc)
+                            (search-paths
+                             ;; Ensure the cross libc headers appears on the
+                             ;; C++ system header search path.
+                             (cons (search-path-specification
+                                    (variable "CROSS_CPLUS_INCLUDE_PATH")
+                                    (files '("include")))
+                                   (package-search-paths gcc)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap))
           ("libc:static" ,(glibc-for-bootstrap) "static")
           ("gcc" ,(package (inherit gcc)
-                    (outputs '("out")) ; all in one so libgcc_s is easily found
+                    (outputs '("out"))  ;all in one so libgcc_s is easily found
+                    (native-search-paths
+                     ;; Set CPLUS_INCLUDE_PATH so GCC is able to find the libc
+                     ;; C++ headers.
+                     (cons (search-path-specification
+                            (variable "CPLUS_INCLUDE_PATH")
+                            (files '("include")))
+                           (package-native-search-paths gcc)))
                     (inputs
-                     `(("libc" ,(glibc-for-bootstrap))
+                     `(;; Distinguish the name so we can refer to it below.
+                       ("bootstrap-libc" ,(glibc-for-bootstrap))
                        ("libc:static" ,(glibc-for-bootstrap) "static")
-                       ,@(package-inputs gcc)))))
+                       ,@(package-inputs gcc)))
+                    (arguments
+                     (substitute-keyword-arguments (package-arguments gcc)
+                       ((#:phases phases)
+                        `(modify-phases ,phases
+                           (add-before 'configure 'treat-glibc-as-system-header
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               (let ((libc (assoc-ref inputs "bootstrap-libc")))
+                                 ;; GCCs build processes requires that the libc
+                                 ;; we're building against is on the system header
+                                 ;; search path.
+                                 (for-each (lambda (var)
+                                             (setenv var (string-append libc "/include")))
+                                           '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+                                 #t)))))))))
           ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
@@ -131,7 +164,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (source (origin
               (inherit (package-source static-bash))
               (patches
-               (cons (search-patch "bash-4.4-linux-pgrp-pipe.patch")
+               (cons (search-patch "bash-reproducible-linux-pgrp-pipe.patch")
                      (origin-patches (package-source static-bash))))))))
 
 (define %static-inputs
@@ -143,7 +176,15 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                            "--disable-silent-rules"
                            "--enable-no-install-program=stdbuf,libstdbuf.so"
                            "CFLAGS=-Os -g0"        ; smaller, please
-                           "LDFLAGS=-static -pthread")
+                           "LDFLAGS=-static -pthread"
+
+                           ;; Work around a cross-compilation bug whereby libcoreutils.a
+                           ;; would provide '__mktime_internal', which conflicts with the
+                           ;; one in libc.a.
+                           ,@(if (%current-target-system)
+                                 `("gl_cv_func_working_mktime=yes")
+                                 '()))
+
                          #:tests? #f   ; signal-related Gnulib tests fail
                          ,@(package-arguments coreutils)))
 
@@ -168,6 +209,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                "LDFLAGS = -static"))
                             #t))))))))
         (xz (package (inherit xz)
+              (outputs '("out"))
               (arguments
                `(#:strip-flags '("--strip-all")
                  #:phases (modify-phases %standard-phases
@@ -205,17 +247,22 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                             '()))))
 	(tar (package (inherit tar)
 	       (arguments
-                (substitute-keyword-arguments (package-arguments tar)
-                  ((#:phases phases)
-                   `(modify-phases ,phases
-                      (replace 'set-shell-file-name
-                        (lambda _
-                          ;; Do not use "/bin/sh" to run programs; see
-                          ;; <http://lists.gnu.org/archive/html/guix-devel/2016-09/msg02272.html>.
-                          (substitute* "src/system.c"
-                            (("/bin/sh") "sh")
-                            (("execv ") "execvp "))
-                          #t))))))))
+                `(;; Work around a cross-compilation bug whereby libgnu.a would provide
+                  ;; '__mktime_internal', which conflicts with the one in libc.a.
+                  ,@(if (%current-target-system)
+                        `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
+                        '())
+                  ,@(substitute-keyword-arguments (package-arguments tar)
+                      ((#:phases phases)
+                       `(modify-phases ,phases
+                          (replace 'set-shell-file-name
+                            (lambda _
+                              ;; Do not use "/bin/sh" to run programs; see
+                              ;; <http://lists.gnu.org/archive/html/guix-devel/2016-09/msg02272.html>.
+                              (substitute* "src/system.c"
+                                (("/bin/sh") "sh")
+                                (("execv ") "execvp "))
+                              #t)))))))))
         ;; We don't want to retain a reference to /gnu/store in the bootstrap
         ;; versions of egrep/fgrep, so we remove the custom phase added since
         ;; grep@2.25. The effect is 'egrep' and 'fgrep' look for 'grep' in
@@ -547,34 +594,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
-;; One package: build + remove store references
-;; (define %mescc-tools-static-stripped
-;;   ;; A statically linked Mescc Tools with store references removed, for
-;;   ;; bootstrap.
-;;   (package
-;;     (inherit mescc-tools)
-;;     (name "mescc-tools-static-stripped")
-;;     (arguments
-;;      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
-;;                           "CC=gcc -static")
-;;        #:test-target "test"
-;;        #:phases (modify-phases %standard-phases
-;;                   (delete 'configure)
-;;                   (add-after 'install 'strip-store-references
-;;                     (lambda _
-;;                       (let* ((out (assoc-ref %outputs "out"))
-;;                              (bin (string-append out "/bin")))
-;;                         (for-each (lambda (file)
-;;                                  (let ((target (string-append bin "/" file)))
-;;                                    (format #t "strippingg `~a'...~%" target)
-;;                                    (remove-store-references target)))
-;;                                   '( "M1" "blood-elf" "hex2"))))))))))
-
 ;; Two packages: first build static, bare minimum content.
 (define %mescc-tools-static
   ;; A statically linked MesCC Tools.
   (package
-    (inherit mescc-tools)
+    (inherit mescc-tools-0.5.2)
     (name "mescc-tools-static")
     (arguments
      `(#:system "i686-linux"
@@ -609,45 +633,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            #t))))
     (inputs `(("mescc-tools" ,%mescc-tools-static)))))
 
-;; (define-public %mes-minimal-stripped
-;;   ;; A minimal Mes without documentation dependencies, for bootstrap.
-;;   (let ((triplet "i686-unknown-linux-gnu"))
-;;     (package
-;;       (inherit mes)
-;;       (name "mes-minimal-stripped")
-;;       (native-inputs
-;;        `(("guile" ,guile-2.2)))
-;;       (arguments
-;;        `(#:system "i686-linux"
-;;          #:strip-binaries? #f
-;;          #:configure-flags '("--mes")
-;;          #:phases
-;;          (modify-phases %standard-phases
-;;            (delete 'patch-shebangs)
-;;            (add-after 'install 'strip-install
-;;              (lambda _
-;;                (let* ((out (assoc-ref %outputs "out"))
-;;                       (share (string-append out "/share")))
-;;                  (delete-file-recursively (string-append out "/lib/guile"))
-;;                  (delete-file-recursively (string-append share "/guile"))
-;;                  (delete-file-recursively (string-append share "/mes/scaffold"))
-
-;;                  (for-each delete-file
-;;                            (find-files
-;;                             (string-append share "/mes/lib") "\\.(h|c)"))
-
-;;                  (for-each (lambda (dir)
-;;                              (for-each remove-store-references
-;;                                        (find-files (string-append out "/" dir)
-;;                                                    ".*")))
-;;                            '("bin" "share/mes")))))))))))
-
 ;; Two packages: first build static, bare minimum content.
 (define-public %mes-minimal
   ;; A minimal Mes without documentation.
   (let ((triplet "i686-unknown-linux-gnu"))
     (package
-      (inherit mes)
+      (inherit mes-0.19)
       (name "mes-minimal")
       (native-inputs
        `(("guile" ,guile-2.2)))

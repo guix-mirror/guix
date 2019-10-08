@@ -626,13 +626,13 @@ the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
 (define-public indent
   (package
    (name "indent")
-   (version "2.2.10")
+   (version "2.2.12")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/indent/indent-" version
                                 ".tar.gz"))
-            (sha256 (base32
-                     "0f9655vqdvfwbxvs1gpa7py8k1z71aqh8hp73f65vazwbfz436wa"))))
+            (sha256
+             (base32 "12xvcd16cwilzglv9h7sgh4h1qqjd1h8s48ji2dla58m4706hzg7"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -645,6 +645,8 @@ the C, C++, C++/CLI, Objective‑C, C#, and Java programming languages.")
             (substitute* "doc/Makefile.in"
               (("^docdir = .*$") "docdir = @docdir@\n"))
             #t)))))
+   (native-inputs
+    `(("texinfo" ,texinfo)))
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by
@@ -654,19 +656,6 @@ deal with incomplete or malformed syntax.  GNU indent offers several
 extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "https://www.gnu.org/software/indent/")))
-
-(define-public indent-2.2.12
-  (package
-    (inherit indent)
-    (version "2.2.12")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/indent/indent-" version
-                                  ".tar.gz"))
-              (sha256
-               (base32
-                "12xvcd16cwilzglv9h7sgh4h1qqjd1h8s48ji2dla58m4706hzg7"))))
-    (native-inputs `(("texinfo" ,texinfo)))))
 
 (define-public amalgamate
   (let* ((commit "c91f07eea1133aa184f652b8f1398eaf03586208")

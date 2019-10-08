@@ -1,10 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:export (%standard-phases
             add-installed-pythonpath
             site-packages
+            python-version
             python-build))
 
 ;; Commentary:
@@ -146,7 +148,7 @@
       (format #t "test suite not run~%"))
   #t)
 
-(define (get-python-version python)
+(define (python-version python)
   (let* ((version     (last (string-split python #\-)))
          (components  (string-split version #\.))
          (major+minor (take components 2)))
@@ -157,7 +159,7 @@
   (let* ((out (assoc-ref outputs "out"))
          (python (assoc-ref inputs "python")))
     (string-append out "/lib/python"
-                   (get-python-version python)
+                   (python-version python)
                    "/site-packages/")))
 
 (define (add-installed-pythonpath inputs outputs)
@@ -186,11 +188,9 @@ when running checks after installing the package."
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
-    (map (cut string-append dir "/" <>)
-         (or (scandir dir (lambda (f)
-                            (let ((s (stat (string-append dir "/" f))))
-                              (eq? 'regular (stat:type s)))))
-             '())))
+    (find-files dir (lambda (file stat)
+                      (and (eq? 'regular (stat:type stat))
+                           (not (wrapper? file))))))
 
   (define bindirs
     (append-map (match-lambda
@@ -203,7 +203,7 @@ when running checks after installing the package."
          (python (assoc-ref inputs "python"))
          (var `("PYTHONPATH" prefix
                 ,(cons (string-append out "/lib/python"
-                                      (get-python-version python)
+                                      (python-version python)
                                       "/site-packages")
                        (search-path-as-string->list
                         (or (getenv "PYTHONPATH") ""))))))
@@ -223,7 +223,7 @@ installed with setuptools."
   (let* ((out (assoc-ref outputs "out"))
          (python (assoc-ref inputs "python"))
          (site-packages (string-append out "/lib/python"
-                                       (get-python-version python)
+                                       (python-version python)
                                        "/site-packages"))
          (easy-install-pth (string-append site-packages "/easy-install.pth"))
          (new-pth (string-append site-packages "/" name ".pth")))
@@ -251,16 +251,21 @@ installed with setuptools."
   #t)
 
 (define %standard-phases
-  ;; 'configure' phase is not needed.
+  ;; The build phase only builds C extensions and copies the Python sources,
+  ;; while the install phase byte-compiles and copies them to the prefix
+  ;; directory.  The tests are run after the install phase because otherwise
+  ;; the cached .pyc generated during the tests execution seem to interfere
+  ;; with the byte compilation of the install phase.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
     (add-after 'ensure-no-mtimes-pre-1980 'enable-bytecode-determinism
       enable-bytecode-determinism)
     (delete 'bootstrap)
-    (delete 'configure)
-    (replace 'install install)
-    (replace 'check check)
+    (delete 'configure)                 ;not needed
     (replace 'build build)
+    (delete 'check)                     ;moved after the install phase
+    (replace 'install install)
+    (add-after 'install 'check check)
     (add-after 'install 'wrap wrap)
     (add-before 'strip 'rename-pth-file rename-pth-file)))
 

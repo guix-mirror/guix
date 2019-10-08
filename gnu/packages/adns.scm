@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +62,7 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.14.0")
+    (version "1.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -69,7 +70,7 @@ scripts.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0vnwmbvymw677k780kpb6sb8i3szdp89rzy8mz1fwg1657yw3ls5"))))
+                "0lk8knip4xk6qzksdkn7085mmgm4ixfczdyyjw656c193y3rgnvc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -83,32 +84,16 @@ The primary examples of such applications are servers which communicate with
 multiple clients and programs with graphical user interfaces.")
     (license (x11-style "https://c-ares.haxx.se/license.html"))))
 
-;; XXX: temporary package for tensorflow / grpc
-(define-public c-ares-next
-  (package
-    (name "c-ares")
-    (version "1.15.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://c-ares.haxx.se/download/" name "-" version
-                    ".tar.gz"))
-              (sha256
-               (base32
-                "0lk8knip4xk6qzksdkn7085mmgm4ixfczdyyjw656c193y3rgnvc"))))
-    (build-system cmake-build-system)
-    (arguments
-     `(#:tests? #f ; some tests seem to require Internet connection
-       #:configure-flags
-       (list "-DCARES_BUILD_TESTS=ON")))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://c-ares.haxx.se/")
-    (synopsis "C library for asynchronous DNS requests")
-    (description
-      "C-ares is a C library that performs DNS requests and name resolution
-asynchronously.  It is intended for applications which need to perform DNS
-queries without blocking, or need to perform multiple DNS queries in parallel.
-The primary examples of such applications are servers which communicate with
-multiple clients and programs with graphical user interfaces.")
-    (license (x11-style "https://c-ares.haxx.se/license.html"))))
+;; gRPC requires a c-ares built with CMake in order to get the .cmake modules.
+;; We can not build c-ares itself with CMake because that would introduce a
+;; circular dependency through nghttp2.
+;; XXX: It would be nice if we could extract the modules somehow and make them
+;; work with the "normal" c-ares package instead of building a whole new library.
+(define-public c-ares/cmake
+  (hidden-package
+   (package
+     (inherit c-ares)
+     (build-system cmake-build-system)
+     (arguments
+      `(;; XXX: Tests require name resolution (the normal variant runs no tests).
+        #:tests? #f)))))

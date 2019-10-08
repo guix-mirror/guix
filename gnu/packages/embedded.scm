@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
@@ -85,6 +85,7 @@
                           (origin-patches (package-source xgcc))))))
       (native-inputs
        `(("flex" ,flex)
+         ("gcc" ,gcc-5)
          ,@(package-native-inputs xgcc)))
       (arguments
        (substitute-keyword-arguments (package-arguments xgcc)

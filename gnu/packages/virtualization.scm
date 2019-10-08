@@ -62,6 +62,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -106,16 +107,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "3.1.0")
+    (version "4.1.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qemu.org/qemu-"
                                  version ".tar.xz"))
-             (patches (search-patches "qemu-CVE-2018-16872.patch"
-                                      "qemu-CVE-2019-6778.patch"))
              (sha256
               (base32
-               "1z5bd5nfyjvhfi1s95labc82y4hjdjjkdabw931362ls0zghh1ba"))))
+               "1ih9v6gxgild3m4g80ld4dr3wp9db3bpy203k73fxgc9hqhn0vk5"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Running tests in parallel can occasionally lead to failures, like:
@@ -179,12 +178,23 @@ exec smbd $@")))
                (chmod "samba-wrapper" #o755)
                (install-file "samba-wrapper" libexec))
              #t))
-         (add-before 'check 'disable-test-qga
+         (add-before 'configure 'prevent-network-configuration
            (lambda _
+             ;; Prevent the build from trying to use git to fetch from the net.
+             (substitute* "Makefile"
+               (("@./config.status")
+                "")) #t))
+         (add-before 'check 'disable-unusable-tests
+           (lambda* (#:key inputs outputs #:allow-other-keys)
              (substitute* "tests/Makefile.include"
                ;; Comment out the test-qga test, which needs /sys and
                ;; fails within the build environment.
                (("check-unit-.* tests/test-qga" all)
+                (string-append "# " all)))
+             (substitute* "tests/Makefile.include"
+               ;; Comment out the test-char test, which needs networking and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-char" all)
                 (string-append "# " all)))
              #t)))))
     (inputs                                       ; TODO: Add optional inputs.
@@ -417,6 +427,15 @@ manage system or application containers.")
              (substitute* "config.h.in"
                (("/bin/sh") (which "sh")))
              #t))
+         (add-before 'configure 'patch-libtirpc-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; libvirt uses an m4 macro instead of pkg-config to determine where
+             ;; the RPC headers are located.  Tell it to look in the right place.
+             (substitute* "configure"
+               (("/usr/include/tirpc")  ;defined in m4/virt-xdr.m4
+                (string-append (assoc-ref inputs "libtirpc")
+                               "/include/tirpc")))
+             #t))
          (add-before 'configure 'disable-broken-tests
            (lambda _
              (let ((tests (list "commandtest"      ; hangs idly
@@ -443,8 +462,9 @@ manage system or application containers.")
        ("dbus" ,dbus)
        ("libpcap" ,libpcap)
        ("libnl" ,libnl)
+       ("libtirpc" ,libtirpc)           ;for <rpc/rpc.h>
        ("libuuid" ,util-linux)
-       ("lvm2" ,lvm2)                   ; for libdevmapper
+       ("lvm2" ,lvm2)                   ;for libdevmapper
        ("curl" ,curl)
        ("openssl" ,openssl)
        ("cyrus-sasl" ,cyrus-sasl)
@@ -673,7 +693,13 @@ domains, their live performance and resource utilization statistics.")
              (setenv "C_INCLUDE_PATH"
                      (string-append (assoc-ref inputs "libnl")
                                     "/include/libnl3:"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    ;; Also add the kernel headers here so that GCC
+                                    ;; treats them as "system headers".  Otherwise
+                                    ;; the build fails with -Werror because parasite.c
+                                    ;; includes both <linux/fs.h> and <sys/mount.h>,
+                                    ;; which define some of the same constants.
+                                    (assoc-ref inputs "kernel-headers")
+                                    "/include"))
              ;; Prevent xmlto from failing the install phase.
              (substitute* "Documentation/Makefile"
                (("XMLTO.*:=.*")
@@ -1276,7 +1302,7 @@ override CC = " (assoc-ref inputs "cross-gcc") "/bin/i686-linux-gnu-gcc"))
     (native-inputs
      `(("dev86" ,dev86)
        ("bison" ,bison)
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("figlet" ,figlet)
        ("flex" ,flex)
        ("gettext" ,gettext-minimal)

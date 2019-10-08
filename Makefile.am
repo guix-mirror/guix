@@ -614,7 +614,7 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 # The above trick doesn't work for 'config.go' because both 'config.scm' and
 # 'config.go' are listed in $(nobase_nodist_guileobject_DATA).  Thus, give it
 # special treatment.
-install-data-hook: set-bootstrap-executable-permissions
+install-data-hook:
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
 # Assuming Guix is already installed and the daemon is up and running, this
@@ -830,6 +830,7 @@ assert-no-store-file-names:
 	     --exclude=guix-cookbook.pot --exclude=guix-cookbook.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
+	     --exclude=binutils-boot-2.20*.patch				\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\

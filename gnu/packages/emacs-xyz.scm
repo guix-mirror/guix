@@ -3946,7 +3946,7 @@ to a key in your preferred mode.")
       (inputs
        `(("supercollider" ,supercollider)))
       (native-inputs
-       `(("cmake" ,cmake)))
+       `(("cmake" ,cmake-minimal)))
       (home-page "https://github.com/supercollider/scel")
       (synopsis "SuperCollider Emacs interface")
       (description "@code{emacs-scel} is an Emacs interface to SuperCollider.

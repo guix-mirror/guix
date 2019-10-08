@@ -38,6 +38,7 @@ DOT_FILES =					\
   %D%/images/bootstrap-packages.dot		\
   %D%/images/coreutils-graph.dot		\
   %D%/images/coreutils-bag-graph.dot		\
+  %D%/images/gcc-mesboot-bag-graph.dot		\
   %D%/images/service-graph.dot			\
   %D%/images/shepherd-graph.dot
 

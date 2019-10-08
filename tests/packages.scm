@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix memoization)
   #:use-module (guix profiles)
   #:use-module (guix scripts package)
   #:use-module (gnu packages)
@@ -336,18 +338,55 @@
   ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
   ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
   (let ((p (dummy-package "foo"
+               (build-system gnu-build-system)
+               (supported-systems
+                `("does-not-exist" "foobar" ,@%supported-systems)))))
+    (parameterize ((%current-system "armhf-linux")) ; a traditionally-bootstrapped architecture
+      (package-transitive-supported-systems p))))
+
+(test-equal "package-transitive-supported-systems: reduced binary seed, implicit inputs"
+  '("x86_64-linux" "i686-linux")
+
+  ;; Here GNU-BUILD-SYSTEM adds implicit inputs that build only on
+  ;; %SUPPORTED-SYSTEMS.  Thus the others must be ignored.
+  (let ((p (dummy-package "foo"
              (build-system gnu-build-system)
              (supported-systems
               `("does-not-exist" "foobar" ,@%supported-systems)))))
-    (package-transitive-supported-systems p)))
+    (parameterize ((%current-system "x86_64-linux"))
+      (package-transitive-supported-systems p))))
 
 (test-assert "supported-package?"
-  (let ((p (dummy-package "foo"
-             (build-system gnu-build-system)
-             (supported-systems '("x86_64-linux" "does-not-exist")))))
+  (let* ((d (dummy-package "dep"
+              (build-system trivial-build-system)
+              (supported-systems '("x86_64-linux"))))
+         (p (dummy-package "foo"
+              (build-system gnu-build-system)
+              (inputs `(("d" ,d)))
+              (supported-systems '("x86_64-linux" "armhf-linux")))))
     (and (supported-package? p "x86_64-linux")
-         (not (supported-package? p "does-not-exist"))
-         (not (supported-package? p "i686-linux")))))
+         (not (supported-package? p "i686-linux"))
+         (not (supported-package? p "armhf-linux")))))
+
+(test-assert "supported-package? vs. system-dependent graph"
+  ;; The inputs of a package can depend on (%current-system).  Thus,
+  ;; 'supported-package?' must make sure that it binds (%current-system)
+  ;; appropriately before traversing the dependency graph.  In the example
+  ;; below, 'supported-package?' must thus return true for both systems.
+  (let* ((p0a (dummy-package "foo-arm"
+                (build-system trivial-build-system)
+                (supported-systems '("armhf-linux"))))
+         (p0b (dummy-package "foo-x86_64"
+                (build-system trivial-build-system)
+                (supported-systems '("x86_64-linux"))))
+         (p   (dummy-package "bar"
+                (build-system trivial-build-system)
+                (inputs
+                 (if (string=? (%current-system) "armhf-linux")
+                     `(("foo" ,p0a))
+                     `(("foo" ,p0b)))))))
+    (and (supported-package? p "x86_64-linux")
+         (supported-package? p "armhf-linux"))))
 
 (test-skip (if (not %store) 8 0))
 
@@ -918,9 +957,9 @@
 (when (or (not (network-reachable?)) (shebang-too-long?))
   (test-skip 1))
 (test-assert "GNU Make, bootstrap"
-  ;; GNU Make is the first program built during bootstrap; we choose it
-  ;; here so that the test doesn't last for too long.
-  (let ((gnu-make (@@ (gnu packages commencement) gnu-make-boot0)))
+  ;; GNU-MAKE-FOR-TESTS can be built cheaply; we choose it here so that the
+  ;; test doesn't last for too long.
+  (let ((gnu-make gnu-make-for-tests))
     (and (package? gnu-make)
          (or (location? (package-location gnu-make))
              (not (package-location gnu-make)))

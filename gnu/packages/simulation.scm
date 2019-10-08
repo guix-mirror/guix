@@ -620,7 +620,7 @@ user interface to the FEniCS core components and external libraries.")
        ("python-matplotlib" ,python-matplotlib)
        ,@(alist-delete "python" (package-inputs fenics-dolfin))))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("ply" ,python-ply)
        ("pytest" ,python-pytest)
        ("python-decorator" ,python-decorator)

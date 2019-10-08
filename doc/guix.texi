@@ -26998,7 +26998,80 @@ Binutils, libc, and the other packages mentioned above---the
 These bootstrap binaries are ``taken for granted'', though we can also
 re-create them if needed (more on that later).
 
-@unnumberedsec Preparing to Use the Bootstrap Binaries
+For @code{i686-linux} and @code{x86_64-linux} the Guix bootstrap process is
+more elaborate, @pxref{Reduced Binary Seed Bootstrap}.
+
+@menu
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
+* Preparing to Use the Bootstrap Binaries:: Building that what matters most.
+@end menu
+
+@node Reduced Binary Seed Bootstrap
+@section The Reduced Binary Seed Bootstrap
+
+Guix---like other GNU/Linux distributions---is traditionally bootstrapped from
+a set of bootstrap binaries: Bourne shell, command-line tools provided by GNU
+Coreutils, Awk, Findutils, `sed', and `grep' and Guile, GCC, Binutils, and the
+GNU C Library (@pxref{Bootstrapping}).  Usually, these bootstrap binaries are
+``taken for granted.''
+
+Taking these binaries for granted means that we consider them to be a correct
+and trustworthy `seed' for building the complete system.  Therein lies a
+problem: the current combined size of these bootstrap binaries is about 250MB
+(@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing or even inspecting
+these is next to impossible.
+
+For @code{i686-linux} and @code{x86_64-linux}, Guix now features a ``Reduced
+Binary Seed'' bootstrap @footnote{We would like to say: ``Full Source
+Bootstrap'' and while we are working towards that goal it would be hyperbole
+to use that term for what we do now.}.
+
+The Reduced Binary Seed bootstrap removes the most critical tools---from a
+trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
+Library are replaced by: @code{bootstrap-mescc-tools} (a tiny assembler and
+linker) and @code{bootstrap-mes} (a small Scheme Interpreter and a C compiler
+written in Scheme and the Mes C Library, built for TinyCC and for GCC).  Using
+these new binary seeds and a new set of
+@c
+packages@footnote{@c
+nyacc-boot,
+mes-boot,
+tcc-boot0,
+tcc-boot,
+make-mesboot0,
+diffutils-mesboot,
+binutils-mesboot0,
+gcc-core-mesboot,
+mesboot-headers,
+glibc-mesboot0,
+gcc-mesboot0,
+binutils-mesboot,
+make-mesboot,
+gcc-mesboot1,
+gcc-mesboot1-wrapper,
+glibc-headers-mesboot,
+glibc-mesboot,
+gcc-mesboot,
+and
+gcc-mesboot-wrapper.
+}
+@c
+the ``missing'' Binutils, GCC, and the GNU C Library are built from source.
+From here on the more traditional bootstrap process resumes.  This approach
+has reduced the bootstrap binaries in size to about 130MB.  Work is ongoing to
+reduce this further.  If you are interested, join us on @code{#bootstrappable}
+on the Freenode IRC network.
+
+@c ./pre-inst-env guix graph --type=bag -e '(begin (use-modules (guix packages)) (%current-system "i686-linux") (@@ (gnu packages commencement) gcc-mesboot))' > doc/images/gcc-mesboot-bag-graph.dot
+@c dot -T png doc/images/gcc-mesboot-bag-graph.dot > doc/images/gcc-mesboot-bag-graph.png
+
+Below is the generated dependency graph for @code{gcc-mesboot}, the bootstrap
+compiler used to build the rest of GuixSD.
+
+@image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
+
+@node Preparing to Use the Bootstrap Binaries
+@section Preparing to Use the Bootstrap Binaries
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
@@ -27012,7 +27085,15 @@ packages bootstrap)} module.  A similar figure can be generated with
 @example
 guix graph -t derivation \
   -e '(@@@@ (gnu packages bootstrap) %bootstrap-gcc)' \
-  | dot -Tps > t.ps
+  | dot -Tps > gcc.ps
+@end example
+
+or, for the Reduced Binary Seed bootstrap
+
+@example
+guix graph -t derivation \
+  -e '(@@@@ (gnu packages bootstrap) %bootstrap-mes)' \
+  | dot -Tps > mes.ps
 @end example
 
 At this level of detail, things are
@@ -27044,10 +27125,10 @@ write them in an output directory with the right layout.  This
 corresponds to the @code{#:modules} argument of
 @code{build-expression->derivation} (@pxref{Derivations}).
 
-Finally, the various tarballs are unpacked by the
-derivations @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv},
-etc., at which point we have a working C tool chain.
-
+Finally, the various tarballs are unpacked by the derivations
+@code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv}, or
+@code{bootstrap-mes-0.drv} and @code{bootstrap-mescc-tools-0.drv}, at which
+point we have a working C tool chain.
 
 @unnumberedsec Building the Build Tools
 
@@ -27112,9 +27193,11 @@ those rarely need to be updated.  Nevertheless, it is useful to have an
 automated way to produce them, should an update occur, and this is what
 the @code{(gnu packages make-bootstrap)} module provides.
 
-The following command builds the tarballs containing the bootstrap
-binaries (Guile, Binutils, GCC, libc, and a tarball containing a mixture
-of Coreutils and other basic command-line tools):
+The following command builds the tarballs containing the bootstrap binaries
+(Binutils, GCC, glibc, for the traditional bootstrap and linux-libre-headers,
+bootstrap-mescc-tools, bootstrap-mes for the Reduced Binary Seed bootstrap,
+and Guile, and a tarball containing a mixture of Coreutils and other basic
+command-line tools):
 
 @example
 guix build bootstrap-tarballs
@@ -27132,12 +27215,12 @@ know.
 
 @unnumberedsec Reducing the Set of Bootstrap Binaries
 
-Our bootstrap binaries currently include GCC, Guile, etc.  That's a lot
-of binary code!  Why is that a problem?  It's a problem because these
-big chunks of binary code are practically non-auditable, which makes it
-hard to establish what source code produced them.  Every unauditable
-binary also leaves us vulnerable to compiler backdoors as described by
-Ken Thompson in the 1984 paper @emph{Reflections on Trusting Trust}.
+Our traditional bootstrap includes GCC, GNU Libc, Guile, etc.  That's a lot of
+binary code!  Why is that a problem?  It's a problem because these big chunks
+of binary code are practically non-auditable, which makes it hard to establish
+what source code produced them.  Every unauditable binary also leaves us
+vulnerable to compiler backdoors as described by Ken Thompson in the 1984
+paper @emph{Reflections on Trusting Trust}.
 
 This is mitigated by the fact that our bootstrap binaries were generated
 from an earlier Guix revision.  Nevertheless it lacks the level of
@@ -27149,8 +27232,19 @@ The @uref{http://bootstrappable.org, Bootstrappable.org web site} lists
 on-going projects to do that.  One of these is about replacing the
 bootstrap GCC with a sequence of assemblers, interpreters, and compilers
 of increasing complexity, which could be built from source starting from
-a simple and auditable assembler.  Your help is welcome!
+a simple and auditable assembler.
 
+Our first major achievement is the replacement of of GCC, the GNU C Library
+and Binutils by MesCC-Tools (a simple hex linker and macro assembler) and Mes
+(@pxref{Top, GNU Mes Reference Manual,, mes, GNU Mes}, a Scheme interpreter
+and C compiler in Scheme).  Neither MesCC-Tools nor Mes can be fully
+bootstrapped yet and thus we inject them as binary seeds.  We call this the
+Reduced Binary Seed bootstrap, as it has halved the size of our bootstrap
+binaries!  Also, it has eliminated the C compiler binary; i686-linux and
+x86_64-linux Guix packages are now bootstrapped without any binary C compiler.
+
+Work is ongoing to make MesCC-Tools and Mes fully bootstrappable and we are
+also looking at any other bootstrap binaries.  Your help is welcome!
 
 @node Porting
 @chapter Porting to a New Platform

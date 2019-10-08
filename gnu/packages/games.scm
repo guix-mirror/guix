@@ -900,7 +900,8 @@ Chess).  It is similar to standard chess but this variant is far more complicate
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
@@ -1112,7 +1113,8 @@ Every puzzle has a complete solution, although there may be more than one.")
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
                     (string-append (assoc-ref inputs "sdl-union")
-                                   "/include/SDL"))
+                                   "/include/SDL:"
+                                   (or (getenv "CPATH") "")))
             #t)))))
    (inputs
     `(("fluidsynth" ,fluidsynth)
@@ -1344,7 +1346,8 @@ can be explored and changed freely.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL"))))
+                                             "/include/SDL:"
+                                             (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -2925,16 +2928,12 @@ Transport Tycoon Deluxe.")
                (copy-recursively
                 (string-append objects "/share/openrct2/objects")
                 "data/object"))))
-         (add-before 'configure 'fixgcc7
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t))
-         (add-after 'fixgcc7 'get-rid-of-errors
+         (add-before 'configure 'get-rid-of-errors
            (lambda _
              ;; Don't treat warnings as errors.
              (substitute* "CMakeLists.txt"
-               (("-Werror") "")))))))
+               (("-Werror") ""))
+             #t)))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2950,8 +2949,7 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("gcc" ,gcc-7)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -3200,7 +3198,8 @@ http://lavachat.symlynx.com/unix/")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "sdl-union")
-                                      "/include/SDL2"))
+                                      "/include/SDL2:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
@@ -3716,12 +3715,10 @@ with the \"Stamp\" tool within Tux Paint.")
              (base32
               "1h1s4abirkdv4ag22zvyk6zkk64skqbjmcnnba67ps4hdzxfbhy4"))
             (patches
-             (search-patches "supertux-fix-build-with-gcc5.patch"
-                             "supertux-unbundle-squirrel.patch"))))
+             (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
-                          "-DENABLE_BOOST_STATIC_LIBS=OFF"
                           "-DUSE_SYSTEM_PHYSFS=ON")
       #:phases
       (modify-phases %standard-phases
@@ -3977,7 +3974,8 @@ throwing people around in pseudo-randomly generated buildings.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-union")
+                     (string-append (getenv "CPATH") ":"
+                                    (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4384,8 +4382,7 @@ over 100 user-created campaigns.")
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL:"
                                     (assoc-ref inputs "python")
-                                    "/include/python2.7:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                                    "/include/python2.7"))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -4990,7 +4987,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("boost" ,boost)
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("mesa" ,mesa)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
@@ -5194,7 +5191,8 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL2"))
+                                             "/include/SDL2:"
+                                             (getenv "CPATH")))
                       #t))
                   (delete 'check)
                   ;; premake doesn't provide install target
@@ -5487,7 +5485,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("gettext-minimal" ,gettext-minimal)
        ("qttools" ,qttools)))
     (synopsis "Realistic physics puzzle game")
@@ -6611,7 +6609,8 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
@@ -6730,7 +6729,8 @@ affected by the gravity of the planets.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -6849,7 +6849,8 @@ the desired spell.")
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
                                (string-append (assoc-ref inputs "sdl2-union")
-                                              "/include/SDL2"))
+                                              "/include/SDL2:"
+                                              (or (getenv "CPATH") "")))
                        #t)))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))

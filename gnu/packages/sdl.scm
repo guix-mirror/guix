@@ -9,6 +9,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,6 +122,15 @@ joystick, and graphics hardware.")
        ((#:configure-flags flags)
         `(append '("--disable-wayland-shared" "--enable-video-kmsdrm"
                    "--disable-kmsdrm-shared")
+                 ,flags))
+       ((#:make-flags flags ''())
+        ;; Add the Fcitx header files to GCCs "system header" search path
+        ;; in order to suppress compiler warnings induced by those:
+        ;;   .../include/fcitx-utils/utarray.h:178:9: error: ISO C90 forbids
+        ;;   mixed declarations and code [-Werror=declaration-after-statement]
+        `(append (list (string-append "C_INCLUDE_PATH="
+                                      (assoc-ref %build-inputs "fcitx")
+                                      "/include"))
                  ,flags))))
     (inputs
      ;; SDL2 needs to be built with ibus support otherwise some systems

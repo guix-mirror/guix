@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015, 2016, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -66,20 +66,19 @@
 (define-public expat
   (package
     (name "expat")
-    (replacement expat/fixed)
-    (version "2.2.6")
+    (version "2.2.7")
     (source (let ((dot->underscore (lambda (c) (if (char=? #\. c) #\_ c))))
               (origin
                 (method url-fetch)
                 (uri (list (string-append "mirror://sourceforge/expat/expat/"
-                                          version "/expat-" version ".tar.bz2")
+                                          version "/expat-" version ".tar.xz")
                            (string-append
                             "https://github.com/libexpat/libexpat/releases/download/R_"
                             (string-map dot->underscore version)
-                            "/expat-" version ".tar.bz2")))
+                            "/expat-" version ".tar.xz")))
                 (sha256
                  (base32
-                  "1wl1x93b5w457ddsdgj0lh7yjq4q6l7wfbgwhagkc8fm2qkkrd0p")))))
+                  "1y5yax6bq8p9xk49zqkd62pxk8bq266wrgbrqgaxp3wsrw5g9qrh")))))
     (build-system gnu-build-system)
     (home-page "https://libexpat.github.io/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -88,14 +87,6 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
-
-(define expat/fixed
-  (package
-    (inherit expat)
-    (source
-     (origin
-       (inherit (package-source expat))
-       (patches (search-patches "expat-CVE-2018-20843.patch"))))))
 
 (define-public libebml
   (package
@@ -124,14 +115,14 @@ hierarchical form with variable field lengths.")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.8")
+    (version "2.9.9")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b"))))
+               "0wd881jzvqayx0ihzba29jl80k06xj9ywp16kxacdqs3064p1ywl"))))
     (build-system gnu-build-system)
     (outputs '("out" "static"))
     (arguments
@@ -146,6 +137,12 @@ hierarchical form with variable field lengths.")
                                     (rename-file ar (string-append dst "/"
                                                                    (basename ar))))
                                   (find-files src "\\.a$"))
+
+                        ;; Remove reference to the static library from the .la
+                        ;; file such that Libtool does the right thing when both
+                        ;; the shared and static variants are available.
+                        (substitute* (string-append src "/libxml2.la")
+                          (("^old_library='libxml2.a'") "old_library=''"))
                         #t))))))
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
@@ -167,6 +164,7 @@ project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
 (define-public python-libxml2
+  ;; TODO: Merge with 'python-libxml2/fixed' on the next rebuild cycle.
   (package/inherit libxml2
     (name "python-libxml2")
     (build-system python-build-system)
@@ -194,20 +192,32 @@ project (but it is usable outside of the Gnome platform).")
     (inputs `(("libxml2" ,libxml2)))
     (synopsis "Python bindings for the libxml2 library")))
 
+(define-public python-libxml2/fixed
+  ;; This variant fixes a crash when processing UTF-8 sequences:
+  ;;    <https://bugs.gnu.org/37468>
+  ;; TODO: Merge with 'python-libxml2' on the next rebuild cycle.
+  (package/inherit
+   python-libxml2
+   (version (string-append (package-version python-libxml2) "-1"))
+   (source (origin
+             (inherit (package-source libxml2))
+             (patches (cons (search-patch "python-libxml2-utf8.patch")
+                            (origin-patches (package-source libxml2))))))))
+
 (define-public python2-libxml2
   (package-with-python2 python-libxml2))
 
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.32")
+    (version "1.1.33")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0q2l6m56iv3ysxgm2walhg4c9wp7q183jb328687i9zlp85csvjj"))
+               "1j1q1swnsy8jgi9x7mclvkrqhfgn09886gdlr9wzk7a08i8n0dlf"))
              (patches (search-patches "libxslt-generated-ids.patch"))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")

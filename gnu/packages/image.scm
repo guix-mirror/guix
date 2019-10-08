@@ -87,8 +87,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.34")
-   (replacement libpng-1.6.37)
+   (version "1.6.37")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -101,8 +100,10 @@
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
              (base32
-              "1xjr0v34fyjgnhvaa1zixcpx5yvxcg4zwvfh0fyklfyfj86rc7ig"))))
+              "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--disable-static")))
 
    ;; libpng.la says "-lz", so propagate it.
    (propagated-inputs `(("zlib" ,zlib)))
@@ -113,25 +114,6 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
-
-;; This graft exists to fix CVE-2018-14048, CVE-2018-14550, and CVE-2019-7317.
-(define-public libpng-1.6.37
-  (package
-    (inherit libpng)
-    (version "1.6.37")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
-                                        version "/libpng-" version ".tar.xz")
-                         (string-append
-                          "ftp://ftp.simplesystems.org/pub/libpng/png/src"
-                          "/libpng16/libpng-" version ".tar.xz")
-                         (string-append
-                          "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
-                          "/libpng16/libpng-" version ".tar.xz")))
-              (sha256
-               (base32
-                "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))))
 
 ;; libpng-apng should be updated when the APNG patch is released:
 ;; <https://bugs.gnu.org/27556>
@@ -647,15 +629,15 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.15")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ArtifexSoftware"
                                   "/ghostpdl-downloads/releases/download"
-                                  "/gs924/" name "-" version ".tar.gz"))
+                                  "/gs927/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))
+                "00h61y7bh3z6mqfzxyb318gyh0f8jwarg4hvlrm83rqps8avzxm4"))
               (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")))
@@ -751,22 +733,20 @@ images of initially unknown height.")
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.3.0")
-    (replacement openjpeg-2.3.1)
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-         (string-append "https://github.com/uclouvain/openjpeg/archive/v"
-                        version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "06npqzkg20avnygdwaqpap91r7qpdqgrn39adj2bl8v0pg0qgirx"))))
+    (version "2.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uclouvain/openjpeg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "openjpeg" version))
+              (sha256
+               (base32
+                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-      ;; Trying to run `$ make check' results in a no rule fault.
-      '(#:tests? #f))
+     '(#:tests? #f                   ;TODO: requires a 1.1 GiB data repository
+       #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
     (inputs
       `(("lcms" ,lcms)
         ("libpng" ,libpng)
@@ -785,20 +765,6 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
-
-(define-public openjpeg-2.3.1
-  (package
-    (inherit openjpeg)
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uclouvain/openjpeg")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "openjpeg" version))
-              (sha256
-               (base32
-                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
@@ -1528,15 +1494,14 @@ is hereby granted."))))
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.1")
-    (replacement libjpeg-turbo-2.0.2)
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "1zv6z093l3x3jzygvni7b819j7xhn6d63jhcdrckj7fz67n6ry75"))))
+                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
@@ -1558,18 +1523,6 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
-
-(define-public libjpeg-turbo-2.0.2
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.2")
-    (source (origin
-              (inherit (package-source libjpeg-turbo))
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))))
 
 (define-public niftilib
   (package

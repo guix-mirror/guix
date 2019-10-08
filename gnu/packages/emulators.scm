@@ -152,11 +152,6 @@
        '(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'fixgcc7
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
@@ -194,7 +189,6 @@
                "-DX11_FOUND=1")))
       (native-inputs
        `(("pkg-config" ,pkg-config)
-         ("gcc" ,gcc-7) ; Building with gcc@5 doesn't work anymore.
          ("gettext" ,gnu-gettext)))
       (inputs
        `(("alsa-lib" ,alsa-lib)

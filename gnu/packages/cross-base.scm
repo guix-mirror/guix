@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -53,11 +54,8 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
-  '("C_INCLUDE_PATH"
-    "CPLUS_INCLUDE_PATH"
-    "OBJC_INCLUDE_PATH"
-    "OBJCPLUS_INCLUDE_PATH"))
+  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
+  '("CPATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
@@ -124,7 +122,15 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                        ,@(if libc
                              `( ;; Disable libcilkrts because it is not
                                 ;; ported to GNU/Hurd.
-                               "--disable-libcilkrts")
+                               "--disable-libcilkrts"
+                               ;; When building a cross compiler, --with-sysroot is
+                               ;; implicitly set to "$gcc_tooldir/sys-root".  This does
+                               ;; not work for us, because --with-native-system-header-dir
+                               ;; is searched for relative to this location.  Thus, we set
+                               ;; it to "/" so GCC is able to find the target libc headers.
+                               ;; This is safe because in practice GCC uses CROSS_CPATH
+                               ;; & co to separate target and host libraries.
+                               "--with-sysroot=/")
                              `( ;; Disable features not needed at this stage.
                                "--disable-shared" "--enable-static"
                                "--enable-languages=c,c++"
@@ -138,6 +144,7 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                                "--disable-libatomic"
                                "--disable-libmudflap"
                                "--disable-libgomp"
+                               "--disable-libmpx"
                                "--disable-libssp"
                                "--disable-libquadmath"
                                "--disable-decimal-float" ;would need libc
@@ -170,15 +177,30 @@ base compiler and using LIBC (which may be either a libc package or #f.)"
                      ,flags))
             flags))
        ((#:phases phases)
-        `(cross-gcc-build-phases ,target ,phases))))))
+        `(cross-gcc-build-phases
+          ,target
+          (modify-phases ,phases
+            (add-before 'configure 'treat-glibc-as-system-header
+              (lambda* (#:key inputs #:allow-other-keys)
+                (let ((libc (assoc-ref inputs "libc")))
+                  (when libc
+                    ;; For GCC6 and later, make sure Glibc is treated as a "system
+                    ;; header" such that #include_next does the right thing.
+                    (for-each (lambda (var)
+                                (setenv var (string-append libc "/include")))
+                              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH")))
+                  #t))))))))))
 
-(define (cross-gcc-patches target)
-  "Return GCC patches needed for TARGET."
+(define (cross-gcc-patches xgcc target)
+  "Return GCC patches needed for XGCC and TARGET."
   (cond ((string-prefix? "xtensa-" target)
          ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
          (search-patches "ath9k-htc-firmware-gcc.patch"))
         ((target-mingw? target)
-         (search-patches "gcc-4.9.3-mingw-gthr-default.patch"))
+         (append (search-patches "gcc-4.9.3-mingw-gthr-default.patch")
+                 (if (version>=? (package-version xgcc) "7.0")
+                     (search-patches "gcc-7-cross-mingw.patch")
+                    '())))
         (else '())))
 
 (define (cross-gcc-snippet target)
@@ -211,7 +233,7 @@ target that libc."
                        ((version>=? (package-version xgcc) "8.0") (search-patch "gcc-8-cross-environment-variables.patch"))
                        ((version>=? (package-version xgcc) "6.0") (search-patch "gcc-6-cross-environment-variables.patch"))
                        (else  (search-patch "gcc-cross-environment-variables.patch")))
-                      (cross-gcc-patches target))))
+                      (cross-gcc-patches xgcc target))))
               (modules '((guix build utils)))
               (snippet
                (cross-gcc-snippet target))))
@@ -459,23 +481,6 @@ and the cross tool chain."
                           flags)))
              ((#:phases phases)
               `(modify-phases ,phases
-                 ;; XXX: The hack below allows us to make sure the
-                 ;; 'apply-hurd-patch' phase gets added in the first
-                 ;; cross-libc, but does *not* get added twice subsequently
-                 ;; when cross-building another libc.
-                 ,@(if (and (hurd-triplet? target)
-                            (not (hurd-target?)))
-                       `((add-after 'unpack 'apply-hurd-patch
-                           (lambda* (#:key inputs native-inputs
-                                     #:allow-other-keys)
-                             ;; TODO: Move this to 'patches' field.
-                             (let ((patch (or (assoc-ref native-inputs
-                                                         "hurd-magic-pid-patch")
-                                              (assoc-ref inputs
-                                                         "hurd-magic-pid-patch"))))
-                               (invoke "patch" "-p1" "--force" "--input"
-                                       patch)))))
-                       '())
                  (add-before 'configure 'set-cross-kernel-headers-path
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let* ((kernel (assoc-ref inputs "kernel-headers"))
@@ -499,9 +504,7 @@ and the cross tool chain."
                            ,@(if (hurd-triplet? target)
                                  `(("cross-mig"
                                     ,@(assoc-ref (package-native-inputs xheaders)
-                                                 "cross-mig"))
-                                   ("hurd-magic-pid-patch"
-                                    ,(search-patch "glibc-hurd-magic-pid.patch")))
+                                                 "cross-mig")))
                                  '())
                            ,@(package-inputs libc)     ;FIXME: static-bash
                            ,@(package-native-inputs libc)))))))

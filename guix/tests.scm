@@ -23,12 +23,18 @@
   #:use-module (guix packages)
   #:use-module (guix base32)
   #:use-module (guix serialization)
+  #:use-module (guix monads)
+  #:use-module ((guix utils) #:select (substitute-keyword-arguments))
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (gcrypt hash)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 match)
   #:use-module (ice-9 binary-ports)
   #:use-module (web uri)
   #:export (open-connection-for-tests
@@ -42,6 +48,8 @@
             shebang-too-long?
             with-environment-variable
 
+            search-bootstrap-binary
+
             mock
             %test-substitute-urls
             test-assertm
@@ -50,7 +58,9 @@
             with-derivation-narinfo
             with-derivation-substitute
             dummy-package
-            dummy-origin))
+            dummy-origin
+
+            gnu-make-for-tests))
 
 ;;; Commentary:
 ;;;
@@ -82,6 +92,35 @@
       (%guile-for-build (package-derivation store %bootstrap-guile))
 
       store)))
+
+(define (bootstrap-binary-file program system)
+  "Return the absolute file name where bootstrap binary PROGRAM for SYSTEM is
+stored."
+  (string-append (dirname (search-path %load-path
+                                       "gnu/packages/bootstrap.scm"))
+                 "/bootstrap/" system "/" program))
+
+(define (search-bootstrap-binary file-name system)
+  "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
+found."
+  ;; Note: Keep bootstrap binaries on the local file system so that the 'guix'
+  ;; package can provide them as inputs and copy them to the right place.
+  (let* ((system (match system
+                   ("x86_64-linux" "i686-linux")
+                   (_ system)))
+         (file   (bootstrap-binary-file file-name system)))
+    (if (file-exists? file)
+        file
+        (with-store store
+          (run-with-store store
+            (mlet %store-monad ((drv (origin->derivation
+                                      (bootstrap-executable file-name system))))
+              (mbegin %store-monad
+                (built-derivations (list drv))
+                (begin
+                  (mkdir-p (dirname file))
+                  (copy-file (derivation->output-path drv) file)
+                  (return file)))))))))
 
 (define (call-with-external-store proc)
   "Call PROC with an open connection to the external store or #f it there is
@@ -363,6 +402,33 @@ default values, and with EXTRA-FIELDS set as specified."
   (let ((o (origin (method #f) (uri "http://www.example.com")
                    (sha256 (base32 (make-string 52 #\x))))))
     (origin (inherit o) extra-fields ...)))
+
+(define gnu-make-for-tests
+  ;; This is a variant of 'gnu-make-boot0' that can be built with minimal
+  ;; resources.
+  (package-with-bootstrap-guile
+   (package
+     (inherit gnu-make)
+     (name "make-test-boot0")
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:tests? #f                               ;cannot run "make check"
+        ,@(substitute-keyword-arguments (package-arguments gnu-make)
+            ((#:phases phases)
+             `(modify-phases ,phases
+                (replace 'build
+                  (lambda _
+                    (invoke "./build.sh")
+                    #t))
+                (replace 'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (install-file "make" bin)
+                      #t))))))))
+     (native-inputs '())                          ;no need for 'pkg-config'
+     (inputs %bootstrap-inputs-for-tests))))
 
 ;; Local Variables:
 ;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)

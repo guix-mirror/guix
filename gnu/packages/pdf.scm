@@ -85,14 +85,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.72.0")
+   (version "0.79.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lfs1b1jfamxl13zbl5n448dqvl9n8frbv8180y7b7kfyaw7wx61"))))
+              "1j18jlv1q6h21azb939gqjsgcbsh5qcd8dwxdmad54p5ixha91gr"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -124,7 +124,7 @@
       #:configure-flags
       (let* ((out (assoc-ref %outputs "out"))
              (lib (string-append out "/lib")))
-        (list "-DENABLE_XPDF_HEADERS=ON" ; to install header files
+        (list "-DENABLE_UNSTABLE_API_ABI_HEADERS=ON" ;to install header files
               "-DENABLE_ZLIB=ON"
               (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
               (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
@@ -668,14 +668,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "8.4.0")
+   (version "8.4.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "1864p952m8vzxk6v500a42psbqj2g2gyli3d3zj6h33hzwxqy09r"))
+              "1fsfy38dnm9cy1j40jw5x8vn84l6f2kgb68rdjl0wxignfw05z87"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove

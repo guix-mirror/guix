@@ -54,7 +54,7 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "3.5")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
@@ -62,7 +62,7 @@
                            version "/gnucash-" version ".tar.bz2"))
        (sha256
         (base32
-         "0ibp7g6aknvnkwkin97kv04ipksy3l18dsz9qysjb7h2nr8hnvbp"))))
+         "1d2qi3ny0bxa16ifh3465z1jgn1l0fmqk9dkph4ialw076gv13kb"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -124,13 +124,6 @@
            (lambda _
              (substitute* "libgnucash/scm/price-quotes.scm"
                (("\"perl\" \"-w\" ") ""))
-             #t))
-         ;; The test-stress-options unit test is known to fail, so we disable
-         ;; it (see: https://bugs.gnucash.org/show_bug.cgi?id=796877).
-         (add-after 'unpack 'disable-stress-options-test
-           (lambda _
-             (substitute* "gnucash/report/standard-reports/test/CMakeLists.txt"
-               (("test-stress-options.scm") ""))
              #t))
          ;; The qof test requires the en_US, en_GB, and fr_FR locales.
          (add-before 'check 'install-locales
@@ -207,7 +200,7 @@ installed as well as Yelp, the Gnome help browser.")
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
-           "0gjndyms413vilf5nqh39frs1691sxib8l7y9mbvcyirj1f8285k"))))
+           "1h4hm58ikffbhplx4gm8pzm9blfwqa1sz8yc2fqi21vs5v0ijf9r"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.

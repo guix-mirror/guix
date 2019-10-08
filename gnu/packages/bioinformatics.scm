@@ -1110,9 +1110,6 @@ relying on a complex dependency tree.")
       (build-system cmake-build-system)
       (arguments
        `(#:parallel-build? #f))
-      (inputs
-       `(("gcc" ,gcc-5))) ; Compilation of bpp-phyl fails with GCC 4.9 so we
-                          ; compile all of the bpp packages with GCC 5.
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "C++ libraries for Bioinformatics")
       (description
@@ -1148,10 +1145,7 @@ providing them a set of re-usable tools.")
          #:out-of-source? #f))
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ;; GCC 4.8 fails due to an 'internal compiler error', so we use a more
-         ;; modern GCC.
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ phylogenetic Library")
       (description
@@ -1183,8 +1177,7 @@ library provides phylogenetics-related modules.")
          #:tests? #f)) ; There are no tests.
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ population genetics library")
       (description
@@ -1217,8 +1210,7 @@ library provides population genetics-related modules.")
          ;; so the tests fail.
          #:out-of-source? #f))
       (inputs
-       `(("bpp-core" ,bpp-core)
-         ("gcc" ,gcc-5))) ; Use GCC 5 as per 'bpp-core'.
+       `(("bpp-core" ,bpp-core)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ sequence library")
       (description
@@ -1256,8 +1248,7 @@ library provides sequence-related modules.")
        `(("bpp-core" ,bpp-core)
          ("bpp-seq" ,bpp-seq)
          ("bpp-phyl" ,bpp-phyl)
-         ("bpp-phyl" ,bpp-popgen)
-         ("gcc" ,gcc-5)))
+         ("bpp-phyl" ,bpp-popgen)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bioinformatics tools written with the Bio++ libraries")
       (description
@@ -3261,9 +3252,7 @@ comment or quality sections.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          (add-before 'build 'bin-mkdir
@@ -4848,7 +4837,7 @@ generated using the PacBio Iso-Seq protocol.")
 (define-public prank
   (package
     (name "prank")
-    (version "150803")
+    (version "170427")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4856,7 +4845,7 @@ generated using the PacBio Iso-Seq protocol.")
                     version ".tgz"))
               (sha256
                (base32
-                "0am4z94fs3w2n5xpfls9zda61vq7qqz4q2i7b9hlsxz5q4j3kfm4"))))
+                "0nc8g9c5rkdxcir46s0in9ci1sxwzbjibxrvkksf22ybnplvagk2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -11721,9 +11710,7 @@ bytes of memory space, where n is the length of the string.")
 
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t)))))
     (inputs
@@ -11902,13 +11889,10 @@ The following file formats are supported:
                (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
 
              ;; Ensure that all headers can be found
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
+             (setenv "CPATH"
+                     (string-append (getenv "CPATH")
                                     ":"
                                     (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
@@ -14102,7 +14086,8 @@ choosing which reads pass the filter.")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "eigen")
-                                      "/include/eigen3"))
+                                      "/include/eigen3:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (delete 'configure)
            (replace 'install

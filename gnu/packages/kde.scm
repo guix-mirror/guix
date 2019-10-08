@@ -477,15 +477,15 @@ used in KDE development tools Kompare and KDevelop.")
 (define-public qca
   (package
     (name "qca")
-    (version "2.1.3")
+    (version "2.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "mirror://kde/stable/qca/" version
-                            "/src/qca-" version ".tar.xz"))
+                            "/qca-" version ".tar.xz"))
         (sha256
          (base32
-          "0lz3n652z208daxypdcxiybl0a9fnn6ida0q7fh5f42269mdhgq0"))))
+          "00kv1vsrc8fp556hm8s6yw3240vx3l4067q6vfxrb3gdwgcd45np"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

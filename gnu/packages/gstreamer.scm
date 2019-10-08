@@ -436,19 +436,14 @@ compression formats through the use of the libav library.")
                 "0f1d9rvy2qxlymmfzyknnfr5rz1vx69jv17gp7wnamc5s6p7mp2m"))))
     (build-system gnu-build-system)
     (arguments
-     ;; XXX: Factorize python-sitedir with python-build-system.
-     `(#:imported-modules (,@%gnu-build-system-modules
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build python-build-system) #:prefix python:))
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build python-build-system))
        #:configure-flags
-       (let* ((python (assoc-ref %build-inputs "python"))
-              (python-version ((@@ (guix build python-build-system)
-                                   get-python-version)
-                               python))
-              (python-sitedir (string-append
-                               "lib/python" python-version "/site-packages")))
-         (list (string-append
-                "--with-pygi-overrides-dir=" %output "/" python-sitedir
-                "/gi/overrides")))))
+       (list (string-append
+              "--with-pygi-overrides-dir="
+              (python:site-packages %build-inputs %outputs) "gi/overrides"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))

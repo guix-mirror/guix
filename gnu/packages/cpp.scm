@@ -3,6 +3,7 @@
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web))
 
 (define-public libzen
   (package
@@ -276,3 +278,34 @@ intuitive syntax and trivial integration.")
     (description "xtl is a C++ header-only template library providing basic
 tools (containers, algorithms) used by other QuantStack packages.")
     (license license:bsd-3)))
+
+(define-public ccls
+  (package
+    (name "ccls")
+    (version "0.20190823.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/MaskRay/ccls")
+             (commit version)))
+       (sha256
+        (base32 "1sx31zp6q2qc6fz3r78rx34zp2x4blrqzxwbpww71vb6lp1clmdm"))
+       (file-name (git-file-name name version))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no check target.
+    (inputs
+     `(("rapidjson" ,rapidjson)))
+    (native-inputs
+     `(("clang" ,clang)
+       ("llvm" ,llvm)))
+    (home-page "https://github.com/MaskRay/ccls")
+    (synopsis "C/C++/Objective-C language server")
+    (description
+     "@code{ccls} is a server implementing the Language Server Protocol (LSP)
+for C, C++ and Objective-C languages.  It uses @code{clang} to perform static
+code analysis and supports cross references, hierarchies, completion and
+syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
+maintained anymore.")
+    (license license:asl2.0)))

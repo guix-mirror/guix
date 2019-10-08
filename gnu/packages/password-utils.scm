@@ -766,7 +766,7 @@ between hosts and entries in the password store.")
          ("krb5" ,mit-krb5)
          ("libpcap" ,libpcap)
          ("nss" ,nss)
-         ("openssl" ,openssl)
+         ("openssl" ,openssl-1.0)
          ("zlib" ,zlib)))
       (arguments
        `(#:configure-flags

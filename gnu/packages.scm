@@ -46,10 +46,8 @@
   #:export (search-patch
             search-patches
             search-auxiliary-file
-            search-bootstrap-binary
             %patch-path
             %auxiliary-files-path
-            %bootstrap-binaries-path
             %package-module-path
             %default-package-module-path
 
@@ -75,17 +73,12 @@
 ;;;
 ;;; Code:
 
-;; By default, we store patches, auxiliary files and bootstrap binaries
+;; By default, we store patches and auxiliary files
 ;; alongside Guile modules.  This is so that these extra files can be
 ;; found without requiring a special setup, such as a specific
 ;; installation directory and an extra environment variable.  One
 ;; advantage of this setup is that everything just works in an
 ;; auto-compilation setting.
-
-(define %bootstrap-binaries-path
-  (make-parameter
-   (map (cut string-append <> "/gnu/packages/bootstrap")
-        %load-path)))
 
 (define %auxiliary-files-path
   (make-parameter
@@ -107,18 +100,6 @@
   "Return the list of absolute file names corresponding to each
 FILE-NAME found in %PATCH-PATH."
   (list (search-patch file-name) ...))
-
-(define (search-bootstrap-binary file-name system)
-  "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
-found."
-  (or (search-path (%bootstrap-binaries-path)
-                   (string-append system "/" file-name))
-      (raise (condition
-              (&message
-               (message
-                (format #f (G_ "could not find bootstrap binary '~a' \
-for system '~a'")
-                        file-name system)))))))
 
 (define %distro-root-directory
   ;; Absolute file name of the module hierarchy.  Since (gnu packages …) might
@@ -412,9 +393,7 @@ reducing the memory footprint."
                              ,(module-name module)
                              ,symbol
                              ,(package-outputs package)
-                             ,(->bool
-                               (member (%current-system)
-                                       (package-supported-systems package)))
+                             ,(->bool (supported-package? package))
                              ,(->bool (package-superseded package))
                              ,@(let ((loc (package-location package)))
                                  (if loc

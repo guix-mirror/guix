@@ -134,14 +134,14 @@ with a flexible variety of user interfaces.")
 (define-public cppunit
   (package
     (name "cppunit")
-    (version "1.13.2")
+    (version "1.14.0")
     (source (origin
              (method url-fetch)
               (uri (string-append "http://dev-www.libreoffice.org/src/"
                                   name "-" version ".tar.gz"))
              (sha256
               (base32
-               "17s2kzmkw3kfjhpp72rfppyd7syr7bdq5s69syj2nvrlwd3d4irz"))))
+               "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))
     ;; Explicitly link with libdl. This is expected to be done by packages
     ;; relying on cppunit for their tests. However, not all of them do.
     ;; If we added the linker flag to such packages, we would pollute all
@@ -155,23 +155,6 @@ with a flexible variety of user interfaces.")
 unit testing.  Test output is in XML for automatic testing and GUI based for
 supervised tests.")
     (license license:lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
-
-;; Some packages require this newer version of cppunit.  However, it needs
-;; C++11 support, which is not enabled by default in our current GCC, and
-;; updating in-place would require adding CXXFLAGS to many dependent packages.
-;; Thus, keep as a separate variable for now.
-;; TODO: Remove this when our default GCC is updated to 6 or higher.
-(define-public cppunit-1.14
-  (package
-    (inherit cppunit)
-    (version "1.14.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://dev-www.libreoffice.org/src/"
-                                  "cppunit-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1027cyfx5gsjkdkaf6c2wnjh68882grw8n672018cj3vs9lrhmix"))))))
 
 ;; When dependent packages upgraded to use newer version of catch, this one should
 ;; be removed.
@@ -700,31 +683,28 @@ standard library.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "3.8.0")
+    (version "4.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest" version))
        (sha256
         (base32
-         "17grcfvd6ggvvqmprwv5y8g319nayam70hr43ssjwj40ws27z858"))))
+         "18w38kjnffdcrlbw6ny6dksgxai6x9bxpjs2m6klqmb8hfzjkcb2"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-invalid-tests
+         (replace 'check
            (lambda _
-             ;; Some tests involves the /usr directory, and fails.
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix\\(self\\):")
-                "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):"))
-             (substitute* "testing/test_argcomplete.py"
-               (("def test_remove_dir_prefix" line)
-                (string-append "@pytest.mark.skip"
-                               "(reason=\"Assumes that /usr exists.\")\n    "
-                               line)))
-             #t))
-         (replace 'check (lambda _ (invoke "pytest" "-vv"))))))
+             (invoke "pytest" "-vv" "-k"
+                     (string-append
+                      ;; These tests involve the /usr directory, and fails.
+                      "not test_remove_dir_prefix"
+                      " and not test_argcomplete"
+                      ;; This test tries to override PYTHONPATH, and
+                      ;; subsequently fails to locate the test libraries.
+                      " and not test_collection")))))))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-attrs" ,python-attrs-bootstrap)
@@ -814,14 +794,14 @@ supports coverage of subprocesses.")
 (define-public python-pytest-runner
   (package
     (name "python-pytest-runner")
-    (version "4.2")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
-         "1gkpyphawxz38ni1gdq1fmwyqcg02m7ypzqvv46z06crwdxi2gyj"))))
+         "1x0d9n40lsiphblbs61rdc0d5r31f6vh0vcahqdv0mffakbnrb80"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest-bootstrap)
@@ -1265,14 +1245,14 @@ have failed since the last commit or what tests are currently failing.")))
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "4.4.1")
+    (version "4.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "097l4s3ssxm1vncsn0nw3a1pbzah28773q36c1ab9wz01r04973s"))))
+         "02f6m073qdispn96rc616hg0rnmw1pgqzw3bgxwiwza4zf9hirlx"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: 95 tests failed, 539 passed, 6 skipped, 2 errors.
@@ -1535,17 +1515,16 @@ instantly.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.70.3")
+    (version "4.18.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "1rshs1japfmwgar98yrkq4hg4z2q76hlnq7w2n3lfbjnscn1jd9b"))))
+                "0a35nwqyjnm4cphi43xracqpkws0ip61mndvqb1iqq7gkva83lb1"))))
     (build-system python-build-system)
     (native-inputs
-     `(;; FIXME: Change to python-flake8 in the next rebuild cycle.
-       ("python-flake8" ,python-flake8-3.5)
+     `(("python-flake8" ,python-flake8)
        ("python-pytest" ,python-pytest-bootstrap)))
     (propagated-inputs
      `(("python-attrs" ,python-attrs-bootstrap)
@@ -2145,33 +2124,45 @@ retried.")
   (package-with-python2 python-flaky))
 
 (define-public python-pyhamcrest
-  (package
-    (name "python-pyhamcrest")
-    (version "1.9.0")
-    (source (origin
-              ;; Tests not distributed from pypi release.
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/hamcrest/PyHamcrest")
-                     (commit (string-append "V" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "01qnzj9qnzz0y78qa3ing24ssvszb0adw59xc4qqmdn5wryy606b"))))
-    (native-inputs                      ; All native inputs are for tests
-     `(("python-pytest-cov" ,python-pytest-cov)
-       ("python-mock" ,python-mock)
-       ("python-pytest" ,python-pytest)
-       ("python-hypothesis" ,python-hypothesis)))
-    (propagated-inputs
-     `(("python-six" ,python-six)))
-    (build-system python-build-system)
-    (home-page "http://hamcrest.org/")
-    (synopsis "Hamcrest matchers for Python")
-    (description
-     "PyHamcrest is a framework for writing matcher objects,
+  ;; The latest release was in 2016 and its test suite does not work with recent
+  ;; versions of Pytest.  Just take the master branch for now, which seems stable.
+  (let ((commit "25fdc5f00bdf3084335353bc9247253098ec4cf2")
+        (revision "0"))
+    (package
+      (name "python-pyhamcrest")
+      (version (git-version "1.9.0" revision commit))
+      (source (origin
+                ;; Tests not distributed from pypi release.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/hamcrest/PyHamcrest")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1miqmhhi68vaix8sqc1lvpvbm27bacffxh5anm5cbfsvk7g9n6f3"))))
+      (native-inputs                    ;all native inputs are for tests
+       `(("python-pytest-cov" ,python-pytest-cov)
+         ("python-mock" ,python-mock)
+         ("python-pytest" ,python-pytest)
+         ("python-hypothesis" ,python-hypothesis)))
+      (propagated-inputs
+       `(("python-six" ,python-six)))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (replace 'check
+                      (lambda _
+                        (setenv "PYTHONPATH"
+                                (string-append "build/lib:"
+                                               (getenv "PYTHONPATH")))
+                        (invoke "pytest" "-vv"))))))
+      (home-page "http://hamcrest.org/")
+      (synopsis "Hamcrest matchers for Python")
+      (description
+       "PyHamcrest is a framework for writing matcher objects,
  allowing you to declaratively define \"match\" rules.")
-    (license license:bsd-3)))
+      (license license:bsd-3))))
 
 (define-public python2-pyhamcrest
   (package-with-python2 python-pyhamcrest))

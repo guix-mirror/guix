@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +51,14 @@
            ;; Required since Perl 5.26.0's removal of the current
            ;; working directory from @INC.
            ;; TODO Try removing this for later versions of SWIG.
-           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t)))))
+           (lambda _ (setenv "PERL_USE_UNSAFE_INC" "1") #t))
+         (add-before 'configure 'workaround-gcc-bug
+           (lambda _
+             ;; XXX: Don't add the -isystem flag, or GCCs #include_next
+             ;; won't be able to find <stdlib.h>.
+             (substitute* "configure"
+               (("-isystem ") "-I"))
+             #t)))))
     (native-inputs `(("boost" ,boost)
                      ("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(;; Provide these to run the corresponding tests.

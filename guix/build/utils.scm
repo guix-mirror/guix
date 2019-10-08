@@ -1,8 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015, 2018 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -87,7 +89,13 @@
             patch-/usr/bin/file
             fold-port-matches
             remove-store-references
+            wrapper?
             wrap-program
+            wrap-script
+
+            wrap-error?
+            wrap-error-program
+            wrap-error-type
 
             invoke
             invoke-error?
@@ -96,10 +104,33 @@
             invoke-error-exit-status
             invoke-error-term-signal
             invoke-error-stop-signal
+            report-invoke-error
+
+            invoke/quiet
 
             locale-category->string))
 
+
+;;;
+;;; Guile 2.0 compatibility later.
+;;;
 
+;; The bootstrap Guile is Guile 2.0, so provide a compatibility layer.
+(cond-expand
+  ((and guile-2 (not guile-2.2))
+   (define (setvbuf port mode . rest)
+     (apply (@ (guile) setvbuf) port
+            (match mode
+              ('line _IOLBF)
+              ('block _IOFBF)
+              ('none _IONBF)
+              (_ mode))                           ;an _IO* integer
+            rest))
+
+   (module-replace! (current-module) '(setvbuf)))
+  (else #f))
+
+
 ;;;
 ;;; Directories.
 ;;;
@@ -600,6 +631,11 @@ Where every <*-phase-name> is an expression evaluating to a symbol, and
     ((_ phases (add-after old-phase-name new-phase-name new-phase))
      (alist-cons-after old-phase-name new-phase-name new-phase phases))))
 
+
+;;;
+;;; Program invocation.
+;;;
+
 (define-condition-type &invoke-error &error
   invoke-error?
   (program      invoke-error-program)
@@ -620,6 +656,68 @@ if the exit code is non-zero; otherwise return #t."
                          (term-signal (status:term-sig code))
                          (stop-signal (status:stop-sig code))))))
     #t))
+
+(define* (report-invoke-error c #:optional (port (current-error-port)))
+  "Report to PORT about C, an '&invoke-error' condition, in a human-friendly
+way."
+  (format port "command~{ ~s~} failed with ~:[signal~;status~] ~a~%"
+          (cons (invoke-error-program c)
+                (invoke-error-arguments c))
+          (invoke-error-exit-status c)
+          (or (invoke-error-exit-status c)
+              (invoke-error-term-signal c)
+              (invoke-error-stop-signal c))))
+
+(define (open-pipe-with-stderr program . args)
+  "Run PROGRAM with ARGS in an input pipe, but, unlike 'open-pipe*', redirect
+both its standard output and standard error to the pipe.  Return two value:
+the pipe to read PROGRAM's data from, and the PID of the child process running
+PROGRAM."
+  ;; 'open-pipe*' doesn't attempt to capture stderr in any way, which is why
+  ;; we need to roll our own.
+  (match (pipe)
+    ((input .  output)
+     (match (primitive-fork)
+       (0
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (close-port input)
+            (dup2 (fileno output) 1)
+            (dup2 (fileno output) 2)
+            (apply execlp program program args))
+          (lambda ()
+            (primitive-exit 127))))
+       (pid
+        (close-port output)
+        (values input pid))))))
+
+(define (invoke/quiet program . args)
+  "Invoke PROGRAM with ARGS and capture PROGRAM's standard output and standard
+error.  If PROGRAM succeeds, print nothing and return the unspecified value;
+otherwise, raise a '&message' error condition that includes the status code
+and the output of PROGRAM."
+  (let-values (((pipe pid)
+                (apply open-pipe-with-stderr program args)))
+    (let loop ((lines '()))
+      (match (read-line pipe)
+        ((? eof-object?)
+         (close-port pipe)
+         (match (waitpid pid)
+           ((_ . status)
+            (unless (zero? status)
+              (let-syntax ((G_ (syntax-rules ()   ;for xgettext
+                                 ((_ str) str))))
+                (raise (condition
+                        (&message
+                         (message (format #f (G_ "'~a~{ ~a~}' exited \
+with status ~a; output follows:~%~%~{  ~a~%~}")
+                                          program args
+                                          (or (status:exit-val status)
+                                              status)
+                                          (reverse lines)))))))))))
+        (line
+         (loop (cons line lines)))))))
 
 
 ;;;
@@ -987,8 +1085,8 @@ known as `nuke-refs' in Nixpkgs."
         ;; We cannot use `regexp-exec' here because it cannot deal with
         ;; strings containing NUL characters.
         (format #t "removing store references from `~a'...~%" file)
-        (setvbuf in _IOFBF 65536)
-        (setvbuf out _IOFBF 65536)
+        (setvbuf in 'block 65536)
+        (setvbuf out 'block 65536)
         (fold-port-matches (lambda (match result)
                              (put-bytevector out (string->utf8 store))
                              (put-u8 out (char->integer #\/))
@@ -1002,6 +1100,18 @@ known as `nuke-refs' in Nixpkgs."
                            (lambda (char result)
                              (put-u8 out (char->integer char))
                              result))))))
+
+(define-condition-type &wrap-error &error
+  wrap-error?
+  (program    wrap-error-program)
+  (type       wrap-error-type))
+
+(define (wrapper? prog)
+  "Return #t if PROG is a wrapper as produced by 'wrap-program'."
+  (and (file-exists? prog)
+       (let ((base (basename prog)))
+         (and (string-prefix? "." base)
+              (string-suffix? "-real" base)))))
 
 (define* (wrap-program prog #:rest vars)
   "Make a wrapper for PROG.  VARS should look like this:
@@ -1099,6 +1209,120 @@ with definitions for VARS."
 
         (chmod prog-tmp #o755)
         (rename-file prog-tmp prog))))
+
+(define wrap-script
+  (let ((interpreter-regex
+         (make-regexp
+          (string-append "^#! ?(/[^ ]+/bin/("
+                         (string-join '("python[^ ]*"
+                                        "Rscript"
+                                        "perl"
+                                        "ruby"
+                                        "bash"
+                                        "sh") "|")
+                         "))( ?.*)")))
+        (coding-line-regex
+         (make-regexp
+          ".*#.*coding[=:][[:space:]]*([-a-zA-Z_0-9.]+)")))
+    (lambda* (prog #:key (guile (which "guile")) #:rest vars)
+      "Wrap the script PROG such that VARS are set first.  The format of VARS
+is the same as in the WRAP-PROGRAM procedure.  This procedure differs from
+WRAP-PROGRAM in that it does not create a separate shell script.  Instead,
+PROG is modified directly by prepending a Guile script, which is interpreted
+as a comment in the script's language.
+
+Special encoding comments as supported by Python are recreated on the second
+line.
+
+Note that this procedure can only be used once per file as Guile scripts are
+not supported."
+      (define update-env
+        (match-lambda
+          ((var sep '= rest)
+           `(setenv ,var ,(string-join rest sep)))
+          ((var sep 'prefix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append ,(string-join rest sep)
+                                              ,sep current)
+                               ,(string-join rest sep)))))
+          ((var sep 'suffix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append current ,sep
+                                              ,(string-join rest sep))
+                               ,(string-join rest sep)))))
+          ((var '= rest)
+           `(setenv ,var ,(string-join rest ":")))
+          ((var 'prefix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append ,(string-join rest ":")
+                                              ":" current)
+                               ,(string-join rest ":")))))
+          ((var 'suffix rest)
+           `(let ((current (getenv ,var)))
+              (setenv ,var (if current
+                               (string-append current ":"
+                                              ,(string-join rest ":"))
+                               ,(string-join rest ":")))))))
+      (let-values (((interpreter args coding-line)
+                    (call-with-ascii-input-file prog
+                      (lambda (p)
+                        (let ((first-match
+                               (false-if-exception
+                                (regexp-exec interpreter-regex (read-line p)))))
+                          (values (and first-match (match:substring first-match 1))
+                                  (and first-match (match:substring first-match 3))
+                                  (false-if-exception
+                                   (and=> (regexp-exec coding-line-regex (read-line p))
+                                          (lambda (m) (match:substring m 0))))))))))
+        (if interpreter
+            (let* ((header (format #f "\
+#!~a --no-auto-compile
+#!#; ~a
+#\\-~s
+#\\-~s
+"
+                                   guile
+                                   (or coding-line "Guix wrapper")
+                                   (cons 'begin (map update-env
+                                                     (match vars
+                                                       ((#:guile _ . vars) vars)
+                                                       (_ vars))))
+                                   `(let ((cl (command-line)))
+                                      (apply execl ,interpreter
+                                             (car cl)
+                                             (cons (car cl)
+                                                   (append
+                                                    ',(string-split args #\space)
+                                                    cl))))))
+                   (template (string-append prog ".XXXXXX"))
+                   (out      (mkstemp! template))
+                   (st       (stat prog))
+                   (mode     (stat:mode st)))
+              (with-throw-handler #t
+                (lambda ()
+                  (call-with-ascii-input-file prog
+                    (lambda (p)
+                      (format out header)
+                      (dump-port p out)
+                      (close out)
+                      (chmod template mode)
+                      (rename-file template prog)
+                      (set-file-time prog st))))
+                (lambda (key . args)
+                  (format (current-error-port)
+                          "wrap-script: ~a: error: ~a ~s~%"
+                          prog key args)
+                  (false-if-exception (delete-file template))
+                  (raise (condition
+                          (&wrap-error (program prog)
+                                       (type key))))
+                  #f)))
+            (raise (condition
+                    (&wrap-error (program prog)
+                                 (type 'no-interpreter-found)))))))))
 
 
 ;;;

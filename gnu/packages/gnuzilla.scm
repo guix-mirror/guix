@@ -865,8 +865,7 @@ from forcing GEXP-PROMISE."
              (let ((gcc (assoc-ref inputs "gcc")))
                (setenv "CPLUS_INCLUDE_PATH"
                        (string-append gcc "/include/c++" ":"
-                                      gcc "/include/c++/" build ":"
-                                      (getenv "CPLUS_INCLUDE_PATH"))))
+                                      gcc "/include/c++/" build)))
              #t))
          (replace 'configure
            ;; configure does not work followed by both "SHELL=..." and

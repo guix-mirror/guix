@@ -724,6 +724,10 @@ fi\n")))
        ;; to certain networks.  Some discussion at
        ;; https://lists.gnu.org/archive/html/help-guix/2017-09/msg00037.html
        ("hostname" ,(plain-file "hostname" (operating-system-host-name os)))
+       ;; Some programs (e.g., GLib) look at /etc/timezone to find the
+       ;; name of the current timezone.  For details, see
+       ;; https://lists.gnu.org/archive/html/guix-devel/2019-07/msg00166.html
+       ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))

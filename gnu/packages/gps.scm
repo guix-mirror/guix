@@ -66,11 +66,7 @@
     ;; TODO: "make doc" requires Docbook & co.
     (arguments
      `(#:configure-flags
-       '("--with-zlib=system"
-         ;; XXX Use -fPIC to work around build problems with Qt, GCC 5, and
-         ;; recent binutils:
-         ;; https://codereview.qt-project.org/#/c/111787/
-         "CXXFLAGS=-std=gnu++11 -fPIC")
+       '("--with-zlib=system")
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
        ;; on these platforms.

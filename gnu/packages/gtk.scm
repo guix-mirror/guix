@@ -180,15 +180,15 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "2.2.0")
+   (version "2.5.3")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
                                  "harfbuzz/release/harfbuzz-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "047q63jr513azf3g1y7f5xn60b4jdjs9zsmrx04sfw5rasyzrk5p"))))
+               "0p45xk5bblsw8lfs7y7z80b4rvda9f2hlpr28flkrfmpjz3hvl7y"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -200,7 +200,8 @@ affine transformation (scale, rotation, shear, etc.).")
       ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
    (native-inputs
-    `(("gobject-introspection" ,gobject-introspection)
+    `(("glib:bin" ,glib "bin")          ;for glib-mkenums
+      ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
       ("which" ,which)))
@@ -298,8 +299,6 @@ functions which were removed.")
        (modify-phases %standard-phases
          (add-before 'configure 'set-flags
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Compile with C++11, required by gtkmm.
-             (setenv "CXXFLAGS" "-std=c++11")
              ;; Allow 'bin/ganv_bench' to find libganv-1.so.
              (setenv "LDFLAGS"
                      (string-append "-Wl,-rpath="
@@ -400,7 +399,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "4.0.2")
+   (version "4.2.0")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/gtksourceview/"
@@ -408,7 +407,7 @@ printing and other features typical of a source code editor.")
                                  "gtksourceview-" version ".tar.xz"))
              (sha256
               (base32
-               "1b2z9c0skxrgw2vh08hv6qxky8jbvamc4rgww82j0kpp533rz0hm"))))
+               "0xgnjj7jd56wbl99s76sa1vjq9bkz4mdsxwgwlcphg689liyncf4"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -1045,7 +1044,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.40.1")
+    (version "2.42.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1053,7 +1052,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1bz3gciff23bpw9bqc4v2l3lkq9w7394v3a4jxkvx0ap5lmfwqlp"))))
+               "0mmzxp3wniaafkxr30sb22mq9x44xckb5d60h1bl99lkzxks0vfa"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -1071,7 +1070,7 @@ library.")
 (define-public atkmm
   (package
     (name "atkmm")
-    (version "2.24.2")
+    (version "2.28.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1079,7 +1078,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1gaqwhviadsmy0fsr47686yglv1p4mpkamj0in127bz2b5bki5gz"))))
+               "0fnxrspxkhhbrjphqrpvl3zjm66n50s4cywrrrwkhbflgy8zqk2c"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -1094,7 +1093,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.22.2")
+    (version "3.24.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1102,7 +1101,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1400535lhyya462pfx8bp11k3mg3jsbdghlpygskd5ai665dkbwi"))))
+               "0hxaq4x9jqj8vvnv3sb6nwapz83v8lclbm887qqci0g50llcjpyg"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
@@ -1114,10 +1113,7 @@ toolkit.")
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
     (arguments
-     `(;; XXX: Tests require C++14 or later.  Remove this when the default
-       ;; compiler is >= GCC6.
-       #:configure-flags '("CXXFLAGS=-std=gnu++14")
-       #:disallowed-references (,xorg-server-for-tests)
+     `(#:disallowed-references (,xorg-server-for-tests)
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'run-xvfb
                     (lambda* (#:key inputs #:allow-other-keys)
@@ -1153,8 +1149,7 @@ extensive documentation, including API reference and a tutorial.")
              (sha256
               (base32
                "0wkbzvsx4kgw16f6xjdc1dz7f77ldngdila4yi5lw2zrgcxsb006"))))
-    (arguments
-     '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
+    (arguments '())
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("pangomm" ,pangomm)

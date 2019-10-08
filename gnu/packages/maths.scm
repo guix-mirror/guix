@@ -101,6 +101,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -685,7 +686,8 @@ computations.")
         (base32 "0n29klrrbwan9307np0d9hr128dlpc4nnlf57a140080ll3jmp8l"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
-                                "hdf4-shared-fortran.patch"))))
+                                "hdf4-shared-fortran.patch"
+                                "hdf4-tirpc.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -693,10 +695,14 @@ computations.")
        ("flex" ,flex)))
     (inputs
      `(("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)))
     (arguments
      `(#:parallel-tests? #f
-       #:configure-flags '("--enable-shared")
+       #:configure-flags (list "--enable-shared"
+                               (string-append "CPPFLAGS=-I"
+                                              (assoc-ref %build-inputs "libtirpc")
+                                              "/include/tirpc"))
        #:phases
        (modify-phases %standard-phases
          ;; This is inspired by two of Debian's patches.
@@ -1045,8 +1051,11 @@ implemented in C.")
      `(("gfortran" ,gfortran)))
     (inputs
      `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
+       ;; XXX: These inputs are really dependencies of hdf4.
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)
+
        ("gctp" ,gctp)))
     (arguments
      `( #:configure-flags '("--enable-install-include" "--enable-shared"
@@ -3102,7 +3111,7 @@ parts of it.")
     (replacement openblas/fixed-num-threads)
 
     (name "openblas")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -3111,7 +3120,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "062kg4ny1ywz7k5grpb4pbf0hba0w6manbajwkmv4f477a31sxpl"))))
+         "1r2g9zzwq5dm8vjd19pxwggfvfzy56cvkmpmp5d014qr3svgmsap"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -4867,8 +4876,7 @@ assemble global function spaces on finite-element grids.")
          (add-after 'build 'build-tests
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "dune-grid") "/share:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                     (string-append (assoc-ref inputs "dune-grid") "/share"))
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)

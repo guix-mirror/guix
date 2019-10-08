@@ -72,6 +72,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -84,6 +85,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -544,7 +546,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.23")
+    (version "5.7.27")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -556,7 +558,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
+               "1fhv16zr46pxm1j8vb8x8mh3nwzglg01arz8gnazbmjqldr5idpq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -593,12 +595,15 @@ RDBMS systems (which are deep in functionality).")
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
+       ("libtirpc" ,libtirpc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
        ("zlib" ,zlib)))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
@@ -775,6 +780,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
+       ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
+       ,@(if (string-prefix? "armhf" (%current-system))
+             `(("gcc", gcc-5))
+             '())
        ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
@@ -786,7 +795,7 @@ Language.")
        ("zlib" ,zlib)))
     (propagated-inputs
      ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl)))
+     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -3061,7 +3070,7 @@ algorithm implementations.")
        ("python-pandas" ,python-pandas)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)

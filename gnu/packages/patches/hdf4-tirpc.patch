@@ -1,0 +1,33 @@
+Build with libtirpc on all architectures because glibc no longer provides
+SunRPC support.
+
+diff --git a/configure b/configure
+--- a/configure
++++ b/configure
+@@ -23635,10 +23635,13 @@
+   *-pc-cygwin*)
+     LIBS="$LIBS -ltirpc"
+     CPPFLAGS="$CPPFLAGS -I/usr/include/tirpc"  ;;
++  *-linux-gnu)
++    LIBS="$LIBS -ltirpc"
++    CPPFLAGS="$CPPFLAGS"  ;;
+   *) ;;
+ esac
+ 
+-if test "X$BUILD_XDR" != "Xyes"; then
++if test "X$BUILD_XDR" = "Xyes"; then
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -23693,9 +23696,9 @@
+   ## but we need to make sure that it is present on the system. Do that here,
+   ## The SunRPC of the glibc has been replaced by a TI-RPC (Transport Independent RPC) library for IPv6 support
+   case "$host" in
+-    *-pc-cygwin*)
++    *)
+       HAVE_RPC="yes"
+-      ac_fn_c_check_header_mongrel "$LINENO" "rpc.h" "ac_cv_header_rpc_h" "$ac_includes_default"
++      ac_fn_c_check_header_mongrel "$LINENO" "rpc/rpc.h" "ac_cv_header_rpc_h" "$ac_includes_default"
+ if test "x$ac_cv_header_rpc_h" = xyes; then :
+   :
+ else

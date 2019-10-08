@@ -43,6 +43,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages kerberos)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -225,6 +226,7 @@ anywhere.")
     (native-inputs
      `(("docbook-xsl" ,docbook-xsl)    ;for generating manpages
        ("xsltproc" ,libxslt)           ;ditto
+       ("rpcsvc-proto" ,rpcsvc-proto)  ;for 'rpcgen'
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python)))

@@ -1,0 +1,14 @@
+Require opt-in for NVEnc support.  Otherwise the default is true with no way
+to disable it.
+
+--- HandBrake-1.2.0/make/configure.py.orig	1969-12-31 18:00:00.000000000 -0600
++++ HandBrake-1.2.0/make/configure.py	2019-01-22 23:22:46.186959060 -0600
+@@ -1320,7 +1320,7 @@
+     grp.add_option( '--disable-ffmpeg-aac', dest="enable_ffmpeg_aac", action='store_false' )
+ 
+     h = IfHost( 'enable Nvidia NVEnc video encoder', '*-*-*', none=optparse.SUPPRESS_HELP ).value
+-    grp.add_option( '--enable-nvenc', dest="enable_nvenc", default=not (host.match( '*-*-darwin*' ) or host.match( '*-*-freebsd*' )), action='store_true', help=h )
++    grp.add_option( '--enable-nvenc', dest="enable_nvenc", default=False, action='store_true', help=h )
+ 
+ 
+     cli.add_option_group( grp )

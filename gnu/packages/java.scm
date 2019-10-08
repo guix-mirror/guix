@@ -152,6 +152,17 @@ and binary format defined in The Java Virtual Machine Specification.")
              "--disable-gjdoc")
        #:phases
        (modify-phases %standard-phases
+         ;; XXX: This introduces a memory leak as we remove a call to free up
+         ;; memory for the file name string.  This was necessary because of a
+         ;; runtime error that would have prevented us from building
+         ;; ant-bootstrap later.  See https://issues.guix.gnu.org/issue/36685
+         ;; for the gnarly details.
+         (add-after 'unpack 'remove-call-to-free
+           (lambda _
+             (substitute* "native/jni/java-io/java_io_VMFile.c"
+               (("result = cpio_isFileExists.*" m)
+                (string-append m "\n//")))
+             #t))
          (add-after 'install 'install-data
            (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
@@ -195,6 +206,11 @@ language.")
        ("jikes" ,jikes)
        ("libffi" ,libffi)
        ("zlib" ,zlib)))
+    ;; When built with a recent GCC and glibc the configure step of icedtea-6
+    ;; fails with an invalid instruction error.
+    (native-inputs
+     `(("gcc" ,gcc-5)
+       ("libc" ,glibc-2.28)))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
@@ -744,6 +760,9 @@ machine.")))
              (with-directory-excursion "openjdk"
                (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
                (rename-file "hg-checkout" "hotspot"))
+             (substitute* "patches/freetypeversion.patch"
+               (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                "REQUIRED_FREETYPE_VERSION = 2.10.1"))
              (substitute* "Makefile.in"
                (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
                 "echo \"trust me\";")
@@ -911,7 +930,6 @@ machine.")))
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5 or gcc-7
        ("gtk" ,gtk+-2)
        ("gawk" ,gawk)
        ("giflib" ,giflib)
@@ -1111,6 +1129,18 @@ bootstrapping purposes.")
                                             ((name . _) name))
                                           inputs))))
                  #t)))
+           (add-after 'unpack 'patch-bitrot
+             (lambda _
+               (substitute* '("patches/boot/revert-6973616.patch"
+                              "openjdk.src/jdk/make/common/shared/Defs-versions.gmk")
+                 (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                  "REQUIRED_FREETYPE_VERSION = 2.10.1"))
+               ;; As of attr 2.4.48 this header is no longer
+               ;; included.  It is provided by the libc instead.
+               (substitute* '("configure"
+                              "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
+                 (("attr/xattr.h") "sys/xattr.h"))
+               #t))
            (add-after 'unpack 'fix-x11-extension-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
@@ -1604,6 +1634,7 @@ IcedTea build harness.")
                  (delete 'patch-paths)
                  (delete 'set-additional-paths)
                  (delete 'patch-patches)
+                 (delete 'patch-bitrot)
                  ;; Prevent the keytool from recording the current time when
                  ;; adding certificates at build time.
                  (add-after 'unpack 'patch-keystore

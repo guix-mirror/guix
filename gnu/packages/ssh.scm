@@ -111,7 +111,7 @@ applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.8.2")
+   (version "1.9.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -119,21 +119,13 @@ applications.")
                    version ".tar.gz"))
             (sha256
              (base32
-              "0rqd37pc80nm2pz4sa2m9pfc48axys7jwq1l7z0vii5nyvchg0q8"))
-            (patches
-             (search-patches "libssh2-fix-build-failure-with-gcrypt.patch"))))
+              "1zfsz9nldakfz61d2j70pk29zlmj7w2vv46s9l3x2prhcgaqpyym"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
-   (arguments `(#:configure-flags `("--with-libgcrypt")
-                #:phases (modify-phases %standard-phases
-                           (replace 'bootstrap
-                             (lambda _
-                               (invoke "autoreconf" "-v"))))))
-   (native-inputs `(("autoconf" ,autoconf)
-                    ("automake" ,automake)))
+   (arguments `(#:configure-flags `("--with-libgcrypt")))
    (synopsis "Client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
@@ -142,24 +134,6 @@ into an application to perform many different tasks when communicating with
 a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
    (home-page "https://www.libssh2.org/")))
-
-;; XXX A hidden special obsolete libssh2 for temporary use in the curl package.
-;; <https://bugs.gnu.org/34927>
-(define-public libssh2-1.8.0
-  (hidden-package
-    (package
-      (inherit libssh2)
-      (version "1.8.0")
-      (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://www.libssh2.org/download/libssh2-"
-                      version ".tar.gz"))
-                (sha256
-                 (base32
-                  "1m3n8spv79qhjq4yi0wgly5s5rc8783jb1pyra9bkx1md0plxwrr"))
-                (patches
-                 (search-patches "libssh2-fix-build-failure-with-gcrypt.patch")))))))
 
 (define-public openssh
   (package

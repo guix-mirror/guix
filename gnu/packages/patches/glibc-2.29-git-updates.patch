@@ -1,0 +1,742 @@
+This file tracks updates from the "release/2.29/master" branch:
+https://sourceware.org/git/?p=glibc.git;a=shortlog;h=refs/heads/release/2.29/master
+
+Abridged commits are appended to this file.
+
+From ec894251ef11723d10df04fcfd7bd2030c6e43ff Mon Sep 17 00:00:00 2001
+From: Carlos O'Donell <carlos@redhat.com>
+Date: Mon, 21 Jan 2019 22:50:12 -0500
+Subject: [PATCH] nptl: Fix pthread_rwlock_try*lock stalls (Bug 23844)
+diff --git a/nptl/pthread_rwlock_tryrdlock.c b/nptl/pthread_rwlock_tryrdlock.c
+index 368862ff07..2f94f17f36 100644
+--- a/nptl/pthread_rwlock_tryrdlock.c
++++ b/nptl/pthread_rwlock_tryrdlock.c
+@@ -94,15 +94,22 @@ __pthread_rwlock_tryrdlock (pthread_rwlock_t *rwlock)
+       /* Same as in __pthread_rwlock_rdlock_full:
+ 	 We started the read phase, so we are also responsible for
+ 	 updating the write-phase futex.  Relaxed MO is sufficient.
+-	 Note that there can be no other reader that we have to wake
+-	 because all other readers will see the read phase started by us
+-	 (or they will try to start it themselves); if a writer started
+-	 the read phase, we cannot have started it.  Furthermore, we
+-	 cannot discard a PTHREAD_RWLOCK_FUTEX_USED flag because we will
+-	 overwrite the value set by the most recent writer (or the readers
+-	 before it in case of explicit hand-over) and we know that there
+-	 are no waiting readers.  */
+-      atomic_store_relaxed (&rwlock->__data.__wrphase_futex, 0);
++	 We have to do the same steps as a writer would when handing over the
++	 read phase to use because other readers cannot distinguish between
++	 us and the writer.
++	 Note that __pthread_rwlock_tryrdlock callers will not have to be
++	 woken up because they will either see the read phase started by us
++	 or they will try to start it themselves; however, callers of
++	 __pthread_rwlock_rdlock_full just increase the reader count and then
++	 check what state the lock is in, so they cannot distinguish between
++	 us and a writer that acquired and released the lock in the
++	 meantime.  */
++      if ((atomic_exchange_relaxed (&rwlock->__data.__wrphase_futex, 0)
++	  & PTHREAD_RWLOCK_FUTEX_USED) != 0)
++	{
++	  int private = __pthread_rwlock_get_private (rwlock);
++	  futex_wake (&rwlock->__data.__wrphase_futex, INT_MAX, private);
++	}
+     }
+ 
+   return 0;
+diff --git a/nptl/pthread_rwlock_trywrlock.c b/nptl/pthread_rwlock_trywrlock.c
+index fd37a71ce4..fae475cc70 100644
+--- a/nptl/pthread_rwlock_trywrlock.c
++++ b/nptl/pthread_rwlock_trywrlock.c
+@@ -46,8 +46,15 @@ __pthread_rwlock_trywrlock (pthread_rwlock_t *rwlock)
+ 	  &rwlock->__data.__readers, &r,
+ 	  r | PTHREAD_RWLOCK_WRPHASE | PTHREAD_RWLOCK_WRLOCKED))
+ 	{
++	  /* We have become the primary writer and we cannot have shared
++	     the PTHREAD_RWLOCK_FUTEX_USED flag with someone else, so we
++	     can simply enable blocking (see full wrlock code).  */
+ 	  atomic_store_relaxed (&rwlock->__data.__writers_futex, 1);
+-	  atomic_store_relaxed (&rwlock->__data.__wrphase_futex, 1);
++	  /* If we started a write phase, we need to enable readers to
++	     wait.  If we did not, we must not change it because other threads
++	     may have set the PTHREAD_RWLOCK_FUTEX_USED in the meantime.  */
++	  if ((r & PTHREAD_RWLOCK_WRPHASE) == 0)
++	    atomic_store_relaxed (&rwlock->__data.__wrphase_futex, 1);
+ 	  atomic_store_relaxed (&rwlock->__data.__cur_writer,
+ 	      THREAD_GETMEM (THREAD_SELF, tid));
+ 	  return 0;
+diff --git a/support/Makefile b/support/Makefile
+index 432cf2fe6c..c15b93647c 100644
+--- a/support/Makefile
++++ b/support/Makefile
+@@ -129,6 +129,7 @@ libsupport-routines = \
+   xpthread_mutexattr_settype \
+   xpthread_once \
+   xpthread_rwlock_init \
++  xpthread_rwlock_destroy \
+   xpthread_rwlock_rdlock \
+   xpthread_rwlock_unlock \
+   xpthread_rwlock_wrlock \
+diff --git a/support/xpthread_rwlock_destroy.c b/support/xpthread_rwlock_destroy.c
+new file mode 100644
+index 0000000000..6d6e953569
+--- /dev/null
++++ b/support/xpthread_rwlock_destroy.c
+@@ -0,0 +1,26 @@
++/* pthread_rwlock_destroy with error checking.
++   Copyright (C) 2019 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <support/xthread.h>
++
++void
++xpthread_rwlock_destroy (pthread_rwlock_t *rwlock)
++{
++  xpthread_check_return ("pthread_rwlock_destroy",
++                         pthread_rwlock_destroy (rwlock));
++}
+diff --git a/support/xthread.h b/support/xthread.h
+index 47c23235f3..9fe1f68b3b 100644
+--- a/support/xthread.h
++++ b/support/xthread.h
+@@ -84,6 +84,7 @@ void xpthread_rwlockattr_setkind_np (pthread_rwlockattr_t *attr, int pref);
+ void xpthread_rwlock_wrlock (pthread_rwlock_t *rwlock);
+ void xpthread_rwlock_rdlock (pthread_rwlock_t *rwlock);
+ void xpthread_rwlock_unlock (pthread_rwlock_t *rwlock);
++void xpthread_rwlock_destroy (pthread_rwlock_t *rwlock);
+ 
+ __END_DECLS
+ 
+From 44113a8ba24af23d7bbb174f9087a6b83a76289a Mon Sep 17 00:00:00 2001
+From: Stefan Liebler <stli@linux.ibm.com>
+Date: Thu, 7 Feb 2019 15:18:36 +0100
+Subject: [PATCH] Add compiler barriers around modifications of the robust
+ mutex list for pthread_mutex_trylock. [BZ #24180]
+diff --git a/nptl/pthread_mutex_trylock.c b/nptl/pthread_mutex_trylock.c
+index 8fe43b8f0f..bf2869eca2 100644
+--- a/nptl/pthread_mutex_trylock.c
++++ b/nptl/pthread_mutex_trylock.c
+@@ -94,6 +94,9 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+     case PTHREAD_MUTEX_ROBUST_ADAPTIVE_NP:
+       THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
+ 		     &mutex->__data.__list.__next);
++      /* We need to set op_pending before starting the operation.  Also
++	 see comments at ENQUEUE_MUTEX.  */
++      __asm ("" ::: "memory");
+ 
+       oldval = mutex->__data.__lock;
+       do
+@@ -119,7 +122,12 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	      /* But it is inconsistent unless marked otherwise.  */
+ 	      mutex->__data.__owner = PTHREAD_MUTEX_INCONSISTENT;
+ 
++	      /* We must not enqueue the mutex before we have acquired it.
++		 Also see comments at ENQUEUE_MUTEX.  */
++	      __asm ("" ::: "memory");
+ 	      ENQUEUE_MUTEX (mutex);
++	      /* We need to clear op_pending after we enqueue the mutex.  */
++	      __asm ("" ::: "memory");
+ 	      THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 	      /* Note that we deliberately exist here.  If we fall
+@@ -135,6 +143,8 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	      int kind = PTHREAD_MUTEX_TYPE (mutex);
+ 	      if (kind == PTHREAD_MUTEX_ROBUST_ERRORCHECK_NP)
+ 		{
++		  /* We do not need to ensure ordering wrt another memory
++		     access.  Also see comments at ENQUEUE_MUTEX. */
+ 		  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
+ 				 NULL);
+ 		  return EDEADLK;
+@@ -142,6 +152,8 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 
+ 	      if (kind == PTHREAD_MUTEX_ROBUST_RECURSIVE_NP)
+ 		{
++		  /* We do not need to ensure ordering wrt another memory
++		     access.  */
+ 		  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
+ 				 NULL);
+ 
+@@ -160,6 +172,9 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 							id, 0);
+ 	  if (oldval != 0 && (oldval & FUTEX_OWNER_DIED) == 0)
+ 	    {
++	      /* We haven't acquired the lock as it is already acquired by
++		 another owner.  We do not need to ensure ordering wrt another
++		 memory access.  */
+ 	      THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 	      return EBUSY;
+@@ -173,13 +188,20 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	      if (oldval == id)
+ 		lll_unlock (mutex->__data.__lock,
+ 			    PTHREAD_ROBUST_MUTEX_PSHARED (mutex));
++	      /* FIXME This violates the mutex destruction requirements.  See
++		 __pthread_mutex_unlock_full.  */
+ 	      THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 	      return ENOTRECOVERABLE;
+ 	    }
+ 	}
+       while ((oldval & FUTEX_OWNER_DIED) != 0);
+ 
++      /* We must not enqueue the mutex before we have acquired it.
++	 Also see comments at ENQUEUE_MUTEX.  */
++      __asm ("" ::: "memory");
+       ENQUEUE_MUTEX (mutex);
++      /* We need to clear op_pending after we enqueue the mutex.  */
++      __asm ("" ::: "memory");
+       THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+       mutex->__data.__owner = id;
+@@ -211,10 +233,15 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	}
+ 
+ 	if (robust)
+-	  /* Note: robust PI futexes are signaled by setting bit 0.  */
+-	  THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
+-			 (void *) (((uintptr_t) &mutex->__data.__list.__next)
+-				   | 1));
++	  {
++	    /* Note: robust PI futexes are signaled by setting bit 0.  */
++	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending,
++			   (void *) (((uintptr_t) &mutex->__data.__list.__next)
++				     | 1));
++	    /* We need to set op_pending before starting the operation.  Also
++	       see comments at ENQUEUE_MUTEX.  */
++	    __asm ("" ::: "memory");
++	  }
+ 
+ 	oldval = mutex->__data.__lock;
+ 
+@@ -223,12 +250,16 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	  {
+ 	    if (kind == PTHREAD_MUTEX_ERRORCHECK_NP)
+ 	      {
++		/* We do not need to ensure ordering wrt another memory
++		   access.  */
+ 		THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 		return EDEADLK;
+ 	      }
+ 
+ 	    if (kind == PTHREAD_MUTEX_RECURSIVE_NP)
+ 	      {
++		/* We do not need to ensure ordering wrt another memory
++		   access.  */
+ 		THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 		/* Just bump the counter.  */
+@@ -250,6 +281,9 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	  {
+ 	    if ((oldval & FUTEX_OWNER_DIED) == 0)
+ 	      {
++		/* We haven't acquired the lock as it is already acquired by
++		   another owner.  We do not need to ensure ordering wrt another
++		   memory access.  */
+ 		THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 		return EBUSY;
+@@ -270,6 +304,9 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	    if (INTERNAL_SYSCALL_ERROR_P (e, __err)
+ 		&& INTERNAL_SYSCALL_ERRNO (e, __err) == EWOULDBLOCK)
+ 	      {
++		/* The kernel has not yet finished the mutex owner death.
++		   We do not need to ensure ordering wrt another memory
++		   access.  */
+ 		THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 		return EBUSY;
+@@ -287,7 +324,12 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 	    /* But it is inconsistent unless marked otherwise.  */
+ 	    mutex->__data.__owner = PTHREAD_MUTEX_INCONSISTENT;
+ 
++	    /* We must not enqueue the mutex before we have acquired it.
++	       Also see comments at ENQUEUE_MUTEX.  */
++	    __asm ("" ::: "memory");
+ 	    ENQUEUE_MUTEX (mutex);
++	    /* We need to clear op_pending after we enqueue the mutex.  */
++	    __asm ("" ::: "memory");
+ 	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 
+ 	    /* Note that we deliberately exit here.  If we fall
+@@ -310,13 +352,20 @@ __pthread_mutex_trylock (pthread_mutex_t *mutex)
+ 						  PTHREAD_ROBUST_MUTEX_PSHARED (mutex)),
+ 			      0, 0);
+ 
++	    /* To the kernel, this will be visible after the kernel has
++	       acquired the mutex in the syscall.  */
+ 	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 	    return ENOTRECOVERABLE;
+ 	  }
+ 
+ 	if (robust)
+ 	  {
++	    /* We must not enqueue the mutex before we have acquired it.
++	       Also see comments at ENQUEUE_MUTEX.  */
++	    __asm ("" ::: "memory");
+ 	    ENQUEUE_MUTEX_PI (mutex);
++	    /* We need to clear op_pending after we enqueue the mutex.  */
++	    __asm ("" ::: "memory");
+ 	    THREAD_SETMEM (THREAD_SELF, robust_head.list_op_pending, NULL);
+ 	  }
+ 
+From c096b008d2671028c21ac8cf01f18a2083e73c44 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 8 Feb 2019 12:54:41 +0100
+Subject: [PATCH] nptl: Avoid fork handler lock for async-signal-safe fork [BZ
+ #24161]
+--- a/nptl/register-atfork.c
++++ b/nptl/register-atfork.c
+@@ -107,13 +107,14 @@ __unregister_atfork (void *dso_handle)
+ }
+ 
+ void
+-__run_fork_handlers (enum __run_fork_handler_type who)
++__run_fork_handlers (enum __run_fork_handler_type who, _Bool do_locking)
+ {
+   struct fork_handler *runp;
+ 
+   if (who == atfork_run_prepare)
+     {
+-      lll_lock (atfork_lock, LLL_PRIVATE);
++      if (do_locking)
++	lll_lock (atfork_lock, LLL_PRIVATE);
+       size_t sl = fork_handler_list_size (&fork_handlers);
+       for (size_t i = sl; i > 0; i--)
+ 	{
+@@ -133,7 +134,8 @@ __run_fork_handlers (enum __run_fork_handler_type who)
+ 	  else if (who == atfork_run_parent && runp->parent_handler)
+ 	    runp->parent_handler ();
+ 	}
+-      lll_unlock (atfork_lock, LLL_PRIVATE);
++      if (do_locking)
++	lll_unlock (atfork_lock, LLL_PRIVATE);
+     }
+ }
+ 
+diff --git a/sysdeps/nptl/fork.c b/sysdeps/nptl/fork.c
+index bd68f18b45..14b69a6f89 100644
+--- a/sysdeps/nptl/fork.c
++++ b/sysdeps/nptl/fork.c
+@@ -55,7 +55,7 @@ __libc_fork (void)
+      but our current fork implementation is not.  */
+   bool multiple_threads = THREAD_GETMEM (THREAD_SELF, header.multiple_threads);
+ 
+-  __run_fork_handlers (atfork_run_prepare);
++  __run_fork_handlers (atfork_run_prepare, multiple_threads);
+ 
+   /* If we are not running multiple threads, we do not have to
+      preserve lock state.  If fork runs from a signal handler, only
+@@ -134,7 +134,7 @@ __libc_fork (void)
+       __rtld_lock_initialize (GL(dl_load_lock));
+ 
+       /* Run the handlers registered for the child.  */
+-      __run_fork_handlers (atfork_run_child);
++      __run_fork_handlers (atfork_run_child, multiple_threads);
+     }
+   else
+     {
+@@ -149,7 +149,7 @@ __libc_fork (void)
+ 	}
+ 
+       /* Run the handlers registered for the parent.  */
+-      __run_fork_handlers (atfork_run_parent);
++      __run_fork_handlers (atfork_run_parent, multiple_threads);
+     }
+ 
+   return pid;
+diff --git a/sysdeps/nptl/fork.h b/sysdeps/nptl/fork.h
+index a1c3b26b68..99ed76034b 100644
+--- a/sysdeps/nptl/fork.h
++++ b/sysdeps/nptl/fork.h
+@@ -52,10 +52,12 @@ enum __run_fork_handler_type
+    - atfork_run_child: run all the CHILD_HANDLER and unlocks the internal
+ 		       lock.
+    - atfork_run_parent: run all the PARENT_HANDLER and unlocks the internal
+-			lock.  */
+-extern void __run_fork_handlers (enum __run_fork_handler_type who)
+-  attribute_hidden;
++			lock.
++
++   Perform locking only if DO_LOCKING.  */
++extern void __run_fork_handlers (enum __run_fork_handler_type who,
++				 _Bool do_locking) attribute_hidden;
+ 
+ /* C library side function to register new fork handlers.  */
+ extern int __register_atfork (void (*__prepare) (void),
+
+From 067fc32968b601493f4b247a3ac00caeea3f3d61 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Fri, 15 Feb 2019 21:27:01 +0100
+Subject: [PATCH] nptl: Fix invalid Systemtap probe in pthread_join [BZ #24211]
+diff --git a/nptl/pthread_join_common.c b/nptl/pthread_join_common.c
+index ecb78ffba5..366feb376b 100644
+--- a/nptl/pthread_join_common.c
++++ b/nptl/pthread_join_common.c
+@@ -86,6 +86,7 @@ __pthread_timedjoin_ex (pthread_t threadid, void **thread_return,
+       pthread_cleanup_pop (0);
+     }
+ 
++  void *pd_result = pd->result;
+   if (__glibc_likely (result == 0))
+     {
+       /* We mark the thread as terminated and as joined.  */
+@@ -93,7 +94,7 @@ __pthread_timedjoin_ex (pthread_t threadid, void **thread_return,
+ 
+       /* Store the return value if the caller is interested.  */
+       if (thread_return != NULL)
+-	*thread_return = pd->result;
++	*thread_return = pd_result;
+ 
+       /* Free the TCB.  */
+       __free_tcb (pd);
+@@ -101,7 +102,7 @@ __pthread_timedjoin_ex (pthread_t threadid, void **thread_return,
+   else
+     pd->joinid = NULL;
+ 
+-  LIBC_PROBE (pthread_join_ret, 3, threadid, result, pd->result);
++  LIBC_PROBE (pthread_join_ret, 3, threadid, result, pd_result);
+ 
+   return result;
+ }
+
+From bc6f839fb4066be83272c735e662850af2595777 Mon Sep 17 00:00:00 2001
+From: Stefan Liebler <stli@linux.ibm.com>
+Date: Wed, 13 Mar 2019 10:45:35 +0100
+Subject: [PATCH] Fix output of LD_SHOW_AUXV=1.
+diff --git a/elf/dl-sysdep.c b/elf/dl-sysdep.c
+index 5f6c679a3f..5d19b100b2 100644
+--- a/elf/dl-sysdep.c
++++ b/elf/dl-sysdep.c
+@@ -328,14 +328,9 @@ _dl_show_auxv (void)
+       assert (AT_NULL == 0);
+       assert (AT_IGNORE == 1);
+ 
+-      if (av->a_type == AT_HWCAP || av->a_type == AT_HWCAP2
+-	  || AT_L1I_CACHEGEOMETRY || AT_L1D_CACHEGEOMETRY
+-	  || AT_L2_CACHEGEOMETRY || AT_L3_CACHEGEOMETRY)
+-	{
+-	  /* These are handled in a special way per platform.  */
+-	  if (_dl_procinfo (av->a_type, av->a_un.a_val) == 0)
+-	    continue;
+-	}
++      /* Some entries are handled in a special way per platform.  */
++      if (_dl_procinfo (av->a_type, av->a_un.a_val) == 0)
++	continue;
+ 
+       if (idx < sizeof (auxvars) / sizeof (auxvars[0])
+ 	  && auxvars[idx].form != unknown)
+diff --git a/sysdeps/powerpc/dl-procinfo.h b/sysdeps/powerpc/dl-procinfo.h
+index f542f7318f..dfc3b33a72 100644
+--- a/sysdeps/powerpc/dl-procinfo.h
++++ b/sysdeps/powerpc/dl-procinfo.h
+@@ -225,7 +225,7 @@ _dl_procinfo (unsigned int type, unsigned long int word)
+ 	break;
+       }
+     default:
+-      /* This should not happen.  */
++      /* Fallback to generic output mechanism.  */
+       return -1;
+     }
+    _dl_printf ("\n");
+diff --git a/sysdeps/sparc/dl-procinfo.h b/sysdeps/sparc/dl-procinfo.h
+index 282b8c5117..64ee267fc7 100644
+--- a/sysdeps/sparc/dl-procinfo.h
++++ b/sysdeps/sparc/dl-procinfo.h
+@@ -31,8 +31,8 @@ _dl_procinfo (unsigned int type, unsigned long int word)
+ {
+   int i;
+ 
+-  /* Fallback to unknown output mechanism.  */
+-  if (type == AT_HWCAP2)
++  /* Fallback to generic output mechanism.  */
++  if (type != AT_HWCAP)
+     return -1;
+ 
+   _dl_printf ("AT_HWCAP:   ");
+diff --git a/sysdeps/unix/sysv/linux/arm/dl-procinfo.h b/sysdeps/unix/sysv/linux/arm/dl-procinfo.h
+index 66c00297b7..05c62c8687 100644
+--- a/sysdeps/unix/sysv/linux/arm/dl-procinfo.h
++++ b/sysdeps/unix/sysv/linux/arm/dl-procinfo.h
+@@ -67,7 +67,7 @@ _dl_procinfo (unsigned int type, unsigned long int word)
+ 	break;
+       }
+     default:
+-      /* This should not happen.  */
++      /* Fallback to generic output mechanism.  */
+       return -1;
+     }
+   _dl_printf ("\n");
+diff --git a/sysdeps/unix/sysv/linux/i386/dl-procinfo.h b/sysdeps/unix/sysv/linux/i386/dl-procinfo.h
+index 22b43431bc..0585cdaa9c 100644
+--- a/sysdeps/unix/sysv/linux/i386/dl-procinfo.h
++++ b/sysdeps/unix/sysv/linux/i386/dl-procinfo.h
+@@ -30,8 +30,8 @@ _dl_procinfo (unsigned int type, unsigned long int word)
+      in the kernel sources.  */
+   int i;
+ 
+-  /* Fallback to unknown output mechanism.  */
+-  if (type == AT_HWCAP2)
++  /* Fallback to generic output mechanism.  */
++  if (type != AT_HWCAP)
+     return -1;
+ 
+   _dl_printf ("AT_HWCAP:   ");
+diff --git a/sysdeps/unix/sysv/linux/s390/dl-procinfo.h b/sysdeps/unix/sysv/linux/s390/dl-procinfo.h
+index 19329a335b..d67fde368f 100644
+--- a/sysdeps/unix/sysv/linux/s390/dl-procinfo.h
++++ b/sysdeps/unix/sysv/linux/s390/dl-procinfo.h
+@@ -32,8 +32,8 @@ _dl_procinfo (unsigned int type, unsigned long int word)
+      in the kernel sources.  */
+   int i;
+ 
+-  /* Fallback to unknown output mechanism.  */
+-  if (type == AT_HWCAP2)
++  /* Fallback to generic output mechanism.  */
++  if (type != AT_HWCAP)
+     return -1;
+ 
+   _dl_printf ("AT_HWCAP:   ");
+
+From e28ad442e73b00ae2047d89c8cc7f9b2a0de5436 Mon Sep 17 00:00:00 2001
+From: TAMUKI Shoichi <tamuki@linet.gr.jp>
+Date: Sat, 2 Mar 2019 21:00:28 +0900
+Subject: [PATCH] ja_JP: Change the offset for Taisho gan-nen from 2 to 1 [BZ
+ #24162]
+diff --git a/localedata/locales/ja_JP b/localedata/locales/ja_JP
+index 1fd2fee44b..9bfbb2bb9b 100644
+--- a/localedata/locales/ja_JP
++++ b/localedata/locales/ja_JP
+@@ -14951,7 +14951,7 @@ era	"+:2:1990//01//01:+*:<U5E73><U6210>:%EC%Ey<U5E74>";/
+ 	"+:2:1927//01//01:1989//01//07:<U662D><U548C>:%EC%Ey<U5E74>";/
+ 	"+:1:1926//12//25:1926//12//31:<U662D><U548C>:%EC<U5143><U5E74>";/
+ 	"+:2:1913//01//01:1926//12//24:<U5927><U6B63>:%EC%Ey<U5E74>";/
+-	"+:2:1912//07//30:1912//12//31:<U5927><U6B63>:%EC<U5143><U5E74>";/
++	"+:1:1912//07//30:1912//12//31:<U5927><U6B63>:%EC<U5143><U5E74>";/
+ 	"+:6:1873//01//01:1912//07//29:<U660E><U6CBB>:%EC%Ey<U5E74>";/
+ 	"+:1:0001//01//01:1872//12//31:<U897F><U66A6>:%EC%Ey<U5E74>";/
+ 	"+:1:-0001//12//31:-*:<U7D00><U5143><U524D>:%EC%Ey<U5E74>"
+
+From 0941350c20a52447e53c5169354408e3db591f73 Mon Sep 17 00:00:00 2001
+From: TAMUKI Shoichi <tamuki@linet.gr.jp>
+Date: Tue, 2 Apr 2019 16:46:55 +0900
+Subject: [PATCH] ja_JP locale: Add entry for the new Japanese era [BZ #22964]
+diff --git a/localedata/locales/ja_JP b/localedata/locales/ja_JP
+index 9bfbb2bb9b..c64aaaff55 100644
+--- a/localedata/locales/ja_JP
++++ b/localedata/locales/ja_JP
+@@ -14946,7 +14946,9 @@ am_pm	"<U5348><U524D>";"<U5348><U5F8C>"
+ 
+ t_fmt_ampm "%p%I<U6642>%M<U5206>%S<U79D2>"
+ 
+-era	"+:2:1990//01//01:+*:<U5E73><U6210>:%EC%Ey<U5E74>";/
++era	"+:2:2020//01//01:+*:<U4EE4><U548C>:%EC%Ey<U5E74>";/
++	"+:1:2019//05//01:2019//12//31:<U4EE4><U548C>:%EC<U5143><U5E74>";/
++	"+:2:1990//01//01:2019//04//30:<U5E73><U6210>:%EC%Ey<U5E74>";/
+ 	"+:1:1989//01//08:1989//12//31:<U5E73><U6210>:%EC<U5143><U5E74>";/
+ 	"+:2:1927//01//01:1989//01//07:<U662D><U548C>:%EC%Ey<U5E74>";/
+ 	"+:1:1926//12//25:1926//12//31:<U662D><U548C>:%EC<U5143><U5E74>";/
+
+From 52b7cd6e9a701bb203023d56e84551943dc6a4c0 Mon Sep 17 00:00:00 2001
+From: Adam Maris <amaris@redhat.com>
+Date: Thu, 14 Mar 2019 16:51:16 -0400
+Subject: [PATCH] malloc: Check for large bin list corruption when inserting
+ unsorted chunk
+diff --git a/malloc/malloc.c b/malloc/malloc.c
+index feaf7ee0bf..ce771375b6 100644
+--- a/malloc/malloc.c
++++ b/malloc/malloc.c
+@@ -3876,10 +3876,14 @@ _int_malloc (mstate av, size_t bytes)
+                         {
+                           victim->fd_nextsize = fwd;
+                           victim->bk_nextsize = fwd->bk_nextsize;
++                          if (__glibc_unlikely (fwd->bk_nextsize->fd_nextsize != fwd))
++                            malloc_printerr ("malloc(): largebin double linked list corrupted (nextsize)");
+                           fwd->bk_nextsize = victim;
+                           victim->bk_nextsize->fd_nextsize = victim;
+                         }
+                       bck = fwd->bk;
++                      if (bck->fd != fwd)
++                        malloc_printerr ("malloc(): largebin double linked list corrupted (bk)");
+                     }
+                 }
+               else
+
+From c6177be4b92d5d7df50a785652d1912db511423e Mon Sep 17 00:00:00 2001
+From: Andreas Schwab <schwab@suse.de>
+Date: Wed, 15 May 2019 17:09:05 +0200
+Subject: [PATCH] Fix crash in _IO_wfile_sync (bug 20568)
+diff --git a/libio/wfileops.c b/libio/wfileops.c
+index 78f20486e5..bab2ba4892 100644
+--- a/libio/wfileops.c
++++ b/libio/wfileops.c
+@@ -508,11 +508,12 @@ _IO_wfile_sync (FILE *fp)
+ 	     generate the wide characters up to the current reading
+ 	     position.  */
+ 	  int nread;
+-
++	  size_t wnread = (fp->_wide_data->_IO_read_ptr
++			   - fp->_wide_data->_IO_read_base);
+ 	  fp->_wide_data->_IO_state = fp->_wide_data->_IO_last_state;
+ 	  nread = (*cv->__codecvt_do_length) (cv, &fp->_wide_data->_IO_state,
+ 					      fp->_IO_read_base,
+-					      fp->_IO_read_end, delta);
++					      fp->_IO_read_end, wnread);
+ 	  fp->_IO_read_ptr = fp->_IO_read_base + nread;
+ 	  delta = -(fp->_IO_read_end - fp->_IO_read_base - nread);
+ 	}
+
+From e3f828b8bd6e21922da8be8dee35edef09382d8d Mon Sep 17 00:00:00 2001
+From: Mark Wielaard <mark@klomp.org>
+Date: Wed, 15 May 2019 17:14:01 +0200
+Subject: [PATCH] dlfcn: Guard __dlerror_main_freeres with __libc_once_get
+ (once) [BZ#24476]
+diff --git a/dlfcn/dlerror.c b/dlfcn/dlerror.c
+index 27376582d0..ca42c126c1 100644
+--- a/dlfcn/dlerror.c
++++ b/dlfcn/dlerror.c
+@@ -72,9 +72,16 @@ __dlerror (void)
+   __libc_once (once, init);
+ 
+   /* Get error string.  */
+-  result = (struct dl_action_result *) __libc_getspecific (key);
+-  if (result == NULL)
+-    result = &last_result;
++  if (static_buf != NULL)
++    result = static_buf;
++  else
++    {
++      /* init () has been run and we don't use the static buffer.
++	 So we have a valid key.  */
++      result = (struct dl_action_result *) __libc_getspecific (key);
++      if (result == NULL)
++	result = &last_result;
++    }
+ 
+   /* Test whether we already returned the string.  */
+   if (result->returned != 0)
+@@ -230,13 +237,19 @@ free_key_mem (void *mem)
+ void
+ __dlerror_main_freeres (void)
+ {
+-  void *mem;
+   /* Free the global memory if used.  */
+   check_free (&last_result);
+-  /* Free the TSD memory if used.  */
+-  mem = __libc_getspecific (key);
+-  if (mem != NULL)
+-    free_key_mem (mem);
++
++  if (__libc_once_get (once) && static_buf == NULL)
++    {
++      /* init () has been run and we don't use the static buffer.
++	 So we have a valid key.  */
++      void *mem;
++      /* Free the TSD memory if used.  */
++      mem = __libc_getspecific (key);
++      if (mem != NULL)
++	free_key_mem (mem);
++    }
+ }
+ 
+ struct dlfcn_hook *_dlfcn_hook __attribute__((nocommon));
+
+From 95d66fecaabbc92ab53027e808f0fc1929c9f21a Mon Sep 17 00:00:00 2001
+From: Wilco Dijkstra <wdijkstr@arm.com>
+Date: Fri, 10 May 2019 16:38:21 +0100
+Subject: [PATCH] Fix tcache count maximum (BZ #24531)
+diff --git a/malloc/malloc.c b/malloc/malloc.c
+index ce771375b6..0abd653be2 100644
+--- a/malloc/malloc.c
++++ b/malloc/malloc.c
+@@ -2919,6 +2919,8 @@ typedef struct tcache_perthread_struct
+   tcache_entry *entries[TCACHE_MAX_BINS];
+ } tcache_perthread_struct;
+ 
++#define MAX_TCACHE_COUNT 127	/* Maximum value of counts[] entries.  */
++
+ static __thread bool tcache_shutting_down = false;
+ static __thread tcache_perthread_struct *tcache = NULL;
+ 
+@@ -5124,8 +5126,11 @@ static inline int
+ __always_inline
+ do_set_tcache_count (size_t value)
+ {
+-  LIBC_PROBE (memory_tunable_tcache_count, 2, value, mp_.tcache_count);
+-  mp_.tcache_count = value;
++  if (value <= MAX_TCACHE_COUNT)
++    {
++      LIBC_PROBE (memory_tunable_tcache_count, 2, value, mp_.tcache_count);
++      mp_.tcache_count = value;
++    }
+   return 1;
+ }
+ 
+From 34fb5f61d3c3f4b8fc616ea259fa19168b58ecd4 Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Wed, 13 Feb 2019 01:20:51 +0000
+Subject: [PATCH] libio: do not attempt to free wide buffers of legacy streams
+ [BZ #24228]
+diff --git a/libio/genops.c b/libio/genops.c
+index 2a0d9b81df..11a15549e8 100644
+--- a/libio/genops.c
++++ b/libio/genops.c
+@@ -789,9 +789,16 @@ _IO_unbuffer_all (void)
+ 
+   for (fp = (FILE *) _IO_list_all; fp; fp = fp->_chain)
+     {
++      int legacy = 0;
++
++#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
++      if (__glibc_unlikely (_IO_vtable_offset (fp) != 0))
++	legacy = 1;
++#endif
++
+       if (! (fp->_flags & _IO_UNBUFFERED)
+ 	  /* Iff stream is un-orientated, it wasn't used. */
+-	  && fp->_mode != 0)
++	  && (legacy || fp->_mode != 0))
+ 	{
+ #ifdef _IO_MTSAFE_IO
+ 	  int cnt;
+@@ -805,7 +812,7 @@ _IO_unbuffer_all (void)
+ 	      __sched_yield ();
+ #endif
+ 
+-	  if (! dealloc_buffers && !(fp->_flags & _IO_USER_BUF))
++	  if (! legacy && ! dealloc_buffers && !(fp->_flags & _IO_USER_BUF))
+ 	    {
+ 	      fp->_flags |= _IO_USER_BUF;
+ 
+@@ -816,7 +823,7 @@ _IO_unbuffer_all (void)
+ 
+ 	  _IO_SETBUF (fp, NULL, 0);
+ 
+-	  if (fp->_mode > 0)
++	  if (! legacy && fp->_mode > 0)
+ 	    _IO_wsetb (fp, NULL, NULL, 0);
+ 
+ #ifdef _IO_MTSAFE_IO
+@@ -827,7 +834,8 @@ _IO_unbuffer_all (void)
+ 
+       /* Make sure that never again the wide char functions can be
+ 	 used.  */
+-      fp->_mode = -1;
++      if (! legacy)
++	fp->_mode = -1;
+     }
+ 
+ #ifdef _IO_MTSAFE_IO
+

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,8 +95,9 @@
                          `(,name ,(package-derivation %store package))))
 
                        ;; Purposefully leave duplicate entries.
-                       (append %bootstrap-inputs
-                               (take %bootstrap-inputs 3))))
+                       (filter (compose package? cadr)
+                               (append %bootstrap-inputs-for-tests
+                                       (take %bootstrap-inputs-for-tests 3)))))
          (builder `(begin
                      (use-modules (guix build union))
                      (union-build (assoc-ref %outputs "out")

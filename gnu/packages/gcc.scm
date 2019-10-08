@@ -538,7 +538,7 @@ It also includes runtime support libraries for these languages.")))
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions and the gfortran definition
 ;;       accordingly.
-(define-public gcc gcc-5)
+(define-public gcc gcc-7)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
@@ -677,7 +677,7 @@ as the 'native-search-paths' field."
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object
   ;; that is not 'eq?' with GFORTRAN-5, and thus 'fold-packages' would
   ;; report two gfortran@5 that are in fact identical.
-  gfortran-5)
+  gfortran-7)
 
 (define-public gccgo-4.9
   (custom-gcc gcc-4.9 "gccgo" '("go")
@@ -741,7 +741,7 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc gcc-objc-5)
+(define-public gcc-objc gcc-objc-7)
 
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
@@ -797,7 +797,7 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
-(define-public gcc-objc++ gcc-objc++-5)
+(define-public gcc-objc++ gcc-objc++-7)
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
@@ -860,7 +860,7 @@ as the 'native-search-paths' field."
 (define-public isl
   (package
     (name "isl")
-    (version "0.19")
+    (version "0.21")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -868,10 +868,10 @@ as the 'native-search-paths' field."
                          version
                          ".tar.bz2")
                         (string-append %gcc-infrastructure
-                                       name "-" version ".tar.gz")))
+                                       name "-" version ".tar.bz2")))
              (sha256
               (base32
-               "1n4yz9rj24mv226hqbpw210ifvqkn8dgvpnkzf0s0lkq9zrjd5ym"))))
+               "0ng8l3q1px9lkzb44nxnzhh6fhdbclrwng9xs2v9m8yii8gs336i"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
@@ -898,7 +898,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
               (uri (list (string-append "http://isl.gforge.inria.fr/isl-"
                                         version ".tar.bz2")
                          (string-append %gcc-infrastructure
-                                        "isl-" version ".tar.gz")))
+                                        "isl-" version ".tar.bz2")))
               (sha256
                (base32
                 "06ybml6llhi4i56q90jnimbcgk1lpcdwhy9nxdxra2hxz3bhz2vb"))))))
@@ -915,7 +915,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
                          version
                          ".tar.bz2")
                         (string-append %gcc-infrastructure
-                                       name "-" version ".tar.gz")))
+                                       name "-" version ".tar.bz2")))
              (sha256
               (base32
                "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))

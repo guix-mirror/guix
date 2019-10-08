@@ -210,14 +210,14 @@ adding and extracting files to/from a tar archive.")
 (define-public gzip
   (package
    (name "gzip")
-   (version "1.9")
+   (version "1.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "16h8g4acy7fgfxcjacr3wijjsnixwsfd2jhz3zwdi2qrzi262l5f"))))
+              "1h6p374d3j8d4cdfydzls021xa2yby8myc0h8d6m8bc7k6ncq9c4"))))
    (build-system gnu-build-system)
    (synopsis "General file (de)compression (using lzw)")
    (arguments
@@ -433,6 +433,23 @@ compressed with pbzip2 can be decompressed with bzip2).")
              (base32
               "0ibi2zsfaz6l756spjwc5rayf4ckgc9hwmy8qinppcyk4svz64mm"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'move-static-lib
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out    (assoc-ref outputs "out"))
+                  (static (assoc-ref outputs "static")))
+              (mkdir-p (string-append static "/lib"))
+              (rename-file (string-append out "/lib/liblzma.a")
+                           (string-append static "/lib/liblzma.a"))
+              ;; Remove reference to the static library from the .la file
+              ;; so Libtool does the right thing when both the shared and
+              ;; static library is available.
+              (substitute* (string-append out "/lib/liblzma.la")
+                (("^old_library='liblzma.a'") "old_library=''"))
+              #t))))))
+   (outputs '("out" "static"))
    (synopsis "General-purpose data compression")
    (description
     "XZ Utils is free general-purpose data compression software with high
@@ -532,14 +549,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.20")
+    (version "1.21")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0319q59kb8g324wnj7xzbr7vvlx5bcs13lr34j0zb3kqlyjq2fy9"))))
+               "12qdcw5k1cx77brv9yxi1h4dzwibhfmdpigrj43nfk8nscwm12z4"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
@@ -718,7 +735,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.1.2")
+    (version "1.9.1")
     (source
      (origin
        (method git-fetch)
@@ -726,16 +743,23 @@ decompression of some loosely related file formats used by Microsoft.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "1jggv4lvfav53advnj0pwqgxzn868lrj8dc9zp73iwvqlj82mhmx"))
+         "1l1caxrik1hqs40vj3bpv1pikw6b74cfazv5c0v6g48zpcbmshl0"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
-    (native-inputs `(("valgrind" ,valgrind)))   ; for tests
+    (native-inputs `(("valgrind" ,valgrind)))    ;for tests
     (arguments
      `(#:test-target "test"
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+                  (delete 'configure)            ;no configure script
+                  (add-before 'check 'disable-broken-test
+                    (lambda _
+                      ;; XXX: test_install.sh fails when prefix is a subdirectory.
+                      (substitute* "tests/Makefile"
+                        (("^test: (.*) test-install" _ targets)
+                         (string-append "test: " targets)))
+                      #t)))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
@@ -1578,14 +1602,27 @@ recreates the stored directory structure by default.")
     (name "zziplib")
     (version "0.13.69")
     (home-page "https://github.com/gdraheim/zziplib")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
-       (sha256
-        (base32
-         "0i052a7shww0fzsxrdp3rd7g4mbzx7324a8ysbc0br7frpblcql4"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'make-files-writable
+                    (lambda _
+                      (for-each make-file-writable
+                                (find-files "test" #:directories? #t))
+                      #t)))
+
+       ;; XXX: The default test target attempts to download external resources and
+       ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
+       ;; To prevent confusing log messages, just run a simple zip test that works.
+       #:test-target "check-readme"))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
@@ -1785,7 +1822,18 @@ single-member files which can't be decompressed in parallel.")
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:tests? #f)) ;; No tests available.
+    `(#:tests? #f
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'glibc-is-already-a-system-library
+                   (lambda _
+                     ;; Prevent the build system from passing the glibc
+                     ;; header files to GCC as "system headers", because
+                     ;; it conflicts with the system headers already known
+                     ;; to GCC, causing #include_next failures.
+                     (substitute* "CMakeLists.txt"
+                       (("include_directories\\(SYSTEM \\$\\{iconv")
+                        "include_directories(${iconv"))
+                     #t)))))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))

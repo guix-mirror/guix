@@ -81,15 +81,14 @@ fundamental object types for C.")
 (define-public sssd
   (package
     (name "sssd")
-    (version "1.16.2")
+    (version "1.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://releases.pagure.org/SSSD/sssd/"
                                   "sssd-" version ".tar.gz"))
-              (patches (search-patches "sssd-curl-compat.patch"))
               (sha256
                (base32
-                "032ppk57qs1lnvz7pb7lw9ldwm9i1yagh9fzgqgn6na3bg61ynzy"))))
+                "0ngr7cgimyjc6flqkm7psxagp1m4jlzpqkn28pliifbmdg6i5ckb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -130,10 +129,6 @@ fundamental object types for C.")
            (lambda _
              (substitute* "src/tests/responder_socket_access-tests.c"
                (("tcase_add_test\\(tc_utils, resp_str_to_array_test\\);") ""))
-             ;; XXX: These tests fail with recent versions of ldb.  See
-             ;; <https://pagure.io/SSSD/sssd/issue/3563>.
-             (substitute* "Makefile.in"
-               (("sysdb-tests\\$\\(EXEEXT\\)") ""))
              #t)))))
     (inputs
      `(("augeas" ,augeas)

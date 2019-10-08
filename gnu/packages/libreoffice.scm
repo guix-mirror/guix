@@ -183,6 +183,8 @@ spreadsheets and presentations.")
       (sha256 (base32
                "0436gnidx45a9vx114hhh216jrh57mqb9zyssyjfadagmyz6hgrj"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-werror")))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
@@ -317,6 +319,8 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
           ;; FIXME: Man pages generation requires docbook-to-man; reenable
           ;; it once this is available.
           "--without-man"
+          ;; XXX: A configure test fails with GCC7 when including Boost headers.
+          "--disable-werror"
           ;; During configure, the boost headers are found, but linking
           ;; fails without the following flag.
           (string-append "--with-boost="
@@ -558,6 +562,8 @@ Java.")
       (sha256 (base32
                "17ai8ajffr0ixxmmcv3k5vgjlcsix38ldb4fw2arild70pbsrbb6"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-werror")))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
@@ -974,7 +980,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("cppunit" ,cppunit-1.14)
+       ("cppunit" ,cppunit)
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)

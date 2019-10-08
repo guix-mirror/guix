@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
@@ -41,6 +41,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -198,11 +199,7 @@
     (inputs
      `(("tzdata" ,tzdata)
        ("pcre" ,pcre)
-       ;; Building Go 1.10 with the Go 1.4 bootstrap, Thread Sanitizer from GCC
-       ;; 5 finds a data race during the the test suite of Go 1.10. With GCC 6,
-       ;; the race doesn't seem to be present:
-       ;; https://github.com/golang/go/issues/24046
-       ("gcc:lib" ,gcc-6 "lib")))
+       ("gcc:lib" ,gcc "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)
@@ -427,6 +424,12 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                        (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
                       (output (assoc-ref outputs "out")))
 
+                 ;; Having the patch in the 'patches' field of <origin> breaks
+                 ;; the 'TestServeContent' test due to the fact that
+                 ;; timestamps are reset.  Thus, apply it from here.
+                 (invoke "patch" "-p2" "--force" "-i"
+                         (assoc-ref inputs "go-skip-gc-test.patch"))
+
                  ;; A side effect of these test scripts is testing
                  ;; cgo. Attempts at using cgo flags and directives with these
                  ;; scripts as specified here (https://golang.org/cmd/cgo/)
@@ -578,6 +581,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
+       ("go-skip-gc-test.patch" ,(search-patch "go-skip-gc-test.patch"))
        ,@(match (%current-system)
            ((or "armhf-linux" "aarch64-linux")
             `(("gold" ,binutils-gold)))

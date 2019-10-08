@@ -90,7 +90,7 @@
                       (outputs '("out"))
                       (configure-flags ''())
                       (search-paths '())
-                      (build-type "plain")
+                      (build-type "debugoptimized")
                       (tests? #t)
                       (test-target "test")
                       (glib-or-gtk? #f)

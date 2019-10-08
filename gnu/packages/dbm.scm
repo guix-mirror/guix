@@ -33,73 +33,22 @@
 ;;; This module has been separated from (gnu packages databases) to reduce the
 ;;; number of module references for core packages.
 
-(define-public bdb
+(define-public bdb-4.8
   (package
     (name "bdb")
-    (version "6.2.32")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1yx8wzhch5wwh016nh0kfxvknjkafv6ybkqh6nh7lxx50jqf5id9"))))
-    (build-system gnu-build-system)
-    (outputs '("out"                             ; programs, libraries, headers
-               "doc"))                           ; 94 MiB of HTML docs
-    (arguments
-     '(#:tests? #f                            ; no check target available
-       #:disallowed-references ("doc")
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (doc (assoc-ref outputs "doc")))
-               ;; '--docdir' is not honored, so we need to patch.
-               (substitute* "dist/Makefile.in"
-                 (("docdir[[:blank:]]*=.*")
-                  (string-append "docdir = " doc "/share/doc/bdb")))
-
-               (invoke "./dist/configure"
-                       (string-append "--prefix=" out)
-                       (string-append "CONFIG_SHELL=" (which "bash"))
-                       (string-append "SHELL=" (which "bash"))
-
-                       ;; Remove 7 MiB of .a files.
-                       "--disable-static"
-
-                       ;; The compatibility mode is needed by some packages,
-                       ;; notably iproute2.
-                       "--enable-compat185"
-
-                       ;; The following flag is needed so that the inclusion
-                       ;; of db_cxx.h into C++ files works; it leads to
-                       ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                       "--enable-cxx")))))))
-    (synopsis "Berkeley database")
-    (description
-     "Berkeley DB is an embeddable database allowing developers the choice of
-SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
-    ;; files are covered by the 3-clause BSD license.
-    (license (list license:agpl3+ license:bsd-3))
-    (home-page
-     "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
-
-(define-public bdb-5.3
-  (package (inherit bdb)
-    (name "bdb")
-    (version "5.3.28")
+    (version "4.8.30")
     (license (license:non-copyleft "file://LICENSE"
                                    "See LICENSE in the distribution."))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))
+             (method url-fetch)
+             (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0ampbl2f0hb1nix195kz1syrqqxpmvnvnfvphambj7xjrl3iljg0"))))
+    (build-system gnu-build-system)
+    (outputs '("out"                             ; programs, libraries, headers
+               "doc"))                           ; 94 MiB of HTML docs
     (arguments
      `(#:tests? #f                            ; no check target available
        #:disallowed-references ("doc")
@@ -114,7 +63,8 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                  (("docdir[[:blank:]]*=.*")
                   (string-append "docdir = " doc "/share/doc/bdb")))
 
-               (invoke "./dist/configure"
+               (chdir "build_unix")
+               (invoke "../dist/configure"
                        (string-append "--prefix=" out)
                        (string-append "CONFIG_SHELL=" (which "bash"))
                        (string-append "SHELL=" (which "bash"))
@@ -134,19 +84,56 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                        ;; The following flag is needed so that the inclusion
                        ;; of db_cxx.h into C++ files works; it leads to
                        ;; HAVE_CXX_STDHEADERS being defined in db_cxx.h.
-                       "--enable-cxx")))))))))
+                       "--enable-cxx")))))))
+    (synopsis "Berkeley database")
+    (description
+     "Berkeley DB is an embeddable database allowing developers the choice of
+SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
+    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
+    ;; files are covered by the 3-clause BSD license.
+    (home-page
+     "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
+
+(define-public bdb-5.3
+  (package (inherit bdb-4.8)
+    (name "bdb")
+    (version "5.3.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
+
+(define-public bdb-6
+  (package (inherit bdb-4.8)
+    (name "bdb")
+    (version "6.2.32")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yx8wzhch5wwh016nh0kfxvknjkafv6ybkqh6nh7lxx50jqf5id9"))))
+    ;; Starting with version 6, BDB is distributed under AGPL3. Many individual
+    ;; files are covered by the 3-clause BSD license.
+    (license (list license:agpl3+ license:bsd-3))))
+
+(define-public bdb bdb-6)
 
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.18")
+    (version "1.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kimnv12bzjjhaqk4c8w2j6chdj9c6bg21lchaf7abcyfss2r0mq"))))
+                "1p4ibds6z3ccy65lkmd6lm7js0kwifvl53r0fd759fjxgr917rl6"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org.ua/software/gdbm")

@@ -57,7 +57,7 @@ test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
 
-boot_make="(@@ (gnu packages commencement) gnu-make-boot0)"
+boot_make="(@ (guix tests) gnu-make-for-tests)"
 boot_make_drv="`guix build -e "$boot_make" | grep -v -e -debug`"
 guix package --bootstrap -p "$profile" -i "$boot_make_drv"
 test -L "$profile-2-link"
