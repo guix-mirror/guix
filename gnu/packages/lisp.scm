@@ -7664,3 +7664,57 @@ implementation specific equivalent.")
 
 (define-public ecl-trivial-macroexpand-all
   (sbcl-package->ecl-package sbcl-trivial-macroexpand-all))
+
+(define-public sbcl-serapeum
+  (let ((commit "65837f8a0d65b36369ec8d000fff5c29a395b5fe")
+        (revision "0"))
+    (package
+      (name "sbcl-serapeum")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/ruricolist/serapeum")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0clwf81r2lvk1rbfvk91s9zmbkas9imf57ilqclw12mxaxlfsnbw"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("trivia" ,sbcl-trivia)
+         ("trivia.quasiquote" ,sbcl-trivia.quasiquote)
+         ("split-sequence" ,sbcl-split-sequence)
+         ("string-case" ,sbcl-string-case)
+         ("parse-number" ,sbcl-parse-number)
+         ("trivial-garbage" ,sbcl-trivial-garbage)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("named-readtables" ,sbcl-named-readtables)
+         ("fare-quasiquote-extras" ,cl-fare-quasiquote-extras)
+         ("parse-declarations-1.0" ,sbcl-parse-declarations)
+         ("global-vars" ,sbcl-global-vars)
+         ("trivial-file-size" ,sbcl-trivial-file-size)
+         ("trivial-macroexpand-all" ,sbcl-trivial-macroexpand-all)))
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)
+         ("local-time" ,sbcl-local-time)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'disable-failing-tests
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "serapeum.asd"
+                 ;; Guix does not have Quicklisp, and probably never will.
+                 (("\\(:file \"quicklisp\"\\)") ""))
+               #t)))))
+      (synopsis "Common Lisp utility library beyond Alexandria")
+      (description
+       "Serapeum is a conservative library of Common Lisp utilities.  It is a
+supplement, not a competitor, to Alexandria.")
+      (license license:expat))))
+
+(define-public cl-serapeum
+  (sbcl-package->cl-source-package sbcl-serapeum))
