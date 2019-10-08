@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -54,7 +54,7 @@
   ;; directory.
   (package
     (name "gnucash")
-    (version "3.5")
+    (version "3.7")
     (source
      (origin
        (method url-fetch)
@@ -62,7 +62,7 @@
                            version "/gnucash-" version ".tar.bz2"))
        (sha256
         (base32
-         "0ibp7g6aknvnkwkin97kv04ipksy3l18dsz9qysjb7h2nr8hnvbp"))))
+         "1d2qi3ny0bxa16ifh3465z1jgn1l0fmqk9dkph4ialw076gv13kb"))))
     (build-system cmake-build-system)
     (inputs
      `(("guile" ,guile-2.2)
@@ -124,13 +124,6 @@
            (lambda _
              (substitute* "libgnucash/scm/price-quotes.scm"
                (("\"perl\" \"-w\" ") ""))
-             #t))
-         ;; The test-stress-options unit test is known to fail, so we disable
-         ;; it (see: https://bugs.gnucash.org/show_bug.cgi?id=796877).
-         (add-after 'unpack 'disable-stress-options-test
-           (lambda _
-             (substitute* "gnucash/report/standard-reports/test/CMakeLists.txt"
-               (("test-stress-options.scm") ""))
              #t))
          ;; The qof test requires the en_US, en_GB, and fr_FR locales.
          (add-before 'check 'install-locales
@@ -207,7 +200,7 @@ installed as well as Yelp, the Gnome help browser.")
                              version "/gnucash-docs-" version revision ".tar.gz"))
          (sha256
           (base32
-           "0gjndyms413vilf5nqh39frs1691sxib8l7y9mbvcyirj1f8285k"))))
+           "1h4hm58ikffbhplx4gm8pzm9blfwqa1sz8yc2fqi21vs5v0ijf9r"))))
       (build-system gnu-build-system)
       ;; These are native-inputs because they are only required for building the
       ;; documentation.
@@ -231,17 +224,14 @@ to be read using the GNOME Yelp program.")
 (define-public gwenhywfar
   (package
     (name "gwenhywfar")
-    (version "4.20.0")
+    (version "4.20.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.aquamaniac.de/sites/download/"
-                           "download.php?package=01&release=208&file=02&"
-                           "dummy=gwenhywfar-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
+                           "download/108/gwenhywfar-" version ".tar.gz"))
        (sha256
-        (base32
-         "1c0g3f8jk6j693774ifslx2ds4ksabgbbalhhm9gk20kpamxm22s"))))
+        (base32 "0w1j7ppr1247kr3bpn4dqwyxp6cl8mfgr0m4782iz8f8a4ixjkqg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -271,17 +261,14 @@ applications and libraries.  It is used by AqBanking.")
 (define-public aqbanking
   (package
     (name "aqbanking")
-    (version "5.7.8")
+    (version "5.8.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://www.aquamaniac.de/sites/download/"
-                           "download.php?package=03&release=217&file=02&"
-                           "dummy=aqbanking-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.aquamaniac.de/rdm/attachments/"
+                           "download/105/aqbanking-" version ".tar.gz"))
        (sha256
-        (base32
-         "0s67mysskbiw1h1p0np4ph4351r7wq3nc873vylam7lsqi66xy0n"))))
+        (base32 "0m44n2hyxprxzq7ijkrd7rmhhl0r033s1k21ix9y67a0p9skl1mg"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Parallel building fails because aqhbci is required before it's

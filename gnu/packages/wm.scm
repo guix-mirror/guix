@@ -21,6 +21,8 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
+;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
+;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,9 +50,9 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gawk)
@@ -89,14 +91,13 @@
   #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages serialization)
-  #:use-module (gnu packages commencement) ; TODO remove when default gcc version >=7
   #:use-module (guix download)
   #:use-module (guix git-download))
 
 (define-public bspwm
   (package
     (name "bspwm")
-    (version "0.9.5")
+    (version "0.9.9")
     (source
      (origin
        (method git-fetch)
@@ -105,7 +106,7 @@
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "09h3g1rxxjyw861mk32lj774nmwkx8cwxq4wfgmf4dpbizymvhhr"))))
+        (base32 "1i7crmljk1vra1r6alxvj6lqqailjjcv0llyg7a0gm23rbv4a42g"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -126,6 +127,86 @@
     (synopsis "Tiling window manager based on binary space partitioning")
     (description "bspwm is a tiling window manager that represents windows as
 the leaves of a full binary tree.")
+    (license license:bsd-2)))
+
+(define-public herbstluftwm
+  (package
+    (name "herbstluftwm")
+    (version "0.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://herbstluftwm.org/tarballs/herbstluftwm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1kc18aj9j3nfz6fj4qxg9s3gg4jvn6kzi3ii24hfm0vqdpy17xnz"))
+       (file-name (string-append "herbstluftwm-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dzen"        ,dzen)
+       ("dmenu"       ,dmenu)
+       ("glib"        ,glib)
+       ("glibmm"      ,glibmm)
+       ("xterm"       ,xterm)
+       ("xsetroot"    ,xsetroot)
+       ("libx11"      ,libx11)
+       ("libxext"     ,libxext)
+       ("libxinerama" ,libxinerama)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'install-xsession
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/herbstluftwm.desktop")
+                 (lambda (port)
+                   (format port "~
+                     [Desktop Entry]~@
+                     Name=herbstluftwm~@
+                     Comment=Manual tiling window manager~@
+                     Exec=~a/bin/herbstluftwm~@
+                     Type=XSession~%" out)))
+               #t))))
+       #:tests? #f
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list "CC=gcc"
+               (string-append "PREFIX=''")
+               (string-append "DESTDIR=" out)
+               (string-append "BASHCOMPLETIONDIR=" out
+                              "/etc/bash_completion.d")))))
+    (synopsis "Tiling window manager for X11")
+    (description "herbstluftwm is a manual tiling window manager for X11 using
+Xlib and GLib.  Its main features are:
+
+@itemize
+@item
+The layout is based on splitting frames into subframes which can be split
+again or can be filled with windows (similar to i3 or musca).
+
+@item
+Tags (or workspaces or virtual desktops or …) can be added/removed at runtime.
+Each tag contains an own layout.
+
+@item
+Exactly one tag is viewed on each monitor.  The tags are monitor independent
+(similar to Xmonad).
+
+@item
+It is configured at runtime via IPC calls from @command{herbstclient}.  So the
+configuration file is just a script which is run on startup (similar to wmii
+or musca).
+
+@end itemize")
+    (home-page "https://herbstluftwm.org")
     (license license:bsd-2)))
 
 (define-public i3status
@@ -173,14 +254,14 @@ commands would.")
 (define-public i3-wm
   (package
     (name "i3-wm")
-    (version "4.17")
+    (version "4.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1z8qmkkq9dhqmqy8sjw3rnpnmnb8v7lr456bs0qzp23bgpj17gjf"))))
+                "0iazv2i2rgmakzh95pgj6iapyzn7bdpcbcd35a79mhlml4ry33qy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -271,42 +352,30 @@ Despite the name it should work with any X11 window manager.")
     (license license:bsd-3)))
 
 (define-public i3blocks
-  (let ((commit "ec050e79ad8489a6f8deb37d4c20ab10729c25c3")
-        (revision "2"))
-    (package
-      (name "i3blocks")
-      (version (string-append "1.4-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/vivien/i3blocks.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "1fx4230lmqa5rpzph68dwnpcjfaaqv5gfkradcr85hd1z8d1qp1b"))
-                (file-name (git-file-name name version))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
-         #:phases (modify-phases %standard-phases
-                    (add-after 'install 'install-doc
-                      (lambda* (#:key outputs #:allow-other-keys)
-                        (let* ((out (assoc-ref outputs "out"))
-                               (man1 (string-append out "/share/man/man1")))
-                          (install-file "docs/i3blocks.1" man1)
-                          #t))))))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/vivien/i3blocks")
-      (synopsis "Minimalist scheduler for status bar scripts")
-      (description "i3blocks executes your command lines and generates a
+  (package
+    (name "i3blocks")
+    (version "1.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vivien/i3blocks.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "0v8mwnm8qzpv6xnqvrk43s4b9iyld4naqzbaxk4ldq1qkhai0wsv"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/vivien/i3blocks")
+    (synopsis "Minimalist scheduler for status bar scripts")
+    (description "i3blocks executes your command lines and generates a
 status line from their output.  The generated line is meant to be displayed by
 the i3 window manager through its i3bar component, as an alternative to
 i3status.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public perl-anyevent-i3
   (package
@@ -931,6 +1000,34 @@ Keybinder works with GTK-based applications using the X Window System.")
     (home-page "https://github.com/kupferlauncher/keybinder")
     (license license:gpl2+)))
 
+(define-public keybinder-3.0
+  (package
+    (name "keybinder-3.0")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/kupferlauncher/keybinder"
+                           "/releases/download/" name "-v" version "/" name "-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0830ihwnalw59pp1xzrp37dn58n8vwb8zasnm4a1h81v3x7dxqz6"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Library for registering global keyboard shortcuts, Gtk3 version")
+    (description
+     "Keybinder is a library for registering global keyboard shortcuts.
+Keybinder works with GTK-based applications using the X Window System.")
+    (home-page "https://github.com/kupferlauncher/keybinder")
+    (license license:x11)))
+
 (define-public spectrwm
   (package
     (name "spectrwm")
@@ -1074,10 +1171,6 @@ project derived from the original Calm Window Manager.")
        ("glibmm" ,glibmm)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags (list
-                          (string-append "--prefix=" %output)
-                          "CXXFLAGS=-std=c++11")))
     (home-page "http://projects.l3ib.org/nitrogen/")
     (synopsis "Background browser and setter for X windows")
     (description
@@ -1143,7 +1236,7 @@ functionality to display information about the most commonly used services.")
 (define-public wlroots
   (package
     (name "wlroots")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method git-fetch)
@@ -1152,7 +1245,7 @@ functionality to display information about the most commonly used services.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1rdcmll5b8w242n6yfjpsaprq280ck2jmbz46dxndhignxgda7k4"))))
+        (base32 "0jzxa6psbc7ddxli7rbfqxmv1svxnis51l1vch4hb9fdixqm284a"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags '("-Dlogind-provider=elogind")
@@ -1188,7 +1281,7 @@ modules for building a Wayland compositor.")
 (define-public sway
   (package
     (name "sway")
-    (version "1.1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -1197,7 +1290,7 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0yhn9zdg9mzfhn97c440lk3pw6122nrhx0is5sqmvgr6p814f776"))))
+        (base32 "0vch2zm5afc76ia78p3vg71zr2fyda67l9hd2h0x1jq3mnvfbxnd"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -1322,7 +1415,7 @@ modules for building a Wayland compositor.")
 (define-public waybar
   (package
     (name "waybar")
-    (version "0.6.8")
+    (version "0.8.0")
     (source
      (origin
        (method git-fetch)
@@ -1331,19 +1424,11 @@ modules for building a Wayland compositor.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0wyp1p9r1k8jnjq8clp2fx8xa3f4lfrgbp67fxrjh9718p4br0ab"))))
+        (base32 "0s8ck7qxka0l91ayma6amp9sc8cidi43byqgzcavi3a6id983r1z"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
-       (list (string-append "-Dout=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; TODO remove when issue #30756 is resolved
-         (add-before 'configure 'fix-gcc
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t)))))
+       (list (string-append "-Dout=" (assoc-ref %outputs "out")))))
     (inputs `(("fmt" ,fmt)
               ("gtkmm" ,gtkmm)
               ("jsoncpp" ,jsoncpp)
@@ -1354,8 +1439,7 @@ modules for building a Wayland compositor.")
               ("pulseaudio" ,pulseaudio)
               ("spdlog" ,spdlog)
               ("wayland" ,wayland)))
-    (native-inputs `(("gcc-toolchain" ,gcc-toolchain-7) ; TODO remove when default gcc version >=7
-                     ("glib:bin" ,glib "bin")
+    (native-inputs `(("glib:bin" ,glib "bin")
                      ("pkg-config" ,pkg-config)
                      ("wayland-protocols" ,wayland-protocols)))
     (home-page "https://github.com/Alexays/Waybar")
@@ -1367,7 +1451,7 @@ Wlroots based compositors.")
 (define-public mako
   (package
     (name "mako")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -1376,7 +1460,7 @@ Wlroots based compositors.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "17azdc37xsbmx13fkfp23vg9lznrv9fh6nhagn64wdq3nhsxm3b6"))))
+        (base32 "11ymiq6cr2ma0iva1mqybn3j6k73bsc6lv6pcbdq7hkhd4f9b7j9"))))
     (build-system meson-build-system)
     (inputs `(("cairo" ,cairo)
               ("elogind" ,elogind)

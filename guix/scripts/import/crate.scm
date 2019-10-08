@@ -2,6 +2,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
+  #:use-module (srfi srfi-41)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (guix-import-crate))
@@ -43,6 +45,9 @@
   (display (G_ "Usage: guix import crate PACKAGE-NAME
 Import and convert the crate.io package for PACKAGE-NAME.\n"))
   (display (G_ "
+  -r, --recursive        import packages recursively"))
+  (newline)
+  (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
   -V, --version          display version information and exit"))
@@ -58,6 +63,9 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix import crate")))
+         (option '(#\r "recursive") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'recursive #t result)))
          %standard-import-options))
 
 
@@ -75,19 +83,34 @@ Import and convert the crate.io package for PACKAGE-NAME.\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
+
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
-                            (('argument . value)
-                             value)
-                            (_ #f))
+                             (('argument . value)
+                              value)
+                             (_ #f))
                            (reverse opts))))
     (match args
-      ((package-name)
-       (let ((sexp (crate->guix-package package-name)))
-         (unless sexp
-           (leave (G_ "failed to download meta-data for package '~a'~%")
-                  package-name))
-         sexp))
+      ((spec)
+       (define-values (name version)
+         (package-name->name+version spec))
+
+       (if (assoc-ref opts 'recursive)
+           (map (match-lambda
+                  ((and ('package ('name name) . rest) pkg)
+                   `(define-public ,(string->symbol name)
+                      ,pkg))
+                  (_ #f))
+                (reverse
+                 (stream->list
+                  (crate-recursive-import name))))
+           (let ((sexp (crate->guix-package name version)))
+             (unless sexp
+               (leave (G_ "failed to download meta-data for package '~a'~%")
+                      (if version
+                          (string-append name "@" version)
+                          name)))
+             sexp)))
       (()
        (leave (G_ "too few arguments~%")))
       ((many ...)

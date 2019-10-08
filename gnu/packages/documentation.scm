@@ -139,9 +139,9 @@ markup) can be customized and extended by the user.")
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex-2.6.1) ; sefaults with 2.6.4
-       ("libxml2" ,libxml2) ; provides xmllint for the tests
-       ("python" ,python-2))) ; for creating the documentation
+       ("flex" ,flex)
+       ("libxml2" ,libxml2)             ;provides xmllint for the tests
+       ("python" ,python)))             ;for creating the documentation
     (inputs
      `(("bash" ,bash-minimal)))
     (arguments

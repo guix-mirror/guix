@@ -28,7 +28,7 @@ index 2bced6766..208e583ba 100644
  }
  #endif  // HAVE_EEZE || __FreeBSD_kernel__
 diff --git a/src/bin/e_fm/e_fm_main_eeze.c b/src/bin/e_fm/e_fm_main_eeze.c
-index b7d9e3eba..d8a9eb82c 100644
+index 0fcffa249..c1921121d 100644
 --- a/src/bin/e_fm/e_fm_main_eeze.c
 +++ b/src/bin/e_fm/e_fm_main_eeze.c
 @@ -318,7 +318,7 @@ _e_fm_main_eeze_volume_eject(E_Volume *v)
@@ -59,10 +59,10 @@ index b7d9e3eba..d8a9eb82c 100644
       }
     v->guard = ecore_timer_loop_add(E_FM_MOUNT_TIMEOUT, (Ecore_Task_Cb)_e_fm_main_eeze_vol_mount_timeout, v);
 diff --git a/src/bin/e_sys.c b/src/bin/e_sys.c
-index 6781a9b5a..8cd140f1b 100644
+index 671fbcd9a..90ee04cf1 100644
 --- a/src/bin/e_sys.c
 +++ b/src/bin/e_sys.c
-@@ -653,20 +653,16 @@ _e_sys_cb_timer(void *data EINA_UNUSED)
+@@ -702,20 +702,16 @@ _e_sys_cb_timer(void *data EINA_UNUSED)
  
     e_init_status_set(_("Checking System Permissions"));
     snprintf(buf, sizeof(buf),
@@ -87,9 +87,9 @@ index 6781a9b5a..8cd140f1b 100644
     _e_sys_hibernate_check_exe = ecore_exe_run(buf, NULL);
     return ECORE_CALLBACK_CANCEL;
  }
-@@ -1079,8 +1075,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-         /* shutdown -h now */
+@@ -1134,8 +1130,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
          if (e_util_immortal_check()) return 0;
+         e_fm2_die();
          snprintf(buf, sizeof(buf),
 -                 "%s/enlightenment/utils/enlightenment_sys halt",
 -                 e_prefix_lib_get());
@@ -97,9 +97,9 @@ index 6781a9b5a..8cd140f1b 100644
          if (_e_sys_exe)
            {
               if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1114,8 +1109,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
-         /* shutdown -r now */
+@@ -1170,8 +1165,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
          if (e_util_immortal_check()) return 0;
+         e_fm2_die();
          snprintf(buf, sizeof(buf),
 -                 "%s/enlightenment/utils/enlightenment_sys reboot",
 -                 e_prefix_lib_get());
@@ -107,7 +107,7 @@ index 6781a9b5a..8cd140f1b 100644
          if (_e_sys_exe)
            {
               if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1148,8 +1142,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
+@@ -1204,8 +1198,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
        case E_SYS_SUSPEND:
          /* /etc/acpi/sleep.sh force */
          snprintf(buf, sizeof(buf),
@@ -117,7 +117,7 @@ index 6781a9b5a..8cd140f1b 100644
          if (_e_sys_exe)
            {
               if ((ecore_time_get() - _e_sys_begin_time) > 2.0)
-@@ -1208,8 +1201,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
+@@ -1265,8 +1258,7 @@ _e_sys_action_do(E_Sys_Action a, char *param EINA_UNUSED, Eina_Bool raw)
        case E_SYS_HIBERNATE:
          /* /etc/acpi/hibernate.sh force */
          snprintf(buf, sizeof(buf),
@@ -152,11 +152,26 @@ index 4b5148634..47d34b07f 100644
     autolock_exe = ecore_exe_run(eina_strbuf_string_get(buf), NULL);
     eina_strbuf_free(buf);
  
+diff --git a/src/modules/bluez5/e_mod_main.c b/src/modules/bluez5/e_mod_main.c
+index a581c466c..095d8f360 100644
+--- a/src/modules/bluez5/e_mod_main.c
++++ b/src/modules/bluez5/e_mod_main.c
+@@ -321,8 +321,8 @@ ebluez5_rfkill_unblock(const char *name)
+    if (buf)
+      {
+         eina_strbuf_append_printf
+-          (buf, "%s/enlightenment/utils/enlightenment_sys rfkill-unblock %s",
+-           e_prefix_lib_get(), name);
++          (buf, "/run/setuid-programs/enlightenment_sys rfkill-unblock %s",
++           name);
+         _rfkill_exe = ecore_exe_run(eina_strbuf_string_get(buf), NULL);
+         eina_strbuf_free(buf);
+      }
 diff --git a/src/modules/cpufreq/e_mod_main.c b/src/modules/cpufreq/e_mod_main.c
-index f4ba259b6..ae228bae3 100644
+index b66b365d8..bab0802cc 100644
 --- a/src/modules/cpufreq/e_mod_main.c
 +++ b/src/modules/cpufreq/e_mod_main.c
-@@ -1450,8 +1450,7 @@ e_modapi_init(E_Module *m)
+@@ -1452,8 +1452,7 @@ e_modapi_init(E_Module *m)
       }
     E_CONFIG_LIMIT(cpufreq_config->poll_interval, 1, 1024);
  
@@ -166,3 +181,40 @@ index f4ba259b6..ae228bae3 100644
     cpufreq_config->set_exe_path = strdup(buf);
     
     if (stat(buf, &st) < 0)
+diff --git a/src/modules/sysinfo/cpuclock/cpuclock.c b/src/modules/sysinfo/cpuclock/cpuclock.c
+index 938916e53..00d5067d0 100644
+--- a/src/modules/sysinfo/cpuclock/cpuclock.c
++++ b/src/modules/sysinfo/cpuclock/cpuclock.c
+@@ -80,8 +80,7 @@ _cpuclock_set_governor(const char *governor)
+    char buf[4096 + 100], exe[4096];
+    struct stat st;
+ 
+-   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
+-            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
++   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
+    if (stat(exe, &st) < 0) return;
+ 
+    snprintf(buf, sizeof(buf),
+@@ -108,8 +107,7 @@ _cpuclock_set_frequency(int frequency)
+    if (system(buf) != 0)
+      ERR("Error code from trying to run \"%s\"", buf);
+ #else
+-   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
+-            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
++   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
+    if (stat(exe, &st) < 0) return;
+    snprintf(buf, sizeof(buf),
+             "%s %s %i", exe, "frequency", frequency);
+@@ -127,8 +125,7 @@ _cpuclock_set_pstate(int min, int max, int turbo)
+    char buf[4096 + 100], exe[4096];
+    struct stat st;
+ 
+-   snprintf(exe, 4096, "%s/%s/cpuclock_sysfs",
+-            e_module_dir_get(sysinfo_config->module), MODULE_ARCH);
++   snprintf(exe, 4096, "/run/setuid-programs/cpuclock_sysfs");
+    if (stat(exe, &st) < 0) return;
+    snprintf(buf, sizeof(buf),
+             "%s %s %i %i %i", exe, "pstate", min, max, turbo);
+-- 
+2.23.0
+

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,9 +26,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 ftw)
+  #:use-module (rnrs io ports)
   #:re-export (%gc-roots-directory)
   #:export (gc-roots
-            user-owned?))
+            user-owned?
+            busy-store-items))
 
 ;;; Commentary:
 ;;;
@@ -118,3 +122,124 @@ are user-controlled symlinks stored anywhere on the file system."
 
       (= (stat:uid stat) uid))
     (const #f)))
+
+
+;;;
+;;; Listing "busy" store items: those referenced by currently running
+;;; processes.
+;;;
+
+(define %proc-directory
+  ;; Mount point of Linuxish /proc file system.
+  "/proc")
+
+(define (proc-file-roots dir file)
+  "Return a one-element list containing the file pointed to by DIR/FILE,
+or the empty list."
+  (or (and=> (false-if-exception (readlink (string-append dir "/" file)))
+             list)
+      '()))
+
+(define proc-exe-roots (cut proc-file-roots <> "exe"))
+(define proc-cwd-roots (cut proc-file-roots <> "cwd"))
+
+(define (proc-fd-roots dir)
+  "Return the list of store files referenced by DIR, which is a
+/proc/XYZ directory."
+  (let ((dir (string-append dir "/fd")))
+    (filter-map (lambda (file)
+                  (let ((target (false-if-exception
+                                 (readlink (string-append dir "/" file)))))
+                    (and target
+                         (string-prefix? "/" target)
+                         target)))
+                (or (scandir dir string->number) '()))))
+
+(define (proc-maps-roots dir)
+  "Return the list of store files referenced by DIR, which is a
+/proc/XYZ directory."
+  (define %file-mapping-line
+    (make-regexp "^.*[[:blank:]]+/([^ ]+)$"))
+
+  (call-with-input-file (string-append dir "/maps")
+    (lambda (maps)
+      (let loop ((line  (read-line maps))
+                 (roots '()))
+        (cond ((eof-object? line)
+               roots)
+              ((regexp-exec %file-mapping-line line)
+               =>
+               (lambda (match)
+                 (let ((file (string-append "/"
+                                            (match:substring match 1))))
+                   (loop (read-line maps)
+                         (cons file roots)))))
+              (else
+               (loop (read-line maps) roots)))))))
+
+(define (proc-environ-roots dir)
+  "Return the list of store files referenced by DIR/environ, where DIR is a
+/proc/XYZ directory."
+  (define split-on-nul
+    (cute string-tokenize <>
+          (char-set-complement (char-set #\nul))))
+
+  (define (rhs-file-names str)
+    (let ((equal (string-index str #\=)))
+      (if equal
+          (let* ((str (substring str (+ 1 equal)))
+                 (rx  (string-append (regexp-quote %store-directory)
+                                     "/[0-9a-z]{32}-[a-zA-Z0-9\\._+-]+")))
+            (map match:substring (list-matches rx str)))
+          '())))
+
+  (define environ
+    (string-append dir "/environ"))
+
+  (append-map rhs-file-names
+              (split-on-nul
+               (call-with-input-file environ
+                 get-string-all))))
+
+(define (referenced-files)
+  "Return the list of referenced store items."
+  (append-map (lambda (pid)
+                (let ((proc (string-append %proc-directory "/" pid)))
+                  (catch 'system-error
+                    (lambda ()
+                      (append (proc-exe-roots proc)
+                              (proc-cwd-roots proc)
+                              (proc-fd-roots proc)
+                              (proc-maps-roots proc)
+                              (proc-environ-roots proc)))
+                    (lambda args
+                      (let ((err (system-error-errno args)))
+                        (if (or (= ENOENT err)    ;TOCTTOU race
+                                (= ESRCH err)     ;ditto
+                                (= EACCES err))   ;not running as root
+                            '()
+                            (apply throw args)))))))
+              (scandir %proc-directory string->number
+                       (lambda (a b)
+                         (< (string->number a) (string->number b))))))
+
+(define canonicalize-store-item
+  (let* ((store  (string-append %store-directory "/"))
+         (prefix (string-length store)))
+    (lambda (file)
+      "Return #f if FILE is not a store item; otherwise, return the store file
+name without any sub-directory components."
+      (and (string-prefix? store file)
+           (string-append store
+                          (let ((base (string-drop file prefix)))
+                            (match (string-index base #\/)
+                              (#f    base)
+                              (slash (string-take base slash)))))))))
+
+(define (busy-store-items)
+  "Return the list of store items used by the currently running processes.
+
+This code should typically run as root; it allows the garbage collector to
+determine which store items must not be deleted."
+  (delete-duplicates
+   (filter-map canonicalize-store-item (referenced-files))))

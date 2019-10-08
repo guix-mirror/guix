@@ -119,8 +119,8 @@
 
 ;; Building from recent Git because the official 5.0 release no longer builds.
 (define-public dolphin-emu
-  (let ((commit "24718c1a389e4f51db974575cd15c372485b92e2")
-        (revision "6"))
+  (let ((commit "a9745400ec5cea7e55d94955afbdc44d1a4982d1")
+        (revision "7"))
     (package
       (name "dolphin-emu")
       (version (git-version "5.0" revision commit))
@@ -140,23 +140,18 @@
                            (string-append "Externals/" dir)))
                        '("LZO" "OpenAL" "Qt" "SFML" "curl" "ffmpeg"
                          "gettext" "hidapi" "libpng" "libusb" "mbedtls"
-                         "miniupnpc" "zlib"))
+                         "miniupnpc" "MoltenVK" "zlib"))
              ;; Clean up source.
              (for-each delete-file (find-files "." ".*\\.(bin|dsy|exe|jar|rar)$"))
              #t))
          (sha256
           (base32
-           "1d92rhnw307j3m6swk6bycb8fyc7vw2hfgakd5hpsc4qw65vxfq8"))))
+           "0ic08ii4vlqlmk2wkfc99jiy6nji2wfq56r7slj23wgvhznnaabk"))))
       (build-system cmake-build-system)
       (arguments
        '(#:tests? #f
          #:phases
          (modify-phases %standard-phases
-           (add-before 'configure 'fixgcc7
-             (lambda _
-               (unsetenv "C_INCLUDE_PATH")
-               (unsetenv "CPLUS_INCLUDE_PATH")
-               #t))
            (add-before 'configure 'generate-fonts&hardcore-libvulkan-path
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((fontfile
@@ -174,7 +169,11 @@
                  (copy-file "font_western.bin" "../Data/Sys/GC/font_western.bin")
                  (chdir "..")
                  (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
-                              (("libvulkan.so") libvulkan))
+                              (("\"vulkan\", 1") (string-append "\"vulkan\"")))
+                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
+                              (("\"vulkan\"") (string-append "\"" libvulkan "\"")))
+                 (substitute* "Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp"
+                              (("Common::DynamicLibrary::GetVersionedFilename") ""))
                  #t))))
 
          ;; The FindGTK2 cmake script only checks hardcoded directories for
@@ -190,7 +189,6 @@
                "-DX11_FOUND=1")))
       (native-inputs
        `(("pkg-config" ,pkg-config)
-         ("gcc" ,gcc-7) ; Building with gcc@5 doesn't work anymore.
          ("gettext" ,gnu-gettext)))
       (inputs
        `(("alsa-lib" ,alsa-lib)
@@ -401,7 +399,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 (define-public mgba
   (package
     (name "mgba")
-    (version "0.7.2")
+    (version "0.7.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -410,7 +408,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0g0xa1mzvan0sl1p5c784j2g5mcw9kd2b7wiahy06gy0c1nmbcnp"))
+                "1wrmwh50rv8bd328r8cisrihq6h90kx2bfb0vmjfbsd3l1jvgrgm"))
               (modules '((guix build utils)))
               (snippet
                ;; Make sure we don't use the bundled software.
@@ -485,16 +483,17 @@ and Game Boy Color games.")
          (delete 'configure)
          ;; Makefile is in a subdirectory.
          (add-before
-          'build 'cd-to-project-dir
+          'build 'chdir-to-project-directory
           (lambda _
-            (chdir "projects/unix"))))
+            (chdir "projects/unix")
+            #t)))
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "all" (string-append "PREFIX=" out)))
        ;; There are no tests.
        #:tests? #f))
     ;; As per the Makefile (in projects/unix/Makefile):
     (supported-systems '("i686-linux" "x86_64-linux"))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Nintendo 64 emulator core library")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -540,7 +539,7 @@ core library.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -585,7 +584,7 @@ SDL audio plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -627,7 +626,7 @@ SDL input plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -669,7 +668,7 @@ high-level emulation (HLE) RSP processor plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus SDL input plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -715,7 +714,7 @@ Z64 RSP processor plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -769,7 +768,7 @@ Arachnoid video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -819,7 +818,7 @@ Glide64 video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -867,7 +866,7 @@ Glide64MK2 video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Rice Video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -922,7 +921,7 @@ Rice Video plugin.")
                (string-append "APIDIR=" m64p "/include/mupen64plus")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
+    (home-page "https://www.mupen64plus.org/")
     (synopsis "Mupen64Plus Z64 video plugin")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
@@ -986,8 +985,8 @@ Z64 video plugin.")
                (string-append "COREDIR=" m64p "/lib/")))
        ;; There are no tests.
        #:tests? #f))
-    (home-page "http://www.mupen64plus.org/")
-    (synopsis "Mupen64Plus SDL input plugin")
+    (home-page "https://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus command line user interface")
     (description
      "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
 which is capable of accurately playing many games.  This package contains the
@@ -1049,7 +1048,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.7.7")
+    (version "1.7.8.4")
     (source
      (origin
        (method git-fetch)
@@ -1058,7 +1057,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "026720z0vpiwr4da7l2x2yinns09fmg6yxsib203xwnixj399azi"))))
+        (base32 "1i3i23xwvmck8k2fpalr49np7xjzfg507243mybqrljawlnbxvph"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1080,8 +1079,7 @@ emulation community.  It provides highly accurate emulation.")
                  (("/bin/true") (which "true")))
                ;; Use shared zlib.
                (substitute* '("libretro-common/file/archive_file_zlib.c"
-                              "libretro-common/streams/trans_stream_zlib.c"
-                              "network/httpserver/httpserver.c")
+                              "libretro-common/streams/trans_stream_zlib.c")
                  (("<compat/zlib.h>") "<zlib.h>"))
                ;; The configure script does not yet accept the extra arguments
                ;; (like ‘CONFIG_SHELL=’) passed by the default configure phase.
@@ -1185,7 +1183,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.211")
+    (version "0.214")
     (source
      (origin
        (method git-fetch)
@@ -1195,7 +1193,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0gbxgncbzmmplijg0c1ibwsb87fbmfvs1kjflh002yyx8yvfw83z"))
+         "129yk3ybcviscy2xk1mkkzxm4h4nh5p6ndfgqbmcx547p1s6hbja"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

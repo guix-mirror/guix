@@ -68,6 +68,7 @@ MODULES =					\
   guix/cpio.scm					\
   guix/deprecation.scm				\
   guix/docker.scm	   			\
+  guix/json.scm					\
   guix/records.scm				\
   guix/pki.scm					\
   guix/progress.scm				\
@@ -125,6 +126,7 @@ MODULES =					\
   guix/build-system/gnu.scm			\
   guix/build-system/guile.scm			\
   guix/build-system/haskell.scm			\
+  guix/build-system/julia.scm			\
   guix/build-system/linux-module.scm		\
   guix/build-system/node.scm			\
   guix/build-system/perl.scm			\
@@ -183,6 +185,7 @@ MODULES =					\
   guix/build/texlive-build-system.scm		\
   guix/build/waf-build-system.scm		\
   guix/build/haskell-build-system.scm		\
+  guix/build/julia-build-system.scm		\
   guix/build/linux-module-build-system.scm	\
   guix/build/store-copy.scm			\
   guix/build/json.scm				\
@@ -218,6 +221,7 @@ MODULES =					\
   guix/import/gnu.scm				\
   guix/import/hackage.scm			\
   guix/import/json.scm				\
+  guix/import/kde.scm				\
   guix/import/launchpad.scm   			\
   guix/import/opam.scm				\
   guix/import/print.scm				\
@@ -237,6 +241,7 @@ MODULES =					\
   guix/scripts/remove.scm			\
   guix/scripts/upgrade.scm			\
   guix/scripts/search.scm			\
+  guix/scripts/show.scm				\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
@@ -302,12 +307,20 @@ STORE_MODULES =					\
 MODULES += $(STORE_MODULES)
 
 # Internal modules with test suite support.
-dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
+dist_noinst_DATA =				\
+  guix/tests.scm				\
+  guix/tests/http.scm				\
+  guix/tests/git.scm
 
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/5.3-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-arm-veyron.conf       \
+  gnu/packages/aux-files/linux-libre/5.3-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.2-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.2-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/5.2-arm64.conf	\
@@ -386,6 +399,7 @@ SCM_TESTS =					\
   tests/file-systems.scm			\
   tests/gem.scm				\
   tests/gexp.scm				\
+  tests/git.scm					\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
   tests/grafts.scm				\
@@ -399,6 +413,7 @@ SCM_TESTS =					\
   tests/modules.scm				\
   tests/monads.scm				\
   tests/nar.scm				\
+  tests/networking.scm				\
   tests/opam.scm				\
   tests/packages.scm				\
   tests/pack.scm				\
@@ -523,8 +538,10 @@ EXTRA_DIST +=						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
+  etc/news.scm						\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
@@ -597,7 +614,7 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 # The above trick doesn't work for 'config.go' because both 'config.scm' and
 # 'config.go' are listed in $(nobase_nodist_guileobject_DATA).  Thus, give it
 # special treatment.
-install-data-hook: set-bootstrap-executable-permissions
+install-data-hook:
 	touch "$(DESTDIR)$(guileobjectdir)/guix/config.go"
 
 # Assuming Guix is already installed and the daemon is up and running, this
@@ -809,9 +826,11 @@ assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
-		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-cookbook.pot --exclude=guix-cookbook.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
+	     --exclude=binutils-boot-2.20*.patch				\
 	     -E "$(storedir)/[a-z0-9]{32}-" $(distdir) ;			\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
@@ -850,6 +869,39 @@ cuirass-jobs.scm: $(GOBJECTS)
 .PHONY: assert-final-inputs-self-contained
 .PHONY: clean-go make-go as-derivation
 .PHONY: update-guix-package update-NEWS release
+
+# Downloading up-to-date PO files.
+
+# make-download-po-rule DOMAIN DIRECTORY [FILE-NAME-PREFIX]
+define make-download-po-rule
+
+download-po.$(1):
+	if [ -f "$(top_srcdir)/$(2)/LINGUAS" ]; then				\
+	  LINGUAS="`grep -v '^[[:blank:]]*#' < $(top_srcdir)/$(2)/LINGUAS`" ;	\
+	else									\
+	  LINGUAS="`(cd $(top_srcdir)/$(2);					\
+	    for i in *.po; do echo $$$$i; done) | cut -d . -f 2`" ;		\
+	fi ;									\
+	for lang in $$$$LINGUAS; do						\
+	  if wget -nv -O "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp"		\
+	     "https://translationproject.org/latest/$(1)/$$$$lang.po" ;		\
+	  then									\
+	    mv "$(top_srcdir)/$(2)/$(3)$$$$lang.po"{.tmp,} ;			\
+	  else									\
+	    rm "$(top_srcdir)/$(2)/$(3)$$$$lang.po.tmp" ;			\
+	  fi ;									\
+	done
+
+.PHONY: download-po.$(1)
+
+endef
+
+$(eval $(call make-download-po-rule,guix,po/guix))
+$(eval $(call make-download-po-rule,guix-packages,po/packages))
+$(eval $(call make-download-po-rule,guix-manual,po/doc,guix-manual.))
+
+download-po: $(foreach domain,guix guix-packages guix-manual,download-po.$(domain))
+.PHONY: download-po
 
 ## -------------- ##
 ## Silent rules.  ##

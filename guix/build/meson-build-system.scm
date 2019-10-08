@@ -108,6 +108,7 @@ for example libraries only needed for the tests."
   ;; from the gnu-build-system.  If the glib-or-gtk? key is #f (the default)
   ;; then the extra phases will be removed again in (guix build-system meson).
   (modify-phases glib-or-gtk:%standard-phases
+    (delete 'bootstrap)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)

@@ -93,14 +93,14 @@ older or slower computers and embedded systems.")
 (define-public links
   (package
     (name "links")
-    (version "2.19")
+    (version "2.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
                 (sha256
                (base32
-                "02ls11c02p7xvsdjyb43rrzr850i1yly003r812z0w5vv5yqqxbh"))))
+                "0184g59cxxhg9dqg5gv66f30f1wg8sx957pp5rs7b8icnwnafa5v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -331,7 +331,7 @@ GUI.  It is based on PyQt5 and QtWebKit.")
 (define-public vimb
   (package
     (name "vimb")
-    (version "3.3.0")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -339,12 +339,11 @@ GUI.  It is based on PyQt5 and QtWebKit.")
              (url "https://github.com/fanglingsu/vimb/")
              (commit version)))
        (sha256
-        (base32
-         "1qg18z2gnsli9qgrqfhqfrsi6g9mcgr90w8yab28nxrq4aha6brf"))
+        (base32 "13q7mk1hhjri0s30a98r8ncy0skf6m6lrnbqaf0jimf6sbwgiirf"))
        (file-name (git-file-name name version))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           "DESTDIR="
                           (string-append "PREFIX=" %output))
@@ -365,28 +364,27 @@ vim editor and also easily configurable during runtime.  Vimb is mostly keyboard
 driven and does not detract you from your daily work.")
     (license license:gpl3+)))
 
-(define-public next-gtk-webkit
+(define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.2.2")
+    (version "1.3.4")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
-             (url "https://source.atlas.engineer/public/next")
+             ;; TODO: Mirror seems to hang, let's fallback to GitHub for now.
+             ;; (url "https://source.atlas.engineer/public/next")
+             (url "https://github.com/atlas-engineer/next")
              (commit version)))
        (sha256
         (base32
-         "1bif1k738knhifxhkn0d2x1m521zkx40pri44vyjqncp9r95hkbk"))
+         "00iqv4xarabl98gdl1rzqkc5v0vfljx1nawsxqsx9x3a9mnxmgxi"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:make-flags (list "gtk-webkit"
-                          (string-append
-                           "CC="
-                           (assoc-ref %build-inputs "gcc-7")
-                           "/bin/gcc")
+                          "CC=gcc"
                           (string-append "PREFIX=" %output))
        #:phases
        (modify-phases %standard-phases
@@ -397,10 +395,9 @@ driven and does not detract you from your daily work.")
     (inputs
      `(("glib-networking" ,glib-networking)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("webkitgtk" ,webkitgtk-2.24)))
+       ("webkitgtk" ,webkitgtk)))
     (native-inputs
-     `(("gcc-7" ,gcc-7) ; needed because webkitgtk-2.22 and above are compiled with gcc-7
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://next.atlas.engineer")
     (synopsis "Infinitely extensible web-browser (user interface only)")
     (description "Next is a keyboard-oriented, extensible web-browser
@@ -409,71 +406,173 @@ key-bindings, is fully configurable and extensible in Lisp, and has powerful
 features for productive professionals.")
     (license license:bsd-3)))
 
-(define-public sbcl-next
+(define sbcl-next-download-manager
   (package
     (inherit next-gtk-webkit)
-    (name "sbcl-next")
+    (name "sbcl-next-download-manager")
     (build-system asdf-build-system/sbcl)
-    (outputs '("out" "lib"))
     (arguments
-     `(#:tests? #f                      ; no tests
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'patch-platform-port-path
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "source/ports/gtk-webkit.lisp"
-                        (("\"next-gtk-webkit\"")
-                         (string-append "\"" (assoc-ref inputs "next-gtk-webkit")
-                                        "/bin/next-gtk-webkit\"")))))
-                  (add-before 'cleanup 'move-bundle
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (define lib (assoc-ref outputs "lib"))
-                      (define actual-fasl (string-append
-                                           lib
-                                           "/lib/sbcl/next.fasl"))
-                      (define expected-fasl (string-append
-                                             lib
-                                             "/lib/sbcl/next--system.fasl"))
-                      (copy-file actual-fasl expected-fasl)
-                      #t))
-                  (add-after 'create-symlinks 'build-program
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (build-program
-                       (string-append (assoc-ref outputs "out") "/bin/next")
-                       outputs
-                       #:entry-program '((next:start-with-port) 0))))
-                  (add-before 'build 'install-assets
-                    ;; Since the ASDF build system generates a new .asd with a
-                    ;; possibly suffixed and thus illegal version number, assets
-                    ;; should not be installed after the 'build phase or else
-                    ;; the illegal version will result in NIL in the .desktop
-                    ;; file.
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (with-output-to-file "version"
-                        (lambda _
-                          (format #t "~a" ,(package-version next-gtk-webkit))))
-                      (invoke "make" "install-assets"
-                              (string-append "PREFIX="
-                                             (assoc-ref outputs "out"))))))))
+     `(#:tests? #f                      ; Need online access.
+       #:asd-file "next.asd"
+       #:asd-system-name "next/download-manager"))
     (inputs
-     `(("next-gtk-webkit" ,next-gtk-webkit)
-       ;; Lisp libraries:
-       ("trivial-features" ,sbcl-trivial-features)
-       ("alexandria" ,sbcl-alexandria)
-       ("anaphora" ,sbcl-anaphora)
-       ("closer-mop" ,sbcl-closer-mop)
+     `(("cl-ppcre" ,sbcl-cl-ppcre)
+       ("dexador" ,sbcl-dexador)
        ("log4cl" ,sbcl-log4cl)
-       ("find-port" ,sbcl-find-port)
-       ("cl-strings" ,sbcl-cl-strings)
-       ("cl-string-match" ,sbcl-cl-string-match)
-       ("puri" ,sbcl-puri)
-       ("sqlite" ,sbcl-cl-sqlite)
-       ("parenscript" ,sbcl-parenscript)
-       ("cl-json" ,sbcl-cl-json)
-       ("swank" ,sbcl-slime-swank)
-       ("cl-markup" ,sbcl-cl-markup)
-       ("cl-css" ,sbcl-cl-css)
-       ("bordeaux-threads" ,sbcl-bordeaux-threads)
-       ("s-xml-rpc" ,sbcl-s-xml-rpc)
-       ("unix-opts" ,sbcl-unix-opts)
+       ("lparallel" ,sbcl-lparallel)
+       ("quri" ,sbcl-quri)
+       ("str" ,sbcl-cl-str)))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (download manager)")))
+
+(define sbcl-next-ring
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-ring")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/ring"))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (ring)")))
+
+(define sbcl-next-history-tree
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-history-tree")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/history-tree"))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (history-tree)")))
+
+(define sbcl-next-password-manager
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-password-manager")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/password-manager"))
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-annot" ,sbcl-cl-annot)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("str" ,sbcl-cl-str)
        ("trivial-clipboard" ,sbcl-trivial-clipboard)))
-    (synopsis "Infinitely extensible web-browser (with Lisp development files)")))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (password manager)")))
+
+(define-public next
+  (let ((version (package-version next-gtk-webkit)))
+    (package
+      (inherit next-gtk-webkit)
+      (name "next")
+      (build-system asdf-build-system/sbcl)
+      (outputs '("out" "lib"))
+      (arguments
+       `(#:tests? #f                    ; no tests
+         #:asd-system-name "next"
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'patch-platform-port-path
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "source/ports/gtk-webkit.lisp"
+                          (("\"next-gtk-webkit\"")
+                           (string-append "\"" (assoc-ref inputs "next-gtk-webkit")
+                                          "/bin/next-gtk-webkit\"")))
+                        #t))
+                    (add-after 'patch-platform-port-path 'patch-version
+                      ;; When the version is not just dot-separated numerals
+                      ;; (e.g. a git-commit version), Guix modifies the .asd with
+                      ;; an illegal version number, and then Next fails to query
+                      ;; it.  So we hard-code it here.
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (let ((version (format #f "~a" ,version)))
+                          (substitute* "source/global.lisp"
+                            (("version\\)\\)\\)")
+                             (string-append "version)))
+(setf +version+ \"" version "\")"))))
+                        #t))
+                    (add-before 'cleanup 'move-bundle
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (define lib (assoc-ref outputs "lib"))
+                        (define actual-fasl (string-append
+                                             lib
+                                             "/lib/sbcl/next.fasl"))
+                        (define expected-fasl (string-append
+                                               lib
+                                               "/lib/sbcl/next--system.fasl"))
+                        (copy-file actual-fasl expected-fasl)
+                        #t))
+                    (add-after 'create-symlinks 'build-program
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (build-program
+                         (string-append (assoc-ref outputs "out") "/bin/next")
+                         outputs
+                         #:entry-program '((next:entry-point) 0))))
+                    (add-before 'build 'install-assets
+                      ;; Since the ASDF build system generates a new .asd with a
+                      ;; possibly suffixed and thus illegal version number, assets
+                      ;; should not be installed after the 'build phase or else
+                      ;; the illegal version will result in NIL in the .desktop
+                      ;; file.
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (with-output-to-file "version"
+                          (lambda _
+                            (format #t "~a" ,(package-version next-gtk-webkit))))
+                        (invoke "make" "install-assets"
+                                (string-append "PREFIX="
+                                               (assoc-ref outputs "out"))))))))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-annot" ,sbcl-cl-annot)
+         ("cl-ansi-text" ,sbcl-cl-ansi-text)
+         ("cl-css" ,sbcl-cl-css)
+         ("cl-hooks" ,sbcl-cl-hooks)
+         ("cl-json" ,sbcl-cl-json)
+         ("cl-markup" ,sbcl-cl-markup)
+         ("cl-ppcre" ,sbcl-cl-ppcre)
+         ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-prevalence" ,sbcl-cl-prevalence)
+         ("closer-mop" ,sbcl-closer-mop)
+         ("dbus" ,cl-dbus)
+         ("dexador" ,sbcl-dexador)
+         ("ironclad" ,sbcl-ironclad)
+         ("local-time" ,sbcl-local-time)
+         ("log4cl" ,sbcl-log4cl)
+         ("lparallel" ,sbcl-lparallel)
+         ("mk-string-metrics" ,sbcl-mk-string-metrics)
+         ("parenscript" ,sbcl-parenscript)
+         ("quri" ,sbcl-quri)
+         ("sqlite" ,sbcl-cl-sqlite)
+         ("str" ,sbcl-cl-str)
+         ("swank" ,cl-slime-swank)
+         ("trivia" ,sbcl-trivia)
+         ("trivial-clipboard" ,sbcl-trivial-clipboard)
+         ("unix-opts" ,sbcl-unix-opts)
+         ;; Local deps
+         ("next-gtk-webkit" ,next-gtk-webkit)
+         ("next-download-manager" ,sbcl-next-download-manager)
+         ("next-ring" ,sbcl-next-ring)
+         ("next-history-tree" ,sbcl-next-history-tree)
+         ("next-password-manager" ,sbcl-next-password-manager)))
+      (native-inputs
+       `(("trivial-features" ,sbcl-trivial-features)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (synopsis "Infinitely extensible web-browser (with Lisp development files)"))))
+
+(define-public sbcl-next
+  (deprecated-package "sbcl-next" next))

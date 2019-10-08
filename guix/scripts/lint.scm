@@ -46,9 +46,9 @@
    (lambda (lint-warning)
      (let ((package (lint-warning-package lint-warning))
            (loc     (lint-warning-location lint-warning)))
-       (warning loc (G_ "~a@~a: ~a~%")
-                (package-name package) (package-version package)
-                (lint-warning-message lint-warning))))
+       (info loc (G_ "~a@~a: ~a~%")
+             (package-name package) (package-version package)
+             (lint-warning-message lint-warning))))
    warnings))
 
 (define (run-checkers package checkers)

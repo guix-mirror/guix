@@ -376,8 +376,8 @@ of SUBSTITUTABLES."
                                  (substitution-oracle
                                   store inputs #:mode mode)))
   "Given INPUTS, a list of derivation-inputs, return two values: the list of
-derivation to build, and the list of substitutable items that, together,
-allows INPUTS to be realized.
+derivations to build, and the list of substitutable items that, together,
+allow INPUTS to be realized.
 
 SUBSTITUTABLE-INFO must be a one-argument procedure similar to that returned
 by 'substitution-oracle'."
@@ -685,7 +685,7 @@ name of each input with that input's hash."
                              (make-derivation-input hash sub-drvs))))
                         inputs)))
        (make-derivation outputs
-                        (sort inputs
+                        (sort (delete-duplicates inputs)
                               (lambda (drv1 drv2)
                                 (string<? (derivation-input-derivation drv1)
                                           (derivation-input-derivation drv2))))

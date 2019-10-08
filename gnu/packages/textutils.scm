@@ -10,10 +10,10 @@
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2017 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2017,2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Meiyo Peng <meiyo.peng@gmail.com>
 ;;; Copyright © 2019 Yoshinori Arai <kumagusu08@gmail.com>
@@ -45,6 +45,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages java)
@@ -88,23 +89,18 @@ to DOS format and vice versa.")
 (define-public recode
   (package
     (name "recode")
-    (version "3.7.1")
+    (version "3.7.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/rrthomas/recode/releases/"
-                           "download/v" version "/" name "-" version ".tar.gz"))
+                           "download/v" version "/recode-" version ".tar.gz"))
        (sha256
-        (base32
-         "0215hfj0rhlh0grg91qfx75pp6z09bpv8211qdxqihniw7y9a4fs"))
-       (modules '((guix build utils)))
-       (snippet '(begin
-                   (delete-file "tests/Recode.c")
-                   #t))))
+        (base32 "0m59sd1ca0zw1aydpc3m8sw03nc885knmccqryg7byzmqs585ia6"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("python" ,python-2)
-       ("python2-cython" ,python2-cython)))
+     `(("python" ,python)
+       ("python-cython" ,python-cython)))
     (home-page "https://github.com/rrthomas/recode")
     (synopsis "Text encoding converter")
     (description "The Recode library converts files between character sets and
@@ -321,6 +317,112 @@ input bits thoroughly but are not suitable for cryptography.")
     ;; entails."
     (license license:public-domain)))
 
+(define-public ascii2binary
+  (package
+    (name "ascii2binary")
+    (version "2.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://billposer.org/Software/Downloads/"
+                           "ascii2binary-" version ".tar.bz2"))
+       (sha256
+        (base32 "0dc9fxcdmppbs9s06jvq61zbk552laxps0xyk098gj41697ihd96"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (home-page "https://billposer.org/Software/a2b.html")
+    (synopsis "Convert between ASCII, hexadecimal and binary representations")
+    (description "The two programs are useful for generating test data, for
+inspecting binary files, and for interfacing programs that generate textual
+output to programs that require binary input and conversely.  They can also be
+useful when it is desired to reformat numbers.
+
+@itemize
+
+@item @command{ascii2binary} reads input consisting of ascii or hexadecimal
+   representation numbers separated by whitespace and produces as output
+   the binary equivalents.  The type and precision of the binary output
+   is selected using command line flags.
+
+@item @command{binary2ascii} reads input consisting of binary numbers
+   and converts them to their ascii or hexadecimal representation.
+   Command line flags specify the type and size of the binary numbers
+   and provide control over the format of the output.
+   Unsigned integers may be written out in binary, octal, decimal,
+   or hexadecimal.
+
+   Signed integers may be written out only in binary or decimal.  Floating
+   point numbers may be written out only decimal, either in standard or
+   scientific notation.  (If you want to examine the binary representation
+   of floating point numbers, just treat the input as a sequence of unsigned
+   characters.)
+
+@end itemize")
+    (license license:gpl3)))
+
+(define-public uniutils
+  (package
+    (name "uniutils")
+    (version "2.27")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://billposer.org/Software/Downloads/"
+                           "uniutils-" version ".tar.bz2"))
+       (sha256
+        (base32 "19w1510w87gx7n4qy3zsb0m467a4rn5scvh4ajajg7jh6x5xri08"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-dependency-tracking")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'fix-paths
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (a2b (assoc-ref inputs "ascii2binary"))
+                   (iconv (assoc-ref inputs "libiconv")))
+               (substitute* "utf8lookup"
+                 (("^ascii2binary ") (string-append a2b "/bin/ascii2binary "))
+                 (("^uniname ") (string-append out "/bin/uniname "))
+                 (("^iconv ") (string-append iconv "/bin/iconv ")))
+             #t))))))
+    (inputs
+     `(("ascii2binary" ,ascii2binary)
+       ("libiconv" ,libiconv)))
+    (home-page "https://billposer.org/Software/unidesc.html")
+    (synopsis "Find out what is in a Unicode file")
+    (description "Useful tools when working with Unicode files when one
+doesn't know the writing system, doesn't have the necessary font, needs to
+inspect invisible characters, needs to find out whether characters have been
+combined or in what order they occur, or needs statistics on which characters
+occur.
+
+@itemize
+
+@item @command{uniname} defaults to printing the character offset of each
+character, its byte offset, its hex code value, its encoding, the glyph
+itself, and its name.  It may also be used to validate UTF-8 input.
+
+@item @command{unidesc} reports the character ranges to which different
+portions of the text belong.   It can also be used to identify Unicode encodings
+(e.g. UTF-16be) flagged by magic numbers.
+
+@item @command{unihist} generates a histogram of the characters in its input.
+
+@item @command{ExplicateUTF8} is intended for debugging or for learning about
+Unicode.  It determines and explains the validity of a sequence of bytes as a
+UTF8 encoding.
+
+@item @command{utf8lookup} provides a handy way to look up Unicode characters
+from the command line.
+
+@item @command{unireverse} reverse each line of UTF-8 input
+character-by-character.
+
+@end itemize")
+    (license license:gpl3)))
+
 (define-public libconfig
   (package
     (name "libconfig")
@@ -368,7 +470,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 (define-public oniguruma
   (package
     (name "oniguruma")
-    (version "6.9.2")
+    (version "6.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/kkos/"
@@ -376,7 +478,7 @@ as existing hashing techniques, with provably negligible risk of collisions.")
                                   "/onig-" version ".tar.gz"))
               (sha256
                (base32
-                "0slp4hpw9qxk4xhn7abyw7065sd355xwkyfq72glxczcjsqxsynv"))))
+                "0pvj37r1rd5h5vw99mdk8z4k44gq1ldwrapkamdiicksdfkr4ndb"))))
     (build-system gnu-build-system)
     (home-page "https://github.com/kkos/oniguruma")
     (synopsis "Regular expression library")
@@ -384,20 +486,6 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 characteristic of this library is that different character encoding for every
 regular expression object can be specified.")
     (license license:bsd-2)))
-
-;; PHP < 7.3.0 requires this old version.  Remove once no longer needed.
-(define-public oniguruma-5
-  (package
-    (inherit oniguruma)
-    (version "5.9.6")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/kkos/"
-                                  "oniguruma/releases/download/v" version
-                                  "/onig-" version ".tar.gz"))
-              (sha256
-               (base32
-                "19s79vsclqn170mw0ajwv7j37qsbn4f1yjz3yavnhvva6c820r6m"))))))
 
 (define-public antiword
   (package
@@ -785,6 +873,44 @@ indentation.
 @end itemize\n")
     (home-page "http://docx2txt.sourceforge.net")
     (license license:gpl3+)))
+
+(define-public odt2txt
+  (package
+    (name "odt2txt")
+    (version "0.5")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url "https://github.com/dstosberg/odt2txt/")
+               (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+         (base32
+          "0im3kzvhxkjlx57w6h13mc9584c74ma1dyymgvpq2y61av3gc35v"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no make check
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://github.com/dstosberg/odt2txt/")
+    (synopsis "Converter from OpenDocument Text to plain text")
+    (description "odt2txt is a command-line tool which extracts the text out
+of OpenDocument Texts, as produced by OpenOffice.org, KOffice, StarOffice and
+others.
+
+odt2txt can also extract text from some file formats similar to OpenDocument
+Text, such as OpenOffice.org XML (*.sxw), which was used by OpenOffice.org
+version 1.x and older StarOffice versions.  To a lesser extent, odt2txt may be
+useful to extract content from OpenDocument spreadsheets (*.ods) and
+OpenDocument presentations (*.odp).")
+    (license license:gpl2)))
 
 (define-public opencc
   (package

@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +121,10 @@
             roll-back*
             switch-to-generation*
             delete-generation*
+
+            %default-message-language
+            current-message-language
+
             run-guix-command
             run-guix
             guix-main))
@@ -426,6 +431,20 @@ exiting.  ARGS is the list of arguments received by the 'throw' handler."
   "Capture 'unbound-variable' exceptions in the dynamic extent of EXP... and
 report them in a user-friendly way."
   (call-with-unbound-variable-handling (lambda () exp ...)))
+
+(define %default-message-language
+  ;; Default language to use for messages.
+  (make-parameter "en"))
+
+(define (current-message-language)
+  "Return the language used for messages according to the current locale.
+Return %DEFAULT-MESSAGE-LANGUAGE if that information could not be obtained.  The
+result is an ISO-639-2 language code such as \"ar\", without the territory
+part."
+  (let ((locale (setlocale LC_MESSAGES)))
+    (match (string-index locale #\_)
+      (#f    locale)
+      (index (string-take locale index)))))
 
 (define (install-locale)
   "Install the current locale settings."
@@ -848,6 +867,17 @@ warning."
     ('profile-hook #t)
     (_ #f)))
 
+(define (colorize-store-file-name file)
+  "Colorize FILE, a store file name, such that the hash part is less prominent
+that the rest."
+  (let ((len    (string-length file))
+        (prefix (+ (string-length (%store-prefix)) 32 2)))
+    (if (< len prefix)
+        file
+        (string-append (colorize-string (string-take file prefix)
+                                        (color DARK))
+                       (string-drop file prefix)))))
+
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t)
                              (mode (build-mode normal)))
@@ -870,6 +900,11 @@ check and report what is prerequisites are available for download."
     (if use-substitutes?
         (substitution-oracle store inputs #:mode mode)
         (const #f)))
+
+  (define colorized-store-item
+    (if (color-output? (current-error-port))
+        colorize-store-file-name
+        identity))
 
   (let*-values (((build download)
                  (derivation-build-plan store inputs
@@ -916,7 +951,7 @@ check and report what is prerequisites are available for download."
                   (N_ "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
-                  (null? build) build)
+                  (null? build) (map colorized-store-item build))
           (if display-download-size?
               (format (current-error-port)
                       ;; TRANSLATORS: "MB" is for "megabyte"; it should be
@@ -924,29 +959,31 @@ check and report what is prerequisites are available for download."
                       (G_ "~:[~,1h MB would be downloaded:~%~{   ~a~%~}~;~]")
                       (null? download)
                       download-size
-                      (map substitutable-path download))
+                      (map (compose colorized-store-item substitutable-path)
+                           download))
               (format (current-error-port)
                       (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
                           "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download)))
+                      (map (compose colorized-store-item substitutable-path)
+                           download)))
           (format (current-error-port)
                   (N_ "~:[The following graft would be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts would be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft)
+                  (null? graft) (map colorized-store-item graft))
           (format (current-error-port)
                   (N_ "~:[The following profile hook would be built:~%~{   ~a~%~}~;~]"
                       "~:[The following profile hooks would be built:~%~{   ~a~%~}~;~]"
                       (length hook))
-                  (null? hook) hook))
+                  (null? hook) (map colorized-store-item hook)))
         (begin
           (format (current-error-port)
                   (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
-                  (null? build) build)
+                  (null? build) (map colorized-store-item build))
           (if display-download-size?
               (format (current-error-port)
                       ;; TRANSLATORS: "MB" is for "megabyte"; it should be
@@ -954,23 +991,25 @@ check and report what is prerequisites are available for download."
                       (G_ "~:[~,1h MB will be downloaded:~%~{   ~a~%~}~;~]")
                       (null? download)
                       download-size
-                      (map substitutable-path download))
+                      (map (compose colorized-store-item substitutable-path)
+                           download))
               (format (current-error-port)
                       (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
                           "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
                           (length download))
                       (null? download)
-                      (map substitutable-path download)))
+                      (map (compose colorized-store-item substitutable-path)
+                           download)))
           (format (current-error-port)
                   (N_ "~:[The following graft will be made:~%~{   ~a~%~}~;~]"
                       "~:[The following grafts will be made:~%~{   ~a~%~}~;~]"
                       (length graft))
-                  (null? graft) graft)
+                  (null? graft) (map colorized-store-item graft))
           (format (current-error-port)
                   (N_ "~:[The following profile hook will be built:~%~{   ~a~%~}~;~]"
                       "~:[The following profile hooks will be built:~%~{   ~a~%~}~;~]"
                       (length hook))
-                  (null? hook) hook)))
+                  (null? hook) (map colorized-store-item hook))))
 
     (check-available-space installed-size)
 
@@ -1281,33 +1320,32 @@ weight of this field in the final score.
 
 A score of zero means that OBJ does not match any of REGEXPS.  The higher the
 score, the more relevant OBJ is to REGEXPS."
-  (define (score str)
-    (define scores
-      (map (lambda (regexp)
-             (fold-matches regexp str 0
-                           (lambda (m score)
-                             (+ score
-                                (if (string=? (match:substring m) str)
-                                    5             ;exact match
-                                    1)))))
-           regexps))
+  (define (score regexp str)
+    (fold-matches regexp str 0
+                  (lambda (m score)
+                    (+ score
+                       (if (string=? (match:substring m) str)
+                           5             ;exact match
+                           1)))))
 
+  (define (regexp->score regexp)
+    (let ((score-regexp (lambda (str) (score regexp str))))
+      (fold (lambda (metric relevance)
+              (match metric
+                ((field . weight)
+                 (match (field obj)
+                   (#f  relevance)
+                   ((? string? str)
+                    (+ relevance (* (score-regexp str) weight)))
+                   ((lst ...)
+                    (+ relevance (* weight (apply + (map score-regexp lst)))))))))
+            0 metrics)))
+
+  (let ((scores (map regexp->score regexps)))
     ;; Return zero if one of REGEXPS doesn't match.
     (if (any zero? scores)
         0
-        (reduce + 0 scores)))
-
-  (fold (lambda (metric relevance)
-          (match metric
-            ((field . weight)
-             (match (field obj)
-               (#f  relevance)
-               ((? string? str)
-                (+ relevance (* (score str) weight)))
-               ((lst ...)
-                (+ relevance (* weight (apply + (map score lst)))))))))
-        0
-        metrics))
+        (reduce + 0 scores))))
 
 (define %package-metrics
   ;; Metrics used to compute the "relevance score" of a package against a set

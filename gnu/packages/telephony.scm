@@ -284,7 +284,7 @@ supporting cryptographic kernel.")
     (home-page "https://www.linphone.org")
     (synopsis "Utilities library for linphone software")
     (description "BCtoolbox is a utilities library used by Belledonne
-Communications softwares like linphone.")
+Communications software like linphone.")
     (license license:gpl2+)))
 
 (define-public ortp
@@ -491,28 +491,24 @@ Mumble consists of two applications for separate usage:
                    license:bsd-2))))
 
 (define-public twinkle
-  (let ((commit "02e1d1538af3337134bd7381dcd95f8d7775b30f")
-        (revision "1"))
   (package
-   (name "twinkle")
-   (version (git-version "1.10.1" revision commit))
-   (source (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/LubosD/twinkle")
-                   (commit commit)))
-             (patches
-              (search-patches "twinkle-include-qregexpvalidator.patch"))
-             (file-name (git-file-name name version))
-             (sha256
-              (base32
-               "0ds4rp4vr1wagn4m4m7ldqbsx5vgmgbfcqqgyhn1wf6s1dm0020z"))))
-   (build-system cmake-build-system)
-   (arguments
-    `(#:tests? #f ; no test target
-      #:configure-flags '("-DWITH_SPEEX=On")
-      #:phases
-      (modify-phases %standard-phases
+    (name "twinkle")
+    (version "1.10.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/LubosD/twinkle")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0s0gi03xwvzp02ah4q6j33r9jx9nbayr6dxlg2ck9pwbay1nq1hx"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                                ; no test target
+       #:configure-flags '("-DWITH_SPEEX=On")
+       #:phases
+       (modify-phases %standard-phases
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -528,30 +524,30 @@ Mumble consists of two applications for separate usage:
                                           "/lib/qt5/qml"))
                          '("qtdeclarative" "qtquickcontrols"))))
                #t))))))
-   (native-inputs
-    `(("bison" ,bison)
-      ("flex" ,flex)
-      ("readline" ,readline)
-      ("file" ,file)
-      ("ucommon" ,ucommon)
-      ("ccrtp" ,ccrtp)
-      ("libxml2" ,libxml2)
-      ("speex" ,speex)
-      ("speexdsp" ,speexdsp)
-      ("libsndfile" ,libsndfile)
-      ("alsa-lib" ,alsa-lib)
-      ("qttools" ,qttools)))
-   (inputs
-    `(("qtbase" ,qtbase)
-      ("qtdeclarative" ,qtdeclarative)
-      ("qtquickcontrols" ,qtquickcontrols)))
-   (home-page "http://twinkle.dolezel.info/")
-   (synopsis "Softphone for voice over IP and instant messaging")
-   (description "Twinkle is a softphone for your voice over IP and instant
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("readline" ,readline)
+       ("file" ,file)
+       ("ucommon" ,ucommon)
+       ("ccrtp" ,ccrtp)
+       ("libxml2" ,libxml2)
+       ("speex" ,speex)
+       ("speexdsp" ,speexdsp)
+       ("libsndfile" ,libsndfile)
+       ("alsa-lib" ,alsa-lib)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtquickcontrols" ,qtquickcontrols)))
+    (home-page "http://twinkle.dolezel.info/")
+    (synopsis "Softphone for voice over IP and instant messaging")
+    (description "Twinkle is a softphone for your voice over IP and instant
 messaging communcations using the SIP protocol.  You can use it for direct IP
 phone to IP phone communication or in a network using a SIP proxy to route your
 calls and messages")
-   (license license:gpl2+))))
+    (license license:gpl2+)))
 
 (define-public pjproject
   (package

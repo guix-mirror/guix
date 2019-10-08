@@ -21,6 +21,7 @@
   #:use-module (guix inferior)
   #:use-module (guix i18n)
   #:use-module ((guix utils) #:select (&fix-hint))
+  #:use-module (gcrypt pk-crypto)
   #:use-module (ssh session)
   #:use-module (ssh auth)
   #:use-module (ssh key)
@@ -39,6 +40,8 @@
             remote-inferior
             remote-daemon-channel
             connect-to-remote-daemon
+            remote-system
+            remote-authorize-signing-key
             send-files
             retrieve-files
             retrieve-files*
@@ -97,16 +100,27 @@ specifies; otherwise use them.  Throw an error on failure."
                 (message (format #f (G_ "SSH connection to '~a' failed: ~a~%")
                                  host (get-error session))))))))))
 
-(define (remote-inferior session)
-  "Return a remote inferior for the given SESSION."
-  (let ((pipe (open-remote-pipe* session OPEN_BOTH
-                                 "guix" "repl" "-t" "machine")))
+(define* (remote-inferior session #:optional become-command)
+  "Return a remote inferior for the given SESSION.  If BECOME-COMMAND is
+given, use that to invoke the remote Guile REPL."
+  (let* ((repl-command (append (or become-command '())
+                               '("guix" "repl" "-t" "machine")))
+         (pipe (apply open-remote-pipe* session OPEN_BOTH repl-command)))
+    (when (eof-object? (peek-char pipe))
+      (let ((status (channel-get-exit-status pipe)))
+        (close-port pipe)
+        (raise (condition
+                (&message
+                 (message (format #f (G_ "remote command '~{~a~^ ~}' failed \
+with status ~a")
+                                  repl-command status)))))))
     (port->inferior pipe)))
 
-(define (inferior-remote-eval exp session)
+(define* (inferior-remote-eval exp session #:optional become-command)
   "Evaluate EXP in a new inferior running in SESSION, and close the inferior
-right away."
-  (let ((inferior (remote-inferior session)))
+right away.  If BECOME-COMMAND is given, use that to invoke the remote Guile
+REPL."
+  (let ((inferior (remote-inferior session become-command)))
     (dynamic-wind
       (const #t)
       (lambda ()
@@ -281,6 +295,34 @@ be read.  When RECURSIVE? is true, the closure of FILES is exported."
                            `("guile" "-c"
                              ,(object->string
                                (object->string export))))))
+
+(define (remote-system session)
+  "Return the system type as expected by Nix, usually ARCHITECTURE-KERNEL, of
+the machine on the other end of SESSION."
+  (inferior-remote-eval '(begin (use-modules (guix utils)) (%current-system))
+                        session))
+
+(define* (remote-authorize-signing-key key session #:optional become-command)
+  "Send KEY, a canonical sexp containing a public key, over SESSION and add it
+to the system ACL file if it has not yet been authorized."
+  (inferior-remote-eval
+   `(begin
+      (use-modules (guix build utils)
+                   (guix pki)
+                   (guix utils)
+                   (gcrypt pk-crypto)
+                   (srfi srfi-26))
+
+      (define acl (current-acl))
+      (define key (string->canonical-sexp ,(canonical-sexp->string key)))
+
+      (unless (authorized-key? key)
+        (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
+          (mkdir-p (dirname %acl-file))
+          (with-atomic-file-output %acl-file
+            (cut write-acl acl <>)))))
+   session
+   become-command))
 
 (define* (send-files local files remote
                      #:key

@@ -45,14 +45,14 @@
 (define-public node
   (package
     (name "node")
-    (version "10.15.3")
+    (version "10.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.xz"))
               (sha256
                (base32
-                "1mcijznh481s44i59p571a38bfvcxm9f8x2l0l1005aly0kdj8jf"))
+                "0236jlb1hxhzqjlmmlxipcycrndiq92c8434iyy7zshh3n4pzqqq"))
               (modules '((guix build utils)))
               (snippet
                `(begin
@@ -90,12 +90,12 @@
        (modify-phases %standard-phases
          (add-before 'configure 'patch-files
            (lambda* (#:key inputs #:allow-other-keys)
-
              ;; Fix hardcoded /bin/sh references.
              (substitute* '("lib/child_process.js"
                             "lib/internal/v8_prof_polyfill.js"
                             "test/parallel/test-child-process-spawnsync-shell.js"
-                            "test/parallel/test-stdio-closed.js")
+                            "test/parallel/test-stdio-closed.js"
+                            "test/sequential/test-child-process-emfile.js")
                (("'/bin/sh'")
                 (string-append "'" (which "sh") "'")))
 
@@ -109,18 +109,13 @@
              ;; FIXME: These tests fail in the build container, but they don't
              ;; seem to be indicative of real problems in practice.
              (for-each delete-file
-                       '("test/async-hooks/test-ttywrap.readstream.js"
-                         "test/parallel/test-util-inspect.js"
-                         "test/parallel/test-v8-serdes.js"
-                         "test/parallel/test-dgram-membership.js"
-                         "test/parallel/test-dns-cancel-reverse-lookup.js"
-                         "test/parallel/test-dns-resolveany.js"
-                         "test/parallel/test-cluster-master-error.js"
+                       '("test/parallel/test-cluster-master-error.js"
                          "test/parallel/test-cluster-master-kill.js"
-                         "test/parallel/test-net-listen-after-destroying-stdin.js"
-                         "test/parallel/test-npm-install.js"
-                         "test/sequential/test-child-process-emfile.js"
-                         "test/sequential/test-http-regr-gh-2928.js"))
+                         ;; See also <https://github.com/nodejs/node/issues/25903>.
+                         "test/sequential/test-performance.js"))
+
+             ;; This requires a DNS resolver.
+             (delete-file "test/parallel/test-dns.js")
 
              ;; These tests have an expiry date: they depend on the validity of
              ;; TLS certificates that are bundled with the source.  We want this
@@ -173,7 +168,7 @@
        ("icu4c" ,icu4c)
        ("libuv" ,libuv)
        ("nghttp2" ,nghttp2 "lib")
-       ("openssl" ,openssl-next)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime

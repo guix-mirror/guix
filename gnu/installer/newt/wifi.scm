@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,7 +89,8 @@ nmc_wifi_strength_bars."
 (define (run-wifi-password-page)
   "Run a page prompting user for a password and return it."
   (run-input-page (G_ "Please enter the wifi password.")
-                  (G_ "Password required")))
+                  (G_ "Password required")
+                  #:input-visibility-checkbox? #t))
 
 (define (run-wrong-password-page service-name)
   "Run a page to inform user of a wrong password input."

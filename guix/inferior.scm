@@ -19,6 +19,8 @@
 (define-module (guix inferior)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module ((guix utils)
                 #:select (%current-system
                           source-properties->location
@@ -29,7 +31,8 @@
                 #:select (store-connection-socket
                           store-connection-major-version
                           store-connection-minor-version
-                          store-lift))
+                          store-lift
+                          &store-protocol-error))
   #:use-module ((guix derivations)
                 #:select (read-derivation-from-file))
   #:use-module (guix gexp)
@@ -133,8 +136,8 @@ it's an old Guix."
                       (object->string
                        `(begin
                           (primitive-load ,(search-path %load-path
-                                                        "guix/scripts/repl.scm"))
-                          ((@ (guix scripts repl) machine-repl))))))
+                                                        "guix/repl.scm"))
+                          ((@ (guix repl) machine-repl))))))
         pipe)))
 
 (define* (port->inferior pipe #:optional (close close-port))
@@ -151,6 +154,7 @@ inferior."
        (inferior-eval '(use-modules (guix)) result)
        (inferior-eval '(use-modules (gnu)) result)
        (inferior-eval '(use-modules (ice-9 match)) result)
+       (inferior-eval '(use-modules (srfi srfi-34)) result)
        (inferior-eval '(define %package-table (make-hash-table))
                       result)
        result))
@@ -386,7 +390,7 @@ inferior package."
   (cut inferior-package-input-field <> 'package-transitive-propagated-inputs))
 
 (define (%inferior-package-search-paths package field)
-  "Return the list of search path specificiations of PACKAGE, an inferior
+  "Return the list of search path specifications of PACKAGE, an inferior
 package."
   (define paths
     (inferior-package-field package
@@ -462,7 +466,13 @@ thus be the code of a one-argument procedure that accepts a store."
        (listen socket 1024)
        (send-inferior-request
         `(let ((proc   ,code)
-               (socket (socket AF_UNIX SOCK_STREAM 0)))
+               (socket (socket AF_UNIX SOCK_STREAM 0))
+               (error? (if (defined? 'store-protocol-error?)
+                           store-protocol-error?
+                           nix-protocol-error?))
+               (error-message (if (defined? 'store-protocol-error-message)
+                                  store-protocol-error-message
+                                  nix-protocol-error-message)))
            (connect socket AF_UNIX ,name)
 
            ;; 'port->connection' appeared in June 2018 and we can hardly
@@ -475,7 +485,13 @@ thus be the code of a one-argument procedure that accepts a store."
              (dynamic-wind
                (const #t)
                (lambda ()
-                 (proc store))
+                 ;; Serialize '&store-protocol-error' conditions.  The
+                 ;; exception serialization mechanism that
+                 ;; 'read-repl-response' expects is unsuitable for SRFI-35
+                 ;; error conditions, hence this special case.
+                 (guard (c ((error? c)
+                            `(store-protocol-error ,(error-message c))))
+                   `(result ,(proc store))))
                (lambda ()
                  (close-connection store)
                  (close-port socket)))))
@@ -484,7 +500,14 @@ thus be the code of a one-argument procedure that accepts a store."
          ((client . address)
           (proxy client (store-connection-socket store))))
        (close-port socket)
-       (read-inferior-response inferior)))))
+
+       (match (read-inferior-response inferior)
+         (('store-protocol-error message)
+          (raise (condition
+                  (&store-protocol-error (message message)
+                                         (status 1)))))
+         (('result result)
+          result))))))
 
 (define* (inferior-package-derivation store package
                                       #:optional

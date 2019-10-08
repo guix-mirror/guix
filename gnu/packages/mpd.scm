@@ -33,7 +33,6 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -91,7 +90,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.21.11")
+    (version "0.21.14")
     (source (origin
               (method url-fetch)
               (uri
@@ -100,20 +99,10 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "1gbcg8icm0pp918jw1lx1j066m39zg9wyqjla328ic848j5zhbnk"))))
+                "0iknnm9xvwfgk8h82hjwrmbijpk9l0dgap0794c2nyg8i66qlb0y"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=true") ; the default is 'false'...
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'expand-C++-include-path
-           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path)))
-               #t))))))
+     `(#:configure-flags '("-Ddocumentation=true"))) ;the default is 'false'...
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
               ("avahi" ,avahi)
@@ -135,10 +124,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
               ("pulseaudio" ,pulseaudio)
               ("sqlite" ,sqlite)
               ("zlib" ,zlib)))
-    ;; MPD > 0.21 requires > GCC 6
-    (native-inputs `(("gcc" ,gcc-8)
-                     ("gcc-lib" ,gcc-8 "lib")
-                     ("pkg-config" ,pkg-config)
+    (native-inputs `(("pkg-config" ,pkg-config)
                      ("python-sphinx" ,python-sphinx)))
     ;; Missing optional inputs:
     ;;   libyajl
@@ -195,7 +181,7 @@ player daemon.")
 (define-public ncmpc
   (package
     (name "ncmpc")
-    (version "0.34")
+    (version "0.35")
     (source (origin
               (method url-fetch)
               (uri
@@ -204,26 +190,15 @@ player daemon.")
                               "/ncmpc-" version ".tar.xz"))
               (sha256
                (base32
-                "0mz8r6vc4zn5sa3hlq4ii74qcrkh01nbg784zcwahgz8g3fb3i8l"))))
+                "0hfjvm1p0z7x6gfn5xhl5c0jsmidvz0qfl04pq45x4chh9iiwkxx"))))
     (build-system meson-build-system)
     (arguments
      `(#:configure-flags
        ;; Otherwise, they are installed incorrectly, in
        ;; '$out/share/man/man/man1'.
        (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
-                            "/share"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'expand-C++-include-path
-           ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path)))
-               #t))))))
-    (inputs `(("gcc" ,gcc-8)            ; for its C++14 support
-              ("boost" ,boost)
+                            "/share"))))
+    (inputs `(("boost" ,boost)
               ("pcre" ,pcre)
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))

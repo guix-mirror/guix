@@ -75,7 +75,8 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1zz2zvikvfibxnk1va3kgzs7djsmiqy7bmk8y01vbsf54ryjb3zh"))))
+              "1zz2zvikvfibxnk1va3kgzs7djsmiqy7bmk8y01vbsf54ryjb3zh"))
+            (patches (search-patches "libextractor-exiv2.patch"))))
    (build-system gnu-build-system)
    ;; WARNING: Checks require /dev/shm to be in the build chroot, especially
    ;; not to be a symbolic link to /run/shm.
@@ -146,14 +147,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.65")
+   (version "0.9.66")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1jdk6wigvnkh5bi9if4rik8i9sbvdql61lm8ipgpypyxqmcpjipj"))))
+              "06xblz77bnn29y7sl43avxbcrjbw486x3416plpr3x3l2pdx8rjf"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)

@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +24,7 @@
   #:use-module ((guix download) #:prefix download:)
   #:use-module (gcrypt hash)
   #:use-module (guix http-client)
+  #:use-module (guix json)
   #:use-module (guix import json)
   #:use-module (guix import utils)
   #:use-module ((guix licenses) #:prefix license:)
@@ -30,55 +33,92 @@
   #:use-module (guix upstream)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 pretty-print) ; recursive
+  #:use-module (ice-9 regex)
   #:use-module (json)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:export (crate->guix-package
             guix-package->crate-name
+            crate-recursive-import
             %crate-updater))
 
-(define (crate-fetch crate-name callback)
-  "Fetch the metadata for CRATE-NAME from crates.io and call the callback."
+
+;;;
+;;; Interface to https://crates.io/api/v1.
+;;;
 
-  (define (crates->inputs crates)
-    (sort (map (cut assoc-ref <> "crate_id") crates) string-ci<?))
+;; Crates.  A crate is essentially a "package".  It can have several
+;; "versions", each of which has its own set of dependencies, license,
+;; etc.--see <crate-version> below.
+(define-json-mapping <crate> make-crate crate?
+  json->crate
+  (name          crate-name)                      ;string
+  (latest-version crate-latest-version "max_version") ;string
+  (home-page     crate-home-page "homepage")      ;string | #nil
+  (repository    crate-repository)                ;string
+  (description   crate-description)               ;string
+  (keywords      crate-keywords                   ;list of strings
+                 "keywords" vector->list)
+  (categories    crate-categories                 ;list of strings
+                 "categories" vector->list)
+  (versions      crate-versions "actual_versions" ;list of <crate-version>
+                 (lambda (vector)
+                   (map json->crate-version
+                        (vector->list vector))))
+  (links         crate-links))                    ;alist
 
-  (define (string->license string)
-    (map spdx-string->license (string-split string #\/)))
+;; Crate version.
+(define-json-mapping <crate-version> make-crate-version crate-version?
+  json->crate-version
+  (id            crate-version-id)                ;integer
+  (number        crate-version-number "num")      ;string
+  (download-path crate-version-download-path "dl_path") ;string
+  (readme-path   crate-version-readme-path "readme_path") ;string
+  (license       crate-version-license "license") ;string
+  (links         crate-version-links))            ;alist
 
-  (define (crate-kind-predicate kind)
-    (lambda (dep) (string=? (assoc-ref dep "kind") kind)))
+;; Crate dependency.  Each dependency (each edge in the graph) is annotated as
+;; being a "normal" dependency or a development dependency.  There also
+;; information about the minimum required version, such as "^0.0.41".
+(define-json-mapping <crate-dependency> make-crate-dependency
+  crate-dependency?
+  json->crate-dependency
+  (id            crate-dependency-id "crate_id")  ;string
+  (kind          crate-dependency-kind "kind"     ;'normal | 'dev
+                 string->symbol)
+  (requirement   crate-dependency-requirement "req")) ;string
 
-  (and-let* ((crate-json (json-fetch (string-append crate-url crate-name)))
-             (crate (assoc-ref crate-json "crate"))
-             (name (assoc-ref crate "name"))
-             (version (assoc-ref crate "max_version"))
-             (homepage (assoc-ref crate "homepage"))
-             (repository (assoc-ref crate "repository"))
-             (synopsis (assoc-ref crate "description"))
-             (description (assoc-ref crate "description"))
-             (license (or (and=> (assoc-ref crate "license")
-                                 string->license)
-                          '()))                   ;missing license info
-             (path (string-append "/" version "/dependencies"))
-             (deps-json (json-fetch (string-append crate-url name path)))
-             (deps (vector->list (assoc-ref deps-json "dependencies")))
-             (dep-crates (filter (crate-kind-predicate "normal") deps))
-             (dev-dep-crates
-              (filter (lambda (dep)
-                        (not ((crate-kind-predicate "normal") dep))) deps))
-             (cargo-inputs (crates->inputs dep-crates))
-             (cargo-development-inputs (crates->inputs dev-dep-crates))
-             (home-page (match homepage
-                          (() repository)
-                          (_ homepage))))
-    (callback #:name name #:version version
-              #:cargo-inputs cargo-inputs
-              #:cargo-development-inputs cargo-development-inputs
-              #:home-page home-page #:synopsis synopsis
-              #:description description #:license license)))
+(define (lookup-crate name)
+  "Look up NAME on https://crates.io and return the corresopnding <crate>
+record or #f if it was not found."
+  (let ((json (json-fetch (string-append (%crate-base-url) "/api/v1/crates/"
+                                         name))))
+    (and=> (and json (assoc-ref json "crate"))
+           (lambda (alist)
+             ;; The "versions" field of ALIST is simply a list of version IDs
+             ;; (integers).  Here, we squeeze in the actual version
+             ;; dictionaries that are not part of ALIST but are just more
+             ;; convenient handled this way.
+             (let ((versions (or (assoc-ref json "versions") '#())))
+               (json->crate `(,@alist
+                              ("actual_versions" . ,versions))))))))
+
+(define (crate-version-dependencies version)
+  "Return the list of <crate-dependency> records of VERSION, a
+<crate-version>."
+  (let* ((path (assoc-ref (crate-version-links version) "dependencies"))
+         (url  (string-append (%crate-base-url) path)))
+    (match (assoc-ref (or (json-fetch url) '()) "dependencies")
+      ((? vector? vector)
+       (map json->crate-dependency (vector->list vector)))
+      (_
+       '()))))
+
+
+;;;
+;;; Converting crates to Guix packages.
+;;;
 
 (define (maybe-cargo-inputs package-names)
   (match (package-names->package-inputs package-names)
@@ -138,10 +178,65 @@ and LICENSE."
          (close-port port)
          pkg))
 
-(define (crate->guix-package crate-name)
+(define %dual-license-rx
+  ;; Dual licensing is represented by a string such as "MIT OR Apache-2.0".
+  ;; This regexp matches that.
+  (make-regexp "^(.*) OR (.*)$"))
+
+(define* (crate->guix-package crate-name #:optional version)
   "Fetch the metadata for CRATE-NAME from crates.io, and return the
-`package' s-expression corresponding to that package, or #f on failure."
-  (crate-fetch crate-name make-crate-sexp))
+`package' s-expression corresponding to that package, or #f on failure.
+When VERSION is specified, attempt to fetch that version; otherwise fetch the
+latest version of CRATE-NAME."
+  (define (string->license string)
+    (match (regexp-exec %dual-license-rx string)
+      (#f (list (spdx-string->license string)))
+      (m  (list (spdx-string->license (match:substring m 1))
+                (spdx-string->license (match:substring m 2))))))
+
+  (define (normal-dependency? dependency)
+    (eq? (crate-dependency-kind dependency) 'normal))
+
+  (define crate
+    (lookup-crate crate-name))
+
+  (define version-number
+    (or version
+        (crate-latest-version crate)))
+
+  (define version*
+    (find (lambda (version)
+            (string=? (crate-version-number version)
+                      version-number))
+          (crate-versions crate)))
+
+  (and crate version*
+       (let* ((dependencies   (crate-version-dependencies version*))
+              (dep-crates     (filter normal-dependency? dependencies))
+              (dev-dep-crates (remove normal-dependency? dependencies))
+              (cargo-inputs   (sort (map crate-dependency-id dep-crates)
+                                    string-ci<?))
+              (cargo-development-inputs
+               (sort (map crate-dependency-id dev-dep-crates)
+                     string-ci<?)))
+         (values
+          (make-crate-sexp #:name crate-name
+                           #:version (crate-version-number version*)
+                           #:cargo-inputs cargo-inputs
+                           #:cargo-development-inputs cargo-development-inputs
+                           #:home-page (or (crate-home-page crate)
+                                           (crate-repository crate))
+                           #:synopsis (crate-description crate)
+                           #:description (crate-description crate)
+                           #:license (and=> (crate-version-license version*)
+                                            string->license))
+          (append cargo-inputs cargo-development-inputs)))))
+
+(define (crate-recursive-import crate-name)
+  (recursive-import crate-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (crate->guix-package name))
+                    #:guix-name crate-name->package-name))
 
 (define (guix-package->crate-name package)
   "Return the crate name of PACKAGE."
@@ -157,6 +252,7 @@ and LICENSE."
 (define (crate-name->package-name name)
   (string-append "rust-" (string-join (string-split name #\_) "-")))
 
+
 ;;;
 ;;; Updater
 ;;;
@@ -175,9 +271,9 @@ and LICENSE."
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
   (let* ((crate-name (guix-package->crate-name package))
-         (callback (lambda* (#:key version #:allow-other-keys) version))
-         (version (crate-fetch crate-name callback))
-         (url (crate-uri crate-name version)))
+         (crate      (lookup-crate crate-name))
+         (version    (crate-latest-version crate))
+         (url        (crate-uri crate-name version)))
     (upstream-source
      (package (package-name package))
      (version version)

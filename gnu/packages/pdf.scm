@@ -9,7 +9,7 @@
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
-;;; Copyright © 2016 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2016, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
@@ -85,14 +85,14 @@
 (define-public poppler
   (package
    (name "poppler")
-   (version "0.72.0")
+   (version "0.79.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lfs1b1jfamxl13zbl5n448dqvl9n8frbv8180y7b7kfyaw7wx61"))))
+              "1j18jlv1q6h21azb939gqjsgcbsh5qcd8dwxdmad54p5ixha91gr"))))
    (build-system cmake-build-system)
    ;; FIXME:
    ;;  use libcurl:        no
@@ -124,7 +124,7 @@
       #:configure-flags
       (let* ((out (assoc-ref %outputs "out"))
              (lib (string-append out "/lib")))
-        (list "-DENABLE_XPDF_HEADERS=ON" ; to install header files
+        (list "-DENABLE_UNSTABLE_API_ABI_HEADERS=ON" ;to install header files
               "-DENABLE_ZLIB=ON"
               (string-append "-DCMAKE_INSTALL_LIBDIR=" lib)
               (string-append "-DCMAKE_INSTALL_RPATH=" lib)))))
@@ -419,7 +419,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-mupdf
   (package
     (name "zathura-pdf-mupdf")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -427,7 +427,7 @@ using the DjVuLibre library.")
                               "/download/zathura-pdf-mupdf-" version ".tar.xz"))
               (sha256
                (base32
-                "166d5nz47ixzwj4pixsd5fd9qvjf5v34cdqi3p72vr23pswk2hyn"))))
+                "1pjwsb7zwclxsvz229fl7y2saf1pv3ifwv3ay8viqxgrp9x3z9hq"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("jbig2dec" ,jbig2dec)
@@ -604,7 +604,7 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.15.0")
+    (version "1.16.1")
     (source
       (origin
         (method url-fetch)
@@ -612,7 +612,7 @@ extracting content or merging files.")
                             name "-" version "-source.tar.xz"))
         (sha256
          (base32
-          "0kmcz3ivxmqmks8vg50ri1zar18q5svk829z0g1kj08lgz7kcl2n"))
+          "1npmy92lkj41nnc14b4fpq7z62pminy94zsdbrczj22jpn283rvg"))
         (modules '((guix build utils)))
         (snippet
          ;; We keep lcms2 since it is different than our lcms.
@@ -668,14 +668,14 @@ line tools for batch rendering @command{pdfdraw}, rewriting files
 (define-public qpdf
   (package
    (name "qpdf")
-   (version "8.4.0")
+   (version "8.4.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256
              (base32
-              "1864p952m8vzxk6v500a42psbqj2g2gyli3d3zj6h33hzwxqy09r"))
+              "1fsfy38dnm9cy1j40jw5x8vn84l6f2kgb68rdjl0wxignfw05z87"))
             (modules '((guix build utils)))
             (snippet
              ;; Replace shebang with the bi-lingual shell/Perl trick to remove
@@ -1116,3 +1116,45 @@ presentation.  The input files processed by pdfpc are PDF documents.")
 rendering of the file.  The rendering is done by creating outline curves
 through the Pango @code{ft2} backend.")
       (license license:lgpl2.0+))))
+
+(define-public stapler
+  (package
+    (name "stapler")
+    (version "0.3.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/hellerbarde/stapler")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "06w7xanzr7cicqik62g7zqs57j4y6fc7hflrc1rlmphxx40hkg6r"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-pypdf2" ,python2-pypdf2)))
+    (arguments
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pypdf-version-requirement
+           ;; A PyPDF2 version requirement of 1.25.1 is hard-coded in
+           ;; setup.py. Relax it to work with any version of PyPDF2.
+           (lambda _
+             (substitute* "setup.py"
+               (("PyPDF2==1.25.1") "PyPDF2"))
+             #t)))))
+    (home-page "https://github.com/hellerbarde/stapler")
+    (synopsis "PDF manipulation tool")
+    (description "Stapler is a pure Python alternative to PDFtk, a tool for
+manipulating PDF documents from the command line.  It supports
+
+@itemize
+@item cherry-picking pages and concatenating them into a new file
+@item splitting a PDF document into single pages each in its own file
+@item merging PDF documents with their pages interleaved
+@item displaying metadata in a PDF document
+@item displaying the mapping between logical and physical page numbers
+@end itemize")
+    (license license:bsd-3)))

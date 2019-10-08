@@ -29,6 +29,8 @@
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -274,16 +276,16 @@ transparently check connection attempts against an access control list.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.0.7")
+    (version "4.3.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.zeromq.org/zeromq-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/zeromq/libzmq/releases"
+                                  "/download/v" version "/zeromq-" version ".tar.gz"))
               (sha256
                (base32
-                "00vvwhgcdr1lva2pavicvy92iad0hj8cf71n702hv6blw1kjj2z0"))))
+                "0qzp80ky4y2k7k1ya09v9gkivvfbz2km813snrb8jhnn634bbmzb"))))
     (build-system gnu-build-system)
-    (home-page "http://zeromq.org")
+    (home-page "https://zeromq.org")
     (synopsis "Library for message-based applications")
     (description
      "The 0MQ lightweight messaging kernel is a library which extends the
@@ -297,7 +299,7 @@ more.")
 (define-public czmq
   (package
     (name "czmq")
-    (version "4.1.1")
+    (version "4.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -306,21 +308,19 @@ more.")
                     "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1h5hrcsc30fcwb032vy5gxkq4j4vv1y4dj460rfs1hhxi0cz83zh"))))
+                "1szciz62sk3fm4ga9qjpxz0n0lazvphm32km95bq92ncng12kayg"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; TODO Tests fail for some reason:
-       ;;  * zauth: OK
-       ;;  * zbeacon: OK (skipping test, no UDP broadcasting)
-       ;; E: (czmq_selftest) 18-02-24 16:25:52 No broadcast interface found, (ZSYS_INTERFACE=lo)
-       ;; make[2]: *** [Makefile:2245: check-local] Segmentation fault
-       ;; make[2]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make[1]: *** [Makefile:2032: check-am] Error 2
-       ;; make[1]: Leaving directory '/tmp/guix-build-czmq-4.1.0.drv-0/czmq-4.1.0'
-       ;; make: *** [Makefile:1588: check-recursive] Error 1
-       ;; phase `check' failed after 19.4 seconds
-       #:tests? #f
-       #:configure-flags '("--enable-drafts")))
+     '(#:configure-flags '("--enable-drafts")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'patch-tests
+                    (lambda _
+                      ;; XXX FIXME: Disable the zproc test, which fails on some
+                      ;; hardware: <https://github.com/zeromq/czmq/issues/2007>.
+                      (substitute* "src/czmq_selftest.c"
+                        (("\\{ \"zproc\", zproc_test.*")
+                         ""))
+                      #t)))))
     (inputs
      `(("zeromq" ,zeromq)))
     (home-page "http://zeromq.org")
@@ -419,14 +419,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.19")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "1j6hyr809af2m3gqm11hdfwks5kljqy1ikspq3d9rhj29qv6r2mi"))))
+                "1i14zrg4a84zjpwvqi8an0zx0hm06g614a79zc2syrkhrvdw1npk"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -551,15 +551,14 @@ and up to 1 Mbit/s downstream.")
 (define-public whois
   (package
     (name "whois")
-    (version "5.5.0")
+    (version "5.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://debian/pool/main/w/whois/"
-                           name "_" version ".tar.xz"))
+                           "whois_" version ".tar.xz"))
        (sha256
-        (base32
-         "0gbg9fis05zf2fl4264jplbphy75l50k3g92cz6mkmbsklrn7v34"))))
+        (base32 "10mc7iqhdnvd1kk8gnnhihd5ga2rw3sz69n3nd6x8fb65qpq13gf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no test suite
@@ -594,14 +593,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.3")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0711jilp9sbgi46d105m3galw8n4wk5yncawi08031qxg2f754mg"))))
+        (base32 "087qv7nd7zlbckvcs37fkkg7v0mw0hjd5yfbghqym764fpjgqlf5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -946,6 +945,82 @@ security.  It focuses on different areas of WiFi security: monitoring,
 attacking, testing, and cracking.  All tools are command-line driven, which
 allows for heavy scripting.")
     (license (list license:gpl2+ license:bsd-3))))
+
+(define-public pixiewps
+  (package
+    (name "pixiewps")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/wiire-a/pixiewps/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "07nym6bqml0k9v29vnj003nrgnwrywgjvnljb7cdpsvnwilhbp64"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)) ; no configure script
+       #:tests? #f)) ; there are no tests
+    (home-page "https://github.com/wiire-a/pixiewps/")
+    (synopsis "Offline brute-force tool for Wi-Fi Protected Setup")
+    (description "Pixiewps implements the pixie-dust attack to brute
+force the Wi-Fi Protected Setup (WPS) PIN by exploiting the low or
+non-existing entropy of some access points.")
+    (license license:gpl3+)))
+
+(define-public reaver
+  (package
+    (name "reaver")
+    (version "1.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/t6x/reaver-wps-fork-t6x/releases/"
+                    "download/v" version "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0sva3g0kwgv143n9l3lg4qp5iiqz7nk76nr0hwivsnglbhk9sbil"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; Save session files to current directory instead of /var.
+       (list "--enable-savetocurrent"
+             "--localstatedir=/tmp/dummy") ; prevent creating /var during install
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'change-directory
+           (lambda _
+             (chdir "src")
+             #t))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (chdir "../docs")
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version))
+                    (man1 (string-append out "/share/man/man1")))
+               (for-each (lambda (file) (install-file file doc))
+                         (find-files "." "README.*"))
+               (install-file "reaver.1" man1)
+               #t))))
+       #:tests? #f)) ; there are no tests
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (propagated-inputs
+     `(("aircrack-ng" ,aircrack-ng)
+       ("pixiewps" ,pixiewps)))
+    (home-page "https://github.com/t6x/reaver-wps-fork-t6x/")
+    (synopsis "Attack tool for Wi-Fi Protected Setup")
+    (description "Reaver performs a brute force attack against an access
+point's Wi-Fi Protected Setup (WPS) PIN.  Once the PIN is found, the WPA
+passphrase can be recovered and the AP's wireless settings can be
+reconfigured.")
+    (license license:gpl2+)))
 
 (define-public perl-danga-socket
   (package
@@ -1510,7 +1585,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.11.1")
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1518,7 +1593,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1p5mv44jaslvrr1ym15smqna19y0gi4vqcsyj58625vv9bj6laf1"))))
+                "1y78ix5inhhcvicbvyy2ij38am1215nr55vydhab3d4065q45z8k"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
@@ -1650,7 +1725,7 @@ enabled due to license conflicts between the BSD advertising clause and the GPL.
     (arguments
      `(#:tests? #f)) ; No tests are included
     (inputs
-     `(("openssl" ,openssl))) ; For the DES library
+     `(("openssl" ,openssl-1.0)))       ;for the DES library
     (home-page "https://www.lysator.liu.se/~pen/pidentd/")
     (synopsis "Small Ident Daemon")
     (description
@@ -1894,14 +1969,14 @@ displays the results in real time.")
 (define-public strongswan
   (package
     (name "strongswan")
-    (version "5.8.0")
+    (version "5.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.strongswan.org/strongswan-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0cq9m86ydd2i0awxkv4a256f4926p2f9pzlisyskl9fngl6f3c8m"))))
+        (base32 "034rd6kr1bmnvj8rg2kcxdjb0cgj3dn9310mmm94j1awxan71byr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1924,7 +1999,7 @@ displays the results in real time.")
              #t)))
        #:configure-flags
        (list
-        ;; Disable bsd-4 licensed plugins
+        ;; Disable bsd-4 licensed plugins.
         "--disable-des"
         "--disable-blowfish")))
     (inputs
@@ -2042,6 +2117,12 @@ remotely.")
                (base32
                 "0qz2730bng1gs9xbqxhkw88qbsmszgmmrl2g9k6xrg6r3bqvsdc7"))))
     (build-system gnu-build-system)
+    (arguments
+     `(;; Ensure the kernel headers are treated as system headers to suppress
+       ;; harmless -Werror=pedantic warnings.
+       #:make-flags (list (string-append "C_INCLUDE_PATH="
+                                         (assoc-ref %build-inputs "kernel-headers")
+                                         "/include"))))
     (inputs `(("zeromq" ,zeromq)
               ("czmq" ,czmq)
               ("libsodium" ,libsodium)))
@@ -2245,7 +2326,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.15")
+    (version "0.9.16")
     (source
      (origin
        (method git-fetch)
@@ -2254,7 +2335,7 @@ SNMP v3 using both IPv4 and IPv6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fl07zyall04map6v2l1bclqh8y3rrhsx61s2v0sr8b00j201jg4"))))
+        (base32 "1bind7ylgxs743vfdmpdrpp4iamy461bc3i7nxza91kj7hyyjz6h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -2283,7 +2364,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
 (define-public hcxtools
   (package
     (name "hcxtools")
-    (version "5.1.6")
+    (version "5.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2291,7 +2372,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
              (url "https://github.com/ZerBea/hcxtools.git")
              (commit version)))
        (sha256
-        (base32 "05sjbmv2wq3nlmammrwxqc62c4sagjjgczzddr1jcqkf6kywzkl8"))
+        (base32 "0k2qlq9hz5zc21nyc6yrnfqzga7hydn5mm0x3rpl2fhkwl81lxcn"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (inputs
@@ -2313,8 +2394,7 @@ Ethernet and TAP interfaces is supported.  Packet capture is also supported.")
                      (string-append (assoc-ref inputs "curl") "/include:"
                                     (assoc-ref inputs "libpcap") "/include:"
                                     (assoc-ref inputs "openssl") "/include:"
-                                    (assoc-ref inputs "zlib") "/include:"
-                                    (getenv "C_INCLUDE_PATH")))
+                                    (assoc-ref inputs "zlib") "/include"))
              #t)))))
     (home-page "https://github.com/ZerBea/hcxtools")
     (synopsis "Capture wlan traffic to hashcat and John the Ripper")
@@ -2326,7 +2406,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
 (define-public hcxdumptool
   (package
     (name "hcxdumptool")
-    (version "5.1.5")
+    (version "5.2.0")
     (source
      (origin
        (method git-fetch)
@@ -2334,7 +2414,7 @@ packets from wireless devices for use with hashcat or John the Ripper.")
              (url "https://github.com/ZerBea/hcxdumptool.git")
              (commit version)))
        (sha256
-        (base32 "0xkzdvwpi6dq9wsrn882f2ljb7d5v2bvarq8gs6jm8znfx3y8hi2"))
+        (base32 "0pg1pvg029gm4rj0fj5kcsjb32hixgn4cxsgiir7spkmacf1qm4q"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (arguments
@@ -2502,3 +2582,61 @@ communication.")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes
 protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
     (license license:gpl2+)))
+
+(define-public iwd
+  (package
+    (name "iwd")
+    (version "0.21")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "001dikinsa6kshwscjbvwipavzwpqnpvx9fpshcn63gbvbhyd393"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dbus" ,dbus)
+       ("libtool" ,libtool)
+       ("ell" ,ell)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkgconfig" ,pkg-config)
+       ("python" ,python)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (let ((dbus (assoc-ref %outputs "out")))
+         (list "--disable-systemd-service"
+               "--enable-external-ell"
+               "--enable-hwsim"
+               "--enable-tools"
+               "--enable-wired"
+               "--enable-docs"
+               "--localstatedir=/var"
+               (string-append "--with-dbus-datadir=" dbus "/share/")
+               (string-append "--with-dbus-busdir="
+                              dbus "/share/dbus-1/system-services")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'pre-bootstrap
+           (lambda _
+             (substitute* "Makefile.am"
+               ;; Test disabled because it needs the kernel module
+               ;; 'pkcs8_key_parser' loaded.
+               (("unit\\/test-eapol.*? ") "")
+               ;; Don't try to 'mkdir /var'.
+               (("\\$\\(MKDIR_P\\) -m 700") "true"))
+             #t)))))
+    (home-page "https://git.kernel.org/pub/scm/network/wireless/iwd.git/")
+    (synopsis "Internet Wireless Daemon")
+    (description "iwd is a wireless daemon for Linux that aims to replace WPA
+Supplicant.  It optimizes resource utilization by not depending on any external
+libraries and instead utilizing features provided by the Linux kernel to the
+maximum extent possible.")
+    (license license:lgpl2.1+)))

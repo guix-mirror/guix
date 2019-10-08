@@ -483,7 +483,7 @@ trouble using them, because you do not have to remember each snippet name.")
 (define-public vim-fugitive
   (package
     (name "vim-fugitive")
-    (version "2.5")
+    (version "3.0")
     (source
       (origin
         (method git-fetch)
@@ -493,7 +493,7 @@ trouble using them, because you do not have to remember each snippet name.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "17yz7gxn7a49jzndr4z5vnk1y4a6c22qss3mwxzmq4m46fni0k8q"))))
+          "0ghh8a9xysc3njqql1khhl2dkhymz93snpwqp2apm7pka6l893bc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -506,13 +506,15 @@ trouble using them, because you do not have to remember each snippet name.")
              (let* ((out (assoc-ref outputs "out"))
                     (vimfiles (string-append out "/share/vim/vimfiles"))
                     (autoload (string-append vimfiles "/autoload"))
-                    (doc (string-append vimfiles "/doc"))
+                    (doc      (string-append vimfiles "/doc"))
                     (ftdetect (string-append vimfiles "/ftdetect"))
-                    (plugin (string-append vimfiles "/plugin")))
+                    (plugin   (string-append vimfiles "/plugin"))
+                    (syntax   (string-append vimfiles "/syntax")))
                (copy-recursively "autoload" autoload)
                (copy-recursively "doc" doc)
                (copy-recursively "ftdetect" ftdetect)
                (copy-recursively "plugin" plugin)
+               (copy-recursively "syntax" syntax)
                #t))))))
     (home-page "https://github.com/tpope/vim-fugitive")
     (synopsis "Vim plugin to work with Git")
@@ -733,7 +735,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.3.7")
+    (version "0.4.2")
     (source
      (origin
        (method git-fetch)
@@ -743,7 +745,7 @@ are detected, the user is notified.")))
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1j6w5jvq5v7kf7diad91qs1acr427nidnk9s24yyrz0hwdd1c2lh"))))
+         "13w446plvgl219lhj29jyimhiqvs1y1byrz4qpdmxgyddmx9xqss"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)
@@ -752,13 +754,6 @@ are detected, the user is notified.")))
        #:configure-flags '("-DPREFER_LUA:BOOL=YES")
        #:phases
        (modify-phases %standard-phases
-         ;; TODO: remove 'patch-tic on update
-         ;; see: https://github.com/neovim/neovim/issues/9687
-         (add-after 'unpack 'patch-tic
-           (lambda _
-             (substitute* "src/nvim/tui/tui.c"
-               (("value != NULL") "value != NULL && value != (char *)-1"))
-             #t))
          (add-after 'unpack 'set-lua-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let* ((lua-version "5.1")
@@ -772,6 +767,7 @@ are detected, the user is notified.")))
                          (string-append path "/?.lua;" path "/?/?.lua"))))
                     (lua-inputs (map (cute assoc-ref %build-inputs <>)
                                      '("lua"
+                                       "lua-luv"
                                        "lua-lpeg"
                                        "lua-bitop"
                                        "lua-libmpack"))))
@@ -789,6 +785,7 @@ are detected, the user is notified.")))
        ("jemalloc" ,jemalloc)
        ("libiconv" ,libiconv)
        ("lua" ,lua-5.1)
+       ("lua-luv" ,lua5.1-luv)
        ("lua-lpeg" ,lua5.1-lpeg)
        ("lua-bitop" ,lua5.1-bitop)
        ("lua-libmpack" ,lua5.1-libmpack)))
@@ -814,7 +811,7 @@ refactor Vim in order to:
 (define-public vifm
   (package
     (name "vifm")
-    (version "0.10")
+    (version "0.10.1")
     (source
       (origin
         (method url-fetch)
@@ -825,35 +822,35 @@ refactor Vim in order to:
                               "vifm-" version ".tar.bz2")))
         (sha256
          (base32
-          "1f380xcyjnm4xmcdazs6dj064bwddhywvn3mgm36k7r7b2gnjnp0"))))
+          "0fyhxh7ndjn8fyjhj14ymkr3pjcs3k1xbs43g7xvvq85vdb6y04r"))))
     (build-system gnu-build-system)
     (arguments
-    '(#:configure-flags '("--disable-build-timestamp")
-      #:phases
-      (modify-phases %standard-phases
-        (add-after 'patch-source-shebangs 'patch-test-shebangs
-          (lambda _
-            (substitute* (cons* "src/background.c"
-                                "src/cfg/config.c"
-                                (find-files "tests" "\\.c$"))
-              (("/bin/sh") (which "sh"))
-              (("/bin/bash") (which "bash")))
-            ;; This test segfaults
-            (substitute* "tests/Makefile"
-              (("misc") ""))
-            #t))
-         (add-after 'install 'install-vim-plugin-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (vifm (string-append out "/share/vifm"))
-                    (vimfiles (string-append out "/share/vim/vimfiles")))
-               (copy-recursively (string-append vifm "/colors")
-                                 (string-append vimfiles "/colors"))
-               (copy-recursively (string-append vifm "/vim")
-                                 vimfiles)
-               (delete-file-recursively (string-append vifm "/colors"))
-               (delete-file-recursively (string-append vifm "/vim")))
-             #t)))))
+     '(#:configure-flags '("--disable-build-timestamp")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'patch-source-shebangs 'patch-test-shebangs
+           (lambda _
+             (substitute* (cons* "src/background.c"
+                                 "src/cfg/config.c"
+                                 (find-files "tests" "\\.c$"))
+               (("/bin/sh") (which "sh"))
+               (("/bin/bash") (which "bash")))
+             ;; This test segfaults
+             (substitute* "tests/Makefile"
+               (("misc") ""))
+             #t))
+          (add-after 'install 'install-vim-plugin-files
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (vifm (string-append out "/share/vifm"))
+                     (vimfiles (string-append out "/share/vim/vimfiles")))
+                (copy-recursively (string-append vifm "/colors")
+                                  (string-append vimfiles "/colors"))
+                (copy-recursively (string-append vifm "/vim")
+                                  vimfiles)
+                (delete-file-recursively (string-append vifm "/colors"))
+                (delete-file-recursively (string-append vifm "/vim")))
+              #t)))))
     (native-inputs
      `(("groff" ,groff))) ; for the documentation
     (inputs

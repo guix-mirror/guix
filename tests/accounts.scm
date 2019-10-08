@@ -62,6 +62,25 @@ nobody:!:0::::::\n"))
                            (shell "/bin/sh")))
                     port))))
 
+(test-equal "write-passwd with duplicate entry"
+  %passwd-sample
+  (call-with-output-string
+    (lambda (port)
+      (let ((charlie (password-entry
+                      (name "charlie")
+                      (uid 1000) (gid 998)
+                      (real-name "Charlie")
+                      (directory "/home/charlie")
+                      (shell "/bin/sh"))))
+        (write-passwd (list (password-entry
+                             (name "root")
+                             (uid 0) (gid 0)
+                             (real-name "Admin")
+                             (directory "/root")
+                             (shell "/bin/sh"))
+                            charlie charlie)
+                      port)))))
+
 (test-equal "read-passwd + write-passwd"
   %passwd-sample
   (call-with-output-string

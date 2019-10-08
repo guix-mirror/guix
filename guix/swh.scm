@@ -20,6 +20,8 @@
   #:use-module (guix base16)
   #:use-module (guix build utils)
   #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module (web uri)
+  #:use-module (guix json)
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (json)
@@ -32,6 +34,9 @@
   #:use-module (ice-9 popen)
   #:use-module ((ice-9 ftw) #:select (scandir))
   #:export (%swh-base-url
+            %allow-request?
+
+            request-rate-limit-reached?
 
             origin?
             origin-id
@@ -101,6 +106,8 @@
             request-cooking
             vault-fetch
 
+            commit-id?
+
             swh-download))
 
 ;;; Commentary:
@@ -129,40 +136,6 @@
       url
       (string-append url "/")))
 
-(define-syntax-rule (define-json-reader json->record ctor spec ...)
-  "Define JSON->RECORD as a procedure that converts a JSON representation,
-read from a port, string, or hash table, into a record created by CTOR and
-following SPEC, a series of field specifications."
-  (define (json->record input)
-    (let ((table (cond ((port? input)
-                        (json->scm input))
-                       ((string? input)
-                        (json-string->scm input))
-                       ((or (null? input) (pair? input))
-                        input))))
-      (let-syntax ((extract-field (syntax-rules ()
-                                    ((_ table (field key json->value))
-                                     (json->value (assoc-ref table key)))
-                                    ((_ table (field key))
-                                     (assoc-ref table key))
-                                    ((_ table (field))
-                                     (assoc-ref table
-                                                (symbol->string 'field))))))
-        (ctor (extract-field table spec) ...)))))
-
-(define-syntax-rule (define-json-mapping rtd ctor pred json->record
-                      (field getter spec ...) ...)
-  "Define RTD as a record type with the given FIELDs and GETTERs, à la SRFI-9,
-and define JSON->RECORD as a conversion from JSON to a record of this type."
-  (begin
-    (define-record-type rtd
-      (ctor field ...)
-      pred
-      (field getter) ...)
-
-    (define-json-reader json->record ctor
-      (field spec ...) ...)))
-
 (define %date-regexp
   ;; Match strings like "2014-11-17T22:09:38+01:00" or
   ;; "2018-09-30T23:20:07.815449+00:00"".
@@ -190,31 +163,77 @@ Software Heritage."
                                  (ref 10))))))
       str))                                       ;oops!
 
+(define string*
+  ;; Converts "string or #nil" coming from JSON to "string or #f".
+  (match-lambda
+    ((? string? str) str)
+    ((? null?) #f)))
+
+(define %allow-request?
+  ;; Takes a URL and method (e.g., the 'http-get' procedure) and returns true
+  ;; to keep going.  This can be used to disallow a requests when
+  ;; 'request-rate-limit-reached?' returns true, for instance.
+  (make-parameter (const #t)))
+
+;; The time when the rate limit for "/origin/save" POST requests and that of
+;; other requests will be reset.
+;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
+(define %save-rate-limit-reset-time 0)
+(define %general-rate-limit-reset-time 0)
+
+(define (request-rate-limit-reached? url method)
+  "Return true if the rate limit has been reached for URI."
+  (define uri
+    (string->uri url))
+
+  (define reset-time
+    (if (and (eq? method http-post)
+             (string-prefix? "/api/1/origin/save/" (uri-path uri)))
+        %save-rate-limit-reset-time
+        %general-rate-limit-reset-time))
+
+  (< (car (gettimeofday)) reset-time))
+
+(define (update-rate-limit-reset-time! url method response)
+  "Update the rate limit reset time for URL and METHOD based on the headers in
+RESPONSE."
+  (let ((uri (string->uri url)))
+    (match (assq-ref (response-headers response) 'x-ratelimit-reset)
+      ((= string->number (? number? reset))
+       (if (and (eq? method http-post)
+                (string-prefix? "/api/1/origin/save/" (uri-path uri)))
+           (set! %save-rate-limit-reset-time reset)
+           (set! %general-rate-limit-reset-time reset)))
+      (_
+       #f))))
+
 (define* (call url decode #:optional (method http-get)
                #:key (false-if-404? #t))
   "Invoke the endpoint at URL using METHOD.  Decode the resulting JSON body
 using DECODE, a one-argument procedure that takes an input port.  When
 FALSE-IF-404? is true, return #f upon 404 responses."
-  (let*-values (((response port)
-                 (method url #:streaming? #t)))
-    ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
-    (match (assq-ref (response-headers response) 'x-ratelimit-remaining)
-      (#f #t)
-      ((? (compose zero? string->number))
-       (throw 'swh-error url response))
-      (_ #t))
+  (and ((%allow-request?) url method)
+       (let*-values (((response port)
+                      (method url #:streaming? #t)))
+         ;; See <https://archive.softwareheritage.org/api/#rate-limiting>.
+         (match (assq-ref (response-headers response) 'x-ratelimit-remaining)
+           (#f #t)
+           ((? (compose zero? string->number))
+            (update-rate-limit-reset-time! url method response)
+            (throw 'swh-error url method response))
+           (_ #t))
 
-    (cond ((= 200 (response-code response))
-           (let ((result (decode port)))
-             (close-port port)
-             result))
-          ((and false-if-404?
-                (= 404 (response-code response)))
-           (close-port port)
-           #f)
-          (else
-           (close-port port)
-           (throw 'swh-error url response)))))
+         (cond ((= 200 (response-code response))
+                (let ((result (decode port)))
+                  (close-port port)
+                  result))
+               ((and false-if-404?
+                     (= 404 (response-code response)))
+                (close-port port)
+                #f)
+               (else
+                (close-port port)
+                (throw 'swh-error url method response))))))
 
 (define-syntax define-query
   (syntax-rules (path)
@@ -239,8 +258,8 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   (date visit-date "date" string->date*)
   (origin visit-origin)
   (url visit-url "origin_visit_url")
-  (snapshot-url visit-snapshot-url "snapshot_url")
-  (status visit-status)
+  (snapshot-url visit-snapshot-url "snapshot_url" string*) ;string | #f
+  (status visit-status "status" string->symbol)   ;'full | 'partial | 'ongoing
   (number visit-number "visit"))
 
 ;; <https://archive.softwareheritage.org/api/1/snapshot/4334c3ed4bb208604ed780d8687fe523837f1bd1/>
@@ -378,9 +397,11 @@ FALSE-IF-404? is true, return #f upon 404 responses."
           (map json->visit (vector->list (json->scm port))))))
 
 (define (visit-snapshot visit)
-  "Return the snapshot corresponding to VISIT."
-  (call (swh-url (visit-snapshot-url visit))
-        json->snapshot))
+  "Return the snapshot corresponding to VISIT or #f if no snapshot is
+available."
+  (and (visit-snapshot-url visit)
+       (call (swh-url (visit-snapshot-url visit))
+             json->snapshot)))
 
 (define (branch-target branch)
   "Return the target of BRANCH, either a <revision> or a <release>."
@@ -396,7 +417,7 @@ FALSE-IF-404? is true, return #f upon 404 responses."
   "Return a <revision> corresponding to the given TAG for the repository
 coming from URL.  Example:
 
-  (lookup-origin-release \"https://github.com/guix-mirror/guix/\" \"v0.8\")
+  (lookup-origin-revision \"https://github.com/guix-mirror/guix/\" \"v0.8\")
   => #<<revision> id: \"44941…\" …>
 
 The information is based on the latest visit of URL available.  Return #f if
@@ -404,7 +425,7 @@ URL could not be found."
   (match (lookup-origin url)
     (#f #f)
     (origin
-      (match (origin-visits origin)
+      (match (filter visit-snapshot-url (origin-visits origin))
         ((visit . _)
          (let ((snapshot (visit-snapshot visit)))
            (match (and=> (find (lambda (branch)
@@ -516,7 +537,7 @@ requested bundle cooking, waiting for completion...~%"))
 
 (define (commit-id? reference)
   "Return true if REFERENCE is likely a commit ID, false otherwise---e.g., if
-it is a tag name."
+it is a tag name.  This is based on a simple heuristic so use with care!"
   (and (= (string-length reference) 40)
        (string-every char-set:hex-digit reference)))
 
@@ -533,7 +554,8 @@ delete it when leaving the dynamic extent of this call."
       (lambda ()
         (false-if-exception (delete-file-recursively tmp-dir))))))
 
-(define (swh-download url reference output)
+(define* (swh-download url reference output
+                       #:key (log-port (current-error-port)))
   "Download from Software Heritage a checkout of the Git tag or commit
 REFERENCE originating from URL, and unpack it in OUTPUT.  Return #t on success
 and #f on failure.
@@ -545,21 +567,31 @@ wait until it becomes available, which could take several minutes."
              (lookup-revision reference)
              (lookup-origin-revision url reference))
     ((? revision? revision)
+     (format log-port "SWH: found revision ~a with directory at '~a'~%"
+             (revision-id revision)
+             (swh-url (revision-directory-url revision)))
      (call-with-temporary-directory
       (lambda (directory)
-        (let ((input (vault-fetch (revision-directory revision) 'directory))
-              (tar   (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
-          (dump-port input tar)
-          (close-port input)
-          (let ((status (close-pipe tar)))
-            (unless (zero? status)
-              (error "tar extraction failure" status)))
+        (match (vault-fetch (revision-directory revision) 'directory
+                            #:log-port log-port)
+          (#f
+           (format log-port
+                   "SWH: directory ~a could not be fetched from the vault~%"
+                   (revision-directory revision))
+           #f)
+          ((? port? input)
+           (let ((tar (open-pipe* OPEN_WRITE "tar" "-C" directory "-xzvf" "-")))
+             (dump-port input tar)
+             (close-port input)
+             (let ((status (close-pipe tar)))
+               (unless (zero? status)
+                 (error "tar extraction failure" status)))
 
-          (match (scandir directory)
-            (("." ".." sub-directory)
-             (copy-recursively (string-append directory "/" sub-directory)
-                               output
-                               #:log (%make-void-port "w"))
-             #t))))))
+             (match (scandir directory)
+               (("." ".." sub-directory)
+                (copy-recursively (string-append directory "/" sub-directory)
+                                  output
+                                  #:log (%make-void-port "w"))
+                #t))))))))
     (#f
      #f)))

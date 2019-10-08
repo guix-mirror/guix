@@ -71,7 +71,12 @@ is a trivial format string."
 (define* (%highlight-argument arg #:optional (port (guix-warning-port)))
   "Highlight ARG, a format string argument, if PORT supports colors."
   (cond ((string? arg)
-         (highlight arg port))
+         ;; If ARG contains white space, don't highlight it, on the grounds
+         ;; that it may be a complete message in its own, like those produced
+         ;; by 'guix lint.
+         (if (string-any char-set:whitespace arg)
+             arg
+             (highlight arg port)))
         ((symbol? arg)
          (highlight (symbol->string arg) port))
         (else arg)))

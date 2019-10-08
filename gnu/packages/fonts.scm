@@ -26,6 +26,7 @@
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
+;;; Copyright © 2019 Alva <alva@skogen.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,10 +52,13 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system font)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -63,7 +67,7 @@
 (define-public font-ibm-plex
   (package
     (name "font-ibm-plex")
-    (version "1.0.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -71,7 +75,7 @@
                     "v" version "/OpenType.zip"))
               (sha256
                (base32
-                "0nzxw9z6waixslam248yr26ci3fbk83c7jf6m90hncnaj6zxx795"))))
+                "1lv65z3qnqgh2w36daf5wyz0ma9rg1qj9s9lzlnva8l7q3h8c9b8"))))
     (build-system font-build-system)
     (home-page "https://github.com/IBM/plex")
     (synopsis "IBM Plex typeface")
@@ -182,7 +186,7 @@ itself."))))
 (define-public font-cantarell
   (package
     (name "font-abattis-cantarell")
-    (version "0.0.25")
+    (version "0.111")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
@@ -190,8 +194,11 @@ itself."))))
                                   "/cantarell-fonts-" version ".tar.xz"))
               (sha256
                (base32
-                "0zvkd8cm1cg2919v1js9qmzwa02sjl7qajj3gcvgqvai1fm2i8hl"))))
-    (build-system gnu-build-system)
+                "05hpnhihwm9sxlq1qn993g03pwkmpjbn0dvnba71r1gfjv0jp2w5"))))
+    (build-system meson-build-system)
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("gettext" ,gettext-minimal))) ;for msgfmt
     (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
     (synopsis "Cantarell sans-serif typeface")
     (description "The Cantarell font family is a contemporary Humanist
@@ -638,7 +645,7 @@ for use at smaller text sizes")))
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "12.1.02")
+    (version "12.1.03")
     (source
      (origin
        (method url-fetch)
@@ -648,7 +655,7 @@ for use at smaller text sizes")))
              (string-append "mirror://gnu/unifont/unifont-"
                             version "/unifont-" version ".tar.gz")))
        (sha256
-        (base32 "12wdxnlyz5gl5d7h6pazcz8d7h81fwkng1xrayxsgrzh6bqdq4p8"))))
+        (base32 "10mr3ax19v5pa6a791fk2j3k45fpa8n5r36kq9gs8lk95wfnxmf1"))))
     (build-system gnu-build-system)
     (outputs '("out"   ; TrueType version
                "pcf"   ; PCF (bitmap) version

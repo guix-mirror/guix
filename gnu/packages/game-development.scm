@@ -314,6 +314,16 @@ provide connectivity for client applications written in any language.")
         (base32
          "1pmvvm3sgnpngfa7884mqhq3fwdjh9sr0ca07ypnidcg0y341w53"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-pillow
+           (lambda _
+             ;; pillow's version is not in PIL.Image.VERSION anymore
+             (substitute* "nml/version_info.py"
+               (("from PIL import Image") "import PIL")
+               (("Image.VERSION") "PIL.__version__"))
+             #t)))))
     (propagated-inputs
      `(("python-pillow" ,python-pillow)
        ("python-ply" ,python-ply)))
@@ -1127,7 +1137,7 @@ of use.")
        ("libxt" ,libxt)
        ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph)
+       ("openscenegraph" ,openmw-openscenegraph)
        ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("unshield" ,unshield)))

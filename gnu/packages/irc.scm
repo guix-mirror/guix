@@ -5,7 +5,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,15 +166,14 @@ SILC and ICB protocols via plugins.")
 (define-public weechat
   (package
     (name "weechat")
-    (version "2.5")
+    (version "2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://weechat.org/files/src/weechat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "09sc5lf7z70x3iw87q4zh8rbyngsw89pwnzs5jk195zzqdspgj2j"))
-              (patches (search-patches "weechat-python.patch"))))
+                "0j2iflnfvv31q2l9r67r8aj3ipggqfm2r2dpy7pvdpxgwwq337ps"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -187,9 +186,11 @@ SILC and ICB protocols via plugins.")
               ("aspell" ,aspell)
               ("curl" ,curl)
               ("gnutls" ,gnutls)
+
+              ;; Scripting language plug-ins.
               ("guile" ,guile-2.0)
               ("lua" ,lua-5.1)
-              ("python" ,python-2)
+              ("python" ,python)
               ("perl" ,perl)
               ("tcl" ,tcl)))
     (arguments
@@ -214,14 +215,7 @@ SILC and ICB protocols via plugins.")
              (substitute* "tests/scripts/test-scripts.cpp"
                ((".*\\{ \"(javascript|php|ruby)\", " all)
                 (string-append "// SKIP" all)))
-             #t))
-         (add-after 'install 'wrap
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out"))
-                   (py2 (assoc-ref inputs "python")))
-               (wrap-program (string-append out "/bin/weechat")
-                 `("PATH" ":" prefix (,(string-append py2 "/bin"))))
-               #t))))))
+             #t)))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 @dfn{Internet Relay Chat} (IRC) client, which is designed to be light and fast.

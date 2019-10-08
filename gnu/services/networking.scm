@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (guix records)
   #:use-module (guix modules)
   #:use-module (guix deprecation)
+  #:use-module (rnrs enums)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -72,13 +74,22 @@
             dhcpd-configuration-pid-file
             dhcpd-configuration-interfaces
 
-            %ntp-servers
-
             ntp-configuration
             ntp-configuration?
+            ntp-configuration-ntp
+            ntp-configuration-servers
+            ntp-allow-large-adjustment?
+
+            %ntp-servers
+            ntp-server
+            ntp-server-type
+            ntp-server-address
+            ntp-server-options
+
             ntp-service
             ntp-service-type
 
+            %openntpd-servers
             openntpd-configuration
             openntpd-configuration?
             openntpd-service-type
@@ -134,7 +145,14 @@
             iptables-configuration-iptables
             iptables-configuration-ipv4-rules
             iptables-configuration-ipv6-rules
-            iptables-service-type))
+            iptables-service-type
+
+            nftables-service-type
+            nftables-configuration
+            nftables-configuration?
+            nftables-configuration-package
+            nftables-configuration-ruleset
+            %default-nftables-ruleset))
 
 ;;; Commentary:
 ;;;
@@ -292,30 +310,86 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
     (list (service-extension shepherd-root-service-type dhcpd-shepherd-service)
           (service-extension activation-service-type dhcpd-activation)))))
 
-(define %ntp-servers
-  ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
-  ;; Within Guix, Leo Famulari <leo@famulari.name> is the administrative contact
-  ;; for this NTP pool "zone".
-  '("0.guix.pool.ntp.org"
-    "1.guix.pool.ntp.org"
-    "2.guix.pool.ntp.org"
-    "3.guix.pool.ntp.org"))
-
 
 ;;;
 ;;; NTP.
 ;;;
 
-;; TODO: Export.
+(define ntp-server-types (make-enumeration
+                          '(pool
+                            server
+                            peer
+                            broadcast
+                            manycastclient)))
+
+(define-record-type* <ntp-server>
+  ntp-server make-ntp-server
+  ntp-server?
+  ;; The type can be one of the symbols of the NTP-SERVER-TYPE? enumeration.
+  (type ntp-server-type
+        (default 'server))
+  (address ntp-server-address)    ; a string
+  ;; The list of options can contain single option names or tuples in the form
+  ;; '(name value).
+  (options ntp-server-options
+           (default '())))
+
+(define (ntp-server->string ntp-server)
+  ;; Serialize the NTP server object as a string, ready to use in the NTP
+  ;; configuration file.
+  (define (flatten lst)
+    (reverse
+     (let loop ((x lst)
+                (res '()))
+       (if (list? x)
+           (fold loop res x)
+           (cons (format #f "~s" x) res)))))
+
+  (match ntp-server
+    (($ <ntp-server> type address options)
+     ;; XXX: It'd be neater if fields were validated at the syntax level (for
+     ;; static ones at least).  Perhaps the Guix record type could support a
+     ;; predicate property on a field?
+     (unless (enum-set-member? type ntp-server-types)
+       (error "Invalid NTP server type" type))
+     (string-join (cons* (symbol->string type)
+                         address
+                         (flatten options))))))
+
+(define %ntp-servers
+  ;; Default set of NTP servers. These URLs are managed by the NTP Pool project.
+  ;; Within Guix, Leo Famulari <leo@famulari.name> is the administrative contact
+  ;; for this NTP pool "zone".
+  (list
+   (ntp-server
+    (type 'pool)
+    (address "0.guix.pool.ntp.org")
+    (options '("iburst")))))               ;as recommended in the ntpd manual
+
 (define-record-type* <ntp-configuration>
   ntp-configuration make-ntp-configuration
   ntp-configuration?
   (ntp      ntp-configuration-ntp
             (default ntp))
-  (servers  ntp-configuration-servers
+  (servers  %ntp-configuration-servers   ;list of <ntp-server> objects
             (default %ntp-servers))
   (allow-large-adjustment? ntp-allow-large-adjustment?
-                           (default #f)))
+                           (default #t))) ;as recommended in the ntpd manual
+
+(define (ntp-configuration-servers ntp-configuration)
+  ;; A wrapper to support the deprecated form of this field.
+  (let ((ntp-servers (%ntp-configuration-servers ntp-configuration)))
+    (match ntp-servers
+      (((? string?) (? string?) ...)
+       (format (current-error-port) "warning: Defining NTP servers as strings is \
+deprecated.  Please use <ntp-server> records instead.\n")
+       (map (lambda (addr)
+              (ntp-server
+               (type 'server)
+               (address addr)
+               (options '()))) ntp-servers))
+      ((($ <ntp-server>) ($ <ntp-server>) ...)
+       ntp-servers))))
 
 (define ntp-shepherd-service
   (match-lambda
@@ -324,18 +398,21 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
        ;; TODO: Add authentication support.
        (define config
          (string-append "driftfile /var/run/ntpd/ntp.drift\n"
-                        (string-join (map (cut string-append "server " <>)
-                                          servers)
+                        (string-join (map ntp-server->string servers)
                                      "\n")
                         "
 # Disable status queries as a workaround for CVE-2013-5211:
 # <http://support.ntp.org/bin/view/Main/SecurityNotice#DRDoS_Amplification_Attack_using>.
-restrict default kod nomodify notrap nopeer noquery
-restrict -6 default kod nomodify notrap nopeer noquery
+restrict default kod nomodify notrap nopeer noquery limited
+restrict -6 default kod nomodify notrap nopeer noquery limited
 
 # Yet, allow use of the local 'ntpq'.
 restrict 127.0.0.1
-restrict -6 ::1\n"))
+restrict -6 ::1
+
+# This is required to use servers from a pool directive when using the 'nopeer'
+# option by default, as documented in the 'ntp.conf' manual.
+restrict source notrap nomodify noquery\n"))
 
        (define ntpd.conf
          (plain-file "ntpd.conf" config))
@@ -409,6 +486,9 @@ make an initial adjustment of more than 1,000 seconds."
 ;;; OpenNTPD.
 ;;;
 
+(define %openntpd-servers
+  (map ntp-server-address %ntp-servers))
+
 (define-record-type* <openntpd-configuration>
   openntpd-configuration make-openntpd-configuration
   openntpd-configuration?
@@ -422,9 +502,9 @@ make an initial adjustment of more than 1,000 seconds."
   (sensor                  openntpd-sensor
                            (default '()))
   (server                  openntpd-server
-                           (default %ntp-servers))
-  (servers                 openntpd-servers
                            (default '()))
+  (servers                 openntpd-servers
+                           (default %openntpd-servers))
   (constraint-from         openntpd-constraint-from
                            (default '()))
   (constraints-from        openntpd-constraints-from
@@ -432,45 +512,58 @@ make an initial adjustment of more than 1,000 seconds."
   (allow-large-adjustment? openntpd-allow-large-adjustment?
                            (default #f))) ; upstream default
 
-(define (openntpd-shepherd-service config)
+(define (openntpd-configuration->string config)
+
+  (define (quote-field? name)
+    (member name '("constraints from")))
+
   (match-record config <openntpd-configuration>
-    (openntpd listen-on query-from sensor server servers constraint-from
-              constraints-from allow-large-adjustment?)
-    (let ()
-      (define config
-        (string-join
-          (filter-map
-            (lambda (field value)
-              (string-join
-                (map (cut string-append field <> "\n")
-                     value)))
-            '("listen on " "query from " "sensor " "server " "servers "
-              "constraint from ")
-            (list listen-on query-from sensor server servers constraint-from))
-          ;; The 'constraints from' field needs to be enclosed in double quotes.
-          (string-join
-            (map (cut string-append "constraints from \"" <> "\"\n")
-                 constraints-from))))
+    (listen-on query-from sensor server servers constraint-from
+               constraints-from)
+    (string-append
+     (string-join
+      (concatenate
+       (filter-map (lambda (field values)
+                     (match values
+                       (() #f)          ;discard entry with filter-map
+                       ((val ...)       ;validate value type
+                        (map (lambda (value)
+                               (if (quote-field? field)
+                                   (format #f "~a \"~a\"" field value)
+                                   (format #f "~a ~a" field value)))
+                             values))))
+                   ;; The entry names.
+                   '("listen on" "query from" "sensor" "server" "servers"
+                     "constraint from" "constraints from")
+                   ;; The corresponding entry values.
+                   (list listen-on query-from sensor server servers
+                         constraint-from constraints-from)))
+      "\n")
+     "\n")))                              ;add a trailing newline
 
-      (define ntpd.conf
-        (plain-file "ntpd.conf" config))
+(define (openntpd-shepherd-service config)
+  (let ((openntpd (openntpd-configuration-openntpd config))
+        (allow-large-adjustment? (openntpd-allow-large-adjustment? config)))
 
-      (list (shepherd-service
-              (provision '(ntpd))
-              (documentation "Run the Network Time Protocol (NTP) daemon.")
-              (requirement '(user-processes networking))
-              (start #~(make-forkexec-constructor
-                         (list (string-append #$openntpd "/sbin/ntpd")
-                               "-f" #$ntpd.conf
-                               "-d" ;; don't daemonize
-                               #$@(if allow-large-adjustment?
-                                    '("-s")
-                                    '()))
-                         ;; When ntpd is daemonized it repeatedly tries to respawn
-                         ;; while running, leading shepherd to disable it.  To
-                         ;; prevent spamming stderr, redirect output to logfile.
-                         #:log-file "/var/log/ntpd"))
-              (stop #~(make-kill-destructor)))))))
+    (define ntpd.conf
+      (plain-file "ntpd.conf" (openntpd-configuration->string config)))
+
+    (list (shepherd-service
+           (provision '(ntpd))
+           (documentation "Run the Network Time Protocol (NTP) daemon.")
+           (requirement '(user-processes networking))
+           (start #~(make-forkexec-constructor
+                     (list (string-append #$openntpd "/sbin/ntpd")
+                           "-f" #$ntpd.conf
+                           "-d" ;; don't daemonize
+                           #$@(if allow-large-adjustment?
+                                  '("-s")
+                                  '()))
+                     ;; When ntpd is daemonized it repeatedly tries to respawn
+                     ;; while running, leading shepherd to disable it.  To
+                     ;; prevent spamming stderr, redirect output to logfile.
+                     #:log-file "/var/log/ntpd"))
+           (stop #~(make-kill-destructor))))))
 
 (define (openntpd-service-activation config)
   "Return the activation gexp for CONFIG."
@@ -1329,5 +1422,77 @@ COMMIT
    (extensions
     (list (service-extension shepherd-root-service-type
                              (compose list iptables-shepherd-service))))))
+
+;;;
+;;; nftables
+;;;
+
+(define %default-nftables-ruleset
+  (plain-file "nftables.conf"
+              "# A simple and safe firewall
+table inet filter {
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    # early drop of invalid connections
+    ct state invalid drop
+
+    # allow established/related connections
+    ct state { established, related } accept
+
+    # allow from loopback
+    iifname lo accept
+
+    # allow icmp
+    ip protocol icmp accept
+    ip6 nexthdr icmpv6 accept
+
+    # allow ssh
+    tcp dport ssh accept
+
+    # reject everything else
+    reject with icmpx type port-unreachable
+  }
+  chain forward {
+    type filter hook forward priority 0; policy drop;
+  }
+  chain output {
+    type filter hook output priority 0; policy accept;
+  }
+}
+"))
+
+(define-record-type* <nftables-configuration>
+  nftables-configuration
+  make-nftables-configuration
+  nftables-configuration?
+  (package nftables-configuration-package
+           (default nftables))
+  (ruleset nftables-configuration-ruleset ; file-like object
+           (default %default-nftables-ruleset)))
+
+(define nftables-shepherd-service
+  (match-lambda
+    (($ <nftables-configuration> package ruleset)
+     (let ((nft (file-append package "/sbin/nft")))
+       (shepherd-service
+        (documentation "Packet filtering and classification")
+        (provision '(nftables))
+        (start #~(lambda _
+                   (invoke #$nft "--file" #$ruleset)))
+        (stop #~(lambda _
+                  (invoke #$nft "flush" "ruleset"))))))))
+
+(define nftables-service-type
+  (service-type
+   (name 'nftables)
+   (description
+    "Run @command{nft}, setting up the specified ruleset.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list nftables-shepherd-service))
+          (service-extension profile-service-type
+                             (compose list nftables-configuration-package))))
+   (default-value (nftables-configuration))))
 
 ;;; networking.scm ends here

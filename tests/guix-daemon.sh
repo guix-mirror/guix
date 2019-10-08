@@ -141,7 +141,7 @@ daemon_pid=$!
 
 GUIX_DAEMON_SOCKET="$socket" \
 guile -c '
-  (use-modules (guix) (gnu packages) (guix tests))
+  (use-modules (guix) (guix tests))
 
   (with-store store
     (let* ((build  (add-text-to-store store "build.sh"
@@ -165,7 +165,7 @@ kill "$daemon_pid"
 # honored.
 
 client_code='
-  (use-modules (guix) (gnu packages) (guix tests) (srfi srfi-34))
+  (use-modules (guix) (guix tests) (srfi srfi-34))
 
   (with-store store
     (let* ((build  (add-text-to-store store "build.sh"

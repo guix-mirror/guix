@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -198,28 +199,30 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive-3.3.3)
-    (version "3.3.2")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://libarchive.org/downloads/libarchive-"
-                           version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2017-14166.patch"
-                                "libarchive-CVE-2017-14502.patch"))
+       (uri (list (string-append "https://libarchive.org/downloads/libarchive-"
+                                 version ".tar.gz")
+                  (string-append "https://github.com/libarchive/libarchive"
+                                 "/releases/download/v" version "/libarchive-"
+                                 version ".tar.gz")))
        (sha256
         (base32
-         "1km0mzfl6in7l5vz9kl09a88ajx562rw93ng9h2jqavrailvsbgd"))))
+         "0pl25mmz1b1cnwf35kxmygyy9g7z7hslxbx329a9yx8csh7dahw6"))))
     (build-system gnu-build-system)
     (inputs
-     `(("zlib" ,zlib)
-       ("nettle" ,nettle)
-       ("lzo" ,lzo)
-       ("bzip2" ,bzip2)
+     `(("bzip2" ,bzip2)
        ("libxml2" ,libxml2)
-       ("xz" ,xz)))
+       ("lzo" ,lzo)
+       ("nettle" ,nettle)
+       ("xz" ,xz)
+       ("zlib" ,zlib)
+       ("zstd" ,zstd "lib")))
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--disable-static")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'build 'patch-pwd
            (lambda _
@@ -232,6 +235,13 @@ backups (called chunks) to allow easy burning to CD/DVD.")
              ;; test_write_disk_lookup tests expect user 'root' to exist, but
              ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
              ;;
+             ;; XXX: Adjust test that fails with zstd 1.4.1 because the default
+             ;; options compresses two bytes better than this test expects.
+             ;; https://github.com/libarchive/libarchive/issues/1226
+             (substitute* "libarchive/test/test_write_filter_zstd.c"
+               (("compression-level\", \"6\"")
+                "compression-level\", \"7\""))
+
              ;; The tests allow one to disable tests matching a globbing pattern.
              (invoke "make" "libarchive_test" "bsdcpio_test" "bsdtar_test")
              ;; XXX: This glob disables too much.
@@ -246,8 +256,11 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                     (libxml2 (assoc-ref inputs "libxml2"))
                     (xz      (assoc-ref inputs "xz"))
                     (zlib    (assoc-ref inputs "zlib"))
+                    (zstd    (assoc-ref inputs "zstd"))
                     (bzip2   (assoc-ref inputs "bzip2")))
-               (substitute* (string-append lib "/pkgconfig/libarchive.pc")
+               ;; Embed absolute references to these inputs to avoid propagation.
+               (substitute* (list (string-append lib "/pkgconfig/libarchive.pc")
+                                  (string-append lib "/libarchive.la"))
                  (("-lnettle")
                   (string-append "-L" nettle "/lib -lnettle"))
                  (("-lxml2")
@@ -256,13 +269,11 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                   (string-append "-L" xz "/lib -llzma"))
                  (("-lz")
                   (string-append "-L" zlib "/lib -lz"))
+                 (("-lzstd")
+                  (string-append "-L" zstd "/lib -lzstd"))
                  (("-lbz2")
                   (string-append "-L" bzip2 "/lib -lbz2")))
-               #t))))
-
-       ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
-       ;; compiled with C99 or C11 or a gnu variant.
-       #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
+               #t))))))
     (home-page "https://libarchive.org/")
     (synopsis "Multi-format archive and compression library")
     (description
@@ -274,22 +285,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define-public libarchive-3.3.3
-  (package
-    (inherit libarchive)
-    (version "3.3.3")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://libarchive.org/downloads/libarchive-"
-                           version ".tar.gz"))
-       (patches (search-patches "libarchive-CVE-2018-1000877.patch"
-                                "libarchive-CVE-2018-1000878.patch"
-                                "libarchive-CVE-2018-1000880.patch"))
-       (sha256
-        (base32
-         "0bhfncid058p7n1n8v29l6wxm3mhdqfassscihbsxfwz3iwb2zms"))))))
 
 (define-public rdup
   (package

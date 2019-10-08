@@ -313,7 +313,7 @@ be logged:
 Multiple filters can be defined in a single filters statement, they just
 need to be separated by spaces.")
   (log-outputs
-    (string "3:stderr")
+    (string "3:syslog:libvirtd")
     "Logging outputs.
 
 An output is one of the places to save logging information
@@ -432,7 +432,10 @@ potential infinite waits blocking libvirt."))
            (provision '(libvirtd))
            (start #~(make-forkexec-constructor
                      (list (string-append #$libvirt "/sbin/libvirtd")
-                           "-f" #$config-file)))
+                           "-f" #$config-file)
+                     #:environment-variables
+                     ;; For finding qemu binaries.
+                     '("PATH=/run/current-system/profile/bin")))
            (stop #~(make-kill-destructor))))))
 
 (define libvirt-service-type
@@ -442,8 +445,10 @@ potential infinite waits blocking libvirt."))
                   (service-extension polkit-service-type
                                      (compose list libvirt-configuration-libvirt))
                   (service-extension profile-service-type
-                                     (compose list
-                                              libvirt-configuration-libvirt))
+                                     (lambda (config)
+                                       (list
+                                        (libvirt-configuration-libvirt config)
+                                        qemu)))
                   (service-extension activation-service-type
                                      %libvirt-activation)
                   (service-extension shepherd-root-service-type

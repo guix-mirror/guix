@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015, 2018 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2018 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -15,6 +15,7 @@
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +77,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.32")
+    (version "1.36")
     (source
      (origin
       (method url-fetch)
@@ -84,7 +85,16 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1jj08ns4sh1hmafqp1giskvdicdz18la516va26jycy27kkwaif3"))))
+        "0z696dmhfxm2n6pmr8b857wwljq9h633yi99bhbn7h88f91rigds"))
+      (patches (search-patches "libgpg-error-gawk-compat.patch"))
+      ;; XXX: Remove this snippet with the gawk patch above.  It avoids having
+      ;; to call autoreconf for the Makefile.am change to take effect.
+      (modules '((guix build utils)))
+      (snippet
+       '(begin
+          (substitute* "src/Makefile.in"
+            (("namespace=errnos") "pkg_namespace=errnos"))
+          #t))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -100,16 +110,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.8.3")
+    (version "1.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0z5gs1khzyknyfjr19k8gk4q148s6q987ya85cpn0iv70fz91v36"))
-             (patches
-              (search-patches "libgcrypt-make-yat2m-reproducible.patch"))))
+               "09r27ywj9zplq6n9qw3mn7zmvf6y2jdmwx5d1kg8yqkj0qx18f7n"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))
@@ -434,7 +442,7 @@ gpgpme starting with version 1.7.")
 (define-public guile-gcrypt
   (package
     (name "guile-gcrypt")
-    (version "0.1.0")
+    (version "0.2.0")
     (home-page "https://notabug.org/cwebber/guile-gcrypt")
     (source (origin
               (method git-fetch)
@@ -443,7 +451,7 @@ gpgpme starting with version 1.7.")
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "1lhgh3105yi0ggrjsjibv4wp1ipz8s17pa820hk2wln3rc04wpvf"))
+                "1mhc5m4xygkfj7x18f8apiqpfdn9mrql0am5sk13cf5xn8x1r63z"))
               (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -468,6 +476,14 @@ interface (FFI) of Guile.")
     (name "guile2.0-gcrypt")
     (inputs
      `(("guile" ,guile-2.0)
+       ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
+
+(define-public guile3.0-gcrypt
+  (package
+    (inherit guile-gcrypt)
+    (name "guile3.0-gcrypt")
+    (inputs
+     `(("guile" ,guile-next)
        ,@(alist-delete "guile" (package-inputs guile-gcrypt))))))
 
 (define-public python-gpg
@@ -906,6 +922,34 @@ qualities.  To reconstruct a secret key, you re-enter those
 bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
 them to transform your existing public key into a secret key.")
     (license license:gpl2+)))
+
+(define-public pgpdump
+  (package
+    (name "pgpdump")
+    (version "0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.mew.org/~kazu/proj/pgpdump/pgpdump-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1j001jra2m89n6cys3n0hs574bipjdzfxhzpnd4jfyv95mqwl7n4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no make check
+       #:configure-flags (list "--prefix=/")
+       #:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out")))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (home-page "https://www.mew.org/~kazu/proj/pgpdump/en/")
+    (synopsis "PGP packet visualizer")
+    (description "pgpdump displays the sequence of OpenPGP or PGP version 2
+packets from a file.
+
+The output of this command is similar to GnuPG's list packets command,
+however, pgpdump produces more detailed and easier to understand output.")
+    (license license:bsd-3)))
 
 (define-public gpa
   (package

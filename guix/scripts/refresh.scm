@@ -285,10 +285,9 @@ update would trigger a complete rebuild."
   (exit 0))
 
 (define (warn-no-updater package)
-  (format (current-error-port)
-          (G_ "~a: warning: no updater for ~a~%")
-          (location->string (package-location package))
-          (package-name package)))
+  (warning (package-location package)
+           (G_ "no updater for ~a~%")
+           (package-name package)))
 
 (define* (update-package store package updaters
                          #:key (key-download 'interactive) warn?)
@@ -306,11 +305,10 @@ warn about packages that have no matching updater."
         (when version
           (if (and=> tarball file-exists?)
               (begin
-                (format (current-error-port)
-                        (G_ "~a: ~a: updating from version ~a to version ~a...~%")
-                        (location->string loc)
-                        (package-name package)
-                        (package-version package) version)
+                (info loc
+                      (G_ "~a: updating from version ~a to version ~a...~%")
+                      (package-name package)
+                      (package-version package) version)
                 (for-each
                  (lambda (change)
                    (format (current-error-port)
@@ -350,31 +348,36 @@ WARN? is true and no updater exists for PACKAGE, print a warning."
        (case (version-compare (upstream-source-version source)
                               (package-version package))
          ((>)
-          (format (current-error-port)
-                  (G_ "~a: ~a would be upgraded from ~a to ~a~%")
-                  (location->string loc)
-                  (package-name package) (package-version package)
-                  (upstream-source-version source)))
+          (info loc
+                (G_ "~a would be upgraded from ~a to ~a~%")
+                (package-name package) (package-version package)
+                (upstream-source-version source)))
          ((=)
           (when warn?
-            (format (current-error-port)
-                    (G_ "~a: info: ~a is already the latest version of ~a~%")
-                    (location->string loc)
-                    (package-version package)
-                    (package-name package))))
+            (info loc
+                  (G_ "~a is already the latest version of ~a~%")
+                  (package-version package)
+                  (package-name package))))
          (else
           (when warn?
-            (format (current-error-port)
-                    (G_ "~a: warning: ~a is greater than \
+            (warning loc
+                     (G_ "~a is greater than \
 the latest known version of ~a (~a)~%")
-                    (location->string loc)
-                    (package-version package)
-                    (package-name package)
-                    (upstream-source-version source)))))))
+                     (package-version package)
+                     (package-name package)
+                     (upstream-source-version source)))))))
     (#f
      (when warn?
-       (warn-no-updater package)))))
-
+       ;; Distinguish between "no updater" and "failing updater."
+       (match (lookup-updater package updaters)
+         ((? upstream-updater? updater)
+          (warning (package-location package)
+                   (G_ "'~a' updater failed to determine available \
+releases for ~a~%")
+                   (upstream-updater-name updater)
+                   (package-name package)))
+         (#f
+          (warn-no-updater package)))))))
 
 
 ;;;

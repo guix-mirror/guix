@@ -48,8 +48,8 @@ Copyright @copyright{} 2017 humanitiesNerd@*
 Copyright @copyright{} 2017 Christopher Allan Webber@*
 Copyright @copyright{} 2017, 2018 Marius Bakke@*
 Copyright @copyright{} 2017 Hartmut Goebel@*
-Copyright @copyright{} 2017 Maxim Cournoyer@*
-Copyright @copyright{} 2017, 2018 Tobias Geerinckx-Rice@*
+Copyright @copyright{} 2017, 2019 Maxim Cournoyer@*
+Copyright @copyright{} 2017, 2018, 2019 Tobias Geerinckx-Rice@*
 Copyright @copyright{} 2017 George Clemmer@*
 Copyright @copyright{} 2017 Andy Wingo@*
 Copyright @copyright{} 2017, 2018, 2019 Arun Isaac@*
@@ -513,6 +513,7 @@ ready to use it.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 * Application Setup::           Application-specific setup.
+* Upgrading Guix::              Upgrading Guix and its build daemon.
 @end menu
 
 @node Binary Installation
@@ -794,22 +795,6 @@ GNU Coding Standards}).  The @command{configure} script protects against
 unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
-@cindex Nix, compatibility
-When a working installation of @url{https://nixos.org/nix/, the Nix package
-manager} is available, you
-can instead configure Guix with @code{--disable-daemon}.  In that case,
-Nix replaces the three dependencies above.
-
-Guix is compatible with Nix, so it is possible to share the same store
-between both.  To do so, you must pass @command{configure} not only the
-same @code{--with-store-dir} value, but also the same
-@code{--localstatedir} value.  The latter is essential because it
-specifies where the database that stores metadata about the store is
-located, among other things.  The default values for Nix are
-@code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
-Note that @code{--disable-daemon} is not required if
-your goal is to share the store with Nix.
-
 @node Running the Test Suite
 @section Running the Test Suite
 
@@ -1035,7 +1020,7 @@ build are copied back to the initial machine.
 
 The @file{/etc/guix/machines.scm} file typically looks like this:
 
-@example
+@lisp
 (list (build-machine
         (name "eightysix.example.org")
         (system "x86_64-linux")
@@ -1051,7 +1036,7 @@ The @file{/etc/guix/machines.scm} file typically looks like this:
         (private-key
          (string-append (getenv "HOME")
                         "/.ssh/identity-for-guix"))))
-@end example
+@end lisp
 
 @noindent
 In the example above we specify a list of two build machines, one for
@@ -1724,8 +1709,8 @@ to make sure your TrueType fonts are listed there.
 After installing fonts you may have to refresh the font cache to use
 them in applications.  The same applies when applications installed via
 Guix do not seem to find fonts.  To force rebuilding of the font cache
-run @code{fc-cache -f}.  The @code{fc-cache} command is provided by the
-@code{fontconfig} package.
+run @code{fc-cache -rv}.  The @code{fc-cache} command is provided by
+the @code{fontconfig} package.
 
 @subsection X.509 Certificates
 
@@ -1776,6 +1761,40 @@ passed to the linker, add corresponding @code{-rpath} arguments, and
 invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
 @code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
+
+@node Upgrading Guix
+@section Upgrading Guix
+
+@cindex Upgrading Guix, on a foreign distro
+
+To upgrade Guix, run:
+
+@example
+guix pull
+@end example
+
+@xref{Invoking guix pull}, for more information.
+
+@cindex upgrading Guix for the root user, on a foreign distro
+@cindex upgrading the Guix daemon, on a foreign distro
+@cindex @command{guix pull} for the root user, on a foreign distro
+
+On a foreign distro, you can upgrade the build daemon by running:
+
+@example
+sudo -i guix pull
+@end example
+
+@noindent
+followed by (assuming your distro uses the systemd service management
+tool):
+
+@example
+systemctl restart guix-daemon.service
+@end example
+
+On Guix System, upgrading the daemon is achieved by reconfiguring the
+system (@pxref{Invoking guix system, @code{guix system reconfigure}}).
 
 @c TODO What else?
 
@@ -2431,7 +2450,7 @@ Create a disk image that will hold the installed system.  To make a
 qcow2-formatted disk image, use the @command{qemu-img} command:
 
 @example
-qemu-img create -f qcow2 guixsd.img 50G
+qemu-img create -f qcow2 guix-system.img 50G
 @end example
 
 The resulting file will be much smaller than 50 GB (typically less than
@@ -2442,17 +2461,13 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
-  -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
-  -drive file=guixsd.img
+  -net user -net nic,model=virtio -boot menu=on,order=d \
+  -drive file=guix-system.img \
+  -drive media=cdrom,file=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
 
-The ordering of the drives matters.  @code{-enable-kvm} is optional, but
-significantly improves performance, @pxref{Running Guix in a VM}.
-
-In the VM console, quickly press the @kbd{F12} key to enter the boot
-menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
-selection.
+@code{-enable-kvm} is optional, but significantly improves performance,
+@pxref{Running Guix in a VM}.
 
 @item
 You're now root in the VM, proceed with the installation process.
@@ -2460,7 +2475,7 @@ You're now root in the VM, proceed with the installation process.
 @end enumerate
 
 Once installation is complete, you can boot the system that's on your
-@file{guixsd.img} image.  @xref{Running Guix in a VM}, for how to do
+@file{guix-system.img} image.  @xref{Running Guix in a VM}, for how to do
 that.
 
 @node Building the Installation Image
@@ -2657,7 +2672,9 @@ For your convenience, we also provide the following aliases:
 @item
 @command{guix remove} is an alias for @command{guix package -r},
 @item
-and @command{guix upgrade} is an alias for @command{guix package -u}.
+@command{guix upgrade} is an alias for @command{guix package -u},
+@item
+and @command{guix show} is an alias for @command{guix package --show=}.
 @end itemize
 
 These aliases are less expressive than @command{guix package} and provide
@@ -2756,9 +2773,9 @@ Install the package that the code within @var{file} evaluates to.
 As an example, @var{file} might contain a definition like this
 (@pxref{Defining Packages}):
 
-@example
-@verbatiminclude package-hello.scm
-@end example
+@lisp
+@include package-hello.scm
+@end lisp
 
 Developers may find it useful to include such a @file{guix.scm} file
 in the root of their project source tree that can be used to test
@@ -2814,7 +2831,7 @@ so on.
 of packages:
 
 @findex packages->manifest
-@example
+@lisp
 (use-package-modules guile emacs)
 
 (packages->manifest
@@ -2822,7 +2839,7 @@ of packages:
        guile-2.0
        ;; Use a specific package output.
        (list guile-2.0 "debug")))
-@end example
+@end lisp
 
 @findex specifications->manifest
 In this example we have to know which modules define the @code{emacs}
@@ -2832,10 +2849,10 @@ instead provide regular package specifications and let
 @code{specifications->manifest} look up the corresponding package
 objects, like this:
 
-@example
+@lisp
 (specifications->manifest
  '("emacs" "guile@@2.2" "guile@@2.2:debug"))
-@end example
+@end lisp
 
 @item --roll-back
 @cindex rolling back
@@ -2915,6 +2932,38 @@ variable, even though, taken individually, neither @file{foo} nor
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
+
+@var{profile} must be the name of a file that will be created upon
+completion.  Concretely, @var{profile} will be a mere symbolic link
+(``symlink'') pointing to the actual profile where packages are
+installed:
+
+@example
+$ guix install hello -p ~/code/my-profile
+@dots{}
+$ ~/code/my-profile/bin/hello
+Hello, world!
+@end example
+
+All it takes to get rid of the profile is to remove this symlink and its
+siblings that point to specific generations:
+
+@example
+$ rm ~/code/my-profile ~/code/my-profile-*-link
+@end example
+
+@item --list-profiles
+List all the user's profiles:
+
+@example
+$ guix package --list-profiles
+/home/charlie/.guix-profile
+/home/charlie/code/my-profile
+/home/charlie/code/devel-profile
+/home/charlie/tmp/test
+@end example
+
+When running as root, list all the profiles of all the users.
 
 @cindex collisions, in a profile
 @cindex colliding packages in profiles
@@ -3020,9 +3069,9 @@ version: 3.3.5
 @end example
 
 You may also specify the full name of a package to only get details about a
-specific version of it:
+specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix package --show=python@@3.4 | recsel -p name,version
+$ guix show python@@3.4 | recsel -p name,version
 name: python
 version: 3.4.3
 @end example
@@ -3496,6 +3545,10 @@ This prints nothing unless the daemon was started with
 List the GC roots owned by the user; when run as root, list @emph{all} the GC
 roots.
 
+@item --list-busy
+List store items in use by currently running processes.  These store
+items are effectively considered GC roots: they cannot be deleted.
+
 @item --clear-failures
 Remove the specified store items from the failed-build cache.
 
@@ -3620,7 +3673,7 @@ version.  New @command{guix} sub-commands added by the update also
 become available.
 
 Any user can update their Guix copy using @command{guix pull}, and the
-effect is limited to the user who run @command{guix pull}.  For
+effect is limited to the user who ran @command{guix pull}.  For
 instance, when user @code{root} runs @command{guix pull}, this has no
 effect on the version of Guix that user @code{alice} sees, and vice
 versa.
@@ -3669,11 +3722,20 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 @xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
-This @code{~/.config/guix/current} profile works like any other profile
-created by @command{guix package} (@pxref{Invoking guix package}).  That
+This @code{~/.config/guix/current} profile works exactly like the profiles
+created by @command{guix package} (@pxref{Invoking guix package}). That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
+@example
+$ guix pull --roll-back
+switched from generation 3 to 2
+$ guix pull --delete-generations=1
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
+@end example
+
+You can also use @command{guix package} (@pxref{Invoking guix package})
+to manage the profile by naming it explicitly:
 @example
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
@@ -3705,13 +3767,16 @@ Read the list of channels from @var{file} instead of
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
+@cindex channel news
 @item --news
 @itemx -N
-Display the list of packages added or upgraded since the previous generation.
+Display the list of packages added or upgraded since the previous
+generation, as well as, occasionally, news written by channel authors
+for their users (@pxref{Channels, Writing Channel News}).
 
-This is the same information as displayed upon @command{guix pull} completion,
-but without ellipses; it is also similar to the output of @command{guix pull
--l} for the last generation (see below).
+The package information is the same as displayed upon @command{guix
+pull} completion, but without ellipses; it is also similar to the output
+of @command{guix pull -l} for the last generation (see below).
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
@@ -3719,6 +3784,40 @@ List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
 is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
+
+@item --roll-back
+@cindex rolling back
+@cindex undoing transactions
+@cindex transactions, undoing
+Roll back to the previous @dfn{generation} of @file{~/.config/guix/current}---i.e.,
+undo the last transaction.
+
+@item --switch-generation=@var{pattern}
+@itemx -S @var{pattern}
+@cindex generations
+Switch to a particular generation defined by @var{pattern}.
+
+@var{pattern} may be either a generation number or a number prefixed
+with ``+'' or ``-''.  The latter means: move forward/backward by a
+specified number of generations.  For example, if you want to return to
+the latest generation after @code{--roll-back}, use
+@code{--switch-generation=+1}.
+
+@item --delete-generations[=@var{pattern}]
+@itemx -d [@var{pattern}]
+When @var{pattern} is omitted, delete all generations except the current
+one.
+
+This command accepts the same patterns as @option{--list-generations}.
+When @var{pattern} is specified, delete the matching generations.  When
+@var{pattern} specifies a duration, generations @emph{older} than the
+specified duration match.  For instance, @code{--delete-generations=1m}
+deletes generations that are more than one month old.
+
+If the current generation matches, it is @emph{not} deleted.
+
+Note that deleting generations prevents rolling back to them.
+Consequently, this command must be used with care.
 
 @xref{Invoking guix describe}, for a way to display information about the
 current generation only.
@@ -3941,6 +4040,68 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex news, for channels
+@subsection Writing Channel News
+
+Channel authors may occasionally want to communicate to their users
+information about important changes in the channel.  You'd send them all
+an email, but that's not convenient.
+
+Instead, channels can provide a @dfn{news file}; when the channel users
+run @command{guix pull}, that news file is automatically read and
+@command{guix pull --news} can display the announcements that correspond
+to the new commits that have been pulled, if any.
+
+To do that, channel authors must first declare the name of the news file
+in their @file{.guix-channel} file:
+
+@lisp
+(channel
+  (version 0)
+  (news-file "etc/news.txt"))
+@end lisp
+
+The news file itself, @file{etc/news.txt} in this example, must look
+something like this:
+
+@lisp
+(channel-news
+  (version 0)
+  (entry (tag "the-bug-fix")
+         (title (en "Fixed terrible bug")
+                (fr "Oh la la"))
+         (body (en "@@emph@{Good news@}!  It's fixed!")
+               (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
+         (title (en "Added a great package")
+                (ca "Què vol dir guix?"))
+         (body (en "Don't miss the @@code@{hello@} package!"))))
+@end lisp
+
+The file consists of a list of @dfn{news entries}.  Each entry is
+associated with a commit or tag: it describes changes made in this
+commit, possibly in preceding commits as well.  Users see entries only
+the first time they obtain the commit the entry refers to.
+
+The @code{title} field should be a one-line summary while @code{body}
+can be arbitrarily long, and both can contain Texinfo markup
+(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
+a list of language tag/message tuples, which allows @command{guix pull}
+to display news in the language that corresponds to the user's locale.
+
+If you want to translate news using a gettext-based workflow, you can
+extract translatable strings with @command{xgettext} (@pxref{xgettext
+Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
+you write news entries in English first, the command below creates a PO
+file containing the strings to translate:
+
+@example
+xgettext -o news.po -l scheme -ken etc/news.scm
+@end example
+
+To sum up, yes, you could use your channel as a blog.  But beware, this
+is @emph{not quite} what your users might expect.
 
 @subsection Replicating Guix
 
@@ -4548,9 +4709,9 @@ within @var{file} evaluates to.
 As an example, @var{file} might contain a definition like this
 (@pxref{Defining Packages}):
 
-@example
+@lisp
 @verbatiminclude environment-gdb.scm
-@end example
+@end lisp
 
 @item --manifest=@var{file}
 @itemx -m @var{file}
@@ -4831,7 +4992,9 @@ specified binaries and symlinks.
 @item docker
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-Docker Image Specification}.
+Docker Image Specification}.  The ``repository name'' as it appears in
+the output of the @command{docker images} command is computed from
+package names passed on the command line or in the manifest file.
 
 @item squashfs
 This produces a SquashFS image containing all the specified binaries and
@@ -5124,7 +5287,7 @@ The high-level interface to package definitions is implemented in the
 example, the package definition, or @dfn{recipe}, for the GNU Hello
 package looks like this:
 
-@example
+@lisp
 (define-module (gnu packages hello)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -5150,7 +5313,7 @@ package looks like this:
     (description "Guess what GNU Hello prints!")
     (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
-@end example
+@end lisp
 
 @noindent
 Without being a Scheme expert, the reader may have guessed the meaning
@@ -5331,7 +5494,7 @@ the name of a package and returns its new name after rewrite.
 @noindent
 Consider this example:
 
-@example
+@lisp
 (define libressl-instead-of-openssl
   ;; This is a procedure to replace OPENSSL by LIBRESSL,
   ;; recursively.
@@ -5339,7 +5502,7 @@ Consider this example:
 
 (define git-with-libressl
   (libressl-instead-of-openssl git))
-@end example
+@end lisp
 
 @noindent
 Here we first define a rewriting procedure that replaces @var{openssl}
@@ -5361,11 +5524,11 @@ replacement for that package.
 
 The example above could be rewritten this way:
 
-@example
+@lisp
 (define libressl-instead-of-openssl
   ;; Replace all the packages called "openssl" with LibreSSL.
   (package-input-rewriting/spec `(("openssl" . ,(const libressl)))))
-@end example
+@end lisp
 
 The key difference here is that, this time, packages are matched by spec and
 not by identity.  In other words, any package in the graph that is called
@@ -5431,11 +5594,11 @@ defaults to @code{"out"} (@pxref{Packages with Multiple Outputs}, for
 more on package outputs).  For example, the list below specifies three
 inputs:
 
-@example
+@lisp
 `(("libffi" ,libffi)
   ("libunistring" ,libunistring)
   ("glib:bin" ,glib "bin"))  ;the "bin" output of Glib
-@end example
+@end lisp
 
 @cindex cross compilation, package dependencies
 The distinction between @code{native-inputs} and @code{inputs} is
@@ -5516,7 +5679,7 @@ identifier resolves to the package being defined.
 The example below shows how to add a package as a native input of itself when
 cross-compiling:
 
-@example
+@lisp
 (package
   (name "guile")
   ;; ...
@@ -5526,7 +5689,7 @@ cross-compiling:
   (native-inputs (if (%current-target-system)
                      `(("self" ,this-package))
                      '())))
-@end example
+@end lisp
 
 It is an error to refer to @code{this-package} outside a package definition.
 @end deffn
@@ -5563,11 +5726,11 @@ clone the Git version control repository, and check out the revision
 specified in the @code{uri} field as a @code{git-reference} object; a
 @code{git-reference} looks like this:
 
-@example
+@lisp
 (git-reference
-  (url "git://git.debian.org/git/pkg-shadow/shadow")
-  (commit "v4.1.5.1"))
-@end example
+  (url "https://git.savannah.gnu.org/git/hello.git")
+  (commit "v2.10"))
+@end lisp
 @end table
 
 @item @code{sha256}
@@ -5854,11 +6017,10 @@ should be added to the package definition via the
 
 In its @code{configure} phase, this build system will make any source inputs
 specified in the @code{#:cargo-inputs} and @code{#:cargo-development-inputs}
-parameters available to cargo.  The @code{update-cargo-lock} phase will,
-when there is a @code{Cargo.lock} file, update the @code{Cargo.lock} file
-with the inputs and their versions available at build time.  The
-@code{install} phase installs any crate the binaries if they are defined by
-the crate.
+parameters available to cargo.  It will also remove an included
+@code{Cargo.lock} file to be recreated by @code{cargo} during the
+@code{build} phase.  The @code{install} phase installs any crate the binaries
+if they are defined by the crate.
 @end defvr
 
 @cindex Clojure (programming language)
@@ -6035,6 +6197,29 @@ Packages built with @code{guile-build-system} must provide a Guile package in
 their @code{native-inputs} field.
 @end defvr
 
+@defvr {Scheme Variable} julia-build-system
+This variable is exported by @code{(guix build-system julia)}.  It implements
+the build procedure used by @uref{https://julialang.org/, julia} packages,
+which essentially is similar to running @command{julia -e 'using Pkg;
+Pkg.add(package)'} in an environment where @code{JULIA_LOAD_PATH} contains the
+paths to all Julia package inputs.  Tests are run not run.
+
+Julia packages require the source @code{file-name} to be the real name of the
+package, correctly capitalized.
+
+For packages requiring shared library dependencies, you may need to write the
+@file{/deps/deps.jl} file manually. It's usually a line of @code{const
+variable = /gnu/store/library.so} for each dependency, plus a void function
+@code{check_deps() = nothing}.
+
+Some older packages that aren't using @file{Package.toml} yet, will require
+this file to be created, too. The function @code{julia-create-package-toml}
+helps creating the file. You need to pass the outputs and the source of the
+package, it's name (the same as the @code{file-name} parameter), the package
+uuid, the package version, and a list of dependencies specified by their name
+and their uuid.
+@end defvr
+
 @defvr {Scheme Variable} minify-build-system
 This variable is exported by @code{(guix build-system minify)}.  It
 implements a minification procedure for simple JavaScript packages.
@@ -6112,7 +6297,7 @@ interpreter version.
 By default guix calls @code{setup.py} under control of
 @code{setuptools}, much like @command{pip} does.  Some packages are not
 compatible with setuptools (and pip), thus you can disable this by
-setting the @code{#:use-setuptools} parameter to @code{#f}.
+setting the @code{#:use-setuptools?} parameter to @code{#f}.
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
@@ -6757,7 +6942,7 @@ in a monad---values that carry this additional context---are called
 
 Consider this ``normal'' procedure:
 
-@example
+@lisp
 (define (sh-symlink store)
   ;; Return a derivation that symlinks the 'bash' executable.
   (let* ((drv (package-derivation store bash))
@@ -6765,19 +6950,19 @@ Consider this ``normal'' procedure:
          (sh  (string-append out "/bin/bash")))
     (build-expression->derivation store "sh"
                                   `(symlink ,sh %output))))
-@end example
+@end lisp
 
 Using @code{(guix monads)} and @code{(guix gexp)}, it may be rewritten
 as a monadic function:
 
-@example
+@lisp
 (define (sh-symlink)
   ;; Same, but return a monadic value.
   (mlet %store-monad ((drv (package->derivation bash)))
     (gexp->derivation "sh"
                       #~(symlink (string-append #$drv "/bin/bash")
                                  #$output))))
-@end example
+@end lisp
 
 There are several things to note in the second version: the @code{store}
 parameter is now implicit and is ``threaded'' in the calls to the
@@ -6789,12 +6974,12 @@ As it turns out, the call to @code{package->derivation} can even be
 omitted since it will take place implicitly, as we will see later
 (@pxref{G-Expressions}):
 
-@example
+@lisp
 (define (sh-symlink)
   (gexp->derivation "sh"
                     #~(symlink (string-append #$bash "/bin/bash")
                                #$output)))
-@end example
+@end lisp
 
 @c See
 @c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/>
@@ -6804,10 +6989,10 @@ said, ``you exit a monad like you exit a building on fire: by running''.
 So, to exit the monad and get the desired effect, one must use
 @code{run-with-store}:
 
-@example
+@lisp
 (run-with-store (open-connection) (sh-symlink))
 @result{} /gnu/store/...-sh-symlink
-@end example
+@end lisp
 
 Note that the @code{(guix monad-repl)} module extends the Guile REPL with
 new ``meta-commands'' to make it easier to deal with monadic procedures:
@@ -6856,7 +7041,7 @@ Guile.  Thus we use this somewhat cryptic symbol inherited from the
 Haskell language.}.  There can be one @var{mproc} or several of them, as
 in this example:
 
-@example
+@lisp
 (run-with-state
     (with-monad %state-monad
       (>>= (return 1)
@@ -6866,7 +7051,7 @@ in this example:
 
 @result{} 4
 @result{} some-state
-@end example
+@end lisp
 @end deffn
 
 @deffn {Scheme Syntax} mlet @var{monad} ((@var{var} @var{mval}) ...) @
@@ -6925,7 +7110,7 @@ Consider the example below.  The @code{square} procedure returns a value
 in the state monad.  It returns the square of its argument, but also
 increments the current state value:
 
-@example
+@lisp
 (define (square x)
   (mlet %state-monad ((count (current-state)))
     (mbegin %state-monad
@@ -6935,7 +7120,7 @@ increments the current state value:
 (run-with-state (sequence %state-monad (map square (iota 3))) 0)
 @result{} (0 1 4)
 @result{} 3
-@end example
+@end lisp
 
 When ``run'' through @var{%state-monad}, we obtain that additional state
 value, which is the number of @code{square} calls.
@@ -7010,14 +7195,14 @@ entries for which @var{select?} does not return true.
 
 The example below adds a file to the store, under two different names:
 
-@example
+@lisp
 (run-with-store (open-connection)
   (mlet %store-monad ((a (interned-file "README"))
                       (b (interned-file "README" "LEGU-MIN")))
     (return (list a b))))
 
 @result{} ("/gnu/store/rwm@dots{}-README" "/gnu/store/44i@dots{}-LEGU-MIN")
-@end example
+@end lisp
 
 @end deffn
 
@@ -7111,22 +7296,22 @@ below.)
 
 To illustrate the idea, here is an example of a gexp:
 
-@example
+@lisp
 (define build-exp
   #~(begin
       (mkdir #$output)
       (chdir #$output)
       (symlink (string-append #$coreutils "/bin/ls")
                "list-files")))
-@end example
+@end lisp
 
 This gexp can be passed to @code{gexp->derivation}; we obtain a
 derivation that builds a directory containing exactly one symlink to
 @file{/gnu/store/@dots{}-coreutils-8.22/bin/ls}:
 
-@example
+@lisp
 (gexp->derivation "the-thing" build-exp)
-@end example
+@end lisp
 
 As one would expect, the @code{"/gnu/store/@dots{}-coreutils-8.22"} string is
 substituted to the reference to the @var{coreutils} package in the
@@ -7142,7 +7327,7 @@ host---versus references to cross builds of a package.  To that end, the
 @code{#+} plays the same role as @code{#$}, but is a reference to a
 native package build:
 
-@example
+@lisp
 (gexp->derivation "vi"
    #~(begin
        (mkdir #$output)
@@ -7151,7 +7336,7 @@ native package build:
                 (string-append #$emacs "/bin/emacs")
                 (string-append #$output "/bin/vi")))
    #:target "mips64el-linux-gnu")
-@end example
+@end lisp
 
 @noindent
 In the example above, the native build of @var{coreutils} is used, so
@@ -7165,7 +7350,7 @@ able to use certain Guile modules from the ``host environment'' in the
 gexp, so those modules should be imported in the ``build environment''.
 The @code{with-imported-modules} form allows you to express that:
 
-@example
+@lisp
 (let ((build (with-imported-modules '((guix build utils))
                #~(begin
                    (use-modules (guix build utils))
@@ -7175,7 +7360,7 @@ The @code{with-imported-modules} form allows you to express that:
                         #$build
                         (display "success!\n")
                         #t)))
-@end example
+@end lisp
 
 @noindent
 In this example, the @code{(guix build utils)} module is automatically
@@ -7191,7 +7376,7 @@ because of missing dependent modules.  The @code{source-module-closure}
 procedure computes the closure of a module by looking at its source file
 headers, which comes in handy in this case:
 
-@example
+@lisp
 (use-modules (guix modules))   ;for 'source-module-closure'
 
 (with-imported-modules (source-module-closure
@@ -7202,7 +7387,7 @@ headers, which comes in handy in this case:
                         (use-modules (guix build utils)
                                      (gnu build vm))
                         @dots{})))
-@end example
+@end lisp
 
 @cindex extensions, for gexps
 @findex with-extensions
@@ -7211,7 +7396,7 @@ modules, but also ``extensions'' such as Guile bindings to C libraries
 or other ``full-blown'' packages.  Say you need the @code{guile-json}
 package available on the build side, here's how you would do it:
 
-@example
+@lisp
 (use-modules (gnu packages guile))  ;for 'guile-json'
 
 (with-extensions (list guile-json)
@@ -7219,7 +7404,7 @@ package available on the build side, here's how you would do it:
                     #~(begin
                         (use-modules (json))
                         @dots{})))
-@end example
+@end lisp
 
 The syntactic form to construct gexps is summarized below.
 
@@ -7288,12 +7473,12 @@ Each item in @var{modules} can be the name of a module, such as
 @code{(guix build utils)}, or it can be a module name, followed by an
 arrow, followed by a file-like object:
 
-@example
+@lisp
 `((guix build utils)
   (guix gcrypt)
   ((guix config) => ,(scheme-file "config.scm"
                                   #~(define-module @dots{}))))
-@end example
+@end lisp
 
 @noindent
 In the example above, the first two modules are taken from the search
@@ -7392,10 +7577,10 @@ The @code{local-file}, @code{plain-file}, @code{computed-file},
 @dfn{file-like objects}.  That is, when unquoted in a G-expression,
 these objects lead to a file in the store.  Consider this G-expression:
 
-@example
+@lisp
 #~(system* #$(file-append glibc "/sbin/nscd") "-f"
            #$(local-file "/tmp/my-nscd.conf"))
-@end example
+@end lisp
 
 The effect here is to ``intern'' @file{/tmp/my-nscd.conf} by copying it
 to the store.  Once expanded, for instance @i{via}
@@ -7451,13 +7636,13 @@ Look up @var{exp}'s modules in @var{module-path}.
 The example below builds a script that simply invokes the @command{ls}
 command:
 
-@example
+@lisp
 (use-modules (guix gexp) (gnu packages base))
 
 (gexp->script "list-files"
               #~(execl #$(file-append coreutils "/bin/ls")
                        "ls"))
-@end example
+@end lisp
 
 When ``running'' it through the store (@pxref{The Store Monad,
 @code{run-with-store}}), we obtain a derivation that produces an
@@ -7515,14 +7700,14 @@ to create will reference items from the store.  This is typically the
 case when building a configuration file that embeds store file names,
 like this:
 
-@example
+@lisp
 (define (profile.sh)
   ;; Return the name of a shell script in the store that
   ;; initializes the 'PATH' environment variable.
   (text-file* "profile.sh"
               "export PATH=" coreutils "/bin:"
               grep "/bin:" sed "/bin\n"))
-@end example
+@end lisp
 
 In this example, the resulting @file{/gnu/store/@dots{}-profile.sh} file
 will reference @var{coreutils}, @var{grep}, and @var{sed}, thereby
@@ -7534,10 +7719,10 @@ Return an object representing store file @var{name} containing
 @var{text}.  @var{text} is a sequence of strings and file-like objects,
 as in:
 
-@example
+@lisp
 (mixed-text-file "profile"
                  "export PATH=" coreutils "/bin:" grep "/bin")
-@end example
+@end lisp
 
 This is the declarative counterpart of @code{text-file*}.
 @end deffn
@@ -7548,13 +7733,13 @@ Each item in @var{files} must be a two-element list where the first element is t
 file name to use in the new directory, and the second element is a gexp
 denoting the target file.  Here's an example:
 
-@example
+@lisp
 (file-union "etc"
             `(("hosts" ,(plain-file "hosts"
                                     "127.0.0.1 localhost"))
               ("bashrc" ,(plain-file "bashrc"
                                      "alias ls='ls --color=auto'"))))
-@end example
+@end lisp
 
 This yields an @code{etc} directory containing these two files.
 @end deffn
@@ -7563,9 +7748,9 @@ This yields an @code{etc} directory containing these two files.
 Return a directory that is the union of @var{things}, where @var{things} is a list of
 file-like objects denoting directories.  For example:
 
-@example
+@lisp
 (directory-union "guile+emacs" (list guile emacs))
-@end example
+@end lisp
 
 yields a directory that is the union of the @code{guile} and @code{emacs} packages.
 @end deffn
@@ -7577,19 +7762,19 @@ and @var{suffix}, where @var{obj} is a lowerable object and each
 
 As an example, consider this gexp:
 
-@example
+@lisp
 (gexp->script "run-uname"
               #~(system* #$(file-append coreutils
                                         "/bin/uname")))
-@end example
+@end lisp
 
 The same effect could be achieved with:
 
-@example
+@lisp
 (gexp->script "run-uname"
               #~(system* (string-append #$coreutils
                                         "/bin/uname")))
-@end example
+@end lisp
 
 There is one difference though: in the @code{file-append} case, the
 resulting script contains the absolute file name as a string, whereas in
@@ -8077,9 +8262,9 @@ Build the package, derivation, or other file-like object that the code within
 As an example, @var{file} might contain a package definition like this
 (@pxref{Defining Packages}):
 
-@example
-@verbatiminclude package-hello.scm
-@end example
+@lisp
+@include package-hello.scm
+@end lisp
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
@@ -8510,8 +8695,13 @@ guix import @var{importer} @var{options}@dots{}
 
 @var{importer} specifies the source from which to import package
 metadata, and @var{options} specifies a package identifier and other
-options specific to @var{importer}.  Currently, the available
-``importers'' are:
+options specific to @var{importer}.
+
+Some of the importers rely on the ability to run the @command{gpgv} command.
+For these, GnuPG must be installed and in @code{$PATH}; run @code{guix install
+gnupg} if needed.
+
+Currently, the available ``importers'' are:
 
 @table @code
 @item gnu
@@ -8629,14 +8819,22 @@ When @code{--archive=bioconductor} is added, metadata is imported from
 packages for for the analysis and comprehension of high-throughput
 genomic data in bioinformatics.
 
-Information is extracted from the @code{DESCRIPTION} file of a package
-published on the web interface of the Bioconductor SVN repository.
+Information is extracted from the @code{DESCRIPTION} file contained in the
+package archive.
 
 The command below imports metadata for the @code{GenomicRanges}
 R package:
 
 @example
 guix import cran --archive=bioconductor GenomicRanges
+@end example
+
+Finally, you can also import R packages that have not yet been published on
+CRAN or Bioconductor as long as they are in a git repository.  Use
+@code{--archive=git} followed by the URL of the git repository:
+
+@example
+guix import cran --archive=git https://github.com/immunogenomics/harmony
 @end example
 
 @item texlive
@@ -8873,7 +9071,27 @@ in Guix.
 @item crate
 @cindex crate
 Import metadata from the crates.io Rust package repository
-@uref{https://crates.io, crates.io}.
+@uref{https://crates.io, crates.io}, as in this example:
+
+@example
+guix import crate blake2-rfc
+@end example
+
+The crate importer also allows you to specify a version string:
+
+@example
+guix import crate constant-time-eq@@0.1.0
+@end example
+
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
 
 @item opam
 @cindex OPAM
@@ -8939,20 +9157,23 @@ and @command{guix refresh} needs a little help.  Most updaters honor the
 @code{upstream-name} property in package definitions, which can be used
 to that effect:
 
-@example
+@lisp
 (define-public network-manager
   (package
     (name "network-manager")
     ;; @dots{}
     (properties '((upstream-name . "NetworkManager")))))
-@end example
+@end lisp
 
 When passed @code{--update}, it modifies distribution source files to
 update the version numbers and source tarball hashes of those package
 recipes (@pxref{Defining Packages}).  This is achieved by downloading
 each package's latest source tarball and its associated OpenPGP
 signature, authenticating the downloaded tarball against its signature
-using @command{gpg}, and finally computing its hash.  When the public
+using @command{gpgv}, and finally computing its hash---note that GnuPG must be
+installed and in @code{$PATH}; run @code{guix install gnupg} if needed.
+
+When the public
 key used to sign the tarball is missing from the user's keyring, an
 attempt is made to automatically retrieve it from a public key server;
 when this is successful, the key is added to the user's keyring; otherwise,
@@ -9234,6 +9455,31 @@ Parse the @code{source} URL to determine if a tarball from GitHub is
 autogenerated or if it is a release tarball.  Unfortunately GitHub's
 autogenerated tarballs are sometimes regenerated.
 
+@item archival
+@cindex Software Heritage, source code archive
+@cindex archival of source code, Software Heritage
+Checks whether the package's source code is archived at
+@uref{https://www.softwareheritage.org, Software Heritage}.
+
+When the source code that is not archived comes from a version-control system
+(VCS)---e.g., it's obtained with @code{git-fetch}, send Software Heritage a
+``save'' request so that it eventually archives it.  This ensures that the
+source will remain available in the long term, and that Guix can fall back to
+Software Heritage should the source code disappear from its original host.
+The status of recent ``save'' requests can be
+@uref{https://archive.softwareheritage.org/save/#requests, viewed on-line}.
+
+When source code is a tarball obtained with @code{url-fetch}, simply print a
+message when it is not archived.  As of this writing, Software Heritage does
+not allow requests to save arbitrary tarballs; we are working on ways to
+ensure that non-VCS source code is also archived.
+
+Software Heritage
+@uref{https://archive.softwareheritage.org/api/#rate-limiting, limits the
+request rate per IP address}.  When the limit is reached, @command{guix lint}
+prints a message and the @code{archival} checker stops doing anything until
+that limit has been reset.
+
 @item cve
 @cindex security vulnerabilities
 @cindex CVE, Common Vulnerabilities and Exposures
@@ -9260,14 +9506,14 @@ Package developers can specify in package recipes the
 name and version of the package when they differ from the name or version
 that Guix uses, as in this example:
 
-@example
+@lisp
 (package
   (name "grub")
   ;; @dots{}
   ;; CPE calls this package "grub2".
   (properties '((cpe-name . "grub2")
-                (cpe-version . "2.3")))
-@end example
+                (cpe-version . "2.3"))))
+@end lisp
 
 @c See <https://www.openwall.com/lists/oss-security/2017/03/15/3>.
 Some entries in the CVE database do not specify which version of a
@@ -9275,7 +9521,7 @@ package they apply to, and would thus ``stick around'' forever.  Package
 developers who found CVE alerts and verified they can be ignored can
 declare them as in this example:
 
-@example
+@lisp
 (package
   (name "t1lib")
   ;; @dots{}
@@ -9284,7 +9530,7 @@ declare them as in this example:
                                     "CVE-2011-1553"
                                     "CVE-2011-1554"
                                     "CVE-2011-5244")))))
-@end example
+@end lisp
 
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
@@ -10384,11 +10630,11 @@ mode, as in the example above.  However, more recent machines rely instead on
 the @dfn{Unified Extensible Firmware Interface} (UEFI) to boot.  In that case,
 the @code{bootloader} field should contain something along these lines:
 
-@example
+@lisp
 (bootloader-configuration
   (bootloader grub-efi-bootloader)
   (target "/boot/efi"))
-@end example
+@end lisp
 
 @xref{Bootloader Configuration}, for more information on the available
 configuration options.
@@ -10525,11 +10771,11 @@ Partitioning,,, guile, GNU Guile Reference Manual}).  For instance, the
 following expression returns a list that contains all the services in
 @code{%desktop-services} minus the Avahi service:
 
-@example
+@lisp
 (remove (lambda (service)
           (eq? (service-kind service) avahi-service-type))
         %desktop-services)
-@end example
+@end lisp
 
 @unnumberedsubsec Instantiating the System
 
@@ -10690,12 +10936,12 @@ the home directory of newly-created user accounts.
 
 For instance, a valid value may look like this:
 
-@example
+@lisp
 `((".bashrc" ,(plain-file "bashrc" "echo Hello\n"))
   (".guile" ,(plain-file "guile"
                          "(use-modules (ice-9 readline))
                           (activate-readline)")))
-@end example
+@end lisp
 
 @item @code{issue} (default: @code{%default-issue})
 A string denoting the contents of the @file{/etc/issue} file, which is
@@ -10773,14 +11019,14 @@ this identifier resolves to the operating system being defined.
 The example below shows how to refer to the operating system being defined in
 the definition of the @code{label} field:
 
-@example
+@lisp
 (use-modules (gnu) (guix))
 
 (operating-system
   ;; ...
   (label (package-full-name
           (operating-system-kernel this-operating-system))))
-@end example
+@end lisp
 
 It is an error to refer to @code{this-operating-system} outside an operating
 system definition.
@@ -10796,12 +11042,12 @@ The list of file systems to be mounted is specified in the
 (@pxref{Using the Configuration System}).  Each file system is declared
 using the @code{file-system} form, like this:
 
-@example
+@lisp
 (file-system
   (mount-point "/home")
   (device "/dev/sda3")
   (type "ext4"))
-@end example
+@end lisp
 
 As usual, some of the fields are mandatory---those shown in the example
 above---while others can be omitted.  These are described below.
@@ -10835,12 +11081,12 @@ procedure, UUIDs are created using @code{uuid}, and @file{/dev} node are
 plain strings.  Here's an example of a file system referred to by its
 label, as shown by the @command{e2label} command:
 
-@example
+@lisp
 (file-system
   (mount-point "/home")
   (type "ext4")
   (device (file-system-label "my-home")))
-@end example
+@end lisp
 
 @findex uuid
 UUIDs are converted from their string representation (as shown by the
@@ -10851,12 +11097,12 @@ form of UUID used by the ext2 family of file systems and others, but it
 is different from ``UUIDs'' found in FAT file systems, for instance.},
 like this:
 
-@example
+@lisp
 (file-system
   (mount-point "/home")
   (type "ext4")
   (device (uuid "4dab5feb-d176-45de-b287-9b0a6e4c01cb")))
-@end example
+@end lisp
 
 When the source of a file system is a mapped device (@pxref{Mapped
 Devices}), its @code{device} field @emph{must} refer to the mapped
@@ -11031,12 +11277,12 @@ The @file{/dev/mapper/home}
 device can then be used as the @code{device} of a @code{file-system}
 declaration (@pxref{File Systems}).
 
-@example
+@lisp
 (mapped-device
   (source "/dev/sda3")
   (target "home")
   (type luks-device-mapping))
-@end example
+@end lisp
 
 Alternatively, to become independent of device numbering, one may obtain
 the LUKS UUID (@dfn{unique identifier}) of the source device by a
@@ -11048,12 +11294,12 @@ cryptsetup luksUUID /dev/sda3
 
 and use it as follows:
 
-@example
+@lisp
 (mapped-device
   (source (uuid "cb67fc72-0d54-4c88-9d4b-b225f30b0f44"))
   (target "home")
   (type luks-device-mapping))
-@end example
+@end lisp
 
 @cindex swap encryption
 It is also desirable to encrypt swap space, since swap space may contain
@@ -11065,12 +11311,12 @@ swap file is encrypted because the entire device is encrypted.
 A RAID device formed of the partitions @file{/dev/sda1} and @file{/dev/sdb1}
 may be declared as follows:
 
-@example
+@lisp
 (mapped-device
   (source (list "/dev/sda1" "/dev/sdb1"))
   (target "/dev/md0")
   (type raid-device-mapping))
-@end example
+@end lisp
 
 The @file{/dev/md0} device can then be used as the @code{device} of a
 @code{file-system} declaration (@pxref{File Systems}).
@@ -11089,7 +11335,7 @@ User accounts and groups are entirely managed through the
 @code{operating-system} declaration.  They are specified with the
 @code{user-account} and @code{user-group} forms:
 
-@example
+@lisp
 (user-account
   (name "alice")
   (group "users")
@@ -11099,7 +11345,7 @@ User accounts and groups are entirely managed through the
                           "cdrom")) ;the good ol' CD-ROM
   (comment "Bob's sister")
   (home-directory "/home/alice"))
-@end example
+@end lisp
 
 When booting or upon completion of @command{guix system reconfigure},
 the system ensures that only the user accounts and groups specified in
@@ -11163,14 +11409,14 @@ If you @emph{do} want to set an initial password for an account, then
 this field must contain the encrypted password, as a string.  You can use the
 @code{crypt} procedure for this purpose:
 
-@example
+@lisp
 (user-account
   (name "charlie")
   (group "users")
 
   ;; Specify a SHA-512-hashed initial password.
   (password (crypt "InitialPassword!" "$6$abc")))
-@end example
+@end lisp
 
 @quotation Note
 The hash of this initial password will be available in a file in
@@ -11188,9 +11434,9 @@ Guile Reference Manual}, for information on Guile's @code{crypt} procedure.
 @cindex groups
 User group declarations are even simpler:
 
-@example
+@lisp
 (user-group (name "students"))
-@end example
+@end lisp
 
 @deftp {Data Type} user-group
 This type is for, well, user groups.  There are just a few fields:
@@ -11277,7 +11523,7 @@ optional variant name, an optional keyboard model name, and a possibly empty
 list of additional options.  In most cases the layout name is all you care
 about.  Here are a few example:
 
-@example
+@lisp
 ;; The German QWERTZ layout.  Here we assume a standard
 ;; "pc105" keyboard model.
 (keyboard-layout "de")
@@ -11302,7 +11548,7 @@ about.  Here are a few example:
 ;; dead keys to enter accented characters.  This is for an
 ;; Apple MacBook keyboard.
 (keyboard-layout "us" "intl" #:model "macbook78")
-@end example
+@end lisp
 
 See the @file{share/X11/xkb} directory of the @code{xkeyboard-config} package
 for a complete list of supported layouts, variants, and models.
@@ -11392,20 +11638,20 @@ used locales, but not all the available locales, in order to save space.
 For instance, to add the North Frisian locale for Germany, the value of
 that field may be:
 
-@example
+@lisp
 (cons (locale-definition
         (name "fy_DE.utf8") (source "fy_DE"))
       %default-locale-definitions)
-@end example
+@end lisp
 
 Likewise, to save space, one might want @code{locale-definitions} to
 list only the locales that are actually used, as in:
 
-@example
+@lisp
 (list (locale-definition
         (name "ja_JP.eucjp") (source "ja_JP")
         (charset "EUC-JP")))
-@end example
+@end lisp
 
 @vindex LOCPATH
 The compiled locale definitions are available at
@@ -11491,13 +11737,13 @@ it---this is especially crucial on a multi-user system.  To do that, the
 administrator can specify several libc packages in the
 @code{locale-libcs} field of @code{operating-system}:
 
-@example
+@lisp
 (use-package-modules base)
 
 (operating-system
   ;; @dots{}
   (locale-libcs (list glibc-2.21 (canonical-package glibc))))
-@end example
+@end lisp
 
 This example would lead to a system containing locale definitions for
 both libc 2.21 and the current version of libc in
@@ -11580,6 +11826,7 @@ declaration.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
+* Guix Services::               Services relating specifically to Guix.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -11602,11 +11849,11 @@ This is the default value of the @code{services} field of
 system, you will want to append services to @code{%base-services}, like
 this:
 
-@example
+@lisp
 (append (list (service avahi-service-type)
               (service openssh-service-type))
         %base-services)
-@end example
+@end lisp
 @end defvr
 
 @defvr {Scheme Variable} special-files-service-type
@@ -11619,19 +11866,19 @@ and the second element is its target.  By default it is:
 
 @cindex @file{/bin/sh}
 @cindex @file{sh}, in @file{/bin}
-@example
-`(("/bin/sh" ,(file-append @var{bash} "/bin/sh")))
-@end example
+@lisp
+`(("/bin/sh" ,(file-append bash "/bin/sh")))
+@end lisp
 
 @cindex @file{/usr/bin/env}
 @cindex @file{env}, in @file{/usr/bin}
 If you want to add, say, @code{/usr/bin/env} to your system, you can
 change it to:
 
-@example
-`(("/bin/sh" ,(file-append @var{bash} "/bin/sh"))
-  ("/usr/bin/env" ,(file-append @var{coreutils} "/bin/env")))
-@end example
+@lisp
+`(("/bin/sh" ,(file-append bash "/bin/sh"))
+  ("/usr/bin/env" ,(file-append coreutils "/bin/env")))
+@end lisp
 
 Since this is part of @code{%base-services}, you can use
 @code{modify-services} to customize the set of special files
@@ -11647,10 +11894,10 @@ For example, adding the following lines to the @code{services} field of
 your operating system declaration leads to a @file{/usr/bin/env}
 symlink:
 
-@example
+@lisp
 (extra-special-file "/usr/bin/env"
                     (file-append coreutils "/bin/env"))
-@end example
+@end lisp
 @end deffn
 
 @deffn {Scheme Procedure} host-name-service @var{name}
@@ -12149,14 +12396,14 @@ In the following example, a rule for a USB device is defined to be
 stored in the file @file{90-usb-thing.rules}.  The rule runs a script
 upon detecting a USB device with a given product identifier.
 
-@example
+@lisp
 (define %example-udev-rule
   (udev-rule
     "90-usb-thing.rules"
     (string-append "ACTION==\"add\", SUBSYSTEM==\"usb\", "
                    "ATTR@{product@}==\"Example\", "
                    "RUN+=\"/path/to/script\"")))
-@end example
+@end lisp
 
 The @command{herd rules udev} command, as root, returns the name of the
 directory containing all the active udev rules.
@@ -12164,7 +12411,7 @@ directory containing all the active udev rules.
 
 Here we show how the default @var{udev-service} can be extended with it.
 
-@example
+@lisp
 (operating-system
  ;; @dots{}
  (services
@@ -12173,7 +12420,7 @@ Here we show how the default @var{udev-service} can be extended with it.
      (udev-configuration (inherit config)
       (rules (append (udev-configuration-rules config)
                      (list %example-udev-rule))))))))
-@end example
+@end lisp
 
 @deffn {Scheme Procedure} file->udev-rule [@var{file-name} @var{file}]
 Return a udev file named @var{file-name} containing the rules defined
@@ -12181,10 +12428,10 @@ within @var{file}, a file-like object.
 
 The following example showcases how we can use an existing rule file.
 
-@example
+@lisp
 (use-modules (guix download)     ;for url-fetch
              (guix packages)     ;for origin
-             ;; @dots{})
+             @dots{})
 
 (define %android-udev-rules
   (file->udev-rule
@@ -12196,7 +12443,7 @@ The following example showcases how we can use an existing rule file.
                            "android-udev-rules/" version "/51-android.rules"))
        (sha256
         (base32 "0lmmagpyb6xsq6zcr2w1cyx9qmjqmajkvrdbhjx32gqf1d9is003"))))))
-@end example
+@end lisp
 @end deffn
 
 Additionally, Guix package definitions can be included in @var{rules} in
@@ -12215,10 +12462,10 @@ create such a group, we must define it both as part of the
 @var{supplementary-groups} of our @var{user-account} declaration, as
 well as in the @var{groups} field of the @var{operating-system} record.
 
-@example
+@lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
              (gnu system shadow)     ;for user-group
-             ;; @dots{})
+             @dots{})
 
 (operating-system
   ;; @dots{}
@@ -12226,8 +12473,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 ;; @dots{}
                 (supplementary-groups
                  '("adbusers"   ;for adb
-                   "wheel" "netdev" "audio" "video"))
-                ;; @dots{})))
+                   "wheel" "netdev" "audio" "video")))))
 
   (groups (cons (user-group (system? #t) (name "adbusers"))
                 %base-groups))
@@ -12241,7 +12487,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
       (udev-configuration (inherit config)
                           (rules (cons android-udev-rules
                                        (udev-configuration-rules config))))))))
-@end example
+@end lisp
 
 @defvr {Scheme Variable} urandom-seed-service-type
 Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
@@ -12315,9 +12561,9 @@ This is a list of compression method/level tuple used when compressing
 substitutes.  For example, to compress all substitutes with @emph{both} lzip
 at level 7 and gzip at level 9, write:
 
-@example
+@lisp
 '(("lzip" 7) ("gzip" 9))
-@end example
+@end lisp
 
 Level 9 achieves the best compression ratio at the expense of increased CPU
 usage, whereas level 1 achieves fast compression.
@@ -12372,12 +12618,12 @@ Return a service that installs a configuration file for the
 The following limits definition sets two hard and soft limits for all
 login sessions of users in the @code{realtime} group:
 
-@example
+@lisp
 (pam-limits-service
  (list
   (pam-limits-entry "@@realtime" 'both 'rtprio 99)
   (pam-limits-entry "@@realtime" 'both 'memlock 'unlimited)))
-@end example
+@end lisp
 
 The first entry increases the maximum realtime priority for
 non-privileged processes; the second entry lifts any restriction of the
@@ -12440,6 +12686,40 @@ gexps to introduce job definitions that are passed to mcron
                                         updatedb-job
                                         idutils-job))))
                   %base-services)))
+@end lisp
+
+For more complex jobs defined in Scheme where you need control over the top
+level, for instance to introduce a @code{use-modules} form, you can move your
+code to a separate program using the @code{program-file} procedure of the
+@code{(guix gexp)} module (@pxref{G-Expressions}).  The example below
+illustrates that.
+
+@lisp
+(define %battery-alert-job
+  ;; Beep when the battery percentage falls below %MIN-LEVEL.
+  #~(job
+     '(next-minute (range 0 60 1))
+     #$(program-file
+        "battery-alert.scm"
+        (with-imported-modules (source-module-closure
+                                '((guix build utils)))
+          #~(begin
+              (define %min-level 20)
+              (use-modules (guix build utils)
+                           (ice-9 popen)
+                           (ice-9 regex)
+                           (ice-9 textual-ports)
+                           (srfi srfi-2))
+              (setenv "LC_ALL" "C")     ;ensure English output
+              (and-let* ((input-pipe (open-pipe*
+                                      OPEN_READ
+                                      #$(file-append acpi "/bin/acpi")))
+                         (output (get-string-all input-pipe))
+                         (m (string-match "Discharging, ([0-9]+)%" output))
+                         (level (string->number (match:substring m 1)))
+                         ((< level %min-level)))
+                (format #t "warning: Battery level is low (~a%)~%" level)
+                (invoke #$(file-append beep "/bin/beep") "-r5")))))))
 @end lisp
 
 @xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
@@ -12550,7 +12830,7 @@ Taking an example from the Rottlog manual (@pxref{Period Related File
 Examples,,, rottlog, GNU Rot[t]log Manual}), a log rotation might be
 defined like this:
 
-@example
+@lisp
 (log-rotation
   (frequency 'daily)
   (files '("/var/log/apache/*"))
@@ -12558,7 +12838,7 @@ defined like this:
              "rotate 6"
              "notifempty"
              "nocompress")))
-@end example
+@end lisp
 
 The list of fields is as follows:
 
@@ -12579,13 +12859,14 @@ Either @code{#f} or a gexp to execute once the rotation has completed.
 @end deftp
 
 @defvr {Scheme Variable} %default-rotations
-Specifies weekly rotation of @var{%rotated-files} and
-a couple of other files.
+Specifies weekly rotation of @var{%rotated-files} and of
+@file{/var/log/guix-daemon.log}.
 @end defvr
 
 @defvr {Scheme Variable} %rotated-files
 The list of syslog-controlled files to be rotated.  By default it is:
-@code{'("/var/log/messages" "/var/log/secure")}.
+@code{'("/var/log/messages" "/var/log/secure" "/var/log/debug" \
+"/var/log/maillog")}.
 @end defvr
 
 @node Networking Services
@@ -12606,12 +12887,12 @@ This type defines a service that runs a DHCP daemon.  To create a
 service of this type, you must supply a @code{<dhcpd-configuration>}.
 For example:
 
-@example
+@lisp
 (service dhcpd-service-type
          (dhcpd-configuration
           (config-file (local-file "my-dhcpd.conf"))
           (interfaces '("enp0s25"))))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} dhcpd-configuration
@@ -12667,11 +12948,11 @@ to handle.
 
 For example:
 
-@example
+@lisp
 (static-networking-service "eno1" "192.168.1.82"
                            #:gateway "192.168.1.2"
                            #:name-servers '("192.168.1.2"))
-@end example
+@end lisp
 @end deffn
 
 @cindex wicd
@@ -12826,11 +13107,11 @@ a network connection manager.
 Its value must be an
 @code{connman-configuration} record as in this example:
 
-@example
+@lisp
 (service connman-service-type
          (connman-configuration
            (disable-vpn? #t)))
-@end example
+@end lisp
 
 See below for details about @code{connman-configuration}.
 @end deffn
@@ -12929,7 +13210,35 @@ objects}).
 @end table
 @end deftp
 
+@cindex nftables
+@defvr {Scheme Variable} nftables-service-type
+This is the service type to set up a nftables configuration.  nftables is a
+netfilter project that aims to replace the existing iptables, ip6tables,
+arptables and ebtables framework.  It provides a new packet filtering
+framework, a new user-space utility @command{nft}, and a compatibility layer
+for iptables.  This service comes with a default ruleset
+@code{%default-nftables-ruleset} that rejecting all incomming connections
+except those to the ssh port 22.  To use it, simply write:
+
+@lisp
+(service nftables-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} nftables-configuration
+The data type representing the configuration of nftables.
+
+@table @asis
+@item @code{package} (default: @code{nftables})
+The nftables package that provides @command{nft}.
+@item @code{ruleset} (default: @code{%default-nftables-ruleset})
+The nftables ruleset to use.  This may be any ``file-like'' object
+(@pxref{G-Expressions, file-like objects}).
+@end table
+@end deftp
+
 @cindex NTP (Network Time Protocol), service
+@cindex ntpd, service for the Network Time Protocol daemon
 @cindex real time clock
 @defvr {Scheme Variable} ntp-service-type
 This is the type of the service running the @uref{http://www.ntp.org,
@@ -12945,10 +13254,11 @@ This is the data type for the NTP service configuration.
 
 @table @asis
 @item @code{servers} (default: @code{%ntp-servers})
-This is the list of servers (host names) with which @command{ntpd} will be
-synchronized.
+This is the list of servers (@code{<ntp-server>} records) with which
+@command{ntpd} will be synchronized.  See the @code{ntp-server} data type
+definition below.
 
-@item @code{allow-large-adjustment?} (default: @code{#f})
+@item @code{allow-large-adjustment?} (default: @code{#t})
 This determines whether @command{ntpd} is allowed to make an initial
 adjustment of more than 1,000 seconds.
 
@@ -12962,13 +13272,39 @@ List of host names used as the default NTP servers.  These are servers of the
 @uref{https://www.ntppool.org/en/, NTP Pool Project}.
 @end defvr
 
+@deftp {Data Type} ntp-server
+The data type representing the configuration of a NTP server.
+
+@table @asis
+@item @code{type} (default: @code{'server})
+The type of the NTP server, given as a symbol. One of @code{'pool},
+@code{'server}, @code{'peer}, @code{'broadcast} or @code{'manycastclient}.
+
+@item @code{address}
+The address of the server, as a string.
+
+@item @code{options}
+NTPD options to use with that specific server, given as a list of option names
+and/or of option names and values tuples. The following example define a server
+to use with the options @option{iburst} and @option{prefer}, as well as
+@option{version} 3 and a @option{maxpoll} time of 16 seconds.
+
+@example
+(ntp-server
+ (type 'server)
+ (address "some.ntp.server.org")
+ (options `(iburst (version 3) (maxpoll 16) prefer))))
+@end example
+@end table
+@end deftp
+
 @cindex OpenNTPD
 @deffn {Scheme Procedure} openntpd-service-type
 Run the @command{ntpd}, the Network Time Protocol (NTP) daemon, as implemented
 by @uref{http://www.openntpd.org, OpenNTPD}.  The daemon will keep the system
 clock synchronized with that of the given servers.
 
-@example
+@lisp
 (service
  openntpd-service-type
  (openntpd-configuration
@@ -12978,8 +13314,13 @@ clock synchronized with that of the given servers.
   (constraints-from '("https://www.google.com/"))
   (allow-large-adjustment? #t)))
 
-@end example
+@end lisp
 @end deffn
+
+@defvr {Scheme Variable} %openntpd-servers
+This variable is a list of the server addresses defined in
+@var{%ntp-servers}.
+@end defvr
 
 @deftp {Data Type} openntpd-configuration
 @table @asis
@@ -12994,9 +13335,9 @@ Specify a list of timedelta sensor devices ntpd should use.  @code{ntpd}
 will listen to each sensor that actually exists and ignore non-existent ones.
 See @uref{https://man.openbsd.org/ntpd.conf, upstream documentation} for more
 information.
-@item @code{server} (default: @var{%ntp-servers})
+@item @code{server} (default: @code{'()})
 Specify a list of IP addresses or hostnames of NTP servers to synchronize to.
-@item @code{servers} (default: @code{'()})
+@item @code{servers} (default: @var{%openntp-servers})
 Specify a list of IP addresses or hostnames of NTP pools to synchronize to.
 @item @code{constraint-from} (default: @code{'()})
 @code{ntpd} can be configured to query the ‘Date’ from trusted HTTPS servers via TLS.
@@ -13028,7 +13369,7 @@ built-in @command{echo} service, as well as an smtp service which
 forwards smtp traffic over ssh to a server @code{smtp-server} behind a
 gateway @code{hostname}:
 
-@example
+@lisp
 (service
  inetd-service-type
  (inetd-configuration
@@ -13049,8 +13390,8 @@ gateway @code{hostname}:
              (program (file-append openssh "/bin/ssh"))
              (arguments
               '("ssh" "-qT" "-i" "/path/to/ssh_key"
-                "-W" "smtp-server:25" "user@@hostname")))))
-@end example
+                "-W" "smtp-server:25" "user@@hostname")))))))
+@end lisp
 
 See below for more details about @code{inetd-configuration}.
 @end deffn
@@ -13186,9 +13527,9 @@ This is the service type for the @uref{https://rsync.samba.org, rsync} daemon,
 The value for this service type is a
 @command{rsync-configuration} record as in this example:
 
-@example
+@lisp
 (service rsync-service-type)
-@end example
+@end lisp
 
 See below for details about @code{rsync-configuration}.
 @end deffn
@@ -13292,7 +13633,7 @@ This is the type for the @uref{http://www.openssh.org, OpenSSH} secure
 shell daemon, @command{sshd}.  Its value must be an
 @code{openssh-configuration} record as in this example:
 
-@example
+@lisp
 (service openssh-service-type
          (openssh-configuration
            (x11-forwarding? #t)
@@ -13300,18 +13641,18 @@ shell daemon, @command{sshd}.  Its value must be an
            (authorized-keys
              `(("alice" ,(local-file "alice.pub"))
                ("bob" ,(local-file "bob.pub"))))))
-@end example
+@end lisp
 
 See below for details about @code{openssh-configuration}.
 
 This service can be extended with extra authorized keys, as in this
 example:
 
-@example
+@lisp
 (service-extension openssh-service-type
                    (const `(("charlie"
                              ,(local-file "charlie.pub")))))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} openssh-configuration
@@ -13388,12 +13729,12 @@ subsystem request.
 
 The command @command{internal-sftp} implements an in-process SFTP
 server.  Alternately, one can specify the @command{sftp-server} command:
-@example
+@lisp
 (service openssh-service-type
          (openssh-configuration
           (subsystems
            `(("sftp" ,(file-append openssh "/libexec/sftp-server"))))))
-@end example
+@end lisp
 
 @item @code{accepted-environment} (default: @code{'()})
 List of strings describing which environment variables may be exported.
@@ -13406,11 +13747,11 @@ It is set by terminal emulators, which support colors.  You can use it in
 your shell's ressource file to enable colors for the prompt and commands
 if this variable is set.
 
-@example
+@lisp
 (service openssh-service-type
          (openssh-configuration
            (accepted-environment '("COLORTERM"))))
-@end example
+@end lisp
 
 @item @code{authorized-keys} (default: @code{'()})
 @cindex authorized keys, SSH
@@ -13419,13 +13760,13 @@ This is the list of authorized keys.  Each element of the list is a user
 name followed by one or more file-like objects that represent SSH public
 keys.  For example:
 
-@example
+@lisp
 (openssh-configuration
   (authorized-keys
     `(("rekado" ,(local-file "rekado.pub"))
       ("chris" ,(local-file "chris.pub"))
       ("root" ,(local-file "rekado.pub") ,(local-file "chris.pub")))))
-@end example
+@end lisp
 
 @noindent
 registers the specified public keys for user accounts @code{rekado},
@@ -13448,12 +13789,12 @@ is especially useful for elaborate configurations that cannot be expressed
 otherwise.  This configuration, for example, would generally disable root
 logins, but permit them from one specific IP address:
 
-@example
+@lisp
 (openssh-configuration
   (extra-content "\
 Match Address 192.168.0.1
   PermitRootLogin yes"))
-@end example
+@end lisp
 
 @end table
 @end deftp
@@ -13466,10 +13807,10 @@ object.
 For example, to specify a Dropbear service listening on port 1234, add
 this call to the operating system's @code{services} field:
 
-@example
+@lisp
 (dropbear-service (dropbear-configuration
                     (port-number 1234)))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} dropbear-configuration
@@ -13510,7 +13851,7 @@ This variable is typically used in the @code{hosts-file} field of an
 @code{operating-system} declaration (@pxref{operating-system Reference,
 @file{/etc/hosts}}):
 
-@example
+@lisp
 (use-modules (gnu) (guix))
 
 (operating-system
@@ -13522,7 +13863,7 @@ This variable is typically used in the @code{hosts-file} field of an
     (plain-file "hosts"
                 (string-append (local-host-aliases host-name)
                                %facebook-host-aliases))))
-@end example
+@end lisp
 
 This mechanism can prevent programs running locally, such as Web
 browsers, from accessing Facebook.
@@ -13956,9 +14297,9 @@ system, add a @code{cups-service} to the operating system definition:
 The service type for the CUPS print server.  Its value should be a valid
 CUPS configuration (see below).  To use the default settings, simply
 write:
-@example
+@lisp
 (service cups-service-type)
-@end example
+@end lisp
 @end deffn
 
 The CUPS configuration controls the basic things about your CUPS
@@ -13974,13 +14315,13 @@ support for Epson printers @i{via} the @code{escpr} package and for HP
 printers @i{via} the @code{hplip-minimal} package.  You can do that directly,
 like this (you need to use the @code{(gnu packages cups)} module):
 
-@example
+@lisp
 (service cups-service-type
          (cups-configuration
            (web-interface? #t)
            (extensions
              (list cups-filters escpr hplip-minimal))))
-@end example
+@end lisp
 
 Note: If you wish to use the Qt5 based GUI which comes with the hplip
 package then it is suggested that you install the @code{hplip} package,
@@ -14187,6 +14528,12 @@ programs.
 
 Defaults to @samp{"lp"}.
 @end deftypevr
+
+@deftypevr {@code{files-configuration} parameter} string set-env
+Set the specified environment variable to be passed to child processes.
+
+Defaults to @samp{"variable value"}.
+@end deftypevr
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} access-log-level access-log-level
@@ -14205,6 +14552,14 @@ Specifies whether to purge job history data automatically when it is no
 longer required for quotas.
 
 Defaults to @samp{#f}.
+@end deftypevr
+
+@deftypevr {@code{cups-configuration} parameter} comma-separated-string-list browse-dns-sd-sub-types
+Specifies a list of DNS-SD sub-types to advertise for each shared printer.
+For example, @samp{"_cups" "_print"} will tell network clients that both
+CUPS sharing and IPP Everywhere are supported.
+
+Defaults to @samp{"_cups"}.
 @end deftypevr
 
 @deftypevr {@code{cups-configuration} parameter} browse-local-protocols browse-local-protocols
@@ -14292,7 +14647,7 @@ Defaults to @samp{30}.
 Specifies what to do when an error occurs.  Possible values are
 @code{abort-job}, which will discard the failed print job;
 @code{retry-job}, which will retry the job at a later time;
-@code{retry-this-job}, which retries the failed job immediately; and
+@code{retry-current-job}, which retries the failed job immediately; and
 @code{stop-printer}, which stops the printer.
 
 Defaults to @samp{stop-printer}.
@@ -14706,12 +15061,6 @@ the output of the @code{uname} command.  @code{Full} reports @code{CUPS
 Defaults to @samp{Minimal}.
 @end deftypevr
 
-@deftypevr {@code{cups-configuration} parameter} string set-env
-Set the specified environment variable to be passed to child processes.
-
-Defaults to @samp{"variable value"}.
-@end deftypevr
-
 @deftypevr {@code{cups-configuration} parameter} multiline-string-list ssl-listen
 Listens on the specified interfaces for encrypted connections.  Valid
 values are of the form @var{address}:@var{port}, where @var{address} is
@@ -14723,11 +15072,14 @@ Defaults to @samp{()}.
 
 @deftypevr {@code{cups-configuration} parameter} ssl-options ssl-options
 Sets encryption options.  By default, CUPS only supports encryption
-using TLS v1.0 or higher using known secure cipher suites.  The
-@code{AllowRC4} option enables the 128-bit RC4 cipher suites, which are
-required for some older clients that do not implement newer ones.  The
-@code{AllowSSL3} option enables SSL v3.0, which is required for some
-older clients that do not support TLS v1.0.
+using TLS v1.0 or higher using known secure cipher suites.  Security is
+reduced when @code{Allow} options are used, and enhanced when @code{Deny}
+options are used.  The @code{AllowRC4} option enables the 128-bit RC4 cipher
+suites, which are required for some older clients.  The @code{AllowSSL3} option
+enables SSL v3.0, which is required for some older clients that do not support
+TLS v1.0.  The @code{DenyCBC} option disables all CBC cipher suites.  The
+@code{DenyTLS1.0} option disables TLS v1.0 support - this sets the minimum
+protocol version to TLS v1.1.
 
 Defaults to @samp{()}.
 @end deftypevr
@@ -14777,12 +15129,12 @@ For example, if your @code{cupsd.conf} and @code{cups-files.conf} are in
 strings of the same name, you could instantiate a CUPS service like
 this:
 
-@example
+@lisp
 (service cups-service-type
          (opaque-cups-configuration
            (cupsd.conf cupsd.conf)
            (cups-files.conf cups-files.conf)))
-@end example
+@end lisp
 
 
 @node Desktop Services
@@ -14925,7 +15277,7 @@ them by default.  To add GNOME, Xfce or MATE, just @code{cons} them onto
 @code{%desktop-services} in the @code{services} field of your
 @code{operating-system}:
 
-@example
+@lisp
 (use-modules (gnu))
 (use-service-modules desktop)
 (operating-system
@@ -14935,7 +15287,7 @@ them by default.  To add GNOME, Xfce or MATE, just @code{cons} them onto
                    (service xfce-desktop-service)
                    %desktop-services))
   ...)
-@end example
+@end lisp
 
 These desktop environments will then be available as options in the
 graphical login window.
@@ -15204,9 +15556,9 @@ Architecture} (ALSA) system, which generates the @file{/etc/asound.conf}
 configuration file.  The value for this type is a @command{alsa-configuration}
 record as in this example:
 
-@example
+@lisp
 (service alsa-service-type)
-@end example
+@end lisp
 
 See below for details about @code{alsa-configuration}.
 @end deffn
@@ -15292,7 +15644,7 @@ to create a geographic database using the @code{postgis} extension, a user can
 configure the postgresql-service as in this example:
 
 @cindex postgis
-@example
+@lisp
 (use-package-modules databases geo)
 
 (operating-system
@@ -15304,7 +15656,7 @@ configure the postgresql-service as in this example:
     (cons*
       (postgresql-service #:extension-packages (list postgis))
       %base-services)))
-@end example
+@end lisp
 
 Then the extension becomes visible and you can initialise an empty geographic
 database in this way:
@@ -15352,9 +15704,9 @@ Memcached} service, which provides a distributed in memory cache.  The
 value for the service type is a @code{memcached-configuration} object.
 @end defvr
 
-@example
+@lisp
 (service memcached-service-type)
-@end example
+@end lisp
 
 @deftp {Data Type} memcached-configuration
 Data type representing the configuration of memcached.
@@ -15383,9 +15735,9 @@ This is the service type for @uref{https://www.mongodb.com/, MongoDB}.
 The value for the service type is a @code{mongodb-configuration} object.
 @end defvr
 
-@example
+@lisp
 (service mongodb-service-type)
-@end example
+@end lisp
 
 @deftp {Data Type} mongodb-configuration
 Data type representing the configuration of mongodb.
@@ -15456,11 +15808,11 @@ administrator to specify these parameters via a uniform Scheme interface.
 For example, to specify that mail is located at @code{maildir~/.mail},
 one would instantiate the Dovecot service like this:
 
-@example
+@lisp
 (dovecot-service #:config
                  (dovecot-configuration
                   (mail-location "maildir:~/.mail")))
-@end example
+@end lisp
 
 The available configuration parameters follow.  Each parameter
 definition is preceded by its type; for example, @samp{string-list foo}
@@ -16796,11 +17148,11 @@ The contents of the @code{dovecot.conf}, as a string.
 For example, if your @code{dovecot.conf} is just the empty string, you
 could instantiate a dovecot service like this:
 
-@example
+@lisp
 (dovecot-service #:config
                  (opaque-dovecot-configuration
                   (string "")))
-@end example
+@end lisp
 
 @subsubheading OpenSMTPD Service
 
@@ -16809,11 +17161,11 @@ This is the type of the @uref{https://www.opensmtpd.org, OpenSMTPD}
 service, whose value should be an @code{opensmtpd-configuration} object
 as in this example:
 
-@example
+@lisp
 (service opensmtpd-service-type
          (opensmtpd-configuration
            (config-file (local-file "./my-smtpd.conf"))))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} opensmtpd-configuration
@@ -16843,11 +17195,11 @@ This is the type of the @uref{https://exim.org, Exim} mail transfer
 agent (MTA), whose value should be an @code{exim-configuration} object
 as in this example:
 
-@example
+@lisp
 (service exim-service-type
          (exim-configuration
            (config-file (local-file "./my-exim.conf"))))
-@end example
+@end lisp
 @end deffn
 
 In order to use an @code{exim-service-type} service you must also have a
@@ -17171,11 +17523,11 @@ Defaults to @samp{()}.
 This is the type of the service which provides @code{/etc/aliases},
 specifying how to deliver mail to users on this system.
 
-@example
+@lisp
 (service mail-aliases-service-type
          '(("postmaster" "bob")
            ("bob" "bob@@example.com" "bob@@example2.com")))
-@end example
+@end lisp
 @end deffn
 
 The configuration for a @code{mail-aliases-service-type} service is an
@@ -17198,11 +17550,11 @@ This is the type of the GNU Mailutils IMAP4 Daemon (@pxref{imap4d,,,
 mailutils, GNU Mailutils Manual}), whose value should be an
 @code{imap4d-configuration} object as in this example:
 
-@example
+@lisp
 (service imap4d-service-type
          (imap4d-configuration
            (config-file (local-file "imap4d.conf"))))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} imap4d-configuration
@@ -17236,7 +17588,7 @@ This is the type for the @uref{https://prosody.im, Prosody XMPP
 communication server}.  Its value must be a @code{prosody-configuration}
 record as in this example:
 
-@example
+@lisp
 (service prosody-service-type
          (prosody-configuration
           (modules-enabled (cons "groups" "mam" %default-modules-enabled))
@@ -17250,7 +17602,7 @@ record as in this example:
            (list
             (virtualhost-configuration
              (domain "example.net"))))))
-@end example
+@end lisp
 
 See below for details about @code{prosody-configuration}.
 
@@ -17638,11 +17990,11 @@ The contents of the @code{prosody.cfg.lua} to use.
 For example, if your @code{prosody.cfg.lua} is just the empty
 string, you could instantiate a prosody service like this:
 
-@example
+@lisp
 (service prosody-service-type
          (opaque-prosody-configuration
           (prosody.cfg.lua "")))
-@end example
+@end lisp
 
 @c end of Prosody auto-generated documentation
 
@@ -17661,9 +18013,9 @@ below).
 To have BitlBee listen on port 6667 on localhost, add this line to your
 services:
 
-@example
+@lisp
 (service bitlbee-service-type)
-@end example
+@end lisp
 @end defvr
 
 @deftp {Data Type} bitlbee-configuration
@@ -17735,7 +18087,7 @@ the server of the @uref{https://mumble.info, Mumble} voice-over-IP
 The service type for the Murmur server.  An example configuration can
 look like this:
 
-@example
+@lisp
 (service murmur-service-type
          (murmur-configuration
           (welcome-text
@@ -17743,7 +18095,7 @@ look like this:
           (cert-required? #t) ;disallow text password logins
           (ssl-cert "/etc/letsencrypt/live/mumble.example.com/fullchain.pem")
           (ssl-key "/etc/letsencrypt/live/mumble.example.com/privkey.pem")))
-@end example
+@end lisp
 
 After reconfiguring your system, you can manually set the murmur @code{SuperUser}
 password with the command that is printed during the activation phase.
@@ -17857,14 +18209,14 @@ Should logged ips be obfuscated to protect the privacy of users.
 @item @code{ssl-cert} (default: @code{#f})
 File name of the SSL/TLS certificate used for encrypted connections.
 
-@example
+@lisp
 (ssl-cert "/etc/letsencrypt/live/example.com/fullchain.pem")
-@end example
+@end lisp
 @item @code{ssl-key} (default: @code{#f})
 Filepath to the ssl private key used for encrypted connections.
-@example
+@lisp
 (ssl-key "/etc/letsencrypt/live/example.com/privkey.pem")
-@end example
+@end lisp
 
 @item @code{ssl-dh-params} (default: @code{#f})
 File name of a PEM-encoded file with Diffie-Hellman parameters
@@ -17938,20 +18290,20 @@ viewing and searching log files.
 The following example will configure the service with default values.
 By default, Tailon can be accessed on port 8080 (@code{http://localhost:8080}).
 
-@example
+@lisp
 (service tailon-service-type)
-@end example
+@end lisp
 
 The following example customises more of the Tailon configuration,
 adding @command{sed} to the list of allowed commands.
 
-@example
+@lisp
 (service tailon-service-type
          (tailon-configuration
            (config-file
              (tailon-configuration-file
                (allowed-commands '("tail" "grep" "awk" "sed"))))))
-@end example
+@end lisp
 
 
 @deftp {Data Type} tailon-configuration
@@ -17967,11 +18319,11 @@ The configuration file to use for Tailon. This can be set to a
 For example, to instead use a local file, the @code{local-file} function
 can be used:
 
-@example
+@lisp
 (service tailon-service-type
          (tailon-configuration
            (config-file (local-file "./my-tailon.conf"))))
-@end example
+@end lisp
 
 @item @code{package} (default: @code{tailon})
 The tailon package to use.
@@ -18027,12 +18379,12 @@ restricted to the credentials provided here. To configure users, use a
 list of pairs, where the first element of the pair is the username, and
 the 2nd element of the pair is the password.
 
-@example
+@lisp
 (tailon-configuration-file
   (http-auth "basic")
   (users     '(("user1" . "password1")
                ("user2" . "password2"))))
-@end example
+@end lisp
 
 @end table
 @end deftp
@@ -18049,11 +18401,11 @@ This is the service type for the
 service,  its value must be a @code{darkstat-configuration} record as in
 this example:
 
-@example
+@lisp
 (service darkstat-service-type
          (darkstat-configuration
            (interface "eno1")))
-@end example
+@end lisp
 @end defvar
 
 @deftp {Data Type} darkstat-configuration
@@ -18093,11 +18445,11 @@ This is the service type for the
 service, its value must be a @code{prometheus-node-exporter-configuration}
 record as in this example:
 
-@example
+@lisp
 (service prometheus-node-exporter-service-type
          (prometheus-node-exporter-configuration
            (web-listen-address ":9100")))
-@end example
+@end lisp
 @end defvar
 
 @deftp {Data Type} prometheus-node-exporter-configuration
@@ -18573,7 +18925,7 @@ Here is a simple operating system declaration with a default configuration of
 the @code{nslcd-service-type} and a Name Service Switch configuration that
 consults the @code{ldap} name service last:
 
-@example
+@lisp
 (use-service-modules authentication)
 (use-modules (gnu system nss))
 ...
@@ -18595,7 +18947,7 @@ consults the @code{ldap} name service last:
       (group    services)
       (netgroup services)
       (gshadow  services)))))
-@end example
+@end lisp
 
 @c %start of generated documentation for nslcd-configuration
 
@@ -19054,27 +19406,27 @@ Service type for the @uref{https://httpd.apache.org/,Apache HTTP} server
 
 A simple example configuration is given below.
 
-@example
+@lisp
 (service httpd-service-type
          (httpd-configuration
            (config
              (httpd-config-file
                (server-name "www.example.com")
                (document-root "/srv/http/www.example.com")))))
-@end example
+@end lisp
 
 Other services can also extend the @code{httpd-service-type} to add to
 the configuration.
 
-@example
-(simple-service 'my-extra-server httpd-service-type
+@lisp
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
-@end example
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
+@end lisp
 @end deffn
 
 The details for the @code{httpd-configuration}, @code{httpd-module},
@@ -19131,7 +19483,7 @@ additional configuration.
 For example, in order to handle requests for PHP files, you can use Apache’s
 @code{mod_proxy_fcgi} module along with @code{php-fpm-service-type}:
 
-@example
+@lisp
 (service httpd-service-type
          (httpd-configuration
           (config
@@ -19152,7 +19504,7 @@ For example, in order to handle requests for PHP files, you can use Apache’s
          (php-fpm-configuration
           (socket "/var/run/php-fpm.sock")
           (socket-group "httpd")))
-@end example
+@end lisp
 
 @item @code{server-root} (default: @code{httpd})
 The @code{ServerRoot} in the configuration file, defaults to the httpd
@@ -19206,15 +19558,15 @@ This data type represents a virtualhost configuration block for the httpd servic
 
 These should be added to the extra-config for the httpd-service.
 
-@example
-(simple-service 'my-extra-server httpd-service-type
+@lisp
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
-@end example
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
+@end lisp
 
 @table @asis
 @item @code{addresses-and-ports}
@@ -19235,25 +19587,25 @@ value for this service type is a @code{<nginx-configuration>} record.
 
 A simple example configuration is given below.
 
-@example
+@lisp
 (service nginx-service-type
          (nginx-configuration
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com"))))))
-@end example
+@end lisp
 
 In addition to adding server blocks to the service configuration
 directly, this service can be extended by other services to add server
 blocks, as in this example:
 
-@example
+@lisp
 (simple-service 'my-extra-server nginx-service-type
                 (list (nginx-server-configuration
                         (root "/srv/http/extra-website")
                         (try-files (list "$uri" "$uri/index.html")))))
-@end example
+@end lisp
 @end deffn
 
 At startup, @command{nginx} has not yet read its configuration file, so
@@ -19289,14 +19641,14 @@ file, the elements should be of type
 The following example would setup NGinx to serve @code{www.example.com}
 from the @code{/srv/http/www.example.com} directory, without using
 HTTPS.
-@example
+@lisp
 (service nginx-service-type
          (nginx-configuration
            (server-blocks
              (list (nginx-server-configuration
                      (server-name '("www.example.com"))
                      (root "/srv/http/www.example.com"))))))
-@end example
+@end lisp
 
 @item @code{upstream-blocks} (default: @code{'()})
 A list of @dfn{upstream blocks} to create in the generated configuration
@@ -19310,7 +19662,7 @@ creates a server configuration with one location configuration, that
 will proxy requests to a upstream configuration, which will handle
 requests with two servers.
 
-@example
+@lisp
 (service
   nginx-service-type
   (nginx-configuration
@@ -19328,7 +19680,7 @@ requests with two servers.
               (name "server-proxy")
               (servers (list "server1.example.com"
                              "server2.example.com")))))))
-@end example
+@end lisp
 
 @item @code{file} (default: @code{#f})
 If a configuration @var{file} is provided, this will be used, rather than
@@ -19366,9 +19718,9 @@ path for a UNIX-domain socket on which the server will accept requests.
 Both address and port, or only address or only port can be specified.
 An address may also be a hostname, for example:
 
-@example
+@lisp
 '("127.0.0.1:8000" "127.0.0.1" "8000" "*:8000" "localhost:8000")
-@end example
+@end lisp
 
 @item @code{server-name} (default: @code{(list 'default)})
 A list of server names this server represents. @code{'default} represents the
@@ -19506,21 +19858,20 @@ VCL syntax.
 For example, to mirror @url{http://www.gnu.org,www.gnu.org} with VCL you
 can do something along these lines:
 
-@example
+@lisp
 (define %gnu-mirror
-  (plain-file
-   "gnu.vcl"
-   "vcl 4.1;
-backend gnu @{ .host = "www.gnu.org"; @}"))
+  (plain-file "gnu.vcl"
+              "vcl 4.1;
+backend gnu @{ .host = \"www.gnu.org\"; @}"))
 
 (operating-system
-  ...
+  ;; @dots{}
   (services (cons (service varnish-service-type
                            (varnish-configuration
                             (listen '(":80"))
                             (vcl %gnu-mirror)))
                   %base-services)))
-@end example
+@end lisp
 
 The configuration of an already running Varnish instance can be inspected
 and changed using the @command{varnishadm} program.
@@ -19556,7 +19907,7 @@ Service type for Patchwork.
 The following example is an example of a minimal service for Patchwork, for
 the @code{patchwork.example.com} domain.
 
-@example
+@lisp
 (service patchwork-service-type
          (patchwork-configuration
           (domain "patchwork.example.com")
@@ -19576,7 +19927,7 @@ the @code{patchwork.example.com} domain.
             (extra-parameters
             '((mailboxes . ("Patches"))))))))
 
-@end example
+@end lisp
 
 There are three records for configuring the Patchwork service.  The
 @code{<patchwork-configuration>} relates to the configuration for Patchwork
@@ -19895,7 +20246,7 @@ A helper function to quickly add php to an @code{nginx-server-configuration}.
 @end deffn
 
 A simple services setup for nginx with php can look like this:
-@example
+@lisp
 (services (cons* (service dhcp-client-service-type)
                  (service php-fpm-service-type)
                  (service nginx-service-type
@@ -19908,7 +20259,7 @@ A simple services setup for nginx with php can look like this:
                            (ssl-certificate #f)
                            (ssl-certificate-key #f)))
                  %base-services))
-@end example
+@end lisp
 
 @cindex cat-avatar-generator
 The cat avatar generator is a simple service to demonstrate the use of php-fpm
@@ -19926,14 +20277,14 @@ be able to use @code{cache-dir} as its cache directory.
 @end deffn
 
 A simple setup for cat-avatar-generator can look like this:
-@example
+@lisp
 (services (cons* (cat-avatar-generator-service
                   #:configuration
                   (nginx-server-configuration
                     (server-name '("example.com"))))
                  ...
                  %base-services))
-@end example
+@end lisp
 
 @subsubheading Hpcguix-web
 
@@ -19990,7 +20341,7 @@ The hpcguix-web package to use.
 
 A typical hpcguix-web service declaration looks like this:
 
-@example
+@lisp
 (service hpcguix-web-service-type
          (hpcguix-web-configuration
           (specs
@@ -19998,7 +20349,7 @@ A typical hpcguix-web service declaration looks like this:
                (hpcweb-configuration
                 (title-prefix "Guix-HPC - ")
                 (menu '(("/about" "ABOUT"))))))))
-@end example
+@end lisp
 
 @quotation Note
 The hpcguix-web service periodically updates the package list it publishes by
@@ -20058,7 +20409,7 @@ can be found there:
 A service type for the @code{certbot} Let's Encrypt client.  Its value
 must be a @code{certbot-configuration} record as in this example:
 
-@example
+@lisp
 (define %nginx-deploy-hook
   (program-file
    "nginx-deploy-hook"
@@ -20075,7 +20426,7 @@ must be a @code{certbot-configuration} record as in this example:
              (deploy-hook %nginx-deploy-hook))
             (certificate-configuration
              (domains '("bar.example.net")))))))
-@end example
+@end lisp
 
 See below for details about @code{certbot-configuration}.
 @end defvr
@@ -20146,7 +20497,9 @@ all domains will be Subject Alternative Names on the certificate.
 The challenge type that has to be run by certbot.  If @code{#f} is specified,
 default to the HTTP challenge.  If a value is specified, defaults to the
 manual plugin (see @code{authentication-hook}, @code{cleanup-hook} and
-the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}).
+the documentation at @url{https://certbot.eff.org/docs/using.html#hooks}),
+and gives Let's Encrypt permission to log the public IP address of the
+requesting machine.
 
 @item @code{authentication-hook} (default: @code{#f})
 Command to be run in a shell once for each certificate challenge to be
@@ -20657,12 +21010,12 @@ The list of knot-zone-configuration used by this configuration.
 This is the type of the dnsmasq service, whose value should be an
 @code{dnsmasq-configuration} object as in this example:
 
-@example
+@lisp
 (service dnsmasq-service-type
          (dnsmasq-configuration
            (no-resolv? #t)
            (servers '("192.168.1.1"))))
-@end example
+@end lisp
 @end deffn
 
 @deftp {Data Type} dnsmasq-configuration
@@ -20715,9 +21068,9 @@ care of automatically updating DNS entries for service providers such as
 The following example show instantiates the service with its default
 configuration:
 
-@example
+@lisp
 (service ddclient-service-type)
-@end example
+@end lisp
 
 Note that ddclient needs to access credentials that are stored in a
 @dfn{secret file}, by default @file{/etc/ddclient/secrets} (see
@@ -21307,7 +21660,7 @@ and builds the packages from a manifest.  Some of the packages are defined in
 the @code{"custom-packages"} input, which is the equivalent of
 @code{GUIX_PACKAGE_PATH}.
 
-@example
+@lisp
 (define %cuirass-specs
   #~(list
      '((#:name . "my-manifest")
@@ -21325,12 +21678,12 @@ the @code{"custom-packages"} input, which is the equivalent of
                      (#:branch . "master")
                      (#:no-compile? . #t))
                     ((#:name . "config")
-                     (#:url . "git://git.example.org/config.git")
+                     (#:url . "https://git.example.org/config.git")
                      (#:load-path . ".")
                      (#:branch . "master")
                      (#:no-compile? . #t))
                     ((#:name . "custom-packages")
-                     (#:url . "git://git.example.org/custom-packages.git")
+                     (#:url . "https://git.example.org/custom-packages.git")
                      (#:load-path . ".")
                      (#:branch . "master")
                      (#:no-compile? . #t)))))))
@@ -21338,7 +21691,7 @@ the @code{"custom-packages"} input, which is the equivalent of
 (service cuirass-service-type
          (cuirass-configuration
           (specifications %cuirass-specs)))
-@end example
+@end lisp
 
 While information related to build jobs is located directly in the
 specifications, global settings for the @command{cuirass} process are
@@ -21350,6 +21703,9 @@ Data type representing the configuration of Cuirass.
 @table @asis
 @item @code{log-file} (default: @code{"/var/log/cuirass.log"})
 Location of the log file.
+
+@item @code{web-log-file} (default: @code{"/var/log/cuirass-web.log"})
+Location of the log file used by the web interface.
 
 @item @code{cache-directory} (default: @code{"/var/cache/cuirass"})
 Location of the repository cache.
@@ -21423,9 +21779,9 @@ source is detected.  More information can be found at
 The service type for the TLP tool.  Its value should be a valid
 TLP configuration (see below).  To use the default settings, simply
 write:
-@example
+@lisp
 (service tlp-service-type)
-@end example
+@end lisp
 @end deffn
 
 By default TLP does not need much configuration but most TLP parameters
@@ -21953,12 +22309,12 @@ of clients.
 The following example shows how one might run @code{mpd} as user
 @code{"bob"} on port @code{6666}.  It uses pulseaudio for output.
 
-@example
+@lisp
 (service mpd-service-type
          (mpd-configuration
           (user "bob")
           (port "6666")))
-@end example
+@end lisp
 
 @defvr {Scheme Variable} mpd-service-type
 The service type for @command{mpd}
@@ -22012,12 +22368,12 @@ and performs required management tasks for virtualized guests.
 This is the type of the @uref{https://libvirt.org, libvirt daemon}.
 Its value must be a @code{libvirt-configuration}.
 
-@example
+@lisp
 (service libvirt-service-type
          (libvirt-configuration
           (unix-sock-group "libvirt")
           (tls-port "16555")))
-@end example
+@end lisp
 @end deffn
 
 @c Auto-generated with (generate-libvirt-documentation)
@@ -22578,11 +22934,11 @@ itself upon receiving @code{SIGUSR1}, to allow live upgrades without downtime.
 This is the type of the virtlog daemon.
 Its value must be a @code{virtlog-configuration}.
 
-@example
+@lisp
 (service virtlog-service-type
          (virtlog-configuration
           (max-clients 1000)))
-@end example
+@end lisp
 @end deffn
 
 @deftypevr {@code{virtlog-configuration} parameter} integer log-level
@@ -22720,11 +23076,11 @@ Its value must be a @code{qemu-binfmt-configuration} object, which
 specifies the QEMU package to use as well as the architecture we want to
 emulated:
 
-@example
+@lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
            (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))))
-@end example
+@end lisp
 
 In this example, we enable transparent emulation for the ARM and aarch64
 platforms.  Running @code{herd stop qemu-binfmt} turns it off, and
@@ -22750,12 +23106,12 @@ that you can transparently build programs for another architecture.
 For example, let's suppose you're on an x86_64 machine and you have this
 service:
 
-@example
+@lisp
 (service qemu-binfmt-service-type
          (qemu-binfmt-configuration
            (platforms (lookup-qemu-platforms "arm"))
            (guix-support? #t)))
-@end example
+@end lisp
 
 You can run:
 
@@ -22906,7 +23262,7 @@ Compute an @code{nginx-location-configuration} that corresponds to the
 given Git http configuration.  An example nginx service definition to
 serve the default @file{/srv/git} over HTTPS might be:
 
-@example
+@lisp
 (service nginx-service-type
          (nginx-configuration
           (server-blocks
@@ -22922,7 +23278,7 @@ serve the default @file{/srv/git} over HTTPS might be:
               (list
                (git-http-nginx-location-configuration
                 (git-http-configuration (uri-path "/"))))))))))
-@end example
+@end lisp
 
 This example assumes that you are using Let's Encrypt to get your TLS
 certificate.  @xref{Certificate Services}.  The default @code{certbot}
@@ -22941,9 +23297,9 @@ repositories written in C.
 The following example will configure the service with default values.
 By default, Cgit can be accessed on port 80 (@code{http://localhost:80}).
 
-@example
+@lisp
 (service cgit-service-type)
-@end example
+@end lisp
 
 The @code{file-object} type designates either a file-like object
 (@pxref{G-Expressions, file-like objects}) or a string.
@@ -23876,11 +24232,11 @@ The contents of the @code{cgitrc}, as a string.
 For example, if your @code{cgitrc} is just the empty string, you
 could instantiate a cgit service like this:
 
-@example
+@lisp
 (service cgit-service-type
          (opaque-cgit-configuration
           (cgitrc "")))
-@end example
+@end lisp
 
 @subsubheading Gitolite Service
 
@@ -23895,13 +24251,13 @@ configuration of the permissions for the users on the repositories.
 The following example will configure Gitolite using the default @code{git}
 user, and the provided SSH public key.
 
-@example
+@lisp
 (service gitolite-service-type
          (gitolite-configuration
            (admin-pubkey (plain-file
                            "yourname.pub"
                            "ssh-rsa AAAA... guix@@example.com"))))
-@end example
+@end lisp
 
 Gitolite is configured through a special admin repository which you can clone,
 for example, if you setup Gitolite on @code{example.com}, you would run the
@@ -23944,9 +24300,9 @@ within the gitolite-admin repository.
 
 To specify the SSH key as a string, use the @code{plain-file} function.
 
-@example
+@lisp
 (plain-file "yourname.pub" "ssh-rsa AAAA... guix@@example.com")
-@end example
+@end lisp
 
 @end table
 @end deftp
@@ -23991,9 +24347,9 @@ Service type for the wesnothd service.  Its value must be a
 @code{wesnothd-configuration} object.  To run wesnothd in the default
 configuration, instantiate it as:
 
-@example
+@lisp
 (service wesnothd-service-type)
-@end example
+@end lisp
 @end defvar
 
 @deftp {Data Type} wesnothd-configuration
@@ -24008,6 +24364,57 @@ The port to bind the server to.
 @end table
 @end deftp
 
+
+@node Guix Services
+@subsection Guix Services
+
+@subsubheading Guix Data Service
+The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
+and provides data about GNU Guix.  This includes information about
+packages, derivations and lint warnings.
+
+The data is stored in a PostgreSQL database, and available through a web
+interface.
+
+@defvar {Scheme Variable} guix-data-service-type
+Service type for the Guix Data Service.  Its value must be a
+@code{guix-data-service-configuration} object.  The service optionally
+extends the getmail service, as the guix-commits mailing list is used to
+find out about changes in the Guix git repository.
+@end defvar
+
+@deftp {Data Type} guix-data-service-configuration
+Data type representing the configuration of the Guix Data Service.
+
+@table @asis
+@item @code{package} (default: @code{guix-data-service})
+The Guix Data Service package to use.
+
+@item @code{user} (default: @code{"guix-data-service"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-data-service"})
+The system group to run the service as.
+
+@item @code{port} (default: @code{8765})
+The port to bind the web service to.
+
+@item @code{host} (default: @code{"127.0.0.1"})
+The host to bind the web service to.
+
+@item @code{getmail-idle-mailboxes} (default: @code{#f})
+If set, this is the list of mailboxes that the getmail service will be
+configured to listen to.
+
+@item @code{commits-getmail-retriever-configuration} (default: @code{#f})
+If set, this is the @code{getmail-retriever-configuration} object with
+which to configure getmail to fetch mail from the guix-commits mailing
+list.
+
+@end table
+@end deftp
+
+
 @node Miscellaneous Services
 @subsection Miscellaneous Services
 
@@ -24021,9 +24428,9 @@ read and identify fingerprints via a fingerprint sensor.
 The service type for @command{fprintd}, which provides the fingerprint
 reading capability.
 
-@example
+@lisp
 (service fprintd-service-type)
-@end example
+@end lisp
 @end defvr
 
 @cindex sysctl
@@ -24037,11 +24444,11 @@ The service type for @command{sysctl}, which modifies kernel parameters
 under @file{/proc/sys/}.  To enable IPv4 forwarding, it can be
 instantiated as:
 
-@example
+@lisp
 (service sysctl-service-type
          (sysctl-configuration
            (settings '(("net.ipv4.ip_forward" . "1")))))
-@end example
+@end lisp
 @end defvr
 
 @deftp {Data Type} sysctl-configuration
@@ -24070,9 +24477,9 @@ Service type for the @command{pcscd} service.  Its value must be a
 @code{pcscd-configuration} object.  To run pcscd in the default
 configuration, instantiate it as:
 
-@example
+@lisp
 (service pcscd-service-type)
-@end example
+@end lisp
 @end defvr
 
 @deftp {Data Type} pcscd-configuration
@@ -24227,7 +24634,7 @@ Dictionary of English using the @code{gcide} package.
 
 The following is an example @code{dicod-service} configuration.
 
-@example
+@lisp
 (dicod-service #:config
   (dicod-configuration
    (handlers (list (dicod-handler
@@ -24241,7 +24648,7 @@ The following is an example @code{dicod-service} configuration.
                      (handler "wordnet")
                      (options '("database=wn")))
                     %dicod-database:gcide))))
-@end example
+@end lisp
 
 @cindex Docker
 @subsubheading Docker Service
@@ -24341,7 +24748,7 @@ This is the type of the service that runs build daemon of the
 @url{https://nixos.org/nix/, Nix} package manager.  Here is an example showing
 how to use it:
 
-@example
+@lisp
 (use-modules (gnu))
 (use-service-modules nix)
 (use-package-modules package-management)
@@ -24353,7 +24760,7 @@ how to use it:
 
   (services (append (list (service nix-service-type))
                     %base-services)))
-@end example
+@end lisp
 
 After @command{guix system reconfigure} configure Nix for your user:
 
@@ -24508,7 +24915,7 @@ As an example, the declaration below configures the NSS to use the
 back-end}, which supports host name lookups over multicast DNS (mDNS)
 for host names ending in @code{.local}:
 
-@example
+@lisp
 (name-service-switch
    (hosts (list %files    ;first, check /etc/hosts
 
@@ -24530,7 +24937,7 @@ for host names ending in @code{.local}:
                 ;; Finally, try with the "full" 'mdns'.
                 (name-service
                   (name "mdns")))))
-@end example
+@end lisp
 
 Do not worry: the @code{%mdns-host-lookup-nss} variable (see below)
 contains this configuration, so you will not have to type it if all you
@@ -24611,10 +25018,10 @@ An action specified using the @code{lookup-specification} macro
 (@pxref{Actions in the NSS configuration,,, libc, The GNU C Library
 Reference Manual}).  For example:
 
-@example
+@lisp
 (lookup-specification (unavailable => continue)
                       (success => return))
-@end example
+@end lisp
 @end table
 @end deftp
 
@@ -24638,11 +25045,11 @@ most use cases.  For example, assuming you need the @code{megaraid_sas}
 module in addition to the default modules to be able to access your root
 file system, you would write:
 
-@example
+@lisp
 (operating-system
   ;; @dots{}
   (initrd-modules (cons "megaraid_sas" %base-initrd-modules)))
-@end example
+@end lisp
 
 @defvr {Scheme Variable} %base-initrd-modules
 This is the list of kernel modules included in the initrd by default.
@@ -24660,14 +25067,14 @@ For example, if you want to add a bunch of kernel modules to be loaded
 at boot time, you can define the @code{initrd} field of the operating
 system declaration like this:
 
-@example
+@lisp
 (initrd (lambda (file-systems . rest)
           ;; Create a standard initrd but set up networking
           ;; with the parameters QEMU expects by default.
           (apply base-initrd file-systems
                  #:qemu-networking? #t
                  rest)))
-@end example
+@end lisp
 
 The @code{base-initrd} procedure also handles common use cases that
 involves using the system as a QEMU guest, or as a ``live'' system with
@@ -24919,13 +25326,13 @@ Should you want to list additional boot menu entries @i{via} the
 boot another distro (hard to imagine!), you can define a menu entry
 along these lines:
 
-@example
+@lisp
 (menu-entry
   (label "The Other Distro")
   (linux "/boot/old/vmlinux-2.6.32")
   (linux-arguments '("root=/dev/sda2"))
   (initrd "/boot/old/initrd"))
-@end example
+@end lisp
 
 Details below.
 
@@ -24940,9 +25347,9 @@ The label to show in the menu---e.g., @code{"GNU"}.
 @item @code{linux}
 The Linux kernel image to boot, for example:
 
-@example
+@lisp
 (file-append linux-libre "/bzImage")
-@end example
+@end lisp
 
 For GRUB, it is also possible to specify a device explicitly in the
 file path using GRUB's device naming convention (@pxref{Naming
@@ -25478,7 +25885,7 @@ guix deploy @var{file}
 Such an invocation will deploy the machines that the code within @var{file}
 evaluates to.  As an example, @var{file} might contain a definition like this:
 
-@example
+@lisp
 ;; This is a Guix deployment of a "bare bones" setup, with
 ;; no X11 display server, to a machine with an SSH daemon
 ;; listening on localhost:2222. A configuration such as this
@@ -25514,9 +25921,11 @@ evaluates to.  As an example, @var{file} might contain a definition like this:
        (environment managed-host-environment-type)
        (configuration (machine-ssh-configuration
                        (host-name "localhost")
+                       (system "x86_64-linux")
+                       (user "alice")
                        (identity "./id_rsa")
                        (port 2222)))))
-@end example
+@end lisp
 
 The file should evaluate to a list of @var{machine} objects.  This example,
 upon being deployed, will create a new generation on the remote system
@@ -25546,6 +25955,15 @@ accepts store items it receives from the coordinator:
 # guix archive --authorize < coordinator-public-key.txt
 @end example
 
+@code{user}, in this example, specifies the name of the user account to log in
+as to perform the deployment.  Its default value is @code{root}, but root
+login over SSH may be forbidden in some cases.  To work around this,
+@command{guix deploy} can log in as an unprivileged user and employ
+@code{sudo} to escalate privileges.  This will only work if @code{sudo} is
+currently installed on the remote and can be invoked non-interactively as
+@code{user}.  That is: the line in @code{sudoers} granting @code{user} the
+ability to use @code{sudo} must contain the @code{NOPASSWD} tag.
+
 @deftp {Data Type} machine
 This is the data type representing a single machine in a heterogeneous Guix
 deployment.
@@ -25573,6 +25991,14 @@ with an @code{environment} of @code{managed-host-environment-type}.
 
 @table @asis
 @item @code{host-name}
+@item @code{build-locally?} (default: @code{#t})
+If false, system derivations will be built on the machine being deployed to.
+@item @code{system}
+The Nix system type describing the architecture of the machine being deployed
+to. This should look something like ``x86_64-linux''.
+@item @code{authorize?} (default: @code{#t})
+If true, the coordinator's signing key will be added to the remote's ACL
+keyring.
 @item @code{port} (default: @code{22})
 @item @code{user} (default: @code{"root"})
 @item @code{identity} (default: @code{#f})
@@ -25788,7 +26214,7 @@ A @dfn{service type} is a node in the DAG described above.  Let us start
 with a simple example, the service type for the Guix build daemon
 (@pxref{Invoking guix-daemon}):
 
-@example
+@lisp
 (define guix-service-type
   (service-type
    (name 'guix)
@@ -25797,7 +26223,7 @@ with a simple example, the service type for the Guix build daemon
           (service-extension account-service-type guix-accounts)
           (service-extension activation-service-type guix-activation)))
    (default-value (guix-configuration))))
-@end example
+@end lisp
 
 @noindent
 It defines three things:
@@ -25841,12 +26267,12 @@ booted.
 
 A service of this type is instantiated like this:
 
-@example
+@lisp
 (service guix-service-type
          (guix-configuration
            (build-accounts 5)
            (use-substitutes? #f)))
-@end example
+@end lisp
 
 The second argument to the @code{service} form is a value representing
 the parameters of this specific service instance.
@@ -25855,9 +26281,9 @@ information about the @code{guix-configuration} data type.  When the
 value is omitted, the default value specified by
 @code{guix-service-type} is used:
 
-@example
+@lisp
 (service guix-service-type)
-@end example
+@end lisp
 
 @code{guix-service-type} is quite simple because it extends other
 services but is not extensible itself.
@@ -25866,7 +26292,7 @@ services but is not extensible itself.
 
 The service type for an @emph{extensible} service looks like this:
 
-@example
+@lisp
 (define udev-service-type
   (service-type (name 'udev)
                 (extensions
@@ -25880,7 +26306,7 @@ The service type for an @emph{extensible} service looks like this:
                              (udev-configuration
                               (udev udev)   ;the udev package to use
                               (rules (append initial-rules rules)))))))))
-@end example
+@end lisp
 
 This is the service type for the
 @uref{https://wiki.gentoo.org/wiki/Project:Eudev, eudev device
@@ -25937,17 +26363,17 @@ raised.
 
 For instance, this:
 
-@example
+@lisp
 (service openssh-service-type)
-@end example
+@end lisp
 
 @noindent
 is equivalent to this:
 
-@example
+@lisp
 (service openssh-service-type
          (openssh-configuration))
-@end example
+@end lisp
 
 In both cases the result is an instance of @code{openssh-service-type}
 with the default configuration.
@@ -25968,7 +26394,7 @@ parameters.
 
 Here is an example of how a service is created and manipulated:
 
-@example
+@lisp
 (define s
   (service nginx-service-type
            (nginx-configuration
@@ -25982,7 +26408,7 @@ Here is an example of how a service is created and manipulated:
 
 (eq? (service-kind s) nginx-service-type)
 @result{} #t
-@end example
+@end lisp
 
 The @code{modify-services} form provides a handy way to change the
 parameters of some of the services of a list such as
@@ -26084,10 +26510,10 @@ service is an instance.
 For example, this extends mcron (@pxref{Scheduled Job Execution}) with
 an additional job:
 
-@example
+@lisp
 (simple-service 'my-mcron-job mcron-service-type
                 #~(job '(next-hour (3)) "guix gc -F 2G"))
-@end example
+@end lisp
 @end deffn
 
 At the core of the service abstraction lies the @code{fold-services}
@@ -26122,9 +26548,9 @@ The type of the @file{/etc} service.  This service is used to create
 files under @file{/etc} and can be extended by
 passing it name/file tuples such as:
 
-@example
+@lisp
 (list `("issue" ,(plain-file "issue" "Welcome!\n")))
-@end example
+@end lisp
 
 In this example, the effect would be to add an @file{/etc/issue} file
 pointing to the given file.
@@ -26260,7 +26686,7 @@ shepherd, The GNU Shepherd Manual}).
 The following example defines an action called @code{say-hello} that kindly
 greets the user:
 
-@example
+@lisp
 (shepherd-action
   (name 'say-hello)
   (documentation "Say hi!")
@@ -26268,7 +26694,7 @@ greets the user:
                  (format #t "Hello, friend! arguments: ~s\n"
                          args)
                  #t)))
-@end example
+@end lisp
 
 Assuming this action is added to the @code{example} service, then you can do:
 
@@ -26475,13 +26901,13 @@ Bash, say @code{bash-fixed}, in the usual way (@pxref{Defining
 Packages}).  Then, the original package definition is augmented with a
 @code{replacement} field pointing to the package containing the bug fix:
 
-@example
+@lisp
 (define bash
   (package
     (name "bash")
     ;; @dots{}
     (replacement bash-fixed)))
-@end example
+@end lisp
 
 From there on, any package depending directly or indirectly on Bash---as
 reported by @command{guix gc --requisites} (@pxref{Invoking guix
@@ -26572,7 +26998,80 @@ Binutils, libc, and the other packages mentioned above---the
 These bootstrap binaries are ``taken for granted'', though we can also
 re-create them if needed (more on that later).
 
-@unnumberedsec Preparing to Use the Bootstrap Binaries
+For @code{i686-linux} and @code{x86_64-linux} the Guix bootstrap process is
+more elaborate, @pxref{Reduced Binary Seed Bootstrap}.
+
+@menu
+* Reduced Binary Seed Bootstrap::  A Bootstrap worthy of GNU.
+* Preparing to Use the Bootstrap Binaries:: Building that what matters most.
+@end menu
+
+@node Reduced Binary Seed Bootstrap
+@section The Reduced Binary Seed Bootstrap
+
+Guix---like other GNU/Linux distributions---is traditionally bootstrapped from
+a set of bootstrap binaries: Bourne shell, command-line tools provided by GNU
+Coreutils, Awk, Findutils, `sed', and `grep' and Guile, GCC, Binutils, and the
+GNU C Library (@pxref{Bootstrapping}).  Usually, these bootstrap binaries are
+``taken for granted.''
+
+Taking these binaries for granted means that we consider them to be a correct
+and trustworthy `seed' for building the complete system.  Therein lies a
+problem: the current combined size of these bootstrap binaries is about 250MB
+(@pxref{Bootstrappable Builds,,, mes, GNU Mes}).  Auditing or even inspecting
+these is next to impossible.
+
+For @code{i686-linux} and @code{x86_64-linux}, Guix now features a ``Reduced
+Binary Seed'' bootstrap @footnote{We would like to say: ``Full Source
+Bootstrap'' and while we are working towards that goal it would be hyperbole
+to use that term for what we do now.}.
+
+The Reduced Binary Seed bootstrap removes the most critical tools---from a
+trust perspective---from the bootstrap binaries: GCC, Binutils and the GNU C
+Library are replaced by: @code{bootstrap-mescc-tools} (a tiny assembler and
+linker) and @code{bootstrap-mes} (a small Scheme Interpreter and a C compiler
+written in Scheme and the Mes C Library, built for TinyCC and for GCC).  Using
+these new binary seeds and a new set of
+@c
+packages@footnote{@c
+nyacc-boot,
+mes-boot,
+tcc-boot0,
+tcc-boot,
+make-mesboot0,
+diffutils-mesboot,
+binutils-mesboot0,
+gcc-core-mesboot,
+mesboot-headers,
+glibc-mesboot0,
+gcc-mesboot0,
+binutils-mesboot,
+make-mesboot,
+gcc-mesboot1,
+gcc-mesboot1-wrapper,
+glibc-headers-mesboot,
+glibc-mesboot,
+gcc-mesboot,
+and
+gcc-mesboot-wrapper.
+}
+@c
+the ``missing'' Binutils, GCC, and the GNU C Library are built from source.
+From here on the more traditional bootstrap process resumes.  This approach
+has reduced the bootstrap binaries in size to about 130MB.  Work is ongoing to
+reduce this further.  If you are interested, join us on @code{#bootstrappable}
+on the Freenode IRC network.
+
+@c ./pre-inst-env guix graph --type=bag -e '(begin (use-modules (guix packages)) (%current-system "i686-linux") (@@ (gnu packages commencement) gcc-mesboot))' > doc/images/gcc-mesboot-bag-graph.dot
+@c dot -T png doc/images/gcc-mesboot-bag-graph.dot > doc/images/gcc-mesboot-bag-graph.png
+
+Below is the generated dependency graph for @code{gcc-mesboot}, the bootstrap
+compiler used to build the rest of GuixSD.
+
+@image{images/gcc-mesboot-bag-graph,6in,,Dependency graph of the gcc-mesboot}
+
+@node Preparing to Use the Bootstrap Binaries
+@section Preparing to Use the Bootstrap Binaries
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
@@ -26586,7 +27085,15 @@ packages bootstrap)} module.  A similar figure can be generated with
 @example
 guix graph -t derivation \
   -e '(@@@@ (gnu packages bootstrap) %bootstrap-gcc)' \
-  | dot -Tps > t.ps
+  | dot -Tps > gcc.ps
+@end example
+
+or, for the Reduced Binary Seed bootstrap
+
+@example
+guix graph -t derivation \
+  -e '(@@@@ (gnu packages bootstrap) %bootstrap-mes)' \
+  | dot -Tps > mes.ps
 @end example
 
 At this level of detail, things are
@@ -26618,10 +27125,10 @@ write them in an output directory with the right layout.  This
 corresponds to the @code{#:modules} argument of
 @code{build-expression->derivation} (@pxref{Derivations}).
 
-Finally, the various tarballs are unpacked by the
-derivations @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv},
-etc., at which point we have a working C tool chain.
-
+Finally, the various tarballs are unpacked by the derivations
+@code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv}, or
+@code{bootstrap-mes-0.drv} and @code{bootstrap-mescc-tools-0.drv}, at which
+point we have a working C tool chain.
 
 @unnumberedsec Building the Build Tools
 
@@ -26686,9 +27193,11 @@ those rarely need to be updated.  Nevertheless, it is useful to have an
 automated way to produce them, should an update occur, and this is what
 the @code{(gnu packages make-bootstrap)} module provides.
 
-The following command builds the tarballs containing the bootstrap
-binaries (Guile, Binutils, GCC, libc, and a tarball containing a mixture
-of Coreutils and other basic command-line tools):
+The following command builds the tarballs containing the bootstrap binaries
+(Binutils, GCC, glibc, for the traditional bootstrap and linux-libre-headers,
+bootstrap-mescc-tools, bootstrap-mes for the Reduced Binary Seed bootstrap,
+and Guile, and a tarball containing a mixture of Coreutils and other basic
+command-line tools):
 
 @example
 guix build bootstrap-tarballs
@@ -26706,12 +27215,12 @@ know.
 
 @unnumberedsec Reducing the Set of Bootstrap Binaries
 
-Our bootstrap binaries currently include GCC, Guile, etc.  That's a lot
-of binary code!  Why is that a problem?  It's a problem because these
-big chunks of binary code are practically non-auditable, which makes it
-hard to establish what source code produced them.  Every unauditable
-binary also leaves us vulnerable to compiler backdoors as described by
-Ken Thompson in the 1984 paper @emph{Reflections on Trusting Trust}.
+Our traditional bootstrap includes GCC, GNU Libc, Guile, etc.  That's a lot of
+binary code!  Why is that a problem?  It's a problem because these big chunks
+of binary code are practically non-auditable, which makes it hard to establish
+what source code produced them.  Every unauditable binary also leaves us
+vulnerable to compiler backdoors as described by Ken Thompson in the 1984
+paper @emph{Reflections on Trusting Trust}.
 
 This is mitigated by the fact that our bootstrap binaries were generated
 from an earlier Guix revision.  Nevertheless it lacks the level of
@@ -26723,8 +27232,19 @@ The @uref{http://bootstrappable.org, Bootstrappable.org web site} lists
 on-going projects to do that.  One of these is about replacing the
 bootstrap GCC with a sequence of assemblers, interpreters, and compilers
 of increasing complexity, which could be built from source starting from
-a simple and auditable assembler.  Your help is welcome!
+a simple and auditable assembler.
 
+Our first major achievement is the replacement of of GCC, the GNU C Library
+and Binutils by MesCC-Tools (a simple hex linker and macro assembler) and Mes
+(@pxref{Top, GNU Mes Reference Manual,, mes, GNU Mes}, a Scheme interpreter
+and C compiler in Scheme).  Neither MesCC-Tools nor Mes can be fully
+bootstrapped yet and thus we inject them as binary seeds.  We call this the
+Reduced Binary Seed bootstrap, as it has halved the size of our bootstrap
+binaries!  Also, it has eliminated the C compiler binary; i686-linux and
+x86_64-linux Guix packages are now bootstrapped without any binary C compiler.
+
+Work is ongoing to make MesCC-Tools and Mes fully bootstrappable and we are
+also looking at any other bootstrap binaries.  Your help is welcome!
 
 @node Porting
 @chapter Porting to a New Platform

@@ -57,14 +57,14 @@ struct Settings {
     /* The directory where configuration files are stored. */
     Path nixConfDir;
 
-    /* The directory where internal helper programs are stored. */
-    Path nixLibexecDir;
-
     /* The directory where the main programs are stored. */
     Path nixBinDir;
 
     /* File name of the socket the daemon listens to.  */
     Path nixDaemonSocketFile;
+
+    /* Absolute file name of the 'guix' program.  */
+    Path guixProgram;
 
     /* Whether to keep temporary directories of failed builds. */
     bool keepFailed;
@@ -111,11 +111,6 @@ struct Settings {
     /* The maximum duration in seconds that a builder can run.  0
        means infinity.  */
     time_t buildTimeout;
-
-    /* The substituters.  There are programs that can somehow realise
-       a store path without building, e.g., by downloading it or
-       copying it from a CD. */
-    Paths substituters;
 
     /* Whether to use build hooks (for distributed builds).  Sometimes
        users want to disable this from the command-line. */

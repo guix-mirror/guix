@@ -29,7 +29,7 @@
   #:use-module (guix search-paths)
   #:use-module (guix build utils)
   #:use-module (guix monads)
-  #:use-module ((guix gexp) #:select (lower-inputs))
+  #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module (gnu build linux-container)
@@ -40,7 +40,8 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
+  #:use-module ((gnu packages bootstrap)
+                #:select (bootstrap-executable %bootstrap-guile))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
@@ -452,7 +453,7 @@ regexps in WHITE-LIST."
 
 (define* (launch-environment/container #:key command bash user user-mappings
                                        profile manifest link-profile? network?
-                                       map-cwd?)
+                                       map-cwd? (white-list '()))
   "Run COMMAND within a container that features the software in PROFILE.
 Environment variables are set according to the search paths of MANIFEST.
 The global shell is BASH, a file name for a GNU Bash binary in the
@@ -461,7 +462,14 @@ USER-MAPPINGS, a list of file system mappings, contains the user-specified
 host file systems to mount inside the container.  If USER is not #f, each
 target of USER-MAPPINGS will be re-written relative to '/home/USER', and USER
 will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
-~/.guix-profile to the environment profile."
+~/.guix-profile to the environment profile.
+
+Preserve environment variables whose name matches the one of the regexps in
+WHILE-LIST."
+  (define (optional-mapping->fs mapping)
+    (and (file-exists? (file-system-mapping-source mapping))
+         (file-system-mapping->bind-mount mapping)))
+
   (mlet %store-monad ((reqs (inputs->requisites
                              (list (direct-store-path bash) profile))))
     (return
@@ -483,6 +491,11 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                             (group-entry (gid 65534) ;the overflow GID
                                          (name "overflow"))))
             (home-dir (password-entry-directory passwd))
+            (environ  (filter (match-lambda
+                                ((variable . value)
+                                 (find (cut regexp-exec <> variable)
+                                       white-list)))
+                              (get-environment-variables)))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
@@ -498,11 +511,6 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                                   (target cwd)
                                   (writable? #t)))
                            '())))
-              ;; When in Rome, do as Nix build.cc does: Automagically
-              ;; map common network configuration files.
-              (if network?
-                  %network-file-mappings
-                  '())
               ;; Mappings for the union closure of all inputs.
               (map (lambda (dir)
                      (file-system-mapping
@@ -511,6 +519,10 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
                       (writable? #f)))
                    reqs)))
             (file-systems (append %container-file-systems
+                                  (if network?
+                                      (filter-map optional-mapping->fs
+                                                  %network-file-mappings)
+                                      '())
                                   (map file-system-mapping->bind-mount
                                        mappings))))
        (exit/status
@@ -551,6 +563,12 @@ will be used for the passwd entry.  LINK-PROFILE? creates a symbolic link from
             (chdir (if map-cwd?
                        (override-user-dir user home cwd)
                        home-dir))
+
+            ;; Set environment variables that match WHITE-LIST.
+            (for-each (match-lambda
+                        ((variable . value)
+                         (setenv variable value)))
+                      environ)
 
             (primitive-exit/status
              ;; A container's environment is already purified, so no need to
@@ -613,8 +631,7 @@ Otherwise, return the derivation for the Bash package."
       (package->derivation bash))
      ;; Use the bootstrap Bash instead.
      ((and container? bootstrap?)
-      (interned-file
-       (search-bootstrap-binary "bash" system)))
+      (lower-object (bootstrap-executable "bash" system)))
      (else
       (return #f)))))
 
@@ -747,7 +764,7 @@ message if any test fails."
                    (container?
                     (let ((bash-binary
                            (if bootstrap?
-                               bash
+                               (derivation->output-path bash)
                                (string-append (derivation->output-path bash)
                                               "/bin/sh"))))
                       (launch-environment/container #:command command
@@ -756,6 +773,7 @@ message if any test fails."
                                                     #:user-mappings mappings
                                                     #:profile profile
                                                     #:manifest manifest
+                                                    #:white-list white-list
                                                     #:link-profile? link-prof?
                                                     #:network? network?
                                                     #:map-cwd? (not no-cwd?))))

@@ -1,0 +1,45 @@
+From 5059daf8bd59a83f520c14731173ea76ce8b8661 Mon Sep 17 00:00:00 2001
+From: Hartmut Goebel <h.goebel@crazy-compilers.com>
+Date: Sun, 8 Sep 2019 13:09:15 +0200
+Subject: [PATCH] [debops-defaults] If `view` is not available, try less, etc.
+
+---
+ bin/debops-defaults | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/bin/debops-defaults b/bin/debops-defaults
+index 9dd87fe0a..3e3db4c41 100755
+--- a/bin/debops-defaults
++++ b/bin/debops-defaults
+@@ -96,13 +96,22 @@ def main(role_list):
+     config = read_config(project_root)
+     playbooks_path = find_playbookpath(config, project_root, required=True)
+ 
+-    # Make sure required commands are present
+-    require_commands('view')
+-
+-    if sys.stdout.isatty():
++    # Check if one of the output commands is present
++    sys.stdout = io.BytesIO()  # suppress error message, if any
++    for cmd_args in (('view', '+set ft=yaml', '-'),
++                     ('less', '-'),
++                     ('more', '-')):
++        try:
++            require_commands(cmd_args[0])
++            break
++        except SystemExit:
++            # this command was not found
++            cmd_args = None
++    sys.stdout = sys.__stdout__
++
++    if cmd_args and sys.stdout.isatty():
+         # if script is run as standalone, redirect to view
+-        view = subprocess.Popen(['view', '+set ft=yaml', '-'],
+-                                stdin=subprocess.PIPE)
++        view = subprocess.Popen(cmd_args, stdin=subprocess.PIPE)
+         try:
+             aggregate_defaults(playbooks_path, role_list, view.stdin)
+         except IOError as e:
+-- 
+2.21.0
+

@@ -29,11 +29,13 @@
              (guix gexp)
              (guix git)
              (guix git-download)
+             (guix utils)
              (git)
              (gnu packages base)
              (gnu packages gawk)
              (gnu packages gettext)
              (gnu packages guile)
+             (gnu packages guile-xyz)
              (gnu packages iso-codes)
              (gnu packages texinfo)
              (gnu packages tex)
@@ -164,6 +166,197 @@ as well as images, OS examples, and translations."
   ;; Options passed to 'makeinfo --html'.
   '("--css-ref=https://www.gnu.org/software/gnulib/manual.css"))
 
+(define guile-lib/htmlprag-fixed
+  ;; Guile-Lib with a hotfix for (htmlprag).
+  (package
+    (inherit guile-lib)
+    (source (origin
+              (inherit (package-source guile-lib))
+              (modules '(( guix build utils)))
+              (snippet
+               '(begin
+                  ;; When parsing
+                  ;; "<body><blockquote><p>foo</p>\n</blockquote></body>",
+                  ;; 'html->shtml' would mistakenly close 'blockquote' right
+                  ;; before <p>.  This patch removes 'p' from the
+                  ;; 'parent-constraints' alist to fix that.
+                  (substitute* "src/htmlprag.scm"
+                    (("^[[:blank:]]*\\(p[[:blank:]]+\\. \\(body td th\\)\\).*")
+                     ""))
+                  #t))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments guile-lib)
+       ((#:phases phases '%standard-phases)
+        `(modify-phases ,phases
+          (add-before 'check 'skip-known-failure
+            (lambda _
+              ;; XXX: The above change causes one test failure among
+              ;; the htmlprag tests.
+              (setenv "XFAIL_TESTS" "htmlprag.scm")
+              #t))))))))
+
+(define* (syntax-highlighted-html input
+                                  #:key
+                                  (name "highlighted-syntax")
+                                  (syntax-css-url
+                                   "/static/base/css/code.css"))
+  "Return a derivation called NAME that processes all the HTML files in INPUT
+to (1) add them a link to SYNTAX-CSS-URL, and (2) highlight the syntax of all
+its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
+  (define build
+    (with-extensions (list guile-lib/htmlprag-fixed guile-syntax-highlight)
+      (with-imported-modules '((guix build utils))
+        #~(begin
+            (use-modules (htmlprag)
+                         (syntax-highlight)
+                         (syntax-highlight scheme)
+                         (syntax-highlight lexers)
+                         (guix build utils)
+                         (ice-9 match)
+                         (ice-9 threads))
+
+            (define (pair-open/close lst)
+              ;; Pair 'open' and 'close' tags produced by 'highlights' and
+              ;; produce nested 'paren' tags instead.
+              (let loop ((lst lst)
+                         (level 0)
+                         (result '()))
+                (match lst
+                  ((('open open) rest ...)
+                   (call-with-values
+                       (lambda ()
+                         (loop rest (+ 1 level) '()))
+                     (lambda (inner close rest)
+                       (loop rest level
+                             (cons `(paren ,level ,open ,inner ,close)
+                                   result)))))
+                  ((('close str) rest ...)
+                   (if (> level 0)
+                       (values (reverse result) str rest)
+                       (begin
+                         (format (current-error-port)
+                                 "warning: extra closing paren; context:~% ~y~%"
+                                 (reverse result))
+                         (loop rest 0 (cons `(close ,str) result)))))
+                  ((item rest ...)
+                   (loop rest level (cons item result)))
+                  (()
+                   (when (> level 0)
+                     (format (current-error-port)
+                             "warning: missing ~a closing parens; context:~% ~y%"
+                             level (reverse result)))
+                   (values (reverse result) "" '())))))
+
+            (define (highlights->sxml* highlights)
+              ;; Like 'highlights->sxml', but handle nested 'paren tags.  This
+              ;; allows for paren matching highlights via appropriate CSS
+              ;; "hover" properties.
+              (define (tag->class tag)
+                (string-append "syntax-" (symbol->string tag)))
+
+              (map (match-lambda
+                     ((? string? str) str)
+                     (('paren level open (body ...) close)
+                      `(span (@ (class ,(string-append "syntax-paren"
+                                                       (number->string level))))
+                             ,open
+                             (span (@ (class "syntax-symbol"))
+                                   ,@(highlights->sxml* body))
+                             ,close))
+                     ((tag text)
+                      `(span (@ (class ,(tag->class tag))) ,text)))
+                   highlights))
+
+            (define entity->string
+              (match-lambda
+                ("rArr"   "⇒")
+                ("hellip" "…")
+                ("rsquo"  "’")
+                (e (pk 'unknown-entity e) (primitive-exit 2))))
+
+            (define (concatenate-snippets pieces)
+              ;; Concatenate PIECES, which contains strings and entities,
+              ;; replacing entities with their corresponding string.
+              (let loop ((pieces pieces)
+                         (strings '()))
+                (match pieces
+                  (()
+                   (string-concatenate-reverse strings))
+                  (((? string? str) . rest)
+                   (loop rest (cons str strings)))
+                  ((('*ENTITY* "additional" entity) . rest)
+                   (loop rest (cons (entity->string entity) strings)))
+                  ((('span _ lst ...) . rest)     ;for <span class="roman">
+                   (loop (append lst rest) strings))
+                  (something
+                   (pk 'unsupported-code-snippet something)
+                   (primitive-exit 1)))))
+
+            (define (syntax-highlight sxml)
+              ;; Recurse over SXML and syntax-highlight code snippets.
+              (match sxml
+                (('*TOP* decl body ...)
+                 `(*TOP* ,decl ,@(map syntax-highlight body)))
+                (('head things ...)
+                 `(head ,@things
+                        (link (@ (rel "stylesheet")
+                                 (type "text/css")
+                                 (href #$syntax-css-url)))))
+                (('pre ('@ ('class "lisp")) code-snippet ...)
+                 `(pre (@ (class "lisp"))
+                       ,@(highlights->sxml*
+                          (pair-open/close
+                           (highlight lex-scheme
+                                      (concatenate-snippets code-snippet))))))
+                ((tag ('@ attributes ...) body ...)
+                 `(,tag (@ ,@attributes) ,@(map syntax-highlight body)))
+                ((tag body ...)
+                 `(,tag ,@(map syntax-highlight body)))
+                ((? string? str)
+                 str)))
+
+            (define (process-html file)
+              ;; Parse FILE and perform syntax highlighting for its Scheme
+              ;; snippets.  Install the result to #$output.
+              (format (current-error-port) "processing ~a...~%" file)
+              (let* ((shtml        (call-with-input-file file html->shtml))
+                     (highlighted  (syntax-highlight shtml))
+                     (base         (string-drop file (string-length #$input)))
+                     (target       (string-append #$output base)))
+                (mkdir-p (dirname target))
+                (call-with-output-file target
+                  (lambda (port)
+                    (write-shtml-as-html highlighted port)))))
+
+            (define (copy-as-is file)
+              ;; Copy FILE as is to #$output.
+              (let* ((base   (string-drop file (string-length #$input)))
+                     (target (string-append #$output base)))
+                (mkdir-p (dirname target))
+                (catch 'system-error
+                  (lambda ()
+                    (if (eq? 'symlink (stat:type (lstat file)))
+                        (symlink (readlink file) target)
+                        (link file target)))
+                  (lambda args
+                    (let ((errno (system-error-errno args)))
+                      (pk 'error-link file target (strerror errno))
+                      (primitive-exit 3))))))
+
+            ;; Install a UTF-8 locale so we can process UTF-8 files.
+            (setenv "GUIX_LOCPATH"
+                    #+(file-append glibc-utf8-locales "/lib/locale"))
+            (setlocale LC_ALL "en_US.utf8")
+
+            (n-par-for-each (parallel-job-count)
+                            (lambda (file)
+                              (if (string-suffix? ".html" file)
+                                  (process-html file)
+                                  (copy-as-is file)))
+                            (find-files #$input))))))
+
+  (computed-file name build))
+
 (define* (html-manual source #:key (languages %languages)
                       (version "0.0")
                       (manual "guix")
@@ -242,7 +435,10 @@ makeinfo OPTIONS."
                                                 "/html_node/images"))))
                     '#$languages))))
 
-  (computed-file (string-append manual "-html-manual") build))
+  (let* ((name   (string-append manual "-html-manual"))
+         (manual (computed-file name build)))
+    (syntax-highlighted-html manual
+                             #:name (string-append name "-highlighted"))))
 
 (define* (pdf-manual source #:key (languages %languages)
                      (version "0.0")

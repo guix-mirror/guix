@@ -369,7 +369,7 @@ requirements according to version 1.1 of the OpenCL specification.")
      '(#:configure-flags '("-DLIBOMP_USE_HWLOC=ON"
                            "-DOPENMP_TEST_C_COMPILER=clang"
                            "-DOPENMP_TEST_CXX_COMPILER=clang++")
-       #:test-target "check-libomptarget"))
+       #:test-target "check-libomp"))
     (native-inputs
      `(("clang" ,clang)
        ("llvm" ,llvm)
@@ -439,6 +439,23 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
   (clang-from-llvm llvm-6 clang-runtime
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
+
+;; Libcxx files specifically used by PySide2.
+(define-public libcxx-6
+  (package
+    (inherit libcxx)
+    (version (package-version llvm-6))
+    (source
+     (origin
+       (inherit (package-source libcxx))
+       (uri (string-append "http://llvm.org/releases/"
+                           version "/libcxx-" version ".src.tar.xz"))
+       (sha256
+        (base32
+         "0rzw4qvxp6qx4l4h9amrq02gp7hbg8lw4m0sy3k60f50234gnm3n"))))
+    (native-inputs
+     `(("clang" ,clang-6)
+       ("llvm" ,llvm-6)))))
 
 (define-public llvm-3.9.1
   (package (inherit llvm)

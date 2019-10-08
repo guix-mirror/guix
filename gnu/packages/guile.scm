@@ -216,7 +216,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.2
   (package (inherit guile-2.0)
     (name "guile")
-    (version "2.2.4")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
 
@@ -226,8 +226,10 @@ without requiring the source code to be rewritten.")
                                   ".tar.xz"))
               (sha256
                (base32
-                "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))
+                "1269ymxm56j1z1lvq1y42rm961f2n7rinm3k6l00p9k52hrpcddk"))
               (modules '((guix build utils)))
+              (patches (search-patches
+                        "guile-2.2-skip-oom-test.patch"))
 
               ;; Remove the pre-built object files.  Instead, build everything
               ;; from source, at the expense of significantly longer build
@@ -245,36 +247,7 @@ without requiring the source code to be rewritten.")
             (files '("share/guile/site/2.2")))
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
-            (files '("lib/guile/2.2/site-ccache")))))
-
-    (arguments
-     (if (%current-target-system)
-         (substitute-keyword-arguments (package-arguments guile-2.0)
-           ((#:phases phases '%standard-phases)
-            `(modify-phases ,phases
-               (add-after 'unpack 'sacrifice-elisp-support
-                 (lambda _
-                   ;; Cross-compiling language/elisp/boot.el fails, so
-                   ;; sacrifice it.  See
-                   ;; <https://git.savannah.gnu.org/cgit/guile.git/commit/?h=stable-2.2&id=988aa29238fca862c7e2cb55f15762a69b4c16ce>
-                   ;; for the upstream fix.
-                   (substitute* "module/Makefile.in"
-                     (("language/elisp/boot\\.el")
-                      "\n"))
-                   #t))
-               ,@(if (hurd-target?)
-                     `((add-after 'unpack 'allow-madvise-ENOSYS
-                         (lambda _
-                           ;; Do not warn about ENOSYS on 'madvise'.  This is
-                           ;; what Guile commit
-                           ;; 45e4ace6603e00b297e6542362273041aebe7305 does.
-                           ;; TODO: Remove for Guile >= 2.2.5.
-                           (substitute* "libguile/vm.c"
-                             (("perror \\(\"madvise failed\"\\)")
-                              "if (errno != ENOSYS) perror (\"madvised failed\");"))
-                           #t)))
-                     '()))))
-         (package-arguments guile-2.0)))))
+            (files '("lib/guile/2.2/site-ccache")))))))
 
 (define-public guile-2.2/fixed
   ;; A package of Guile 2.2 that's rarely changed.  It is the one used
@@ -285,32 +258,31 @@ without requiring the source code to be rewritten.")
                   (timeout . 72000)             ;20 hours
                   (max-silent-time . 36000))))) ;10 hours (needed on ARM
                                                 ;  when heavily loaded)
-
-(define-public guile-2.2.6
-  (package
-    (inherit guile-2.2)
-    (version "2.2.6")
-    (source (origin
-              (inherit (package-source guile-2.2))
-              (uri (string-append "mirror://gnu/guile/guile-" version
-                                  ".tar.xz"))
-              (sha256
-               (base32
-                "1269ymxm56j1z1lvq1y42rm961f2n7rinm3k6l00p9k52hrpcddk"))))))
+(define-public guile-2.2.4
+  (package/inherit
+   guile-2.2
+   (version "2.2.4")
+   (source (origin
+             (inherit (package-source guile-2.2))
+             (uri (string-append "mirror://gnu/guile/guile-" version
+                                 ".tar.xz"))
+             (sha256
+              (base32
+               "07p3g0v2ba2vlfbfidqzlgbhnzdx46wh2rgc5gszq1mjyx5bks6r"))))))
 
 (define-public guile-next
   ;; This is the upcoming Guile 3.0, with JIT support.
   (package
     (inherit guile-2.2)
     (name "guile-next")
-    (version "2.9.3")
+    (version "2.9.4")
     (source (origin
               (inherit (package-source guile-2.2))
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "14990wcpysgw58kij03wbgiggmi5z94jmy7wdcqnn6ny7cimkkgr"))))
+                "1milviqhipyfx400pqhngxpxyajalzwmp597dxn5514pkk0g7v0p"))))
     (native-search-paths
      (list (search-path-specification
             (variable "GUILE_LOAD_PATH")
@@ -396,6 +368,10 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
   (package-input-rewriting `((,guile-2.2 . ,guile-2.0))
                            (guile-variant-package-name "guile2.0")))
 
+(define package-for-guile-3.0
+  (package-input-rewriting `((,guile-2.2 . ,guile-next))
+                           (guile-variant-package-name "guile3.0")))
+
 (define-public guile-for-guile-emacs
   (package (inherit guile-2.2)
     (name "guile-for-guile-emacs")
@@ -444,8 +420,8 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
     (home-page "https://github.com/aconchillo/guile-json")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.savannah.nongnu.org/releases/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "15gnb84d7hpazqhskkf3g9z4r6knw54wfj4ch5270kakz1lp70c9"))))
@@ -472,9 +448,6 @@ specification.  These are the main features:
   ;; This is the 1.x branch of Guile-JSON.
   guile-json)
 
-(define-public guile2.2-json
-  (deprecated-package "guile2.2-json" guile-json))
-
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json))
 
@@ -483,14 +456,17 @@ specification.  These are the main features:
   (package
     (inherit guile-json)
     (name "guile-json")
-    (version "3.1.0")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://download.savannah.nongnu.org/releases/"
-                                  name "/" name "-" version ".tar.gz"))
+              (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "1yfqscz74i4vxylabd3s9l0wbdp8bg9qxnv1ixdm3b1l7zdx00z3"))))))
+                "14m6b6g2maw0mkvfm4x63rqb54vgbpn1gcqs715ijw4bikfzlqfz"))))))
+
+(define-public guile3.0-json
+  (package-for-guile-3.0 guile-json-3))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -544,8 +520,8 @@ Guile's foreign function interface.")
 (define-public guile2.0-gdbm-ffi
   (package-for-guile-2.0 guile-gdbm-ffi))
 
-(define-public guile2.2-gdbm-ffi
-  (deprecated-package "guile2.2-gdbm-ffi" guile-gdbm-ffi))
+(define-public guile3.0-gdbm-ffi
+  (package-for-guile-3.0 guile-gdbm-ffi))
 
 (define-public guile-sqlite3
   (package
@@ -580,7 +556,7 @@ Guile's foreign function interface.")
 (define-public guile-bytestructures
   (package
     (name "guile-bytestructures")
-    (version "1.0.5")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/TaylanUB/scheme-bytestructures"
@@ -588,7 +564,7 @@ Guile's foreign function interface.")
                                   "/bytestructures-" version ".tar.gz"))
               (sha256
                (base32
-                "0ibk7fjwpb450lnrva4bx45sgln3pbyb645az4ansvh1spgani43"))))
+                "07dffrmc6cnw9mmw0pdrqlkbhzzpz0hm8p26z738l2j5i84dypnk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -602,10 +578,14 @@ of the C programming language, to be used on bytevectors.  C's type
 system works on raw memory, and Guile works on bytevectors which are
 an abstraction over raw memory.  It's also more powerful than the C
 type system, elevating types to first-class status.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "bytestructures")))))
 
 (define-public guile2.0-bytestructures
   (package-for-guile-2.0 guile-bytestructures))
+
+(define-public guile3.0-bytestructures
+  (package-for-guile-3.0 guile-bytestructures))
 
 (define-public guile-git
   (package

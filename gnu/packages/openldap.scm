@@ -57,7 +57,7 @@
 (define-public openldap
   (package
    (name "openldap")
-   (version "2.4.46")
+   (version "2.4.47")
    (source (origin
             (method url-fetch)
 
@@ -74,7 +74,7 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "0bab1km8f2nan1x0zgwliknbxg0zlf2pafxrr867kblrdfwdr44s"))))
+              "02sj0p1pq12hqq29b22m3f5zs2rykgvc0q3wlynxjcsjhrvmhk7m"))))
    (build-system gnu-build-system)
    (inputs `(("bdb" ,bdb-5.3)
              ("cyrus-sasl" ,cyrus-sasl)
@@ -112,14 +112,14 @@
 (define-public nss-pam-ldapd
   (package
     (name "nss-pam-ldapd")
-    (version "0.9.10")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://arthurdejong.org/nss-pam-ldapd/"
                                   "nss-pam-ldapd-" version ".tar.gz"))
               (sha256
                (base32
-                "1cqamcr6qpgwxijlr6kg7jspjamjra8w0haan0qssn0yxn95d7c0"))))
+                "1dna3r0q6sjhhlkhcp8x2zkslrd4y7701kk6fl5r940sdph1pmyh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -146,7 +146,7 @@
      `(("linux-pam" ,linux-pam)
        ("openldap" ,openldap)
        ("mit-krb5" ,mit-krb5)
-       ("python" ,python-2)))
+       ("python" ,python)))
     (home-page "https://arthurdejong.org/nss-pam-ldapd")
     (synopsis "NSS and PAM modules for LDAP")
     (description "nss-pam-ldapd provides a @dfn{Name Service Switch} (NSS)
@@ -211,7 +211,11 @@ servers from Python programs.")
     (arguments
      `(#:modules ((srfi srfi-1)
                   (guix build gnu-build-system)
+                  ((guix build python-build-system)
+                   #:select (python-version))
                   (guix build utils))
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
        #:configure-flags
        (list (string-append "--with-db="
                             (assoc-ref %build-inputs "bdb"))
@@ -263,16 +267,9 @@ servers from Python programs.")
          (add-after 'unpack 'fix-install-location-of-python-tools
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
-                    (get-python-version
-                     ;; FIXME: copied from python-build-system
-                     (lambda (python)
-                       (let* ((version     (last (string-split python #\-)))
-                              (components  (string-split version #\.))
-                              (major+minor (take components 2)))
-                         (string-join major+minor "."))))
                     (pythondir (string-append
                                 out "/lib/python"
-                                (get-python-version (assoc-ref inputs "python"))
+                                (python-version (assoc-ref inputs "python"))
                                 "/site-packages/")))
                ;; Install directory must be on PYTHONPATH.
                (setenv "PYTHONPATH"

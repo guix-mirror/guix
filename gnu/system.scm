@@ -116,6 +116,7 @@
             boot-parameters-label
             boot-parameters-root-device
             boot-parameters-bootloader-name
+            boot-parameters-bootloader-menu-entries
             boot-parameters-store-device
             boot-parameters-store-mount-point
             boot-parameters-kernel
@@ -251,6 +252,8 @@ directly by the user."
   ;; OS's root file system, so it might be a device path like "/dev/sda3".
   (root-device      boot-parameters-root-device)
   (bootloader-name  boot-parameters-bootloader-name)
+  (bootloader-menu-entries                        ;list of <menu-entry>
+   boot-parameters-bootloader-menu-entries)
   (store-device     boot-parameters-store-device)
   (store-mount-point boot-parameters-store-mount-point)
   (kernel           boot-parameters-kernel)
@@ -296,6 +299,11 @@ file system labels."
        (match (assq 'bootloader-name rest)
          ((_ args) args)
          (#f       'grub))) ; for compatibility reasons.
+
+      (bootloader-menu-entries
+       (match (assq 'bootloader-menu-entries rest)
+         ((_ entries) (map sexp->menu-entry entries))
+         (#f          '())))
 
       ;; In the past, we would store the directory name of the kernel instead
       ;; of the absolute file name of its image.  Detect that and correct it.
@@ -716,6 +724,10 @@ fi\n")))
        ;; to certain networks.  Some discussion at
        ;; https://lists.gnu.org/archive/html/help-guix/2017-09/msg00037.html
        ("hostname" ,(plain-file "hostname" (operating-system-host-name os)))
+       ;; Some programs (e.g., GLib) look at /etc/timezone to find the
+       ;; name of the current timezone.  For details, see
+       ;; https://lists.gnu.org/archive/html/guix-devel/2019-07/msg00166.html
+       ("timezone" ,(plain-file "timezone" (operating-system-timezone os)))
        ("localtime" ,(file-append tzdata "/share/zoneinfo/"
                                   (operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
@@ -817,7 +829,12 @@ use 'plain-file' instead~%")
           (file-append inetutils "/bin/ping6")
           (file-append sudo "/bin/sudo")
           (file-append sudo "/bin/sudoedit")
-          (file-append fuse "/bin/fusermount"))))
+          (file-append fuse "/bin/fusermount")
+
+          ;; To allow mounts with the "user" option, "mount" and "umount" must
+          ;; be setuid-root.
+          (file-append util-linux "/bin/mount")
+          (file-append util-linux "/bin/umount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
@@ -1005,6 +1022,8 @@ such as '--root' and '--load' to <boot-parameters>."
           (operating-system-user-kernel-arguments os)))
      (initrd initrd)
      (bootloader-name bootloader-name)
+     (bootloader-menu-entries
+      (bootloader-configuration-menu-entries (operating-system-bootloader os)))
      (store-device (ensure-not-/dev (file-system-device store)))
      (store-mount-point (file-system-mount-point store)))))
 
@@ -1046,6 +1065,11 @@ being stored into the \"parameters\" file)."
                      #$(boot-parameters-kernel-arguments params))
                     (initrd #$(boot-parameters-initrd params))
                     (bootloader-name #$(boot-parameters-bootloader-name params))
+                    (bootloader-menu-entries
+                     #$(map menu-entry->sexp
+                            (or (and=> (operating-system-bootloader os)
+                                       bootloader-configuration-menu-entries)
+                                '())))
                     (store
                      (device
                       #$(device->sexp (boot-parameters-store-device params)))

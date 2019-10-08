@@ -130,7 +130,8 @@ SYSTEM."
     "aarch64-linux-gnu"
     "powerpc-linux-gnu"
     "i586-pc-gnu"                                 ;aka. GNU/Hurd
-    "i686-w64-mingw32"))
+    "i686-w64-mingw32"
+    "x86_64-w64-mingw32"))
 
 (define %guixsd-supported-systems
   '("x86_64-linux" "i686-linux" "armhf-linux"))
@@ -330,8 +331,12 @@ valid."
   "Return the list of packages to build."
   (define (adjust package result)
     (cond ((package-replacement package)
-           (cons* package                         ;build both
-                  (package-replacement package)
+           ;; XXX: If PACKAGE and its replacement have the same name/version,
+           ;; then both Cuirass jobs will have the same name, which
+           ;; effectively means that the second one will be ignored.  Thus,
+           ;; return the replacement first.
+           (cons* (package-replacement package)   ;build both
+                  package
                   result))
           ((package-superseded package)
            result)                                ;don't build it

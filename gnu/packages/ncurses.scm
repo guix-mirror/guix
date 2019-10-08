@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -40,7 +40,7 @@
 (define-public ncurses
   (package
     (name "ncurses")
-    (version "6.1")
+    (version "6.1-20190609")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/ncurses/ncurses-"
@@ -84,8 +84,7 @@
                (copy-file (assoc-ref (or native-inputs inputs) "rollup-patch")
                           (string-append (getcwd) "/rollup-patch.sh.bz2"))
                (invoke "bzip2" "-d" "rollup-patch.sh.bz2")
-               (invoke "sh" "rollup-patch.sh")
-               #t))
+               (invoke "sh" "rollup-patch.sh")))
            (remove-shebang-phase
             '(lambda _
                ;; To avoid retaining a reference to the bootstrap Bash via the
@@ -189,17 +188,31 @@
               ,@(if (target-mingw?) '("--enable-term-driver") '()))))
          #:tests? #f                  ; no "check" target
          #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'apply-rollup-patch
+                      ,apply-rollup-patch-phase)
                     (replace 'configure ,configure-phase)
                     (add-after 'install 'post-install
                       ,post-install-phase)
                     (add-before 'configure 'patch-makefile-SHELL
                       ,patch-makefile-phase)
-                    (add-after 'unpack 'remove-unneeded-shebang
+                    (add-before 'patch-source-shebangs 'remove-unneeded-shebang
                       ,remove-shebang-phase)))))
     (native-inputs
      `(,@(if (%current-target-system)
              `(("self" ,this-package))            ;for `tic'
              '())
+
+       ("rollup-patch"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://invisible-mirror.net/archives/ncurses/"
+                 (car (string-split version #\-))
+                 "/ncurses-" version "-patch.sh.bz2"))
+           (sha256
+            (base32
+             "0hqlqdqmh7lfs6dwj763qksb4j9nk0pv6crzx5gnp6n4caz3i46g"))))
+
        ("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification

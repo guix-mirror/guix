@@ -490,7 +490,8 @@ the image."
         #~(begin
             (use-modules (guix docker) (guix build store-copy)
                          (guix profiles) (guix search-paths)
-                         (srfi srfi-19) (ice-9 match))
+                         (srfi srfi-1) (srfi srfi-19)
+                         (ice-9 match))
 
             (define environment
               (map (match-lambda
@@ -499,6 +500,35 @@ the image."
                             value)))
                    (profile-search-paths #$profile)))
 
+            (define symlink->directives
+              ;; Return "populate directives" to make the given symlink and its
+              ;; parent directories.
+              (match-lambda
+                ((source '-> target)
+                 (let ((target (string-append #$profile "/" target))
+                       (parent (dirname source)))
+                   `((directory ,parent)
+                     (,source -> ,target))))))
+
+            (define directives
+              ;; Create a /tmp directory, as some programs expect it, and
+              ;; create SYMLINKS.
+              `((directory "/tmp" ,(getuid) ,(getgid) #o1777)
+                ,@(append-map symlink->directives '#$symlinks)))
+
+            (define tag
+              ;; Compute a meaningful "repository" name, which will show up in
+              ;; the output of "docker images".
+              (let ((manifest (profile-manifest #$profile)))
+                (let loop ((names (map manifest-entry-name
+                                       (manifest-entries manifest))))
+                  (define str (string-join names "-"))
+                  (if (< (string-length str) 40)
+                      str
+                      (match names
+                        ((_) str)
+                        ((names ... _) (loop names))))))) ;drop one entry
+
             (setenv "PATH" (string-append #$archiver "/bin"))
 
             (build-docker-image #$output
@@ -506,6 +536,7 @@ the image."
                                      (call-with-input-file "profile"
                                        read-reference-graph))
                                 #$profile
+                                #:repository tag
                                 #:database #+database
                                 #:system (or #$target (utsname:machine (uname)))
                                 #:environment environment
@@ -513,7 +544,7 @@ the image."
                                 #$(and entry-point
                                        #~(list (string-append #$profile "/"
                                                               #$entry-point)))
-                                #:symlinks '#$symlinks
+                                #:extra-files directives
                                 #:compressor '#$(compressor-command compressor)
                                 #:creation-time (make-time time-utc 0 1))))))
 
@@ -543,9 +574,9 @@ the image."
   "Return the C compiler that uses the bootstrap toolchain.  This is used only
 by '--bootstrap', for testing purposes."
   (define bootstrap-toolchain
-    (list (first (assoc-ref %bootstrap-inputs "gcc"))
-          (first (assoc-ref %bootstrap-inputs "binutils"))
-          (first (assoc-ref %bootstrap-inputs "libc"))))
+    (list (first (assoc-ref (%bootstrap-inputs) "gcc"))
+          (first (assoc-ref (%bootstrap-inputs) "binutils"))
+          (first (assoc-ref (%bootstrap-inputs) "libc"))))
 
   (c-compiler bootstrap-toolchain
               #:guile %bootstrap-guile))
@@ -611,8 +642,13 @@ please email '~a'~%")
 ;;;
 
 (define* (wrapped-package package
-                          #:optional (compiler (c-compiler))
+                          #:optional
+                          (output* "out")
+                          (compiler (c-compiler))
                           #:key proot?)
+  "Return the OUTPUT of PACKAGE with its binaries wrapped such that they are
+relocatable.  When PROOT? is true, include PRoot in the result and use it as a
+last resort for relocation."
   (define runner
     (local-file (search-auxiliary-file "run-in-namespace.c")))
 
@@ -628,6 +664,14 @@ please email '~a'~%")
                        ((guix build union) #:select (relative-file-name))
                        (ice-9 ftw)
                        (ice-9 match))
+
+          (define input
+            ;; The OUTPUT* output of PACKAGE.
+            (ungexp package output*))
+
+          (define target
+            ;; The output we are producing.
+            (ungexp output output*))
 
           (define (strip-store-prefix file)
             ;; Given a file name like "/gnu/store/…-foo-1.2/bin/foo", return
@@ -648,7 +692,7 @@ please email '~a'~%")
               (("@STORE_DIRECTORY@") (%store-directory)))
 
             (let* ((base   (strip-store-prefix program))
-                   (result (string-append #$output "/" base))
+                   (result (string-append target "/" base))
                    (proot  #$(and proot?
                                   #~(string-drop
                                      #$(file-append (proot) "/bin/proot")
@@ -667,18 +711,18 @@ please email '~a'~%")
 
           ;; Link the top-level files of PACKAGE so that search paths are
           ;; properly defined in PROFILE/etc/profile.
-          (mkdir #$output)
+          (mkdir target)
           (for-each (lambda (file)
                       (unless (member file '("." ".." "bin" "sbin" "libexec"))
-                        (let ((file* (string-append #$package "/" file)))
-                          (symlink (relative-file-name #$output file*)
-                                   (string-append #$output "/" file)))))
-                    (scandir #$package))
+                        (let ((file* (string-append input "/" file)))
+                          (symlink (relative-file-name target file*)
+                                   (string-append target "/" file)))))
+                    (scandir input))
 
           (for-each build-wrapper
-                    (append (find-files #$(file-append package "/bin"))
-                            (find-files #$(file-append package "/sbin"))
-                            (find-files #$(file-append package "/libexec")))))))
+                    (append (find-files (string-append input "/bin"))
+                            (find-files (string-append input "/sbin"))
+                            (find-files (string-append input "/libexec")))))))
 
   (computed-file (string-append
                   (cond ((package? package)
@@ -691,14 +735,18 @@ please email '~a'~%")
                   "R")
                  build))
 
+(define (wrapped-manifest-entry entry . args)
+  (manifest-entry
+    (inherit entry)
+    (item (apply wrapped-package
+                 (manifest-entry-item entry)
+                 (manifest-entry-output entry)
+                 args))))
+
 (define (map-manifest-entries proc manifest)
   "Apply PROC to all the entries of MANIFEST and return a new manifest."
   (make-manifest
-   (map (lambda (entry)
-          (manifest-entry
-            (inherit entry)
-            (item (proc (manifest-entry-item entry)))))
-        (manifest-entries manifest))))
+   (map proc (manifest-entries manifest))))
 
 
 ;;;
@@ -909,7 +957,8 @@ Create a bundle of PACKAGE.\n"))
                                   (list (transform store package) output))
                                  ((? package? package)
                                   (list (transform store package) "out")))
-                               (filter-map maybe-package-argument opts)))
+                               (reverse
+                                (filter-map maybe-package-argument opts))))
            (manifest-file (assoc-ref opts 'manifest)))
       (define properties
         (if (assoc-ref opts 'save-provenance?)
@@ -960,7 +1009,7 @@ Create a bundle of PACKAGE.\n"))
                                 ;; 'glibc-bootstrap' lacks 'libc.a'.
                                 (if relocatable?
                                     (map-manifest-entries
-                                     (cut wrapped-package <> #:proot? proot?)
+                                     (cut wrapped-manifest-entry <> #:proot? proot?)
                                      manifest)
                                     manifest)))
                  (pack-format (assoc-ref opts 'format))

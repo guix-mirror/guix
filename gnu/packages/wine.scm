@@ -72,7 +72,7 @@
 (define-public wine
   (package
     (name "wine")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.winehq.org/wine/source/"
@@ -80,7 +80,7 @@
                                   "/wine-" version ".tar.xz"))
               (sha256
                (base32
-                "0j29df0px6dzin4j0cbxgza4msvf9spmwranv25krq1g9kq959nk"))))
+                "0x5x9pvhryzhq1m7i8gx5wwwj341zz05zymadlhfw5w45xlm0h4r"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gettext-minimal)
@@ -318,7 +318,7 @@ integrate Windows applications into your desktop.")
 (define-public wine-staging-patchset-data
   (package
     (name "wine-staging-patchset-data")
-    (version "4.13")
+    (version "4.16")
     (source
      (origin
        (method git-fetch)
@@ -328,7 +328,7 @@ integrate Windows applications into your desktop.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0bbwsd2qpjilxpjscqbp78p0gl0awj1yj62g0wvybh4x89fzy8zj"))))
+         "0zkvwl6rxr6xcqk4a3h43cak67w6bcyqqnajz6azif07ir3z1c61"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
@@ -374,7 +374,7 @@ integrate Windows applications into your desktop.")
               (file-name (string-append name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0rqx8g394aj5q913cd18zsi60sldvxarrp178w6ja0y4rd8l25vr"))))
+                "17qxbddv23ibbayw1ai984m0dlq63cgplms2jhsc09incjhafywd"))))
     (inputs `(("autoconf" ,autoconf) ; for autoreconf
               ("faudio" ,faudio)
               ("ffmpeg" ,ffmpeg)
@@ -499,7 +499,6 @@ integrated into the main branch.")
                     (script (string-append (assoc-ref %build-inputs
                             "wine-staging-patchset-data")
                             "/share/wine-staging/patches/patchinstall.sh")))
-               ;; Exclude specific patches that conflict with FAudio.
                (invoke script (string-append "DESTDIR=" ".") "--all")
                #t)))
          (add-after 'install 'copy-wine32-binaries

@@ -344,7 +344,7 @@ precision.")
 (define-public giac
   (package
     (name "giac")
-    (version "1.5.0-63")
+    (version "1.5.0-65")
     (source (origin
               (method url-fetch)
               ;; "~parisse/giac" is not used because the maintainer regularly
@@ -356,7 +356,7 @@ precision.")
                                   "source/giac_" version ".tar.gz"))
               (sha256
                (base32
-                "1jp7awyp8j8w6fhn802z8ddbq1fxhkyk9xdf0mq0mm0chpkylwqk"))))
+                "1g2fp9vgy0gqjmi6mlc3ldfn8ryq3h4mfd7rcq5hs6ry21hblv30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
@@ -987,7 +987,7 @@ features, and more.")
 (define-public xtensor
   (package
     (name "xtensor")
-    (version "0.20.5")
+    (version "0.20.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -995,7 +995,7 @@ features, and more.")
                     (commit version)))
               (sha256
                (base32
-                "0kkc4ar7p2d94jnclmrh46dwv7ldy9lx630vm9gci3pp4hnhbj9f"))
+                "1rw04bdi7mzp362dhkxr9m4rafnvb47xjsi9p3fp4vfif8v0jij8"))
               (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1005,7 +1005,7 @@ features, and more.")
      `(#:configure-flags
        '("-DBUILD_TESTS=ON")
        #:test-target "xtest"))
-    (home-page "http://quantstack.net/xtensor")
+    (home-page "https://quantstack.net/xtensor")
     (synopsis "C++ tensors with broadcasting and lazy computing")
     (description "xtensor is a C++ library meant for numerical analysis with
 multi-dimensional array expressions.
@@ -1435,7 +1435,7 @@ of M4RI from F_2 to F_{2^e}.")
 (define-public eclib
   (package
     (name "eclib")
-    (version "20190226")
+    (version "20190909")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1444,7 +1444,7 @@ of M4RI from F_2 to F_{2^e}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1910np1xzyjzszay24xn4b81qhpsvhp5aix9vdpknplni2mq8kwb"))))
+                "1gw27lqc3f525n8qdcmr2nyn16y9g10z9f6dnmckyyxcdzvhq35n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)

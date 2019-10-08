@@ -508,7 +508,7 @@ a bind mount."
                  ;; symlink to a file in a tmpfs which, for an unknown reason,
                  ;; cannot be bind mounted read-only within the container.
                  (writable? (string=? file "/etc/resolv.conf"))))
-              %network-configuration-files))
+              (cons "/var/run/nscd" %network-configuration-files)))
 
 (define (file-system-type-predicate type)
   "Return a predicate that, when passed a file system, returns #t if that file

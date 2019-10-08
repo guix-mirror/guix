@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
@@ -26,7 +26,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;; Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
@@ -54,7 +54,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Luther Thompson <lutheroto@gmail.com>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;;
@@ -76,6 +76,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages dbm)
@@ -85,6 +86,7 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -94,8 +96,7 @@
 (define-public python-2.7
   (package
     (name "python2")
-    (version "2.7.15")
-    (replacement python-2/fixed)
+    (version "2.7.16")
     (source
      (origin
       (method url-fetch)
@@ -103,18 +104,26 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0x2mvz9dp11wj7p5ccvmk9s0hzjk2fa1m462p395l4r6bfnb3n92"))
+        "1mqfcqp5y8r0bfyr7ppl74n0lig45p9mc4b8adlcpvj74rhfy8pj"))
       (patches (search-patches "python-2.7-search-paths.patch"
                                "python-2-deterministic-build-info.patch"
                                "python-2.7-site-prefixes.patch"
                                "python-2.7-source-date-epoch.patch"
                                "python-2.7-adjust-tests.patch"))
       (modules '((guix build utils)))
-      ;; suboptimal to delete failing tests here, but if we delete them in the
-      ;; arguments then we need to make sure to strip out that phase when it
-      ;; gets inherited by python and python-minimal.
       (snippet
        '(begin
+          ;; Ensure the bundled copies of these libraries are not used.
+          (for-each delete-file-recursively
+                    '("Modules/_ctypes/libffi" "Modules/expat" "Modules/zlib"))
+
+          (substitute* "Modules/Setup.dist"
+            ;; Link Expat instead of embedding the bundled one.
+            (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
+
+          ;; Suboptimal to delete failing tests here, but if we delete them in
+          ;; the arguments then we need to make sure to strip out that phase
+          ;; when it gets inherited by python and python-minimal.
           (for-each delete-file
                     '("Lib/test/test_compileall.py"
                       "Lib/test/test_ctypes.py" ; fails on mips64el
@@ -131,11 +140,28 @@
      `(#:test-target "test"
        #:configure-flags
        (list "--enable-shared"                    ;allow embedding
+             "--with-system-expat"                ;for XML support
              "--with-system-ffi"                  ;build ctypes
              "--with-ensurepip=install"           ;install pip and setuptools
              "--enable-unicode=ucs4"
+
+             ;; Prevent the installed _sysconfigdata.py from retaining a reference
+             ;; to coreutils.
+             "INSTALL=install -c"
+             "MKDIR_P=mkdir -p"
+
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
+       ;; With no -j argument tests use all available cpus, so provide one.
+       #:make-flags
+       (list (string-append
+              (format #f "TESTOPTS=-j~d" (parallel-job-count))
+              ;; Exclude the following tests as they fail
+              ;; non-deterministically with "error: [Errno 104] Connection
+              ;; reset by peer."  Python 3 seems unaffected.  A potential fix,
+              ;; yet to be backported to Python 2, is available at:
+              ;; https://github.com/python/cpython/commit/529525fb5a8fd9b96ab4021311a598c77588b918.
+              " --exclude test_urllib2_localnet test_httplib"))
 
         #:modules ((ice-9 ftw) (ice-9 match)
                    (guix build utils) (guix build gnu-build-system))
@@ -204,16 +230,35 @@
                                  (scandir testdir
                                           (match-lambda
                                             ((or "." "..") #f)
+                                            ("support" #f)
                                             (file
                                              (not
-                                              ;; FIXME: Add the 'support' directory
-                                              ;; in the next rebuild cycle, since it
-                                              ;; moved in 2.7.14.  See also
-                                              ;; python2-futures below.
                                               (string-prefix? "test_support."
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
                        #t)))))))
+          (add-after 'remove-tests 'rebuild-bytecode
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                ;; Disable hash randomization to ensure the generated .pycs
+                ;; are reproducible.
+                (setenv "PYTHONHASHSEED" "0")
+                (for-each
+                 (lambda (opt)
+                   (format #t "Compiling with optimization level: ~a\n"
+                           (if (null? opt) "none" (car opt)))
+                   (for-each (lambda (file)
+                               (apply invoke
+                                      `(,(string-append out "/bin/python")
+                                        ,@opt
+                                        "-m" "compileall"
+                                        "-f" ; force rebuild
+                                        ;; Don't build lib2to3, because it contains Python 3 code.
+                                        "-x" "lib2to3/.*"
+                                        ,file)))
+                             (find-files out "\\.py$")))
+                 (list '() '("-O") '("-OO")))
+                #t)))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
@@ -237,6 +282,7 @@
                 #t))))))
     (inputs
      `(("bzip2" ,bzip2)
+       ("expat" ,expat)
        ("gdbm" ,gdbm)
        ("libffi" ,libffi)                         ; for ctypes
        ("sqlite" ,sqlite)                         ; for sqlite extension
@@ -267,16 +313,6 @@ data types.")
 ;; Current 2.x version.
 (define-public python-2 python-2.7)
 
-(define python-2/fixed
-  (package
-    (inherit python-2)
-    (source (origin
-              (inherit (package-source python-2))
-              (patches (append
-                        (origin-patches (package-source python-2))
-                        (search-patches "python2-CVE-2018-14647.patch"
-                                        "python2-CVE-2018-1000802.patch")))))))
-
 (define-public python2-called-python
   ;; Both 2.x and 3.x used to be called "python".  In commit
   ;; a7714d42de2c3082f3609d1e63c83d703fb39cf9 (March 2018), we renamed the
@@ -289,48 +325,58 @@ data types.")
 (define-public python-3.7
   (package (inherit python-2)
     (name "python")
-    (version "3.7.0")
-    (replacement python-3/fixed)
+    (version "3.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
-                        "python-fix-tests.patch"
                         "python-3-fix-tests.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
-              (patch-flags '("-p0"))
               (sha256
                (base32
-                "0j9mic5c9lbd2b20wka7hily7szz740wy9ilfrczxap63rnrk0h3"))
+                "0gxiv5617zd7dnqm5k9r4q2188lk327nf9jznwq9j6b8p0s92ygv"))
+              (modules '((guix build utils)))
               (snippet
                '(begin
-                  (for-each delete-file
-                            '(;; This test may hang and eventually run out of
-                              ;; memory on some systems:
-                              ;; <https://bugs.python.org/issue34587>
-                              "Lib/test/test_socket.py"
-
-                              ;; These tests fail on AArch64.
-                              "Lib/ctypes/test/test_win32.py"
-                              "Lib/test/test_fcntl.py"
-                              "Lib/test/test_posix.py"))
+                  ;; Delete the bundled copy of libexpat.
+                  (delete-file-recursively "Modules/expat")
+                  (substitute* "Modules/Setup.dist"
+                    ;; Link Expat instead of embedding the bundled one.
+                    (("^#pyexpat.*") "pyexpat pyexpat.c -lexpat\n"))
                   #t))))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
+       ((#:make-flags _)
+        `(list (string-append
+                (format #f "TESTOPTS=-j~d" (parallel-job-count))
+                ;; test_mmap fails on low-memory systems.
+                " --exclude test_mmap"
+                ;; test_socket may hang and eventually run out of memory
+                ;; on some systems: <https://bugs.python.org/issue34587>.
+                " test_socket"
+                ;; XXX: test_ctypes fails on some platforms due to a problem in
+                ;; libffi 3.2.1: <https://bugs.python.org/issue23249>.
+                ,@(if (string-prefix? "aarch64" (%current-system))
+                      '(" test_ctypes")
+                      '()))))
        ((#:phases phases)
        `(modify-phases ,phases
+          (add-before 'check 'set-TZDIR
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; test_email requires the Olson time zone database.
+              (setenv "TZDIR"
+                      (string-append (assoc-ref inputs "tzdata")
+                                     "/share/zoneinfo"))
+              #t))
           ;; Unset SOURCE_DATE_EPOCH while running the test-suite and set it
           ;; again afterwards.  See <https://bugs.python.org/issue34022>.
           (add-before 'check 'unset-SOURCE_DATE_EPOCH
             (lambda _ (unsetenv "SOURCE_DATE_EPOCH") #t))
           (add-after 'check 'reset-SOURCE_DATE_EPOCH
             (lambda _ (setenv "SOURCE_DATE_EPOCH" "1") #t))
-           ;; FIXME: Without this phase we have close to 400 files that
-           ;; differ across different builds of this package.  With this phase
-           ;; there are 44 files left that differ.
-           (add-after 'remove-tests 'rebuild-bytecode
+           (replace 'rebuild-bytecode
              (lambda* (#:key outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out")))
                  ;; Disable hash randomization to ensure the generated .pycs
@@ -352,6 +398,9 @@ data types.")
                               (find-files out "\\.py$")))
                   (list '() '("-O") '("-OO")))
                  #t)))))))
+    (native-inputs
+     `(("tzdata" ,tzdata-for-tests)
+       ,@(package-native-inputs python-2)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
@@ -361,14 +410,6 @@ data types.")
 
 ;; Current 3.x version.
 (define-public python-3 python-3.7)
-
-(define python-3/fixed
-  (package
-    (inherit python-3)
-    (source (origin
-              (inherit (package-source python-3))
-              (patches (append (origin-patches (package-source python-3))
-                               (search-patches "python-CVE-2018-14647.patch")))))))
 
 ;; Current major version.
 (define-public python python-3)
@@ -383,8 +424,10 @@ data types.")
 
     ;; Keep zlib, which is used by 'pip' (via the 'zipimport' module), which
     ;; is invoked upon 'make install'.  'pip' also expects 'ctypes' and thus
-    ;; libffi.
-    (inputs `(("libffi" ,libffi)
+    ;; libffi.  Expat is needed for XML support which is expected by a lot
+    ;; of libraries out there.
+    (inputs `(("expat" ,expat)
+              ("libffi" ,libffi)
               ("zlib" ,zlib)))))
 
 (define-public python-minimal
@@ -394,8 +437,10 @@ data types.")
 
     ;; Build fails due to missing ctypes without libffi.
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
-    ;; zlib is required by 'zipimport', used by pip.
-    (inputs `(("libffi" ,libffi)
+    ;; zlib is required by 'zipimport', used by pip.  Expat is needed
+    ;; for XML support, which is generally expected to be available.
+    (inputs `(("expat" ,expat)
+              ("libffi" ,libffi)
               ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
@@ -464,7 +509,7 @@ instead of @command{python3}.")))
 (define-public micropython
   (package
     (name "micropython")
-    (version "1.10")
+    (version "1.11")
     (source
       (origin
         (method url-fetch)
@@ -473,7 +518,7 @@ instead of @command{python3}.")))
                             "/micropython-" version ".tar.gz"))
         (sha256
          (base32
-          "1g1zjip3rkx6bp16qi1bag72wivnbh56fcsl3nffanrx4j5f4z90"))
+          "0px3xhw16rl0l7qifq7jw1gq92wzlnhd17dmszv9m2c3wbzs9p9f"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -487,7 +532,7 @@ instead of @command{python3}.")))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'preprare-build
+         (add-before 'build 'prepare-build
            (lambda _
              (chdir "ports/unix")
              ;; see: https://github.com/micropython/micropython/pull/4246

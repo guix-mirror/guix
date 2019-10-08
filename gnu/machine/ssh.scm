@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu machine ssh)
+  #:use-module (gnu bootloader)
   #:use-module (gnu machine)
   #:autoload   (gnu packages gnupg) (guile-gcrypt)
   #:use-module (gnu system)
@@ -27,15 +28,20 @@
   #:use-module (guix i18n)
   #:use-module (guix modules)
   #:use-module (guix monads)
+  #:use-module (guix pki)
   #:use-module (guix records)
   #:use-module (guix remote)
   #:use-module (guix scripts system reconfigure)
   #:use-module (guix ssh)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (gcrypt pk-crypto)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 textual-ports)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (managed-host-environment-type
 
@@ -45,6 +51,7 @@
 
             machine-ssh-configuration-host-name
             machine-ssh-configuration-build-locally?
+            machine-ssh-configuration-authorize?
             machine-ssh-configuration-port
             machine-ssh-configuration-user
             machine-ssh-configuration-session))
@@ -67,16 +74,19 @@
   make-machine-ssh-configuration
   machine-ssh-configuration?
   this-machine-ssh-configuration
-  (host-name      machine-ssh-configuration-host-name) ; string
-  (build-locally? machine-ssh-configuration-build-locally?
+  (host-name      machine-ssh-configuration-host-name)     ; string
+  (system         machine-ssh-configuration-system)        ; string
+  (build-locally? machine-ssh-configuration-build-locally? ; boolean
                   (default #t))
-  (port           machine-ssh-configuration-port       ; integer
+  (authorize?     machine-ssh-configuration-authorize?     ; boolean
+                  (default #t))
+  (port           machine-ssh-configuration-port           ; integer
                   (default 22))
-  (user           machine-ssh-configuration-user       ; string
+  (user           machine-ssh-configuration-user           ; string
                   (default "root"))
-  (identity       machine-ssh-configuration-identity   ; path to a private key
+  (identity       machine-ssh-configuration-identity       ; path to a private key
                   (default #f))
-  (session        machine-ssh-configuration-session    ; session
+  (session        machine-ssh-configuration-session        ; session
                   (default #f)))
 
 (define (machine-ssh-session machine)
@@ -99,14 +109,26 @@ one from the configuration's parameters if one was not provided."
 ;;; Remote evaluation.
 ;;;
 
+(define (machine-become-command machine)
+  "Return as a list of strings the program and arguments necessary to run a
+shell command with escalated privileges for MACHINE's configuration."
+  (if (string= "root" (machine-ssh-configuration-user
+                       (machine-configuration machine)))
+      '()
+      '("/run/setuid-programs/sudo" "-n" "--")))
+
 (define (managed-host-remote-eval machine exp)
   "Internal implementation of 'machine-remote-eval' for MACHINE instances with
 an environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
-  (remote-eval exp (machine-ssh-session machine)
-               #:build-locally?
-               (machine-ssh-configuration-build-locally?
-                (machine-configuration machine))))
+  (let ((config (machine-configuration machine)))
+    (remote-eval exp (machine-ssh-session machine)
+                 #:build-locally?
+                 (machine-ssh-configuration-build-locally? config)
+                 #:system
+                 (machine-ssh-configuration-system config)
+                 #:become-command
+                 (machine-become-command machine))))
 
 
 ;;;
@@ -144,7 +166,8 @@ MACHINE's 'system' declaration do not exist on the machine."
 
   (define (check-labeled-file-system fs)
     (define remote-exp
-      (with-imported-modules '((gnu build file-systems))
+      (with-imported-modules (source-module-closure
+                              '((gnu build file-systems)))
         #~(begin
             (use-modules (gnu build file-systems))
             (find-partition-by-label #$(file-system-label->string
@@ -221,7 +244,7 @@ MACHINE's 'system' declaration do not exist on the machine."
                                             #$(uuid->string device))))
                         ((file-system-label? device)
                          #~(find-partition-by-label
-                            (file-system-label->string #$device)))))
+                            #$(file-system-label->string device)))))
 
               (missing-modules dev '#$(operating-system-initrd-modules
                                        (machine-operating-system machine)))))))
@@ -240,10 +263,29 @@ MACHINE's 'system' declaration do not exist on the machine."
               device)
     (return #t)))
 
+(define (machine-check-building-for-appropriate-system machine)
+  "Raise a '&message' error condition if MACHINE is configured to be built
+locally and the 'system' field does not match the '%current-system' reported
+by MACHINE."
+  (let ((config (machine-configuration machine))
+        (system (remote-system (machine-ssh-session machine))))
+    (when (and (machine-ssh-configuration-build-locally? config)
+               (not (string= system (machine-ssh-configuration-system config))))
+      (raise (condition
+              (&message
+               (message (format #f (G_ "incorrect target system \
+('~a' was given, while the system reports that it is '~a')~%")
+                                (machine-ssh-configuration-system config)
+                                system)))))))
+  (with-monad %store-monad (return #t)))
+
 (define (check-deployment-sanity machine)
   "Raise a '&message' error condition if it is clear that deploying MACHINE's
 'system' declaration would fail."
+  ;; Order is important here -- an incorrect value for 'system' will cause
+  ;; invocations of 'remote-eval' to fail.
   (mbegin %store-monad
+    (machine-check-building-for-appropriate-system machine)
     (machine-check-file-system-availability machine)
     (machine-check-initrd-modules machine)))
 
@@ -310,10 +352,36 @@ of MACHINE's system profile, ordered from most recent to oldest."
                            (boot-parameters-kernel-arguments params))))))))
           generations))))
 
+(define-syntax-rule (with-roll-back should-roll-back? mbody ...)
+  "Catch exceptions that arise when binding MBODY, a monadic expression in
+%STORE-MONAD, and collect their arguments in a &deploy-error condition, with
+the 'should-roll-back' field set to SHOULD-ROLL-BACK?"
+  (catch #t
+    (lambda ()
+      mbody ...)
+    (lambda args
+      (raise (condition (&deploy-error
+                         (should-roll-back should-roll-back?)
+                         (captured-args args)))))))
+
 (define (deploy-managed-host machine)
   "Internal implementation of 'deploy-machine' for MACHINE instances with an
 environment type of 'managed-host."
   (maybe-raise-unsupported-configuration-error machine)
+  (when (machine-ssh-configuration-authorize?
+         (machine-configuration machine))
+    (unless (file-exists? %public-key-file)
+      (raise (condition
+              (&message
+               (message (format #f (G_ "no signing key '~a'. \
+have you run 'guix archive --generate-key?'")
+                                %public-key-file))))))
+    (remote-authorize-signing-key (call-with-input-file %public-key-file
+                                    (lambda (port)
+                                      (string->canonical-sexp
+                                       (get-string-all port))))
+                                  (machine-ssh-session machine)
+                                  (machine-become-command machine)))
   (mlet %store-monad ((_ (check-deployment-sanity machine))
                       (boot-parameters (machine-boot-parameters machine)))
     (let* ((os (machine-operating-system machine))
@@ -322,9 +390,60 @@ environment type of 'managed-host."
            (bootloader-configuration (operating-system-bootloader os))
            (bootcfg (operating-system-bootcfg os menu-entries)))
       (mbegin %store-monad
-        (switch-to-system eval os)
-        (upgrade-shepherd-services eval os)
-        (install-bootloader eval bootloader-configuration bootcfg)))))
+        (with-roll-back #f
+          (switch-to-system eval os))
+        (with-roll-back #t
+          (mbegin %store-monad
+            (upgrade-shepherd-services eval os)
+            (install-bootloader eval bootloader-configuration bootcfg)))))))
+
+
+;;;
+;;; Roll-back.
+;;;
+
+(define (roll-back-managed-host machine)
+  "Internal implementation of 'roll-back-machine' for MACHINE instances with
+an environment type of 'managed-host."
+  (define remote-exp
+    (with-extensions (list guile-gcrypt)
+      (with-imported-modules (source-module-closure '((guix config)
+                                                      (guix profiles)))
+        #~(begin
+            (use-modules (guix config)
+                         (guix profiles))
+
+            (define %system-profile
+              (string-append %state-directory "/profiles/system"))
+
+            (define target-generation
+              (relative-generation %system-profile -1))
+
+            (if target-generation
+                (switch-to-generation %system-profile target-generation)
+                'error)))))
+
+  (define roll-back-failure
+    (condition (&message (message (G_ "could not roll-back machine")))))
+
+  (mlet* %store-monad ((boot-parameters (machine-boot-parameters machine))
+                       (_ -> (if (< (length boot-parameters) 2)
+                                 (raise roll-back-failure)))
+                       (entries -> (map boot-parameters->menu-entry
+                                        (list (second boot-parameters))))
+                       (old-entries -> (map boot-parameters->menu-entry
+                                            (drop boot-parameters 2)))
+                       (bootloader -> (operating-system-bootloader
+                                       (machine-operating-system machine)))
+                       (bootcfg (lower-object
+                                 ((bootloader-configuration-file-generator
+                                   (bootloader-configuration-bootloader
+                                    bootloader))
+                                  bootloader entries
+                                  #:old-entries old-entries)))
+                       (remote-result (machine-remote-eval machine remote-exp)))
+    (when (eqv? 'error remote-result)
+      (raise roll-back-failure))))
 
 
 ;;;
@@ -335,6 +454,7 @@ environment type of 'managed-host."
   (environment-type
    (machine-remote-eval managed-host-remote-eval)
    (deploy-machine      deploy-managed-host)
+   (roll-back-machine   roll-back-managed-host)
    (name                'managed-host-environment-type)
    (description         "Provisioning for machines that are accessible over SSH
 and have a known host-name. This entails little more than maintaining an SSH

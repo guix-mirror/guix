@@ -1177,7 +1177,8 @@ processes currently in existence, much like code{top} or code{ps}.")
         (base32 "0v1vvi8vf9y8nv8y0gzffaqji53s75ab5jypksih0ndcws8ryww4"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("utf8proc" ,utf8proc)))
     (native-inputs
      `(("lxqt-build-tools" ,lxqt-build-tools)
        ("qttools" ,qttools)))
@@ -1244,6 +1245,39 @@ QTermWidget.")
 easily publishing them on internet image hosting services.")
     (license license:gpl2+)))
 
+
+(define-public lxqt-archiver
+  (package
+    (name "lxqt-archiver")
+    (version "0.0.96")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+               (url (string-append "https://github.com/lxqt/" name ".git"))
+               (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32 "09rw774vxj96wcpxxncz6nr9bmw7l4l0kwylmz1saq6rpa2yvn2i"))))
+    (build-system cmake-build-system)
+    (inputs
+      `(("glib" ,glib)
+        ("json-glib" ,json-glib)
+        ("libfm-qt" ,libfm-qt)
+        ("qtbase" ,qtbase)
+        ("qtx11extras" ,qtx11extras)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("lxqt-build-tools" ,lxqt-build-tools)
+        ("qttools" ,qttools)))
+    (arguments
+      '(#:tests? #f))
+    (home-page "https://lxqt.org/")
+    (synopsis "Simple & lightweight desktop-agnostic Qt file archiver")
+    (description
+     "This package provides a Qt graphical interface to archiving programs
+like @command{tar} and @command{zip}.")
+    (license license:gpl2+)))
 
 ;; The LXQt Desktop Environment
 

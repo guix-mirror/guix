@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,11 +22,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages man)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages code)
   #:use-module (srfi srfi-1))
 
 (define-public flex
@@ -47,11 +47,12 @@
      (let ((bison-for-tests
             (package
               (inherit bison)
-              ;; Disable tests, since they require flex.
-              (arguments '(#:tests? #f))
+              (arguments
+               ;; Disable tests, since they require flex.
+               (substitute-keyword-arguments (package-arguments bison)
+                 ((#:tests? _ #f) #f)))
               (inputs (alist-delete "flex" (package-inputs bison))))))
-       `(("bison" ,bison-for-tests)
-         ("indent" ,indent))))
+       `(("bison" ,bison-for-tests))))
     ;; m4 is not present in PATH when cross-building
     (native-inputs
      `(("help2man" ,help2man)

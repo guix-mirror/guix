@@ -31,7 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graph)
-  #:use-module (gnu packages haskell)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages netpbm)
@@ -50,21 +50,14 @@
     (version "1.4.0")
     (source (origin
               (method url-fetch)
-              ;; We cannot use bioconductor-uri here because this tarball is
-              ;; located under "data/annotation/" instead of "bioc/".
-              (uri (string-append "https://www.bioconductor.org/packages/"
-                                  "release/data/annotation/src/contrib/"
-                                  "BSgenome.Celegans.UCSC.ce6_"
-                                  version ".tar.gz"))
+              (uri (bioconductor-uri "BSgenome.Celegans.UCSC.ce6"
+                                     version 'annotation))
               (sha256
                (base32
                 "0mqzb353xv2c3m3vkb315dkmnxkgczp7ndnknyhpgjlybyf715v9"))))
     (properties
      `((upstream-name . "BSgenome.Celegans.UCSC.ce6")))
     (build-system r-build-system)
-    ;; As this package provides little more than a very large data file it
-    ;; doesn't make sense to build substitutes.
-    (arguments `(#:substitutable? #f))
     (propagated-inputs
      `(("r-bsgenome" ,r-bsgenome)))
     (home-page
@@ -532,6 +525,28 @@ annotations for the genome of the model mouse Mus musculus.")
 by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
+(define-public r-ensdb-hsapiens-v75
+  (package
+    (name "r-ensdb-hsapiens-v75")
+    (version "2.99.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "EnsDb.Hsapiens.v75" version 'annotation))
+       (sha256
+        (base32
+         "0jx6rf6v0j8yr07q3c1h7s121901dc400nm6xaiv4i7kb5czjn9c"))))
+    (properties
+     `((upstream-name . "EnsDb.Hsapiens.v75")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ensembldb" ,r-ensembldb)))
+    (home-page "https://bioconductor.org/packages/EnsDb.Hsapiens.v75")
+    (synopsis "Ensembl based annotation package")
+    (description
+     "This package exposes an annotation database generated from Ensembl.")
+    (license license:artistic2.0)))
+
 (define-public r-genelendatabase
   (package
     (name "r-genelendatabase")
@@ -686,6 +701,31 @@ the TxDb object of Mouse data as provided by UCSC (mm10, December 2011)
 based on the knownGene track.")
     (license license:artistic2.0)))
 
+(define-public r-txdb-celegans-ucsc-ce6-ensgene
+  (package
+    (name "r-txdb-celegans-ucsc-ce6-ensgene")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TxDb.Celegans.UCSC.ce6.ensGene"
+                              version 'annotation))
+       (sha256
+        (base32
+         "1sgppva33cdy4isj2is8mfalj5gmmkpbkq9w1d83a4agcq31mi90"))))
+    (properties
+     `((upstream-name . "TxDb.Celegans.UCSC.ce6.ensGene")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-genomicfeatures" ,r-genomicfeatures)))
+    (home-page "https://bioconductor.org/packages/TxDb.Celegans.UCSC.ce6.ensGene/")
+    (synopsis "Annotation package for C elegans TxDb objects")
+    (description
+     "This package exposes a C elegans annotation database generated from UCSC
+by exposing these as TxDb objects.")
+    (license license:artistic2.0)))
+
 (define-public r-fdb-infiniummethylation-hg19
   (package
     (name "r-fdb-infiniummethylation-hg19")
@@ -768,6 +808,28 @@ annotations.")
     (description
      "This package provides a set of annotation maps describing the entire
 Disease Ontology.")
+    (license license:artistic2.0)))
+
+(define-public r-pfam-db
+  (package
+    (name "r-pfam-db")
+    (version "3.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "PFAM.db" version 'annotation))
+       (sha256
+        (base32
+         "0rn1arzzcniy3yyc4yc44vn40g0cqss37dhwnvsgxpfayqq1k59s"))))
+    (properties `((upstream-name . "PFAM.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "https://bioconductor.org/packages/PFAM.db")
+    (synopsis "Set of protein ID mappings for PFAM")
+    (description
+     "This package provides a set of protein ID mappings for PFAM, assembled
+using data from public repositories.")
     (license license:artistic2.0)))
 
 
@@ -895,6 +957,29 @@ jointly normalized data that are available here.  The data are presented in
 the form of an @code{exprSet} object.")
     (license license:artistic2.0)))
 
+(define-public r-affydata
+  (package
+    (name "r-affydata")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affydata" version 'experiment))
+       (sha256
+        (base32
+         "1l9qhmjqgbrdl9cmd74rlnvmvr6mslbmckb83n0211whp2i0b7h5"))))
+    (properties `((upstream-name . "affydata")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)))
+    (home-page "https://bioconductor.org/packages/affydata/")
+    (synopsis "Affymetrix data for demonstration purposes")
+    (description
+     "This package provides example datasets that represent 'real world
+examples' of Affymetrix data, unlike the artificial examples included in the
+package @code{affy}.")
+    (license license:gpl2+)))
+
 
 ;;; Packages
 
@@ -917,6 +1002,147 @@ the form of an @code{exprSet} object.")
      "This package provides S4 generic functions needed by many Bioconductor
 packages.")
     (license license:artistic2.0)))
+
+(define-public r-affycomp
+  (package
+    (name "r-affycomp")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affycomp" version))
+       (sha256
+        (base32
+         "1nijqljg5r3qj1y6an0i58sby76hqacj3a3nvainxic4n5wlzh0n"))))
+    (properties `((upstream-name . "affycomp")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/affycomp/")
+    (synopsis "Graphics toolbox for assessment of Affymetrix expression measures")
+    (description
+     "The package contains functions that can be used to compare expression
+measures for Affymetrix Oligonucleotide Arrays.")
+    (license license:gpl2+)))
+
+(define-public r-affycompatible
+  (package
+    (name "r-affycompatible")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "AffyCompatible" version))
+       (sha256
+        (base32
+         "1zi96qa6vkgwvvy5cn6c3p1kbfsaz74zsw2kjxarz5qs744f0xvs"))))
+    (properties
+     `((upstream-name . "AffyCompatible")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/AffyCompatible/")
+    (synopsis "Work with Affymetrix GeneChip files")
+    (description
+     "This package provides an interface to Affymetrix chip annotation and
+sample attribute files.  The package allows an easy way for users to download
+and manage local data bases of Affynmetrix NetAffx annotation files.  It also
+provides access to @dfn{GeneChip Operating System} (GCOS) and @dfn{GeneChip
+Command Console} (AGCC)-compatible sample annotation files.")
+    (license license:artistic2.0)))
+
+(define-public r-affycontam
+  (package
+    (name "r-affycontam")
+    (version "1.42.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affyContam" version))
+       (sha256
+        (base32
+         "0nzk1cm26rhmym753wyhn35hqnz5lvavi3i5qfgdvhxgjy3m1jgp"))))
+    (properties `((upstream-name . "affyContam")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-affydata" ,r-affydata)
+       ("r-biobase" ,r-biobase)))
+    (home-page "https://bioconductor.org/packages/affyContam/")
+    (synopsis "Structured corruption of Affymetrix CEL file data")
+    (description
+     "Microarray quality assessment is a major concern of microarray analysts.
+This package provides some simple approaches to in silico creation of quality
+problems in CEL-level data to help evaluate performance of quality metrics.")
+    (license license:artistic2.0)))
+
+(define-public r-affycoretools
+  (package
+    (name "r-affycoretools")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affycoretools" version))
+       (sha256
+        (base32
+         "17dxpzhwwdwnxkdpmyjwdnacg41hw60mlc71w4nzlvs28sfsy09s"))))
+    (properties `((upstream-name . "affycoretools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-edger" ,r-edger)
+       ("r-gcrma" ,r-gcrma)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gostats" ,r-gostats)
+       ("r-gplots" ,r-gplots)
+       ("r-hwriter" ,r-hwriter)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-reportingtools" ,r-reportingtools)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://bioconductor.org/packages/affycoretools/")
+    (synopsis "Functions for analyses with Affymetrix GeneChips")
+    (description
+     "This package provides various wrapper functions that have been written
+to streamline the more common analyses that a Biostatistician might see.")
+    (license license:artistic2.0)))
+
+(define-public r-affxparser
+  (package
+    (name "r-affxparser")
+    (version "1.56.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "affxparser" version))
+       (sha256
+        (base32
+         "1jv7k9pn4c7szi3ma2f2xsd58pkrkvjpk5wra73r6kc607qgrv33"))))
+    (properties `((upstream-name . "affxparser")))
+    (build-system r-build-system)
+    (home-page "https://github.com/HenrikBengtsson/affxparser")
+    (synopsis "Affymetrix File Parsing SDK")
+    (description
+     "This is a package for parsing Affymetrix files (CDF, CEL, CHP, BPMAP,
+BAR).  It provides methods for fast and memory efficient parsing of Affymetrix
+files using the Affymetrix' Fusion SDK.  Both ASCII- and binary-based files
+are supported.  Currently, there are methods for reading @dfn{chip definition
+file} (CDF) and a @dfn{cell intensity file} (CEL).  These files can be read
+either in full or in part.  For example, probe signals from a few probesets
+can be extracted very quickly from a set of CEL files into a convenient list
+structure.")
+    ;; The Fusion SDK contains files under GPLv2 and LGPLv2.1.  The R code is
+    ;; under LGPLv2+.
+    (license (list license:lgpl2.0+ license:lgpl2.1 license:gpl2))))
 
 (define-public r-annotate
   (package
@@ -966,14 +1192,14 @@ the Human Protein Atlas project.")
 (define-public r-regioner
   (package
     (name "r-regioner")
-    (version "1.16.2")
+    (version "1.16.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "regioneR" version))
        (sha256
         (base32
-         "1b8ybx4wcxlqw9nvajawsf0lqaqn9v89rxcawg4g3dbzlfssfc5q"))))
+         "12x7sh5d8y549hqz4qjb2j3ak22l79w9l0vdbv4gn0bwi5206k8h"))))
     (properties `((upstream-name . "regioneR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -990,6 +1216,54 @@ the Human Protein Atlas project.")
     (description "This package offers a statistical framework based on
 customizable permutation tests to assess the association between genomic
 region sets and other genomic features.")
+    (license license:artistic2.0)))
+
+(define-public r-reportingtools
+  (package
+    (name "r-reportingtools")
+    (version "2.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ReportingTools" version))
+       (sha256
+        (base32
+         "16ska7mlacka0xi8x2icy8v42vaxccb3a1x73szmfvcrwr592qsc"))))
+    (properties
+     `((upstream-name . "ReportingTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotate" ,r-annotate)
+       ("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-category" ,r-category)
+       ("r-deseq2" ,r-deseq2)
+       ("r-edger" ,r-edger)
+       ("r-ggbio" ,r-ggbio)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gostats" ,r-gostats)
+       ("r-gseabase" ,r-gseabase)
+       ("r-hwriter" ,r-hwriter)
+       ("r-iranges" ,r-iranges)
+       ("r-knitr" ,r-knitr)
+       ("r-lattice" ,r-lattice)
+       ("r-limma" ,r-limma)
+       ("r-pfam-db" ,r-pfam-db)
+       ("r-r-utils" ,r-r-utils)
+       ("r-xml" ,r-xml)))
+    (home-page "https://bioconductor.org/packages/ReportingTools/")
+    (synopsis "Tools for making reports in various formats")
+    (description
+     "The ReportingTools package enables users to easily display reports of
+analysis results generated from sources such as microarray and sequencing
+data.  The package allows users to create HTML pages that may be viewed on a
+web browser, or in other formats.  Users can generate tables with sortable and
+filterable columns, make and display plots, and link table entries to other
+data sources such as NCBI or larger plots within the HTML page.  Using the
+package, users can also produce a table of contents page to link various
+reports together for a particular project that can be viewed in a web
+browser.")
     (license license:artistic2.0)))
 
 (define-public r-geneplotter
@@ -1016,6 +1290,75 @@ region sets and other genomic features.")
     (description
      "This package provides functions for plotting genomic data.")
     (license license:artistic2.0)))
+
+(define-public r-oligoclasses
+  (package
+    (name "r-oligoclasses")
+    (version "1.46.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "oligoClasses" version))
+       (sha256
+        (base32
+         "0z86zrmn80kcy6fgb9i9zs82vhim73n8hlkqy7y8sbb2jwksdr72"))))
+    (properties `((upstream-name . "oligoClasses")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocmanager" ,r-biocmanager)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-ff" ,r-ff)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://bioconductor.org/packages/oligoClasses/")
+    (synopsis "Classes for high-throughput arrays")
+    (description
+     "This package contains class definitions, validity checks, and
+initialization methods for classes used by the @code{oligo} and @code{crlmm}
+packages.")
+    (license license:gpl2+)))
+
+(define-public r-oligo
+  (package
+    (name "r-oligo")
+    (version "1.48.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "oligo" version))
+       (sha256
+        (base32
+         "0qkyz65zvry0syibjkvkshwijccna18jy0hlib0n5x4c8x9zs5df"))))
+    (properties `((upstream-name . "oligo")))
+    (build-system r-build-system)
+    (inputs `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-affxparser" ,r-affxparser)
+       ("r-affyio" ,r-affyio)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-ff" ,r-ff)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (home-page "https://bioconductor.org/packages/oligo/")
+    (synopsis "Preprocessing tools for oligonucleotide arrays")
+    (description
+     "This package provides a package to analyze oligonucleotide
+arrays (expression/SNP/tiling/exon) at probe-level.  It currently supports
+Affymetrix (CEL files) and NimbleGen arrays (XYS files).")
+    (license license:lgpl2.0+)))
 
 (define-public r-qvalue
   (package
@@ -2977,14 +3320,14 @@ phenotype of interest.")
 (define-public r-fgsea
   (package
     (name "r-fgsea")
-    (version "1.10.0")
+    (version "1.10.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "fgsea" version))
        (sha256
         (base32
-         "07mvv1i690q80fm8sxgdqxchamn76409vn91ppgcck2xpi6b8q6c"))))
+         "1k2f9hkp1mvc9fpqzhbf08jd0yg4xaa312v9vy37fxd9pyrwp5a6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
@@ -3848,14 +4191,14 @@ analysis.")
 (define-public r-gtrellis
   (package
     (name "r-gtrellis")
-    (version "1.16.0")
+    (version "1.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gtrellis" version))
        (sha256
         (base32
-         "00d5swg3brnx8ryzpg7hp3mg9hx3vz4yd1lv2chlp2pj2rhsir1y"))))
+         "069hln9vflyxic24bxrlmdmz9h3jdd2qaqy898rgk5bn0gqwcjix"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-circlize" ,r-circlize)
@@ -4841,14 +5184,14 @@ annotations.")
 (define-public r-rsubread
   (package
     (name "r-rsubread")
-    (version "1.34.6")
+    (version "1.34.7")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rsubread" version))
        (sha256
         (base32
-         "0nnfh4hnrs5kd72m8c50cidbsxjz12szw2vynpmg8q0wpd99q550"))))
+         "0z4ydk9296bp76ah5y6a7za5jyn4h238xngb789zragly902x83y"))))
     (properties `((upstream-name . "Rsubread")))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
@@ -5000,14 +5343,14 @@ self-organizing map clustering and minimal spanning trees.")
 (define-public r-mixomics
   (package
     (name "r-mixomics")
-    (version "6.8.0")
+    (version "6.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mixOmics" version))
        (sha256
         (base32
-         "1f08jx35amn3sfcmqb96mjxxsm6dnpzhff625z758x1992wj4zsk"))))
+         "0s93ai5d7li8pnxd87n12j9gypvac5zfahsk68j7zjv68dglj8s7"))))
     (properties `((upstream-name . "mixOmics")))
     (build-system r-build-system)
     (propagated-inputs
@@ -5089,6 +5432,41 @@ by a sparse number of variables, this method can reduce the complexity of
 data, to only emphasize the data that actually matters.")
     (license license:expat)))
 
+(define-public r-rcistarget
+  (package
+    (name "r-rcistarget")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "RcisTarget" version))
+       (sha256
+        (base32
+         "133x2vr86ifbk82q08x1c8q19zsk5za7b6qrzz77dhsyf4bhcvpd"))))
+    (properties `((upstream-name . "RcisTarget")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-aucell" ,r-aucell)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-data-table" ,r-data-table)
+       ("r-feather" ,r-feather)
+       ("r-gseabase" ,r-gseabase)
+       ("r-r-utils" ,r-r-utils)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "https://aertslab.org/#scenic")
+    (synopsis "Identify transcription factor binding motifs enriched on a gene list")
+    (description
+     "RcisTarget identifies @dfn{transcription factor binding motifs} (TFBS)
+over-represented on a gene list.  In a first step, RcisTarget selects DNA
+motifs that are significantly over-represented in the surroundings of the
+@dfn{transcription start site} (TSS) of the genes in the gene-set.  This is
+achieved by using a database that contains genome-wide cross-species rankings
+for each motif.  The motifs that are then annotated to TFs and those that have
+a high @dfn{Normalized Enrichment Score} (NES) are retained.  Finally, for
+each motif and gene-set, RcisTarget predicts the candidate target genes (i.e.
+genes in the gene-set that are ranked above the leading edge).")
+    (license license:gpl3)))
+
 (define-public r-cicero
   (package
     (name "r-cicero")
@@ -5151,3 +5529,522 @@ accessibility data.")
        `(("r-monocle3" ,r-monocle3)
          ,@(alist-delete "r-monocle"
                          (package-propagated-inputs r-cicero)))))))
+
+(define-public r-cistopic
+  (let ((commit "29abd8df9afb60ff27ac3f0a590930debe926950")
+        (revision "0"))
+    (package
+      (name "r-cistopic")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/aertslab/cisTopic.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0s8irpsv5d2zcv4ihanvsf1vrpignzliscxnvs4519af3jmx78h8"))))
+      (build-system r-build-system)
+      (propagated-inputs
+       `(("r-aucell" ,r-aucell)
+         ("r-data-table" ,r-data-table)
+         ("r-dplyr" ,r-dplyr)
+         ("r-dosnow" ,r-dosnow)
+         ("r-dt" ,r-dt)
+         ("r-feather" ,r-feather)
+         ("r-fitdistrplus" ,r-fitdistrplus)
+         ("r-genomicranges" ,r-genomicranges)
+         ("r-ggplot2" ,r-ggplot2)
+         ("r-lda" ,r-lda)
+         ("r-matrix" ,r-matrix)
+         ("r-plyr" ,r-plyr)
+         ("r-rcistarget" ,r-rcistarget)
+         ("r-rtracklayer" ,r-rtracklayer)
+         ("r-s4vectors" ,r-s4vectors)))
+      (home-page "https://github.com/aertslab/cisTopic")
+      (synopsis "Modelling of cis-regulatory topics from single cell epigenomics data")
+      (description
+       "The sparse nature of single cell epigenomics data can be overruled using
+probabilistic modelling methods such as @dfn{Latent Dirichlet
+Allocation} (LDA).  This package allows the probabilistic modelling of
+cis-regulatory topics (cisTopics) from single cell epigenomics data, and
+includes functionalities to identify cell states based on the contribution of
+cisTopics and explore the nature and regulatory proteins driving them.")
+      (license license:gpl3))))
+
+(define-public r-genie3
+  (package
+    (name "r-genie3")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GENIE3" version))
+       (sha256
+        (base32
+         "0lvrpw4xn7xyinmn13f65i0vkzfzwdj5y8gsa8vyy8kcn83d28fx"))))
+    (properties `((upstream-name . "GENIE3")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-reshape2" ,r-reshape2)))
+    (home-page "https://bioconductor.org/packages/GENIE3")
+    (synopsis "Gene network inference with ensemble of trees")
+    (description
+     "This package implements the GENIE3 algorithm for inferring gene
+regulatory networks from expression data.")
+    (license license:gpl2+)))
+
+(define-public r-roc
+  (package
+    (name "r-roc")
+    (version "1.60.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ROC" version))
+       (sha256
+        (base32
+         "1sapnl8kyaldgvdc657wqcmyjb24nvrnaw7v94bbs8yf5pmfm71c"))))
+    (properties `((upstream-name . "ROC")))
+    (build-system r-build-system)
+    (home-page "https://www.bioconductor.org/packages/ROC/")
+    (synopsis "Utilities for ROC curves")
+    (description
+     "This package provides utilities for @dfn{Receiver Operating
+Characteristic} (ROC) curves, with a focus on micro arrays.")
+    (license license:artistic2.0)))
+
+(define-public r-illuminahumanmethylation450kanno-ilmn12-hg19
+  (package
+    (name "r-illuminahumanmethylation450kanno-ilmn12-hg19")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri
+             "IlluminaHumanMethylation450kanno.ilmn12.hg19"
+             version 'annotation))
+       (sha256
+        (base32
+         "059vlxsx3p3fcnywwirahsc6mlk813zpqnbv0jsrag6x5bb8z6r4"))))
+    (properties
+     `((upstream-name
+        . "IlluminaHumanMethylation450kanno.ilmn12.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs `(("r-minfi" ,r-minfi)))
+    (home-page
+     "https://bioconductor.org/packages/IlluminaHumanMethylation450kanno.ilmn12.hg19/")
+    (synopsis "Annotation for Illumina's 450k methylation arrays")
+    (description
+     "This package provides manifests and annotation for Illumina's 450k array
+data.")
+    (license license:artistic2.0)))
+
+(define-public r-watermelon
+  (package
+    (name "r-watermelon")
+    (version "1.28.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wateRmelon" version))
+       (sha256
+        (base32
+         "0354ahmfvhqw3yfp17rmz35vlgjp262n4q3hr8qyccyrnk2dz17z"))))
+    (properties `((upstream-name . "wateRmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-illuminahumanmethylation450kanno-ilmn12-hg19"
+        ,r-illuminahumanmethylation450kanno-ilmn12-hg19)
+       ("r-illuminaio" ,r-illuminaio)
+       ("r-limma" ,r-limma)
+       ("r-lumi" ,r-lumi)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-methylumi" ,r-methylumi)
+       ("r-roc" ,r-roc)))
+    (home-page "https://bioconductor.org/packages/wateRmelon/")
+    (synopsis "Illumina 450 methylation array normalization and metrics")
+    (description
+     "The standard index of DNA methylation (beta) is computed from methylated
+and unmethylated signal intensities.  Betas calculated from raw signal
+intensities perform well, but using 11 methylomic datasets we demonstrate that
+quantile normalization methods produce marked improvement.  The commonly used
+procedure of normalizing betas is inferior to the separate normalization of M
+and U, and it is also advantageous to normalize Type I and Type II assays
+separately.  This package provides 15 flavours of betas and three performance
+metrics, with methods for objects produced by the @code{methylumi} and
+@code{minfi} packages.")
+    (license license:gpl3)))
+
+(define-public r-gdsfmt
+  (package
+    (name "r-gdsfmt")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "gdsfmt" version))
+       (sha256
+        (base32
+         "0h3hgwxq26dg09fyxqg545v9dg1dizsj58cf05rncr3jj4f8g0xy"))
+       (modules '((guix build utils)))
+       ;; Remove bundled sources of zlib, lz4, and xz.  Don't attempt to build
+       ;; them and link with system libraries instead.
+       (snippet
+        '(begin
+           (for-each delete-file-recursively
+                     '("src/LZ4"
+                       "src/XZ"
+                       "src/ZLIB"))
+           (substitute* "src/Makevars"
+             (("all: \\$\\(SHLIB\\)") "all:")
+             (("\\$\\(SHLIB\\): liblzma.a") "")
+             (("(ZLIB|LZ4)/.*") "")
+             (("CoreArray/dVLIntGDS.cpp.*")
+              "CoreArray/dVLIntGDS.cpp")
+             (("CoreArray/dVLIntGDS.o.*")
+              "CoreArray/dVLIntGDS.o")
+             (("PKG_LIBS = ./liblzma.a")
+              "PKG_LIBS = -llz4"))
+           (substitute* "src/CoreArray/dStream.h"
+             (("include \"../(ZLIB|LZ4|XZ/api)/(.*)\"" _ _ header)
+              (string-append "include <" header ">")))
+           #t))))
+    (properties `((upstream-name . "gdsfmt")))
+    (build-system r-build-system)
+    (inputs
+     `(("lz4" ,lz4)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "http://corearray.sourceforge.net/")
+    (synopsis
+     "R Interface to CoreArray Genomic Data Structure (GDS) Files")
+    (description
+     "This package provides a high-level R interface to CoreArray @dfn{Genomic
+Data Structure} (GDS) data files, which are portable across platforms with
+hierarchical structure to store multiple scalable array-oriented data sets
+with metadata information.  It is suited for large-scale datasets, especially
+for data which are much larger than the available random-access memory.  The
+@code{gdsfmt} package offers efficient operations specifically designed for
+integers of less than 8 bits, since a diploid genotype, like
+@dfn{single-nucleotide polymorphism} (SNP), usually occupies fewer bits than a
+byte.  Data compression and decompression are available with relatively
+efficient random access.  It is also allowed to read a GDS file in parallel
+with multiple R processes supported by the package @code{parallel}.")
+    (license license:lgpl3)))
+
+(define-public r-bigmelon
+  (package
+    (name "r-bigmelon")
+    (version "1.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "bigmelon" version))
+       (sha256
+        (base32
+         "0269kf3d34dbng3swk7pclpk02vy4k3askygmzi5my3fqyfzdkj9"))))
+    (properties `((upstream-name . "bigmelon")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-gdsfmt" ,r-gdsfmt)
+       ("r-geoquery" ,r-geoquery)
+       ("r-methylumi" ,r-methylumi)
+       ("r-minfi" ,r-minfi)
+       ("r-watermelon" ,r-watermelon)))
+    (home-page "https://bioconductor.org/packages/bigmelon/")
+    (synopsis "Illumina methylation array analysis for large experiments")
+    (description
+     "This package provides methods for working with Illumina arrays using the
+@code{gdsfmt} package.")
+    (license license:gpl3)))
+
+(define-public r-seqbias
+  (package
+    (name "r-seqbias")
+    (version "1.32.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "seqbias" version))
+       (sha256
+        (base32
+         "1pk97jsq0rxijsdm5wnmlw79mhy19skdq1h3mmfbdjh560md47lw"))))
+    (properties `((upstream-name . "seqbias")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-rhtslib" ,r-rhtslib)))
+    (inputs
+     `(("zlib" ,zlib))) ; This comes from rhtslib.
+    (home-page "https://bioconductor.org/packages/seqbias/")
+    (synopsis "Estimation of per-position bias in high-throughput sequencing data")
+    (description
+     "This package implements a model of per-position sequencing bias in
+high-throughput sequencing data using a simple Bayesian network, the structure
+and parameters of which are trained on a set of aligned reads and a reference
+genome sequence.")
+    (license license:lgpl3)))
+
+(define-public r-reqon
+  (package
+    (name "r-reqon")
+    (version "1.30.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "ReQON" version))
+       (sha256
+        (base32
+         "04bljr8vgb9z9800d9v8w7a4rvjkwq48zd8n5divq30zj9k2na7a"))))
+    (properties `((upstream-name . "ReQON")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-rjava" ,r-rjava)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-seqbias" ,r-seqbias)))
+    (home-page "https://bioconductor.org/packages/ReQON/")
+    (synopsis "Recalibrating quality of nucleotides")
+    (description
+     "This package provides an implementation of an algorithm for
+recalibrating the base quality scores for aligned sequencing data in BAM
+format.")
+    (license license:gpl2)))
+
+(define-public r-wavcluster
+  (package
+    (name "r-wavcluster")
+    (version "2.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "wavClusteR" version))
+       (sha256
+        (base32
+         "02i53dskirzr9nls3dsmv7dqhvy3vikkpx7247zpy2qd9r5yvhy2"))))
+    (properties `((upstream-name . "wavClusteR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-foreach" ,r-foreach)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-iranges" ,r-iranges)
+       ("r-mclust" ,r-mclust)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-seqinr" ,r-seqinr)
+       ("r-stringr" ,r-stringr)
+       ("r-wmtsa" ,r-wmtsa)))
+    (home-page "https://bioconductor.org/packages/wavClusteR/")
+    (synopsis "Identification of RNA-protein interaction sites in PAR-CLIP data")
+    (description
+     "This package provides an integrated pipeline for the analysis of
+PAR-CLIP data.  PAR-CLIP-induced transitions are first discriminated from
+sequencing errors, SNPs and additional non-experimental sources by a non-
+parametric mixture model.  The protein binding sites (clusters) are then
+resolved at high resolution and cluster statistics are estimated using a
+rigorous Bayesian framework.  Post-processing of the results, data export for
+UCSC genome browser visualization and motif search analysis are provided.  In
+addition, the package allows to integrate RNA-Seq data to estimate the False
+Discovery Rate of cluster detection.  Key functions support parallel multicore
+computing.  While wavClusteR was designed for PAR-CLIP data analysis, it can
+be applied to the analysis of other NGS data obtained from experimental
+procedures that induce nucleotide substitutions (e.g. BisSeq).")
+    (license license:gpl2)))
+
+(define-public r-timeseriesexperiment
+  (package
+    (name "r-timeseriesexperiment")
+    (version "1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "TimeSeriesExperiment" version))
+       (sha256
+        (base32
+         "1j11g7a2p0yk38fx6wd6152l1xynghj01pfxihalw601jwf1bl0y"))))
+    (properties
+     `((upstream-name . "TimeSeriesExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-deseq2" ,r-deseq2)
+       ("r-dplyr" ,r-dplyr)
+       ("r-dynamictreecut" ,r-dynamictreecut)
+       ("r-edger" ,r-edger)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-hmisc" ,r-hmisc)
+       ("r-limma" ,r-limma)
+       ("r-magrittr" ,r-magrittr)
+       ("r-proxy" ,r-proxy)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-tibble" ,r-tibble)
+       ("r-tidyr" ,r-tidyr)
+       ("r-vegan" ,r-vegan)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://github.com/nlhuong/TimeSeriesExperiment/")
+    (synopsis "Analysis for short time-series data")
+    (description
+     "This package is a visualization and analysis toolbox for short time
+course data which includes dimensionality reduction, clustering, two-sample
+differential expression testing and gene ranking techniques.  The package also
+provides methods for retrieving enriched pathways.")
+    (license license:lgpl3+)))
+
+(define-public r-variantfiltering
+  (package
+    (name "r-variantfiltering")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "VariantFiltering" version))
+       (sha256
+        (base32
+         "0vpghxacqcbaxx2scb5gfhcmfpw1lkls7h6qnbwbnmjwy01q2p17"))))
+    (properties
+     `((upstream-name . "VariantFiltering")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dt" ,r-dt)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicscores" ,r-genomicscores)
+       ("r-graph" ,r-graph)
+       ("r-gviz" ,r-gviz)
+       ("r-iranges" ,r-iranges)
+       ("r-rbgl" ,r-rbgl)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-shiny" ,r-shiny)
+       ("r-shinyjs" ,r-shinyjs)
+       ("r-shinythemes" ,r-shinythemes)
+       ("r-shinytree" ,r-shinytree)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-variantannotation" ,r-variantannotation)
+       ("r-xvector" ,r-xvector)))
+    (home-page "https://github.com/rcastelo/VariantFiltering")
+    (synopsis "Filtering of coding and non-coding genetic variants")
+    (description
+     "Filter genetic variants using different criteria such as inheritance
+model, amino acid change consequence, minor allele frequencies across human
+populations, splice site strength, conservation, etc.")
+    (license license:artistic2.0)))
+
+(define-public r-genomegraphs
+  (package
+    (name "r-genomegraphs")
+    (version "1.44.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "GenomeGraphs" version))
+       (sha256
+        (base32
+         "026skcn2cqchlzaqsnk11gb8d8aq1rz7lrnx4mmsba234mh4j7kd"))))
+    (properties `((upstream-name . "GenomeGraphs")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biomart" ,r-biomart)))
+    (home-page "https://bioconductor.org/packages/GenomeGraphs/")
+    (synopsis "Plotting genomic information from Ensembl")
+    (description
+     "Genomic data analyses requires integrated visualization of known genomic
+information and new experimental data.  GenomeGraphs uses the biomaRt package
+to perform live annotation queries to Ensembl and translates this to e.g.
+gene/transcript structures in viewports of the grid graphics package.  This
+results in genomic information plotted together with your data.  Another
+strength of GenomeGraphs is to plot different data types such as array CGH,
+gene expression, sequencing and other data, together in one plot using the
+same genome coordinate system.")
+    (license license:artistic2.0)))
+
+(define-public r-wavetiling
+  (package
+    (name "r-wavetiling")
+    (version "1.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "waveTiling" version))
+       (sha256
+        (base32
+         "0l0saa0myabpq2rl9dq70zff8jpxr3mkanxlj65hc41f0m5xllir"))))
+    (properties `((upstream-name . "waveTiling")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomegraphs" ,r-genomegraphs)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-oligo" ,r-oligo)
+       ("r-oligoclasses" ,r-oligoclasses)
+       ("r-preprocesscore" ,r-preprocesscore)
+       ("r-waveslim" ,r-waveslim)))
+    (home-page "https://r-forge.r-project.org/projects/wavetiling/")
+    (synopsis "Wavelet-based models for tiling array transcriptome analysis")
+    (description
+     "This package is designed to conduct transcriptome analysis for tiling
+arrays based on fast wavelet-based functional models.")
+    (license license:gpl2+)))
+
+(define-public r-variancepartition
+  (package
+    (name "r-variancepartition")
+    (version "1.14.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "variancePartition" version))
+       (sha256
+        (base32
+         "0w4kri2389x1082xppx7l6xl1a5g74fyp02iwb4938x3gzwqwbjd"))))
+    (properties
+     `((upstream-name . "variancePartition")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-colorramps" ,r-colorramps)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gplots" ,r-gplots)
+       ("r-iterators" ,r-iterators)
+       ("r-limma" ,r-limma)
+       ("r-lme4" ,r-lme4)
+       ("r-lmertest" ,r-lmertest)
+       ("r-mass" ,r-mass)
+       ("r-pbkrtest" ,r-pbkrtest)
+       ("r-progress" ,r-progress)
+       ("r-reshape2" ,r-reshape2)
+       ("r-scales" ,r-scales)))
+    (home-page "https://bioconductor.org/packages/variancePartition/")
+    (synopsis "Analyze variation in gene expression experiments")
+    (description
+     "This is a package providing tools to quantify and interpret multiple
+sources of biological and technical variation in gene expression experiments.
+It uses a linear mixed model to quantify variation in gene expression
+attributable to individual, tissue, time point, or technical variables.  The
+package includes dream differential expression analysis for repeated
+measures.")
+    (license license:gpl2+)))

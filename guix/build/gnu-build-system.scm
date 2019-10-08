@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-34)
@@ -58,19 +59,14 @@ See https://reproducible-builds.org/specs/source-date-epoch/."
   (setenv "SOURCE_DATE_EPOCH" "1")
   #t)
 
-(define (first-subdirectory dir)
-  "Return the path of the first sub-directory of DIR."
-  (file-system-fold (lambda (path stat result)
-                      (string=? path dir))
-                    (lambda (path stat result) result) ; leaf
-                    (lambda (path stat result) result) ; down
-                    (lambda (path stat result) result) ; up
-                    (lambda (path stat result)         ; skip
-                      (or result path))
-                    (lambda (path stat errno result)   ; error
-                      (error "first-subdirectory" (strerror errno)))
-                    #f
-                    dir))
+(define (first-subdirectory directory)
+  "Return the file name of the first sub-directory of DIRECTORY."
+  (match (scandir directory
+                  (lambda (file)
+                    (and (not (member file '("." "..")))
+                         (file-is-directory? (string-append directory "/"
+                                                            file)))))
+    ((first . _) first)))
 
 (define* (set-paths #:key target inputs native-inputs
                     (search-paths '()) (native-search-paths '())
@@ -735,23 +731,64 @@ which cannot be found~%"
 
 (define* (install-license-files #:key outputs
                                 (license-file-regexp %license-file-regexp)
+                                out-of-source?
                                 #:allow-other-keys)
   "Install license files matching LICENSE-FILE-REGEXP to 'share/doc'."
+  (define (find-source-directory package)
+    ;; For an out-of-source build, guess the source directory location
+    ;; relative to the current directory.  Return #f on failure.
+    (match (scandir ".."
+                    (lambda (file)
+                      (and (not (member file '("." ".." "build")))
+                           (file-is-directory?
+                            (string-append "../" file)))))
+      (()                                         ;hmm, no source
+       #f)
+      ((source)                                   ;only one other file
+       (string-append "../" source))
+      ((directories ...)                          ;pick the most likely one
+       ;; This happens for example with libstdc++, which lives within the GCC
+       ;; source tree.
+       (any (lambda (directory)
+              (and (string-prefix? package directory)
+                   (string-append "../" directory)))
+            directories))))
+
+  (define (copy-to-directories directories sub-directory)
+    (lambda (file)
+      (for-each (if (file-is-directory? file)
+                    (cut copy-recursively file <>)
+                    (cut install-file file <>))
+                (map (cut string-append <> "/" sub-directory)
+                     directories))))
+
   (let* ((regexp    (make-regexp license-file-regexp))
          (out       (or (assoc-ref outputs "out")
                         (match outputs
                           (((_ . output) _ ...)
                            output))))
          (package   (strip-store-file-name out))
-         (directory (string-append out "/share/doc/" package))
-         (files     (scandir "." (lambda (file)
-                                   (regexp-exec regexp file)))))
-    (format #t "installing ~a license files~%" (length files))
-    (for-each (lambda (file)
-                (if (file-is-directory? file)
-                    (copy-recursively file directory)
-                    (install-file file directory)))
-              files)
+         (outputs   (match outputs
+                      (((_ . outputs) ...)
+                       outputs)))
+         (source    (if out-of-source?
+                        (find-source-directory
+                         (package-name->name+version package))
+                        "."))
+         (files     (and source
+                         (scandir source
+                                  (lambda (file)
+                                    (regexp-exec regexp file))))))
+    (if files
+        (begin
+          (format #t "installing ~a license files from '~a'~%"
+                  (length files) source)
+          (for-each (copy-to-directories outputs
+                                         (string-append "share/doc/"
+                                                        package))
+                    (map (cut string-append source "/" <>) files)))
+        (format (current-error-port)
+                "failed to find license files~%"))
     #t))
 
 (define %standard-phases
@@ -784,34 +821,37 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
       (+ (time-second diff)
          (/ (time-nanosecond diff) 1e9))))
 
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
+  (setvbuf (current-output-port) 'line)
+  (setvbuf (current-error-port) 'line)
 
   ;; Encoding/decoding errors shouldn't be silent.
   (fluid-set! %default-port-conversion-strategy 'error)
 
-  ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
-  ;; PHASES can pick the keyword arguments it's interested in.
-  (every (match-lambda
-           ((name . proc)
-            (let ((start (current-time time-monotonic)))
-              (format #t "starting phase `~a'~%" name)
-              (let ((result (apply proc args))
-                    (end    (current-time time-monotonic)))
-                (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
-                        name result
-                        (elapsed-time end start))
+  (guard (c ((invoke-error? c)
+             (report-invoke-error c)
+             (exit 1)))
+    ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
+    ;; PHASES can pick the keyword arguments it's interested in.
+    (every (match-lambda
+             ((name . proc)
+              (let ((start (current-time time-monotonic)))
+                (format #t "starting phase `~a'~%" name)
+                (let ((result (apply proc args))
+                      (end    (current-time time-monotonic)))
+                  (format #t "phase `~a' ~:[failed~;succeeded~] after ~,1f seconds~%"
+                          name result
+                          (elapsed-time end start))
 
-                ;; Issue a warning unless the result is #t.
-                (unless (eqv? result #t)
-                  (format (current-error-port) "\
+                  ;; Issue a warning unless the result is #t.
+                  (unless (eqv? result #t)
+                    (format (current-error-port) "\
 ## WARNING: phase `~a' returned `~s'.  Return values other than #t
 ## are deprecated.  Please migrate this package so that its phase
 ## procedures report errors by raising an exception, and otherwise
 ## always return #t.~%"
-                          name result))
+                            name result))
 
-                ;; Dump the environment variables as a shell script, for handy debugging.
-                (system "export > $NIX_BUILD_TOP/environment-variables")
-                result))))
-         phases))
+                  ;; Dump the environment variables as a shell script, for handy debugging.
+                  (system "export > $NIX_BUILD_TOP/environment-variables")
+                  result))))
+           phases)))

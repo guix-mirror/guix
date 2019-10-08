@@ -1,0 +1,24 @@
+This fixes
+
+../../../../gcc-7.4.0/libstdc++-v3/libsupc++/new_opa.cc: In function ‘void* __gnu_cxx::aligned_alloc(std::size_t, std::size_t)’:
+../../../../gcc-7.4.0/libstdc++-v3/libsupc++/new_opa.cc:78:10: error: ‘memalign’ was not declared in this scope
+   return memalign (al, sz);
+          ^~~~~~~~
+../../../../gcc-7.4.0/libstdc++-v3/libsupc++/new_opa.cc:78:10: note: suggested alternative: ‘max_align_t’
+   return memalign (al, sz);
+          ^~~~~~~~
+          max_align_t
+
+diff --git a/libstdc++-v3/libsupc++/new_opa.cc b/libstdc++-v3/libsupc++/new_opa.cc
+index 94e79cadb0e..084900e0daf 100644
+--- a/libstdc++-v3/libsupc++/new_opa.cc
++++ b/libstdc++-v3/libsupc++/new_opa.cc
+@@ -39,6 +39,8 @@ extern "C" void *memalign(std::size_t boundary, std::size_t size);
+ # endif
+ #endif
+ 
++#define memalign _aligned_malloc
++
+ using std::new_handler;
+ using std::bad_alloc;
+ 

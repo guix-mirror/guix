@@ -30,6 +30,7 @@
   #:use-module (gnu build linux-container)
   #:use-module (gnu services)
   #:use-module (gnu services base)
+  #:use-module (gnu services networking)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
@@ -109,7 +110,11 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
             ;; Remove nscd service if network is shared with the host.
             (if shared-network?
                 (list nscd-service-type
-                      static-networking-service-type)
+                      static-networking-service-type
+                      dhcp-client-service-type
+                      network-manager-service-type
+                      connman-service-type
+                      wicd-service-type)
                 (list))))
 
   (operating-system
@@ -147,13 +152,6 @@ containerized OS.  EXTRA-FILE-SYSTEMS is a list of file systems to add to OS."
   "Return a derivation of a script that runs OS as a Linux container.
 MAPPINGS is a list of <file-system> objects that specify the files/directories
 that will be shared with the host system."
-  (define nscd-run-directory "/var/run/nscd")
-
-  (define nscd-mapping
-    (file-system-mapping
-     (source nscd-run-directory)
-     (target nscd-run-directory)))
-
   (define (mountable-file-system? file-system)
     ;; Return #t if FILE-SYSTEM should be mounted in the container.
     (and (not (string=? "/" (file-system-mount-point file-system)))
@@ -168,28 +166,42 @@ that will be shared with the host system."
               os (cons %store-mapping mappings)
               #:shared-network? shared-network?
               #:extra-file-systems %container-file-systems))
-         (nscd-os (containerized-operating-system
-                   os (cons* nscd-mapping %store-mapping mappings)
-                   #:shared-network? shared-network?
-                   #:extra-file-systems %container-file-systems))
-         (specs (os-file-system-specs os))
-         (nscd-specs (os-file-system-specs nscd-os)))
+         (specs (os-file-system-specs os)))
 
     (define script
       (with-imported-modules (source-module-closure
                               '((guix build utils)
-                                (gnu build linux-container)))
+                                (gnu build linux-container)
+                                (guix i18n)
+                                (guix diagnostics)))
         #~(begin
             (use-modules (gnu build linux-container)
                          (gnu system file-systems) ;spec->file-system
-                         (guix build utils))
+                         (guix build utils)
+                         (guix i18n)
+                         (guix diagnostics)
+                         (srfi srfi-1))
 
-            (call-with-container
-                (map spec->file-system
-                     (if (and #$shared-network?
-                              (file-exists? #$nscd-run-directory))
-                         '#$nscd-specs
-                         '#$specs))
+            (define file-systems
+              (filter-map (lambda (spec)
+                            (let* ((fs    (spec->file-system spec))
+                                   (flags (file-system-flags fs)))
+                              (and (or (not (memq 'bind-mount flags))
+                                       (file-exists? (file-system-device fs)))
+                                   fs)))
+                          '#$specs))
+
+            (define (explain pid)
+              ;; XXX: We can't quite call 'bindtextdomain' so there's actually
+              ;; no i18n.
+              (info (G_ "system container is running as PID ~a~%") pid)
+              ;; XXX: Should we recommend 'guix container exec'?  It's more
+              ;; verbose and doesn't bring much.
+              (info (G_ "Run 'sudo nsenter -a -t ~a' to get a shell into it.~%")
+                    pid)
+              (newline (guix-warning-port)))
+
+            (call-with-container file-systems
               (lambda ()
                 (setenv "HOME" "/root")
                 (setenv "TMPDIR" "/tmp")
@@ -203,7 +215,8 @@ that will be shared with the host system."
               #:host-uids 65536
               #:namespaces (if #$shared-network?
                                (delq 'net %namespaces)
-                               %namespaces)))))
+                               %namespaces)
+              #:process-spawned-hook explain))))
 
     (gexp->script "run-container" script)))
 
@@ -244,11 +257,13 @@ effects."
                                            (lowered-gexp-guile lowered))
                                           "/bin/guile")
                            "guile"
-                           (append (map (lambda (directory) `("-L" ,directory))
-                                        (lowered-gexp-load-path lowered))
-                                   (map (lambda (directory) `("-C" ,directory))
-                                        (lowered-gexp-load-compiled-path
-                                         lowered))
+                           (append (append-map (lambda (directory)
+                                                 `("-L" ,directory))
+                                               (lowered-gexp-load-path lowered))
+                                   (append-map (lambda (directory)
+                                                 `("-C" ,directory))
+                                               (lowered-gexp-load-compiled-path
+                                                lowered))
                                    (list "-c"
                                          (object->string
                                           (lowered-gexp-sexp lowered))))))))))))

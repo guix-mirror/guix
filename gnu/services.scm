@@ -430,34 +430,34 @@ ACTIVATION-SCRIPT-TYPE."
 (define (activation-script gexps)
   "Return the system's activation script, which evaluates GEXPS."
   (define actions
-    (map (cut scheme-file "activate-service" <>) gexps))
+    (map (cut program-file "activate-service.scm" <>) gexps))
 
-  (scheme-file "activate"
-               (with-imported-modules (source-module-closure
-                                       '((gnu build activation)
-                                         (guix build utils)))
-                 #~(begin
-                     (use-modules (gnu build activation)
-                                  (guix build utils))
+  (program-file "activate.scm"
+                (with-imported-modules (source-module-closure
+                                        '((gnu build activation)
+                                          (guix build utils)))
+                  #~(begin
+                      (use-modules (gnu build activation)
+                                   (guix build utils))
 
-                     ;; Make sure the user accounting database exists.  If it
-                     ;; does not exist, 'setutxent' does not create it and
-                     ;; thus there is no accounting at all.
-                     (close-port (open-file "/var/run/utmpx" "a0"))
+                      ;; Make sure the user accounting database exists.  If it
+                      ;; does not exist, 'setutxent' does not create it and
+                      ;; thus there is no accounting at all.
+                      (close-port (open-file "/var/run/utmpx" "a0"))
 
-                     ;; Same for 'wtmp', which is populated by mingetty et
-                     ;; al.
-                     (mkdir-p "/var/log")
-                     (close-port (open-file "/var/log/wtmp" "a0"))
+                      ;; Same for 'wtmp', which is populated by mingetty et
+                      ;; al.
+                      (mkdir-p "/var/log")
+                      (close-port (open-file "/var/log/wtmp" "a0"))
 
-                     ;; Set up /run/current-system.  Among other things this
-                     ;; sets up locales, which the activation snippets
-                     ;; executed below may expect.
-                     (activate-current-system)
+                      ;; Set up /run/current-system.  Among other things this
+                      ;; sets up locales, which the activation snippets
+                      ;; executed below may expect.
+                      (activate-current-system)
 
-                     ;; Run the services' activation snippets.
-                     ;; TODO: Use 'load-compiled'.
-                     (for-each primitive-load '#$actions)))))
+                      ;; Run the services' activation snippets.
+                      ;; TODO: Use 'load-compiled'.
+                      (for-each primitive-load '#$actions)))))
 
 (define (gexps->activation-gexp gexps)
   "Return a gexp that runs the activation script containing GEXPS."

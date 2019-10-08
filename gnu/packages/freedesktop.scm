@@ -162,7 +162,12 @@ freedesktop.org project.")
                 "0rzw2kx06ywc19lwf147f474xav7w83h28k0afy822wjz0j5rf3w"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags '("-Ddocumentation=false")))
+     `(#:configure-flags '("-Ddocumentation=false")
+
+       ;; XXX: Using 'debug' or 'debugoptimized' pulls in an additional test that
+       ;; hangs, and the comments around it suggests that we should be using this
+       ;; Meson target anyway.
+       #:build-type "release"))
     (native-inputs
      `(("check" ,check)
        ("pkg-config" ,pkg-config)))
@@ -920,15 +925,15 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.18.2")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.freedesktop.org/software/" name "/"
-                    name "-" version ".tar.xz"))
+                    "https://www.freedesktop.org/software/libmbim/"
+                    "libmbim-" version ".tar.xz"))
               (sha256
                (base32
-                "0s4jsfsydp2vykv7lnimalp9i680aas1qcx7zdpjiic64b5g48vp"))))
+                "0rm8j4zh9gnb3yi324cnxy91gdimc1vg5gv1kxc2m5lymb3wdxrc"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums

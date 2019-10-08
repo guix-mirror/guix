@@ -1,0 +1,157 @@
+This patch enables building binutils using TCC and Mes C Library
+
+  * disable building DOC
+  * remove signed int trickery that does not work with TCC
+  * fixe the malloc prototype to use size_t
+  * add missing includes
+  * remove C99'isms to avoid of mixing code and variable declaration
+  * [MES_BOOTSTRAP]: remove strncmp to avoid duplicat symbol
+
+Upstream status: Not presented upstream.
+
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/bfd/elf32-i386.c binutils-2.20.1a/bfd/elf32-i386.c
+--- ../binutils-2.20.1a/bfd/elf32-i386.c	2009-09-10 13:47:12.000000000 +0200
++++ binutils-2.20.1a/bfd/elf32-i386.c	2018-06-23 19:33:20.068134411 +0200
+@@ -4254,6 +4254,7 @@ elf_i386_finish_dynamic_symbol (bfd *out
+ 	      if (!h->pointer_equality_needed)
+ 		abort ();
+ 
++              {
+ 	      /* For non-shared object, we can't use .got.plt, which
+ 		 contains the real function addres if we need pointer
+ 		 equality.  We load the GOT entry with the PLT entry.  */
+@@ -4262,6 +4263,7 @@ elf_i386_finish_dynamic_symbol (bfd *out
+ 			  (plt->output_section->vma
+ 			   + plt->output_offset + h->plt.offset),
+ 			  htab->elf.sgot->contents + h->got.offset);
++              }
+ 	      return TRUE;
+ 	    }
+ 	}
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/bfd/elfcode.h binutils-2.20.1a/bfd/elfcode.h
+--- ../binutils-2.20.1a/bfd/elfcode.h	2009-09-10 13:47:12.000000000 +0200
++++ binutils-2.20.1a/bfd/elfcode.h	2018-06-19 19:07:16.647627075 +0200
+@@ -73,6 +73,7 @@
+ #include "bfdlink.h"
+ #include "libbfd.h"
+ #include "elf-bfd.h"
++#include <limits.h>
+ 
+ /* Renaming structures, typedefs, macros and functions to be size-specific.  */
+ #define Elf_External_Ehdr	NAME(Elf,External_Ehdr)
+@@ -706,8 +707,8 @@ elf_object_p (bfd *abfd)
+       if (i_ehdrp->e_shnum != 1)
+ 	{
+ 	  /* Check that we don't have a totally silly number of sections.  */
+-	  if (i_ehdrp->e_shnum > (unsigned int) -1 / sizeof (x_shdr)
+-	      || i_ehdrp->e_shnum > (unsigned int) -1 / sizeof (i_shdr))
++	  if (i_ehdrp->e_shnum > INT_MAX / sizeof (x_shdr)
++	      || i_ehdrp->e_shnum > INT_MAX / sizeof (i_shdr))
+ 	    goto got_wrong_format_error;
+ 
+ 	  where += (i_ehdrp->e_shnum - 1) * sizeof (x_shdr);
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/bfd/Makefile.in binutils-2.20.1a/bfd/Makefile.in
+--- ../binutils-2.20.1a/bfd/Makefile.in	2010-03-03 14:59:15.000000000 +0100
++++ binutils-2.20.1a/bfd/Makefile.in	2018-06-16 14:00:46.297724081 +0200
+@@ -320,7 +320,7 @@ ACLOCAL_AMFLAGS = -I . -I .. -I ../confi
+ # RELEASE=y
+ INCDIR = $(srcdir)/../include
+ CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
+-SUBDIRS = doc po
++SUBDIRS = # these fail to build: doc po
+ bfddocdir = doc
+ libbfd_la_LDFLAGS = $(am__append_1) -release `cat libtool-soversion` \
+ 	@SHARED_LDFLAGS@ $(am__empty)
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/binutils/arparse.c binutils-2.20.1a/binutils/arparse.c
+--- ../binutils-2.20.1a/binutils/arparse.c	2009-10-16 13:52:16.000000000 +0200
++++ binutils-2.20.1a/binutils/arparse.c	2018-06-19 01:30:00.576219981 +0200
+@@ -330,7 +330,7 @@ YYID (i)
+ #   define YYMALLOC malloc
+ #   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+      || defined __cplusplus || defined _MSC_VER)
+-void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
++void *malloc (size_t); /* INFRINGES ON USER NAME SPACE */
+ #   endif
+ #  endif
+ #  ifndef YYFREE
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/binutils/dwarf.c binutils-2.20.1a/binutils/dwarf.c
+--- ../binutils-2.20.1a/binutils/dwarf.c	2009-09-14 13:43:26.000000000 +0200
++++ binutils-2.20.1a/binutils/dwarf.c	2018-06-16 14:01:45.162684662 +0200
+@@ -27,6 +27,10 @@
+ #include "dwarf2.h"
+ #include "dwarf.h"
+ 
++#if MES_BOOTSTRAP
++#include "getopt.h"
++#endif
++
+ static int have_frame_base;
+ static int need_base_address;
+ 
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/binutils/sysinfo.c binutils-2.20.1a/binutils/sysinfo.c
+--- ../binutils-2.20.1a/binutils/sysinfo.c	2009-10-16 13:52:17.000000000 +0200
++++ binutils-2.20.1a/binutils/sysinfo.c	2018-06-19 01:29:23.823612807 +0200
+@@ -286,7 +286,7 @@ YYID (i)
+ #   define YYMALLOC malloc
+ #   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+      || defined __cplusplus || defined _MSC_VER)
+-void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
++void *malloc (size_t); /* INFRINGES ON USER NAME SPACE */
+ #   endif
+ #  endif
+ #  ifndef YYFREE
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/gas/config/tc-i386.c binutils-2.20.1a/gas/config/tc-i386.c
+--- ../binutils-2.20.1a/gas/config/tc-i386.c	2009-09-14 13:43:27.000000000 +0200
++++ binutils-2.20.1a/gas/config/tc-i386.c	2018-06-23 19:39:37.546254752 +0200
+@@ -4869,6 +4869,7 @@ build_modrm_byte (void)
+   if (vex_3_sources)
+     {
+       unsigned int nds, reg;
++      expressionS *exp; 
+ 
+       if (i.tm.opcode_modifier.veximmext
+ 	  && i.tm.opcode_modifier.immext)
+@@ -4892,7 +4893,7 @@ build_modrm_byte (void)
+ 
+       /* Generate an 8bit immediate operand to encode the register
+ 	 operand.  */
+-      expressionS *exp = &im_expressions[i.imm_operands++];
++      exp = &im_expressions[i.imm_operands++];
+       i.op[i.operands].imms = exp;
+       i.types[i.operands] = imm8;
+       i.operands++;
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/ld/ldgram.c binutils-2.20.1a/ld/ldgram.c
+--- ../binutils-2.20.1a/ld/ldgram.c	2009-10-16 13:52:15.000000000 +0200
++++ binutils-2.20.1a/ld/ldgram.c	2018-06-19 01:30:57.809165437 +0200
+@@ -561,7 +561,7 @@ YYID (i)
+ #   define YYMALLOC malloc
+ #   if ! defined malloc && ! defined _STDLIB_H && (defined __STDC__ || defined __C99__FUNC__ \
+      || defined __cplusplus || defined _MSC_VER)
+-void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
++void *malloc (size_t); /* INFRINGES ON USER NAME SPACE */
+ #   endif
+ #  endif
+ #  ifndef YYFREE
+diff -purN -x config.status -x config.h -x BOOT ../binutils-2.20.1a/libiberty/strncmp.c binutils-2.20.1a/libiberty/strncmp.c
+--- ../binutils-2.20.1a/libiberty/strncmp.c	2005-03-28 04:09:01.000000000 +0200
++++ binutils-2.20.1a/libiberty/strncmp.c	2018-06-23 19:19:50.038992482 +0200
+@@ -15,6 +15,13 @@ Compares the first @var{n} bytes of two
+ #include <ansidecl.h>
+ #include <stddef.h>
+ 
++#if !MES_BOOTSTRAP
++
++/*
++   libtool: link: /gnu/store/rgwjixk5zl7s2d3xsb2ws2z2q3m0xjm4-tcc-boot-0.9.26-0.97196ce/bin/tcc -D __GLIBC_MINOR__=6 -D MES_BOOTSTRAP=1 -g -o size size.o bucomm.o version.o filemode.o  ../bfd/.libs/libbfd.a ../libiberty/libiberty.a ./../intl/libintl.a
++   /gnu/store/rgwjixk5zl7s2d3xsb2ws2z2q3m0xjm4-tcc-boot-0.9.26-0.97196ce/lib/libc.a: error: 'strncmp' defined twice
++*/
++
+ int
+ strncmp(const char *s1, const char *s2, register size_t n)
+ {
+@@ -31,3 +38,5 @@ strncmp(const char *s1, const char *s2,
+     }
+   return 0;
+ }
++
++#endif // !MES_BOOTSTRAP

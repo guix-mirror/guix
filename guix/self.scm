@@ -124,7 +124,11 @@ NODE's modules, under their FHS directories: share/guile/site and lib/guile."
           (symlink #$(node-compiled node) object))))
 
   (computed-file (string-append (node-name node) "-modules")
-                 build))
+                 build
+                 #:options '(#:local-build? #t
+
+                             ;; "Building" it locally is faster.
+                             #:substitutable? #f)))
 
 (define (node-fold proc init nodes)
   (let loop ((nodes nodes)
@@ -729,6 +733,7 @@ Info manual."
                  (filter-map (match-lambda
                                (('guix 'scripts _ ..1) #f)
                                (('guix 'man-db) #f)
+                               (('guix 'tests _ ...) #f)
                                (name name))
                              (scheme-modules* source "guix"))
                  (list *core-modules*)

@@ -75,6 +75,9 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                       #:env-vars
                       `(("bzr url" . ,(bzr-reference-url ref))
                         ("bzr reference" . ,(bzr-reference-revision ref)))
+                      #:leaked-env-vars '("http_proxy" "https_proxy"
+                                          "LC_ALL" "LC_MESSAGES" "LANG"
+                                          "COLUMNS")
                       #:system system
                       #:local-build? #t  ;don't offload repo branching
                       #:hash-algo hash-algo

@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix svn-download)
+  #:use-module (guix build-system asdf)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ocaml)
@@ -210,8 +213,7 @@ classification.")
              (assoc-ref %standard-phases 'check))
            (add-before 'check 'fix-PYTHONPATH
              (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let ((python-version ((@@ (guix build python-build-system)
-                                           get-python-version)
+               (let ((python-version (python-version
                                       (assoc-ref inputs "python"))))
                  (setenv "PYTHONPATH"
                          (string-append (getenv "PYTHONPATH")
@@ -1143,16 +1145,16 @@ written in C++.")
            (replace 'configure
              (lambda* (#:key inputs #:allow-other-keys)
                (let ((glib (assoc-ref inputs "glib")))
-                 (setenv "CXXFLAGS" "-std=c++11 -fPIC")
+                 (setenv "CXXFLAGS" "-fPIC")
                  (setenv "CPLUS_INCLUDE_PATH"
                          (string-append glib "/include/glib-2.0:"
                                         glib "/lib/glib-2.0/include:"
                                         (assoc-ref inputs "gstreamer")
-                                        "/include/gstreamer-1.0:"
-                                        (getenv "CPLUS_INCLUDE_PATH"))))
+                                        "/include/gstreamer-1.0")))
                (substitute* "Makefile"
                  (("include \\$\\(KALDI_ROOT\\)/src/kaldi.mk") "")
-                 (("\\$\\(error Cannot find") "#"))))
+                 (("\\$\\(error Cannot find") "#"))
+               #t))
            (add-before 'build 'build-depend
              (lambda* (#:key make-flags #:allow-other-keys)
                (apply invoke "make" "depend" make-flags)))
@@ -1296,7 +1298,7 @@ Python.")
              "-DgRPC_SSL_PROVIDER=package"
              "-DgRPC_PROTOBUF_PROVIDER=package")))
     (inputs
-     `(("c-ares" ,c-ares-next)
+     `(("c-ares" ,c-ares/cmake)
        ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
@@ -1608,6 +1610,9 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("protobuf:native" ,protobuf-next) ; protoc
        ("protobuf:src" ,(package-source protobuf-next))
        ("eigen:src" ,(package-source eigen-for-tensorflow))
+       ;; install_pip_packages.sh wants setuptools 39.1.0 specifically.
+       ("python-setuptools" ,python-setuptools-for-tensorflow)
+
        ;; The commit hashes and URLs for third-party source code are taken
        ;; from "tensorflow/workspace.bzl".
        ("boringssl-src"
@@ -1735,7 +1740,7 @@ INSTALL_RPATH " (assoc-ref outputs "out") "/lib)\n")))
        ("python-termcolo" ,python-termcolor)
        ("python-wheel" ,python-wheel)))
     (inputs
-     `(("c-ares" ,c-ares-next)
+     `(("c-ares" ,c-ares)
        ("eigen" ,eigen-for-tensorflow)
        ("gemmlowp" ,gemmlowp-for-tensorflow)
        ("lmdb" ,lmdb)
@@ -1854,6 +1859,7 @@ with image data, text data, and sequence data.")
      (origin
        (method url-fetch)
        (uri (pypi-uri "Keras" version))
+       (patches (search-patches "python-keras-integration-test.patch"))
        (sha256
         (base32
          "1j8bsqzh49vjdxy6l1k4iwax5vpjzniynyd041xjavdzvfii1dlh"))))
@@ -1918,3 +1924,130 @@ that:
 @item Runs seamlessly on CPU and GPU.
 @end itemize\n")
     (license license:expat)))
+
+(define-public sbcl-cl-libsvm-format
+  (let ((commit "3300f84fd8d9f5beafc114f543f9d83417c742fb")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-libsvm-format")
+      (version (git-version "0.1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-libsvm-format.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0284aj84xszhkhlivaigf9qj855fxad3mzmv3zfr0qzb5k0nzwrg"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)))
+      (synopsis "LibSVM data format reader for Common Lisp")
+      (description
+       "This Common Lisp library provides a fast reader for data in LibSVM
+format.")
+      (home-page "https://github.com/masatoi/cl-libsvm-format")
+      (license license:expat))))
+
+(define-public cl-libsvm-format
+  (sbcl-package->cl-source-package sbcl-cl-libsvm-format))
+
+(define-public ecl-cl-libsvm-format
+  (sbcl-package->ecl-package sbcl-cl-libsvm-format))
+
+(define-public sbcl-cl-online-learning
+  (let ((commit "fc7a34f4f161cd1c7dd747d2ed8f698947781423")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-online-learning")
+      (version (git-version "0.5" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-online-learning.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "14x95rlg80ay5hv645ki57pqvy12v28hz4k1w0f6bsfi2rmpxchq"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)))
+      (inputs
+       `(("cl-libsvm-format" ,sbcl-cl-libsvm-format)
+         ("cl-store" ,sbcl-cl-store)))
+      (arguments
+       `(;; FIXME: Tests pass but then the check phase crashes
+         #:tests? #f))
+      (synopsis "Online Machine Learning for Common Lisp")
+      (description
+       "This library contains a collection of machine learning algorithms for
+online linear classification written in Common Lisp.")
+      (home-page "https://github.com/masatoi/cl-online-learning")
+      (license license:expat))))
+
+(define-public cl-online-learning
+  (sbcl-package->cl-source-package sbcl-cl-online-learning))
+
+(define-public ecl-cl-online-learning
+  (sbcl-package->ecl-package sbcl-cl-online-learning))
+
+(define-public sbcl-cl-random-forest
+  (let ((commit "85fbdd4596d40e824f70f1b7cf239cf544e49d51")
+        (revision "0"))
+    (package
+      (name "sbcl-cl-random-forest")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/masatoi/cl-random-forest.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "097xv60i1ndz68sg9p4pc7c5gvyp9i1xgw966b4wwfq3x6hbz421"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("prove" ,sbcl-prove)
+         ("prove-asdf" ,sbcl-prove-asdf)
+         ("trivial-garbage" ,sbcl-trivial-garbage)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-libsvm-format" ,sbcl-cl-libsvm-format)
+         ("cl-online-learning" ,sbcl-cl-online-learning)
+         ("lparallel" ,sbcl-lparallel)))
+      (arguments
+       `(;; The tests download data from the Internet
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'add-sb-cltl2-dependency
+             (lambda _
+               ;; sb-cltl2 is required by lparallel when using sbcl, but it is
+               ;; not loaded automatically.
+               (substitute* "cl-random-forest.asd"
+                 (("\\(in-package :cl-user\\)")
+                  "(in-package :cl-user) #+sbcl (require :sb-cltl2)"))
+               #t)))))
+      (synopsis "Random Forest and Global Refinement for Common Lisp")
+      (description
+       "CL-random-forest is an implementation of Random Forest for multiclass
+classification and univariate regression written in Common Lisp.  It also
+includes an implementation of Global Refinement of Random Forest.")
+      (home-page "https://github.com/masatoi/cl-random-forest")
+      (license license:expat))))
+
+(define-public cl-random-forest
+  (sbcl-package->cl-source-package sbcl-cl-random-forest))
+
+(define-public ecl-cl-random-forest
+  (sbcl-package->ecl-package sbcl-cl-random-forest))

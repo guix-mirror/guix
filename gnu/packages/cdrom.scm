@@ -884,7 +884,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
 (define-public libmirage
   (package
     (name "libmirage")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -892,7 +892,7 @@ CD data, and more.  It's mostly compatible with @code{cdrtools}.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0gwrfia0fyhi0b3p2pfyyvrcfcb0qysfzgpdqsqjqbx4xaqx5wpi"))))
+                "08mfvqyk3833ksfd47i4j3ppmrw5ry219km6h7lywdh9hm9x14yf"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -913,7 +913,7 @@ the data stored in various image formats.")
 (define-public cdemu-daemon
   (package
     (name "cdemu-daemon")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -921,7 +921,7 @@ the data stored in various image formats.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0himyrhhfjsr4ff5aci7240bpm9x34h20pid412ci8fm16nk929b"))))
+                "022xzgwmncswb9md71w3ly3mjkdfc93lbij2llp2jamq8grxjjxr"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -942,7 +942,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
 (define-public cdemu-client
   (package
     (name "cdemu-client")
-    (version "3.2.1")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -950,7 +950,7 @@ drive and disc (including CD-ROMs and DVD-ROMs).")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "1d8m24qvv62xcwafw5zs4yf39vs64kxl4idqcngd8yyjhrb2ykg5"))))
+                "1bvc2m63fx03rbp3ihgl2n7k24lwg5ydwkmr84gsjfcxp46q10zq"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

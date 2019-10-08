@@ -39,6 +39,7 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:autoload   (guix describe) (package-provenance)
+  #:autoload   (guix store roots) (gc-roots)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
@@ -359,6 +360,8 @@ Install, remove, or upgrade packages in a single transaction.\n"))
                          switch to a generation matching PATTERN"))
   (display (G_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
+  (display (G_ "
+      --list-profiles    list the user's profiles"))
   (newline)
   (display (G_ "
       --allow-collisions do not treat collisions in the profile as an error"))
@@ -456,6 +459,11 @@ command-line option~%")
          (option '(#\l "list-generations") #f #t
                  (lambda (opt name arg result arg-handler)
                    (values (cons `(query list-generations ,arg)
+                                 result)
+                           #f)))
+         (option '("list-profiles") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query list-profiles #t)
                                  result)
                            #f)))
          (option '(#\d "delete-generations") #f #t
@@ -607,7 +615,11 @@ and upgrades."
                        (let-values (((package output)
                                      (specification->package+output spec)))
                          (package->manifest-entry* package output))))
-                  (_ #f))
+                  (('install . obj)
+                   (leave (G_ "cannot install non-package object: ~s~%")
+                          obj))
+                  (_
+                   #f))
                 opts))
 
   (fold manifest-transaction-install-entry
@@ -746,6 +758,19 @@ processed, #f otherwise."
                              (string<? name1 name2))))))
          #t))
 
+      (('list-profiles _)
+       (let ((profiles (delete-duplicates
+                        (filter-map (lambda (root)
+                                      (and (or (zero? (getuid))
+                                               (user-owned? root))
+                                           (generation-profile root)))
+                                    (gc-roots)))))
+         (leave-on-EPIPE
+          (for-each (lambda (profile)
+                      (display (user-friendly-profile profile))
+                      (newline))
+                    (sort profiles string<?)))))
+
       (('search _)
        (let* ((patterns (filter-map (match-lambda
                                       (('query 'search rx) rx)
@@ -760,7 +785,8 @@ processed, #f otherwise."
       (('show requested-name)
        (let-values (((name version)
                      (package-name->name+version requested-name)))
-         (match (find-packages-by-name name version)
+         (match (remove package-superseded
+                        (find-packages-by-name name version))
            (()
             (leave (G_ "~a~@[@~a~]: package not found~%") name version))
            (packages

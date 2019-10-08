@@ -77,9 +77,9 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
@@ -1110,9 +1110,6 @@ relying on a complex dependency tree.")
       (build-system cmake-build-system)
       (arguments
        `(#:parallel-build? #f))
-      (inputs
-       `(("gcc" ,gcc-5))) ; Compilation of bpp-phyl fails with GCC 4.9 so we
-                          ; compile all of the bpp packages with GCC 5.
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "C++ libraries for Bioinformatics")
       (description
@@ -1148,10 +1145,7 @@ providing them a set of re-usable tools.")
          #:out-of-source? #f))
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ;; GCC 4.8 fails due to an 'internal compiler error', so we use a more
-         ;; modern GCC.
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ phylogenetic Library")
       (description
@@ -1183,8 +1177,7 @@ library provides phylogenetics-related modules.")
          #:tests? #f)) ; There are no tests.
       (inputs
        `(("bpp-core" ,bpp-core)
-         ("bpp-seq" ,bpp-seq)
-         ("gcc" ,gcc-5)))
+         ("bpp-seq" ,bpp-seq)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ population genetics library")
       (description
@@ -1217,8 +1210,7 @@ library provides population genetics-related modules.")
          ;; so the tests fail.
          #:out-of-source? #f))
       (inputs
-       `(("bpp-core" ,bpp-core)
-         ("gcc" ,gcc-5))) ; Use GCC 5 as per 'bpp-core'.
+       `(("bpp-core" ,bpp-core)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bio++ sequence library")
       (description
@@ -1256,8 +1248,7 @@ library provides sequence-related modules.")
        `(("bpp-core" ,bpp-core)
          ("bpp-seq" ,bpp-seq)
          ("bpp-phyl" ,bpp-phyl)
-         ("bpp-phyl" ,bpp-popgen)
-         ("gcc" ,gcc-5)))
+         ("bpp-phyl" ,bpp-popgen)))
       (home-page "http://biopp.univ-montp2.fr")
       (synopsis "Bioinformatics tools written with the Bio++ libraries")
       (description
@@ -1767,8 +1758,8 @@ well as many of the command line options.")
          (add-after 'unpack 'keep-references-to-bwa
            (lambda* (#:key inputs #:allow-other-keys)
              (substitute* "bwameth.py"
-               (("bwa mem")
-                (string-append (which "bwa") " mem"))
+               (("bwa (mem|index)" _ command)
+                (string-append (which "bwa") " " command))
                ;; There's an ill-advised check for "samtools" on PATH.
                (("^checkX.*") ""))
              #t)))))
@@ -2353,16 +2344,16 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 (define-public libbigwig
   (package
     (name "libbigwig")
-    (version "0.4.2")
+    (version "0.4.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/dpryan79/libBigWig.git")
                     (commit version)))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0h2smg24v5srdcqzrmz2g23cmlp4va465mgx8r2z571sfz8pv454"))))
+                "09693dmf1scdac5pyq6qyn8b4mcipvnmc370k9a5z41z81m3dcsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -2749,7 +2740,7 @@ quantitative phenotypes.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "10.2.20181018")
+    (version "12.1.20190819")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect"
@@ -2757,7 +2748,7 @@ quantitative phenotypes.")
                                   "/edirect-" version ".tar.gz"))
               (sha256
                (base32
-                "091f4aigzpbqih6h82nq566gkp3y07i72yqndmqskfgar1vwgci7"))))
+                "1i9s9mppcfqd60pfywpm8vdyz5vpnyslw22nd7dv0bhykrdnkz9g"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases
@@ -3261,9 +3252,7 @@ comment or quality sections.")
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          (add-before 'build 'bin-mkdir
@@ -4848,7 +4837,7 @@ generated using the PacBio Iso-Seq protocol.")
 (define-public prank
   (package
     (name "prank")
-    (version "150803")
+    (version "170427")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4856,7 +4845,7 @@ generated using the PacBio Iso-Seq protocol.")
                     version ".tgz"))
               (sha256
                (base32
-                "0am4z94fs3w2n5xpfls9zda61vq7qqz4q2i7b9hlsxz5q4j3kfm4"))))
+                "0nc8g9c5rkdxcir46s0in9ci1sxwzbjibxrvkksf22ybnplvagk2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -7351,13 +7340,13 @@ checks on R packages that are to be submitted to the Bioconductor repository.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.22.0")
+    (version "0.22.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "1wkqmpy0d0fab9bjfc7i5wh2zng75pg9rn9c1z1lkki7fpwaw2jb"))))
+                "0cpxqb18wd3pjd7bi8lry13sm5ffqahcvvxpk5pwm5xcj30cdlm9"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
@@ -7378,13 +7367,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.18.1")
+    (version "2.18.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "1d64sh43pfc9vj2l7y7x6sb44l67wlnn3dzygp7ws0smn06mardq"))))
+                "05rw2b2bwns443n7d6lf97zdv1jbqdii2nprhs6x852w73m2a2g3"))))
     (properties
      `((upstream-name . "IRanges")))
     (build-system r-build-system)
@@ -7458,13 +7447,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-edger
   (package
     (name "r-edger")
-    (version "3.26.6")
+    (version "3.26.8")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "edgeR" version))
               (sha256
                (base32
-                "17vadhamjv4x0l4qqq2p2fi6j2bkllz5zd8dq761vgd5ic23zizm"))))
+                "1wwimzviy2vklp80faz7sbbp74qcw2csbmlfgvzj7b785vwarpwg"))))
     (properties `((upstream-name . "edgeR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -7580,13 +7569,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.36.0")
+    (version "1.36.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "1285fr8qjd7d0ixpv7d5imi0n6wzc4k6yia1rkmig71qd2gg556k"))))
+                "1yid84gn0052v52h84685lvk854grl1wl65psmlmxx9yyykgc0jn"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
@@ -7631,13 +7620,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.46.0")
+    (version "1.46.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "0lfq5668a6sq4kqhxx78hl3jcaqdsaaliiybl9xyya2scdk8c29c"))))
+                "13nanz4nzy0mcda8ljz2g8d81hpqfz6jky7ydz5hpk0g2264b9ga"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
@@ -7658,13 +7647,13 @@ annotation data packages using SQLite data storage.")
 (define-public r-biomart
   (package
     (name "r-biomart")
-    (version "2.40.3")
+    (version "2.40.5")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "biomaRt" version))
               (sha256
                (base32
-                "022m1r44s00c5k9bmv0lr22lcn662nhc91aazvv0yyysxjamyf60"))))
+                "1kjvxnkpsx3j2hji3cg3ka2gv8a9mg117lzzxyqjb7qa4zw7dipx"))))
     (properties
      `((upstream-name . "biomaRt")))
     (build-system r-build-system)
@@ -7742,13 +7731,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.0.0")
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "1nv5idyjk75mvl4np5sig0xa6qygm1ivj33k041ffyj19q8jf7ij"))))
+                "188k5g40lbli7dxr96hldyvg9r9hmlbh2fp0qs5nnd12b8zbf338"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -7883,13 +7872,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.44.2")
+    (version "1.44.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "03b4rfsbzjjf5kxcsjv7kq8hrsgcvz9rfzcn2v7fx3nr818pbb8s"))))
+                "0dnifr58j2si2qbnvap2wslz3xgjv3h4l7a6v7nmmc57hq6kdbym"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -8294,14 +8283,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.16.1")
+    (version "1.16.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "178zbrm221rwhbjk7j2v9g5ra44k0xg7c5abhd810m3g7snma8k8"))))
+         "07qaqj2hypmrg40m3pci082bzar6wi10dh77r4a8x74dfppcwdzf"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
@@ -8418,6 +8407,13 @@ library implementing most of the pipeline's features.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'find-RCAS
+           ;; The configure script can't find non-1.3.x versions of RCAS because
+           ;; its R expression ‘1.10.1 >= 1.3.4’ evaluates to false.
+           (lambda _
+             (substitute* "configure"
+               (("1\\.3\\.4") "0.0.0"))
+             #t))
          (add-after 'install 'wrap-executable
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -9176,14 +9172,14 @@ proteomics packages.")
 (define-public r-mzr
   (package
     (name "r-mzr")
-    (version "2.18.0")
+    (version "2.18.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "mzR" version))
        (sha256
         (base32
-         "0g5r6yk4gyz0xdwlmrcij4zv7apdgsgygr043095l33hard6nsl5"))
+         "1pr1pcrg3r3pccm5ag6l8ic6rpqbk9jnlb9mm7g4ak5jwrajbzjq"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -9204,7 +9200,8 @@ proteomics packages.")
 -lboost_iostreams -lboost_thread -lboost_filesystem -lboost_chrono\n")))
              #t)))))
     (inputs
-     `(;; XXX Boost 1.69 will not work here.
+     `(;; Our default boost package won't work here, unfortunately, even with
+       ;; mzR version 2.18.1.
        ("boost" ,boost-for-mysql) ; use this instead of the bundled boost sources
        ("zlib" ,zlib)))
     (propagated-inputs
@@ -9457,13 +9454,13 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
 (define-public r-seurat
   (package
     (name "r-seurat")
-    (version "3.0.2")
+    (version "3.1.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "Seurat" version))
               (sha256
                (base32
-                "016fgcmjz3sjfxdvam5hd7mdxpmpnc7f6p5zqlh97m21dgn5vpqn"))))
+                "084lr2fjdksshsmv1ww82bgn3a9mml7kswsidjrs89snabgvn360"))))
     (properties `((upstream-name . "Seurat")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9476,10 +9473,12 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-ggplot2" ,r-ggplot2)
        ("r-ggrepel" ,r-ggrepel)
        ("r-ggridges" ,r-ggridges)
+       ("r-httr" ,r-httr)
        ("r-ica" ,r-ica)
        ("r-igraph" ,r-igraph)
        ("r-irlba" ,r-irlba)
        ("r-kernsmooth" ,r-kernsmooth)
+       ("r-leiden" ,r-leiden)
        ("r-lmtest" ,r-lmtest)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
@@ -9490,6 +9489,7 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-rann" ,r-rann)
        ("r-rcolorbrewer" ,r-rcolorbrewer)
        ("r-rcpp" ,r-rcpp)
+       ("r-rcppannoy" ,r-rcppannoy)
        ("r-rcppeigen" ,r-rcppeigen)
        ("r-rcppprogress" ,r-rcppprogress)
        ("r-reticulate" ,r-reticulate)
@@ -9500,7 +9500,8 @@ and irregular enzymatic cleavages, mass measurement accuracy, etc.")
        ("r-scales" ,r-scales)
        ("r-sctransform" ,r-sctransform)
        ("r-sdmtools" ,r-sdmtools)
-       ("r-tsne" ,r-tsne)))
+       ("r-tsne" ,r-tsne)
+       ("r-uwot" ,r-uwot)))
     (home-page "http://www.satijalab.org/seurat")
     (synopsis "Seurat is an R toolkit for single cell genomics")
     (description
@@ -9636,14 +9637,14 @@ Shiny-based display methods for Bioconductor objects.")
 (define-public r-annotationhub
   (package
     (name "r-annotationhub")
-    (version "2.16.0")
+    (version "2.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "AnnotationHub" version))
        (sha256
         (base32
-         "1rpzl4x5mrwxrrf1jzm4zni6li6x34fjfyybsdvplb0ixa48zhn4"))))
+         "0c773cmhng907839f0bq161jky7362lxxny36ac55qxiz1giqi8j"))))
     (properties `((upstream-name . "AnnotationHub")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10031,14 +10032,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gprofiler
   (package
     (name "r-gprofiler")
-    (version "0.6.7")
+    (version "0.6.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gProfileR" version))
        (sha256
         (base32
-         "12nwidbnqmnfy5dnqga26byslvdnkrpz2fi19qfcby6xx0wbndk7"))))
+         "05d6y6b7vkkzp2qhs1cwlvp02djij1b28dbwxnrms08f8qi35iaj"))))
     (properties `((upstream-name . "gProfileR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10187,22 +10188,24 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.14.0")
+    (version "1.14.2")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0lraxhq9ny3468534klrl64nx0dpaf9cbd5bir6m5qma8j7kfnyd"))))
+         "0xx04cghx6ads1ackwnw3z0gf72qv461nznzmcnkgmp7w5n9m2af"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
-       ("r-erma" ,r-erma)
+       ("r-ensdb-hsapiens-v75" ,r-ensdb-hsapiens-v75)
+       ("r-ensembldb" ,r-ensembldb)
        ("r-genomeinfodb" ,r-genomeinfodb)
        ("r-genomicfiles" ,r-genomicfiles)
        ("r-go-db" ,r-go-db)
        ("r-homo-sapiens" ,r-homo-sapiens)
+       ("r-httr" ,r-httr)
        ("r-matrix" ,r-matrix)
        ("r-rsamtools" ,r-rsamtools)
        ("r-snpstats" ,r-snpstats)
@@ -10273,14 +10276,14 @@ family of feature/genome hypotheses.")
 (define-public r-gviz
   (package
     (name "r-gviz")
-    (version "1.28.0")
+    (version "1.28.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Gviz" version))
        (sha256
         (base32
-         "02alz27w8fnnm2ga71g3jg2b94f95ccv6r1fyszj4yb1k2g7rkxk"))))
+         "0347r1ly0vzpilflzbyzsjdf4cday294lw3fxzx61clblrmws1ki"))))
     (properties `((upstream-name . "Gviz")))
     (build-system r-build-system)
     (propagated-inputs
@@ -10454,14 +10457,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "1lpmyxlwwcy92hyxqag321ssc5z6yw3a0ws9r058jwgzyjg7i2gm"))
+         "0niz9dh66fcwbvqpkpsdlz9d06kwi3kfh45dhk3qz9g9qqyiakr1"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10650,14 +10653,14 @@ variable and significantly correlated genes.")
 (define-public r-delayedmatrixstats
   (package
     (name "r-delayedmatrixstats")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "DelayedMatrixStats" version))
        (sha256
         (base32
-         "0632ypndblrgzfk8k98rr8c6m2r0zwzf02pzvlrhcp9bj1pvqbrz"))))
+         "1riyzfsq4bd513hidkw3cfkx3jywk3x87j89q70v459xsdfdc95b"))))
     (properties
      `((upstream-name . "DelayedMatrixStats")))
     (build-system r-build-system)
@@ -11707,9 +11710,7 @@ bytes of memory space, where n is the length of the string.")
 
              ;; Ensure that Eigen headers can be found
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
-                                    ":"
-                                    (assoc-ref inputs "eigen")
+                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t)))))
     (inputs
@@ -11888,13 +11889,10 @@ The following file formats are supported:
                (("lib/libdivsufsort.a") "/lib/libdivsufsort.so"))
 
              ;; Ensure that all headers can be found
-             (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (getenv "CPLUS_INCLUDE_PATH")
+             (setenv "CPATH"
+                     (string-append (getenv "CPATH")
                                     ":"
                                     (assoc-ref inputs "eigen")
-                                    "/include/eigen3"))
-             (setenv "CPATH"
-                     (string-append (assoc-ref inputs "eigen")
                                     "/include/eigen3"))
              #t))
          ;; CMAKE_INSTALL_PREFIX does not exist when the tests are
@@ -13428,8 +13426,7 @@ bgzipped text file that contains a pair of genomic coordinates per line.")
          "0y5zyjksj1rdglj601xd2bbni5abhdh622y3ck76chyzxz9z4rx8"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (home-page "http://mattshirley.com")
     (synopsis "Random access to fasta subsequences")
     (description
@@ -14089,7 +14086,8 @@ choosing which reads pass the filter.")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "eigen")
-                                      "/include/eigen3"))
+                                      "/include/eigen3:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (delete 'configure)
            (replace 'install
@@ -14668,16 +14666,14 @@ proximity within a reference genome.")
          "08y3vz1vcx09whmbsn722lcs6jl9wyrh9i4p3k8j4cb1i32bij4a"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-pandas" ,python-pandas)
+     `(("python-pandas" ,python-pandas)
        ("python-future" ,python-future)
        ("python-scipy" ,python-scipy)
        ("python-matplotlib" ,python-matplotlib)
        ("python-regex" ,python-regex)
        ("python-pysam" ,python-pysam)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-cython" ,python-cython)))
+     `(("python-cython" ,python-cython)))
     (home-page "https://github.com/CGATOxford/UMI-tools")
     (synopsis "Tools for analyzing unique modular identifiers")
     (description "This package provides tools for dealing with @dfn{Unique
@@ -14868,6 +14864,24 @@ mutations from scRNA-Seq data.")
 some of the details of opening and jumping in tabix-indexed files.")
    (license license:expat)))
 
+(define tabixpp-freebayes
+  ;; This version works with FreeBayes while the released
+  ;; version doesn't. The released creates a variable with the name \"vcf\"
+  ;; somewhere, which is also the name of a namespace in vcflib.
+  (let ((commit "bbc63a49acc52212199f92e9e3b8fba0a593e3f7"))
+    (package
+      (inherit tabixpp)
+      (name "tabixpp-freebayes")
+      (version (git-version "0.0.0" "1" commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ekg/tabixpp/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "017qsmsc2kyiyzqr9nl8cc6pfldxf16dbn8flx5i59mbqr9ydi7g")))))))
+
 (define-public smithwaterman
   ;; TODO: Upgrading smithwaterman breaks FreeBayes.
   (let ((commit "203218b47d45ac56ef234716f1bd4c741b289be1"))
@@ -14995,3 +15009,254 @@ provides a FASTA reader and indexer that can be embedded into applications
 which would benefit from directly reading subsequences from FASTA files.  The
 library automatically handles index file generation and use.")
       (license (list license:expat license:gpl2)))))
+
+(define-public vcflib
+  (let ((commit "5ac091365fdc716cc47cc5410bb97ee5dc2a2c92")
+        (revision "1"))
+    (package
+      (name "vcflib")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/vcflib/vcflib/")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1gijvcz1lcdn5kvgzb671l6iby0379qk00nqmcrszgk67hfwx6kq"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("zlib" ,zlib)))
+      (native-inputs
+       `(("perl" ,perl)
+         ("python" ,python-2)
+         ;; Submodules.
+         ;; This package builds against the .o files so we need to extract the source.
+         ("tabixpp-src" ,(package-source tabixpp-freebayes))
+         ("smithwaterman-src" ,(package-source smithwaterman))
+         ("multichoose-src" ,(package-source multichoose))
+         ("fsom-src" ,(package-source fsom))
+         ("filevercmp-src" ,(package-source filevercmp))
+         ("fastahack-src" ,(package-source fastahack))
+         ("intervaltree-src"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ekg/intervaltree/")
+                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
+             (file-name "intervaltree-src-checkout")
+             (sha256
+              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))))
+      (arguments
+       `(#:tests? #f ; no tests
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (delete 'check)
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (if (file-is-directory? (assoc-ref inputs source))
+                                     (copy-recursively (assoc-ref inputs source) ".")
+                                     (invoke "tar" "xvf"
+                                             (assoc-ref inputs source)
+                                             "--strip-components=1"))))))
+                 (and
+                  (unpack "intervaltree-src" "intervaltree")
+                  (unpack "fastahack-src" "fastahack")
+                  (unpack "filevercmp-src" "filevercmp")
+                  (unpack "fsom-src" "fsom")
+                  (unpack "multichoose-src" "multichoose")
+                  (unpack "smithwaterman-src" "smithwaterman")
+                  (unpack "tabixpp-src" "tabixpp")))))
+           (replace 'build
+             (lambda* (#:key inputs make-flags #:allow-other-keys)
+               (with-directory-excursion "tabixpp"
+                 (invoke "make"))
+               (invoke "make" "CC=gcc"
+                       (string-append "CFLAGS=\"" "-Itabixpp " "\"")
+                       "all")))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                     (lib (string-append (assoc-ref outputs "out") "/lib")))
+                 (for-each (lambda (file)
+                             (install-file file bin))
+                           (find-files "bin" ".*"))
+                 ;; The header files in src/ do not interface libvcflib,
+                 ;; therefore they are left out.
+                 (install-file "libvcflib.a" lib))
+               #t)))))
+      (home-page "https://github.com/vcflib/vcflib/")
+      (synopsis "Library for parsing and manipulating VCF files")
+      (description "Vcflib provides methods to manipulate and interpret
+sequence variation as it can be described by VCF.  It is both an API for parsing
+and operating on records of genomic variation as it can be described by the VCF
+format, and a collection of command-line utilities for executing complex
+manipulations on VCF files.")
+      (license license:expat))))
+
+(define-public freebayes
+  (let ((commit "3ce827d8ebf89bb3bdc097ee0fe7f46f9f30d5fb")
+        (revision "1")
+        (version "1.0.2"))
+    (package
+      (name "freebayes")
+      (version (git-version version revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/ekg/freebayes.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32 "1sbzwmcbn78ybymjnhwk7qc5r912azy5vqz2y7y81616yc3ba2a2"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("bamtools" ,bamtools)
+         ("htslib" ,htslib)
+         ("zlib" ,zlib)))
+      (native-inputs
+       `(("bc" ,bc)                     ; Needed for running tests.
+         ("samtools" ,samtools)         ; Needed for running tests.
+         ("parallel" ,parallel)         ; Needed for running tests.
+         ("perl" ,perl)                 ; Needed for running tests.
+         ("procps" ,procps)             ; Needed for running tests.
+         ("python" ,python-2)           ; Needed for running tests.
+         ("vcflib-src" ,(package-source vcflib))
+         ;; These are submodules for the vcflib version used in freebayes.
+         ;; This package builds against the .o files so we need to extract the source.
+         ("tabixpp-src" ,(package-source tabixpp-freebayes))
+         ("smithwaterman-src" ,(package-source smithwaterman))
+         ("multichoose-src" ,(package-source multichoose))
+         ("fsom-src" ,(package-source fsom))
+         ("filevercmp-src" ,(package-source filevercmp))
+         ("fastahack-src" ,(package-source fastahack))
+         ("intervaltree-src"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ekg/intervaltree/")
+                   (commit "dbb4c513d1ad3baac516fc1484c995daf9b42838")))
+             (file-name "intervaltree-src-checkout")
+             (sha256
+              (base32 "1fy5qbj4bg8d2bjysvaa9wfnqn2rj2sk5yra2h4l5pzvy53f23fj"))))
+         ;; These submodules are needed to run the tests.
+         ("bash-tap-src" ,(package-source bash-tap))
+         ("test-simple-bash-src"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ingydotnet/test-simple-bash/")
+                   (commit "124673ff204b01c8e96b7fc9f9b32ee35d898acc")))
+             (file-name "test-simple-bash-src-checkout")
+             (sha256
+              (base32 "043plp6z0x9yf7mdpky1fw7zcpwn1p47px95w9mh16603zqqqpga"))))))
+      (arguments
+       `(#:make-flags
+         (list "CC=gcc"
+               (string-append "BAMTOOLS_ROOT="
+                              (assoc-ref %build-inputs "bamtools")))
+         #:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'fix-tests
+             (lambda _
+               (substitute* "test/t/01_call_variants.t"
+                 (("grep -P \"\\(\\\\t500\\$\\|\\\\t11000\\$\\|\\\\t1000\\$\\)\"")
+                  "grep -E '	(500|11000|1000)$'"))
+               #t))
+           (add-after 'unpack 'unpack-submodule-sources
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unpack (lambda (source target)
+                               (with-directory-excursion target
+                                 (if (file-is-directory? (assoc-ref inputs source))
+                                     (copy-recursively (assoc-ref inputs source) ".")
+                                     (invoke "tar" "xvf"
+                                             (assoc-ref inputs source)
+                                             "--strip-components=1"))))))
+                 (and
+                  (unpack "vcflib-src" "vcflib")
+                  (unpack "fastahack-src" "vcflib/fastahack")
+                  (unpack "filevercmp-src" "vcflib/filevercmp")
+                  (unpack "fsom-src" "vcflib/fsom")
+                  (unpack "intervaltree-src" "vcflib/intervaltree")
+                  (unpack "multichoose-src" "vcflib/multichoose")
+                  (unpack "smithwaterman-src" "vcflib/smithwaterman")
+                  (unpack "tabixpp-src" "vcflib/tabixpp")
+                  (unpack "test-simple-bash-src" "test/test-simple-bash")
+                  (unpack "bash-tap-src" "test/bash-tap")))))
+           (add-after 'unpack-submodule-sources 'fix-makefiles
+             (lambda _
+               ;; We don't have the .git folder to get the version tag from.
+               (substitute* "vcflib/Makefile"
+                 (("^GIT_VERSION.*")
+                  (string-append "GIT_VERSION = v" ,version)))
+               (substitute* "src/Makefile"
+                 (("-I\\$\\(BAMTOOLS_ROOT\\)/src")
+                  "-I$(BAMTOOLS_ROOT)/include/bamtools"))
+               #t))
+           (add-before 'build 'build-tabixpp-and-vcflib
+             (lambda* (#:key inputs make-flags #:allow-other-keys)
+               (with-directory-excursion "vcflib"
+                 (with-directory-excursion "tabixpp"
+                   (apply invoke "make"
+                          (string-append "HTS_LIB="
+                                         (assoc-ref inputs "htslib")
+                                         "/lib/libhts.a")
+                          make-flags))
+                 (apply invoke "make"
+                        (string-append "CFLAGS=-Itabixpp")
+                        "all"
+                        make-flags))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "bin/freebayes" bin)
+                 (install-file "bin/bamleftalign" bin))
+               #t)))))
+      (home-page "https://github.com/ekg/freebayes")
+      (synopsis "Haplotype-based variant detector")
+      (description "FreeBayes is a Bayesian genetic variant detector designed to
+find small polymorphisms, specifically SNPs (single-nucleotide polymorphisms),
+indels (insertions and deletions), MNPs (multi-nucleotide polymorphisms), and
+complex events (composite insertion and substitution events) smaller than the
+length of a short-read sequencing alignment.")
+      (license license:expat))))
+
+(define-public samblaster
+  (package
+    (name "samblaster")
+    (version "0.1.24")
+    (source (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/GregoryFaust/samblaster.git")
+            (commit (string-append "v." version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0iv2ddfw8363vb2x8gr3p8g88whb6mb9m0pf71i2cqsbv6jghap7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are none
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "samblaster"
+                           (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (home-page "https://github.com/GregoryFaust/samblaster")
+    (synopsis "Mark duplicates in paired-end SAM files")
+    (description "Samblaster is a fast and flexible program for marking
+duplicates in read-id grouped paired-end SAM files.  It can also optionally
+output discordant read pairs and/or split read mappings to separate SAM files,
+and/or unmapped/clipped reads to a separate FASTQ file. When marking
+duplicates, samblaster will require approximately 20MB of memory per 1M read
+pairs.")
+    (license license:expat)))

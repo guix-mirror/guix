@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -351,7 +352,7 @@ object."
 
   (match (package-location package)
     (($ <location> file line column)
-     (catch 'system
+     (catch 'system-error
        (lambda ()
          ;; In general we want to keep relative file names for modules.
          (with-fluids ((%file-port-name-canonicalization 'relative))
@@ -505,11 +506,17 @@ specifies modules in scope when evaluating SNIPPET."
     (and=> (file-extension file-name)
            (cut string-every char-set:hex-digit <>)))
 
+  (define (checkout? directory)
+    ;; Return true if DIRECTORY is a checkout (git, svn, etc).
+    (string-suffix? "-checkout" directory))
+
   (define (tarxz-name file-name)
     ;; Return a '.tar.xz' file name based on FILE-NAME.
-    (let ((base (if (numeric-extension? file-name)
-                    original-file-name
-                    (file-sans-extension file-name))))
+    (let ((base (cond ((numeric-extension? file-name)
+                       original-file-name)
+                      ((checkout? file-name)
+                       (string-drop-right file-name 9))
+                      (else (file-sans-extension file-name)))))
       (string-append base
                      (if (equal? (file-extension base) "tar")
                          ".xz"
@@ -642,13 +649,11 @@ specifies modules in scope when evaluating SNIPPET."
 
     (let ((name (tarxz-name original-file-name)))
       (gexp->derivation name build
-                        ;; TODO: Remove this on the next rebuild cycle.
-                        #:pre-load-modules? #f
-
                         #:graft? #f
                         #:system system
-                        #:deprecation-warnings #t ;to avoid a rebuild
-                        #:guile-for-build guile-for-build))))
+                        #:guile-for-build guile-for-build
+                        #:properties `((type . origin)
+                                       (patches . ,(length patches)))))))
 
 (define (transitive-inputs inputs)
   "Return the closure of INPUTS when considering the 'propagated-inputs'
@@ -762,23 +767,29 @@ in INPUTS and their transitive propagated inputs."
        (transitive-inputs inputs)))
 
 (define package-transitive-supported-systems
-  (mlambdaq (package)
-    "Return the intersection of the systems supported by PACKAGE and those
+  (let ()
+    (define supported-systems
+      (mlambda (package system)
+        (parameterize ((%current-system system))
+          (fold (lambda (input systems)
+                  (match input
+                    ((label (? package? package) . _)
+                     (lset-intersection string=? systems
+                                        (supported-systems package system)))
+                    (_
+                     systems)))
+                (package-supported-systems package)
+                (bag-direct-inputs (package->bag package))))))
+
+    (lambda* (package #:optional (system (%current-system)))
+      "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-    (fold (lambda (input systems)
-            (match input
-              ((label (? package? p) . _)
-               (lset-intersection
-                string=? systems (package-transitive-supported-systems p)))
-              (_
-               systems)))
-          (package-supported-systems package)
-          (bag-direct-inputs (package->bag package)))))
+      (supported-systems package system))))
 
 (define* (supported-package? package #:optional (system (%current-system)))
   "Return true if PACKAGE is supported on SYSTEM--i.e., if PACKAGE and all its
 dependencies are known to build on SYSTEM."
-  (member system (package-transitive-supported-systems package)))
+  (member system (package-transitive-supported-systems package system)))
 
 (define (bag-direct-inputs bag)
   "Same as 'package-direct-inputs', but applied to a bag."
@@ -796,7 +807,8 @@ dependencies are known to build on SYSTEM."
 
 (define (bag-transitive-host-inputs bag)
   "Same as 'package-transitive-target-inputs', but applied to a bag."
-  (transitive-inputs (bag-host-inputs bag)))
+  (parameterize ((%current-target-system (bag-target bag)))
+    (transitive-inputs (bag-host-inputs bag))))
 
 (define (bag-transitive-target-inputs bag)
   "Return the \"target inputs\" of BAG, recursively."

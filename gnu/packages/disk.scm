@@ -402,7 +402,7 @@ systems.  Output format is completely customizable.")
 (define-public f3
   (package
     (name "f3")
-    (version "7.1")
+    (version "7.2")
     (source
      (origin
       (method git-fetch)
@@ -411,8 +411,7 @@ systems.  Output format is completely customizable.")
             (commit (string-append "v" version))))
       (file-name (git-file-name name version))
       (sha256
-       (base32
-        "0zglsmz683jg7f9wc6vmgljyg9w87pbnjw5x4w6x02w8233zvjqf"))))
+       (base32 "1iwdg0r4wkgc8rynmw1qcqz62l0ldgc8lrazq33msxnk5a818jgy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -760,7 +759,7 @@ LVM D-Bus API).")
 (define-public rmlint
   (package
     (name "rmlint")
-    (version "2.8.0")
+    (version "2.9.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -769,7 +768,7 @@ LVM D-Bus API).")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1gc7gbnh0qg1kl151cv1ld87vhpm1v3pnkn7prhscdcc21jrg8nz"))))
+                "1b5cziam14h80xrfb285fmfrzz2rligxcpsq1xsig14xf4l2875i"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2

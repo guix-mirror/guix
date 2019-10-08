@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "3.0.5")
+    (version "3.4.1")
     (source
      (origin
       (method url-fetch)
@@ -38,8 +39,17 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0f7kjygrckkx8vas2nm673592jif0a9mw5g8207f6hj6h4pfyp07"))))
+        "03c2pmq3bs0drdislnz6gm1rwz3n4pb2rz9navyxydppxg2rl597"))))
     (build-system gnu-build-system)
+    (arguments
+     '(;; Building in parallel on many-core systems may cause an error such as
+       ;; "mv: cannot stat 'examples/c/reccalc/scan.stamp.tmp': No such file or
+       ;; directory".  See <https://bugs.gnu.org/36238>.
+       #:parallel-build? #f
+       ;; Similarly, when building tests in parallel, Make may produce this error:
+       ;; "./examples/c/reccalc/scan.l:13:10: fatal error: parse.h: No such file
+       ;; or directory".  Full log in <https://bugs.gnu.org/36238>.
+       #:parallel-tests? #f))
     (native-inputs `(("perl" ,perl)
                      ;; m4 is not present in PATH when cross-building.
                      ("m4" ,m4)))
@@ -53,3 +63,16 @@ deterministic or generalized LR parser from an annotated, context-free
 grammar.  It is versatile enough to have many applications, from parsers for
 simple tools through complex programming languages.")
     (license gpl3+)))
+
+(define-public bison-3.0
+  (package
+    (inherit bison)
+    (version "3.0.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/bison/bison-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "0f7kjygrckkx8vas2nm673592jif0a9mw5g8207f6hj6h4pfyp07"))))))

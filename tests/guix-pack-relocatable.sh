@@ -78,3 +78,9 @@ else
     "$test_directory/Bin/sed" --version > "$test_directory/output"
 fi
 grep 'GNU sed' "$test_directory/output"
+chmod -Rf +w "$test_directory"; rm -rf "$test_directory"/*
+
+# Ensure '-R' works with outputs other than "out".
+tarball="`guix pack -R -S /share=share groff:doc`"
+(cd "$test_directory"; tar xvf "$tarball")
+test -d "$test_directory/share/doc/groff/html"

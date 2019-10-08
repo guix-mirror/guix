@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2016, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,8 +31,10 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:autoload   (ice-9 pretty-print) (pretty-print)
   #:export (dot-ko
             ensure-dot-ko
+            module-formal-name
             module-aliases
             module-dependencies
             module-soft-dependencies
@@ -42,13 +45,18 @@
             modules-loaded
             module-loaded?
             load-linux-module*
+            load-linux-modules-from-directory
 
             current-module-debugging-port
 
             device-module-aliases
             known-module-aliases
             matching-modules
-            missing-modules))
+            missing-modules
+
+            write-module-name-database
+            write-module-alias-database
+            write-module-device-database))
 
 ;;; Commentary:
 ;;;
@@ -94,6 +102,14 @@ key/value pairs.."
 
 (define %not-comma
   (char-set-complement (char-set #\,)))
+
+(define (module-formal-name file)
+  "Return the module name of FILE as it appears in its info section.  Usually
+the module name is the same as the base name of FILE, modulo hyphens and minus
+the \".ko\" extension."
+  (match (assq 'name (modinfo-section-contents file))
+    (('name . name) name)
+    (#f #f)))
 
 (define (module-dependencies file)
   "Return the list of modules that FILE depends on.  The returned list
@@ -310,6 +326,18 @@ appears in BLACK-LIST are not loaded."
              (or (and recursive? (= EEXIST (system-error-errno args)))
                  (apply throw args)))))))
 
+(define (load-linux-modules-from-directory modules directory)
+  "Load MODULES and their dependencies from DIRECTORY, a directory containing
+the '.ko' files.  The '.ko' suffix is automatically added to MODULES if
+needed."
+  (define module-name->file-name
+    (module-name-lookup directory))
+
+  (for-each (lambda (module)
+              (load-linux-module* (module-name->file-name module)
+                                  #:lookup-module module-name->file-name))
+            modules))
+
 
 ;;;
 ;;; Device modules.
@@ -485,5 +513,122 @@ are required to access DEVICE."
              (provided (map file-name->module-name modules-provided)))
         (remove (cut member <> provided) modules))
       '()))
+
+
+;;;
+;;; Module databases.
+;;;
+
+(define (module-name->file-name/guess directory name)
+  "Guess the file name corresponding to NAME, a module name.  That doesn't
+always work because sometimes underscores in NAME map to hyphens (e.g.,
+\"input-leds.ko\"), sometimes not (e.g., \"mac_hid.ko\")."
+  (string-append directory "/" (ensure-dot-ko name)))
+
+(define (module-name-lookup directory)
+  "Return a one argument procedure that takes a module name (e.g.,
+\"input_leds\") and returns its absolute file name (e.g.,
+\"/.../input-leds.ko\")."
+  (catch 'system-error
+    (lambda ()
+      (define mapping
+        (call-with-input-file (string-append directory "/modules.name")
+          read))
+
+      (lambda (name)
+        (or (assoc-ref mapping name)
+            (module-name->file-name/guess directory name))))
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          (cut module-name->file-name/guess directory <>)
+          (apply throw args)))))
+
+(define (write-module-name-database directory)
+  "Write a database that maps \"module names\" as they appear in the relevant
+ELF section of '.ko' files, to actual file names.  This format is
+Guix-specific.  It aims to deal with inconsistent naming, in particular
+hyphens vs. underscores."
+  (define mapping
+    (map (lambda (file)
+           (match (module-formal-name file)
+             (#f   (cons (basename file ".ko") file))
+             (name (cons name file))))
+         (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.name")
+    (lambda (port)
+      (display ";; Module name to file name mapping.
+;;
+;; This format is Guix-specific; it is not supported by upstream Linux tools.
+\n"
+               port)
+      (pretty-print mapping port))))
+
+(define (write-module-alias-database directory)
+  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+'modules.alias' file."
+  (define aliases
+    (map (lambda (file)
+           (cons (file-name->module-name file) (module-aliases file)))
+         (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.alias")
+    (lambda (port)
+      (display "# Aliases extracted from modules themselves.\n" port)
+      (for-each (match-lambda
+                  ((module . aliases)
+                   (for-each (lambda (alias)
+                               (format port "alias ~a ~a\n" alias module))
+                             aliases)))
+                aliases))))
+
+(define (aliases->device-tuple aliases)
+  "Traverse ALIASES, a list of module aliases, and search for
+\"char-major-M-N\", \"block-major-M-N\", or \"devname:\" aliases.  When they
+are found, return a tuple (DEVNAME TYPE MAJOR MINOR), otherwise return #f."
+  (define (char/block-major? alias)
+    (or (string-prefix? "char-major-" alias)
+        (string-prefix? "block-major-" alias)))
+
+  (define (char/block-major->tuple alias)
+    (match (string-tokenize alias %not-dash)
+      ((type "major" (= string->number major) (= string->number minor))
+       (list (match type
+               ("char" "c")
+               ("block" "b"))
+             major minor))))
+
+  (let* ((devname     (any (lambda (alias)
+                             (and (string-prefix? "devname:" alias)
+                                  (string-drop alias 8)))
+                           aliases))
+         (major/minor (match (find char/block-major? aliases)
+                        (#f #f)
+                        (str (char/block-major->tuple str)))))
+    (and devname major/minor
+         (cons devname major/minor))))
+
+(define %not-dash
+  (char-set-complement (char-set #\-)))
+
+(define (write-module-device-database directory)
+  "Traverse the '.ko' files in DIRECTORY and create the corresponding
+'modules.devname' file.  This file contains information about modules that can
+be loaded on-demand, such as file system modules."
+  (define aliases
+    (filter-map (lambda (file)
+                  (match (aliases->device-tuple (module-aliases file))
+                    (#f #f)
+                    (tuple (cons (file-name->module-name file) tuple))))
+                (find-files directory "\\.ko$")))
+
+  (call-with-output-file (string-append directory "/modules.devname")
+    (lambda (port)
+      (display "# Device nodes to trigger on-demand module loading.\n" port)
+      (for-each (match-lambda
+                  ((module devname type major minor)
+                   (format port "~a ~a ~a~a:~a~%"
+                           module devname type major minor)))
+                aliases))))
 
 ;;; linux-modules.scm ends here

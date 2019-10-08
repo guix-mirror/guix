@@ -2,13 +2,13 @@
 ;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Corentin Bocquillon <corentin@nybble.fr>
 ;;; Copyright © 2017 Gregor Giesen <giesen@zaehlwerk.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -42,6 +42,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -101,7 +102,7 @@ such as compact binary encodings, XML, or JSON.")
 (define-public msgpack
   (package
     (name "msgpack")
-    (version "1.4.2")
+    (version "3.2.0")
     (source
      (origin
        (method url-fetch)
@@ -117,13 +118,10 @@ such as compact binary encodings, XML, or JSON.")
            #t))
        (sha256
         (base32
-         "18hzmyfg3mvnp7ab03nqdzzvqagkl42gygjpi4zv4i7aca2dmwf0"))))
-    (build-system gnu-build-system)
+         "1zhsap7d9zqdm9h1qnpaw78v1sh3rx2if7gk4dszs5m3cg1jiapv"))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("googletest" ,googletest)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("zlib" ,zlib))) ;; Msgpack installs two headers (zbuffer.h,
@@ -140,14 +138,15 @@ serialization.")
   (package
     (name "libmpack")
     (version "1.0.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/tarruda/libmpack/"
-                                  "archive/" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ml922gv8y99lbldqb9ykpjndla0hlprdjyl79yskkhwv2ai7sac"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/tarruda/libmpack.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0rai5djdkjz7bsn025k5489in7r1amagw1pib0z4qns6b52kiar2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -168,14 +167,16 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public lua-libmpack
   (package (inherit libmpack)
     (name "lua-libmpack")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/libmpack/libmpack-lua/"
-                                  "archive/" (package-version libmpack) ".tar.gz"))
-              (file-name (string-append name "-" (package-version libmpack) ".tar.gz"))
-              (sha256
-               (base32
-                "153zrrbyxhf71dgzjjhrk56rfwk3nisslpgcqyg44v8fnz1xpk6i"))))
+    (version "1.0.8")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/libmpack/libmpack-lua.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1ijvzgq5hvib03w5rghv31wi7byamwg7qdx5pawvhvnflaii8ivw"))))
     (build-system gnu-build-system)
     (arguments
      `(;; FIXME: tests require "busted", which is not yet available in Guix.
@@ -204,10 +205,9 @@ that implements both the msgpack and msgpack-rpc specifications.")
              ;; prerequisites are added to the inputs of the gcc invocation.
              (substitute* "Makefile"
                (("\\$\\(MPACK\\): mpack-src") "$(MPACK): "))
-             (mkdir-p "mpack-src")
-             (zero? (system* "tar" "-C" "mpack-src"
-                             "--strip-components=1"
-                             "-xvf" (assoc-ref inputs "libmpack"))))))))
+             (copy-recursively (assoc-ref inputs "libmpack")
+                               "mpack-src")
+             #t)))))
     (inputs
      `(("lua" ,lua)))
     (native-inputs
@@ -394,17 +394,29 @@ it is comparable to protobuf.")
 (define-public nlohmann-json-cpp
   (package
     (name "nlohmann-json-cpp")
-    (version "2.1.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/nlohmann/json/"
-                          "archive/v" version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256
-       (base32
-        "0lrh6cjd643c7kmvmwafbgq7dqj3b778483gjhjbvp6rc6z5xf2r"))))
+    (version "3.7.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/nlohmann/json.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0v7xih4zjixxxfvkfbs7a8j9qcvpwlsv4vrkbyns3hc7b44nb8ap"))))
     (build-system cmake-build-system)
+    (native-inputs
+     ;; Integer overflow tests like those from
+     ;; <https://github.com/nlohmann/json/issues/1447> fail when building with
+     ;; gcc@5.  Thus, build with a newer GCC.
+     `(("gcc" ,gcc-9)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'build 'unset-path-variables
+                    (lambda _
+                      (unsetenv "C_INCLUDE_PATH")
+                      (unsetenv "CPLUS_INCLUDE_PATH")
+                      #t)))))
     (home-page "https://nlohmann.github.io/json/")
     (synopsis "JSON library for C++")
     (description

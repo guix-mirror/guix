@@ -438,7 +438,7 @@
                            addresses-and-ports
                            contents)
                         `(,(string-append
-                            "<VirtualHost " addresses-and-ports ">\n")
+                            "\n<VirtualHost " addresses-and-ports ">\n")
                           ,@contents
                           "\n</VirtualHost>\n"))
                        ((? string? x)
@@ -682,7 +682,8 @@ of index files."
        (system* (string-append #$nginx "/sbin/nginx")
                 "-c" #$(or file
                            (default-nginx-config config))
-                  "-t"))))
+                "-p" #$run-directory
+                "-t"))))
 
 (define (nginx-shepherd-service config)
   (match-record config

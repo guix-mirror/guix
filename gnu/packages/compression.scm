@@ -22,7 +22,7 @@
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
-;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -48,6 +48,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
@@ -209,14 +210,14 @@ adding and extracting files to/from a tar archive.")
 (define-public gzip
   (package
    (name "gzip")
-   (version "1.9")
+   (version "1.10")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "16h8g4acy7fgfxcjacr3wijjsnixwsfd2jhz3zwdi2qrzi262l5f"))))
+              "1h6p374d3j8d4cdfydzls021xa2yby8myc0h8d6m8bc7k6ncq9c4"))))
    (build-system gnu-build-system)
    (synopsis "General file (de)compression (using lzw)")
    (arguments
@@ -432,6 +433,23 @@ compressed with pbzip2 can be decompressed with bzip2).")
              (base32
               "0ibi2zsfaz6l756spjwc5rayf4ckgc9hwmy8qinppcyk4svz64mm"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'install 'move-static-lib
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out    (assoc-ref outputs "out"))
+                  (static (assoc-ref outputs "static")))
+              (mkdir-p (string-append static "/lib"))
+              (rename-file (string-append out "/lib/liblzma.a")
+                           (string-append static "/lib/liblzma.a"))
+              ;; Remove reference to the static library from the .la file
+              ;; so Libtool does the right thing when both the shared and
+              ;; static library is available.
+              (substitute* (string-append out "/lib/liblzma.la")
+                (("^old_library='liblzma.a'") "old_library=''"))
+              #t))))))
+   (outputs '("out" "static"))
    (synopsis "General-purpose data compression")
    (description
     "XZ Utils is free general-purpose data compression software with high
@@ -531,14 +549,14 @@ some compression ratio).")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.20")
+    (version "1.21")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0319q59kb8g324wnj7xzbr7vvlx5bcs13lr34j0zb3kqlyjq2fy9"))))
+               "12qdcw5k1cx77brv9yxi1h4dzwibhfmdpigrj43nfk8nscwm12z4"))))
     (build-system gnu-build-system)
     (home-page "https://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
@@ -717,7 +735,7 @@ decompression of some loosely related file formats used by Microsoft.")
 (define-public lz4
   (package
     (name "lz4")
-    (version "1.8.1.2")
+    (version "1.9.1")
     (source
      (origin
        (method git-fetch)
@@ -725,16 +743,23 @@ decompression of some loosely related file formats used by Microsoft.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "1jggv4lvfav53advnj0pwqgxzn868lrj8dc9zp73iwvqlj82mhmx"))
+         "1l1caxrik1hqs40vj3bpv1pikw6b74cfazv5c0v6g48zpcbmshl0"))
        (file-name (git-file-name name version))))
     (build-system gnu-build-system)
-    (native-inputs `(("valgrind" ,valgrind)))   ; for tests
+    (native-inputs `(("valgrind" ,valgrind)))    ;for tests
     (arguments
      `(#:test-target "test"
        #:make-flags (list "CC=gcc"
                           (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))        ; no configure script
+                  (delete 'configure)            ;no configure script
+                  (add-before 'check 'disable-broken-test
+                    (lambda _
+                      ;; XXX: test_install.sh fails when prefix is a subdirectory.
+                      (substitute* "tests/Makefile"
+                        (("^test: (.*) test-install" _ targets)
+                         (string-append "test: " targets)))
+                      #t)))))
     (home-page "https://www.lz4.org")
     (synopsis "Compression algorithm focused on speed")
     (description "LZ4 is a lossless compression algorithm, providing
@@ -1577,14 +1602,27 @@ recreates the stored directory structure by default.")
     (name "zziplib")
     (version "0.13.69")
     (home-page "https://github.com/gdraheim/zziplib")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append home-page "/archive/v" version ".tar.gz"))
-       (sha256
-        (base32
-         "0i052a7shww0fzsxrdp3rd7g4mbzx7324a8ysbc0br7frpblcql4"))))
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0fbk9k7ryas2wh2ykwkvm1pbi40i88rfvc3dydh9xyd7w2jcki92"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'make-files-writable
+                    (lambda _
+                      (for-each make-file-writable
+                                (find-files "test" #:directories? #t))
+                      #t)))
+
+       ;; XXX: The default test target attempts to download external resources and
+       ;; fails without error: <https://github.com/gdraheim/zziplib/issues/53>.
+       ;; To prevent confusing log messages, just run a simple zip test that works.
+       #:test-target "check-readme"))
     (inputs
      `(("zlib" ,zlib)))
     (native-inputs `(("perl" ,perl)     ; for the documentation
@@ -1784,7 +1822,18 @@ single-member files which can't be decompressed in parallel.")
      (file-name (string-append name "-" version ".tar.gz"))))
    (build-system cmake-build-system)
    (arguments
-    `(#:tests? #f)) ;; No tests available.
+    `(#:tests? #f
+      #:phases (modify-phases %standard-phases
+                 (add-before 'configure 'glibc-is-already-a-system-library
+                   (lambda _
+                     ;; Prevent the build system from passing the glibc
+                     ;; header files to GCC as "system headers", because
+                     ;; it conflicts with the system headers already known
+                     ;; to GCC, causing #include_next failures.
+                     (substitute* "CMakeLists.txt"
+                       (("include_directories\\(SYSTEM \\$\\{iconv")
+                        "include_directories(${iconv"))
+                     #t)))))
    (inputs `(("boost" ,boost)
              ("libiconv" ,libiconv)
              ("xz" ,xz)))
@@ -1954,3 +2003,96 @@ reading from and writing to ZIP archives. ")
     ;; Project is distributed under LGPL, but "quazip/z*" "quazip/unzip.*" are
     ;; distributed under zlib terms.
     (license (list license:lgpl2.1+ license:zlib))))
+
+(define-public zutils
+  (package
+    (name "zutils")
+    ;; Check and remove the lint-hidden-cve property when updating.
+    (version "1.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/zutils/zutils-" version ".tar.lz"))
+       (sha256
+        (base32 "0dx35mv78fgqgz6sszs05ng8ipz2xy09ry9vpmka2rmy08b7x907"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+          (lambda* (#:key make-flags outputs #:allow-other-keys)
+            (apply invoke "make" "install"
+                   (string-append "sysconfdir=" (assoc-ref outputs "out")
+                                  "/etc")
+                   make-flags))))))
+    (native-inputs
+     ;; Needed to extract the source tarball and run the test suite.
+     `(("lzip" ,lzip)))
+    (properties `((lint-hidden-cve . ("CVE-2018-1000637"))))
+    (home-page "https://www.nongnu.org/zutils/zutils.html")
+    (synopsis "Utilities that transparently operate on compressed files")
+    (description
+     "Zutils is a collection of utilities able to process any combination of
+compressed and uncompressed files transparently.  If any given file, including
+standard input, is compressed, its decompressed content is used instead.
+
+@command{zcat}, @command{zcmp}, @command{zdiff}, and @command{zgrep} are
+improved replacements for the shell scripts provided by GNU gzip.
+@command{ztest} tests the integrity of supported compressed files.
+@command{zupdate} recompresses files with lzip, similar to gzip's
+@command{znew}.
+
+Supported compression formats are bzip2, gzip, lzip, and xz.  Zutils uses
+external compressors: the compressor to be used for each format is configurable
+at run time, and must be installed separately.")
+    (license (list license:bsd-2        ; arg_parser.{cc,h}
+                   license:gpl2+))))    ; the rest
+
+(define-public makeself-safeextract
+  (let ((commit "1a95e121fa8e3c02d307ae37b9b7834e616c3683"))
+    (package
+      (name "makeself-safeextract")
+      (version (git-version "0.0.0" "1" commit))
+      (home-page "https://github.com/ssokolow/makeself_safeextract")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1anlinaj9lvfi8bn00wp11vzqq0f9sig4fm9yrspisx31v0z4a2c"))))
+      (build-system trivial-build-system)
+      (inputs
+       `(("python" ,python-2)
+         ("p7zip" ,p7zip)
+         ("unzip" ,unzip)))
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let* ((name "makeself_safeextract")
+                  (source (string-append (assoc-ref %build-inputs "source")
+                                         "/" name ".py"))
+                  (bin (string-append (assoc-ref %outputs "out") "/bin"))
+                  (target (string-append bin "/" name))
+                  (python (string-append (assoc-ref %build-inputs "python") "/bin"))
+                  (7z (string-append (assoc-ref %build-inputs "p7zip") "/bin/7z"))
+                  (unzip (string-append (assoc-ref %build-inputs "unzip") "/bin/unzip")))
+             (setenv "PATH" (string-append (getenv "PATH") ":" python))
+             (mkdir-p bin)
+             (copy-file source target)
+             (substitute* target
+               (("'7z'") (format #f "'~a'" 7z))
+               (("'unzip'") (format #f "'~a'" unzip)))
+             (patch-shebang target)))))
+      (synopsis "Extract makeself and mojo archives without running untrusted code")
+      (description "This package provides a script to unpack self-extracting
+archives generated by @command{makeself} or @command{mojo} without running the
+possibly untrusted extraction shell script.")
+      (license license:gpl3+))))

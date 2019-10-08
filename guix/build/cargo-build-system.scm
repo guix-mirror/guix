@@ -66,10 +66,10 @@ Cargo.toml file present at its root."
          ;; archive, but not nested anywhere else). We do this by cutting up
          ;; each output line and only looking at the second component. We then
          ;; check if it matches Cargo.toml exactly and short circuit if it does.
-         (zero? (apply system* (list "sh" "-c"
-                                     (string-append "tar -tf " path
-                                                    " | cut -d/ -f2"
-                                                    " | grep -q '^Cargo.toml$'"))))))
+         (apply invoke (list "sh" "-c"
+                             (string-append "tar -tf " path
+                                            " | cut -d/ -f2"
+                                            " | grep -q '^Cargo.toml$'")))))
 
 (define* (configure #:key inputs
                     (vendor-dir "guix-vendor")
@@ -84,7 +84,7 @@ Cargo.toml file present at its root."
   (for-each
     (match-lambda
       ((name . path)
-       (let* ((basepath (basename path))
+       (let* ((basepath (strip-store-file-name path))
               (crate-dir (string-append vendor-dir "/" basepath)))
          (and (crate-src? path)
               ;; Gracefully handle duplicate inputs
@@ -119,22 +119,12 @@ directory = '" port)
   ;; upgrading the compiler for example.
   (setenv "RUSTFLAGS" "--cap-lints allow")
   (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-  #t)
 
-;; The Cargo.lock file tells the build system which crates are required for
-;; building and hardcodes their version and checksum.  In order to build with
-;; the inputs we provide, we need to recreate the file with our inputs.
-(define* (update-cargo-lock #:key
-                            (vendor-dir "guix-vendor")
-                            #:allow-other-keys)
-  "Regenerate the Cargo.lock file with the current build inputs."
+  ;; We don't use the Cargo.lock file to determine the package versions we use
+  ;; during building, and in any case if one is not present it is created
+  ;; during the 'build phase by cargo.
   (when (file-exists? "Cargo.lock")
-    (begin
-      ;; Unfortunately we can't generate a Cargo.lock file until the checksums
-      ;; are generated, so we have an extra round of generate-all-checksums here.
-      (generate-all-checksums vendor-dir)
-      (delete-file "Cargo.lock")
-      (invoke "cargo" "generate-lockfile")))
+    (delete-file "Cargo.lock"))
   #t)
 
 ;; After the 'patch-generated-file-shebangs phase any vendored crates who have
@@ -152,7 +142,7 @@ directory = '" port)
                 #:allow-other-keys)
   "Build a given Cargo package."
   (or skip-build?
-      (zero? (apply system* `("cargo" "build" ,@cargo-build-flags)))))
+      (apply invoke `("cargo" "build" ,@cargo-build-flags))))
 
 (define* (check #:key
                 tests?
@@ -160,11 +150,8 @@ directory = '" port)
                 #:allow-other-keys)
   "Run tests for a given Cargo package."
   (if tests?
-      (zero? (apply system* `("cargo" "test" ,@cargo-test-flags)))
+      (apply invoke `("cargo" "test" ,@cargo-test-flags))
       #t))
-
-(define (touch file-name)
-  (call-with-output-file file-name (const #t)))
 
 (define* (install #:key inputs outputs skip-build? #:allow-other-keys)
   "Install a given Cargo package."
@@ -179,7 +166,7 @@ directory = '" port)
     ;; otherwise cargo will raise an error.
     (or skip-build?
         (not (has-executable-target?))
-        (zero? (system* "cargo" "install" "--path" "." "--root" out)))))
+        (invoke "cargo" "install" "--path" "." "--root" out))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
@@ -188,7 +175,6 @@ directory = '" port)
     (replace 'build build)
     (replace 'check check)
     (replace 'install install)
-    (add-after 'configure 'update-cargo-lock update-cargo-lock)
     (add-after 'patch-generated-file-shebangs 'patch-cargo-checksums patch-cargo-checksums)))
 
 (define* (cargo-build #:key inputs (phases %standard-phases)

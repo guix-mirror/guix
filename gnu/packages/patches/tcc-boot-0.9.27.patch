@@ -1,0 +1,26 @@
+From 1431ba3a99582e4c3d2693ac37e57f361858affd Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Mon, 11 Jun 2018 18:39:44 +0200
+Subject: [PATCH] bootstrappable: Force static link.
+
+---
+ libtcc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/libtcc.c b/libtcc.c
+index 3448f44..02ab850 100644
+--- a/libtcc.c
++++ b/libtcc.c
+@@ -735,6 +735,9 @@ LIBTCCAPI TCCState *tcc_new(void)
+     tcc_state = s;
+     ++nb_states;
+ 
++#if BOOTSTRAP
++    s->static_link = 1;
++#endif
+     s->alacarte_link = 1;
+     s->nocommon = 1;
+     s->warn_implicit_function_declaration = 1;
+-- 
+2.16.2
+

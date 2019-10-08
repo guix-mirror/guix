@@ -286,6 +286,11 @@ developers consider to have good quality code and correct functionality.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: 13 of 53 tests fail
+
+       ;; FIXME: OpenEXR 2.4.0 requires C++ 11 or later.  Remove when the
+       ;; default compiler is >= GCC 5.
+       #:make-flags '("CXXFLAGS=-std=gnu++11")
+
        #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
@@ -431,19 +436,14 @@ compression formats through the use of the libav library.")
                 "0f1d9rvy2qxlymmfzyknnfr5rz1vx69jv17gp7wnamc5s6p7mp2m"))))
     (build-system gnu-build-system)
     (arguments
-     ;; XXX: Factorize python-sitedir with python-build-system.
-     `(#:imported-modules (,@%gnu-build-system-modules
+     `(#:modules ((guix build gnu-build-system)
+                  ((guix build python-build-system) #:prefix python:))
+       #:imported-modules (,@%gnu-build-system-modules
                            (guix build python-build-system))
        #:configure-flags
-       (let* ((python (assoc-ref %build-inputs "python"))
-              (python-version ((@@ (guix build python-build-system)
-                                   get-python-version)
-                               python))
-              (python-sitedir (string-append
-                               "lib/python" python-version "/site-packages")))
-         (list (string-append
-                "--with-pygi-overrides-dir=" %output "/" python-sitedir
-                "/gi/overrides")))))
+       (list (string-append
+              "--with-pygi-overrides-dir="
+              (python:site-packages %build-inputs %outputs) "gi/overrides"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("python" ,python)))

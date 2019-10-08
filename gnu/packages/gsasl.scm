@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,9 +95,11 @@ the underlying security implementation.")
                   (("test-lock\\$\\(EXEEXT\\) ") ""))
                 #t))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--with-gssapi-impl=mit")))
    (inputs `(("libidn" ,libidn)
              ("libntlm" ,libntlm)
-             ("gss" ,gss)
+             ("mit-krb5" ,mit-krb5)
              ("zlib" ,zlib)))
    (propagated-inputs
     ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a

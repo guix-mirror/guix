@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015, 2018 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.22.0")
+   (version "2.23.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "17zj6jwx3s6bybd290f1mj5iym1r64560rmnf0p63x4akxclp7hm"))))
+              "0rv0y45gcd3h191isppn77acih695v4pipdj031jvs9rd1ds0kr3"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0fpfqw0h4g4v478fscic8z714i0ls5w7946vzhmq31lf7nizsb2f"))))
+            "0sllhyl0w29v4n303hqfmcc3apafnwk4sk78anyjjhpzd0zl6n4m"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -1390,6 +1390,15 @@ projects, from individuals to large-scale enterprise operations.")
              (patches (search-patches "rcs-5.9.4-noreturn.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'disable-t810
+                    ;; See https://savannah.gnu.org/bugs/index.php?52288
+                    ;; Back-porting the fix is non-trivial, so disable for now.
+                    (lambda _
+                      (substitute* "tests/Makefile"
+                        ((" t810 \\\\\n") ""))
+                     #t)))))
     (home-page "https://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
@@ -1942,7 +1951,7 @@ by rclone usable with git-annex.")
     (inputs
      `(("openssl" ,openssl)
        ("zlib" ,zlib)
-       ("sqlite" ,sqlite-3.26.0)))
+       ("sqlite" ,sqlite)))
     (arguments
      `(#:configure-flags (list "--with-openssl=auto"
                                "--disable-internal-sqlite")

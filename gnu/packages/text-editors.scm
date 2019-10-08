@@ -41,6 +41,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
@@ -565,5 +566,57 @@ The basic features of Geany are:
 @item symbol lists
 @item embedded terminal emulation
 @item extensibility through plugins
+@end itemize")
+    (license license:gpl2+)))
+
+(define-public fe
+  (package
+    (name "fe")
+    ;; Stable release is 1.8.  However, this development version
+    ;; introduces support for UTF-8.
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.moria.de/~michael/fe/"
+                                  "fe-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hwws7si1752z6hp61zxznvgsb6846lp8zl1hn5ddhsbafwalwb9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test
+       ;; Sendmail is only used to send a crash log.  Disable the
+       ;; feature since it is (1) undocumented (2) not very useful.
+       #:configure-flags (list "--disable-sendmail")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/" ,name "-" ,version)))
+               (for-each (lambda (f) (install-file f doc))
+                         '("fe.doc" "fe.html" "fe.ps" "feref.ps" "README"))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (home-page "http://www.moria.de/~michael/fe/")
+    (synopsis "Small folding editor")
+    (description "Fe is a small folding editor.  It allows to fold
+arbitrary text regions; it is not bound to syntactic units.
+
+Fe has no configuration or extension language and requires no setup.
+Its user interface is emacs-like and it has menus for the very most
+important functions to help beginners.  Further there is a reference
+card.  It offers:
+
+@itemize
+@item Regions and Emacs-like kill ring
+@item Incremental search
+@item Keyboard macros
+@item Editing binary files
+@item Multiple windows and views
+@item Compose function for Latin 1 characters
 @end itemize")
     (license license:gpl2+)))

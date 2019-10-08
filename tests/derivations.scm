@@ -29,7 +29,6 @@
   #:use-module (guix tests http)
   #:use-module ((guix packages) #:select (package-derivation base32))
   #:use-module ((guix build utils) #:select (executable-file?))
-  #:use-module ((gnu packages) #:select (search-bootstrap-binary))
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages guile) #:select (guile-1.8))
   #:use-module (srfi srfi-1)
@@ -210,7 +209,7 @@
   (test-skip 1))
 (test-assert "'download' built-in builder"
   (let ((text (random-text)))
-    (with-http-server 200 text
+    (with-http-server `((200 ,text))
       (let* ((drv (derivation %store "world"
                               "builtin:download" '()
                               #:env-vars `(("url"
@@ -225,7 +224,7 @@
 (unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, invalid hash"
-  (with-http-server 200 "hello, world!"
+  (with-http-server `((200 "hello, world!"))
     (let* ((drv (derivation %store "world"
                             "builtin:download" '()
                             #:env-vars `(("url"
@@ -240,7 +239,7 @@
 (unless (http-server-can-listen?)
   (test-skip 1))
 (test-assert "'download' built-in builder, not found"
-  (with-http-server 404 "not found"
+  (with-http-server '((404 "not found"))
     (let* ((drv (derivation %store "will-never-be-found"
                             "builtin:download" '()
                             #:env-vars `(("url"
@@ -275,9 +274,9 @@
                                         . ,(object->string (%local-url))))
                           #:hash-algo 'sha256
                           #:hash (sha256 (string->utf8 text)))))
-    (and (with-http-server 200 text
+    (and (with-http-server `((200 ,text))
            (build-derivations %store (list drv)))
-         (with-http-server 200 text
+         (with-http-server `((200 ,text))
            (build-derivations %store (list drv)
                               (build-mode check)))
          (string=? (call-with-input-file (derivation->output-path drv)
@@ -409,6 +408,38 @@
     (and succeeded?
          (equal? (derivation->output-path final1)
                  (derivation->output-path final2)))))
+
+(test-assert "derivation with duplicate fixed-output inputs"
+  ;; Here we create a derivation that has two inputs, both of which are
+  ;; fixed-output leading to the same result.  This test ensures the hash of
+  ;; that derivation is correctly computed, namely that duplicate inputs are
+  ;; coalesced.  See <https://bugs.gnu.org/36777>.
+  (let* ((builder1   (add-text-to-store %store "fixed-builder1.sh"
+                                        "echo -n hello > $out" '()))
+         (builder2   (add-text-to-store %store "fixed-builder2.sh"
+                                        "echo hey; echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (fixed1     (derivation %store "fixed"
+                                 %bash `(,builder1)
+                                 #:hash hash #:hash-algo 'sha256))
+         (fixed2     (derivation %store "fixed"
+                                 %bash `(,builder2)
+                                 #:hash hash #:hash-algo 'sha256))
+         (builder3   (add-text-to-store %store "builder.sh"
+                                        "echo fake builder"))
+         (final      (derivation %store "final"
+                                 %bash `(,builder3)
+                                 #:sources (list %bash builder3)
+                                 #:inputs (list (derivation-input fixed1)
+                                                (derivation-input fixed2)))))
+    (and (derivation? final)
+         (match (derivation-inputs final)
+           (((= derivation-input-derivation one)
+             (= derivation-input-derivation two))
+            (and (not (string=? (derivation-file-name one)
+                                (derivation-file-name two)))
+                 (string=? (derivation->output-path one)
+                           (derivation->output-path two))))))))
 
 (test-assert "multiple-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
@@ -1232,5 +1263,5 @@
 (test-end)
 
 ;; Local Variables:
-;; eval: (put 'with-http-server 'scheme-indent-function 2)
+;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; End:

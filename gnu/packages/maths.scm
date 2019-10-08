@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -31,6 +31,7 @@
 ;;; Copyright © 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,6 +101,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -246,7 +248,7 @@ triangulations.")
 (define-public python-cvxopt
   (package
     (name "python-cvxopt")
-    (version "1.2.1")
+    (version "1.2.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -255,7 +257,7 @@ triangulations.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05mnjil9palaa48xafdfh4f5pr4z7aqjr995rwl08qfyxs8y0crf"))))
+                "1kiy2m62xgs2d5id6dnnwy4vap85cd70p7pgkb9nh23qf9xnak7b"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -674,17 +676,18 @@ computations.")
 (define-public hdf4
   (package
     (name "hdf4")
-    (version "4.2.13")
+    (version "4.2.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://support.hdfgroup.org/ftp/HDF/releases/HDF"
                            version "/src/hdf-" version ".tar.bz2"))
        (sha256
-        (base32 "1wz0586zh91pqb95wvr0pbh71a8rz358fdj6n2ksp85x2cis9lsm"))
+        (base32 "0n29klrrbwan9307np0d9hr128dlpc4nnlf57a140080ll3jmp8l"))
        (patches (search-patches "hdf4-architectures.patch"
                                 "hdf4-reproducibility.patch"
-                                "hdf4-shared-fortran.patch"))))
+                                "hdf4-shared-fortran.patch"
+                                "hdf4-tirpc.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -692,10 +695,14 @@ computations.")
        ("flex" ,flex)))
     (inputs
      `(("zlib" ,zlib)
-       ("libjpeg" ,libjpeg)))
+       ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)))
     (arguments
      `(#:parallel-tests? #f
-       #:configure-flags '("--enable-shared")
+       #:configure-flags (list "--enable-shared"
+                               (string-append "CPPFLAGS=-I"
+                                              (assoc-ref %build-inputs "libtirpc")
+                                              "/include/tirpc"))
        #:phases
        (modify-phases %standard-phases
          ;; This is inspired by two of Debian's patches.
@@ -1044,8 +1051,11 @@ implemented in C.")
      `(("gfortran" ,gfortran)))
     (inputs
      `(("hdf4" ,hdf4-alt) ; assume most HDF-EOS2 users won't use the HDF4 netCDF API
+       ;; XXX: These inputs are really dependencies of hdf4.
        ("zlib" ,zlib)
        ("libjpeg" ,libjpeg)
+       ("libtirpc" ,libtirpc)
+
        ("gctp" ,gctp)))
     (arguments
      `( #:configure-flags '("--enable-install-include" "--enable-shared"
@@ -1543,7 +1553,7 @@ script files.")
        ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
-       ("texlive" ,texlive) ;for texi2dvi
+       ("texlive" ,(texlive-union (list texlive-epsf))) ; for texi2dvi
        ,@(package-native-inputs octave-cli)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave-cli)
@@ -1716,11 +1726,16 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
     (version "2.16.0")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "http://gmsh.info/src/gmsh-"
-                          version "-source.tgz"))
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://gitlab.onelab.info/gmsh/gmsh.git")
+            (commit
+             (string-append "gmsh_"
+                            (string-map (lambda (x) (if (eq? x #\.) #\_ x))
+                                        version)))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "1slf0bfkwrcgn6296wb4qhbk4ahz6i4wfb10hnim08x05vrylag8"))
+       (base32 "08rq4jajwmlpivnm9yifz2jhaivnz065lnk0h2zv773nwl9wf162"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
@@ -1746,7 +1761,7 @@ This is the certified version of the Open Cascade Technology (OCCT) library.")
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
                            "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
-    (home-page "http://www.geuz.org/gmsh/")
+    (home-page "http://gmsh.info/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in
 CAD engine and post-processor.  Its design goal is to provide a fast, light
@@ -1760,18 +1775,20 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public maxflow
   (package
     (name "maxflow")
-    (version "3.04")
+    ;; Versioning is ambiguous: the git tag matching this commit is ‘3.0.5’,
+    ;; which matches CMakeLists.txt, but README.md and CHANGES say ‘3.04’.
+    (version "3.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/gerddie/maxflow.git")
-                    (commit "42401fa54823d16b9da47716f04e5d9ef1605875")))
-              (file-name (string-append name "-" version "-checkout"))
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0rll38whw55h0vcjrrwdnh9ascvxby0ph7n1l0d12z17cg215kkb"))))
     (build-system cmake-build-system)
-    (home-page "http://pub.ist.ac.at/~vnk/software.html")
+    (home-page "https://pub.ist.ac.at/~vnk/software.html")
     (synopsis "Library implementing Maxflow algorithm")
     (description "An implementation of the maxflow algorithm described in
 @cite{An Experimental Comparison of Min-Cut/Max-Flow Algorithms for
@@ -2967,7 +2984,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.05.7")
+    (version "19.09.0")
     (source
      (origin
        (method git-fetch)
@@ -2976,8 +2993,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zaz71fh156b9inrxf86scnix247al5pl9v18cxhjxcm0lanqxdp"))))
+        (base32 "195j6j8z0jd6xg3a63ywbrbsc6dany795m3fb95nbx1vq0bqqvvn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3090,8 +3106,12 @@ parts of it.")
 
 (define-public openblas
   (package
+    ;; TODO: Incorporate 'openblas/fixed-num-threads' changes on the next
+    ;; rebuild cycle.
+    (replacement openblas/fixed-num-threads)
+
     (name "openblas")
-    (version "0.3.5")
+    (version "0.3.6")
     (source
      (origin
        (method url-fetch)
@@ -3100,7 +3120,7 @@ parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "062kg4ny1ywz7k5grpb4pbf0hba0w6manbajwkmv4f477a31sxpl"))))
+         "1r2g9zzwq5dm8vjd19pxwggfvfzy56cvkmpmp5d014qr3svgmsap"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -3160,7 +3180,7 @@ parts of it.")
     (license license:bsd-3)))
 
 (define-public openblas-ilp64
-  (package (inherit openblas)
+  (package/inherit openblas
     (name "openblas-ilp64")
     (supported-systems '("x86_64-linux" "aarch64-linux" "mips64el-linux"))
     (arguments
@@ -3170,6 +3190,24 @@ parts of it.")
                  ,flags))))
     (synopsis "Optimized BLAS library based on GotoBLAS (ILP64 version)")
     (license license:bsd-3)))
+
+(define openblas/fixed-num-threads
+  ;; TODO: Move that to 'openblas' proper on the next rebuild cycle.
+  (package
+    (inherit openblas)
+    (version (match (string-split (package-version openblas) #\.)
+               ((numbers ... (= string-length len))
+                (string-join (append numbers
+                                     (list (make-string len #\a)))
+                             "."))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openblas)
+       ((#:make-flags flags ''())
+        ;; This is the maximum number of threads OpenBLAS will ever use (that
+        ;; is, if $OPENBLAS_NUM_THREADS is greater than that, then NUM_THREADS
+        ;; is used.)  If we don't set it, the makefile sets it to the number
+        ;; of cores of the build machine, which is obviously wrong.
+        `(cons "NUM_THREADS=128" ,flags))))))
 
 (define* (make-blis implementation #:optional substitutable?)
   "Return a BLIS package with the given IMPLEMENTATION (see config/ in the
@@ -3516,15 +3554,15 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.5")
+    (version "0.9.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/g-truc/glm/releases/download/"
                            version  "/glm-" version ".zip"))
        (sha256
-        (base32
-         "1vmg7hb4xvsa77zpbwiw6lqc7pyaj56dihx6xriny5b9rrh4iqsg"))))
+        (base32 "1l0pi1qi37mk6s0yrkrw07lspv4gcqnr9ryg3521hrl77ff37dwx"))
+       (patches (search-patches "glm-restore-install-target.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -3609,7 +3647,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "9.0.1")
+    (version "9.1.1")
     (source
      (origin
        (method url-fetch)
@@ -3617,8 +3655,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "0r7f8rhl3xr94imd372plizdcbqk0a70w73lwc3vw912dxk0sbyz"))
-       (patches (search-patches "dealii-mpi-deprecations.patch"))
+         "0xhjv0gzswpjbc43xbrpwfc5848g508l01855nszx3g5gwzlhnzw"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -3827,8 +3864,8 @@ set.")
      `(("doc++" ,doc++)
        ("netpbm" ,netpbm)
        ("perl" ,perl)                   ; needed to run 'ppmquant' during tests
-       ("texlive" ,(texlive-union (list texlive-generic-xypic
-                                        texlive-fonts-xypic
+       ("texlive" ,(texlive-union (list texlive-xypic
+                                        texlive-cm
                                         texlive-latex-hyperref
                                         texlive-bibtex)))
        ("ghostscript" ,ghostscript)))
@@ -4080,7 +4117,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.8.4")
+    (version "4.8.6")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -4089,7 +4126,7 @@ as equations, scalars, vectors, and matrices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "014igqm5vwswz0yhz0cdxsj3a6dh7i79hvhgc3jmmmz3z0xm1gyn"))))
+                "1sywcqj5y8yp28m4cdvzsgw74kd6zr1s3y1x17ky8pr9prvpvl6x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4280,7 +4317,7 @@ reduction.")
 (define-public mcrl2
   (package
     (name "mcrl2")
-    (version "201707.1.15162")
+    (version "201908.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.mcrl2.org/download/devel/mcrl2-"
@@ -4288,9 +4325,7 @@ reduction.")
                                   ".tar.gz"))
               (sha256
                (base32
-                "1ziww2fchsklm25hl9p2mngssxfh9w07nc114cncqaxfibqp2p8f"))))
-    (native-inputs
-     `(("subversion" ,subversion)))
+                "1i4xgl2d5fgiz1mwi50cyfkrrcpm8nxfayfjgmhq7chs58wlhfsz"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)
@@ -4307,6 +4342,15 @@ specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
     (home-page "https://mcrl2.org")
     (license license:boost1.0)))
+
+(define-public mcrl2-minimal
+  (package
+    (inherit mcrl2)
+    (name "mcrl2-minimal")
+    (inputs
+     `(("boost" ,boost)))
+    (arguments
+     '(#:configure-flags '("-DMCRL2_ENABLE_GUI_TOOLS=OFF")))))
 
 (define-public r-subplex
   (package
@@ -4832,8 +4876,7 @@ assemble global function spaces on finite-element grids.")
          (add-after 'build 'build-tests
            (lambda* (#:key inputs make-flags #:allow-other-keys)
              (setenv "CPLUS_INCLUDE_PATH"
-                     (string-append (assoc-ref inputs "dune-grid") "/share:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                     (string-append (assoc-ref inputs "dune-grid") "/share"))
              (apply invoke "make" "build_tests" make-flags))))))
     (inputs
      `(("dune-common" ,dune-common)
@@ -5136,3 +5179,36 @@ algorithm, a parametric integer programming solver, and primitives for
 termination analysis via the automatic synthesis of linear ranking
 functions.")
     (license license:gpl3+)))
+
+(define-public speedcrunch
+  (package
+    (name "speedcrunch")
+    (version "0.12.0")
+    (source
+     (origin
+      (method git-fetch)
+      (uri (git-reference
+        (url "https://bitbucket.org/heldercorreia/speedcrunch.git")
+        (commit (string-append "release-" version))))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "0vh7cd1915bjqzkdp3sk25ngy8cq624mkh8c53c5bnzk357kb0fk"))))
+    (build-system cmake-build-system)
+    (inputs `(("qtbase" ,qtbase)))
+    (native-inputs `(("qttools" ,qttools)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir-to-src
+           (lambda _ (chdir "src") #t)))))
+    (synopsis "High-precision scientific calculator")
+    (description
+     "SpeedCrunch is a high-precision scientific calculator.  It features a
+syntax-highlighted scrollable display and is designed to be fully used via
+keyboard.  Some distinctive features are auto-completion of functions and
+variables, a formula book, and quick insertion of constants from various
+fields of knowledge.")
+    (home-page "http://speedcrunch.org/")
+    (license license:gpl2+)))
+

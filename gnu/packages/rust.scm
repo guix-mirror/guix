@@ -379,7 +379,7 @@ test = { path = \"../libtest\" }
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison) ; For the tests
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("flex" ,flex) ; For the tests
        ("gdb" ,gdb)   ; For the tests
        ("procps" ,procps) ; For the tests
@@ -391,7 +391,7 @@ test = { path = \"../libtest\" }
     (inputs
      `(("jemalloc" ,jemalloc-4.5.0)
        ("llvm" ,llvm-3.9.1)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("libssh2" ,libssh2) ; For "cargo"
        ("libcurl" ,curl)))  ; For "cargo"
 
@@ -400,10 +400,7 @@ test = { path = \"../libtest\" }
     ;; modules (see <https://bugs.gnu.org/31392>).
     (native-search-paths
      (list (search-path-specification
-            (variable "C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CPLUS_INCLUDE_PATH")
+            (variable "CPATH")
             (files '("include")))
            (search-path-specification
             (variable "LIBRARY_PATH")
@@ -1057,7 +1054,7 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                    (("bins::check") "//bins::check"))
                  #t)))))))))
 
-(define-public rust
+(define-public rust-1.36
   (let ((base-rust
          (rust-bootstrapped-package rust-1.35 "1.36.0"
            "06xv2p6zq03lidr0yaf029ii8wnjjqa894nkmrm6s0rx47by9i04")))
@@ -1068,3 +1065,20 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
          ((#:phases phases)
           `(modify-phases ,phases
              (delete 'patch-process-docs-rev-cmd))))))))
+
+(define-public rust
+  (let ((base-rust
+         (rust-bootstrapped-package rust-1.36 "1.37.0"
+           "1hrqprybhkhs6d9b5pjskfnc5z9v2l2gync7nb39qjb5s0h703hj")))
+    (package
+      (inherit base-rust)
+      (arguments
+       (substitute-keyword-arguments (package-arguments base-rust)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'configure 'configure-cargo-home
+               (lambda _
+                 (let ((cargo-home (string-append (getcwd) "/.cargo")))
+                   (mkdir-p cargo-home)
+                   (setenv "CARGO_HOME" cargo-home)
+                   #t))))))))))

@@ -466,23 +466,15 @@ main (int argc, char *argv[])
     {
       settings.processEnvironment ();
 
-      /* Use our substituter by default.  */
-      settings.substituters.clear ();
+      /* Enable substitutes by default.  */
       settings.set ("build-use-substitutes", "true");
 
       /* Use our substitute server by default.  */
       settings.set ("substitute-urls", GUIX_SUBSTITUTE_URLS);
 
 #ifdef HAVE_DAEMON_OFFLOAD_HOOK
-      /* Use our build hook for distributed builds by default.  */
+      /* Use 'guix offload' for distributed builds by default.  */
       settings.useBuildHook = true;
-      if (getenv ("NIX_BUILD_HOOK") == NULL)
-	{
-	  std::string build_hook;
-
-	  build_hook = settings.nixLibexecDir + "/offload";
-	  setenv ("NIX_BUILD_HOOK", build_hook.c_str (), 1);
-	}
 #else
       /* We are not installing any build hook, so disable it.  */
       settings.useBuildHook = false;
@@ -496,14 +488,6 @@ main (int argc, char *argv[])
       settings.update ();
       printMsg(lvlDebug,
 	       format ("build log compression: %1%") % settings.logCompression);
-
-      if (settings.useSubstitutes)
-	settings.substituters.push_back (settings.nixLibexecDir
-					 + "/substitute");
-      else
-	/* Clear the substituter list to make sure nothing ever gets
-	   substituted, regardless of the client's settings.  */
-	settings.substituters.clear ();
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
 	fprintf (stderr, _("warning: daemon is running as root, so \

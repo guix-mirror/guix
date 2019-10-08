@@ -133,7 +133,7 @@ type by using either Perl modules, or command-line tools on your system.")
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
-    (version "1.64")
+    (version "1.65")
     (source
      (origin
        (method url-fetch)
@@ -141,8 +141,7 @@ type by using either Perl modules, or command-line tools on your system.")
              "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
              version ".tar.gz"))
        (sha256
-        (base32
-         "0zfinh8nx3rxzscp57vq3w8hihpdb0zs67vvalykcf402kr88pyy"))))
+        (base32 "116vcg8x7n92i7cn3bx0xck69mz9vjy0il9i8p7p7lk40kz7jcbl"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.

@@ -1,11 +1,14 @@
 Use gcc as the default C compiler if CC is not set.
 
-
---- gobject-introspection-1.44.0.orig/giscanner/__init__.py	2014-08-04 22:37:07.000000000 +0800
-+++ gobject-introspection-1.44.0/giscanner/__init__.py	2015-04-20 17:30:26.507697234 +0800
-@@ -22,3 +22,5 @@
+diff -ru gobject-introspection-1.58.1.orig/giscanner/__init__.py gobject-introspection-1.58.1/giscanner/__init__.py
+--- gobject-introspection-1.58.1.orig/giscanner/__init__.py	1970-01-01 01:00:00.000000000 +0100
++++ gobject-introspection-1.58.1/giscanner/__init__.py	2018-12-03 13:33:28.788971299 +0100
+@@ -22,6 +22,8 @@
  builddir = os.environ.get('UNINSTALLED_INTROSPECTION_BUILDDIR')
  if builddir is not None:
      __path__.append(os.path.join(builddir, 'giscanner'))
 +if not 'CC' in os.environ:
 +    os.environ['CC'] = 'gcc'
+ try:
+     from ._version import __version__
+ except ImportError:

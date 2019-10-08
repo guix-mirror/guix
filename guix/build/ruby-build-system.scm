@@ -128,7 +128,7 @@ is #f."
 (define* (install #:key inputs outputs (gem-flags '())
                   #:allow-other-keys)
   "Install the gem archive SOURCE to the output store item.  Additional
-GEM-FLAGS are passed to the 'gem' invokation, if present."
+GEM-FLAGS are passed to the 'gem' invocation, if present."
   (let* ((ruby-version
           (match:substring (string-match "ruby-(.*)\\.[0-9]$"
                                          (assoc-ref inputs "ruby"))

@@ -3,6 +3,8 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,13 +22,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages agda)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (guix build-system emacs)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system trivial)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -154,3 +158,45 @@ such as Coq, Epigram and NuPRL.")
     (synopsis "Emacs mode for Agda")
     (description "This Emacs mode enables interactive development with
 Agda.  It also aids the input of Unicode characters.")))
+
+(define-public agda-ial
+  (package
+    (name "agda-ial")
+    (version "1.5.0")
+    (home-page "https://github.com/cedille/ial")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0dlis6v6nzbscf713cmwlx8h9n2gxghci8y21qak3hp18gkxdp0g"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("agda" ,agda)))
+    (arguments
+     `(#:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-dependencies
+           (lambda _ (patch-shebang "find-deps.sh") #t))
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (include (string-append out "/include/agda/ial")))
+               (for-each (lambda (file)
+                           (make-file-writable file)
+                           (install-file file include))
+                         (find-files "." "\\.agdai?(-lib)?$"))
+               #t))))))
+    (synopsis "The Iowa Agda Library")
+    (description
+     "The goal is to provide a concrete library focused on verification
+examples, as opposed to mathematics.  The library has a good number
+of theorems for booleans, natural numbers, and lists.  It also has
+trees, tries, vectors, and rudimentary IO.  A number of good ideas
+come from Agda's standard library.")
+    (license license:expat)))

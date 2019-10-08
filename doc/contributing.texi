@@ -376,7 +376,7 @@ package and does not contain any version number.
 
 For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
 
-@example
+@lisp
 (define-public gtk+
   (package
     (name "gtk+")
@@ -387,15 +387,15 @@ For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows
     (name "gtk+")
     (version "2.24.20")
     ...))
-@end example
+@end lisp
 If we also wanted GTK+ 3.8.2, this would be packaged as
-@example
+@lisp
 (define-public gtk+-3.8
   (package
     (name "gtk+")
     (version "3.8.2")
     ...))
-@end example
+@end lisp
 
 @c See <https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00425.html>,
 @c for a discussion of what follows.
@@ -432,7 +432,7 @@ kernel.)  It is best to use the full commit identifiers in
 @code{origin}s, though, to avoid ambiguities.  A typical package
 definition may look like this:
 
-@example
+@lisp
 (define my-package
   (let ((commit "c3f29bc928d5900971f65965feaae59e1272a3f7")
         (revision "1"))          ;Guix package revision
@@ -447,7 +447,7 @@ definition may look like this:
                 (file-name (git-file-name name version))))
       ;; @dots{}
       )))
-@end example
+@end lisp
 
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
@@ -825,12 +825,12 @@ recommend using the @code{qemu-binfmt-service-type} to emulate them.  In
 order to enable it, add the following service to the list of services in
 your @code{operating-system} configuration:
 
-@example
+@lisp
 (service qemu-binfmt-service-type
  (qemu-binfmt-configuration
    (platforms (lookup-qemu-platforms "arm" "aarch64" "mips64el"))
    (guix-support? #t)))
-@end example
+@end lisp
 
 Then reconfigure your system.
 

@@ -86,7 +86,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.17.1")
+    (version "0.18.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -94,7 +94,7 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "0am4pnaf2cisv172jqx6jdpzx770agm8777163lkjbw3ryslymiy"))))
+               "0ps0vw9iknz1b1sx74rabd1yhlxvwbd0aimjzn9hlqkvw286hkjy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -102,7 +102,7 @@
        ("util-linux" ,util-linux)   ; provides the hexdump command for tests
        ("qttools" ,qttools)))
     (inputs
-     `(("bdb" ,bdb-5.3) ; with 6.2.23, there is an error: ambiguous overload
+     `(("bdb" ,bdb-4.8) ; Bitcoin Core requires bdb 4.8 for compatibility
        ("boost" ,boost)
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
@@ -112,8 +112,6 @@
     (arguments
      `(#:configure-flags
         (list
-          ;; We use a bdb version newer than 4.8.
-          "--with-incompatible-bdb"
           ;; Boost is not found unless specified manually.
           (string-append "--with-boost="
                          (assoc-ref %build-inputs "boost"))
@@ -136,6 +134,11 @@
           (add-before 'check 'set-home
            (lambda _
             (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            #t))
+          (add-after 'check 'check-functional
+           (lambda _
+            (invoke "python3" "./test/functional/test_runner.py"
+                    (string-append "--jobs=" (number->string (parallel-job-count))))
             #t)))))
     (home-page "https://bitcoin.org/en/")
     (synopsis "Bitcoin peer-to-peer client")
@@ -356,7 +359,7 @@ do so.")
 (define-public electrum
   (package
     (name "electrum")
-    (version "3.3.6")
+    (version "3.3.8")
     (source
      (origin
        (method url-fetch)
@@ -364,7 +367,7 @@ do so.")
                            version "/Electrum-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0am5ki3z0yvhrz16vp2jjy5fkxxqph0mj9qqpbw3kpql65shykwz"))
+        (base32 "1g00cj1pmckd4xis8r032wmraiv3vd3zc803hnyxa2bnhj8z3bg2"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -445,7 +448,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.14.1.0")
+    (version "0.14.1.2")
     (source
      (origin
        (method git-fetch)
@@ -466,23 +469,27 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "1asa197fad81jfv12qgaa7y7pdr1r1pda96m9pvivkh4v30cx0nh"))))
+         "00zl883c7lcd9z7g4y3vv7rxmr7ppzrxdblnhk32r9l3qzyw55r6"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
        ("git" ,git)
        ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)
+       ("protobuf" ,protobuf)
+       ("python" ,python)
        ("qttools" ,qttools)))
     (inputs
      `(("boost" ,boost)
        ("cppzmq" ,cppzmq)
        ("expat" ,expat)
        ("hidapi" ,hidapi)
-       ("libunwind" ,libunwind)
        ("libsodium" ,libsodium)
+       ("libunwind" ,libunwind)
+       ("libusb" ,libusb)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
        ("rapidjson" ,rapidjson)
        ("readline" ,readline)
        ("unbound" ,unbound)
@@ -490,9 +497,12 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
        ("zeromq" ,zeromq)))
     (arguments
      `(#:out-of-source? #t
-       #:configure-flags '("-DARCH=default"
-                           "-DBUILD_TESTS=ON"
-                           "-DBUILD_GUI_DEPS=ON")
+       #:configure-flags
+       (list "-DARCH=default"
+             "-DBUILD_TESTS=ON"
+             "-DBUILD_GUI_DEPS=ON"
+             (string-append "-DReadline_ROOT_DIR="
+                            (assoc-ref %build-inputs "readline")))
        #:phases
        (modify-phases %standard-phases
          ;; tests/core_tests need a valid HOME
@@ -508,6 +518,11 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                (("return \\(")
                 "return ((std::string(getenv(\"HOME\"))) / "))
              #t))
+         (add-after 'change-log-path 'fix-file-permissions-for-tests
+           (lambda _
+             (for-each make-file-writable
+                       (find-files "tests/data/" "wallet_9svHk1.*"))
+             #t))
          ;; Only try tests that don't need access to network or system
          (replace 'check
            (lambda _
@@ -522,16 +537,17 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                        "DNSResolver.DNSSECSuccess"
                        "DNSResolver.DNSSECFailure"
                        "DNSResolver.GetTXTRecord"
-                       ;; TODO: Find why portability_wallet test fails
-                       ;; Maybe the Boost version used to create the test
-                       ;; wallet and the current Boost version are not
-                       ;; completely compatible?
-                       "Serialization.portability_wallet"
                        "is_hdd.linux_os_root")
                      ":")))
                (invoke "tests/unit_tests/unit_tests"
                        (string-append "--gtest_filter=-"
-                                      excluded-unit-tests))))))))
+                                      excluded-unit-tests)))))
+         (add-after 'install 'delete-dead-links
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file (string-append out "/lib/libprotobuf.so"))
+               (delete-file (string-append out "/lib/libusb-1.0.so"))
+               #t))))))
     (home-page "https://getmonero.org/")
     (synopsis "Command-line interface to the Monero currency")
     (description
@@ -542,7 +558,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.14.1.0")
+    (version "0.14.1.2")
     (source
      (origin
        (method git-fetch)
@@ -552,7 +568,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0ilx47771faygf97wilm64xnqxgxa3b43q0g9v014npk0qj8pc31"))))
+         "1rm043r6y2mzy8pclnzbjjfxgps8pkfa2b92p66k8y8rdmgq6m1k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -560,9 +576,11 @@ the Monero command line client and daemon.")
     (inputs
      `(("boost" ,boost)
        ("hidapi" ,hidapi)
-       ("libunwind" ,libunwind)
        ("libsodium" ,libsodium)
+       ("libunwind" ,libunwind)
+       ("libusb" ,libusb)
        ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
        ("qtgraphicaleffects" ,qtgraphicaleffects)
@@ -717,14 +735,13 @@ Ledger Nano as a hardware SSH/GPG agent.")
 (define-public python-mnemonic
   (package
     (name "python-mnemonic")
-    (version "0.18")
+    (version "0.19")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mnemonic" version))
         (sha256
-          (base32
-            "07bzfa5di6nv5xwwcwbypnflpj50wlfczhh6q6hg8w13g5m319q2"))))
+          (base32 "0cd9prmdj8wzdmc7lxbf9lz0xrlkvak5ignag406mmfbn81fndsf"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pbkdf2" ,python-pbkdf2)))
@@ -1111,3 +1128,31 @@ information.")
     (description "This allows a Trezor hardware wallet to communicate to the
 Trezor wallet.")
     (license license:lgpl3+)))
+
+(define-public bitcoin-abc
+  (package
+    (inherit bitcoin-core)
+    (name "bitcoin-abc")
+    (version "0.19.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://download.bitcoinabc.org/"
+                                  version "/linux/src/bitcoin-abc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ndvkxv5m8346bdhfqzgdiz1k9wyjycj05jp7daf9pml3cw79sz5"))))
+    (home-page "https://www.bitcoinabc.org/")
+    (synopsis "Bitcoin ABC peer-to-peer full node for the Bitcoin Cash protocol")
+    (description
+     "Bitcoin Cash brings sound money to the world, fulfilling the original
+promise of Bitcoin as Peer-to-Peer Electronic Cash.  Merchants and users are
+empowered with low fees and reliable confirmations is a digital currency that
+enables instant payments to anyone anywhere in the world.  It uses
+peer-to-peer technology to operate without central authority: managing
+transactions and issuing money are carried out collectively by the network.
+As a fork it implemented changes lowering the time between blocks and now
+offers confimations after less than 5 seconds and have significantly lower
+fees that BTC.  Bitcoin ABC is the reference implementation of the Bitcoin
+Cash protocol.  This package provides the Bitcoin Cash command line client and
+a client based on Qt.  This is a fork of Bitcoin Core.")))

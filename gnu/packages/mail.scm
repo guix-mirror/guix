@@ -353,14 +353,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.12.1")
+    (version "1.12.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/mutt/mutt/downloads/"
                                  "mutt-" version ".tar.gz"))
              (sha256
               (base32
-               "0311sip2q90aqaxn7h3cck1zl98b4vifqi8bp5fsizy4dr06bi81"))
+               "10k8352s0z7yan6d4z2am80qd3bsaky4h89g72wl4xr3x067ahmw"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -491,7 +491,7 @@ It adds a large amount of new and improved features to mutt.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "3.2.3")
+    (version "3.2.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -499,7 +499,7 @@ It adds a large amount of new and improved features to mutt.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "04bk7rqs5slpvlvqf11i6s37s8b2xn6acls8smyl9asjnpp7a23a"))))
+                "096hh4g6z343kncw9svcrzv05d41n4v2q5k9jsm6gc40w30ag7i4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -998,18 +998,17 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "5.6")
+    (version "5.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://pyropus.ca/software/getmail/old-versions/"
-                           name "-" version ".tar.gz"))
+                           "getmail-" version ".tar.gz"))
        (sha256
-        (base32
-         "16nmvj80szr6yvcxxgmxn2lxqpjqqj4xg5a0b66zhvck6j42q3a6"))))
+        (base32 "1hcrd9h4g12f5gvl1djsbchcjry02ghq4icdr897s8v48pkrzagk"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f ; no tests
+     `(#:tests? #f                      ; no tests
        #:python ,python-2))
     (home-page "http://pyropus.ca/software/getmail/")
     (synopsis "Mail retriever")
@@ -1152,14 +1151,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.8.5")
+    (version "1.8.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://marlam.de/msmtp/releases/"
                            "/msmtp-" version ".tar.xz"))
        (sha256
-        (base32 "0fczpfxlr62wkr7bwhp24clxg962k5khgz14h818qyy4v77dl4qn"))))
+        (base32 "1qa260xrm0fzlwxpjvgvq39m4dfkskjlyb7m4y2vlr8c8d3z29b6"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsecret" ,libsecret)
@@ -1198,7 +1197,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.92.1")
+    (version "4.92.2")
     (source
      (origin
        (method url-fetch)
@@ -1207,7 +1206,7 @@ delivery.")
                   (string-append "https://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32 "132zmxgzz35xwi89g3crw6hd3y74rxj5zcpamakvrnlcn256amdp"))))
+        (base32 "1xnc5rdcg5mcrvjqp506a9frmcr89jwsh4c5vbks46awyz1rfzsm"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb-5.3) ; ‘#error Version 6 and later BDB API is not supported’
@@ -1286,7 +1285,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.6")
+    (version "2.3.7.2")
     (source
      (origin
        (method url-fetch)
@@ -1294,7 +1293,8 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32 "1irnalplb47nlc26dn7zzdi95zhrxxi3miza7p3wdsgapv0qs7gd"))))
+        (base32
+         "0q0jgcv3ni2znkgyhc966ffphj1wk73y76wssh0yciqafs2f0v36"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1441,7 +1441,7 @@ hashing schemes plugin for @code{Dovecot}.")
     (inputs
      `(("bdb" ,bdb)
        ("cyrus-sasl" ,cyrus-sasl)
-       ("openssl" ,openssl)
+       ("openssl" ,openssl-1.0)
        ("zlib" ,zlib)))
     (home-page "http://isync.sourceforge.net/")
     (synopsis "Mailbox synchronization program")
@@ -2270,14 +2270,14 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.4.1p2")
+    (version "6.4.2p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "0cppqlx4fk6l8rbim5symh2fm1kzshf421256g596j6c9f9q96xn"))))
+        (base32 "0pgv080ai7d98l9340jadp9wjiaqj2qvgpqhilcz0kps2mdiawbd"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -2887,14 +2887,13 @@ servers.  The 4rev1 and 4 versions of IMAP are supported.")
 (define-public urlscan
   (package
     (name "urlscan")
-    (version "0.9.2")
+    (version "0.9.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "urlscan" version))
         (sha256
-         (base32
-          "1zldck7vnp7z04aacbx3cprf5kzha4gfhjmss4iv2lh5nccxjfzx"))))
+         (base32 "1q0vxv9haap01vz1cbkzss62cgwb9365lv5vnkg2gbpx4g5y7a9l"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urwid" ,python-urwid)))
@@ -2937,8 +2936,8 @@ replacement for the @code{urlview} program.")
     (license gpl2+)))
 
 (define-public mumi
-  (let ((commit "ea0a28f8d5db5761765eb60043b8593901552e25")
-        (revision "4"))
+  (let ((commit "8a57c87797ffb07baa88697130204184db643521")
+        (revision "5"))
     (package
       (name "mumi")
       (version (git-version "0.0.0" revision commit))
@@ -2950,7 +2949,7 @@ replacement for the @code{urlview} program.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0b6dmi41vhssyf983blgi8a2kj3zjccc9cz7b7kvwh781ldqcywh"))))
+                  "1575gn5p086sjxz5hvg6iyskq6cxf6vf50s9nsc4xgrbcqa3pv2c"))))
       (build-system gnu-build-system)
       (arguments
        `(#:phases

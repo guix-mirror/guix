@@ -47,14 +47,22 @@ available via the first URI, the second URI points to the archived version."
         (string-append "mirror://cran/src/contrib/Archive/"
                        name "/" name "_" version ".tar.gz")))
 
-(define (bioconductor-uri name version)
+(define* (bioconductor-uri name version #:optional type)
   "Return a URI string for the R package archive on Bioconductor for the
 release corresponding to NAME and VERSION."
-  (list (string-append "https://bioconductor.org/packages/release/bioc/src/contrib/"
-                       name "_" version ".tar.gz")
-        ;; TODO: use %bioconductor-version from (guix import cran)
-        (string-append "https://bioconductor.org/packages/3.9/bioc/src/contrib/Archive/"
-                       name "_" version ".tar.gz")))
+  (let ((type-url-part (match type
+                         ('annotation "/data/annotation")
+                         ('experiment "/data/experiment")
+                         (_ "/bioc"))))
+    (list (string-append "https://bioconductor.org/packages/release"
+                         type-url-part
+                         "/src/contrib/"
+                         name "_" version ".tar.gz")
+          ;; TODO: use %bioconductor-version from (guix import cran)
+          (string-append "https://bioconductor.org/packages/3.9"
+                         type-url-part
+                         "/src/contrib/Archive/"
+                         name "_" version ".tar.gz"))))
 
 (define %r-build-system-modules
   ;; Build-side modules imported by default.

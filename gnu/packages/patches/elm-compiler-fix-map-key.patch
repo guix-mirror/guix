@@ -1,0 +1,38 @@
+commit e3512d887df41a8162c3e361171c04beca08415b
+Author: Tom Stejskal <tom.stejskal@gmail.com>
+Date:   Mon Nov 19 20:09:43 2018 +0100
+
+    Fix Map.!: given key is not an element in the map
+
+diff --git a/compiler/src/Elm/Compiler/Type/Extract.hs b/compiler/src/Elm/Compiler/Type/Extract.hs
+index 1aafe1d4..99763392 100644
+--- a/compiler/src/Elm/Compiler/Type/Extract.hs
++++ b/compiler/src/Elm/Compiler/Type/Extract.hs
+@@ -10,6 +10,7 @@ module Elm.Compiler.Type.Extract
+ 
+ 
+ import Data.Map ((!))
++import qualified Data.Map as Map
+ import qualified Data.Maybe as Maybe
+ import qualified Data.Set as Set
+ 
+@@ -134,11 +135,15 @@ extractUnion interfaces (Opt.Global home name) =
+     else
+       let
+         pname = toPublicName home name
+-        unions = I._unions (interfaces ! home)
++        maybeUnions = I._unions <$> Map.lookup home interfaces
+       in
+-      case I.toUnionInternals (unions ! name) of
+-        Can.Union vars ctors _ _ ->
+-          T.Union pname vars <$> traverse extractCtor ctors
++      case Map.lookup name =<< maybeUnions of
++        Just union ->
++          case I.toUnionInternals union of
++            Can.Union vars ctors _ _ ->
++              T.Union pname vars <$> traverse extractCtor ctors
++        Nothing ->
++          return $ T.Union pname [] []
+ 
+ 
+ extractCtor :: Can.Ctor -> Extractor (N.Name, [T.Type])

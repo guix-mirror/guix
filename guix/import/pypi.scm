@@ -437,7 +437,8 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   (define (pypi-url? url)
     (or (string-prefix? "https://pypi.org/" url)
         (string-prefix? "https://pypi.python.org/" url)
-        (string-prefix? "https://pypi.org/packages" url)))
+        (string-prefix? "https://pypi.org/packages" url)
+        (string-prefix? "https://files.pythonhosted.org/packages" url)))
 
   (let ((source-url (and=> (package-source package) origin-uri))
         (fetch-method (and=> (package-source package) origin-method)))

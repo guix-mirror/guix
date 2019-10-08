@@ -6,8 +6,8 @@ index 4800173..6bdd77f 100755
  author = 'Val Neekman'
  author_email = 'info@neekware.com'
  license = 'MIT'
--install_requires = ['text-unidecode==1.2']
--extras_require = {'unidecode': ['Unidecode==1.0.23']}
+-install_requires = ['text-unidecode>=1.3']
+-extras_require = {'unidecode': ['Unidecode>=1.1.1']}
 +install_requires = ['Unidecode']
  
  classifiers = [

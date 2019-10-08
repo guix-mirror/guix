@@ -26,8 +26,11 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix grafts)
+  #:use-module (guix status)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:export (guix-deploy))
 
@@ -43,8 +46,6 @@
 (define (show-help)
   (display (G_ "Usage: guix deploy [OPTION] FILE...
 Perform the deployment specified by FILE.\n"))
-  (display (G_ "
-  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (show-build-options-help)
   (newline)
   (display (G_ "
@@ -52,6 +53,8 @@ Perform the deployment specified by FILE.\n"))
   (display (G_ "
   -V, --version          display version information and exit"))
   (newline)
+  (display (G_ "
+  -v, --verbosity=LEVEL  use the given verbosity LEVEL"))
   (show-bug-report-information))
 
 (define %options
@@ -63,15 +66,24 @@ Perform the deployment specified by FILE.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
                                (alist-delete 'system result eq?))))
+         (option '(#\v "verbosity") #t #f
+                 (lambda (opt name arg result)
+                   (let ((level (string->number* arg)))
+                     (alist-cons 'verbosity level
+                                 (alist-delete 'verbosity result)))))
+
          %standard-build-options))
 
 (define %default-options
-  `((system . ,(%current-system))
+  ;; Alist of default option values.
+  `((verbosity . 1)
+    (debug . 0)
+    (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
-    (graft? . #t)
-    (debug . 0)
-    (verbosity . 1)))
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)))
 
 (define (load-source-file file)
   "Load FILE as a user module."
@@ -84,15 +96,27 @@ Perform the deployment specified by FILE.\n"))
 (define (guix-deploy . args)
   (define (handle-argument arg result)
     (alist-cons 'file arg result))
+
   (let* ((opts (parse-command-line args %options (list %default-options)
                                    #:argument-handler handle-argument))
          (file (assq-ref opts 'file))
          (machines (or (and file (load-source-file file)) '())))
-    (with-store store
-      (set-build-options-from-command-line store opts)
-      (for-each (lambda (machine)
-                  (info (G_ "deploying to ~a...") (machine-display-name machine))
-                  (parameterize ((%current-system (assq-ref opts 'system))
-                                 (%graft? (assq-ref opts 'graft?)))
-                    (run-with-store store (deploy-machine machine))))
-                machines))))
+    (with-status-verbosity (assoc-ref opts 'verbosity)
+      (with-store store
+        (set-build-options-from-command-line store opts)
+        (for-each (lambda (machine)
+                    (info (G_ "deploying to ~a...~%")
+                          (machine-display-name machine))
+                    (parameterize ((%graft? (assq-ref opts 'graft?)))
+                      (guard (c ((message-condition? c)
+                                 (report-error (G_ "failed to deploy ~a: ~a~%")
+                                               (machine-display-name machine)
+                                               (condition-message c)))
+                                ((deploy-error? c)
+                                 (when (deploy-error-should-roll-back c)
+                                   (info (G_ "rolling back ~a...~%")
+                                         (machine-display-name machine))
+                                   (run-with-store store (roll-back-machine machine)))
+                                 (apply throw (deploy-error-captured-args c))))
+                        (run-with-store store (deploy-machine machine)))))
+                  machines)))))

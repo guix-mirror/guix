@@ -614,9 +614,7 @@ HookInstance::HookInstance()
 {
     debug("starting build hook");
 
-    Path buildHook = getEnv("NIX_BUILD_HOOK");
-    if (string(buildHook, 0, 1) != "/") buildHook = settings.nixLibexecDir + "/nix/" + buildHook;
-    buildHook = canonPath(buildHook);
+    const Path &buildHook = settings.guixProgram;
 
     /* Create a pipe to get the output of the child. */
     fromHook.create();
@@ -642,13 +640,14 @@ HookInstance::HookInstance()
         if (dup2(builderOut.writeSide, 4) == -1)
             throw SysError("dupping builder's stdout/stderr");
 
-        execl(buildHook.c_str(), buildHook.c_str(), settings.thisSystem.c_str(),
+        execl(buildHook.c_str(), buildHook.c_str(), "offload",
+	    settings.thisSystem.c_str(),
             (format("%1%") % settings.maxSilentTime).str().c_str(),
             (format("%1%") % settings.printBuildTrace).str().c_str(),
             (format("%1%") % settings.buildTimeout).str().c_str(),
             NULL);
 
-        throw SysError(format("executing `%1%'") % buildHook);
+        throw SysError(format("executing `%1% offload'") % buildHook);
     });
 
     pid.setSeparatePG(true);
@@ -1581,7 +1580,7 @@ void DerivationGoal::buildDone()
 
 HookReply DerivationGoal::tryBuildHook()
 {
-    if (!settings.useBuildHook || getEnv("NIX_BUILD_HOOK") == "") return rpDecline;
+    if (!settings.useBuildHook) return rpDecline;
 
     if (!worker.hook)
         worker.hook = std::shared_ptr<HookInstance>(new HookInstance);
@@ -1649,7 +1648,7 @@ HookReply DerivationGoal::tryBuildHook()
     set<int> fds;
     fds.insert(hook->fromHook.readSide);
     fds.insert(hook->builderOut.readSide);
-    worker.childStarted(shared_from_this(), hook->pid, fds, false, false);
+    worker.childStarted(shared_from_this(), hook->pid, fds, false, true);
 
     if (settings.printBuildTrace)
         printMsg(lvlError, format("@ build-started %1% - %2% %3% %4%")
@@ -2864,15 +2863,6 @@ private:
     /* The store path that should be realised through a substitute. */
     Path storePath;
 
-    /* The remaining substituters. */
-    Paths subs;
-
-    /* The current substituter. */
-    Path sub;
-
-    /* Whether any substituter can realise this path */
-    bool hasSubstitute;
-
     /* Path info returned by the substituter's query info operation. */
     SubstitutablePathInfo info;
 
@@ -2898,6 +2888,8 @@ private:
     typedef void (SubstitutionGoal::*GoalState)();
     GoalState state;
 
+    void tryNext();
+
 public:
     SubstitutionGoal(const Path & storePath, Worker & worker, bool repair = false);
     ~SubstitutionGoal();
@@ -2915,7 +2907,6 @@ public:
 
     /* The states. */
     void init();
-    void tryNext();
     void gotInfo();
     void referencesValid();
     void tryToRun();
@@ -2931,7 +2922,6 @@ public:
 
 SubstitutionGoal::SubstitutionGoal(const Path & storePath, Worker & worker, bool repair)
     : Goal(worker)
-    , hasSubstitute(false)
     , repair(repair)
 {
     this->storePath = storePath;
@@ -2981,37 +2971,31 @@ void SubstitutionGoal::init()
     if (settings.readOnlyMode)
         throw Error(format("cannot substitute path `%1%' - no write access to the store") % storePath);
 
-    subs = settings.substituters;
-
     tryNext();
 }
 
 
 void SubstitutionGoal::tryNext()
 {
-    trace("trying next substituter");
+    trace("trying substituter");
 
-    if (subs.size() == 0) {
+    SubstitutablePathInfos infos;
+    PathSet dummy(singleton<PathSet>(storePath));
+    worker.store.querySubstitutablePathInfos(dummy, infos);
+    SubstitutablePathInfos::iterator k = infos.find(storePath);
+    if (k == infos.end()) {
         /* None left.  Terminate this goal and let someone else deal
            with it. */
         debug(format("path `%1%' is required, but there is no substituter that can build it") % storePath);
         /* Hack: don't indicate failure if there were no substituters.
            In that case the calling derivation should just do a
            build. */
-        amDone(hasSubstitute ? ecFailed : ecNoSubstituters);
-        return;
+        amDone(ecNoSubstituters);
+	return;
     }
 
-    sub = subs.front();
-    subs.pop_front();
-
-    SubstitutablePathInfos infos;
-    PathSet dummy(singleton<PathSet>(storePath));
-    worker.store.querySubstitutablePathInfos(sub, dummy, infos);
-    SubstitutablePathInfos::iterator k = infos.find(storePath);
-    if (k == infos.end()) { tryNext(); return; }
+    /* Found a substitute.  */
     info = k->second;
-    hasSubstitute = true;
 
     /* To maintain the closure invariant, we first have to realise the
        paths referenced by this one. */
@@ -3099,7 +3083,8 @@ void SubstitutionGoal::tryToRun()
 
     /* Fill in the arguments. */
     Strings args;
-    args.push_back(baseNameOf(sub));
+    args.push_back("guix");
+    args.push_back("substitute");
     args.push_back("--substitute");
     args.push_back(storePath);
     args.push_back(destPath);
@@ -3112,9 +3097,9 @@ void SubstitutionGoal::tryToRun()
         if (dup2(outPipe.writeSide, STDOUT_FILENO) == -1)
             throw SysError("cannot dup output pipe into stdout");
 
-        execv(sub.c_str(), stringsToCharPtrs(args).data());
+        execv(settings.guixProgram.c_str(), stringsToCharPtrs(args).data());
 
-        throw SysError(format("executing `%1%'") % sub);
+        throw SysError(format("executing `%1% substitute'") % settings.guixProgram);
     });
 
     pid.setSeparatePG(true);
@@ -3127,7 +3112,9 @@ void SubstitutionGoal::tryToRun()
     state = &SubstitutionGoal::finished;
 
     if (settings.printBuildTrace)
-        printMsg(lvlError, format("@ substituter-started %1% %2%") % storePath % sub);
+	/* The second element in the message used to be the name of the
+	   substituter but we're left with only one.  */
+        printMsg(lvlError, format("@ substituter-started %1% substitute") % storePath);
 }
 
 
@@ -3193,9 +3180,7 @@ void SubstitutionGoal::finished()
                 % storePath % status % e.msg());
         }
 
-        /* Try the next substitute. */
-        state = &SubstitutionGoal::tryNext;
-        worker.wakeUp(shared_from_this());
+	amDone(ecFailed);
         return;
     }
 

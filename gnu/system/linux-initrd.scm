@@ -99,7 +99,7 @@ the derivations referenced by EXP are automatically copied to the initrd."
                         #:init #$init
                         ;; Copy everything INIT refers to into the initrd.
                         #:references-graphs '("closure")
-                        #:gzip (string-append #$gzip "/bin/gzip")))))
+                        #:gzip (string-append #+gzip "/bin/gzip")))))
 
   (file-append (computed-file name builder
                               #:options
@@ -133,7 +133,10 @@ MODULES and taken from LINUX."
                       (copy-file module
                                  (string-append #$output "/"
                                                 (basename module))))
-                    (delete-duplicates modules)))))
+                    (delete-duplicates modules))
+
+          ;; Hyphen or underscore?  This database tells us.
+          (write-module-name-database #$output))))
 
   (computed-file "linux-modules" build-exp))
 

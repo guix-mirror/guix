@@ -217,12 +217,10 @@ bind processes, and much more.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "C_INCLUDE_PATH"
                               (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband/:"
-                                             (getenv "C_INCLUDE_PATH")))
+                                             "/include/infiniband"))
                       (setenv "CPLUS_INCLUDE_PATH"
                               (string-append (assoc-ref inputs "opensm")
-                                             "/include/infiniband/:"
-                                             (getenv "CPLUS_INCLUDE_PATH")))
+                                             "/include/infiniband"))
                       #t))
                   (add-before 'build 'remove-absolute
                     (lambda _

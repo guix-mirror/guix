@@ -21,15 +21,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages wget)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
-  #:use-module (gnu packages flex)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnunet)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -40,7 +38,6 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public wget
@@ -74,7 +71,7 @@
 HTTPS and FTP protocols.  It can resume interrupted downloads, use file name
 wild cards, supports proxies and cookies, and it can convert absolute links
 in downloaded documents to relative links.")
-    (license gpl3+))) ; some files are under GPLv2+
+    (license license:gpl3+))) ; some files are under GPLv2+
 
 (define-public wgetpaste
   (package
@@ -136,68 +133,47 @@ in downloaded documents to relative links.")
     (description
      "@code{wgetpaste} is an extremely simple command-line interface to various
 online pastebin services.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public wget2
   (package
    (name "wget2")
-   (version "1.99.1")
+   (version "1.99.2")
    (source
      (origin
-       (method git-fetch)
-       (uri (git-reference
-              (url "https://gitlab.com/gnuwget/wget2.git")
-              (commit (string-append name "-" version))
-              (recursive? #t))) ;; Needed for 'gnulib' git submodule.
-       (file-name (string-append name "-" version "-checkout"))
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/wget/wget2-" version ".tar.gz"))
        (sha256
         (base32
-         "15wxsnjhc6bzk7f60i1djmsarh1w31gwi5h2gh9k19ncwypfj5dm"))))
+         "0qv55f4bablrlhc8bnic8g3mkk1kq44c4cphrk5jmv92z9aqzi6b"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-after 'unpack 'skip-network-test
+        (add-after 'unpack 'skip-network-tests
           (lambda _
-            (substitute* "tests/Makefile.am"
-              (("test-auth-digest\\$\\(EXEEXT)") ""))
-            #t))
-        (replace 'bootstrap
-          (lambda _
-            ;; Make sure all the files are writable so that ./bootstrap
-            ;; can proceed.
-            (for-each (lambda (file)
-                        (chmod file #o755))
-                        (find-files "."))
-            (patch-shebang "./gnulib/gnulib-tool.py")
-            ;; Remove unnecessary inputs from bootstrap.conf
-            (substitute* "bootstrap.conf"
-              (("flex.*") "")
-              (("makeinfo.*") "")
-              (("lzip.*") "")
-              (("rsync.*") ""))
-            (invoke "sh" "./bootstrap"
-                    "--gnulib-srcdir=gnulib"
-                    "--no-git"))))))
+            (substitute* "tests/Makefile.in"
+              (("test-gpg-verify-no-file\\$\\(EXEEXT)") "")
+              (("test-gpg-valid\\$\\(EXEEXT)") "")
+              (("test-gpg-styles\\$\\(EXEEXT)") ""))
+            #t)))
+      #:configure-flags '("--enable-static=no")))
    (inputs
-    `(("gnutls" ,gnutls/dane)
+    `(("bzip2" ,bzip2)
+      ("gnutls" ,gnutls/dane)
+      ("gpgme" ,gpgme)
       ("libiconv" ,libiconv)
       ("libidn2" ,libidn2)
       ("libmicrohttpd" ,libmicrohttpd)
       ("libpsl" ,libpsl)
-      ("pcre2" ,pcre2)))
+      ("pcre2" ,pcre2)
+      ("zlib" ,zlib)))
    ;; TODO: Add libbrotlidec, libnghttp2.
    (native-inputs
-    `(("autoconf" ,autoconf)
-      ("automake" ,automake)
-      ("flex" ,flex)
-      ("gettext" ,gettext-minimal)
-      ("libtool" ,libtool)
-      ("pkg-config" ,pkg-config)
-      ("python" ,python-2)))
+    `(("pkg-config" ,pkg-config)))
    (home-page "https://gitlab.com/gnuwget/wget2")
    (synopsis "Successor of GNU Wget")
    (description "GNU Wget2 is the successor of GNU Wget, a file and recursive
 website downloader.  Designed and written from scratch it wraps around libwget,
 that provides the basic functions needed by a web client.")
-   (license (list gpl3+ lgpl3+))))
+   (license (list license:gpl3+ license:lgpl3+))))

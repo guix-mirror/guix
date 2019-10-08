@@ -331,6 +331,17 @@ cat > "$module_dir/package.scm"<<EOF
 EOF
 guix package --bootstrap --install-from-file="$module_dir/package.scm"
 
+# Make sure an error is raised if the file doesn't return a package.
+cat > "$module_dir/package.scm"<<EOF
+(use-modules (gnu packages base))
+
+(define my-package coreutils)   ;returns *unspecified*
+EOF
+if guix package --bootstrap --install-from-file="$module_dir/package.scm"
+then false; else true; fi
+
+rm "$module_dir/package.scm"
+
 # This one should not show up in searches since it's no supported on the
 # current system.
 test "`guix package -A super-non-portable-emacs`" = ""
@@ -427,7 +438,7 @@ cat > "$module_dir/foo.scm"<<EOF
     (version "dummy-version")
     (outputs '("out" "dummy-output"))
     (source #f)
-    ;; Without a real build system, the "guix pacakge -s" command will fail.
+    ;; Without a real build system, the "guix package -s" command will fail.
     (build-system trivial-build-system)
     (synopsis "dummy-synopsis")
     (description "dummy-description")
@@ -437,3 +448,7 @@ EOF
 guix package -L "$module_dir" -s dummy-output > /tmp/out
 test "`guix package -L "$module_dir" -s dummy-output | grep ^name:`" = "name: dummy-package"
 rm -rf "$module_dir"
+
+# Make sure we can see user profiles.
+guix package --list-profiles | grep "$profile"
+guix package --list-profiles | grep '\.guix-profile'

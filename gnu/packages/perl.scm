@@ -66,14 +66,14 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.28.0")
+    (version "5.30.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky"))
+               "1wkmz6xn3fswpqhz29akiklcxclnlykhp96a8bqcz36rak3i64l5"))
              (patches (search-patches
                        "perl-no-sys-dirs.patch"
                        "perl-autosplit-default-time.patch"
@@ -298,14 +298,14 @@ list manipulation routines.")
 (define-public perl-async-interrupt
   (package
     (name "perl-async-interrupt")
-    (version "1.24")
+    (version "1.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "Async-Interrupt-" version ".tar.gz"))
               (sha256
                (base32
-                "1lx4am3cqb9vvng9fhlwgfd7mk3afbrg8rps6xgpas6ij67dw8m0"))))
+                "0jh94wj1b6a0cnni8prsb59g5lak5rfj2fw5ng96291zmz2yqp1w"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-canary-stability" ,perl-canary-stability)))
@@ -802,15 +802,14 @@ Perl.")
 (define-public perl-carp-clan
   (package
     (name "perl-carp-clan")
-    (version "6.07")
+    (version "6.08")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Carp-Clan-" version ".tar.gz"))
        (sha256
-        (base32
-         "0gaa4ygd9q8lp2fn5d9s7miiwxz92a2lqs7j6smwmifq6w3mc20a"))))
+        (base32 "0237xx3rqa72sr4vdvws9r1m453h5f25bl85mdjmmk128kir4py7"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)))
@@ -1266,14 +1265,14 @@ arrays for their internal representation.")
 (define-public perl-clone
   (package
     (name "perl-clone")
-    (version "0.42")
+    (version "0.43")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://cpan/authors/id/G/GA/GARU/"
+              (uri (string-append "mirror://cpan/authors/id/A/AT/ATOOMIC/"
                                   "Clone-" version ".tar.gz"))
               (sha256
                (base32
-                "1r87rdm0nilfayxwlzvylwc8r3hr5m24180x437j30qpizdk1aal"))))
+                "1npf5s4b90ds6lv8gn76b2w4bdh0z5ni5zk4skgc2db5d12560lr"))))
     (build-system perl-build-system)
     (synopsis "Recursively copy Perl datatypes")
     (description
@@ -4330,17 +4329,16 @@ and busy().")
 (define-public perl-io-pager
   (package
     (name "perl-io-pager")
-    (version "0.4")
+    (version "0.44")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-"
              version
-             "0.tgz"))
+             ".tgz"))
        (sha256
-        (base32
-         "1vzdypsr7vkj8nnda9ccrksci6pqj5awwmi89l7x3mbpq36gad87"))))
+        (base32 "0h52gplhc3rij18xc4ngpg5kqv6mylxfzig18xll1aqda8iwa8kl"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -6495,19 +6493,18 @@ Perl (back to 5.6.0).")
 (define-public perl-namespace-autoclean
   (package
     (name "perl-namespace-autoclean")
-    (version "0.28")
+    (version "0.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "namespace-autoclean-" version ".tar.gz"))
        (sha256
-        (base32
-         "0fbcq99yaix1aa99jl3v811dbw24il9jxnh5i2i23mddh4b0lhfd"))))
+        (base32 "012qqs561xyyhm082znmzsl8lz4n299fa6p0v246za2l9bkdiss5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)))
     (propagated-inputs
      `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
        ("perl-namespace-clean" ,perl-namespace-clean)
@@ -7322,15 +7319,14 @@ and @code{deserialize_regexp}.")
 (define-public perl-role-tiny-2
   (package
     (inherit perl-role-tiny)
-    (version "2.000006")
+    (version "2.001001")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Role-Tiny-" version ".tar.gz"))
        (sha256
-        (base32
-         "10p3sc639c0nj56bb77a2wg8samyyl8sqpliv3n8c0jaj2642wyc"))))))
+        (base32 "16yryg3cr14xw201gm8k8ci00hs60fy8lk2xhnaqa85n5m68flk8"))))))
 
 (define-public perl-safe-isa
   (package
@@ -7899,7 +7895,7 @@ return value is the sub.")
 (define-public perl-sub-quote
   (package
     (name "perl-sub-quote")
-    (version "2.006003")
+    (version "2.006006")
     (source
      (origin
        (method url-fetch)
@@ -7907,7 +7903,7 @@ return value is the sub.")
              "mirror://cpan/authors/id/H/HA/HAARG/Sub-Quote-"
              version ".tar.gz"))
        (sha256
-        (base32 "0xl1w55qilqc3xdqvmjzs5vjnjdc0d4633yw7hh1yd9zfxpkl7xy"))))
+        (base32 "17fq4iskrisnqs96amrz493vxikwvqbj9s7014k6vyl84gs2lkkf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)))

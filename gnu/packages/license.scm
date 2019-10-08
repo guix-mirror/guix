@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,13 +18,18 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages license)
-  #:use-module (guix licenses)
   #:use-module (gnu packages)
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system perl)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages perl-check))
+  #:use-module (gnu packages perl-check)
+  #:use-module (gnu packages python-web)
+  #:use-module (gnu packages python-xyz)
+  #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
+  #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix licenses)
+  #:use-module (guix packages))
 
 ;;;
 ;;; Please: Try to add new module packages in alphabetic order.
@@ -33,7 +38,7 @@
 (define-public perl-regexp-pattern-license
   (package
     (name "perl-regexp-pattern-license")
-    (version "3.1.92")
+    (version "3.1.94")
     (source
      (origin
        (method url-fetch)
@@ -41,8 +46,7 @@
              "mirror://cpan/authors/id/J/JO/JONASS/Regexp-Pattern-License-"
              "v" version ".tar.gz"))
        (sha256
-        (base32
-         "0gxv8wpvlllmvhkpixv5x23ywn1s6zs7ypcs38s7nfh4phamyixh"))))
+        (base32 "0kznpv628jrndn4nw646f6pl7yqvmacwljlygvsjfdkyh0i4sr2k"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
@@ -109,7 +113,7 @@ statements and serializes in normalized format.")
 (define-public licensecheck
   (package
     (name "licensecheck")
-    (version "3.0.36")
+    (version "3.0.37")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -117,7 +121,7 @@ statements and serializes in normalized format.")
                     "v" version ".tar.gz"))
               (sha256
                (base32
-                "0y14ppq6f9hc0rc0syhfgms1r7fd51vpgfx5va6b2v84y8anb6g1"))))
+                "12l83zf85zagpagizmzy3bwkc659sbzqf18cycx8g4h6d3mc5kqw"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-regexp-pattern" ,perl-regexp-pattern)
@@ -160,3 +164,45 @@ statements and serializes in normalized format.")
 to each file passed to it, by searching the start of the file for text
 belonging to various licenses.")
     (license (package-license perl))))
+
+(define-public reuse
+  (package
+    (name "reuse")
+    (version "0.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://git.fsfe.org/reuse/tool.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1w17g6jvs715rjc93nnnqnfdphijq4ymj9jjkr3ccc286ywvn3ih"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python-binaryornot" ,python-binaryornot)
+       ("python-boolean.py" ,python-boolean.py)
+       ("python-debian" ,python-debian)
+       ("python-jinja2" ,python-jinja2)
+       ("python-license-expression" ,python-license-expression)
+       ("python-requests" ,python-requests)))
+    (home-page "https://reuse.software/")
+    (synopsis "Provide and verify copyright and licensing information")
+    (description
+     "The REUSE tool helps you achieve and confirm license compliance with the
+@uref{https://reuse.software, REUSE specification}, a set of recommendations
+for licensing Free Software projects.  REUSE makes it easy to declare the
+licenses under which your works are released, especially when reusing software
+from different projects released under different licenses.  It avoids reliance
+on fuzzy heuristicts and allows both legal experts and computers to understand
+how your project is licensed.  This allows generating a \"bill of materials\"
+for software.
+
+This tool downloads full license texts, adds copyright and license information
+to file headers, and contains a linter to identify problems.  There are other
+tools that have a lot more features and functionality surrounding the analysis
+and inspection of copyright and licenses in software projects.  This one is
+designed to be simple.")
+    (license (list asl2.0 gpl3+))))

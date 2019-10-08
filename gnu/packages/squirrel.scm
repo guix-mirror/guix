@@ -71,7 +71,7 @@
                 (find-files "../squirrel3/include")))
              #t)))))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("python-sphinx" ,python-sphinx)))
     (home-page "https://squirrel-lang.org/")
     (synopsis "High level imperative, object-oriented programming language")

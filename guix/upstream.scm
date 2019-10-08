@@ -245,18 +245,18 @@ correspond to the same version."
 (define (lookup-updater package updaters)
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
 them matches."
-  (any (match-lambda
-         (($ <upstream-updater> name description pred latest)
-          (and (pred package) latest)))
-       updaters))
+  (find (match-lambda
+          (($ <upstream-updater> name description pred latest)
+           (pred package)))
+        updaters))
 
 (define (package-latest-release package updaters)
   "Return an upstream source to update PACKAGE, a <package> object, or #f if
 none of UPDATERS matches PACKAGE.  It is the caller's responsibility to ensure
 that the returned source is newer than the current one."
   (match (lookup-updater package updaters)
-    ((? procedure? latest-release)
-     (latest-release package))
+    ((? upstream-updater? updater)
+     ((upstream-updater-latest updater) package))
     (_ #f)))
 
 (define (package-latest-release* package updaters)
@@ -362,6 +362,7 @@ SOURCE, an <upstream-source>."
                       (_
                        "gz")))
                    ((url signature-url)
+                    ;; Try to find a URL that matches ARCHIVE-TYPE.
                     (find2 (lambda (url sig-url)
                              ;; Some URIs lack a file extension, like
                              ;; 'https://crates.io/???/0.1/download'.  In that
@@ -370,7 +371,13 @@ SOURCE, an <upstream-source>."
                                  (string-suffix? archive-type url)))
                            urls
                            (or signature-urls (circular-list #f)))))
-       (let ((tarball (download-tarball store url signature-url
+       ;; If none of URLS matches ARCHIVE-TYPE, then URL is #f; in that case,
+       ;; pick up the first element of URLS.
+       (let ((tarball (download-tarball store
+                                        (or url (first urls))
+                                        (and (pair? signature-urls)
+                                             (or signature-url
+                                                 (first signature-urls)))
                                         #:key-download key-download)))
          (values version tarball source))))))
 

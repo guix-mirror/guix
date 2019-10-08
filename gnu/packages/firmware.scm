@@ -84,7 +84,7 @@
     ;; Use our own tool chain for that.
     (native-inputs `(("cross-gcc" ,(cross-gcc "xtensa-elf"))
                      ("cross-binutils" ,(cross-binutils "xtensa-elf"))
-                     ("cmake" ,cmake)
+                     ("cmake" ,cmake-minimal)
                      ("perl" ,perl)))
     (home-page "http://wireless.kernel.org/en/users/Drivers/ath9k_htc")
     (synopsis "Firmware for the Atheros AR7010 and AR9271 USB 802.11n NICs")
@@ -249,6 +249,7 @@ coreboot.")
     (build-system gnu-build-system)
     (native-inputs
      `(("acpica" ,acpica)
+       ("gcc" ,gcc-5)
        ("nasm" ,nasm)
        ("python-2" ,python-2)
        ("util-linux" ,util-linux)))

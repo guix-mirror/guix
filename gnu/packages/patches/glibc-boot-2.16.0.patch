@@ -1,0 +1,352 @@
+This patch enables building glibc-2.2.5 using TCC and GNU Make 4.x and Mes C Library.
+
+  * Makefile: Do not link with (non-existent) libgc_eh.
+  * Makefile: Add SHELL variable, ready for substitution, export it.
+  * Makefile: Do not build or assume librpc_compat_pic.
+  * Makefile: Do not build libmesusage.
+  * gen-as-const: Always add preamble.
+  * [BOOTSTRAP_GLIBC]: Really disable rpc.
+
+Upstream status: Not presented upstream.
+
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/elf/Makefile glibc-2.16.0/elf/Makefile
+--- /home/janneke/src/glibc-2.16.0/elf/Makefile	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/elf/Makefile	2018-09-02 12:54:44.616962543 +0200
+@@ -17,6 +17,8 @@
+ 
+ # Makefile for elf subdirectory of GNU C Library.
+ 
++SHELL := /bin/sh
++
+ subdir		:= elf
+ 
+ headers		= elf.h bits/elfclass.h link.h bits/link.h
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/include/libc-symbols.h glibc-2.16.0/include/libc-symbols.h
+--- /home/janneke/src/glibc-2.16.0/include/libc-symbols.h	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/include/libc-symbols.h	2018-09-02 22:41:00.798467803 +0200
+@@ -558,9 +558,9 @@ for linking")
+ # define libc_hidden_weak(name) hidden_weak (name)
+ # ifdef LINK_OBSOLETE_RPC
+    /* libc_hidden_nolink_sunrpc should only get used in sunrpc code.  */
+-#  define libc_hidden_nolink_sunrpc(name, version) hidden_def (name)
++#  define libc_hidden_nolink_sunrpc(name, version)
+ # else
+-#  define libc_hidden_nolink_sunrpc(name, version) hidden_nolink (name, libc, version)
++#  define libc_hidden_nolink_sunrpc(name, version)
+ # endif
+ # define libc_hidden_ver(local, name) hidden_ver (local, name)
+ # define libc_hidden_data_def(name) hidden_data_def (name)
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/Makeconfig glibc-2.16.0/Makeconfig
+--- /home/janneke/src/glibc-2.16.0/Makeconfig	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/Makeconfig	2018-09-03 00:00:25.290357414 +0200
+@@ -23,6 +23,9 @@ ifneq (,)
+ This makefile requires GNU Make.
+ endif
+ 
++SHELL := /bin/sh
++export SHELL
++
+ all: # Make this the default goal
+ 
+ ifneq "$(origin +included-Makeconfig)" "file"
+@@ -521,9 +524,9 @@ ifneq ($(have-cc-with-libunwind),yes)
+ else
+   libunwind = -lunwind
+ endif
+-libgcc_eh := -Wl,--as-needed -lgcc_s $(libunwind) -Wl,--no-as-needed
++libgcc_eh := #-Wl,--as-needed -lgcc_s $(libunwind) -Wl,--no-as-needed
+ gnulib := -lgcc $(libgcc_eh)
+-static-gnulib := -lgcc -lgcc_eh $(libunwind)
++static-gnulib := -lgcc $(libunwind)
+ libc.so-gnulib := -lgcc
+ endif
+ +preinit = $(addprefix $(csu-objpfx),crti.o)
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/Makefile glibc-2.16.0/Makefile
+--- /home/janneke/src/glibc-2.16.0/Makefile	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/Makefile	2018-09-02 23:01:10.485803965 +0200
+@@ -22,6 +22,9 @@ ifneq (,)
+ This makefile requires GNU Make.
+ endif
+ 
++SHELL := /bin/sh
++export SHELL
++
+ include Makeconfig
+ 
+ 
+@@ -135,13 +138,10 @@ $(common-objpfx)linkobj/libc.so: $(elfob
+ 				 $(shlib-lds)
+ 	$(build-shlib)
+ 
+-$(common-objpfx)linkobj/libc_pic.a: $(common-objpfx)libc_pic.a \
+-				    $(common-objpfx)sunrpc/librpc_compat_pic.a
++$(common-objpfx)linkobj/libc_pic.a: $(common-objpfx)libc_pic.a
+ 	$(..)./scripts/mkinstalldirs $(common-objpfx)linkobj
+ 	(cd $(common-objpfx)linkobj; \
+ 	 $(AR) x ../libc_pic.a; \
+-	 rm $$($(AR) t ../sunrpc/librpc_compat_pic.a | sed 's/^compat-//'); \
+-	 $(AR) x ../sunrpc/librpc_compat_pic.a; \
+ 	 $(AR) cr libc_pic.a *.os; \
+ 	 rm *.os)
+ endif
+@@ -151,7 +151,7 @@ endif
+ # the current libc build for testing.
+ $(common-objpfx)testrun.sh: $(common-objpfx)config.make \
+ 			    $(..)Makeconfig $(..)Makefile
+-	(echo '#!/bin/sh'; \
++	(echo '#! $(SHELL)'; \
+ 	 echo 'builddir=`dirname "$$0"`'; \
+ 	 echo 'GCONV_PATH="$${builddir}/iconvdata" \'; \
+ 	 echo 'exec $(subst $(common-objdir),"$${builddir}",\
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/Makefile.in glibc-2.16.0/Makefile.in
+--- /home/janneke/src/glibc-2.16.0/Makefile.in	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/Makefile.in	2018-09-02 13:03:01.892962551 +0200
+@@ -9,3 +9,6 @@ all .DEFAULT:
+ install:
+ 	LANGUAGE=C LC_ALL=C; export LANGUAGE LC_ALL; \
+ 	$(MAKE) -r PARALLELMFLAGS="$(PARALLELMFLAGS)" -C $(srcdir) objdir=`pwd` $@
++
++export SHELL
++export BASH
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/malloc/Makefile glibc-2.16.0/malloc/Makefile
+--- /home/janneke/src/glibc-2.16.0/malloc/Makefile	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/malloc/Makefile	2018-09-02 17:11:33.461547394 +0200
+@@ -35,7 +35,7 @@ install-lib := libmcheck.a
+ non-lib.a := libmcheck.a
+ 
+ # Additional library.
+-extra-libs = libmemusage
++extra-libs = #libmemusage
+ extra-libs-others = $(extra-libs)
+ 
+ libmemusage-routines = memusage
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/nscd/cache.c glibc-2.16.0/nscd/cache.c
+--- /home/janneke/src/glibc-2.16.0/nscd/cache.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/nscd/cache.c	2018-09-02 23:38:31.757616750 +0200
+@@ -74,7 +74,11 @@ struct datahead *
+ cache_search (request_type type, const void *key, size_t len,
+ 	      struct database_dyn *table, uid_t owner)
+ {
++#if !BOOTSTRAP_GLIBC
+   unsigned long int hash = __nis_hash (key, len) % table->head->module;
++#else
++  unsigned long int hash = 0;
++#endif
+ 
+   unsigned long int nsearched = 0;
+   struct datahead *result = NULL;
+@@ -153,7 +153,11 @@ cache_add (int type, const void *key, si
+ 	       first ? _(" (first)") : "");
+     }
+ 
++#if !BOOTSTRAP_GLIBC
+   unsigned long int hash = __nis_hash (key, len) % table->head->module;
++#else
++  unsigned long int hash = 0;
++#endif
+   struct hashentry *newp;
+ 
+   newp = mempool_alloc (table, sizeof (struct hashentry), 0);
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/nscd/Makefile glibc-2.16.0/nscd/Makefile
+--- /home/janneke/src/glibc-2.16.0/nscd/Makefile	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/nscd/Makefile	2018-09-02 23:49:29.948031787 +0200
+@@ -126,9 +126,7 @@ include $(patsubst %,$(..)cppflags-itera
+ $(objpfx)nscd: $(nscd-modules:%=$(objpfx)%.o)
+ 
+ ifeq ($(build-shared),yes)
+-$(objpfx)nscd: $(common-objpfx)rt/librt.so $(shared-thread-library) \
+-	       $(common-objpfx)nis/libnsl.so
++$(objpfx)nscd: $(common-objpfx)rt/librt.so $(shared-thread-library)
+ else
+-$(objpfx)nscd: $(common-objpfx)rt/librt.a $(static-thread-library) \
+-	       $(common-objpfx)nis/libnsl.a
++$(objpfx)nscd: $(common-objpfx)rt/librt.a $(static-thread-library)
+ endif
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/nscd/nscd_helper.c glibc-2.16.0/nscd/nscd_helper.c
+--- /home/janneke/src/glibc-2.16.0/nscd/nscd_helper.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/nscd/nscd_helper.c	2018-09-02 23:38:04.941189464 +0200
+@@ -474,7 +474,7 @@ struct datahead *
+ __nscd_cache_search (request_type type, const char *key, size_t keylen,
+ 		     const struct mapped_database *mapped, size_t datalen)
+ {
+-  unsigned long int hash = __nis_hash (key, keylen) % mapped->head->module;
++  unsigned long int hash = 0;
+   size_t datasize = mapped->datasize;
+ 
+   ref_t trail = mapped->head->array[hash];
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/nss/getent.c glibc-2.16.0/nss/getent.c
+--- /home/janneke/src/glibc-2.16.0/nss/function.def	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/nss/function.def	2018-09-18 13:54:49.582060539 +0200
+@@ -63,10 +63,12 @@
+ DEFINE_GET (files, pwnam)
+ DEFINE_GET (files, pwuid)
+ 
++#if !BOOTSTRAP_GLIBC
+ /* rpc */
+ DEFINE_ENT (files, rpc)
+ DEFINE_GETBY (files, rpc, name)
+ DEFINE_GETBY (files, rpc, number)
++#endif
+ 
+ /* services */
+ DEFINE_ENT (files, serv)
+diff -u ~/src/glibc-2.16.0/nss/getent.c glibc-2.16.0/nss/getent.c
+--- /home/janneke/src/glibc-2.16.0/nss/getent.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/nss/getent.c	2018-09-18 13:57:41.856849140 +0200
+@@ -700,6 +700,7 @@
+   return result;
+ }
+ 
++#if !BOOTSTRAP_GLIBC
+ /* Now is all for rpc */
+ static inline void
+ print_rpc (struct rpcent *rpc)
+@@ -745,6 +746,7 @@
+ 
+   return result;
+ }
++#endif //rpc
+ 
+ /* for services */
+ static void
+@@ -880,7 +882,9 @@
+ D(networks)
+ D(passwd)
+ D(protocols)
++#if !BOOTSTRAP_GLIBC
+ D(rpc)
++#endif
+ D(services)
+ D(shadow)
+ #undef D
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/resolv/netdb.h glibc-2.16.0/resolv/netdb.h
+--- /home/janneke/src/glibc-2.16.0/resolv/netdb.h	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/resolv/netdb.h	2018-09-08 08:49:30.537811219 +0200
+@@ -26,11 +26,13 @@
+ 
+ #include <netinet/in.h>
+ #include <stdint.h>
++#if 0 //!BOOTSTRAP_GLIBC
+ #ifdef __USE_MISC
+ /* This is necessary to make this include file properly replace the
+    Sun version.  */
+ # include <rpc/netdb.h>
+ #endif
++#endif
+ 
+ #ifdef __USE_GNU
+ # define __need_sigevent_t
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/Rules glibc-2.16.0/Rules
+--- /home/janneke/src/glibc-2.16.0/Rules	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/Rules	2018-09-02 10:52:06.927362861 +0200
+@@ -24,6 +24,9 @@ ifneq (,)
+ This makefile requires GNU Make.
+ endif
+ 
++export SHELL
++export BASH
++
+ all: # Don't let the default goal come from Makeconfig.
+ 
+ include $(firstword $(..) ../)Makeconfig
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/scripts/gen-as-const.awk glibc-2.16.0/scripts/gen-as-const.awk
+--- /home/janneke/src/glibc-2.16.0/scripts/gen-as-const.awk	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/scripts/gen-as-const.awk	2018-09-01 18:08:37.266516330 +0200
+@@ -14,6 +14,12 @@ BEGIN { started = 0 }
+ 
+ NF >= 1 && !started {
+   if (test) {
++    print "\n#include <stddef.h>";
++    print "\n#include <stdint.h>";
++#    print "\ntypedef unsigned long size_t;";
++    print "\n#ifndef offsetof";
++    print "\n#define offsetof(type, field) ((size_t)&((type *)0)->field)";
++    print "\n#endif";
+     print "\n#include <inttypes.h>";
+     print "\n#include <stdio.h>";
+     print "\n#include <bits/wordsize.h>";
+@@ -33,8 +39,15 @@ NF >= 1 && !started {
+       " source, #name, U (asconst_##name), #expr, (c_t) (expr));" \
+       " } else ++good;\n";
+   }
+-  else
++  else {
++    print "\n#include <stddef.h>";
++    print "\n#include <stdint.h>";
++#    print "\ntypedef unsigned long size_t;";
++    print "\n#ifndef offsetof";
++    print "\n#define offsetof(type, field) ((size_t)&((type *)0)->field)";
++    print "\n#endif";
+     print "void dummy(void) {";
++  }
+   started = 1;
+ }
+ 
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/sunrpc/auth_none.c glibc-2.16.0/sunrpc/auth_none.c
+--- /home/janneke/src/glibc-2.16.0/sunrpc/auth_none.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/sunrpc/auth_none.c	2018-09-02 22:09:21.629007932 +0200
+@@ -95,7 +95,9 @@ authnone_create (void)
+   __libc_once (authnone_private_guard, authnone_create_once);
+   return &authnone_private.no_client;
+ }
++#if !BOOTSTRAP_GLIBC
+ libc_hidden_nolink_sunrpc (authnone_create, GLIBC_2_0)
++#endif
+ 
+ static bool_t
+ authnone_marshal (AUTH *client, XDR *xdrs)
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/sunrpc/authuxprot.c glibc-2.16.0/sunrpc/authuxprot.c
+--- /home/janneke/src/glibc-2.16.0/sunrpc/authuxprot.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/sunrpc/authuxprot.c	2018-09-02 22:15:51.927158451 +0200
+@@ -63,4 +63,6 @@ xdr_authunix_parms (XDR * xdrs, struct a
+     }
+   return FALSE;
+ }
++#if !BOOTSTRAP_GLIBC
+ libc_hidden_nolink_sunrpc (xdr_authunix_parms, GLIBC_2_0)
++#endif
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/sunrpc/bindrsvprt.c glibc-2.16.0/sunrpc/bindrsvprt.c
+--- /home/janneke/src/glibc-2.16.0/sunrpc/bindrsvprt.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/sunrpc/bindrsvprt.c	2018-09-02 22:24:32.687187675 +0200
+@@ -96,4 +96,7 @@ bindresvport (int sd, struct sockaddr_in
+ 
+   return res;
+ }
++#if !BOOTSTRAP_GLIBC
+ libc_hidden_def (bindresvport)
++#endif
++
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/sunrpc/clnt_raw.c glibc-2.16.0/sunrpc/clnt_raw.c
+--- /home/janneke/src/glibc-2.16.0/sunrpc/clnt_raw.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/sunrpc/clnt_raw.c	2018-09-02 22:33:21.151343826 +0200
+@@ -40,6 +40,7 @@
+ #include <rpc/svc.h>
+ #include <rpc/xdr.h>
+ #include <libintl.h>
++#include <stddef.h>
+ 
+ #define MCALL_MSG_SIZE 24
+ 
+@@ -129,7 +130,9 @@ clntraw_create (u_long prog, u_long vers
+   client->cl_auth = authnone_create ();
+   return client;
+ }
++#if !BOOTSTRAP_GLIBC
+ libc_hidden_nolink_sunrpc (clntraw_create, GLIBC_2_0)
++#endif
+ 
+ static enum clnt_stat
+ clntraw_call (h, proc, xargs, argsp, xresults, resultsp, timeout)
+diff '--exclude=*.orig' -purN /home/janneke/src/glibc-2.16.0/sunrpc/clnt_simp.c glibc-2.16.0/sunrpc/clnt_simp.c
+--- /home/janneke/src/glibc-2.16.0/sunrpc/clnt_simp.c	2012-06-30 21:12:34.000000000 +0200
++++ glibc-2.16.0/sunrpc/clnt_simp.c	2018-09-02 22:34:14.884175251 +0200
+@@ -139,7 +139,9 @@ callrpc (const char *host, u_long prognu
+     crp->valid = 0;
+   return (int) clnt_stat;
+ }
++#if !BOOTSTRAP_GLIBC
+ libc_hidden_nolink_sunrpc (callrpc, GLIBC_2_0)
++#endif
+ 
+ #ifdef _RPC_THREAD_SAFE_
+ void

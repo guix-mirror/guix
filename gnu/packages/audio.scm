@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,6 +68,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages linux)
@@ -143,7 +146,8 @@
        ("qtbase" ,qtbase)
        ("qttools" ,qttools)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gcc" ,gcc-5)))
     (home-page "http://alsamodular.sourceforge.net/")
     (synopsis "Realtime modular synthesizer and effect processor")
     (description
@@ -714,7 +718,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
 (define-public csound
   (package
     (name "csound")
-    (version "6.12.2")
+    (version "6.13.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -723,7 +727,7 @@ emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "01krxcf0alw9k7p5sv0s707600an4sl7lhw3bymbwgqrj0v2p9z2"))))
+                "14822ybqyp31z18gky2y9zadr9dkbhabg97y139py73w7v3af1bh"))))
     (build-system cmake-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -1024,7 +1028,7 @@ audio signals.")
 @enumerate
 @item Pulse-VCO, a dirac pulse oscillator with flat amplitude spectrum
 @item Saw-VCO, a sawtooth oscillator with 1/F amplitude spectrum
-@item Rec-VCO, a square / rectange oscillator
+@item Rec-VCO, a square / rectangle oscillator
 @end enumerate\n
 
 All oscillators are low-pass filtered to provide waveforms similar to the
@@ -1105,16 +1109,16 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.5")
+    (version "2.0.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/FluidSynth/fluidsynth.git")
                     (commit (string-append "v" version))))
-              (file-name (string-append name "-" version "-checkout"))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0rv0apxbj0cgm8f8sqf5xr6kdi4q58ph92ip6cg716ha0ca5lr8y"))))
+                "0nas9pp9r8rnziznxm65x2yzf1ryg98zr3946g0br3s38sjf8l3a"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1532,7 +1536,7 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.12")
+    (version "1.9.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jackaudio/jack2/releases/"
@@ -1541,40 +1545,38 @@ synchronous execution of all clients, and low latency operation.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0crf4y9a5j9miw8r5ji4l3w5w0y2frrf7xyfsfdgacnw6vwy5vyy"))))
+               "1d1d403jn4366mqig6g8ghr8057b3rn7gs26b5p3rkal34j20qw2"))))
     (build-system waf-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f  ; no check target
+     `(#:tests? #f  ; no check target
        #:configure-flags '("--dbus"
                            "--alsa")
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-linkflags
-          (lambda _
-            ;; Add $libdir to the RUNPATH of all the binaries.
-            (substitute* "wscript"
-              ((".*CFLAGS.*-Wall.*" m)
-               (string-append m
-                              "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n")))
-            #t))
+         (add-before 'configure 'set-linkflags
+           (lambda _
+             ;; Add $libdir to the RUNPATH of all the binaries.
+             (substitute* "wscript"
+               ((".*CFLAGS.*-Wall.*" m)
+                (string-append m
+                               "    conf.env.append_unique('LINKFLAGS',"
+                               "'-Wl,-rpath=" %output "/lib')\n")))
+             #t))
          (add-after 'install 'wrap-python-scripts
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
-              (wrap-program (string-append out "/bin/jack_control")
-                `("PYTHONPATH" ":" prefix (,path))))
-            #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/jack_control")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("libsamplerate" ,libsamplerate)
        ("opus" ,opus)
-       ("python2-dbus" ,python2-dbus)
+       ("python-dbus" ,python-dbus)
        ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1595,15 +1597,7 @@ synchronous execution of all clients, and low latency operation.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
-       #:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (add-before
-          'configure 'set-flags
-          (lambda _
-            ;; Compile with C++11, required by gtkmm.
-            (setenv "CXXFLAGS" "-std=c++11")
-            #t)))))
+       #:python ,python-2))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
@@ -1684,7 +1678,12 @@ to be plugged into a wide range of audio synthesis and recording packages.")
                 "12z1vx3krrzsfccpah9xjs68900xvr7bw92wx8np5871i2yv47iw"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(;; Glibc no longer includes Sun RPC support, so tell the build system
+       ;; to use libtirpc instead.
+       #:make-flags (list (string-append "CFLAGS=-I"
+                                         (assoc-ref %build-inputs "libtirpc")
+                                         "/include/tirpc -ltirpc"))
+       #:phases
        (modify-phases %standard-phases
          ;; lashd embeds an ancient version of sigsegv so we just skip it
          (add-after 'unpack 'skip-lashd
@@ -1697,6 +1696,7 @@ to be plugged into a wide range of audio synthesis and recording packages.")
      `(("bdb" ,bdb)
        ("gtk" ,gtk+-2)
        ("jack" ,jack-1)
+       ("libtirpc" ,libtirpc)
        ("readline" ,readline)
        ("python" ,python-2)))
     ;; According to pkg-config, packages depending on lash also need to have
@@ -1949,22 +1949,7 @@ software.")
        #:configure-flags
        (list (string-append "--boost-includes="
                             (assoc-ref %build-inputs "boost")
-                            "/include"))
-       #:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'set-flags
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     ;; See e.g. https://github.com/lvtk/lvtk/issues/21
-                     (setenv "LDFLAGS"
-                             (string-append
-                              "-L" (assoc-ref inputs "boost") "/lib "
-                              "-lboost_system"))
-                     ;; Needed for gtkmm
-                     (substitute* '("src/wscript_build"
-                                    "examples/wscript_build")
-                       (("cxxflags.*= \\[" line)
-                        (string-append line "\"-std=c++11\", ")))
-                     #t)))))
+                            "/include"))))
     (inputs
      `(("boost" ,boost)
        ("gtkmm" ,gtkmm-2)
@@ -2012,6 +1997,13 @@ lv2-c++-tools.")
                               "/lib/libasound.so.2"
                               "\")")))
             #t)))))
+    (native-inputs
+     `(;; FIXME: On i686-linux, GCC 7 hits an internal compiler error
+       ;; upon building utils/makehrtf.c:3281:
+       ;; "internal compiler error: in gen_rtx_SUBREG, at emit-rtl.c:908"
+       ;; https://ci.guix.gnu.org/log/r2fjx9m75m9rifg2yjbnn853wqy2547n-openal-1.19.1
+       ;; Remove this when the default compiler is GCC 9 or later.
+       ("gcc" ,gcc-9)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
@@ -2184,16 +2176,18 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (patches
+               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
+                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2205,12 +2199,6 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-boost-1.68
-           (lambda _
-             (substitute* "server/supernova/utilities/time_tag.hpp"
-               (("(time_duration offset = .+ microseconds\\().*" _ m)
-                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
-             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following
@@ -3203,24 +3191,28 @@ with support for HD extensions.")
 (define-public bs1770gain
   (package
     (name "bs1770gain")
-    (version "0.5.2")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
                            version "/bs1770gain-" version ".tar.gz"))
        (sha256
-        (base32
-         "1p6yz5q7czyf9ard65sp4kawdlkg40cfscr3b24znymmhs3p7rbk"))
+        (base32 "0nnqixvw3x7i22nsr54n4bgm35z9nh3d9qj5s75cfd3ajjsjndyh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; XXX
-           (substitute* "bs1770gain/bs1770gain.c"
-             (("\"N.*\"") "\"\""))
-           (substitute* "configure"
-             (("URL=.*$")
-              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html\n"))))))
+           (substitute* "libbg/bgx.c"
+             (("#define BS.* ") "#define BS ")
+             (("BS.*NO?.*N.*S.*E.*N.*SE?") "NO")
+             (("\"( #|N).*\"") "\"\""))
+           (substitute* (list "config.h"
+                              "configure.ac"
+                              "configure")
+             (("https?://bs1770gain[^/]*/")
+              "https://manpages.debian.org/sid/bs1770gain/bs1770gain.1.en.html"))
+           #t))))
     (build-system gnu-build-system)
     (inputs `(("ffmpeg" ,ffmpeg)
               ("sox" ,sox)))
@@ -3382,21 +3374,22 @@ on the ALSA software PCM plugin.")
 (define-public snd
   (package
     (name "snd")
-    (version "19.5")
+    (version "19.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ccrma-ftp.stanford.edu/pub/Lisp/"
                                   "snd-" version ".tar.gz"))
               (sha256
                (base32
-                "0sk6iyykwi2mm3f1g4r0iqbsrwk3zmyagp6jjqkh8njbq42cjr1y"))))
+                "0s2qv8sznvw6559bi39qj9p072azh9qcb2b86w6w8clz2azjaa76"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
        #:out-of-source? #f              ; for the 'install-doc' phase
        #:configure-flags
        (let* ((out (assoc-ref %outputs "out"))
-              (docdir (string-append out "/share/doc/snd")))
+              (docdir (string-append out "/share/doc/"
+                                     ,name "-" ,version)))
          (list "--with-alsa" "--with-jack" "--with-gmp"
                (string-append "--with-doc-dir=" docdir)))
        #:phases
@@ -3409,7 +3402,7 @@ on the ALSA software PCM plugin.")
                (for-each
                 (lambda (f)
                   (install-file f doc))
-                (find-files "." "\\.html$|COPYING"))
+                (find-files "." "\\.html$"))
                (copy-recursively "pix" (string-append doc "/pix"))
                #t))))))
     (native-inputs
@@ -3700,7 +3693,7 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.08")
+    (version "19.09")
     (source
      (origin
        (method git-fetch)
@@ -3709,7 +3702,7 @@ library.")
              (commit version)))
        (file-name (string-append name "-" version "-checkout"))
        (sha256
-        (base32 "1v13kfhyr46241vb6a4dcb4gw5f149525sprwa9cj4rv6wlcqgm5"))))
+        (base32 "0fagik55jmy3qmb27nhg0zxash1ahfkxphx8m8gs0pimqqrdrd9d"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))

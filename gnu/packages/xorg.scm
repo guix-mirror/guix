@@ -211,14 +211,14 @@ which can be read by any architecture.")
 (define-public xorgproto
   (package
     (name "xorgproto")
-    (version "2018.4")
+    (version "2019.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto/"
-                                  name "-" version ".tar.bz2"))
+                                  "xorgproto-" version ".tar.bz2"))
               (sha256
                (base32
-                "180mqkp70i44rkmj430pmn9idssvffrgv4y5h19fm698a7h8bs7y"))))
+                "16yll1kaffnslik5sizlw3qrigj1gpsgfgyq6903g3mwdixamnm6"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; To get util-macros in (almost?) all package inputs.
@@ -423,7 +423,7 @@ Resources file.")
 (define-public encodings
   (package
     (name "encodings")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -432,8 +432,7 @@ Resources file.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0ffmaw80vmfwdgvdkp6495xgsqszb6s0iira5j0j6pd4i0lk3mnf"))))
+          (base32 "0caafx0yqqnqyvbalxhh3mb0r9v36xmcy5zjhygb2i508dhy35mx"))))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontscale" ,mkfontscale)))
@@ -839,7 +838,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
 (define-public font-util
   (package
     (name "font-util")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -848,8 +847,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "08drjb6cf84pf5ysghjpb4i7xkd2p86k3wl2a0jxs1jif6qbszma"))))
+          (base32 "10i2a8b3d1h3w7klsqf31iz7zbd6l8wglil54fkhdb1385281n1s"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -1209,7 +1207,7 @@ hit when running single-threaded.")
 (define-public libsm
   (package
     (name "libsm")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -1219,7 +1217,7 @@ hit when running single-threaded.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1gc7wavgs435g9qkp9jw4lhmaiq6ip9llv49f054ad6ryp4sib0b"))))
+            "1fwwfq9v3sqmpzpscymswxn76xhxnysa24pfim1mcpxhvjcl89id"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libice" ,libice))) ; SMlib.h includes ICElib.h
@@ -1297,7 +1295,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxdmcp
   (package
     (name "libxdmcp")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1307,7 +1305,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qp4yhxbfnpj34swa0fj635kkihdkwaiw7kf55cg5zqqg630kzl1"))))
+            "0ab53h0rkq721ihk5hi469x500f3pgbkm1wy01yf24x5m923nli0"))))
     (build-system gnu-build-system)
     (inputs
       `(("libbsd" ,libbsd)
@@ -1323,7 +1321,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxft
   (package
     (name "libxft")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
       (origin
         (method url-fetch)
@@ -1333,7 +1331,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0k6wzi5rzs0d0n338ms8n8lfyhq914hw4yl2j7553wqxfqjci8zm"))))
+            "05lja9s54090xwh31r0bqms4v3pimng5xr09g2rdnafx2vk6hp12"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; xft.pc refers to all these.
@@ -1382,7 +1380,7 @@ configuration files.")
 (define-public libxmu
   (package
     (name "libxmu")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1392,7 +1390,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02wx6jw7i0q5qwx87yf94fsn3h0xpz1k7dz1nkwfwm1j71ydqvkm"))))
+            "0cdpqnx6258i4l6qhphvkdiyspysg0i5caqjy820kp63wwjk4d4w"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
@@ -1805,7 +1803,7 @@ used with other display managers such as gdm or kdm.")
 (define-public setxkbmap
   (package
     (name "setxkbmap")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -1815,7 +1813,7 @@ used with other display managers such as gdm or kdm.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qfk097vjysqb72pq89h0la3462kbb2dh1d11qzs2fr67ybb7pd9"))))
+            "1xdrxs65v7d0rw1yaz0vsz55w4hxym99216p085ya9978j379wlg"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
@@ -2017,7 +2015,7 @@ information used in connecting to the X server.")
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -2027,7 +2025,7 @@ information used in connecting to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0pmzaz4kp38qv2lqiw5rnqhwzmwrq65m1x5j001mmv99wh9isnk1"))))
+            "1plssg0s3pbslg6rfzxp9sx8ryvn8l32zyvc8zp9zsbsfwjg69rs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -2386,6 +2384,18 @@ XC-APPGROUP, XTEST.")
         (base32
          "0xca343ff12wh6nsq76r0nbsfrm8dypjrzm4fqz9vv9v8i8kfrp1"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'pedantry
+                    (lambda _
+                      ;; XXX: libevdev includes kernel headers, which causes this
+                      ;; compile test to fail with:
+                      ;; ...-headers-4.14.67/include/asm-generic/posix_types.h:88:14:
+                      ;;error: ISO C90 does not support ‘long long’ [-Werror=long-long]
+                      (substitute* "test/Makefile.in"
+                        (("-pedantic -Werror -std=c89")
+                         "-pedantic -Werror -std=c99"))
+                      #t)))))
     (native-inputs `(("python" ,python)))
     (home-page "https://www.freedesktop.org/wiki/Software/libevdev/")
     (synopsis "Wrapper library for evdev devices")
@@ -4155,16 +4165,16 @@ an X server.")
 (define-public xrandr
   (package
     (name "xrandr")
-    (version "1.5.0")
+    (version "1.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/xrandr-"
-               version ".tar.bz2"))
+               version ".tar.xz"))
         (sha256
           (base32
-            "1kaih7rmzxr1vp5a5zzjhm5x7dn9mckya088sqqw026pskhx9ky1"))))
+            "0ql75s1n3dm2m3g1ilb9l6hqh15r0v709bgghpwazy3jknpnvivv"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -4301,7 +4311,7 @@ a display running X server.")
 (define-public xtrans
   (package
     (name "xtrans")
-    (version "1.3.5")
+    (version "1.4.0")
     (source
       (origin
         (method url-fetch)
@@ -4311,7 +4321,7 @@ a display running X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00c3ph17acnsch3gbdmx33b9ifjnl5w7vx8hrmic1r1cjcv3pgdd"))))
+            "0wyp0yc6gi72hwc3kjmvm3vkj9p6s407cb6dxx37jh9wb68l8z1p"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -4500,7 +4510,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxdamage
   (package
     (name "libxdamage")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -4510,7 +4520,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1bamagq7g6s0d23l8rb3nppj8ifqj05f7z9bhbs4fdg8az3ffgvw"))))
+            "0igaw2akjf712y3rv7lx473jigxmcv9rs9y8sbrvbhya8f30cd5p"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; These are all in the Requires or Requires.private field of xdamage.pc
@@ -4528,7 +4538,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxext
   (package
     (name "libxext")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
       (origin
         (method url-fetch)
@@ -4538,7 +4548,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0dbfn5bznnrhqzvkrcmw4c44yvvpwdcsrvzxf4rk27r36b9x865m"))))
+            "0azqxllcsfxc3ilhz6kwc6x7m8wc477p59ir9p0yrsldx766zbar"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
@@ -4774,7 +4784,7 @@ common definitions and porting layer.")
 (define-public libice
   (package
     (name "libice")
-    (version "1.0.9")
+    (version "1.0.10")
     (source
       (origin
         (method url-fetch)
@@ -4784,7 +4794,7 @@ common definitions and porting layer.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00p2b6bsg6kcdbb39bv46339qcywxfl4hsrz8asm4hy6q7r34w4g"))))
+            "0j638yvmyna2k4mz465jywgdybgdchdqppfx6xfazg7l5khxr1kg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
@@ -4802,7 +4812,7 @@ common definitions and porting layer.")
 (define-public libxau
   (package
     (name "libxau")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -4812,7 +4822,7 @@ common definitions and porting layer.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1wm4pv12f36cwzhldpp7vy3lhm3xdcnp4f184xkxsp7b18r7gm7x"))))
+            "1v3krc6x0zliaa66qq1bf9j60x5nqfy68v8axaiglxpnvgqcpy6c"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)))
@@ -4901,7 +4911,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.9")
+    (version "1.7.10")
     (source
       (origin
         (method url-fetch)
@@ -4911,7 +4921,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0idg1wc01hndvaa820fvfs7phvd1ymf0lldmq6386i7rhkzvirn2"))))
+            "0q8hz3slga3w3ch8wp0k7ay9ilhz315qnab0w1y2x9w3cf7hv8rn"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("xorgproto" ,xorgproto)
@@ -4928,7 +4938,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.5.1")
+    (version "1.5.2")
     (source
       (origin
         (method url-fetch)
@@ -4938,7 +4948,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "06pmphx8lp3iywqnh88fvbfb0d8xgkx0qpvan49akpja1vxfgy8z"))))
+            "08z0mqywrm7ij8bxlfrx0d2wy6kladdmkva1nw5k6qix82z0xsla"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; In accordance with xrandr.pc.
@@ -5022,7 +5032,7 @@ protocol.")
       (origin
         (method url-fetch)
         (uri (string-append "https://xcb.freedesktop.org/dist/"
-                            name "-" version ".tar.bz2"))
+                            "libxcb-" version ".tar.bz2"))
         (sha256
           (base32
            "1ahxhmdqp4bhb90zmc275rmf5wixqra4bnw9pqnzyl1w3598g30q"))))
@@ -5218,7 +5228,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.6")
+    (version "1.6.8")
     (source
       (origin
         (method url-fetch)
@@ -5228,7 +5238,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0ks1mxlda7nxfmffihi15ljsn50q8dknl33i2xag8xzc80fiizk5"))))
+            "1mbkwhhprhf49s2iwx7kiliprsdvd690zk44x3h53ql9q52si2dj"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5289,7 +5299,7 @@ draggable titlebars and borders.")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.5")
+    (version "1.2.0")
     (source
       (origin
         (method url-fetch)
@@ -5299,7 +5309,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-           "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))
+           "0cbqlyssr8aia88c8i7z59z9d0kp3p2hp6683xhz9ndyv8qza7dk"))
         (patches (search-patches "libxt-guix-search-paths.patch"))))
     (build-system gnu-build-system)
     (outputs '("out"
@@ -5788,17 +5798,17 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "335")
+    (version "349")
     (source (origin
               (method url-fetch)
               (uri (list
                     (string-append "http://invisible-mirror.net/archives/xterm/"
-                                   name "-" version ".tgz")
+                                   "xterm-" version ".tgz")
                     (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                   name "-" version ".tgz")))
+                                   "xterm-" version ".tgz")))
               (sha256
                (base32
-                "15nbgys4s2idhx6jzzc24g9bb1s6yps5fyg2bafvs0gkkcm1ggz0"))))
+                "0ps7b2b2kbrkv5q49cmb8c51z0w21jmm7hwciw30m6jgfb9s79ir"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"

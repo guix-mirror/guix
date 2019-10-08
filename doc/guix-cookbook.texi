@@ -1,0 +1,821 @@
+\input texinfo
+@c -*-texinfo-*-
+
+@c %**start of header
+@setfilename guix-cookbook.info
+@documentencoding UTF-8
+@settitle GNU Guix Cookbook
+@c %**end of header
+
+@copying
+Copyright @copyright{} 2019 Ricardo Wurmus@*
+Copyright @copyright{} 2019 Efraim Flashner@*
+Copyright @copyright{} 2019 Pierre Neidhardt@*
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
+@end copying
+
+@dircategory System administration
+@direntry
+* Guix cookbook: (guix-cookbook).    Tutorials and examples for GNU Guix.
+@end direntry
+
+@titlepage
+@title GNU Guix Cookbook
+@subtitle Tutorials and examples for using the GNU Guix Functional Package Manager
+@author The GNU Guix Developers
+
+@page
+@vskip 0pt plus 1filll
+
+@insertcopying
+@end titlepage
+
+@contents
+
+@c *********************************************************************
+@node Top
+@top GNU Guix Cookbook
+
+This document presents tutorials and detailed examples for GNU@tie{}Guix, a
+functional package management tool written for the GNU system.  Please
+@pxref{Top,,, guix, GNU Guix reference manual} for details about the system,
+its API, and related concepts.
+
+@c TRANSLATORS: You can replace the following paragraph with information on
+@c how to join your own translation team and how to report issues with the
+@c translation.
+If you would like to translate this document in your native language, consider
+joining the @uref{https://translationproject.org/domain/guix-cookbook.html,
+Translation Project}.
+
+@menu
+* Scheme tutorials::            Meet your new favorite language!
+* Packaging::                   Packaging tutorials
+* System Configuration::        Customizing the GNU System
+
+* Acknowledgments::             Thanks!
+* GNU Free Documentation License::  The license of this document.
+* Concept Index::               Concepts.
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+Scheme tutorials
+
+* A Scheme Crash Course::       Learn the basics of Scheme
+
+Packaging
+
+* Packaging Tutorial::          Let's add a package to Guix!
+
+System Configuration
+
+* Customizing the Kernel::      Creating and using a custom Linux kernel
+
+
+@end detailmenu
+@end menu
+
+@c *********************************************************************
+@node Scheme tutorials
+@chapter Scheme tutorials
+
+GNU@tie{}Guix is written in the general purpose programming language Scheme,
+and many of its features can be accessed and manipulated programmatically.
+You can use Scheme to generate package definitions, to modify them, to build
+them, to deploy whole operating systems, etc.
+
+Knowing the basics of how to program in Scheme will unlock many of the
+advanced features Guix provides --- and you don't even need to be an
+experienced programmer to use them!
+
+Let's get started!
+
+@node A Scheme Crash Course
+@section A Scheme Crash Course
+
+@cindex Scheme, crash course
+
+Guix uses the Guile implementation of Scheme.  To start playing with the
+language, install it with @code{guix install guile} and start a
+@uref{https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop,
+REPL} by running @code{guile} from the command line.
+
+Alternatively you can also run @code{guix environment --ad-hoc guile -- guile}
+if you'd rather not have Guile installed in your user profile.
+
+In the following examples we use the @code{>} symbol to denote the REPL
+prompt, that is, the line reserved for user input.  @xref{Using Guile
+Interactively,,, guile, GNU Guile Reference Manual}) for more details on the
+REPL.
+
+@itemize
+@item
+Scheme syntax boils down to a tree of expressions (or @emph{s-expression} in
+Lisp lingo).  An expression can be a literal such as numbers and strings, or a
+compound which is a parenthesized list of compounds and literals.  @code{#t}
+and @code{#f} stand for the booleans "true" and "false", respectively.
+
+Examples of valid expressions:
+
+@example scheme
+> "Hello World!"
+"Hello World!"
+> 17
+17
+> (display (string-append "Hello " "Guix" "\n"))
+"Hello Guix!"
+@end example
+
+@item
+This last example is a function call nested in another function call.  When a
+parenthesized expression is evaluated, the first term is the function and the
+rest are the arguments passed to the function.  Every function returns the
+last evaluated expression as its return value.
+
+@item
+Anonymous functions are declared with the @code{lambda} term:
+
+@example scheme
+> (lambda (x) (* x x))
+#<procedure 120e348 at <unknown port>:24:0 (x)>
+@end example
+
+The above procedure returns the square of its argument.  Since everything is
+an expression, the @code{lambda} expression returns an anonymous procedure,
+which can in turn be applied to an argument:
+
+@example scheme
+> ((lambda (x) (* x x)) 3)
+9
+@end example
+
+@item
+Anything can be assigned a global name with @code{define}:
+
+@example scheme
+> (define a 3)
+> (define square (lambda (x) (* x x)))
+> (square a)
+9
+@end example
+
+@item
+Procedures can be defined more concisely with the following syntax:
+
+@example scheme
+(define (square x) (* x x))
+@end example
+
+@item
+A list structure can be created with the @code{list} procedure:
+
+@example scheme
+> (list 2 a 5 7)
+(2 3 5 7)
+@end example
+
+@item
+The @emph{quote} disables evaluation of a parenthesized expression: the first
+term is not called over the other terms.  Thus it effectively returns a list
+of terms.
+
+@example scheme
+> '(display (string-append "Hello " "Guix" "\n"))
+(display (string-append "Hello " "Guix" "\n"))
+> '(2 a 5 7)
+(2 a 5 7)
+@end example
+
+@item
+The @emph{quasiquote} disables evaluation of a parenthesized expression until
+a comma re-enables it.  Thus it provides us with fine-grained control over
+what is evaluated and what is not.
+
+@example scheme
+> `(2 a 5 7 (2 ,a 5 ,(+ a 4)))
+(2 a 5 7 (2 3 5 7))
+@end example
+
+Note that the above result is a list of mixed elements: numbers, symbols (here
+@code{a}) and the last element is a list itself.
+
+@item
+Multiple variables can be named locally with @code{let}:
+
+@example scheme
+> (define x 10)
+> (let ((x 2)
+        (y 3))
+    (list x y))
+(2 3)
+> x
+10
+> y
+ERROR: In procedure module-lookup: Unbound variable: y
+@end example
+
+Use @code{let*} to allow later variable declarations to refer to earlier
+definitions.
+
+@example scheme
+> (let* ((x 2)
+         (y (* x 3)))
+    (list x y))
+(2 6)
+@end example
+
+@item
+The keyword syntax is @code{#:}; it is used to create unique identifiers.
+@pxref{Keywords,,, guile, GNU Guile Reference Manual}.
+
+@item
+The percentage @code{%} is typically used for read-only global variables in
+the build stage.  Note that it is merely a convention, like @code{_} in C.
+Scheme treats @code{%} exactly the same as any other letter.
+
+@item
+Modules are created with @code{define-module}.  For instance
+
+@example scheme
+(define-module (guix build-system ruby)
+  #:use-module (guix store)
+  #:export (ruby-build
+            ruby-build-system))
+@end example
+
+defines the module @code{guix build-system ruby} which must be located in
+@file{guix/build-system/ruby.scm} somewhere in the Guile load path.  It
+depends on the @code{(guix store)} module and it exports two variables,
+@code{ruby-build} and @code{ruby-build-system}.
+@end itemize
+
+For a more detailed introduction, check out
+@uref{http://www.troubleshooters.com/codecorn/scheme_guile/hello.htm, Scheme
+at a Glance}, by Steve Litt.
+
+One of the reference Scheme books is the seminal ``Structure and
+Interpretation of Computer Programs'', by Harold Abelson and Gerald Jay
+Sussman, with Julie Sussman.  You'll find a
+@uref{https://mitpress.mit.edu/sites/default/files/sicp/index.html, free copy
+online}, together with
+@uref{https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/video-lectures/,
+videos of the lectures by the authors}.  The book is available in Texinfo
+format as the @code{sicp} Guix package.  Go ahead, run @code{guix install
+sicp} and start reading with @code{info sicp} (or with the Emacs Info reader).
+An @uref{https://sarabander.github.io/sicp/, unofficial ebook is also
+available}.
+
+You'll find more books, tutorials and other resources at
+@url{https://schemers.org/}.
+
+
+@c *********************************************************************
+@node Packaging
+@chapter Packaging
+
+@cindex packaging
+
+This chapter is dedicated to teaching you how to add packages to the
+collection of packages that come with GNU Guix.  This involves writing package
+definitions in Guile Scheme, organizing them in package modules, and building
+them.
+
+@menu
+* Packaging Tutorial::         A tutorial on how to add packages to Guix.
+@end menu
+
+@node Packaging Tutorial
+@section Packaging Tutorial
+
+GNU Guix stands out as the @emph{hackable} package manager, mostly because it
+uses @uref{https://www.gnu.org/software/guile/, GNU Guile}, a powerful
+high-level programming language, one of the
+@uref{https://en.wikipedia.org/wiki/Scheme_%28programming_language%29, Scheme}
+dialects from the
+@uref{https://en.wikipedia.org/wiki/Lisp_%28programming_language%29, Lisp family}.
+
+Package definitions are also written in Scheme, which empowers Guix in some
+very unique ways, unlike most other package managers that use shell scripts or
+simple languages.
+
+@itemize
+@item
+Use functions, structures, macros and all of Scheme expressiveness for your
+package definitions.
+
+@item
+Inheritance makes it easy to customize a package by inheriting from it and
+modifying only what is needed.
+ 
+@item
+Batch processing: the whole package collection can be parsed, filtered and
+processed.  Building a headless server with all graphical interfaces stripped
+out?  It's possible.  Want to rebuild everything from source using specific
+compiler optimization flags?  Pass the @code{#:make-flags "..."} argument to
+the list of packages.  It wouldn't be a stretch to think
+@uref{https://wiki.gentoo.org/wiki/USE_flag, Gentoo USE flags} here, but this
+goes even further: the changes don't have to be thought out beforehand by the
+packager, they can be @emph{programmed} by the user!
+@end itemize
+
+The following tutorial covers all the basics around package creation with Guix.
+It does not assume much knowledge of the Guix system nor of the Lisp language.
+The reader is only expected to be familiar with the command line and to have some
+basic programming knowledge.
+
+@subsection A "Hello World" package
+
+The “Defining Packages” section of the manual introduces the basics of Guix
+packaging (@pxref{Defining Packages,,, guix, GNU Guix Reference Manual}).  In
+the following section, we will partly go over those basics again.
+
+``GNU hello'' is a dummy project that serves as an idiomatic example for
+packaging.  It uses the GNU build system (@code{./configure && make && make
+install}).  Guix already provides a package definition which is a perfect
+example to start with.  You can look up its declaration with @code{guix edit
+hello} from the command line.  Let's see how it looks:
+
+@example scheme
+(define-public hello
+  (package
+    (name "hello")
+    (version "2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hello/hello-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
+    (build-system gnu-build-system)
+    (synopsis "Hello, GNU world: An example GNU package")
+    (description
+     "GNU Hello prints the message \"Hello, world!\" and then exits.  It
+serves as an example of standard GNU coding practices.  As such, it supports
+command-line arguments, multiple languages, and so on.")
+    (home-page "https://www.gnu.org/software/hello/")
+    (license gpl3+)))
+@end example
+
+As you can see, most of it is rather straightforward.  But let's review the
+fields together:
+
+@table @samp
+@item name
+The project name.  Using Scheme conventions, we prefer to keep it
+lower case, without underscore and using dash-separated words.
+
+@item source
+This field contains a description of the source code origin.  The
+@code{origin} record contains these fields:
+
+@enumerate
+@item  The method, here @code{url-fetch} to download via HTTP/FTP, but other methods
+    exist, such as @code{git-fetch} for Git repositories.
+@item  The URI, which is typically some @code{https://} location for @code{url-fetch}.  Here
+    the special `mirror://gnu` refers to a set of well known locations, all of
+    which can be used by Guix to fetch the source, should some of them fail.
+@item  The @code{sha256} checksum of the requested file.  This is essential to ensure
+    the source is not corrupted.  Note that Guix works with base32 strings,
+    hence the call to the @code{base32} function.
+@end enumerate
+
+@item build-system
+
+This is where the power of abstraction provided by the Scheme language really
+shines: in this case, the @code{gnu-build-system} abstracts away the famous
+@code{./configure && make && make install} shell invocations.  Other build
+systems include the @code{trivial-build-system} which does not do anything and
+requires from the packager to program all the build steps, the
+@code{python-build-system}, the @code{emacs-build-system}, and many more
+(@pxref{Build Systems,,, guix, GNU Guix Reference Manual}).
+
+@item synopsis
+It should be a concise summary of what the package does.  For many packages a
+tagline from the project's home page can be used as the synopsis.
+
+@item description
+Same as for the synopsis, it's fine to re-use the project description from the
+homepage.  Note that Guix uses Texinfo syntax.
+
+@item home-page
+Use HTTPS if available.
+
+@item license
+See @code{guix/licenses.scm} in the project source for a full list of
+available licenses.
+@end table
+
+Time to build our first package!  Nothing fancy here for now: we will stick to a
+dummy "my-hello", a copy of the above declaration.
+
+As with the ritualistic "Hello World" taught with most programming languages,
+this will possibly be the most "manual" approach.  We will work out an ideal
+setup later; for now we will go the simplest route.
+
+Save the following to a file @file{my-hello.scm}.
+
+@example scheme
+(use-modules (guix packages)
+             (guix download)
+             (guix build-system gnu)
+             (guix licenses))
+
+(package
+  (name "my-hello")
+  (version "2.10")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/hello/hello-" version
+                                ".tar.gz"))
+            (sha256
+             (base32
+              "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
+  (build-system gnu-build-system)
+  (synopsis "Hello, Guix world: An example custom Guix package")
+  (description
+   "GNU Hello prints the message \"Hello, world!\" and then exits.  It
+serves as an example of standard GNU coding practices.  As such, it supports
+command-line arguments, multiple languages, and so on.")
+  (home-page "https://www.gnu.org/software/hello/")
+  (license gpl3+))
+@end example
+
+We will explain the extra code in a moment.
+
+Feel free to play with the different values of the various fields.  If you
+change the source, you'll need to update the checksum.  Indeed, Guix refuses to
+build anything if the given checksum does not match the computed checksum of the
+source code.  To obtain the correct checksum of the package declaration, we
+need to download the source, compute the sha256 checksum and convert it to
+base32.
+
+Thankfully, Guix can automate this task for us; all we need is to provide the
+URI:
+
+@c TRANSLATORS: This is example shell output.
+@example sh
+$ guix download mirror://gnu/hello/hello-2.10.tar.gz
+
+Starting download of /tmp/guix-file.JLYgL7
+From https://ftpmirror.gnu.org/gnu/hello/hello-2.10.tar.gz...
+following redirection to `https://mirror.ibcp.fr/pub/gnu/hello/hello-2.10.tar.gz'...
+ …10.tar.gz  709KiB                                 2.5MiB/s 00:00 [##################] 100.0%
+/gnu/store/hbdalsf5lpf01x4dcknwx6xbn6n5km6k-hello-2.10.tar.gz
+0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i
+@end example
+
+In this specific case the output tells us which mirror was chosen.
+If the result of the above command is not the same as in the above snippet,
+update your @code{my-hello} declaration accordingly.
+
+Note that GNU package tarballs come with an OpenPGP signature, so you
+should definitely check the signature of this tarball with `gpg` to
+authenticate it before going further:
+
+@c TRANSLATORS: This is example shell output.
+@example sh
+$ guix download mirror://gnu/hello/hello-2.10.tar.gz.sig
+
+Starting download of /tmp/guix-file.03tFfb
+From https://ftpmirror.gnu.org/gnu/hello/hello-2.10.tar.gz.sig...
+following redirection to `https://ftp.igh.cnrs.fr/pub/gnu/hello/hello-2.10.tar.gz.sig'...
+ ….tar.gz.sig  819B                                                                                                                       1.2MiB/s 00:00 [##################] 100.0%
+/gnu/store/rzs8wba9ka7grrmgcpfyxvs58mly0sx6-hello-2.10.tar.gz.sig
+0q0v86n3y38z17rl146gdakw9xc4mcscpk8dscs412j22glrv9jf
+$ gpg --verify /gnu/store/rzs8wba9ka7grrmgcpfyxvs58mly0sx6-hello-2.10.tar.gz.sig /gnu/store/hbdalsf5lpf01x4dcknwx6xbn6n5km6k-hello-2.10.tar.gz
+gpg: Signature made Sun 16 Nov 2014 01:08:37 PM CET
+gpg:                using RSA key A9553245FDE9B739
+gpg: Good signature from "Sami Kerola <kerolasa@@iki.fi>" [unknown]
+gpg:                 aka "Sami Kerola (http://www.iki.fi/kerolasa/) <kerolasa@@iki.fi>" [unknown]
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 8ED3 96E3 7E38 D471 A005  30D3 A955 3245 FDE9 B739
+@end example
+
+You can then happily run
+
+@c TRANSLATORS: Do not translate this command
+@example sh
+$ guix package --install-from-file=my-hello.scm
+@end example
+
+You should now have @code{my-hello} in your profile!
+
+@c TRANSLATORS: Do not translate this command
+@example sh
+$ guix package --list-installed=my-hello
+my-hello	2.10	out
+/gnu/store/f1db2mfm8syb8qvc357c53slbvf1g9m9-my-hello-2.10
+@end example
+
+We've gone as far as we could without any knowledge of Scheme.  Before moving
+on to more complex packages, now is the right time to brush up on your Scheme
+knowledge.  @pxref{A Scheme Crash Course} to get up to speed.
+
+@c TODO: Continue the tutorial
+
+
+@c *********************************************************************
+@node System Configuration
+@chapter System Configuration
+
+Guix offers a flexible language for declaratively configuring your Guix
+System.  This flexibility can at times be overwhelming.  The purpose of this
+chapter is to demonstrate some advanced configuration concepts.
+
+@pxref{System Configuration,,, guix, GNU Guix Reference Manual} for a complete
+reference.
+
+@menu
+* Customizing the Kernel::     Creating and using a custom Linux kernel on Guix System.
+@end menu
+
+@node Customizing the Kernel
+@section Customizing the Kernel
+
+Guix is, at its core, a source based distribution with substitutes
+(@pxref{Substitutes,,, guix, GNU Guix Reference Manual}), and as such building
+packages from their source code is an expected part of regular package
+installations and upgrades.  Given this starting point, it makes sense that
+efforts are made to reduce the amount of time spent compiling packages, and
+recent changes and upgrades to the building and distribution of substitutes
+continues to be a topic of discussion within Guix.
+
+The kernel, while not requiring an overabundance of RAM to build, does take a
+rather long time on an average machine.  The official kernel configuration, as
+is the case with many GNU/Linux distributions, errs on the side of
+inclusiveness, and this is really what causes the build to take such a long
+time when the kernel is built from source.
+
+The Linux kernel, however, can also just be described as a regular old
+package, and as such can be customized just like any other package.  The
+procedure is a little bit different, although this is primarily due to the
+nature of how the package definition is written.
+
+The @code{linux-libre} kernel package definition is actually a procedure which
+creates a package.
+
+@example scheme
+(define* (make-linux-libre version hash supported-systems
+                           #:key
+                           ;; A function that takes an arch and a variant.
+                           ;; See kernel-config for an example.
+                           (extra-version #f)
+                           (configuration-file #f)
+                           (defconfig "defconfig")
+                           (extra-options %default-extra-linux-options)
+                           (patches (list %boot-logo-patch)))
+  ...)
+@end example
+
+The current @code{linux-libre} package is for the 5.1.x series, and is
+declared like this:
+
+@example scheme
+(define-public linux-libre
+  (make-linux-libre %linux-libre-version
+                    %linux-libre-hash
+                    '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
+                    #:patches %linux-libre-5.1-patches
+                    #:configuration-file kernel-config))
+@end example
+
+Any keys which are not assigned values inherit their default value from the
+@code{make-linux-libre} definition.  When comparing the two snippets above,
+you may notice that the code comment in the first doesn't actually refer to
+the @code{#:extra-version} keyword; it is actually for
+@code{#:configuration-file}.  Because of this, it is not actually easy to
+include a custom kernel configuration from the definition, but don't worry,
+there are other ways to work with what we do have.
+
+There are two ways to create a kernel with a custom kernel configuration.  The
+first is to provide a standard @file{.config} file during the build process by
+including an actual @file{.config} file as a native input to our custom
+kernel.  The following is a snippet from the custom @code{'configure} phase of
+the @code{make-linux-libre} package definition:
+
+@example scheme
+(let ((build  (assoc-ref %standard-phases 'build))
+      (config (assoc-ref (or native-inputs inputs) "kconfig")))
+
+  ;; Use a custom kernel configuration file or a default
+  ;; configuration file.
+  (if config
+      (begin
+        (copy-file config ".config")
+        (chmod ".config" #o666))
+      (invoke "make" ,defconfig))
+@end example
+
+Below is a sample kernel package.  The @code{linux-libre} package is nothing
+special and can be inherited from and have its fields overridden like any
+other package:
+
+@example scheme
+(define-public linux-libre/E2140
+  (package
+    (inherit linux-libre)
+    (native-inputs
+     `(("kconfig" ,(local-file "E2140.config"))
+      ,@@(alist-delete "kconfig"
+                      (package-native-inputs linux-libre))))))
+@end example
+
+In the same directory as the file defining @code{linux-libre-E2140} is a file
+named @file{E2140.config}, which is an actual kernel configuration file.  The
+@code{defconfig} keyword of @code{make-linux-libre} is left blank here, so the
+only kernel configuration in the package is the one which was included in the
+@code{native-inputs} field.
+
+The second way to create a custom kernel is to pass a new value to the
+@code{extra-options} keyword of the @code{make-linux-libre} procedure.  The
+@code{extra-options} keyword works with another function defined right below
+it:
+
+@example scheme
+(define %default-extra-linux-options
+  `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+   ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
+   ;; Modules required for initrd:
+   ("CONFIG_NET_9P" . m)
+   ("CONFIG_NET_9P_VIRTIO" . m)
+   ("CONFIG_VIRTIO_BLK" . m)
+   ("CONFIG_VIRTIO_NET" . m)
+   ("CONFIG_VIRTIO_PCI" . m)
+   ("CONFIG_VIRTIO_BALLOON" . m)
+   ("CONFIG_VIRTIO_MMIO" . m)
+   ("CONFIG_FUSE_FS" . m)
+   ("CONFIG_CIFS" . m)
+   ("CONFIG_9P_FS" . m)))
+
+(define (config->string options)
+  (string-join (map (match-lambda
+                      ((option . 'm)
+                       (string-append option "=m"))
+                      ((option . #t)
+                       (string-append option "=y"))
+                      ((option . #f)
+                       (string-append option "=n")))
+                    options)
+               "\n"))
+@end example
+
+And in the custom configure script from the `make-linux-libre` package:
+
+@example scheme
+;; Appending works even when the option wasn't in the
+;; file.  The last one prevails if duplicated.
+(let ((port (open-file ".config" "a"))
+      (extra-configuration ,(config->string extra-options)))
+  (display extra-configuration port)
+  (close-port port))
+
+(invoke "make" "oldconfig"))))
+@end example
+
+So by not providing a configuration-file the @file{.config} starts blank, and
+then we write into it the collection of flags that we want.  Here's another
+custom kernel:
+
+@example scheme
+(define %macbook41-full-config
+  (append %macbook41-config-options
+          %filesystems
+          %efi-support
+          %emulation
+          (@@@@ (gnu packages linux) %default-extra-linux-options)))
+
+(define-public linux-libre-macbook41
+  ;; XXX: Access the internal 'make-linux-libre' procedure, which is
+  ;; private and unexported, and is liable to change in the future.
+  ((@@@@ (gnu packages linux) make-linux-libre) (@@@@ (gnu packages linux) %linux-libre-version)
+                      (@@@@ (gnu packages linux) %linux-libre-hash)
+                      '("x86_64-linux")
+                      #:extra-version "macbook41"
+                      #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)
+                      #:extra-options %macbook41-config-options))
+@end example
+
+In the above example @code{%filesystems} is a collection of flags enabling
+different filesystem support, @code{%efi-support} enables EFI support and
+@code{%emulation} enables a x86_64-linux machine to act in 32-bit mode also.
+@code{%default-extra-linux-options} are the ones quoted above, which had to be
+added in since they were replaced in the @code{extra-options} keyword.
+
+This all sounds like it should be doable, but how does one even know which
+modules are required for a particular system?  Two places that can be helpful
+in trying to answer this question is the
+@uref{https://wiki.gentoo.org/wiki/Handbook:AMD64/Installation/Kernel, Gentoo
+Handbook} and the
+@uref{https://www.kernel.org/doc/html/latest/admin-guide/README.html?highlight=localmodconfig,
+documentation from the kernel itself}.  From the kernel documentation, it
+seems that @code{make localmodconfig} is the command we want.
+
+In order to actually run @code{make localmodconfig} we first need to get and
+unpack the kernel source code:
+
+@example shell
+tar xf $(guix build linux-libre --source)
+@end example
+
+Once inside the directory containing the source code run @code{touch .config}
+to create an initial, empty @file{.config} to start with.  @code{make
+localmodconfig} works by seeing what you already have in @file{.config} and
+letting you know what you're missing.  If the file is blank then you're
+missing everything.  The next step is to run:
+
+@example shell
+guix environment linux-libre -- make localmodconfig
+@end example
+
+and note the output.  Do note that the @file{.config} file is still empty.
+The output generally contains two types of warnings.  The first start with
+"WARNING" and can actually be ignored in our case.  The second read:
+
+@example shell
+module pcspkr did not have configs CONFIG_INPUT_PCSPKR
+@end example
+
+For each of these lines, copy the @code{CONFIG_XXXX_XXXX} portion into the
+@file{.config} in the directory, and append @code{=m}, so in the end it looks
+like this:
+
+@example shell
+CONFIG_INPUT_PCSPKR=m
+CONFIG_VIRTIO=m
+@end example
+
+After copying all the configuration options, run @code{make localmodconfig}
+again to make sure that you don't have any output starting with "module".
+After all of these machine specific modules there are a couple more left that
+are also needed.  @code{CONFIG_MODULES} is necessary so that you can build and
+load modules separately and not have everything built into the kernel.
+@code{CONFIG_BLK_DEV_SD} is required for reading from hard drives.  It is
+possible that there are other modules which you will need.
+
+This post does not aim to be a guide to configuring your own kernel however,
+so if you do decide to build a custom kernel you'll have to seek out other
+guides to create a kernel which is just right for your needs.
+
+The second way to setup the kernel configuration makes more use of Guix's
+features and allows you to share configuration segments between different
+kernels.  For example, all machines using EFI to boot have a number of EFI
+configuration flags that they need.  It is likely that all the kernels will
+share a list of filesystems to support.  By using variables it is easier to
+see at a glance what features are enabled and to make sure you don't have
+features in one kernel but missing in another.
+
+Left undiscussed however, is Guix's initrd and its customization.  It is
+likely that you'll need to modify the initrd on a machine using a custom
+kernel, since certain modules which are expected to be built may not be
+available for inclusion into the initrd.
+
+@c *********************************************************************
+@node Acknowledgments
+@chapter Acknowledgments
+
+Guix is based on the @uref{https://nixos.org/nix/, Nix package manager},
+which was designed and
+implemented by Eelco Dolstra, with contributions from other people (see
+the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
+management, and promoted unprecedented features, such as transactional
+package upgrades and rollbacks, per-user profiles, and referentially
+transparent build processes.  Without this work, Guix would not exist.
+
+The Nix-based software distributions, Nixpkgs and NixOS, have also been
+an inspiration for Guix.
+
+GNU@tie{}Guix itself is a collective work with contributions from a
+number of people.  See the @file{AUTHORS} file in Guix for more
+information on these fine people.  The @file{THANKS} file lists people
+who have helped by reporting bugs, taking care of the infrastructure,
+providing artwork and themes, making suggestions, and more---thank you!
+
+This document includes adapted sections from articles that have previously
+been published on the Guix blog at @uref{https://guix.gnu.org/blog}.
+
+
+@c *********************************************************************
+@node GNU Free Documentation License
+@appendix GNU Free Documentation License
+@cindex license, GNU Free Documentation License
+@include fdl-1.3.texi
+
+@c *********************************************************************
+@node Concept Index
+@unnumbered Concept Index
+@printindex cp
+
+@bye
+
+@c Local Variables:
+@c ispell-local-dictionary: "american";
+@c End:

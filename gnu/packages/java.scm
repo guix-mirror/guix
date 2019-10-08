@@ -2,7 +2,7 @@
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016, 2017 Roel Janssen <roel@gnu.org>
-;;; Copyright © 2017 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2017, 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2016, 2017, 2018 Alex Vong <alexvong1995@gmail.com>
@@ -152,6 +152,17 @@ and binary format defined in The Java Virtual Machine Specification.")
              "--disable-gjdoc")
        #:phases
        (modify-phases %standard-phases
+         ;; XXX: This introduces a memory leak as we remove a call to free up
+         ;; memory for the file name string.  This was necessary because of a
+         ;; runtime error that would have prevented us from building
+         ;; ant-bootstrap later.  See https://issues.guix.gnu.org/issue/36685
+         ;; for the gnarly details.
+         (add-after 'unpack 'remove-call-to-free
+           (lambda _
+             (substitute* "native/jni/java-io/java_io_VMFile.c"
+               (("result = cpio_isFileExists.*" m)
+                (string-append m "\n//")))
+             #t))
          (add-after 'install 'install-data
            (lambda _ (invoke "make" "install-data"))))))
     (native-inputs
@@ -186,11 +197,20 @@ language.")
     (arguments
      `(#:configure-flags
        (list (string-append "--with-classpath-install-dir="
-                            (assoc-ref %build-inputs "classpath")))))
+                            (assoc-ref %build-inputs "classpath"))
+             "--disable-int-caching"
+             "--enable-runtime-reloc-checks"
+             "--enable-ffi")))
     (inputs
      `(("classpath" ,classpath-bootstrap)
        ("jikes" ,jikes)
+       ("libffi" ,libffi)
        ("zlib" ,zlib)))
+    ;; When built with a recent GCC and glibc the configure step of icedtea-6
+    ;; fails with an invalid instruction error.
+    (native-inputs
+     `(("gcc" ,gcc-5)
+       ("libc" ,glibc-2.28)))
     (home-page "http://jamvm.sourceforge.net/")
     (synopsis "Small Java Virtual Machine")
     (description "JamVM is a Java Virtual Machine conforming to the JVM
@@ -740,6 +760,9 @@ machine.")))
              (with-directory-excursion "openjdk"
                (invoke "tar" "xvf" (assoc-ref inputs "hotspot-src"))
                (rename-file "hg-checkout" "hotspot"))
+             (substitute* "patches/freetypeversion.patch"
+               (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                "REQUIRED_FREETYPE_VERSION = 2.10.1"))
              (substitute* "Makefile.in"
                (("echo \"ERROR: No up-to-date OpenJDK zip available\"; exit -1;")
                 "echo \"trust me\";")
@@ -907,7 +930,6 @@ machine.")))
        ("fastjar" ,fastjar)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("gcc" ,gcc-4.9) ; there's a segmentation fault when compiling with gcc-5 or gcc-7
        ("gtk" ,gtk+-2)
        ("gawk" ,gawk)
        ("giflib" ,giflib)
@@ -1107,6 +1129,18 @@ bootstrapping purposes.")
                                             ((name . _) name))
                                           inputs))))
                  #t)))
+           (add-after 'unpack 'patch-bitrot
+             (lambda _
+               (substitute* '("patches/boot/revert-6973616.patch"
+                              "openjdk.src/jdk/make/common/shared/Defs-versions.gmk")
+                 (("REQUIRED_FREETYPE_VERSION = 2.2.1")
+                  "REQUIRED_FREETYPE_VERSION = 2.10.1"))
+               ;; As of attr 2.4.48 this header is no longer
+               ;; included.  It is provided by the libc instead.
+               (substitute* '("configure"
+                              "openjdk.src/jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c")
+                 (("attr/xattr.h") "sys/xattr.h"))
+               #t))
            (add-after 'unpack 'fix-x11-extension-include-path
              (lambda* (#:key inputs #:allow-other-keys)
                (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
@@ -1372,7 +1406,17 @@ bootstrapping purposes.")
            (add-after 'install 'install-libjvm
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((lib-path (string-append (assoc-ref outputs "out")
-                                               "/lib/amd64")))
+                                               ;; See 'INSTALL_ARCH_DIR' in
+                                               ;; 'configure'.
+                                               ,(match (%current-system)
+                                                  ("i686-linux"
+                                                   "/lib/i386")
+                                                  ("x86_64-linux"
+                                                   "/lib/amd64")
+                                                  ("armhf-linux"
+                                                   "/lib/arm")
+                                                  ("aarch64-linux"
+                                                   "/lib/aarch64")))))
                  (symlink (string-append lib-path "/server/libjvm.so")
                           (string-append lib-path "/libjvm.so")))
                #t))
@@ -1520,6 +1564,10 @@ bootstrapping purposes.")
       (description
        "This package provides the Java development kit OpenJDK built with the
 IcedTea build harness.")
+
+      ;; 'configure' lists "mips" and "mipsel", but not "mips64el'.
+      (supported-systems (delete "mips64el-linux" %supported-systems))
+
       ;; IcedTea is released under the GPL2 + Classpath exception, which is the
       ;; same license as both GNU Classpath and OpenJDK.
       (license license:gpl2+))))
@@ -1586,6 +1634,7 @@ IcedTea build harness.")
                  (delete 'patch-paths)
                  (delete 'set-additional-paths)
                  (delete 'patch-patches)
+                 (delete 'patch-bitrot)
                  ;; Prevent the keytool from recording the current time when
                  ;; adding certificates at build time.
                  (add-after 'unpack 'patch-keystore
@@ -11109,3 +11158,67 @@ network protocols, and core version control algorithms.")
      `(("java-javaewah" ,java-javaewah)
        ("java-jsch" ,java-jsch)
        ("java-slf4j-api" ,java-slf4j-api)))))
+
+(define-public abcl
+  (package
+    (name "abcl")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://abcl.org/releases/"
+                           version "/abcl-src-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1hhvcg050nfpjbdmskc1cv2j38qi6qfl77a61b5cxx576kbff3lj"))
+       (patches
+        (search-patches
+         "abcl-fix-build-xml.patch"))))
+    (build-system ant-build-system)
+    (native-inputs
+     `(("java-junit" ,java-junit)))
+    (arguments
+     `(#:build-target "abcl.jar"
+       #:test-target "abcl.test"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((share (string-append (assoc-ref outputs "out")
+                                         "/share/java/"))
+                   (bin (string-append (assoc-ref outputs "out")
+                                       "/bin/")))
+               (mkdir-p share)
+               (install-file "dist/abcl.jar" share)
+               (install-file "dist/abcl-contrib.jar" share)
+               (mkdir-p bin)
+               (with-output-to-file (string-append bin "abcl")
+                 (lambda _
+                   (let ((classpath (string-append
+                                     share "abcl.jar"
+                                     ":"
+                                     share "abcl-contrib.jar")))
+                     (display (string-append
+                               "#!" (which "sh") "\n"
+                               "if [[ -z $CLASSPATH ]]; then\n"
+                               "  cp=\"" classpath "\"\n"
+                               "else\n"
+                               "  cp=\"" classpath ":$CLASSPATH\"\n"
+                               "fi\n"
+                               "exec " (which "java")
+                               " -cp $cp org.armedbear.lisp.Main $@\n")))))
+               (chmod (string-append bin "abcl") #o755)
+               #t))))))
+    (home-page "https://abcl.org/")
+    (synopsis "Common Lisp Implementation on the JVM")
+    (description
+     "@dfn{Armed Bear Common Lisp} (ABCL) is a full implementation of the Common
+Lisp language featuring both an interpreter and a compiler, running in the
+JVM.  It supports JSR-223 (Java scripting API): it can be a scripting engine
+in any Java application.  Additionally, it can be used to implement (parts of)
+the application using Java to Lisp integration APIs.")
+    (license (list license:gpl2+
+                   ;; named-readtables is released under 3 clause BSD
+                   license:bsd-3
+                   ;; jfli is released under CPL 1.0
+                   license:cpl1.0))))

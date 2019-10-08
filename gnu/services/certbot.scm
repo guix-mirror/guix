@@ -99,6 +99,7 @@
                             "--manual"
                             (string-append "--preferred-challenges=" challenge)
                             "--cert-name" name
+                            "--manual-public-ip-logging-ok"
                             "-d" (string-join domains ","))
                       (if rsa-key-size `("--rsa-key-size" ,rsa-key-size) '())
                       (if authentication-hook

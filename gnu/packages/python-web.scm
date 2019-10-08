@@ -24,7 +24,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2017 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2018 Tomáš Čech <sleep_walker@gnu.org>
-;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
@@ -306,16 +306,24 @@ other HTTP libraries.")
 (define-public python-html2text
   (package
     (name "python-html2text")
-    (version "2018.1.9")
+    (version "2019.8.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "html2text" version))
        (sha256
         (base32
-         "1m6d7ciq30adc3d1n8g6r46072n7q8kdy039pqvnnmp763xi8xb2"))))
+         "0ppgjplg06kmv9sj0x8p7acczcq2mcfgk1jdjwm4w5w40b0vj5pm"))))
     (build-system python-build-system)
-    (home-page "https://pypi.org/project/html2text/")
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "pytest" "test/"))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/Alir3z4/html2text")
     (synopsis "Convert HTML into plain text")
     (description "html2text takes HTML and converts it into plain ASCII text
 which is also valid markdown.  html2text was originally written by Aaron
@@ -923,14 +931,14 @@ object to help create WSGI responses.")
 (define-public python-zope-event
   (package
     (name "python-zope-event")
-    (version "4.1.0")
+    (version "4.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "zope.event" version))
        (sha256
         (base32
-         "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
+         "1ksbc726av9xacml6jhcfyn828hlhb9xlddpx6fcvnlvmpmpvhk9"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/zope.event")
     (synopsis "Event publishing system for Python")
@@ -1808,13 +1816,13 @@ Python.")
 (define-public python-responses
   (package
     (name "python-responses")
-    (version "0.5.1")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "responses" version))
               (sha256
                (base32
-                "1spcfxixyk9k7pk82jm6zqkwk031s95lh8q0mz7539jrb7269bcc"))))
+                "147pacwkkqy3qf3hr33fnl1xbzgw0zsm3qppvvy9qhq8h069qbah"))))
     (build-system python-build-system)
     (arguments
      `(;; Test suite is not distributed:
@@ -2218,24 +2226,21 @@ applications.")
 (define-public python-flask-sqlalchemy
   (package
     (name "python-flask-sqlalchemy")
-    (version "2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "Flask-SQLAlchemy" version))
-        (sha256
-          (base32
-            "1i9ps5d5snih9xlqhrvmi3qfiygkmqzxh92n25kj4pf89kj4s965"))))
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask-SQLAlchemy" version))
+              (sha256
+               (base32
+                "0nnllf0ddbh9jlhngnyjj98lbxgxr1csaplllx0caw98syq0k5hc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flask" ,python-flask)
        ("python-sqlalchemy" ,python-sqlalchemy)))
-    (home-page
-      "https://github.com/mitsuhiko/flask-sqlalchemy")
-    (synopsis
-      "Module adding SQLAlchemy support to your Flask application")
+    (home-page "https://github.com/mitsuhiko/flask-sqlalchemy")
+    (synopsis "Module adding SQLAlchemy support to your Flask application")
     (description
-      "This package adds SQLAlchemy support to your Flask application.")
+     "This package adds SQLAlchemy support to your Flask application.")
     (license license:bsd-3)))
 
 (define-public python-flask-restplus
@@ -3222,14 +3227,13 @@ Python.")
 (define-public python-slugify
   (package
     (name "python-slugify")
-    (version "3.0.2")
+    (version "3.0.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "python-slugify" version))
        (sha256
-        (base32
-         "0n6pfmsq899c54plpvzi46l7zrpa3zfpm8im6h32czjw6kxky5jp"))
+        (base32 "0dv97yi5fq074q5qyqbin09pmi8ixg36caf5nkpw2bqkd8jh6pap"))
        (patches
         (search-patches "python-slugify-depend-on-unidecode.patch"))))
     (native-inputs
@@ -3248,3 +3252,26 @@ Python.")
     (description "This package provides a @command{slufigy} command and
 library to create slugs from unicode strings while keeping it DRY.")
     (license license:expat)))
+
+(define-public python-branca
+  (package
+    (name "python-branca")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "branca" version))
+       (sha256
+        (base32
+         "0pmigd521j2228xf8x34vbx0niwvms7xl7za0lymywj0vydjqxiy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/python-visualization/branca")
+    (synopsis "Generate complex HTML+JS pages with Python")
+    (description "Generate complex HTML+JS pages with Python")
+    (license license:expat)))
+

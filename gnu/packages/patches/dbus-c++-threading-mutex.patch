@@ -1,0 +1,37 @@
+Description: Fix FTBFS if DBUS_HAS_RECURSIVE_MUTEX is undefined
+Author: Peter Williams <peter@newton.cx>
+Last-Update: 2018-01-26
+
+Taken from Debian:
+https://sources.debian.org/src/dbus-c++/0.9.0-8.1/debian/patches/07_fix_mutex_ftbfs.patch/
+
+--- dbus-c++-0.9.0.orig/include/dbus-c++/dispatcher.h
++++ dbus-c++-0.9.0/include/dbus-c++/dispatcher.h
+@@ -267,6 +267,19 @@ struct Threading
+     return new Mx;
+   }
+ 
++#ifndef DBUS_HAS_RECURSIVE_MUTEX
++  static bool mutex_free(Mutex *mx)
++  {
++    delete mx;
++    return true;
++  }
++
++  static bool mutex_lock(Mutex *mx)
++  {
++    mx->lock();
++    return true;
++  }
++#else
+   static void mutex_free(Mutex *mx)
+   {
+     delete mx;
+@@ -276,6 +289,7 @@ struct Threading
+   {
+     mx->lock();
+   }
++#endif
+ 
+   static void mutex_unlock(Mutex *mx)
+   {

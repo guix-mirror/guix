@@ -1,0 +1,18 @@
+Disable -Werror=implicit-fallthrough on GCC7 and later.  Taken from upstream:
+https://github.com/Tencent/rapidjson/commit/fe19b7b6016d446722621fb407738209d1a911e8
+https://github.com/Tencent/rapidjson/commit/cba45fe9de6923b858edb0780e257b7257aa4f7b
+
+diff --git a/include/rapidjson/internal/regex.h b/include/rapidjson/internal/regex.h
+index 422a5240..d4039716 100644
+--- a/include/rapidjson/internal/regex.h
++++ b/include/rapidjson/internal/regex.h
+@@ -29,6 +29,9 @@ RAPIDJSON_DIAG_OFF(implicit-fallthrough)
+ #ifdef __GNUC__
+ RAPIDJSON_DIAG_PUSH
+ RAPIDJSON_DIAG_OFF(effc++)
++#if __GNUC__ >= 7
++RAPIDJSON_DIAG_OFF(implicit-fallthrough)
++#endif
+ #endif
+ 
+ #ifdef _MSC_VER

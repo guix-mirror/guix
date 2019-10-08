@@ -39,7 +39,6 @@
 (define-public gd
   (package
     (name "gd")
-    (replacement gd/fixed)
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
@@ -55,6 +54,8 @@
 
              (patches (search-patches "gd-CVE-2018-5711.patch"
                                       "gd-CVE-2018-1000222.patch"
+                                      "gd-CVE-2019-6977.patch"
+                                      "gd-CVE-2019-6978.patch"
                                       "gd-fix-tests-on-i686.patch"
                                       "gd-freetype-test-failure.patch"))))
     (build-system gnu-build-system)
@@ -94,16 +95,6 @@ most common applications of GD involve website development.")
     (license (non-copyleft "file://COPYING"
                            "See COPYING file in the distribution."))
     (properties '((cpe-name . "libgd")))))
-
-(define-public gd/fixed
-  (hidden-package
-    (package
-      (inherit gd)
-      (source (origin
-                (inherit (package-source gd))
-                (patches (append (origin-patches (package-source gd))
-                                 (search-patches "gd-CVE-2019-6977.patch"
-                                                 "gd-CVE-2019-6978.patch"))))))))
 
 (define-public perl-gd
   (package

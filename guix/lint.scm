@@ -44,6 +44,8 @@
   #:use-module ((guix ui) #:select (texi->plain-text fill-paragraph))
   #:use-module (guix gnu-maintenance)
   #:use-module (guix cve)
+  #:use-module ((guix swh) #:hide (origin?))
+  #:autoload   (guix git-download) (git-reference?)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 format)
@@ -80,6 +82,7 @@
             check-vulnerabilities
             check-for-updates
             check-formatting
+            check-archival
 
             lint-warning
             lint-warning?
@@ -522,7 +525,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
 
 (define (validate-uri uri package field)
   "Return #t if the given URI can be reached, otherwise return a warning for
-PACKAGE mentionning the FIELD."
+PACKAGE mentioning the FIELD."
   (let-values (((status argument)
                 (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
@@ -950,6 +953,16 @@ display a message including MESSAGE and return ERROR-VALUE."
                   message
                   (tls-certificate-error-string args))
          error-value)
+        ((and ('system-error _ ...) args)
+         (let ((errno (system-error-errno args)))
+           (if (member errno (list ECONNRESET ECONNABORTED ECONNREFUSED))
+               (let ((details (call-with-output-string
+                                (lambda (port)
+                                  (print-exception port #f (car args)
+                                                   (cdr args))))))
+                 (warning (G_ "~a: ~a~%") message details)
+                 error-value)
+               (apply throw args))))
         (args
          (apply throw args))))))
 
@@ -1008,8 +1021,8 @@ the NIST server non-fatal."
 (define (check-for-updates package)
   "Check if there is an update available for PACKAGE."
   (match (with-networking-fail-safe
-          (G_ "while retrieving upstream info for '~a'")
-          (list (package-name package))
+          (format #f (G_ "while retrieving upstream info for '~a'")
+                  (package-name package))
           #f
           (package-latest-release* package (force %updaters)))
     ((? upstream-source? source)
@@ -1023,6 +1036,93 @@ the NIST server non-fatal."
          '()))
     (#f '()))) ; cannot find newer upstream release
 
+
+(define (check-archival package)
+  "Check whether PACKAGE's source code is archived on Software Heritage.  If
+it's not, and if its source code is a VCS snapshot, then send a \"save\"
+request to Software Heritage.
+
+Software Heritage imposes limits on the request rate per client IP address.
+This checker prints a notice and stops doing anything once that limit has been
+reached."
+  (define (response->warning url method response)
+    (if (request-rate-limit-reached? url method)
+        (list (make-warning package
+                            (G_ "Software Heritage rate limit reached; \
+try again later")
+                            #:field 'source))
+        (list (make-warning package
+                            (G_ "'~a' returned ~a")
+                            (list url (response-code response))
+                            #:field 'source))))
+
+  (define skip-key (gensym "skip-archival-check"))
+
+  (define (skip-when-limit-reached url method)
+    (or (not (request-rate-limit-reached? url method))
+        (throw skip-key #t)))
+
+  (parameterize ((%allow-request? skip-when-limit-reached))
+    (catch #t
+      (lambda ()
+        (match (and (origin? (package-source package))
+                    (package-source package))
+          (#f                                     ;no source
+           '())
+          ((= origin-uri (? git-reference? reference))
+           (define url
+             (git-reference-url reference))
+           (define commit
+             (git-reference-commit reference))
+
+           (match (if (commit-id? commit)
+                      (or (lookup-revision commit)
+                          (lookup-origin-revision url commit))
+                      (lookup-origin-revision url commit))
+             ((? revision? revision)
+              '())
+             (#f
+              ;; Revision is missing from the archive, attempt to save it.
+              (catch 'swh-error
+                (lambda ()
+                  (save-origin (git-reference-url reference) "git")
+                  (list (make-warning
+                         package
+                         ;; TRANSLATORS: "Software Heritage" is a proper noun
+                         ;; that must remain untranslated.  See
+                         ;; <https://www.softwareheritage.org>.
+                         (G_ "scheduled Software Heritage archival")
+                         #:field 'source)))
+                (lambda (key url method response . _)
+                  (cond ((= 429 (response-code response))
+                         (list (make-warning
+                                package
+                                (G_ "archival rate limit exceeded; \
+try again later")
+                                #:field 'source)))
+                        (else
+                         (response->warning url method response))))))))
+          ((? origin? origin)
+           ;; Since "save" origins are not supported for non-VCS source, all
+           ;; we can do is tell whether a given tarball is available or not.
+           (if (origin-sha256 origin)             ;XXX: for ungoogled-chromium
+               (match (lookup-content (origin-sha256 origin) "sha256")
+                 (#f
+                  (list (make-warning package
+                                      (G_ "source not archived on Software \
+Heritage")
+                                      #:field 'source)))
+                 ((? content?)
+                  '()))
+               '()))))
+      (match-lambda*
+        ((key url method response)
+         (response->warning url method response))
+        ((key . args)
+         (if (eq? key skip-key)
+             '()
+             (apply throw key args)))))))
+
 
 ;;;
 ;;; Source code formatting.
@@ -1031,7 +1131,7 @@ the NIST server non-fatal."
 (define (report-tabulations package line line-number)
   "Warn about tabulations found in LINE."
   (match (string-index line #\tab)
-    (#f #t)
+    (#f #f)
     (index
      (make-warning package
                    (G_ "tabulation on line ~a, column ~a")
@@ -1043,44 +1143,44 @@ the NIST server non-fatal."
 
 (define (report-trailing-white-space package line line-number)
   "Warn about trailing white space in LINE."
-  (unless (or (string=? line (string-trim-right line))
-              (string=? line (string #\page)))
-    (make-warning package
-                  (G_ "trailing white space on line ~a")
-                  (list line-number)
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+  (and (not (or (string=? line (string-trim-right line))
+                (string=? line (string #\page))))
+       (make-warning package
+                     (G_ "trailing white space on line ~a")
+                     (list line-number)
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define (report-long-line package line line-number)
   "Emit a warning if LINE is too long."
   ;; Note: We don't warn at 80 characters because sometimes hashes and URLs
   ;; make it hard to fit within that limit and we want to avoid making too
   ;; much noise.
-  (when (> (string-length line) 90)
-    (make-warning package
-                  (G_ "line ~a is way too long (~a characters)")
-                  (list line-number (string-length line))
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+  (and (> (string-length line) 90)
+       (make-warning package
+                     (G_ "line ~a is way too long (~a characters)")
+                     (list line-number (string-length line))
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define %hanging-paren-rx
   (make-regexp "^[[:blank:]]*[()]+[[:blank:]]*$"))
 
 (define (report-lone-parentheses package line line-number)
   "Emit a warning if LINE contains hanging parentheses."
-  (when (regexp-exec %hanging-paren-rx line)
-    (make-warning package
-                  (G_ "parentheses feel lonely, \
+  (and (regexp-exec %hanging-paren-rx line)
+       (make-warning package
+                     (G_ "parentheses feel lonely, \
 move to the previous or next line")
-                  (list line-number)
-                  #:location
-                  (location (package-file package)
-                            line-number
-                            0))))
+                     (list line-number)
+                     #:location
+                     (location (package-file package)
+                               line-number
+                               0))))
 
 (define %formatting-reporters
   ;; List of procedures that report formatting issues.  These are not separate
@@ -1130,11 +1230,9 @@ them for PACKAGE."
                          warnings
                          (if (< line-number starting-line)
                              '()
-                             (filter
-                              lint-warning?
-                              (map (lambda (report)
-                                     (report package line line-number))
-                                   reporters))))))))))))
+                             (filter-map (lambda (report)
+                                           (report package line line-number))
+                                         reporters)))))))))))
 
 (define (check-formatting package)
   "Check the formatting of the source code of PACKAGE."
@@ -1229,7 +1327,11 @@ or a list thereof")
    (lint-checker
      (name        'refresh)
      (description "Check the package for new upstream releases")
-     (check       check-for-updates))))
+     (check       check-for-updates))
+   (lint-checker
+     (name        'archival)
+     (description "Ensure source code archival on Software Heritage")
+     (check       check-archival))))
 
 (define %all-checkers
   (append %local-checkers

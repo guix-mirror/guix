@@ -1,8 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
@@ -131,7 +131,7 @@ DHT, µTP, PEX and Magnet Links.")
 (define-public libtorrent
   (package
     (name "libtorrent")
-    (version "0.13.6")
+    (version "0.13.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -139,7 +139,7 @@ DHT, µTP, PEX and Magnet Links.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "012s1nwcvz5m5r4d2z9klgy2n34kpgn9kgwgzxm97zgdjs6a0f18"))))
+                "10z9i1rc41cmmi7nx8k7k1agsx6afv09g9cl7g9zr35fyhl5l4gd"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))
@@ -156,7 +156,7 @@ speed and efficiency.")
 (define-public rtorrent
   (package
     (name "rtorrent")
-    (version "0.9.6")
+    (version "0.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -164,7 +164,7 @@ speed and efficiency.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "03jvzw9pi2mhcm913h8qg0qw9gwjqc6lhwynb1yz1y163x7w4s8y"))))
+                "1bs2fnf4q7mlhkhzp3i1v052v9xn8qa7g845pk9ia8hlpw207pwy"))))
     (build-system gnu-build-system)
     (inputs `(("libtorrent" ,libtorrent)
               ("ncurses" ,ncurses)
@@ -183,35 +183,38 @@ XML-RPC over SCGI.")
     (license l:gpl2+)))
 
 (define-public tremc
-  (package
-    (name "tremc")
-    (version "0.9.1")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/tremc/tremc.git")
-             (commit version)))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "1yhwvlcyv1s830p5a7q5x3mkb3mbvr5cn5nh7y62l5b6iyyynlvm"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f                      ; no test suite
-       #:make-flags
-       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         ;; The software is just a Python script that must be copied into place.
-         (delete 'configure)
-         (delete 'build))))
-    (inputs
-     `(("python" ,python)))
-    (synopsis "Console client for the Transmission BitTorrent daemon")
-    (description "Tremc is a console client, with a curses interface, for the
+  (let ((commit "4d50dab7376601daca13f7be6eabc0eaa057c1b0")
+        (revision "0"))
+    (package
+      (name "tremc")
+      (version (git-version "0.9.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/tremc/tremc.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0qpi65n8rv7l9mg8qyqx70z83inkl8v5r5nks65c99lhscdki0w7"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f                      ; no test suite
+         #:make-flags
+         (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:phases
+         (modify-phases %standard-phases
+           ;; The software is just a Python script that must be copied into place.
+           (delete 'configure)
+           (delete 'build))))
+      (inputs
+       `(("python" ,python)))
+      (synopsis "Console client for the Transmission BitTorrent daemon")
+      (description "Tremc is a console client, with a curses interface, for the
 Transmission BitTorrent daemon.")
-    (home-page "https://github.com/tremc/tremc")
-    (license l:gpl3+)))
+      (home-page "https://github.com/tremc/tremc")
+      (license l:gpl3+))))
 
 (define-public transmission-remote-cli
   (package
@@ -259,16 +262,15 @@ maintained upstream.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.34.0")
+    (version "1.35.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
-                                  "releases/download/release-" version "/"
-                                  name "-" version ".tar.xz"))
-              (patches (search-patches "aria2-CVE-2019-3500.patch"))
+              (uri (string-append "https://github.com/aria2/aria2/releases/"
+                                  "download/release-" version
+                                  "/aria2-" version ".tar.xz"))
               (sha256
                (base32
-                "18vpgr430vxlwbcc3598rr1srfmwypls6wp1m4wf21hncc1ahi1s"))))
+                "1zbxc517d97lb96f15xcy4l7b66grxrp3h2ids2jiwkaip87yaqy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--enable-libaria2"
@@ -395,8 +397,7 @@ and will take advantage of multiple processor cores where possible.")
                             (assoc-ref %build-inputs "boost")
                             "/lib")
              "--enable-python-binding"
-             "--enable-tests"
-             "CXXFLAGS=-std=c++11")     ; Use std::chrono instead of boost
+             "--enable-tests")
        #:make-flags (list
                      (string-append "LDFLAGS=-Wl,-rpath="
                                     (assoc-ref %outputs "out") "/lib"))

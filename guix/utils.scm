@@ -91,6 +91,7 @@
             arguments-from-environment-variable
             file-extension
             file-sans-extension
+            tarball-sans-extension
             compressed-file?
             switch-symlinks
             call-with-temporary-output-file
@@ -577,6 +578,12 @@ minor version numbers from version-string."
     (if dot
         (substring file 0 dot)
         file)))
+
+(define (tarball-sans-extension tarball)
+  "Return TARBALL without its .tar.* or .zip extension."
+  (let ((end (or (string-contains tarball ".tar")
+                 (string-contains tarball ".zip"))))
+    (substring tarball 0 end)))
 
 (define (compressed-file? file)
   "Return true if FILE denotes a compressed file."

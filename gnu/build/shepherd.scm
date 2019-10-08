@@ -67,16 +67,10 @@
           (file-system-mapping
            (source "/etc/group") (target source))))
 
-  (define nscd-socket
-    (file-system-mapping
-     (source "/var/run/nscd") (target source)
-     (writable? #t)))
-
   (append (cons (tmpfs "/tmp") %container-file-systems)
           (let ((mappings `(,@(if (memq 'net namespaces)
                                   '()
-                                  (cons nscd-socket
-                                        %network-file-mappings))
+                                  %network-file-mappings)
                             ,@(if (and (memq 'mnt namespaces)
                                        (not (memq 'user namespaces)))
                                   accounts
@@ -156,14 +150,16 @@ namespace, in addition to essential bind-mounts such /proc."
     (when log-file
       ;; Create LOG-FILE so we can map it in the container.
       (unless (file-exists? log-file)
-        (call-with-output-file log-file (const #t))))
+        (call-with-output-file log-file (const #t))
+        (when user
+          (let ((pw (getpwnam user)))
+            (chown log-file (passwd:uid pw) (passwd:gid pw))))))
 
     (let ((pid (run-container container-directory
                               mounts namespaces 1
                               (lambda ()
                                 (mkdir-p "/var/run")
                                 (clean-up pid-file)
-                                (clean-up log-file)
 
                                 (exec-command command
                                               #:user user

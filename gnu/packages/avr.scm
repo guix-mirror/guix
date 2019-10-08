@@ -67,7 +67,10 @@
               (files '("avr/include")))
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
-              (files '("avr/lib"))))))))
+              (files '("avr/lib")))))
+      (native-inputs
+       `(("gcc" ,gcc-5)
+         ,@(package-native-inputs xgcc))))))
 
 (define-public avr-gcc-5
   (package
@@ -94,11 +97,12 @@
        (modify-phases %standard-phases
          (add-before 'unpack 'fix-cpath
            (lambda _
-             ;; C_INCLUDE_PATH poses issues for cross-building, leading to
-             ;; failures when building avr-libc on 64-bit systems.  Simply
-             ;; unsetting it allows the build to succeed because it doesn't
-             ;; try to use any of the native system's headers.
+             ;; C_INCLUDE_PATH and CPATH pose issues for cross-building,
+             ;; leading to failures when building avr-libc on 64-bit systems.
+             ;; Simply unsetting them allows the build to succeed because it
+             ;; doesn't try to use any of the native system's headers.
              (unsetenv "C_INCLUDE_PATH")
+             (unsetenv "CPATH")
              #t)))))
     (native-inputs `(("avr-binutils" ,avr-binutils)
                      ("avr-gcc" ,avr-gcc)))

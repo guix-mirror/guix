@@ -8,7 +8,8 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2018, 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,13 +58,13 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.9.1")
+   (version "2.10.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
-                                version ".tar.bz2"))
+                                version ".tar.xz"))
             (sha256 (base32
-                     "0kg8w6qyiizlyzh4a8lpzslipcbv96hcg3rqqpnxba8ffbm8g3fv"))))
+                     "0vx2dg1jh5kq34dd6ifpjywkpapp8a7p1bvyq9yq5zi1i94gmnqn"))))
    (build-system gnu-build-system)
    (arguments
     ;; The use of "freetype-config" is deprecated, but other packages still
@@ -428,7 +429,7 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.12")
+   (version "1.3.13")
    (source
      (origin
        (method url-fetch)
@@ -436,11 +437,22 @@ applications should be.")
                            "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "1l1940d8fz67jm6a0x8cjb5p2dv48cvz3wcskwa83hamd70k15fd"))))
+         "01jzhwnj1c3d68dmw15jdxly0hwkmd8ja4kw755rbkykn1ly2qyx"))))
    (build-system cmake-build-system)
+   (arguments
+    `(#:phases (modify-phases %standard-phases
+                 (add-after 'unpack 'adjust-test-PYTHONPATH
+                   (lambda _
+                     ;; Tell the build system not to override PYTHONPATH
+                     ;; while running the Python tests.
+                     (substitute* "Graphite.cmake"
+                       (("ENVIRONMENT PYTHONPATH=")
+                        (string-append "ENVIRONMENT PYTHONPATH="
+                                       (getenv "PYTHONPATH") ":")))
+                     #t)))))
    (native-inputs
-    `(("python" ,python-2) ; because of "import imap" in tests
-      ("python-fonttools" ,python2-fonttools)))
+    `(("python" ,python)
+      ("python-fonttools" ,python-fonttools)))
    (inputs
     `(("freetype" ,freetype)))
    (synopsis "Reimplementation of the SIL Graphite text processing engine")
@@ -529,7 +541,7 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "20190305")
+    (version "20190701")
     (home-page "https://github.com/fontforge/libuninameslist")
     (source
      (origin
@@ -538,7 +550,7 @@ smooth contours with constant curvature at the spline joins.")
                            "/libuninameslist-dist-" version ".tar.gz"))
        (sha256
         (base32
-         "1rwd2bgcyvign9agyjsr3v2fr9j1cg2wi6g0z2wwg1az32scknwq"))))
+         "18c9pcz81wm26q2m7npmvh9j3ibjs2hycxfh5xic2xgjfw40v2qn"))))
     (build-system gnu-build-system)
     (synopsis "Unicode names and annotation list")
     (description
@@ -555,14 +567,14 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20190317")
+   (version "20190801")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.gz"))
-            (sha256 (base32
-                     "1ddqbpc32cgbccdnv0lfw0qhj59hcqzb7616ph5lkvm91pnas4dp"))))
+            (sha256
+             (base32 "0lh8yx01asbzxm6car5cfi64njh5p4lxc7iv8dldr5rwg357a86r"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
@@ -570,7 +582,6 @@ definitions.")
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
              ("gettext"         ,gettext-minimal)
-             ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)
              ("libX11"          ,libx11)
@@ -586,10 +597,7 @@ definitions.")
              ("libxml2"         ,libxml2)
              ("pango"           ,pango)
              ("potrace"         ,potrace)
-             ;; FIXME: We use Python 2 here because there is a bug in Python
-             ;; 3.7 that is triggered when Py_Main is called after Py_Init, as
-             ;; is done by fontforge.  This will be fixed in Python 3.7.1.
-             ("python"          ,python-2)
+             ("python"          ,python)
              ("zlib"            ,zlib)))
    (arguments
     '(#:phases

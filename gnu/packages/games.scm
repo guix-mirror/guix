@@ -43,6 +43,7 @@
 ;;; Copyright © 2019 Jesse Gibbons <jgibbons2357+guix@gmail.com>
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
+;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -112,6 +113,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-crypto)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -252,34 +254,26 @@ mouse and joystick control, and original music.")
 (define-public alex4
   (package
     (name "alex4")
-    (version "1.2-alpha")
+    (version "1.2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/carstene1ns/alex4/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/carstene1ns/alex4.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0jj1g3v1a6lyfwp5g2ly0n9z65ryqck8jxvzr01kaqjj3lsfkrhg"))))
+        (base32 "098wy72mh4lsvq3gm0rhamjssf9l1hp6hhkpzrv7klpb97cwwc3h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:make-flags
-       (list "-Csrc"
-             "CC=gcc"
+       (list "CC=gcc"
              "CFLAGS=-D_FILE_OFFSET_BITS=64"
-             (string-append "DATADIR=" (assoc-ref %outputs "out")
-                            "/share/" ,name)
              (string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (replace 'configure
-           (lambda _
-             (substitute* '("src/main.c"
-                            "src/shooter.c")
-               (("fcos") "fixcos")
-               (("fmul") "fixmul")
-               (("fsin") "fixsin"))
-             #t))
+         (delete 'configure)            ; no configure script
          (add-after 'install 'install-data
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((share (string-append (assoc-ref outputs "out")
@@ -906,7 +900,8 @@ Chess).  It is similar to standard chess but this variant is far more complicate
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl-union")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("sdl-union" ,(sdl-union (list sdl sdl-mixer)))))
@@ -1118,7 +1113,8 @@ Every puzzle has a complete solution, although there may be more than one.")
           (lambda* (#:key inputs #:allow-other-keys)
             (setenv "CPATH"
                     (string-append (assoc-ref inputs "sdl-union")
-                                   "/include/SDL"))
+                                   "/include/SDL:"
+                                   (or (getenv "CPATH") "")))
             #t)))))
    (inputs
     `(("fluidsynth" ,fluidsynth)
@@ -1350,7 +1346,8 @@ can be explored and changed freely.")
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL"))))
+                                             "/include/SDL:"
+                                             (or (getenv "CPATH") "")))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -1383,7 +1380,7 @@ that beneath its ruins lay buried an ancient evil.")
 (define-public angband
   (package
     (name "angband")
-    (version "4.1.3")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1392,7 +1389,7 @@ that beneath its ruins lay buried an ancient evil.")
                            "/angband-" version ".tar.gz"))
        (sha256
         (base32
-         "0vs0314lbdc6rzxn4jnb7zp6n1p1cdb8r53savadn7k9vbwc80ll"))
+         "0vdm1ymm28wawp94nl1p5q3lhc0k7cnn2kkvvrkfx962gif4kqfk"))
        (modules '((guix build utils)))
        (snippet
         ;; So, some of the sounds/graphics/tilesets are under different
@@ -1406,7 +1403,7 @@ that beneath its ruins lay buried an ancient evil.")
                          (delete-file-recursively lib-subdir)))
                      '("fonts" "icons" "sounds" "tiles"))
            (substitute* "lib/Makefile"
-             ;; And don't try to invoke makefiles in the directories we removed
+             ;; And don't try to invoke makefiles in the directories we removed.
              (("gamedata customize help screens fonts tiles sounds icons user")
               "gamedata customize help screens user"))
            #t))))
@@ -2033,6 +2030,126 @@ some of the restrictions in the venerable Z-machine format.  This is the
 reference interpreter, using the Glk API.")
    (license license:expat)))
 
+(define-public fifechan
+  (package
+    (name "fifechan")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/fifengine/"
+                                  "fifechan/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wxs9vz5x9y8chghd8vp7vfk089lfb0qnzggi17zrqkrngs5zgi9"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("mesa" ,mesa)))
+    (arguments
+     '(#:tests? #f))                    ; No included tests
+    (home-page "https://fifengine.github.io/fifechan/")
+    (synopsis "Cross platform GUI library specifically for games")
+    (description
+     "Fifechan is a lightweight cross platform GUI library written in C++
+specifically designed for games.  It has a built in set of extendable GUI
+Widgets, and allows users to create more.")
+    (license license:lgpl2.1+)))
+
+(define-public fifengine
+  (package
+    (name "fifengine")
+    (version "0.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/fifengine/"
+                                  "fifengine/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y4grw25cq5iqlg05rnbyxw1njl11ypidnlsm3qy4sm3xxdvb0p8"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f            ; TODO The test running fails to run some tests.
+       #:modules ((srfi srfi-1)
+                  (guix build cmake-build-system)
+                  (guix build utils))
+       #:configure-flags
+       (list
+        (string-append "-DOPENALSOFT_INCLUDE_DIR="
+                       (assoc-ref %build-inputs "openal")
+                       "/include/AL")
+        (string-append "-DPYTHON_SITE_PACKAGES="
+                       (assoc-ref %outputs "out")
+                       "/lib/python3.7/site-packages"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-run_tests.py
+           (lambda _
+             ;; Patch the test runner to exit with a status of 1 if any test
+             ;; fails, to allow detecting failures.
+             (substitute* "run_tests.py"
+               (("ERROR\\. One or more tests failed!'\\)")
+                "ERROR. One or more tests failed!')
+\t\texit(1)"))
+             #t))
+         ;; Run tests after installation so that we can make use of the built
+         ;; python modules.
+         (delete 'check)
+         (add-after 'install 'check
+           (lambda* (#:key inputs outputs tests? #:allow-other-keys)
+             (define python-version
+               (let* ((version     (last (string-split
+                                          (assoc-ref inputs "python")
+                                          #\-)))
+                      (components  (string-split version #\.))
+                      (major+minor (take components 2)))
+                 (string-join major+minor ".")))
+
+             (when tests?
+               ;; Set PYTHONPATH so that python finds the installed modules.
+               (setenv "PYTHONPATH"
+                       (string-append (getenv "PYTHONPATH") ":"
+                                      (assoc-ref outputs "out")
+                                      "/lib/python"
+                                      python-version
+                                      "/site-packages"))
+               ;; The tests require an X server.
+               (system "Xvfb :1 &")
+               (setenv "DISPLAY" ":1")
+               (setenv "XDG_RUNTIME_DIR" "/tmp")
+               ;; Run tests
+               (chdir ,(string-append "../" name "-" version))
+               (invoke "python3" "run_tests.py" "-a"))
+             #t)))))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-ttf" ,sdl2-ttf)
+       ("tinyxml" ,tinyxml)
+       ("openal" ,openal)
+       ("libogg" ,libogg)
+       ("glew" ,glew)
+       ("libvorbis" ,libvorbis)
+       ("boost" ,boost)
+       ("fifechan" ,fifechan)
+       ("swig" ,swig)
+       ("python" ,python)))
+    (native-inputs
+     `(("python" ,python)
+       ("swig" ,swig)
+       ("xvfb" ,xorg-server)))
+    (propagated-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://www.fifengine.net/")
+    (synopsis "FIFE is a multi-platform isometric game engine written in C++")
+    (description
+     "@acronym{FIFE, Flexible Isometric Free Engine} is a multi-platform
+isometric game engine.  Python bindings are included allowing users to create
+games using Python as well as C++.")
+    (license license:lgpl2.1+)))
+
 (define-public fizmo
   (package
     (name "fizmo")
@@ -2192,6 +2309,78 @@ against each other or just trying to beat the computer; single-player mode is
 also available.")
     (license license:gpl3+)))
 
+(define-public unknown-horizons
+  (package
+    (name "unknown-horizons")
+    (version "2019.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/unknown-horizons/"
+                                  "unknown-horizons/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n747p7h0qp48szgp262swg0xh8kxy1bw8ag1qczs4i26hyzs5x4"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-HOME
+           (lambda _
+             (setenv "HOME" "/tmp")))
+         (add-after 'build 'build-extra
+           (lambda _
+             (invoke "python3" "./setup.py" "build_i18n")
+             (invoke "python3" "horizons/engine/generate_atlases.py" "2048")
+             #t))
+         (add-after 'install 'patch
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out "/bin/unknown-horizons")
+                 (("os\\.chdir\\(get\\_content\\_dir\\_parent_path\\(\\)\\)")
+                  (string-append "os.chdir(\""
+                                 (assoc-ref outputs "out")
+                                 "/share/unknown-horizons\")"))))
+             #t))
+         ;; TODO: Run GUI tests as well
+         (replace 'check
+           (lambda _
+             (substitute* "horizons/constants.py"
+               (("IS_DEV_VERSION = False")
+                "IS_DEV_VERSION = True"))
+             (invoke "pytest" "tests")
+             (substitute* "horizons/constants.py"
+               (("IS_DEV_VERSION = True")
+                "IS_DEV_VERSION = False"))
+             #t)))))
+    (inputs
+     `(("fifengine" ,fifengine)
+       ("python:tk" ,python "tk")
+       ("python-pillow" ,python-pillow)
+       ("python-pyyaml" ,python-pyyaml)))
+    (native-inputs
+     `(("intltool" ,intltool)
+
+       ;; Required for tests
+       ("python-greenlet" ,python-greenlet)
+       ("python-polib" ,python-polib)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (home-page "http://unknown-horizons.org/")
+    (synopsis "Isometric realtime strategy, economy and city building simulation")
+    (description
+     "Unknown Horizons is a 2D realtime strategy simulation with an emphasis
+on economy and city building.  Expand your small settlement to a strong and
+wealthy colony, collect taxes and supply your inhabitants with valuable
+goods.  Increase your power with a well balanced economy and with strategic
+trade and diplomacy.")
+    (license (list
+              license:gpl2+        ; Covers code
+              license:expat        ; tests/dummy.py, ext/polib.py
+              license:cc-by-sa3.0  ; Covers some media content
+              license:cc-by3.0     ; Covers some media content
+              license:bsd-3))))    ; horizons/ext/speaklater.py
+
 (define-public gnujump
   (package
     (name "gnujump")
@@ -2209,7 +2398,24 @@ also available.")
        (modify-phases %standard-phases
          (add-before
           'configure 'link-libm
-          (lambda _ (setenv "LIBS" "-lm"))))))
+          (lambda _ (setenv "LIBS" "-lm")))
+         (add-after 'install 'create-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (apps (string-append out "/share/applications")))
+               (mkdir-p apps)
+               (with-output-to-file
+                 (string-append apps "/gnujump.desktop")
+                 (lambda _
+                   (format #t
+                           "[Desktop Entry]~@
+                           Name=GNUjump~@
+                           Comment=Jump up the tower to survive~@
+                           Exec=~a/bin/gnujump~@
+                           Terminal=false~@
+                           Type=Application~@
+                           Categories=Game;ArcadeGame~%"
+                           out)))))))))
     (inputs
      `(("glu" ,glu)
        ("mesa" ,mesa)
@@ -2337,15 +2543,15 @@ on the screen and keyboard to display letters.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.7.6.10")
+    (version "1.9.3.23")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://repo.manaplus.org/manaplus/download/"
+                    "https://repo.manaplus.org/manaplus/download/"
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7swvpzq20am4w2rsjpp6fsvbjv07il6wbfy45a7h9zsdihmqhl"))))
+                "1ky182p4svwdqm6cf7jbns85hidkhkhq4s17cs2p381f0klapfjz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2360,7 +2566,7 @@ on the screen and keyboard to display letters.")
        ("libxml2" ,libxml2)
        ("mesa" ,mesa)
        ("sdl-union" ,(sdl-union))))
-    (home-page "http://manaplus.org")
+    (home-page "https://manaplus.org")
     (synopsis "Client for 'The Mana World' and similar games")
     (description
      "ManaPlus is a 2D MMORPG client for game servers.  It is the only
@@ -2722,16 +2928,12 @@ Transport Tycoon Deluxe.")
                (copy-recursively
                 (string-append objects "/share/openrct2/objects")
                 "data/object"))))
-         (add-before 'configure 'fixgcc7
-           (lambda _
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-             #t))
-         (add-after 'fixgcc7 'get-rid-of-errors
+         (add-before 'configure 'get-rid-of-errors
            (lambda _
              ;; Don't treat warnings as errors.
              (substitute* "CMakeLists.txt"
-               (("-Werror") "")))))))
+               (("-Werror") ""))
+             #t)))))
     (inputs `(("curl" ,curl)
               ("fontconfig" ,fontconfig)
               ("freetype" ,freetype)
@@ -2747,8 +2949,7 @@ Transport Tycoon Deluxe.")
               ("speexdsp" ,speexdsp)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("gcc" ,gcc-7)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/OpenRCT2/OpenRCT2")
     (synopsis "Free software re-implementation of RollerCoaster Tycoon 2")
     (description "OpenRCT2 is a free software re-implementation of
@@ -2830,7 +3031,7 @@ players.")
     (version "2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://http.debian.net/debian/pool/main/e/"
+              (uri (string-append "mirror://debian/pool/main/e/"
                                   "einstein/einstein_2.0.dfsg.2.orig.tar.gz"))
               (sha256
                (base32
@@ -2997,7 +3198,8 @@ http://lavachat.symlynx.com/unix/")
              (lambda* (#:key inputs #:allow-other-keys)
                (setenv "CPATH"
                        (string-append (assoc-ref inputs "sdl-union")
-                                      "/include/SDL2"))
+                                      "/include/SDL2:"
+                                      (or (getenv "CPATH") "")))
                #t))
            (add-after 'install 'copy-data
              (lambda* (#:key outputs #:allow-other-keys)
@@ -3513,12 +3715,10 @@ with the \"Stamp\" tool within Tux Paint.")
              (base32
               "1h1s4abirkdv4ag22zvyk6zkk64skqbjmcnnba67ps4hdzxfbhy4"))
             (patches
-             (search-patches "supertux-fix-build-with-gcc5.patch"
-                             "supertux-unbundle-squirrel.patch"))))
+             (search-patches "supertux-unbundle-squirrel.patch"))))
    (arguments
     '(#:tests? #f
       #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin"
-                          "-DENABLE_BOOST_STATIC_LIBS=OFF"
                           "-DUSE_SYSTEM_PHYSFS=ON")
       #:phases
       (modify-phases %standard-phases
@@ -3774,7 +3974,8 @@ throwing people around in pseudo-randomly generated buildings.")
          (add-after 'set-paths 'set-sdl-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
-                     (string-append (assoc-ref inputs "sdl-union")
+                     (string-append (getenv "CPATH") ":"
+                                    (assoc-ref inputs "sdl-union")
                                     "/include/SDL"))))
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -4181,8 +4382,7 @@ over 100 user-created campaigns.")
                      (string-append (assoc-ref inputs "sdl-union")
                                     "/include/SDL:"
                                     (assoc-ref inputs "python")
-                                    "/include/python2.7:"
-                                    (getenv "CPLUS_INCLUDE_PATH")))
+                                    "/include/python2.7"))
              (substitute* "src/main/main.cpp"
                (("#include <SDL.h>" line)
                 (string-append line "
@@ -4787,7 +4987,7 @@ fight against their plot and save his fellow rabbits from slavery.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("boost" ,boost)
-       ("cmake" ,cmake)
+       ("cmake" ,cmake-minimal)
        ("mesa" ,mesa)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
@@ -4991,7 +5191,8 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                     (lambda* (#:key inputs #:allow-other-keys)
                       (setenv "CPATH"
                               (string-append (assoc-ref inputs "sdl-union")
-                                             "/include/SDL2"))
+                                             "/include/SDL2:"
+                                             (getenv "CPATH")))
                       #t))
                   (delete 'check)
                   ;; premake doesn't provide install target
@@ -5284,7 +5485,7 @@ making Yamagi Quake II one of the most solid Quake II implementations available.
      `(("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("gettext-minimal" ,gettext-minimal)
        ("qttools" ,qttools)))
     (synopsis "Realistic physics puzzle game")
@@ -6108,7 +6309,7 @@ when packaged in Blorb container files or optionally from individual files.")
 (define-public libmanette
   (package
     (name "libmanette")
-    (version "0.2.2")
+    (version "0.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libmanette/"
@@ -6116,7 +6317,7 @@ when packaged in Blorb container files or optionally from individual files.")
                                   "libmanette-" version ".tar.xz"))
               (sha256
                (base32
-                "1lpprk2qz1lsqf9xj6kj2ciyc1zmjhj5lwd584qkh7jgz2x9y6wb"))))
+                "1zxh7jn2zg7hivmal5zxam6fxvjsd1w6hlw0m2kysk76b8anbw60"))))
     (build-system meson-build-system)
     (native-inputs
      `(("glib" ,glib "bin")             ; for glib-compile-resources
@@ -6177,7 +6378,7 @@ your score gets higher, you level up and the blocks fall faster.")
 (define-public endless-sky
   (package
     (name "endless-sky")
-    (version "0.9.8")
+    (version "0.9.10")
     (source
       (origin
         (method git-fetch)
@@ -6187,7 +6388,7 @@ your score gets higher, you level up and the blocks fall faster.")
         (file-name (git-file-name name version))
         (sha256
          (base32
-          "0i36lawypikbq8vvzfis1dn7yf6q0d2s1cllshfn7kmjb6pqfi6c"))))
+          "1wax9qhxakydg6bs92d1jy2fki1n9r0wkps1np02y0pvm1fl189i"))))
     (build-system scons-build-system)
     (arguments
      `(#:scons ,scons-python2
@@ -6408,7 +6609,8 @@ to download and install them in @file{$HOME/.stepmania-X.Y/Songs} directory.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t))
          (add-after 'unpack 'fix-compilation-errors
            (lambda _
@@ -6527,7 +6729,8 @@ affected by the gravity of the planets.")
            (lambda* (#:key inputs #:allow-other-keys)
              (setenv "CPATH"
                      (string-append (assoc-ref inputs "sdl")
-                                    "/include/SDL"))
+                                    "/include/SDL:"
+                                    (or (getenv "CPATH") "")))
              #t)))))
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -6646,7 +6849,8 @@ the desired spell.")
                      (lambda* (#:key inputs #:allow-other-keys)
                        (setenv "CPATH"
                                (string-append (assoc-ref inputs "sdl2-union")
-                                              "/include/SDL2"))
+                                              "/include/SDL2:"
+                                              (or (getenv "CPATH") "")))
                        #t)))))
     (inputs
      `(("sdl2-union" ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))
@@ -7107,7 +7311,7 @@ simulator.")
 (define-public jumpnbump
   (package
     (name "jumpnbump")
-    (version "1.60")
+    (version "1.61")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7116,7 +7320,7 @@ simulator.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gwi58ck4magvdim8wmxdqnsi0fqdpvqia9kcc7q73nqf34jjz3v"))))
+                "12lwl5sl5n009nb83r8l4lakb9286csqdf1ynpmwwydy17giqsdp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags

@@ -100,9 +100,6 @@
        ("gobject-introspection" ,gobject-introspection)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
-                           ;; XXX: MozJS 60 requires the C++11 ABI or higher.
-                           ;; Remove when the default compiler is >= GCC 6.
-                           "CXXFLAGS=-std=gnu++11"
                            "--enable-man-pages")
        #:phases
        (modify-phases %standard-phases

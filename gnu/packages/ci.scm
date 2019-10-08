@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "0b40dca734468e8b12b3ff58e3e779679f17d38e")
-        (revision "21"))
+  (let ((commit "d27ff21e430cd38b02bd70a0dc8d60c9c2736f83")
+        (revision "24"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -60,7 +60,7 @@
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "1kdxs8dzdyldfs4wsz5hb64hprkbrnq5ljdll631f3bj8pbvvvc1"))))
+                  "166xl9zfy7dm645fk2ln45bvw0y0gy0xw8fb7mprbjz8v95dh27p"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
@@ -121,7 +121,7 @@
        `(("guile" ,guile-2.2)
          ("guile-fibers" ,guile-fibers)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-1)
+         ("guile-json" ,guile-json-3)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-git" ,guile-git)
          ;; FIXME: this is propagated by "guile-git", but it needs to be among

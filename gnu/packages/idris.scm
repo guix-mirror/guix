@@ -21,9 +21,9 @@
 
 (define-module (gnu packages idris)
   #:use-module (gnu packages)
-  #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-check)
   #:use-module (gnu packages haskell-web)
+  #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
@@ -38,7 +38,7 @@
 (define-public idris
   (package
     (name "idris")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -46,8 +46,7 @@
                     "idris-" version "/idris-" version ".tar.gz"))
               (sha256
                (base32
-                "0fn9h58l592j72njwma1ia48h8h87wi2rjqfxs7j2lfmvgfv18fi"))
-              (patches (search-patches "idris-test-no-node.patch"))))
+                "0wychzkg0yghd2pp8fqz78vp1ayzks191knfpl7mhh8igsmb6bc7"))))
     (build-system haskell-build-system)
     (native-inputs                      ;For tests
      `(("perl" ,perl)
@@ -71,8 +70,8 @@
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-libffi" ,ghc-libffi)
-       ("ghc-megaparsec" ,ghc-megaparsec)
-       ("ghc-network" ,ghc-network)
+       ("ghc-megaparsec" ,ghc-megaparsec-7)
+       ("ghc-network" ,ghc-network-2.8)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)
        ("ghc-safe" ,ghc-safe)

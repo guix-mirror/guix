@@ -84,14 +84,6 @@ echo "(use-modules (guix profiles) (gnu packages bootstrap))
 guix environment --bootstrap --manifest=$tmpdir/manifest.scm --pure \
      -- "$SHELL" -c 'test -f "$GUIX_ENVIRONMENT/bin/guile"'
 
-# if not sharing CWD, chdir home
-(
-  cd "$tmpdir" \
-    && guix environment --bootstrap --container --no-cwd --user=foo  \
-            --ad-hoc guile-bootstrap --pure \
-            -- /bin/sh -c 'test $(pwd) == "/home/foo" -a ! -d '"$tmpdir"
-)
-
 # Make sure '-r' works as expected.
 rm -f "$gcroot"
 expected="`guix environment --bootstrap --ad-hoc guile-bootstrap \
@@ -164,7 +156,7 @@ if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     # Compute the build environment for the initial GNU Make.
     guix environment --bootstrap --no-substitutes --search-paths --pure \
-         -e '(@@ (gnu packages commencement) gnu-make-boot0)' > "$tmpdir/a"
+         -e '(@ (guix tests) gnu-make-for-tests)' > "$tmpdir/a"
 
     # Make sure bootstrap binaries are in the profile.
     profile=`grep "^export PATH" "$tmpdir/a" | sed -r 's|^.*="(.*)/bin"|\1|'`
@@ -185,30 +177,15 @@ then
     # Make sure that the shell spawned with '--exec' sees the same environment
     # as returned by '--search-paths'.
     guix environment --bootstrap --no-substitutes --pure \
-         -e '(@@ (gnu packages commencement) gnu-make-boot0)' \
+         -e '(@ (guix tests) gnu-make-for-tests)' \
          -- /bin/sh -c 'echo $PATH $CPATH $LIBRARY_PATH' > "$tmpdir/b"
     ( . "$tmpdir/a" ; echo $PATH $CPATH $LIBRARY_PATH ) > "$tmpdir/c"
     cmp "$tmpdir/b" "$tmpdir/c"
 
     rm "$tmpdir"/*
 
-    # Compute the build environment for the initial GNU Findutils.
-    guix environment --bootstrap --no-substitutes --search-paths --pure \
-         -e '(@@ (gnu packages commencement) findutils-boot0)' > "$tmpdir/a"
-    profile=`grep "^export PATH" "$tmpdir/a" | sed -r 's|^.*="(.*)/bin"|\1|'`
-
-    # Make sure the bootstrap binaries are all listed where they belong.
-    grep -E "^export PATH=\"$profile/bin\""         "$tmpdir/a"
-    grep -E "^export CPATH=\"$profile/include\""    "$tmpdir/a"
-    grep -E "^export LIBRARY_PATH=\"$profile/lib\"" "$tmpdir/a"
-    for dep in bootstrap-binaries-0 gcc-bootstrap-0 glibc-bootstrap-0 \
-				    make-boot0
-    do
-	guix gc --references "$profile" | grep "$dep"
-    done
-
     # The following test assumes 'make-boot0' has a "debug" output.
-    make_boot0_debug="`guix build -e '(@@ (gnu packages commencement) gnu-make-boot0)' | grep -e -debug`"
+    make_boot0_debug="`guix build -e '(@ (guix tests) gnu-make-for-tests)' | grep -e -debug`"
     test "x$make_boot0_debug" != "x"
 
     # Make sure the "debug" output is not listed.
@@ -218,7 +195,7 @@ then
     # Compute the build environment for the initial GNU Make, but add in the
     # bootstrap Guile as an ad-hoc addition.
     guix environment --bootstrap --no-substitutes --search-paths --pure	\
-         -e '(@@ (gnu packages commencement) gnu-make-boot0)'		\
+         -e '(@ (guix tests) gnu-make-for-tests)'		\
          --ad-hoc guile-bootstrap > "$tmpdir/a"
     profile=`grep "^export PATH" "$tmpdir/a" | sed -r 's|^.*="(.*)/bin"|\1|'`
 
@@ -235,14 +212,14 @@ then
     # Make sure a package list with plain package objects and package+output
     # tuples can be used with -e.
     expr_list_test_code="
-(list (@@ (gnu packages commencement) gnu-make-boot0)
+(list (@ (guix tests) gnu-make-for-tests)
       (list (@ (gnu packages bootstrap) %bootstrap-guile) \"out\"))"
 
     guix environment --bootstrap --ad-hoc --no-substitutes --search-paths \
          --pure -e "$expr_list_test_code" > "$tmpdir/a"
     profile=`grep "^export PATH" "$tmpdir/a" | sed -r 's|^.*="(.*)/bin"|\1|'`
 
-    for dep in make-boot0 guile-bootstrap
+    for dep in make-test-boot0 guile-bootstrap
     do
 	guix gc --references "$profile" | grep "$dep"
     done

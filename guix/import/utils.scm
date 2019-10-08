@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Oleg Pykhalov <go.wigust@gmail.com>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
 ;;;
@@ -212,10 +212,19 @@ with dashes."
 (define (beautify-description description)
   "Improve the package DESCRIPTION by turning a beginning sentence fragment
 into a proper sentence and by using two spaces between sentences."
-  (let ((cleaned (if (string-prefix? "A " description)
-                     (string-append "This package provides a"
-                                    (substring description 1))
-                     description)))
+  (let ((cleaned (cond
+                  ((string-prefix? "A " description)
+                   (string-append "This package provides a"
+                                  (substring description 1)))
+                  ((string-prefix? "Provides " description)
+                   (string-append "This package provides"
+                                  (substring description
+                                             (string-length "Provides"))))
+                  ((string-prefix? "Functions " description)
+                   (string-append "This package provides functions"
+                                  (substring description
+                                             (string-length "Functions"))))
+                  (else description))))
     ;; Use double spacing between sentences
     (regexp-substitute/global #f "\\. \\b"
                               cleaned 'pre ".  " 'post)))
@@ -251,6 +260,9 @@ package definition."
 (define (package->definition guix-package)
   (match guix-package
     (('package ('name (? string? name)) _ ...)
+     `(define-public ,(string->symbol name)
+        ,guix-package))
+    (('let anything ('package ('name (? string? name)) _ ...))
      `(define-public ,(string->symbol name)
         ,guix-package))))
 

@@ -7,7 +7,7 @@
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Kei Kebreau <kkebreau@posteo.net>
-;;; Copyright © 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
@@ -460,7 +460,7 @@ should be thread-safe.")
 (define-public libvterm
   (package
     (name "libvterm")
-    (version "0+bzr681")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -468,7 +468,7 @@ should be thread-safe.")
                            "libvterm-" version ".tar.gz"))
        (sha256
         (base32
-         "1s56c8p1qz6frkcri0hg4qyydv2wcccj6n2xmz1dwcdqn38ldsmb"))))
+         "1n5maylann2anfifjy576vzyar9q5m1kzpyiz2hca2pacxy8xf4v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -955,7 +955,7 @@ tmux.")
 (define-public kitty
   (package
     (name "kitty")
-    (version "0.14.3")
+    (version "0.14.5")
     (home-page "https://sw.kovidgoyal.net/kitty/")
     (source
      (origin
@@ -966,7 +966,7 @@ tmux.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wi6b6b1nyp16rcpcghk6by62wy6qsamv1xdymyn0zbqgd8h9n6b"))
+         "0qx3wj4n3zgjcpd1vjjwdlz8d1vp8bkxihsg2khlla1izandgxxa"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -1106,3 +1106,59 @@ and IP roaming.  ET provides the same core functionality as @command{mosh},
 while also supporting native scrolling and @command{tmux} control mode
 (@code{tmux -CC}).")
     (license license:asl2.0)))
+
+(define-public wterm
+  (package
+    (name "wterm")
+    (version "0.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/majestrate/wterm.git")
+             (commit "0ae42717c08a85a6509214e881422c7fbe7ecc45")))
+       (sha256
+         (base32
+          "0g4lzmc1w6na81i6hny32xds4xfig4xzswzfijyi6p93a1226dv0"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libdrm" ,libdrm)
+       ("libxkbcommon" ,libxkbcommon)
+       ("ncurses" ,ncurses)
+       ("pixman" ,pixman)
+       ("wayland" ,wayland)))
+    (arguments
+     '(#:tests? #f
+
+       ;; Without -j1 it fails to find file libwld.a.
+       #:parallel-build? #f
+
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output)
+                          (string-append "TERMINFO="
+                                         (assoc-ref %outputs "out")
+                                         "/share/terminfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'terminfo-fix
+           (lambda _
+             (substitute* "Makefile"
+               (("\ttic .*") "\tmkdir -p $(SHARE_PREFIX)/share/terminfo
+\ttic -o $(SHARE_PREFIX)/share/terminfo -s wterm.info\n"))
+             #t)))))
+    (native-search-paths
+      (list (search-path-specification
+              (variable "TERMINFO_DIRS")
+              (files '("share/terminfo")))))
+    (home-page "https://github.com/majestrate/wterm")
+    (synopsis "Terminal emulator for Wayland")
+    (description "wterm is a native Wayland terminal emulator based on
+an st fork using wld. st is a simple terminal emulator for X originally
+made by suckless.")
+    (license license:x11)))

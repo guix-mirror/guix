@@ -260,12 +260,12 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
                                       "&id=" revision))
                   (file-name (string-append "texlive-bin-" name))
                   (sha256 (base32 hash)))))
-             (arch-revision "e1975bce0b9d270d7c9773c5beb7e87d61ee8f57"))
+             (arch-revision "c4b99aba97213ea554b6592a4916d3c7394a6d7b"))
          (append (search-patches  "texlive-bin-CVE-2018-17407.patch"
                                   "texlive-bin-luatex-poppler-compat.patch")
                  (list
-                  (arch-patch "pdftex-poppler0.72.patch" arch-revision
-                              "0p46b6xxxg2s3hx67r0wpz16g3qygx65hpc581xs3jz5pvsiq3y7")
+                  (arch-patch "pdftex-poppler0.76.patch" arch-revision
+                              "15ypbh21amfsdxy7ca825x28lkmmkklxk1w660gpgvzdi7s70h0b")
                   (arch-patch "xetex-poppler-fixes.patch" arch-revision
                               "1jj1p5zkjljb7id9pjv29cw0cf8mwrgrh4ackgzz9c200vaqpsvx")))))))
    (build-system gnu-build-system)
@@ -316,9 +316,6 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
     `(#:out-of-source? #t
       #:configure-flags
        `("--disable-native-texlive-build"
-         ;; XXX: This is needed because recent Poppler requires C++11 or later.
-         ;; Remove after switch to GCC >= 6.
-         "CXXFLAGS=-std=gnu++11"
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
@@ -360,10 +357,23 @@ copied to their outputs; otherwise the TEXLIVE-BUILD-SYSTEM is used."
             #t))
         (add-after 'unpack 'use-code-for-new-poppler
           (lambda _
-            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.72.0.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftoepdf-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftoepdf.cc")
-            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.72.0.cc"
+            (copy-file "texk/web2c/pdftexdir/pdftosrc-poppler0.76.0.cc"
                        "texk/web2c/pdftexdir/pdftosrc.cc")
+            #t))
+        (add-after 'use-code-for-new-poppler 'use-code-for-even-newer-poppler
+          (lambda _
+            ;; Adjust for deprecated types in Poppler 0.73 and later.
+            (substitute* (append
+                          (find-files "texk/web2c/luatexdir/" "\\.(cc|w)$")
+                          '("texk/web2c/pdftexdir/pdftosrc.cc"))
+              (("GBool") "bool")
+              (("gFalse") "false")
+              (("gTrue") "true")
+              (("getCString") "c_str")
+              (("Guint") "unsigned int")
+              (("Guchar") "unsigned char"))
             #t))
         (add-after 'unpack 'disable-failing-test
           (lambda _
@@ -2508,214 +2518,213 @@ formats.")
     (license license:lppl)))
 
 (define-public texlive-latex-base
-  (package
-    (name "texlive-latex-base")
-    (version (number->string %texlive-revision))
-    (source (texlive-origin
-             name version
-             (list "/doc/latex/base/"
-                   "/source/latex/base/"
-                   ;; Almost all files in /tex/latex/base are generated, but
-                   ;; these are not:
-                   "/tex/latex/base/idx.tex"
-                   "/tex/latex/base/lablst.tex"
-                   "/tex/latex/base/lppl.tex"
-                   "/tex/latex/base/ltnews.cls"
-                   "/tex/latex/base/ltxcheck.tex"
-                   "/tex/latex/base/ltxguide.cls"
-                   "/tex/latex/base/minimal.cls"
-                   "/tex/latex/base/sample2e.tex"
-                   "/tex/latex/base/small2e.tex"
-                   "/tex/latex/base/source2e.tex"
-                   "/tex/latex/base/testpage.tex"
-                   "/tex/latex/base/texsys.cfg")
-             (base32
-              "0f8d41wk1gb7i6xq1a10drwhhayc50pg9nwzjkrqnxrv0pcc08w5")))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (ice-9 match)
-                  (srfi srfi-26))
-       #:tests? #f                      ; no tests
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (replace 'build
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Find required fonts
-             (setenv "TFMFONTS"
-                     (string-join
-                      (map (match-lambda
-                             ((pkg-name . dir)
-                              (string-append
-                               (assoc-ref inputs pkg-name)
-                               "/share/texmf-dist/fonts/tfm/public"
-                               dir)))
-                           '(("texlive-etex" . "/etex")
-                             ("texlive-cm" . "/cm")
-                             ("texlive-fonts-latex" . "/latex-fonts")
-                             ("texlive-fonts-knuth-lib" . "/knuth-lib")))
-                      ":"))
-             (let ((cwd (getcwd)))
-               (setenv "TEXINPUTS"
-                       (string-append
-                        cwd "//:"
-                        cwd "/source/latex/base//:"
-                        cwd "/build:"
-                        (string-join
-                         (map (match-lambda ((_ . dir) dir)) inputs)
-                         "//:"))))
+  (let ((template (simple-texlive-package
+                   "texlive-latex-base"
+                   (list "/doc/latex/base/"
+                         "/source/latex/base/"
+                         ;; Almost all files in /tex/latex/base are generated, but
+                         ;; these are not:
+                         "/tex/latex/base/idx.tex"
+                         "/tex/latex/base/lablst.tex"
+                         "/tex/latex/base/lppl.tex"
+                         "/tex/latex/base/ltnews.cls"
+                         "/tex/latex/base/ltxcheck.tex"
+                         "/tex/latex/base/ltxguide.cls"
+                         "/tex/latex/base/minimal.cls"
+                         "/tex/latex/base/sample2e.tex"
+                         "/tex/latex/base/small2e.tex"
+                         "/tex/latex/base/source2e.tex"
+                         "/tex/latex/base/testpage.tex"
+                         "/tex/latex/base/texsys.cfg")
+                   (base32
+                    "0f8d41wk1gb7i6xq1a10drwhhayc50pg9nwzjkrqnxrv0pcc08w5")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:modules modules '())
+          '((guix build gnu-build-system)
+            (guix build utils)
+            (ice-9 match)
+            (srfi srfi-26)))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'build
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Find required fonts
+                 (setenv "TFMFONTS"
+                         (string-join
+                          (map (match-lambda
+                                 ((pkg-name . dir)
+                                  (string-append
+                                   (assoc-ref inputs pkg-name)
+                                   "/share/texmf-dist/fonts/tfm/public"
+                                   dir)))
+                               '(("texlive-etex" . "/etex")
+                                 ("texlive-cm" . "/cm")
+                                 ("texlive-fonts-latex" . "/latex-fonts")
+                                 ("texlive-fonts-knuth-lib" . "/knuth-lib")))
+                          ":"))
+                 (let ((cwd (getcwd)))
+                   (setenv "TEXINPUTS"
+                           (string-append
+                            cwd "//:"
+                            cwd "/source/latex/base//:"
+                            cwd "/build:"
+                            (string-join
+                             (map (match-lambda ((_ . dir) dir)) inputs)
+                             "//:"))))
 
-             ;; This is the actual build step.
-             (mkdir "build")
-             (invoke "tex" "-ini" "-interaction=scrollmode"
-                     "-output-directory=build" "unpack.ins")
+                 ;; This is the actual build step.
+                 (mkdir "build")
+                 (invoke "tex" "-ini" "-interaction=scrollmode"
+                         "-output-directory=build" "unpack.ins")
 
-             ;; XXX: We can't build all formats at this point, nor are they
-             ;; part of the LaTeX base, so we disable them.  Actually, we
-             ;; should be running this all in a profile hook, so that only
-             ;; selected formats and hyphenation patterns are included, but it
-             ;; takes long and TeX Live isn't designed to be modular like
-             ;; that.  Everything operates on a shared directory, which we
-             ;; would only have at profile generation time.
-             (let ((disabled-formats
-                    '("aleph aleph" "lamed aleph" "uptex uptex" "euptex euptex"
-                      "eptex eptex" "ptex ptex" "pdfxmltex pdftex" "platex eptex"
-                      "csplain pdftex" "mf mf-nowin" "mex pdftex" "pdfmex pdftex"
-                      "cont-en xetex" "cont-en pdftex" "pdfcsplain xetex"
-                      "pdfcsplain pdftex" "pdfcsplain luatex" "cslatex pdftex"
-                      "mptopdf pdftex" "uplatex euptex" "jadetex pdftex"
-                      "amstex pdftex" "pdfcslatex pdftex" "lollipop tex"
-                      "xmltex pdftex" "pdfjadetex pdftex" "eplain pdftex"
-                      "texsis pdftex" "mltex pdftex" "utf8mex pdftex")))
-               (mkdir "web2c")
-               (install-file (string-append
-                              (assoc-ref inputs "texlive-kpathsea")
-                              "/share/texmf-dist/web2c/fmtutil.cnf")
-                             "web2c")
-               (make-file-writable "web2c/fmtutil.cnf")
-               (substitute* "web2c/fmtutil.cnf"
-                 (((string-append "^(" (string-join disabled-formats "|") ")") m)
-                  (string-append "#! " m))))
-             (invoke "fmtutil-sys" "--all"
-                     "--fmtdir=web2c"
-                     (string-append "--cnffile=web2c/fmtutil.cnf"))
-             ;; We don't actually want to install it.
-             (delete-file "web2c/fmtutil.cnf")
-             #t))
-         (replace 'install
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (root (string-append out "/share/texmf-dist"))
-                    (target (string-append root "/tex/latex/base"))
-                    (web2c (string-append root "/web2c"))
-                    (makeindex (string-append root "/makeindex/latex")))
-               (for-each delete-file (find-files "." "\\.(log|aux)$"))
+                 ;; XXX: We can't build all formats at this point, nor are they
+                 ;; part of the LaTeX base, so we disable them.  Actually, we
+                 ;; should be running this all in a profile hook, so that only
+                 ;; selected formats and hyphenation patterns are included, but it
+                 ;; takes long and TeX Live isn't designed to be modular like
+                 ;; that.  Everything operates on a shared directory, which we
+                 ;; would only have at profile generation time.
+                 (let ((disabled-formats
+                        '("aleph aleph" "lamed aleph" "uptex uptex" "euptex euptex"
+                          "eptex eptex" "ptex ptex" "pdfxmltex pdftex" "platex eptex"
+                          "csplain pdftex" "mf mf-nowin" "mex pdftex" "pdfmex pdftex"
+                          "cont-en xetex" "cont-en pdftex" "pdfcsplain xetex"
+                          "pdfcsplain pdftex" "pdfcsplain luatex" "cslatex pdftex"
+                          "mptopdf pdftex" "uplatex euptex" "jadetex pdftex"
+                          "amstex pdftex" "pdfcslatex pdftex" "lollipop tex"
+                          "xmltex pdftex" "pdfjadetex pdftex" "eplain pdftex"
+                          "texsis pdftex" "mltex pdftex" "utf8mex pdftex")))
+                   (mkdir "web2c")
+                   (install-file (string-append
+                                  (assoc-ref inputs "texlive-kpathsea")
+                                  "/share/texmf-dist/web2c/fmtutil.cnf")
+                                 "web2c")
+                   (make-file-writable "web2c/fmtutil.cnf")
+                   (substitute* "web2c/fmtutil.cnf"
+                     (((string-append "^(" (string-join disabled-formats "|") ")") m)
+                      (string-append "#! " m))))
+                 (invoke "fmtutil-sys" "--all"
+                         "--fmtdir=web2c"
+                         (string-append "--cnffile=web2c/fmtutil.cnf"))
+                 ;; We don't actually want to install it.
+                 (delete-file "web2c/fmtutil.cnf")
+                 #t))
+             (add-after 'install 'install-more
+               (lambda* (#:key inputs outputs #:allow-other-keys)
+                 (let* ((out (assoc-ref outputs "out"))
+                        (root (string-append out "/share/texmf-dist"))
+                        (target (string-append root "/tex/latex/base"))
+                        (web2c (string-append root "/web2c"))
+                        (makeindex (string-append root "/makeindex/latex")))
+                   (for-each delete-file (find-files "." "\\.(log|aux)$"))
 
-               ;; The usedir directive in docstrip.ins is ignored, so these
-               ;; two files end up in the wrong place.  Move them.
-               (mkdir-p makeindex)
-               (for-each (lambda (file)
-                           (install-file file makeindex)
-                           (delete-file file))
-                         '("build/gglo.ist"
-                           "build/gind.ist"))
-               (for-each (cut install-file <> target)
-                         (find-files "build" ".*"))
-               (for-each (cut install-file <> web2c)
-                         (find-files "web2c" ".*"))
-               #t))))))
-    (native-inputs
-     `(("texlive-bin" ,texlive-bin)
-       ("texlive-tex-ini-files" ,texlive-tex-ini-files)
-       ("texlive-tex-plain" ,texlive-tex-plain)
-       ("texlive-kpathsea" ,texlive-kpathsea)
-       ("texlive-cm" ,texlive-cm)
-       ("texlive-fonts-latex" ,texlive-fonts-latex)
-       ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
-       ("texlive-luatexconfig"
-        ,(texlive-origin
-          "texlive-luatexconfig" (number->string %texlive-revision)
-          (list "/tex/generic/config/luatex-unicode-letters.tex"
-                "/tex/generic/config/luatexiniconfig.tex"
-                "/web2c/texmfcnf.lua")
-          (base32
-           "0cs67a8wwh4s5p5gn8l49jyccgy7glw8mfq5klgn3dfsl2fdlhk7")))))
-    (propagated-inputs
-     `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
-       ("texlive-etex" ,texlive-etex)
-       ("texlive-hyph-utf8" ,texlive-hyph-utf8)
-       ("texlive-hyphen-base" ,texlive-hyphen-base)
-       ("texlive-hyphen-afrikaans" ,texlive-hyphen-afrikaans)
-       ("texlive-hyphen-ancientgreek" ,texlive-hyphen-ancientgreek)
-       ("texlive-hyphen-armenian" ,texlive-hyphen-armenian)
-       ("texlive-hyphen-basque" ,texlive-hyphen-basque)
-       ("texlive-hyphen-belarusian" ,texlive-hyphen-belarusian)
-       ("texlive-hyphen-bulgarian" ,texlive-hyphen-bulgarian)
-       ("texlive-hyphen-catalan" ,texlive-hyphen-catalan)
-       ("texlive-hyphen-chinese" ,texlive-hyphen-chinese)
-       ("texlive-hyphen-churchslavonic" ,texlive-hyphen-churchslavonic)
-       ("texlive-hyphen-coptic" ,texlive-hyphen-coptic)
-       ("texlive-hyphen-croatian" ,texlive-hyphen-croatian)
-       ("texlive-hyphen-czech" ,texlive-hyphen-czech)
-       ("texlive-hyphen-danish" ,texlive-hyphen-danish)
-       ("texlive-hyphen-dutch" ,texlive-hyphen-dutch)
-       ("texlive-hyphen-english" ,texlive-hyphen-english)
-       ("texlive-hyphen-esperanto" ,texlive-hyphen-esperanto)
-       ("texlive-hyphen-estonian" ,texlive-hyphen-estonian)
-       ("texlive-hyphen-ethiopic" ,texlive-hyphen-ethiopic)
-       ("texlive-hyphen-finnish" ,texlive-hyphen-finnish)
-       ("texlive-hyphen-french" ,texlive-hyphen-french)
-       ("texlive-hyphen-friulan" ,texlive-hyphen-friulan)
-       ("texlive-hyphen-galician" ,texlive-hyphen-galician)
-       ("texlive-hyphen-georgian" ,texlive-hyphen-georgian)
-       ("texlive-hyphen-german" ,texlive-hyphen-german)
-       ("texlive-hyphen-greek" ,texlive-hyphen-greek)
-       ("texlive-hyphen-hungarian" ,texlive-hyphen-hungarian)
-       ("texlive-hyphen-icelandic" ,texlive-hyphen-icelandic)
-       ("texlive-hyphen-indic" ,texlive-hyphen-indic)
-       ("texlive-hyphen-indonesian" ,texlive-hyphen-indonesian)
-       ("texlive-hyphen-interlingua" ,texlive-hyphen-interlingua)
-       ("texlive-hyphen-irish" ,texlive-hyphen-irish)
-       ("texlive-hyphen-italian" ,texlive-hyphen-italian)
-       ("texlive-hyphen-kurmanji" ,texlive-hyphen-kurmanji)
-       ("texlive-hyphen-latin" ,texlive-hyphen-latin)
-       ("texlive-hyphen-latvian" ,texlive-hyphen-latvian)
-       ("texlive-hyphen-lithuanian" ,texlive-hyphen-lithuanian)
-       ("texlive-hyphen-mongolian" ,texlive-hyphen-mongolian)
-       ("texlive-hyphen-norwegian" ,texlive-hyphen-norwegian)
-       ("texlive-hyphen-occitan" ,texlive-hyphen-occitan)
-       ("texlive-hyphen-piedmontese" ,texlive-hyphen-piedmontese)
-       ("texlive-hyphen-polish" ,texlive-hyphen-polish)
-       ("texlive-hyphen-portuguese" ,texlive-hyphen-portuguese)
-       ("texlive-hyphen-romanian" ,texlive-hyphen-romanian)
-       ("texlive-hyphen-romansh" ,texlive-hyphen-romansh)
-       ("texlive-hyphen-russian" ,texlive-hyphen-russian)
-       ("texlive-hyphen-sanskrit" ,texlive-hyphen-sanskrit)
-       ("texlive-hyphen-serbian" ,texlive-hyphen-serbian)
-       ("texlive-hyphen-slovak" ,texlive-hyphen-slovak)
-       ("texlive-hyphen-slovenian" ,texlive-hyphen-slovenian)
-       ("texlive-hyphen-spanish" ,texlive-hyphen-spanish)
-       ("texlive-hyphen-swedish" ,texlive-hyphen-swedish)
-       ("texlive-hyphen-thai" ,texlive-hyphen-thai)
-       ("texlive-hyphen-turkish" ,texlive-hyphen-turkish)
-       ("texlive-hyphen-turkmen" ,texlive-hyphen-turkmen)
-       ("texlive-hyphen-ukrainian" ,texlive-hyphen-ukrainian)
-       ("texlive-hyphen-uppersorbian" ,texlive-hyphen-uppersorbian)
-       ("texlive-hyphen-welsh" ,texlive-hyphen-welsh)
-       ("texlive-unicode-data" ,texlive-unicode-data)
-       ("texlive-ukrhyph" ,texlive-ukrhyph)
-       ("texlive-ruhyphen" ,texlive-ruhyphen)
-       ("texlive-latexconfig" ,texlive-latexconfig)))
-    (home-page "https://www.ctan.org/pkg/latex-base")
-    (synopsis "Base sources of LaTeX")
-    (description
-     "This bundle comprises the source of LaTeX itself, together with several
+                   ;; The usedir directive in docstrip.ins is ignored, so these
+                   ;; two files end up in the wrong place.  Move them.
+                   (mkdir-p makeindex)
+                   (for-each (lambda (file)
+                               (install-file file makeindex)
+                               (delete-file file))
+                             '("build/gglo.ist"
+                               "build/gind.ist"))
+                   (for-each (cut install-file <> target)
+                             (find-files "build" ".*"))
+                   (for-each (cut install-file <> web2c)
+                             (find-files "web2c" ".*"))
+                   #t)))))))
+      (native-inputs
+       `(("texlive-bin" ,texlive-bin)
+         ("texlive-tex-ini-files" ,texlive-tex-ini-files)
+         ("texlive-tex-plain" ,texlive-tex-plain)
+         ("texlive-kpathsea" ,texlive-kpathsea)
+         ("texlive-cm" ,texlive-cm)
+         ("texlive-fonts-latex" ,texlive-fonts-latex)
+         ("texlive-fonts-knuth-lib" ,texlive-fonts-knuth-lib)
+         ("texlive-luatexconfig"
+          ,(texlive-origin
+            "texlive-luatexconfig" (number->string %texlive-revision)
+            (list "/tex/generic/config/luatex-unicode-letters.tex"
+                  "/tex/generic/config/luatexiniconfig.tex"
+                  "/web2c/texmfcnf.lua")
+            (base32
+             "0cs67a8wwh4s5p5gn8l49jyccgy7glw8mfq5klgn3dfsl2fdlhk7")))))
+      (propagated-inputs
+       `(("texlive-dehyph-exptl" ,texlive-dehyph-exptl)
+         ("texlive-etex" ,texlive-etex)
+         ("texlive-hyph-utf8" ,texlive-hyph-utf8)
+         ("texlive-hyphen-base" ,texlive-hyphen-base)
+         ("texlive-hyphen-afrikaans" ,texlive-hyphen-afrikaans)
+         ("texlive-hyphen-ancientgreek" ,texlive-hyphen-ancientgreek)
+         ("texlive-hyphen-armenian" ,texlive-hyphen-armenian)
+         ("texlive-hyphen-basque" ,texlive-hyphen-basque)
+         ("texlive-hyphen-belarusian" ,texlive-hyphen-belarusian)
+         ("texlive-hyphen-bulgarian" ,texlive-hyphen-bulgarian)
+         ("texlive-hyphen-catalan" ,texlive-hyphen-catalan)
+         ("texlive-hyphen-chinese" ,texlive-hyphen-chinese)
+         ("texlive-hyphen-churchslavonic" ,texlive-hyphen-churchslavonic)
+         ("texlive-hyphen-coptic" ,texlive-hyphen-coptic)
+         ("texlive-hyphen-croatian" ,texlive-hyphen-croatian)
+         ("texlive-hyphen-czech" ,texlive-hyphen-czech)
+         ("texlive-hyphen-danish" ,texlive-hyphen-danish)
+         ("texlive-hyphen-dutch" ,texlive-hyphen-dutch)
+         ("texlive-hyphen-english" ,texlive-hyphen-english)
+         ("texlive-hyphen-esperanto" ,texlive-hyphen-esperanto)
+         ("texlive-hyphen-estonian" ,texlive-hyphen-estonian)
+         ("texlive-hyphen-ethiopic" ,texlive-hyphen-ethiopic)
+         ("texlive-hyphen-finnish" ,texlive-hyphen-finnish)
+         ("texlive-hyphen-french" ,texlive-hyphen-french)
+         ("texlive-hyphen-friulan" ,texlive-hyphen-friulan)
+         ("texlive-hyphen-galician" ,texlive-hyphen-galician)
+         ("texlive-hyphen-georgian" ,texlive-hyphen-georgian)
+         ("texlive-hyphen-german" ,texlive-hyphen-german)
+         ("texlive-hyphen-greek" ,texlive-hyphen-greek)
+         ("texlive-hyphen-hungarian" ,texlive-hyphen-hungarian)
+         ("texlive-hyphen-icelandic" ,texlive-hyphen-icelandic)
+         ("texlive-hyphen-indic" ,texlive-hyphen-indic)
+         ("texlive-hyphen-indonesian" ,texlive-hyphen-indonesian)
+         ("texlive-hyphen-interlingua" ,texlive-hyphen-interlingua)
+         ("texlive-hyphen-irish" ,texlive-hyphen-irish)
+         ("texlive-hyphen-italian" ,texlive-hyphen-italian)
+         ("texlive-hyphen-kurmanji" ,texlive-hyphen-kurmanji)
+         ("texlive-hyphen-latin" ,texlive-hyphen-latin)
+         ("texlive-hyphen-latvian" ,texlive-hyphen-latvian)
+         ("texlive-hyphen-lithuanian" ,texlive-hyphen-lithuanian)
+         ("texlive-hyphen-mongolian" ,texlive-hyphen-mongolian)
+         ("texlive-hyphen-norwegian" ,texlive-hyphen-norwegian)
+         ("texlive-hyphen-occitan" ,texlive-hyphen-occitan)
+         ("texlive-hyphen-piedmontese" ,texlive-hyphen-piedmontese)
+         ("texlive-hyphen-polish" ,texlive-hyphen-polish)
+         ("texlive-hyphen-portuguese" ,texlive-hyphen-portuguese)
+         ("texlive-hyphen-romanian" ,texlive-hyphen-romanian)
+         ("texlive-hyphen-romansh" ,texlive-hyphen-romansh)
+         ("texlive-hyphen-russian" ,texlive-hyphen-russian)
+         ("texlive-hyphen-sanskrit" ,texlive-hyphen-sanskrit)
+         ("texlive-hyphen-serbian" ,texlive-hyphen-serbian)
+         ("texlive-hyphen-slovak" ,texlive-hyphen-slovak)
+         ("texlive-hyphen-slovenian" ,texlive-hyphen-slovenian)
+         ("texlive-hyphen-spanish" ,texlive-hyphen-spanish)
+         ("texlive-hyphen-swedish" ,texlive-hyphen-swedish)
+         ("texlive-hyphen-thai" ,texlive-hyphen-thai)
+         ("texlive-hyphen-turkish" ,texlive-hyphen-turkish)
+         ("texlive-hyphen-turkmen" ,texlive-hyphen-turkmen)
+         ("texlive-hyphen-ukrainian" ,texlive-hyphen-ukrainian)
+         ("texlive-hyphen-uppersorbian" ,texlive-hyphen-uppersorbian)
+         ("texlive-hyphen-welsh" ,texlive-hyphen-welsh)
+         ("texlive-unicode-data" ,texlive-unicode-data)
+         ("texlive-ukrhyph" ,texlive-ukrhyph)
+         ("texlive-ruhyphen" ,texlive-ruhyphen)
+         ("texlive-latexconfig" ,texlive-latexconfig)))
+      (home-page "https://www.ctan.org/pkg/latex-base")
+      (synopsis "Base sources of LaTeX")
+      (description
+       "This bundle comprises the source of LaTeX itself, together with several
 packages which are considered \"part of the kernel\".  This bundle, together
 with the required packages, constitutes what every LaTeX distribution should
 contain.")
-    (license license:lppl1.3c+)))
+      (license license:lppl1.3c+))))
 
 (define-public texlive-latex-filecontents
   (package
@@ -2875,30 +2884,45 @@ documents.  It comprises the packages color, graphics, graphicx, trig, epsfig,
 keyval, and lscape.")
     (license license:lppl1.3c+)))
 
-(define-public texlive-latex-xcolor
-  (package
-    (name "texlive-latex-xcolor")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xcolor"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "01n613s7bcrd2n4jfawm0k4nn2ny3aaifp2jjfif3lz4sbv31494"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xcolor"))
-    (home-page "https://www.ctan.org/pkg/xcolor")
-    (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
-    (description
-     "The package starts from the basic facilities of the colorcolor package,
+(define-public texlive-xcolor
+  (let ((template (simple-texlive-package
+                   "texlive-xcolor"
+                   (list "/doc/latex/xcolor/"
+                         "/source/latex/xcolor/")
+                   (base32
+                    "12q6spmpxg30alhvarjmxzigmz7lazapbrb0mc4vhbn6n1sdz7pp"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/xcolor")
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/xcolor") #t))
+             (add-after 'install 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((share (string-append (assoc-ref outputs "out")
+                                             "/share/texmf-dist")))
+                   (mkdir-p (string-append share "/dvips/xcolor"))
+                   (rename-file (string-append share "/tex/latex/xcolor/xcolor.pro")
+                                (string-append share "/dvips/xcolor/xcolor.pro"))
+                   #t)))))))
+      (home-page "https://www.ctan.org/pkg/xcolor")
+      (synopsis "Driver-independent color extensions for LaTeX and pdfLaTeX")
+      (description
+       "The package starts from the basic facilities of the colorcolor package,
 and provides easy driver-independent access to several kinds of color tints,
 shades, tones, and mixes of arbitrary colors.  It allows a user to select a
 document-wide target color model and offers complete tools for conversion
 between eight color models.  Additionally, there is a command for alternating
 row colors plus repeated non-aligned material (like horizontal lines) in
 tables.")
-    (license license:lppl1.2+)))
+      (license license:lppl1.2+))))
+
+(define-public texlive-latex-xcolor
+  (deprecated-package "texlive-latex-xcolor" texlive-xcolor))
 
 (define-public texlive-latex-hyperref
   (package
@@ -3553,7 +3577,10 @@ standard LaTeX packages."
                ;; the updmap.cfg file)
                (match (filter (match-lambda
                                 ((name . _)
-                                 (not (member name '("bash" "updmap.cfg")))))
+                                 (not (member name '("bash"
+                                                     "coreutils"
+                                                     "sed"
+                                                     "updmap.cfg")))))
                               %build-inputs)
                  (((names . directories) ...)
                   (union-build (assoc-ref %outputs "out")
@@ -3573,6 +3600,7 @@ standard LaTeX packages."
                (setenv "PATH" (string-append
                                (assoc-ref %build-inputs "bash") "/bin:"
                                (assoc-ref %build-inputs "coreutils") "/bin:"
+                               (assoc-ref %build-inputs "sed") "/bin:"
                                (string-append out "/bin")))
                (for-each
                 (cut wrap-program <>
@@ -3581,16 +3609,32 @@ standard LaTeX packages."
                 (find-files (string-append out "/bin") ".*"))
 
                ;; Remove invalid maps from config file.
-               (let ((port (open-pipe* OPEN_WRITE "updmap-sys"
-                                       "--syncwithtrees"
-                                       "--nohash"
-                                       (assoc-ref %build-inputs "updmap.cfg"))))
-                 (display "Y\n" port)
-                 (when (not (zero? (status:exit-val (close-pipe port))))
-                   (error "failed to filter updmap.cfg")))
-               ;; Generate maps.
-               (invoke "updmap-sys" "--force"
-                       (string-append out "/share/texmf-config/web2c/updmap.cfg"))
+               (let ((web2c (string-append out "/share/texmf-config/web2c/"))
+                     (maproot (string-append out "/share/texmf-dist/fonts/map/")))
+                 (mkdir-p web2c)
+                 (copy-file
+                  (assoc-ref %build-inputs "updmap.cfg")
+                  (string-append web2c "updmap.cfg"))
+                 (make-file-writable (string-append web2c "updmap.cfg"))
+
+                 (let* ((port (open-pipe* OPEN_WRITE "updmap-sys"
+                                          "--syncwithtrees"
+                                          "--nohash"
+                                          (string-append "--cnffile=" web2c "updmap.cfg"))))
+                   (display "Y\n" port)
+                   (when (not (zero? (status:exit-val (close-pipe port))))
+                     (error "failed to filter updmap.cfg")))
+                 ;; Generate maps.
+                 (invoke "updmap-sys"
+                         (string-append "--cnffile=" web2c "updmap.cfg")
+                         (string-append "--dvipdfmxoutputdir="
+                                        maproot "dvipdfmx/updmap/")
+                         (string-append "--dvipsoutputdir="
+                                        maproot "dvips/updmap/")
+                         (string-append "--pdftexoutputdir="
+                                        maproot "pdftex/updmap/"))
+                 ;; Having this file breaks all file lookups later.
+                 (delete-file (string-append out "/share/texmf-dist/ls-R")))
                #t))))
         (inputs
          `(("bash" ,bash)
@@ -3958,31 +4002,6 @@ PSfrag automatically removing these tags from the figure and replacing them
 with a user specified LaTeX construction, properly aligned, scaled, and/or
 rotated.")
     (license (license:fsf-free "file://psfrag.dtx"))))
-
-(define-public texlive-latex-xkeyval
-  (package
-    (name "texlive-latex-xkeyval")
-    (version (number->string %texlive-revision))
-    (source (origin
-              (method svn-fetch)
-              (uri (texlive-ref "latex" "xkeyval"))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
-    (build-system texlive-build-system)
-    (arguments '(#:tex-directory "latex/xkeyval"))
-    (home-page "https://www.ctan.org/pkg/xkeyval")
-    (synopsis "Macros for defining and setting keys")
-    (description
-     "This package is an extension of the @code{keyval} package and offers
-more flexible macros for defining and setting keys.  The package provides a
-pointer and a preset system.  Furthermore, it supplies macros to allow class
-and package options to contain options of the @code{key=value} form.  A LaTeX
-kernel patch is provided to avoid premature expansions of macros in class or
-package options.  A specialized system for setting @code{PSTricks} keys is
-provided by the @code{pst-xkey} package.")
-    (license license:lppl1.3+)))
 
 (define-public texlive-pstool
   (package
@@ -5444,7 +5463,7 @@ TeX metrics (VF and TFM files) and macros for use with LaTeX.")
 as an alternative version of the Kurier typeface, which was designed in 1975
 for a diploma in typeface design at the Warsaw Academy of Fine Arts under the
 supervision of Roman Tomaszewski.  Kurier was designed for linotype
-typesetting of newspapers and similar periodicals. The Iwona fonts are an
+typesetting of newspapers and similar periodicals.  The Iwona fonts are an
 alternative version of the Kurier fonts.  The difference lies in the absence
 of ink traps which typify the Kurier font.")
     (license license:gfl1.0)))
@@ -6827,17 +6846,14 @@ titles.")
                          "/fonts/afm/public/xypic/"
                          "/fonts/tfm/public/xypic/"
                          "/fonts/type1/public/xypic/"
-
-                         ;;"/tex/generic/xypic/" ; I guess these are generated
-                         )
+                         "/tex/generic/xypic/")
                    (base32
-                    "0sqkkvjzzsiazvh8803qqyrcv4is3m1qs9x9v2m35jjikbqc08y8"))))
+                    "09b51bbm189xh7039h5n8nmab5nn2bybhh26qjn08763m80zdhjg")
+                   #:trivial? #t)))
     (package
       (inherit template)
       (arguments
        (substitute-keyword-arguments (package-arguments template)
-         ((#:tex-directory _ #t)
-          "tex/generic/xypic")
          ((#:phases phases)
           `(modify-phases ,phases
              (delete 'reset-gzip-timestamps)))))
@@ -7053,3 +7069,319 @@ the file to which it applies.")
      "This package helps LaTeX users to create PDF/X, PFD/A and other
 standards-compliant PDF documents with pdfTeX, LuaTeX and XeTeX.")
     (license license:lppl1.2+)))
+
+(define-public texlive-ydoc
+  (let ((template (simple-texlive-package
+                   "texlive-ydoc"
+                   (list "/doc/latex/ydoc/"
+                         "/source/latex/ydoc/")
+                   (base32
+                    "0ckcpy1b8v1fk3qc8qkxgiag2wc0qzxm6bgksv000m4m1hsi2g8b")
+                   #:trivial? #f)))
+    (package
+      (inherit template)
+      (outputs '("out" "doc"))
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ #t)
+          "latex/ydoc")
+         ((#:build-targets _ #t)
+          ''("ydoc.dtx"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/ydoc") #t))
+             (add-after 'copy-files 'move-files
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let* ((share (string-append (assoc-ref outputs "out")
+                                              "/share/texmf-dist"))
+                        (target (string-append share "/tex/generic/ydoc"))
+                        (doc (string-append (assoc-ref outputs "doc")
+                                            "/share/texmf-dist/doc") ))
+                   (mkdir-p target)
+                   (for-each
+                    (lambda (file)
+                      (rename-file (string-append share "/tex/latex/ydoc/" file)
+                                   (string-append target "/" file)))
+                    '("ydocincl.tex" "ydocstrip.tex"))
+                   (mkdir-p doc)
+                   (rename-file (string-append share "/doc") doc)
+                   #t)))))))
+      (home-page "http://www.ctan.org/pkg/ydoc")
+      (synopsis "Macros for documentation of LaTeX classes and packages")
+      (description "The package provides macros and environments to document
+LaTeX packages and classes.  It is an (as yet unfinished) alternative to the
+@code{ltxdoc} class and the @code{doc} or @code{xdoc} packages.  The aim is to
+provide a different layout and more modern styles (using the @code{xcolor},
+@code{hyperref} packages, etc.)  This is an alpha release, and should probably
+not (yet) be used with other packages, since the implementation might
+change.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-pstricks
+  (let ((template (simple-texlive-package
+                   "texlive-pstricks"
+                   (list "/doc/generic/pstricks/"
+                         "/dvips/pstricks/"
+                         "/tex/generic/pstricks/"
+                         "/tex/latex/pstricks/")
+                   (base32
+                    "04566354c77claxl1sznc490cda0m5gaa5ck6ms4q7mm44rj3rzk")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'reset-gzip-timestamps)))))
+      (home-page "http://www.ctan.org/pkg/pstricks")
+      (synopsis "PostScript macros for TeX")
+      (description "PSTricks offers an extensive collection of macros for
+generating PostScript that is usable with most TeX macro formats, including
+Plain TeX, LaTeX, AMS-TeX, and AMS-LaTeX.  Included are macros for colour,
+graphics, pie charts, rotation, trees and overlays.  It has many special
+features, including a wide variety of graphics (picture drawing) macros, with
+a flexible interface and with colour support.  There are macros for colouring
+or shading the cells of tables.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-pst-text
+  (let ((template (simple-texlive-package
+                   "texlive-pst-text"
+                   (list "/doc/generic/pst-text/"
+                         "/source/generic/pst-text/Makefile"
+                         "/dvips/pst-text/pst-text.pro"
+                         "/tex/generic/pst-text/"
+                         "/tex/latex/pst-text/")
+                   (base32
+                    "0s2bbkdfy0shqrrkjflrn0x0pnvxzbdc38pjbdfw46wnmnxrnasm")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (propagated-inputs
+       `(("texlive-pstricks" ,texlive-pstricks)))
+      (home-page "http://www.ctan.org/pkg/pst-text")
+      (synopsis "Text and character manipulation in PSTricks")
+      (description "Pst-text is a PSTricks based package for plotting text along
+a different path and manipulating characters.  It includes the functionality
+of the old package @code{pst-char}.")
+      (license license:lppl))))
+
+(define-public texlive-iftex
+  (let ((template (simple-texlive-package
+                   "texlive-iftex"
+                   (list "/doc/generic/iftex/"
+                         "/tex/generic/iftex/iftex.sty")
+                   (base32
+                    "089zvw31gby150n1k0zdk2c0q97pgbqs46phxydaqil64b55nnl7")
+                   #:trivial? #t)))
+    (package
+      (inherit template)
+      (home-page "http://www.ctan.org/pkg/iftex")
+      (synopsis "Determine the currently used TeX engine")
+      (description "This package, which works both for Plain TeX and for
+LaTeX, defines the @code{\\ifPDFTeX}, @code{\\ifXeTeX}, and @code{\\ifLuaTeX}
+conditionals for testing which engine is being used for typesetting.  The
+package also provides the @code{\\RequirePDFTeX}, @code{\\RequireXeTeX}, and
+@code{\\RequireLuaTeX} commands which throw an error if pdfTeX, XeTeX or
+LuaTeX (respectively) is not the engine in use.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-tools
+  (let ((template (simple-texlive-package
+                   "texlive-tools"
+                   (list "/doc/latex/tools/"
+                         "/source/latex/tools/")
+                   (base32
+                    "0v3zqcpy0w5bzy1xdcv1wnxbmxrn1j6x03h3y2af7qmjggph2a09"))))
+    (package
+      (inherit template)
+      (arguments
+       (substitute-keyword-arguments (package-arguments template)
+         ((#:tex-directory _ '())
+          "latex/tools")
+         ((#:build-targets _ '())
+          ''("tools.ins"))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'chdir
+               (lambda _ (chdir "source/latex/tools") #t))))))
+      (home-page "https://www.ctan.org/tex-archive/macros/latex/required/tools/")
+      (synopsis "LaTeX standard tools bundle")
+      (description "This package provides a collection of simple tools that
+are part of the LaTeX required tools distribution, comprising the packages:
+@code{afterpage}, @code{array}, @code{bm}, @code{calc}, @code{dcolumn},
+@code{delarray}, @code{enumerate}, @code{fileerr}, @code{fontsmpl},
+@code{ftnright}, @code{hhline}, @code{indentfirst}, @code{layout},
+@code{longtable}, @code{multicol}, @code{rawfonts}, @code{showkeys},
+@code{somedefs}, @code{tabularx}, @code{theorem}, @code{trace},
+@code{varioref}, @code{verbatim}, @code{xr}, and @code{xspace}.")
+      (license license:lppl1.3+))))
+
+(define-public texlive-latex-xkeyval
+  (package
+    (name "texlive-latex-xkeyval")
+    (version (number->string %texlive-revision))
+    (source (origin
+              (method svn-fetch)
+              (uri (texlive-ref "latex" "xkeyval"))
+              (sha256
+               (base32
+                "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/xkeyval"
+       #:build-targets '("xkeyval.dtx")
+       #:tex-format "latex" ; won't build with luatex
+       #:phases
+       (modify-phases %standard-phases
+         ;; This package cannot be built out of tree as it expects to find
+         ;; built files in the working directory.
+         (add-before 'build 'fix-build
+           (lambda _
+             (setenv "TEXINPUTS"
+                     (string-append (getcwd) "/build:"))
+             (substitute* "xkeyval.dtx"
+               (("usepackage\\{xcolor\\}")
+                "usepackage[dvips]{xcolor}"))
+             #t))
+         ;; FIXME: We don't have a package for this font yet.
+         (add-after 'unpack 'remove-dependency-on-fourier
+           (lambda _
+             (substitute* "xkeyval.dtx"
+               (("\\\\usepackage\\{fourier\\}") ""))
+             #t))
+         (add-after 'install 'move-files
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share/texmf-dist"))
+                    (source (string-append share "/tex/latex/xkeyval/"))
+                    (target (string-append share "/tex/generic/xkeyval/")))
+               (mkdir-p target)
+               (for-each (lambda (file)
+                           (rename-file (string-append source file)
+                                        (string-append target file)))
+                         '("keyval.tex"
+                           "pst-xkey.tex"
+                           "xkeyval.tex"
+                           "xkvex1.tex"
+                           "xkvex2.tex"
+                           "xkvex3.tex"
+                           "xkvex4.tex"
+                           "xkvtxhdr.tex"
+                           "xkvutils.tex"))
+               #t))))))
+    (native-inputs
+     `(("texlive-latex-base" ,texlive-latex-base)
+       ("texlive-cm" ,texlive-cm)
+       ("texlive-lm" ,texlive-lm)
+       ("texlive-url" ,texlive-url)
+       ("texlive-graphics-def" ,texlive-graphics-def)
+       ("texlive-xcolor" ,texlive-xcolor)
+       ("texlive-latex-footmisc" ,texlive-latex-footmisc)
+       ("texlive-latex-listings" ,texlive-latex-listings)
+       ("texlive-iftex" ,texlive-iftex)
+       ("texlive-pstricks" ,texlive-pstricks)
+       ("texlive-pst-text" ,texlive-pst-text)
+       ("texlive-tools" ,texlive-tools)
+       ("texlive-latex-pgf" ,texlive-latex-pgf)))
+    (home-page "http://www.ctan.org/pkg/xkeyval")
+    (synopsis "Extension of the keyval package")
+    (description
+     "This package is an extension of the keyval package and offers additional
+macros for setting keys and declaring and setting class or package options.
+The package allows the programmer to specify a prefix to the name of the
+macros it defines for keys, and to define families of key definitions; these
+all help use in documents where several packages define their own sets of
+keys.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-standalone
+  (package
+    (name "texlive-standalone")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "standalone"))
+       (sha256
+        (base32
+         "192ydxcn8ir96q8qwvnppksmqf5i0p50i0wz6iqazbwmh3dqxpx4"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/standalone"))
+    (propagated-inputs
+     `(("texlive-latex-xkeyval" ,texlive-latex-xkeyval)))
+    (native-inputs
+     `(("texlive-ydoc" ,texlive-ydoc)))
+    (home-page "http://www.ctan.org/pkg/standalone")
+    (synopsis "Compile TeX pictures stand-alone or as part of a document")
+    (description "A class and package is provided which allows TeX pictures or
+other TeX code to be compiled standalone or as part of a main document.
+Special support for pictures with beamer overlays is also provided.  The
+package is used in the main document and skips extra preambles in sub-files.
+The class may be used to simplify the preamble in sub-files.  By default the
+@code{preview} package is used to display the typeset code without margins.
+The behaviour in standalone mode may adjusted using a configuration file
+@code{standalone.cfg} to redefine the standalone environment.")
+    (license license:lppl1.3+)))
+
+(define-public texlive-siunitx
+  (package
+    (name "texlive-siunitx")
+    (version (number->string %texlive-revision))
+    (source (texlive-origin
+             name version
+             (list "/source/latex/siunitx/siunitx.dtx"
+                   "/doc/latex/siunitx/README.md")
+             (base32
+              "0dmljnxgv2bwl3mi74iil41q03swvrm1b0ziwxlhc4m9lx31b1q1")))
+    (build-system texlive-build-system)
+    (arguments
+     '(#:tex-directory "latex/siunitx"
+       #:build-targets '("siunitx.dtx")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'chdir
+           (lambda _ (chdir "source/latex/siunitx") #t)))))
+    (propagated-inputs
+     `(("texlive-latex-l3kernel" ,texlive-latex-l3kernel)
+       ("texlive-latex-l3packages" ,texlive-latex-l3packages)))
+    (home-page "http://www.ctan.org/pkg/siunitx")
+    (synopsis "Comprehensive SI units package")
+    (description
+     "Typesetting values with units requires care to ensure that the combined
+mathematical meaning of the value plus unit combination is clear.  In
+particular, the SI units system lays down a consistent set of units with rules
+on how they are to be used.  However, different countries and publishers have
+differing conventions on the exact appearance of numbers (and units).  A
+number of LaTeX packages have been developed to provide consistent application
+of the various rules.  The @code{siunitx} package takes the best from the
+existing packages, and adds new features and a consistent interface.  A number
+of new ideas have been incorporated, to fill gaps in the existing provision.
+The package also provides backward-compatibility with @code{SIunits},
+@code{sistyle}, @code{unitsdef} and @code{units}.  The aim is to have one
+package to handle all of the possible unit-related needs of LaTeX users.")
+    (license license:lppl1.3c)))
+
+(define-public texlive-booktabs
+  (package
+    (name "texlive-booktabs")
+    (version (number->string %texlive-revision))
+    (source
+     (origin
+       (method svn-fetch)
+       (uri (texlive-ref "latex" "booktabs"))
+       (sha256
+        (base32
+         "1dqid48vgh25wmw8xzmx6x3pfgz1y9f0r8aza1yxq2mjny5yf68x"))))
+    (build-system texlive-build-system)
+    (arguments '(#:tex-directory "latex/booktabs"))
+    (home-page "http://www.ctan.org/pkg/booktabs")
+    (synopsis "Publication quality tables in LaTeX")
+    (description
+     "This package enhances the quality of tables in LaTeX, providing extra
+commands as well as behind-the-scenes optimisation.  Guidelines are given as
+to what constitutes a good table in this context.  The package offers
+@code{longtable} compatibility.")
+    (license license:lppl1.3+)))

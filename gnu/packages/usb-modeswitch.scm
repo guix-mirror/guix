@@ -69,7 +69,7 @@
            (install-file (string-append files "/COPYING") license-dir)))))
     (home-page "http://www.draisberghof.de/usb_modeswitch/")
     (synopsis "Data package for USB_ModeSwitch")
-    (description "This packages contains data about devices and a UDEV rules
+    (description "This package contains data about devices and a UDEV rules
 file for use with USB_ModeSwitch.")
     (license license:gpl2+)))
 

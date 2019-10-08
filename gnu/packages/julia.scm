@@ -482,6 +482,10 @@
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "JULIA_LOAD_PATH")
+            (files (list "share/julia/packages/")))))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux" "aarch64-linux"))

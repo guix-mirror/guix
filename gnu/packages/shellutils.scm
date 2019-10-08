@@ -5,6 +5,7 @@
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Benjamin Slade <slade@jnanam.net>
+;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,21 +23,107 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages shellutils)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages golang)
-  #:use-module (gnu packages python)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (gnu packages autotools)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system go)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages golang)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
+  #:use-module (gnu packages shells)
+  #:use-module (gnu packages tmux))
+
+(define-public zsh-autosuggestions
+  (package
+    (name "zsh-autosuggestions")
+    (version "0.6.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/zsh-users/zsh-autosuggestions.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1h8h2mz9wpjpymgl2p7pc146c1jgb3dggpvzwm9ln3in336wl95c"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ruby" ,ruby)
+       ("ruby-byebug" ,ruby-byebug)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rspec-wait" ,ruby-rspec-wait)
+       ("tmux" ,tmux)
+       ("zsh" ,zsh)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check ; Tests use ruby's bundler; instead execute rspec directly.
+           (lambda _
+             (setenv "TMUX_TMPDIR" (getenv "TMPDIR"))
+             (setenv "SHELL" (which "zsh"))
+             (invoke "rspec")))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (zsh-plugins
+                      (string-append out "/share/zsh/plugins/zsh-autosuggestions")))
+               (invoke "make" "all")
+               (install-file "zsh-autosuggestions.zsh" zsh-plugins)
+               #t))))))
+    (home-page "https://github.com/zsh-users/zsh-autosuggestions")
+    (synopsis "Fish-like autosuggestions for zsh")
+    (description
+     "Fish-like fast/unobtrusive autosuggestions for zsh.  It suggests commands
+as you type.")
+    (license license:expat)))
+
+(define-public sh-z
+  (package
+    (name "sh-z")
+    (version "1.11")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rupa/z.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "13zbgkj6y0qhvn5jpkrqbd4jjxjr789k228iwma5hjfh1nx7ghyb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; No tests provided
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1"))
+                    (bin (string-append out "/bin")))
+               (install-file "z.sh" bin)
+               (chmod (string-append bin "/z.sh") #o755)
+               (install-file "z.1" man)
+               #t))))))
+    (synopsis "Jump about directories")
+    (description
+     "Tracks your most used directories, based on ``frecency''.  After a short
+learning phase, z will take you to the most ``frecent'' directory that matches
+all of the regexes given on the command line in order.")
+    (home-page "https://github.com/rupa/z")
+    (license license:expat)))
 
 (define-public envstore
   (package

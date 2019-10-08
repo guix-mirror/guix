@@ -72,6 +72,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -84,6 +85,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages onc-rpc)
   #:use-module (gnu packages parallel)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -132,12 +134,13 @@
     (name "4store")
     (version "1.1.6")
     (source (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/4store/4store/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (method git-fetch)
+      (uri (git-reference
+             (url "https://github.com/4store/4store.git")
+             (commit (string-append "v" version))))
+      (file-name (git-file-name name version))
       (sha256
-       (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
+       (base32 "1kzdfmwpzy64cgqlkcz5v4klwx99w0jk7afckyf7yqbqb4rydmpk"))
       (patches (search-patches "4store-unset-preprocessor-directive.patch"
                                "4store-fix-buildsystem.patch"))))
     (build-system gnu-build-system)
@@ -160,12 +163,6 @@
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("util-linux" ,util-linux)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'generate-configure
-           (lambda _
-             (invoke "sh" "autogen.sh"))))))
     ;; http://www.4store.org has been down for a while now.
     (home-page "https://github.com/4store/4store")
     (synopsis "Clustered RDF storage and query engine")
@@ -549,7 +546,7 @@ RDBMS systems (which are deep in functionality).")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.23")
+    (version "5.7.27")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -561,7 +558,7 @@ RDBMS systems (which are deep in functionality).")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0rbc3xsc11lq2dm0ip6gxa16c06hi74scb97x5cw7yhbabaz4c07"))))
+               "1fhv16zr46pxm1j8vb8x8mh3nwzglg01arz8gnazbmjqldr5idpq"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -598,12 +595,15 @@ RDBMS systems (which are deep in functionality).")
                        #t))))))
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("boost" ,boost-for-mysql)
        ("libaio" ,libaio)
+       ("libtirpc" ,libtirpc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
+       ("rpcsvc-proto" ,rpcsvc-proto) ; rpcgen
        ("zlib" ,zlib)))
     (home-page "https://www.mysql.com/")
     (synopsis "Fast, easy to use, and popular database")
@@ -780,6 +780,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
+       ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
+       ,@(if (string-prefix? "armhf" (%current-system))
+             `(("gcc", gcc-5))
+             '())
        ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
@@ -791,7 +795,7 @@ Language.")
        ("zlib" ,zlib)))
     (propagated-inputs
      ;; mariadb.pc says -lssl -lcrypto, so propagate it.
-     `(("openssl" ,openssl)))
+     `(("openssl" ,openssl-1.0)))
     ;; The test suite is very resource intensive and can take more than three
     ;; hours on a x86_64 system.  Give slow and busy machines some leeway.
     (properties '((timeout . 64800)))        ;18 hours
@@ -1269,14 +1273,14 @@ changes.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0d9d2f1c83gmmq30bkfs50yb8399mr9xjjzscma4kyq0ajf75861"))))
+                "0jh0iqbb6pkvqrqn033w5g6gwa4bdgkvp49z0qpkk3h2wk6b4h4h"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -2106,20 +2110,19 @@ for ODBC.")
 (define-public python-pyodbc
   (package
     (name "python-pyodbc")
-    (version "4.0.26")
+    (version "4.0.27")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyodbc" version))
        (sha256
-        (base32 "1qrxnf7ji5hml7z4y669k4wmk3iz2pcsr05bnn1n912asash09z5"))
+        (base32 "1kd2i7hc1330cli72vawzby17c3039cqn1aba4i0zrjnpghjhmib"))
        (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (inputs
      `(("unixodbc" ,unixodbc)))
     (arguments
-     `(;; No unit tests exist.
-       #:tests? #f))
+     `(#:tests? #f))                    ; no unit tests exist
     (home-page "https://github.com/mkleehammer/pyodbc")
     (synopsis "Python ODBC Library")
     (description "@code{python-pyodbc} provides a Python DB-API driver
@@ -2436,14 +2439,14 @@ You might also want to install the following optional dependencies:
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "1.0.10")
+    (version "1.0.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "1dwl0264r6ri2jyrjr68am04x538ab26xwy4crqjnnhm4alwm3c2"))))
+         "1k5hag0vahd5vrf9abx8fdj2whrwaw2iq2yp736mmxnbsn5xkdyd"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)
@@ -2454,8 +2457,7 @@ You might also want to install the following optional dependencies:
        ("python-mako" ,python-mako)
        ("python-editor" ,python-editor)))
     (home-page "https://bitbucket.org/zzzeek/alembic")
-    (synopsis
-     "Database migration tool for SQLAlchemy")
+    (synopsis "Database migration tool for SQLAlchemy")
     (description
      "Alembic is a lightweight database migration tool for usage with the
 SQLAlchemy Database Toolkit for Python.")
@@ -2734,13 +2736,13 @@ reasonable substitute.")
 (define-public python-redis
   (package
     (name "python-redis")
-    (version "3.2.1")
+    (version "3.3.8")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "redis" version))
        (sha256
-        (base32 "0wwj8il4c3aff15xwwcjfci367zxsakq05ps1a2il6yavp91i94c"))))
+        (base32 "0fyxzqax7lcwzwhvnz0i0q6v62hxyv1mv52ywx3bpff9a2vjz8lq"))))
     (build-system python-build-system)
     ;; Tests require a running Redis server.
     (arguments '(#:tests? #f))
@@ -3068,7 +3070,7 @@ algorithm implementations.")
        ("python-pandas" ,python-pandas)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("cmake" ,cmake)
+     `(("cmake" ,cmake-minimal)
        ("python-cython" ,python-cython)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)

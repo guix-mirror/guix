@@ -267,6 +267,7 @@ Second line" 24))
         (gcrypt (specification->package "guile-gcrypt"))
         (go     (specification->package "go"))
         (gnugo  (specification->package "gnugo"))
+        (libb2  (specification->package "libb2"))
         (rx     (cut make-regexp <> regexp/icase))
         (>0     (cut > <> 0))
         (=0     zero?))
@@ -283,6 +284,8 @@ Second line" 24))
          (=0 (package-relevance go
                                 (map rx '("go" "game"))))
          (>0 (package-relevance gnugo
-                                (map rx '("go" "game")))))))
+                                (map rx '("go" "game"))))
+         (>0 (package-relevance libb2
+                                (map rx '("crypto" "library")))))))
 
 (test-end "ui")

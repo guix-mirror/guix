@@ -64,7 +64,7 @@
 (define-public ccid
   (package
     (name "ccid")
-    (version "1.4.30")
+    (version "1.4.31")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -72,7 +72,7 @@
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0z7zafdg75fr1adlv2x0zz34s07gljcjg2lsz76s1048w1xhh5xc"))))
+                "1xz8ikr6vk73w3xnwb931yq8lqc1zrj8c3v34n6h63irwjvdfj3b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--enable-usbdropdir=" %output
@@ -353,7 +353,7 @@ retrieve a YubiKey's serial number, and so forth.")
 (define-public python-pyscard
   (package
     (name "python-pyscard")
-    (version "1.9.8")
+    (version "1.9.9")
     (source (origin
               (method url-fetch)
               ;; The maintainer publishes releases on various sites, but
@@ -363,7 +363,7 @@ retrieve a YubiKey's serial number, and so forth.")
                     version "/pyscard-" version ".tar.gz"))
               (sha256
                (base32
-                "15fh00z1an6r5j7hrz3jlq0rb3jygwf3x4jcwsa008bv8vpcg7gm"))))
+                "082cjkbxadaz2jb4rbhr0mkrirzlqyqhcf3r823qb0q1k50ybgg6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

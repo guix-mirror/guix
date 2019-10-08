@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,7 @@ this page to TITLE."
                          #:key
                          (allow-empty-input? #f)
                          (default-text #f)
-                         (input-hide-checkbox? #f)
+                         (input-visibility-checkbox? #f)
                          (input-field-width 40)
                          (input-flags 0))
   "Run a page to prompt user for an input. The given TEXT will be displayed
@@ -88,8 +89,8 @@ input box, such as FLAG-PASSWORD."
                                  input-field-width
                                  #:flags FLAG-BORDER))
          (input-visible-cb
-          (make-checkbox -1 -1 (G_ "Hide") #\x "x "))
-         (input-flags* (if input-hide-checkbox?
+          (make-checkbox -1 -1 (G_ "Show") #\space "x "))
+         (input-flags* (if input-visibility-checkbox?
                            (logior FLAG-PASSWORD FLAG-SCROLL
                                    input-flags)
                            input-flags))
@@ -102,7 +103,7 @@ input box, such as FLAG-PASSWORD."
                 (apply
                  horizontal-stacked-grid
                  GRID-ELEMENT-COMPONENT input-entry
-                 `(,@(if input-hide-checkbox?
+                 `(,@(if input-visibility-checkbox?
                          (list GRID-ELEMENT-COMPONENT input-visible-cb)
                          '())))
                 GRID-ELEMENT-COMPONENT ok-button))

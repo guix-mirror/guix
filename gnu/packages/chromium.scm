@@ -238,8 +238,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "76.0.3809.87")
-(define %ungoogled-revision "6ea939002bae43a27910e03569d43519d07842e7")
+(define %chromium-version "76.0.3809.132")
+(define %ungoogled-revision "8eba5c0df1a318012e3deab39a9add252a0d56a3")
 (define %debian-revision "debian/76.0.3809.87-2")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
@@ -254,7 +254,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "1521vh38mfgy7aj1lw1vpbdm8m6wyh52d5p7bz4x6kvvxsnacp11"))))
+      "0hajwjf7swlgh1flpf8ljfrb2zhmcpzvrigvvxqd36g3nm04cknm"))))
 
 (define %ungoogled-origin
   (origin
@@ -265,7 +265,7 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "1nhrh9fn1appbxf8d3dg49jrqjvha721s89i60s4m63d037cifzr"))))
+      "08fd9whfc1qky44xqxbypr7jz1rg6cma017wj4b5c5b14grxz6k6"))))
 
 (define %debian-origin
   (origin
@@ -762,11 +762,7 @@ from forcing GEXP-PROMISE."
        ("glib" ,glib)
        ("gtk+" ,gtk+)
        ("harfbuzz" ,harfbuzz)
-
-       ;; Build against ICU 64 to prevent a localization problem in version 75
-       ;; and later: <https://github.com/Eloston/ungoogled-chromium/issues/778>.
-       ("icu4c" ,icu4c-64)
-
+       ("icu4c" ,icu4c)
        ("jsoncpp" ,jsoncpp)
        ("lcms" ,lcms)
        ("libevent" ,libevent)

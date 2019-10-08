@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,10 +33,20 @@
   \"crate\": {
     \"max_version\": \"1.0.0\",
     \"name\": \"foo\",
-    \"license\": \"MIT/Apache-2.0\",
     \"description\": \"summary\",
     \"homepage\": \"http://example.com\",
     \"repository\": \"http://example.com\",
+    \"keywords\": [\"dummy\" \"test\"],
+    \"categories\": [\"test\"]
+    \"actual_versions\": [
+      { \"id\": \"foo\",
+        \"num\": \"1.0.0\",
+        \"license\": \"MIT OR Apache-2.0\",
+        \"links\": {
+          \"dependencies\": \"/api/v1/crates/foo/1.0.0/dependencies\"
+        }
+      }
+    ]
   }
 }")
 

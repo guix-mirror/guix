@@ -87,8 +87,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.6.34")
-   (replacement libpng-1.6.37)
+   (version "1.6.37")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
@@ -101,8 +100,10 @@
                         "/libpng16/libpng-" version ".tar.xz")))
             (sha256
              (base32
-              "1xjr0v34fyjgnhvaa1zixcpx5yvxcg4zwvfh0fyklfyfj86rc7ig"))))
+              "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:configure-flags '("--disable-static")))
 
    ;; libpng.la says "-lz", so propagate it.
    (propagated-inputs `(("zlib" ,zlib)))
@@ -113,25 +114,6 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
-
-;; This graft exists to fix CVE-2018-14048, CVE-2018-14550, and CVE-2019-7317.
-(define-public libpng-1.6.37
-  (package
-    (inherit libpng)
-    (version "1.6.37")
-    (source (origin
-              (method url-fetch)
-              (uri (list (string-append "mirror://sourceforge/libpng/libpng16/"
-                                        version "/libpng-" version ".tar.xz")
-                         (string-append
-                          "ftp://ftp.simplesystems.org/pub/libpng/png/src"
-                          "/libpng16/libpng-" version ".tar.xz")
-                         (string-append
-                          "ftp://ftp.simplesystems.org/pub/libpng/png/src/history"
-                          "/libpng16/libpng-" version ".tar.xz")))
-              (sha256
-               (base32
-                "1jl8in381z0128vgxnvn33nln6hzckl7l7j9nqvkaf1m9n1p0pjh"))))))
 
 ;; libpng-apng should be updated when the APNG patch is released:
 ;; <https://bugs.gnu.org/27556>
@@ -437,36 +419,66 @@ lossless JPEG manipulations such as rotation, scaling or cropping:
               (patches (search-patches "libjxr-fix-function-signature.patch"
                                        "libjxr-fix-typos.patch"))))
     (build-system gnu-build-system)
-    (arguments '(#:make-flags '("CC=gcc")
-                 #:tests? #f ; no check target
-                 #:phases
-                 (modify-phases %standard-phases
-                   (delete 'configure) ; no configure script
-                   ;; The upstream makefile does not include an install phase.
-                   (replace 'install
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let* ((out (assoc-ref outputs "out"))
-                              (bin (string-append out "/bin"))
-                              (lib (string-append out "/lib"))
-                              (include (string-append out "/include/jxrlib")))
-                         (for-each (lambda (file)
-                                     (install-file file include)
-                                     (delete-file file))
-                                   (append
-                                    '("jxrgluelib/JXRGlue.h"
-                                      "jxrgluelib/JXRMeta.h"
-                                      "jxrtestlib/JXRTest.h"
-                                      "image/sys/windowsmediaphoto.h")
-                                    (find-files "common/include" "\\.h$")))
-                         (for-each (lambda (file)
-                                     (install-file file lib)
-                                     (delete-file file))
-                                   (find-files "." "\\.a$"))
-                         (for-each (lambda (file)
-                                     (install-file file bin)
-                                     (delete-file file))
-                                   '("JxrDecApp" "JxrEncApp")))
-                       #t)))))
+    (arguments
+     '(#:make-flags
+       (list "CC=gcc"
+             ;; A substitute* procedure call would be enough to add the -fPIC
+             ;; flag if there was no file decoding error.
+             ;; The makefile is a "Non-ISO extended-ASCII text, with CRLF line
+             ;; terminators" according to the file(1) utility.
+             (string-append "CFLAGS=-I. -Icommon/include -Iimage/sys -fPIC "
+                            "-D__ANSI__ -DDISABLE_PERF_MEASUREMENT -w -O "))
+       #:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; no configure script
+         (add-after 'build 'build-shared-library
+           (lambda _
+             ;; The Makefile uses optimization level 1, so the same
+             ;; level is used here for consistency.
+             (invoke "gcc" "-shared" "-fPIC" "-O"
+                     ;; Common files.
+                     "adapthuff.o" "image.o" "strcodec.o" "strPredQuant.o"
+                     "strTransform.o" "perfTimerANSI.o"
+                     ;; Decoding files.
+                     "decode.o" "postprocess.o" "segdec.o" "strdec.o"
+                     "strInvTransform.o" "strPredQuantDec.o" "JXRTranscode.o"
+                     ;; Encoding files.
+                     "encode.o" "segenc.o" "strenc.o" "strFwdTransform.o"
+                     "strPredQuantEnc.o"
+                     "-o" "libjpegxr.so")
+             (invoke "gcc" "-shared" "-fPIC" "-O"
+                     ;; Glue files.
+                     "JXRGlue.o" "JXRMeta.o" "JXRGluePFC.o" "JXRGlueJxr.o"
+                     ;; Test files.
+                     "JXRTest.o" "JXRTestBmp.o" "JXRTestHdr.o" "JXRTestPnm.o"
+                     "JXRTestTif.o" "JXRTestYUV.o"
+                     "-o" "libjxrglue.so")))
+         ;; The upstream makefile does not include an install phase.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include/jxrlib")))
+               (for-each (lambda (file)
+                           (install-file file include)
+                           (delete-file file))
+                         (append
+                          '("jxrgluelib/JXRGlue.h"
+                            "jxrgluelib/JXRMeta.h"
+                            "jxrtestlib/JXRTest.h"
+                            "image/sys/windowsmediaphoto.h")
+                          (find-files "common/include" "\\.h$")))
+               (for-each (lambda (file)
+                           (install-file file lib)
+                           (delete-file file))
+                         (find-files "." "\\.(a|so)$"))
+               (for-each (lambda (file)
+                           (install-file file bin)
+                           (delete-file file))
+                         '("JxrDecApp" "JxrEncApp")))
+             #t)))))
     (synopsis "Implementation of the JPEG XR standard")
     (description "JPEG XR is an approved ISO/IEC International standard (its
 official designation is ISO/IEC 29199-2). This library is an implementation of that standard.")
@@ -617,15 +629,15 @@ arithmetic ops.")
 (define-public jbig2dec
   (package
     (name "jbig2dec")
-    (version "0.15")
+    (version "0.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ArtifexSoftware"
                                   "/ghostpdl-downloads/releases/download"
-                                  "/gs924/" name "-" version ".tar.gz"))
+                                  "/gs927/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m1qwpbjbirgw2fqznbajdhdhh35d6xa2csr64lpjz735pvimykb"))
+                "00h61y7bh3z6mqfzxyb318gyh0f8jwarg4hvlrm83rqps8avzxm4"))
               (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
     (build-system gnu-build-system)
     (arguments '(#:configure-flags '("--disable-static")))
@@ -643,25 +655,98 @@ work.")
     (home-page "https://jbig2dec.com")
     (license license:gpl2+)))
 
+(define-public jbigkit
+  (package
+    (name "jbigkit")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.cl.cam.ac.uk/~mgk25/jbigkit/"
+                           "download/jbigkit-" version ".tar.gz"))
+       (sha256
+        (base32 "0cnrcdr1dwp7h7m0a56qw09bv08krb37mpf7cml5sjdgpyv0cwfy"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove files without clear licence information.
+           (for-each delete-file-recursively
+                     (list "contrib" "examples"))
+           #t))))
+    (build-system gnu-build-system)
+    (outputs (list "out" "pbmtools"))
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ; no configure script
+         (replace 'install              ; no ‘make install’ target
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (with-directory-excursion "libjbig"
+                 (for-each (cut install-file <> include)
+                           (find-files "." "\\.h$"))
+                 (for-each (cut install-file <> lib)
+                           (find-files "." "\\.a$")))
+               #t)))
+         (add-after 'install 'install-pbmtools
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "pbmtools"))
+                    (bin (string-append out "/bin"))
+                    (man1 (string-append out "/share/man/man1"))
+                    (man5 (string-append out "/share/man/man5")))
+               (with-directory-excursion "pbmtools"
+                 (for-each (cut install-file <> bin)
+                           (list "jbgtopbm" "jbgtopbm85"
+                                 "pbmtojbg" "pbmtojbg85"))
+
+                 (for-each (cut install-file <> man1)
+                           (find-files "." "\\.1$"))
+                 (for-each (cut install-file <> man5)
+                           (find-files "." "\\.5$"))
+                 #t)))))
+       #:test-target "test"
+       #:tests? #f))                    ; tests depend on examples/
+    (home-page "https://www.cl.cam.ac.uk/~mgk25/jbigkit/")
+    (synopsis "Lossless compression for bi-level high-resolution images")
+    (description
+     "JBIG-KIT implements the JBIG1 data compression standard (ITU-T T.82 and
+ISO/IEC 11544:1993), designed for bi-level (one bit per pixel) images such as
+black-and-white scanned documents.  It is widely used in fax products, printer
+firmware and drivers, document management systems, and imaging software.
+
+This package provides a static C library of (de)compression functions and some
+simple command-line converters similar to those provided by netpbm.
+
+Two JBIG1 variants are available.  One (@file{jbig.c}) implements nearly all
+options of the standard but has to keep the full uncompressed image in memory.
+The other (@file{jbig85.c}) implements just the ITU-T T.85 profile, with
+memory management optimized for embedded and fax applications.  It buffers
+only a few lines of the uncompressed image in memory and is able to stream
+images of initially unknown height.")
+    (license (list license:isc          ; pbmtools/p?m.5
+                   license:gpl2+))))    ; the rest
+
 (define-public openjpeg
   (package
     (name "openjpeg")
-    (version "2.3.0")
-    (replacement openjpeg-2.3.1)
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-         (string-append "https://github.com/uclouvain/openjpeg/archive/v"
-                        version ".tar.gz"))
-        (file-name (string-append name "-" version ".tar.gz"))
-        (sha256
-         (base32
-          "06npqzkg20avnygdwaqpap91r7qpdqgrn39adj2bl8v0pg0qgirx"))))
+    (version "2.3.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/uclouvain/openjpeg")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "openjpeg" version))
+              (sha256
+               (base32
+                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))
     (build-system cmake-build-system)
     (arguments
-      ;; Trying to run `$ make check' results in a no rule fault.
-      '(#:tests? #f))
+     '(#:tests? #f                   ;TODO: requires a 1.1 GiB data repository
+       #:configure-flags '("-DBUILD_STATIC_LIBS=OFF")))
     (inputs
       `(("lcms" ,lcms)
         ("libpng" ,libpng)
@@ -680,20 +765,6 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "https://github.com/uclouvain/openjpeg")
     (license license:bsd-2)))
-
-(define-public openjpeg-2.3.1
-  (package
-    (inherit openjpeg)
-    (version "2.3.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/uclouvain/openjpeg")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name "openjpeg" version))
-              (sha256
-               (base32
-                "1dn98d2dfa1lqyxxmab6rrcv52dyhjr4g7i4xf2w54fqsx14ynrb"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
@@ -852,7 +923,7 @@ supplies a generic doubly-linked list and some string functions.")
 (define-public freeimage
   (package
    (name "freeimage")
-   (version "3.17.0")
+   (version "3.18.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -862,7 +933,7 @@ supplies a generic doubly-linked list and some string functions.")
                   ".zip"))
             (sha256
              (base32
-              "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
+              "1z9qwi9mlq69d5jipr3v2jika2g0kszqdzilggm99nls5xl7j4zl"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -870,12 +941,8 @@ supplies a generic doubly-linked list and some string functions.")
                   (lambda (dir)
                     (delete-file-recursively (string-append "Source/" dir)))
                   '("LibJPEG" "LibOpenJPEG" "LibPNG" "LibRawLite"
-                    ;; "LibJXR"
-                    "LibWebP" "OpenEXR" "ZLib"))))
-            (patches (search-patches "freeimage-unbundle.patch"
-                                     "freeimage-CVE-2015-0852.patch"
-                                     "freeimage-CVE-2016-5684.patch"
-                                     "freeimage-fix-build-with-gcc-5.patch"))))
+                    "LibJXR" "LibWebP" "OpenEXR" "ZLib"))))
+            (patches (search-patches "freeimage-unbundle.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -906,15 +973,18 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           ;"-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"
-                           ))
+                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib "
+
+                           ;; FIXME: OpenEXR 2.4.0 requires C++11 or later.
+                           ;; Remove when the default compiler is > GCC 5.
+                           "-std=gnu++11"))
       #:tests? #f)) ; no check target
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("unzip" ,unzip)))
    (inputs
     `(("libjpeg" ,libjpeg)
-      ;("libjxr" ,libjxr)
+      ("libjxr" ,libjxr)
       ("libpng" ,libpng)
       ("libraw" ,libraw)
       ("libtiff" ,libtiff)
@@ -1000,12 +1070,11 @@ multi-dimensional image processing.")
    (home-page "https://ukoethe.github.io/vigra/")))
 
 (define-public vigra-c
-  (let* ((commit "a2ff675f42079e2623318d8ff8b4288dbe7a7f06")
-         (revision "0")
-         (version (git-version "0.0.0" revision commit)))
+  (let* ((commit "66ff4fa5a7d4a77415caa676a45c2c6ea16562e7")
+         (revision "1"))
     (package
       (name "vigra-c")
-      (version version)
+      (version (git-version "0.0.0" revision commit))
       (home-page "https://github.com/BSeppke/vigra_c")
       (source (origin
                 (method git-fetch)
@@ -1014,7 +1083,7 @@ multi-dimensional image processing.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1f1phmfbbz3dsq9330rd6bjmdg29hxskxi9l17cyx1f4mdqpgdgl"))
+                  "1pnd92s284dvsg8zp6md7p8ck55bmcsryz58gzic7jh6m72hg689"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments
@@ -1024,6 +1093,7 @@ multi-dimensional image processing.")
       (inputs
        `(("fftw" ,fftw)
          ("fftwf" ,fftwf)
+         ("hdf5" ,hdf5)
          ("vigra" ,vigra)))
       (synopsis "C interface to the VIGRA computer vision library")
       (description
@@ -1387,18 +1457,51 @@ PNG, and performs PNG integrity checks and corrections.")
     (home-page "http://optipng.sourceforge.net/")
     (license license:zlib)))
 
+(define-public pngsuite
+  (package
+    (name "pngsuite")
+    (version "2017jul19")
+    (source
+     (origin
+       (method url-fetch/tarbomb)
+       (uri (string-append "http://www.schaik.com/pngsuite2011/PngSuite-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "1j7xgd9iffcnpphhzz9ld9ybrjmx9brhq0803g0450ssr52b5502"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f                      ; there is no test target
+       #:license-file-regexp "PngSuite.LICENSE"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (copy-recursively "." (string-append out "/"))
+             #t)))
+         (delete 'build)
+         (delete 'configure))))
+    (home-page "http://www.schaik.com/pngsuite2011/pngsuite.html")
+    (synopsis "Example PNGs for use in test suites")
+    (description "Collection of graphics images created to test PNG
+applications like viewers, converters and editors.  As far as that is
+possible, all formats supported by the PNG standard are represented.")
+    (license (license:fsdg-compatible "file://PngSuite.LICENSE" "Permission to
+use, copy, modify and distribute these images for any purpose and without fee
+is hereby granted."))))
+
 (define-public libjpeg-turbo
   (package
     (name "libjpeg-turbo")
-    (version "2.0.1")
-    (replacement libjpeg-turbo-2.0.2)
+    (version "2.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
                                   version "/libjpeg-turbo-" version ".tar.gz"))
               (sha256
                (base32
-                "1zv6z093l3x3jzygvni7b819j7xhn6d63jhcdrckj7fz67n6ry75"))))
+                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("nasm" ,nasm)))
@@ -1420,18 +1523,6 @@ and decompress to 32-bit and big-endian pixel buffers (RGBX, XBGR, etc.).")
     (license (list license:bsd-3        ;the TurboJPEG API library and programs
                    license:ijg          ;the libjpeg library and associated tools
                    license:zlib))))     ;the libjpeg-turbo SIMD extensions
-
-(define-public libjpeg-turbo-2.0.2
-  (package
-    (inherit libjpeg-turbo)
-    (version "2.0.2")
-    (source (origin
-              (inherit (package-source libjpeg-turbo))
-              (uri (string-append "mirror://sourceforge/libjpeg-turbo/"
-                                  version "/libjpeg-turbo-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1v9gx1gdzgxf51nd55ncq7rghmj4x9x91rby50ag36irwngmkf5c"))))))
 
 (define-public niftilib
   (package
@@ -1727,3 +1818,42 @@ identical visual appearance.")
 to the standard output.  It works well together with grim.")
    ;; MIT license.
    (license license:expat)))
+
+(define-public sng
+  (package
+    (name "sng")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sng/sng-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "06a6ydvx9xb3vxvrzdrg3hq0rjwwj9ibr7fyyxjxq6qx1j3mb70i"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'link-pngsuite
+           ;; tests expect pngsuite in source dir
+           (lambda* (#:key inputs #:allow-other-keys)
+             (symlink (assoc-ref inputs "pngsuite") "pngsuite")
+             #t)))
+       #:configure-flags
+       (list (string-append "--with-rgbtxt="
+                            (assoc-ref %build-inputs "xorg-rgb")
+                            "/share/X11/rgb.txt"))))
+    (inputs `(("xorg-rgb" ,xorg-rgb)
+              ("libpng" ,libpng)))
+    (native-inputs `(("pngsuite" ,pngsuite)))
+    (home-page "http://sng.sourceforge.net")
+    (synopsis "Markup language for representing PNG contents")
+    (description "SNG (Scriptable Network Graphics) is a minilanguage designed
+specifically to represent the entire contents of a PNG (Portable Network
+Graphics) file in an editable form.  Thus, SNGs representing elaborate
+graphics images and ancillary chunk data can be readily generated or modified
+using only text tools.
+
+SNG is implemented by a compiler/decompiler called sng that
+losslessly translates between SNG and PNG.")
+    (license license:zlib)))

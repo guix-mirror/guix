@@ -31,6 +31,8 @@
 
             colorize-string
             highlight
+            dim
+
             color-rules
             color-output?
             isatty?*))
@@ -133,14 +135,16 @@ that subsequent output will not have any colors in effect."
        (not (getenv "NO_COLOR"))
        (isatty?* port)))
 
-(define %highlight-color (color BOLD))
+(define (coloring-procedure color)
+  "Return a procedure that applies COLOR to the given string."
+  (lambda* (str #:optional (port (current-output-port)))
+    "Return STR with extra ANSI color attributes if PORT supports it."
+    (if (color-output? port)
+        (colorize-string str color)
+        str)))
 
-(define* (highlight str #:optional (port (current-output-port)))
-  "Return STR with extra ANSI color attributes to highlight it if PORT
-supports it."
-  (if (color-output? port)
-      (colorize-string str %highlight-color)
-      str))
+(define highlight (coloring-procedure (color BOLD)))
+(define dim (coloring-procedure (color DARK)))
 
 (define (colorize-matches rules)
   "Return a procedure that, when passed a string, returns that string

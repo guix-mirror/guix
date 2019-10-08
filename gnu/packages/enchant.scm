@@ -33,7 +33,7 @@
 (define-public enchant
   (package
     (name "enchant")
-    (version "2.2.5")
+    (version "2.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/AbiWord/enchant/releases"
@@ -41,7 +41,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0iqwzs11i9fvqdxv5kn0svcn2mzymn657qf3j66lg8dx1nh4xkpz"))))
+                "029smcna98hllgkm2gy94qa7qphxs4xaa8cdbg5kaaw16mhrf8hv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-static"

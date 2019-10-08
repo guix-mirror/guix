@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -163,6 +163,25 @@ sources.")
 Apple help books.")
     (license license:bsd-2)))
 
+(define-public python-sphinx-copybutton
+  (package
+    (name "python-sphinx-copybutton")
+    (version "0.2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "sphinx-copybutton" version))
+       (sha256
+        (base32
+         "1bk006nv5s9ym6v67cxd4d2wvd8wm6czqi21mqcs33risygksncl"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/choldgraf/sphinx-copybutton")
+    (synopsis "Sphinx extension to add \"copy\" buttons to code blocks")
+    (description
+     "This package provides a small sphinx extension to add \"copy\" buttons
+to code blocks.")
+    (license license:expat)))
+
 (define-public python-sphinxcontrib-devhelp
   (package
     (name "python-sphinxcontrib-devhelp")
@@ -197,7 +216,7 @@ Apple help books.")
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
     (home-page "https://github.com/sphinx-doc/sphinxcontrib-htmlhelp")
-    (synopsis "Sphinx exension for rendering HTML help files")
+    (synopsis "Sphinx extension for rendering HTML help files")
     (description
      "@code{sphinxcontrib-htmlhelp} is a Sphinx extension which renders
 HTML help files.")

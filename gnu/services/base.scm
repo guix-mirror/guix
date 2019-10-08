@@ -8,6 +8,8 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,9 +42,9 @@
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
                 #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
-  #:use-module ((gnu packages base)
-                #:select (canonical-package glibc glibc-utf8-locales))
   #:use-module (gnu packages bash)
+  #:use-module ((gnu packages base)
+                #:select (canonical-package coreutils glibc glibc-utf8-locales))
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages gnupg) #:select (guile-gcrypt))
   #:use-module (gnu packages linux)
@@ -571,7 +573,13 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
                         (lambda (seed)
                           (call-with-output-file "/dev/urandom"
                             (lambda (urandom)
-                              (dump-port seed urandom))))))
+                              (dump-port seed urandom)
+
+                              ;; Writing SEED to URANDOM isn't enough: we must
+                              ;; also tell the kernel to account for these
+                              ;; extra bits of entropy.
+                              (let ((bits (* 8 (stat:size (stat seed)))))
+                                (add-to-entropy-count urandom bits)))))))
 
                     ;; Try writing from /dev/hwrng into /dev/urandom.
                     ;; It seems that the file /dev/hwrng always exists, even
@@ -588,7 +596,9 @@ file systems, as well as corresponding @file{/etc/fstab} entries.")))
                       (when buf
                         (call-with-output-file "/dev/urandom"
                           (lambda (urandom)
-                            (put-bytevector urandom buf)))))
+                            (put-bytevector urandom buf)
+                            (let ((bits (* 8 (bytevector-length buf))))
+                              (add-to-entropy-count urandom bits))))))
 
                     ;; Immediately refresh the seed in case the system doesn't
                     ;; shut down cleanly.
@@ -801,10 +811,14 @@ to add @var{device} to the kernel's entropy pool.  The service will fail if
                 (description
                  "Install the given fonts on the specified ttys (fonts are per
 virtual console on GNU/Linux).  The value of this service is a list of
-tty/font pairs like:
+tty/font pairs.  The font can be the name of a font provided by the @code{kbd}
+package or any valid argument to @command{setfont}, as in this example:
 
 @example
-'((\"tty1\" . \"LatGrkCyr-8x16\"))
+'((\"tty1\" . \"LatGrkCyr-8x16\")
+  (\"tty2\" . (file-append
+                font-tamzen
+                \"/share/kbd/consolefonts/TamzenForPowerline10x20.psf\")))
 @end example\n")))
 
 (define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
@@ -933,36 +947,38 @@ the message of the day, among other things."
 (define (default-serial-port)
   "Return a gexp that determines a reasonable default serial port
 to use as the tty.  This is primarily useful for headless systems."
-  #~(begin
-      ;; console=device,options
-      ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
-      ;; options: BBBBPNF. P n|o|e, N number of bits,
-      ;; F flow control (r RTS)
-      (let* ((not-comma (char-set-complement (char-set #\,)))
-             (command (linux-command-line))
-             (agetty-specs (find-long-options "agetty.tty" command))
-             (console-specs (filter (lambda (spec)
-                                     (and (string-prefix? "tty" spec)
-                                          (not (or
-                                                (string-prefix? "tty0" spec)
-                                                (string-prefix? "tty1" spec)
-                                                (string-prefix? "tty2" spec)
-                                                (string-prefix? "tty3" spec)
-                                                (string-prefix? "tty4" spec)
-                                                (string-prefix? "tty5" spec)
-                                                (string-prefix? "tty6" spec)
-                                                (string-prefix? "tty7" spec)
-                                                (string-prefix? "tty8" spec)
-                                                (string-prefix? "tty9" spec)))))
-                                    (find-long-options "console" command)))
-             (specs (append agetty-specs console-specs)))
-        (match specs
-         (() #f)
-         ((spec _ ...)
-          ;; Extract device name from first spec.
-          (match (string-tokenize spec not-comma)
-           ((device-name _ ...)
-            device-name)))))))
+  (with-imported-modules (source-module-closure
+                          '((gnu build linux-boot))) ;for 'find-long-options'
+    #~(begin
+        ;; console=device,options
+        ;; device: can be tty0, ttyS0, lp0, ttyUSB0 (serial).
+        ;; options: BBBBPNF. P n|o|e, N number of bits,
+        ;; F flow control (r RTS)
+        (let* ((not-comma (char-set-complement (char-set #\,)))
+               (command (linux-command-line))
+               (agetty-specs (find-long-options "agetty.tty" command))
+               (console-specs (filter (lambda (spec)
+                                        (and (string-prefix? "tty" spec)
+                                             (not (or
+                                                   (string-prefix? "tty0" spec)
+                                                   (string-prefix? "tty1" spec)
+                                                   (string-prefix? "tty2" spec)
+                                                   (string-prefix? "tty3" spec)
+                                                   (string-prefix? "tty4" spec)
+                                                   (string-prefix? "tty5" spec)
+                                                   (string-prefix? "tty6" spec)
+                                                   (string-prefix? "tty7" spec)
+                                                   (string-prefix? "tty8" spec)
+                                                   (string-prefix? "tty9" spec)))))
+                                      (find-long-options "console" command)))
+               (specs (append agetty-specs console-specs)))
+          (match specs
+            (() #f)
+            ((spec _ ...)
+             ;; Extract device name from first spec.
+             (match (string-tokenize spec not-comma)
+               ((device-name _ ...)
+                device-name))))))))
 
 (define agetty-shepherd-service
   (match-lambda
@@ -1472,7 +1488,7 @@ information on the configuration file syntax."
                               (module "pam_limits.so")
                               (arguments '("conf=/etc/security/limits.conf")))))
              (if (member (pam-service-name pam)
-                         '("login" "su" "slim"))
+                         '("login" "su" "slim" "gdm-password"))
                  (pam-service
                   (inherit pam)
                   (session (cons pam-limits
@@ -1988,64 +2004,67 @@ item of @var{packages}."
          (requirement '(root-file-system))
 
          (documentation "Populate the /dev directory, dynamically.")
-         (start #~(lambda ()
-                    (define udevd
-                      ;; 'udevd' from eudev.
-                      #$(file-append udev "/sbin/udevd"))
+         (start
+          (with-imported-modules (source-module-closure
+                                  '((gnu build linux-boot)))
+            #~(lambda ()
+                (define udevd
+                  ;; 'udevd' from eudev.
+                  #$(file-append udev "/sbin/udevd"))
 
-                    (define (wait-for-udevd)
-                      ;; Wait until someone's listening on udevd's control
-                      ;; socket.
-                      (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
-                        (let try ()
-                          (catch 'system-error
-                            (lambda ()
-                              (connect sock PF_UNIX "/run/udev/control")
-                              (close-port sock))
-                            (lambda args
-                              (format #t "waiting for udevd...~%")
-                              (usleep 500000)
-                              (try))))))
+                (define (wait-for-udevd)
+                  ;; Wait until someone's listening on udevd's control
+                  ;; socket.
+                  (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                    (let try ()
+                      (catch 'system-error
+                        (lambda ()
+                          (connect sock PF_UNIX "/run/udev/control")
+                          (close-port sock))
+                        (lambda args
+                          (format #t "waiting for udevd...~%")
+                          (usleep 500000)
+                          (try))))))
 
-                    ;; Allow udev to find the modules.
-                    (setenv "LINUX_MODULE_DIRECTORY"
-                            "/run/booted-system/kernel/lib/modules")
+                ;; Allow udev to find the modules.
+                (setenv "LINUX_MODULE_DIRECTORY"
+                        "/run/booted-system/kernel/lib/modules")
 
-                    ;; The first one is for udev, the second one for eudev.
-                    (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                    (setenv "EUDEV_RULES_DIRECTORY"
-                            #$(file-append rules "/lib/udev/rules.d"))
+                ;; The first one is for udev, the second one for eudev.
+                (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                (setenv "EUDEV_RULES_DIRECTORY"
+                        #$(file-append rules "/lib/udev/rules.d"))
 
-                    (let* ((kernel-release
-                            (utsname:release (uname)))
-                           (linux-module-directory
-                            (getenv "LINUX_MODULE_DIRECTORY"))
-                           (directory
-                            (string-append linux-module-directory "/"
-                                           kernel-release))
-                           (old-umask (umask #o022)))
-                      ;; If we're in a container, DIRECTORY might not exist,
-                      ;; for instance because the host runs a different
-                      ;; kernel.  In that case, skip it; we'll just miss a few
-                      ;; nodes like /dev/fuse.
-                      (when (file-exists? directory)
-                        (make-static-device-nodes directory))
-                      (umask old-umask))
+                (let* ((kernel-release
+                        (utsname:release (uname)))
+                       (linux-module-directory
+                        (getenv "LINUX_MODULE_DIRECTORY"))
+                       (directory
+                        (string-append linux-module-directory "/"
+                                       kernel-release))
+                       (old-umask (umask #o022)))
+                  ;; If we're in a container, DIRECTORY might not exist,
+                  ;; for instance because the host runs a different
+                  ;; kernel.  In that case, skip it; we'll just miss a few
+                  ;; nodes like /dev/fuse.
+                  (when (file-exists? directory)
+                    (make-static-device-nodes directory))
+                  (umask old-umask))
 
-                    (let ((pid (fork+exec-command (list udevd))))
-                      ;; Wait until udevd is up and running.  This appears to
-                      ;; be needed so that the events triggered below are
-                      ;; actually handled.
-                      (wait-for-udevd)
+                (let ((pid (fork+exec-command (list udevd))))
+                  ;; Wait until udevd is up and running.  This appears to
+                  ;; be needed so that the events triggered below are
+                  ;; actually handled.
+                  (wait-for-udevd)
 
-                      ;; Trigger device node creation.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "trigger" "--action=add")
+                  ;; Trigger device node creation.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "trigger" "--action=add")
 
-                      ;; Wait for things to settle down.
-                      (system* #$(file-append udev "/bin/udevadm")
-                               "settle")
-                      pid)))
+                  ;; Wait for things to settle down.
+                  (system* #$(file-append udev "/bin/udevadm")
+                           "settle")
+                  pid))))
          (stop #~(make-kill-destructor))
 
          ;; When halting the system, 'udev' is actually killed by
@@ -2053,7 +2072,7 @@ item of @var{packages}."
          ;; Thus, make sure it is not respawned.
          (respawn? #f)
          ;; We need additional modules.
-         (modules `((gnu build linux-boot)
+         (modules `((gnu build linux-boot)        ;'make-static-device-nodes'
                     ,@%default-modules))
 
          (actions (list (shepherd-action
@@ -2420,6 +2439,8 @@ to handle."
 
         (service special-files-service-type
                  `(("/bin/sh" ,(file-append (canonical-package bash)
-                                            "/bin/sh"))))))
+                                            "/bin/sh"))
+                   ("/usr/bin/env" ,(file-append (canonical-package coreutils)
+                                                 "/bin/env"))))))
 
 ;;; base.scm ends here

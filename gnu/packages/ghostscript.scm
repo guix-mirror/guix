@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016, 2017 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2013, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
@@ -47,12 +47,13 @@
 (define-public lcms
   (package
    (name "lcms")
-   (replacement lcms/fixed)
    (version "2.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/lcms/lcms/" version
                                 "/lcms2-" version ".tar.gz"))
+
+            (patches (search-patches "lcms-CVE-2018-16435.patch"))
             (sha256 (base32
                      "083xisy6z01zhm7p7rgk4bx9d6zlr8l20qkfv1g29ylnhgwzvij8"))))
    (build-system gnu-build-system)
@@ -67,14 +68,6 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")
    (properties '((cpe-name . "little_cms_color_engine")))))
-
-(define lcms/fixed
-  (package
-    (inherit lcms)
-    (source
-      (origin
-        (inherit (package-source lcms))
-        (patches (search-patches "lcms-CVE-2018-16435.patch"))))))
 
 (define-public libpaper
   (package
@@ -144,7 +137,13 @@ printing, and psresize, for adjusting page sizes.")
 (define-public ghostscript
   (package
     (name "ghostscript")
-    (version "9.26")
+    (version "9.27")
+
+    ;; The problems addressed by GHOSTSCRIPT/FIXED are not security-related,
+    ;; but they have a significant impact on usability, hence this graft.
+    ;; TODO: Ungraft on next update cycle.
+    (replacement ghostscript/fixed)
+
     (source
       (origin
         (method url-fetch)
@@ -154,7 +153,7 @@ printing, and psresize, for adjusting page sizes.")
                             "/ghostscript-" version ".tar.xz"))
         (sha256
          (base32
-          "1645f47all5w27bfhiq15vycdm954lmr6agqkrp68ksq6xglgvch"))
+          "06dnj0mxyaryfbwlsjwaqf847w91w2h8f108kxxcc41nrnx1y3zw"))
         (patches (search-patches "ghostscript-no-header-creationdate.patch"
                                  "ghostscript-no-header-id.patch"
                                  "ghostscript-no-header-uuid.patch"))
@@ -172,6 +171,13 @@ printing, and psresize, for adjusting page sizes.")
     (outputs '("out" "doc"))                  ;19 MiB of HTML/PS doc + examples
     (arguments
      `(#:disallowed-references ("doc")
+       ;; XXX: Starting with version 9.27, building the tests in parallel
+       ;; occasionally fails like this:
+       ;;  In file included from ./base/memory_.h:23:0,
+       ;;                   from ./obj/gsmd5.h:1,
+       ;;                   from ./obj/gsmd5.c:56:
+       ;;  ./base/std.h:25:10: fatal error: arch.h: No such file or directory
+       #:parallel-tests? #f
        #:configure-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib")
@@ -268,6 +274,25 @@ capabilities of the PostScript language.  It supports a wide variety of
 output file formats and printers.")
     (home-page "https://www.ghostscript.com/")
     (license license:agpl3+)))
+
+(define ghostscript/fixed
+  ;; This adds the Freetype dependency (among other things), which fixes the
+  ;; rendering issues described in <https://issues.guix.gnu.org/issue/34877>.
+  (package/inherit
+   ghostscript
+   (arguments
+    (substitute-keyword-arguments (package-arguments ghostscript)
+      ((#:configure-flags flags ''())
+       `(append (list "--disable-compile-inits"
+                      (string-append "--with-fontpath="
+                                     (assoc-ref %build-inputs "gs-fonts")
+                                     "/share/fonts/type1/ghostscript"))
+                ,flags))))
+   (native-inputs `(("pkg-config" ,pkg-config)    ;needed for freetype
+                    ,@(package-native-inputs ghostscript)))
+   (inputs `(("gs-fonts" ,gs-fonts)
+             ("fontconfig" ,fontconfig)
+             ,@(package-inputs ghostscript)))))
 
 (define-public ghostscript/x
   (package/inherit ghostscript

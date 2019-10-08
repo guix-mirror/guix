@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2017,2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2017, 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -21,7 +21,6 @@
 (define-module (gnu packages mes)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages commencement)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages graphviz)
@@ -35,9 +34,11 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public nyacc-0.86
+  ;; Nyacc used for bootstrap.
   (package
     (name "nyacc")
     (version "0.86.0")
@@ -63,14 +64,14 @@ extensive examples, including parsers for the Javascript and C99 languages.")
 (define-public nyacc
   (package
     (inherit nyacc-0.86)
-    (version "0.94.0")
+    (version "0.99.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/nyacc/nyacc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "12qnzwm1n3j8z7hbr9hy2wka9a1aasm2rvnpnvdxkjcsbdzj8fn4"))
+                "0hl5qxx19i4x1r0839sxm19ziqq65g4hy97yik81cc2yb9yvgyv3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -91,7 +92,8 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (inputs
      `(("guile" ,guile-2.2)))))
 
-(define-public mes
+(define-public mes-0.19
+  ;; Mes used for bootstrap.
   (package
     (name "mes")
     (version "0.19")
@@ -105,10 +107,7 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs
-     `(("mescc-tools" ,mescc-tools)
-
-       ;; XXX: MesCC appears to enter an infinite loop (?) while building
-       ;; crt1.o when we switch to nyacc 0.94.
+     `(("mescc-tools" ,mescc-tools-0.5.2)
        ("nyacc" ,nyacc-0.86)))
     (native-inputs
      `(("guile" ,guile-2.2)
@@ -138,10 +137,59 @@ Guile.")
     (home-page "https://gnu.org/software/mes")
     (license gpl3+)))
 
+(define-public mes
+  (package
+    (inherit mes-0.19)
+    (version "0.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+    (propagated-inputs
+     `(("mescc-tools" ,mescc-tools)
+       ("nyacc" ,nyacc)))))
+
+(define-public mescc-tools-0.5.2
+  ;; Mescc-tools used for bootstrap.
+  (let ((commit "bb062b0da7bf2724ca40f9002b121579898d4ef7")
+        (revision "0")
+        (version "0.5.2"))
+    (package
+      (name "mescc-tools")
+      (version (string-append version "-" revision "." (string-take commit 7)))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
+                      name "-" commit
+                      ".tar.gz"))
+                (sha256
+                 (base32
+                  "1h6j57wyf91i42b26f8msbv6451cw3nm4nmpl1fckp9c7vi8mwkh"))))
+      (build-system gnu-build-system)
+      (supported-systems '("i686-linux" "x86_64-linux"))
+      (arguments
+       `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+         #:test-target "test"
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure))))
+      (synopsis "Tools for the full source bootstrapping process")
+      (description
+       "Mescc-tools is a collection of tools for use in a full source
+bootstrapping process.  It consists of the M1 macro assembler, the hex2
+linker, the blood-elf symbol table generator, the kaem shell, exec_enable and
+get_machine.")
+    (home-page "https://savannah.nongnu.org/projects/mescc-tools")
+    (license gpl3+))))
+
 (define-public mescc-tools
   (package
+    (inherit mescc-tools-0.5.2)
     (name "mescc-tools")
-    (version "0.5.2")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -151,19 +199,9 @@ Guile.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01x7bhmgwyf6mc2g1hcvibhps98nllacqm4f0j5l51b1mbi18pc2"))))
-    (build-system gnu-build-system)
-    (supported-systems '("i686-linux" "x86_64-linux"))
+                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))
     (arguments
-     `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
-       #:test-target "test"
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
-    (synopsis "Tools for the full source bootstrapping process")
-    (description
-     "Mescc-tools is a collection of tools for use in a full source
-bootstrapping process.  It consists of the M1 macro assembler, the hex2
-linker, the blood-elf symbol table generator, the kaem shell, exec_enable and
-get_machine.")
-    (home-page "https://savannah.nongnu.org/projects/mescc-tools")
-    (license gpl3+)))
+     (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
+       ((#:make-flags _)
+        `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc"))))))

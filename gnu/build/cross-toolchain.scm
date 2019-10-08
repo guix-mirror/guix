@@ -3,6 +3,8 @@
 ;;; Copyright © 2014, 2015, 2018 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Carl Dong <contact@carldong.me>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,11 +38,8 @@
 
 (define %gcc-include-paths
   ;; Environment variables for header search paths.
-  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
-  '("C_INCLUDE_PATH"
-    "CPLUS_INCLUDE_PATH"
-    "OBJC_INCLUDE_PATH"
-    "OBJCPLUS_INCLUDE_PATH"))
+  ;; Note: See <http://bugs.gnu.org/30756> for why not 'C_INCLUDE_PATH' & co.
+  '("CPATH"))
 
 (define %gcc-cross-include-paths
   ;; Search path for target headers when cross-compiling.
@@ -95,7 +94,7 @@ C_INCLUDE_PATH et al."
      ;; We're building the sans-libc cross-compiler, so nothing to do.
      #t)))
 
-(define* (set-cross-path/mingw #:key inputs #:allow-other-keys)
+(define* (set-cross-path/mingw #:key inputs target #:allow-other-keys)
   "Add the cross MinGW headers to CROSS_C_*_INCLUDE_PATH, and remove them from
 C_*INCLUDE_PATH."
   (let ((libc (assoc-ref inputs "libc"))
@@ -112,7 +111,7 @@ C_*INCLUDE_PATH."
 
     (if libc
         (let ((cpath (string-append libc "/include"
-                                    ":" libc "/i686-w64-mingw32/include")))
+                                    ":" libc "/" target "/include")))
           (for-each (cut setenv <> cpath)
                     %gcc-cross-include-paths))
 
@@ -129,7 +128,11 @@ C_*INCLUDE_PATH."
 
             (substitute* (string-append mingw-headers "/crt/_mingw.h")
               (("@MINGW_HAS_SECURE_API@")
-               "#define MINGW_HAS_SECURE_API 1"))
+               "#define MINGW_HAS_SECURE_API 1")
+              (("@DEFAULT_WIN32_WINNT@")
+               "0x502")
+              (("@DEFAULT_MSVCRT_VERSION@")
+               "0x700"))
 
             (let ((cpath (string-append mingw-headers "/include"
                                         ":" mingw-headers "/crt"
@@ -142,7 +145,7 @@ C_*INCLUDE_PATH."
     (when libc
       (setenv "CROSS_LIBRARY_PATH"
               (string-append libc "/lib"
-                             ":" libc "/i686-w64-mingw32/lib")))
+                             ":" libc "/" target "/lib")))
 
     (setenv "CPP" (string-append gcc "/bin/cpp"))
     (for-each (lambda (var)
@@ -168,8 +171,12 @@ C_*INCLUDE_PATH."
 a target triplet."
   (modify-phases phases
     (add-before 'configure 'set-cross-path
-      (if (string-contains target "mingw")
-          set-cross-path/mingw
+      ;; This mingw32 target checking logic should match that of target-mingw?
+      ;; in (guix utils), but (guix utils) is too large too copy over to the
+      ;; build side entirely and for now we have no way to select variables to
+      ;; copy over. See (gnu packages cross-base) for more details.
+      (if (string-suffix? "-mingw32" target)
+          (cut set-cross-path/mingw #:target target <...>)
           set-cross-path))
     (add-after 'install 'make-cross-binutils-visible
       (cut make-cross-binutils-visible #:target target <...>))

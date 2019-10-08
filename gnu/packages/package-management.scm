@@ -10,7 +10,6 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -111,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "4a54ed774913480c0f8dad3caf0cd627e4fa8ebf")
-        (revision 3))
+        (commit "0ed97e69805253656df929a6ad678016aa81f08a")
+        (revision 6))
     (package
       (name "guix")
 
@@ -128,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "14m4a4bn0d5hav6mrks5d7r223knx9dpswgbsc875wgr2921na2h"))
+                  "1h2qlbbdqi72jslx17gp2cak5494nbm8j44rz57lnplnfcn6iwaw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -293,7 +292,7 @@
       (propagated-inputs
        `(("gnutls" ,gnutls)
          ("guile-gcrypt" ,guile-gcrypt)
-         ("guile-json" ,guile-json-1)
+         ("guile-json" ,guile-json-3)
          ("guile-sqlite3" ,guile-sqlite3)
          ("guile-ssh" ,guile-ssh)
          ("guile-git" ,guile-git)))
@@ -325,7 +324,7 @@ the Nix package manager.")
     (inputs
      `(("gnutls" ,gnutls)
        ("guile-git" ,guile-git)
-       ("guile-json" ,guile-json-1)
+       ("guile-json" ,guile-json-3)
        ("guile-gcrypt" ,guile-gcrypt)
        ,@(fold alist-delete (package-inputs guix)
                '("boot-guile" "boot-guile/i686" "util-linux"))))
@@ -343,6 +342,19 @@ the Nix package manager.")
         #f)
        ((#:phases phases '%standard-phases)
         `(modify-phases ,phases
+           (add-after 'unpack 'change-default-guix
+             (lambda _
+               ;; We need to tell 'guix-daemon' which 'guix' command to use.
+               ;; Here we use a questionable hack where we hard-code root's
+               ;; current guix, which could be wrong (XXX).  Note that scripts
+               ;; like 'guix perform-download' do not run as root so we assume
+               ;; that they have access to /var/guix/profiles/per-user/root.
+               (substitute* "nix/libstore/globals.cc"
+                 (("guixProgram = (.*)nixBinDir + \"/guix\"" _ before)
+                  (string-append "guixProgram = " before
+                                 "/var/guix/profiles/per-user/root\
+/current-guix/bin/guix")))
+               #t))
            (replace 'build
              (lambda _
                (invoke "make" "nix/libstore/schema.sql.hh")
@@ -352,19 +364,7 @@ the Nix package manager.")
            (delete 'copy-bootstrap-guile)
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
-               (invoke "make" "install-binPROGRAMS"
-                       "install-nodist_pkglibexecSCRIPTS")
-
-               ;; We need to tell 'guix-daemon' which 'guix' command to use.
-               ;; Here we use a questionable hack where we hard-code root's
-               ;; current guix, which could be wrong (XXX).  Note that scripts
-               ;; like 'guix perform-download' do not run as root so we assume
-               ;; that they have access to /var/guix/profiles/per-user/root.
-               (let ((out (assoc-ref outputs "out")))
-                 (substitute* (find-files (string-append out "/libexec"))
-                   (("exec \".*/bin/guix\"")
-                    "exec \"${GUIX:-/var/guix/profiles/per-user/root/current-guix/bin/guix}\""))
-                 #t)))
+               (invoke "make" "install-binPROGRAMS")))
            (delete 'wrap-program)))))))
 
 (define-public guile2.0-guix
@@ -466,32 +466,17 @@ sub-directory.")
 (define-public stow
   (package
     (name "stow")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/stow/stow-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0h8qr2rxsrkg6d8jxjk68r23jgn1dxdxyp4bnzzinpa8sjhfl905"))))
+                "0jrxy12ywn7smdzdnvwzjw77l6knx6jkj2rckgykg1dpf6bdkm89"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'wrap-stow
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (wrap-program (string-append out "/bin/stow")
-                 `("PERL5LIB" ":" prefix
-                   ,(map (lambda (i) (string-append (assoc-ref inputs i)
-                                                    "/lib/perl5/site_perl"))
-                         '("perl-clone-choose" "perl-clone" "perl-hash-merge"))))
-               #t))))))
     (inputs
-     `(("perl" ,perl)
-       ("perl-clone" ,perl-clone)
-       ("perl-clone-choose" ,perl-clone-choose)
-       ("perl-hash-merge" ,perl-hash-merge)))
+     `(("perl" ,perl)))
     (native-inputs
      `(("perl-test-simple" ,perl-test-simple)
        ("perl-test-output" ,perl-test-output)
@@ -542,7 +527,6 @@ symlinks to the files in a common directory such as /usr/local.")
        ("nss" ,nss)
        ("nspr" ,nspr)
        ("libarchive" ,libarchive)
-       ("nettle" ,nettle)            ;XXX: actually a dependency of libarchive
        ("file" ,file)
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
@@ -559,126 +543,6 @@ transactions from C or Python.")
 
     ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
     (license license:gpl2+)))
-
-(define-public diffoscope
-  (package
-    (name "diffoscope")
-    (version "116")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                    (commit "116")))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1anz2c112y0w21mh7xp6bs6z7v10dcy1i25nypkvqy3j929m0g28"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  ;; setup.py mistakenly requires python-magic from PyPi, even
-                  ;; though the Python bindings of `file` are sufficient.
-                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                  (add-after 'unpack 'dependency-on-python-magic
-                    (lambda _
-                      (substitute* "setup.py"
-                        (("'python-magic',") ""))))
-                  ;; This test is broken because our `file` package has a
-                  ;; bug in berkeley-db file type detection.
-                  (add-after 'unpack 'remove-berkeley-test
-                    (lambda _
-                      (delete-file "tests/comparators/test_berkeley_db.py")
-                      #t))
-                  (add-after 'unpack 'embed-tool-references
-                    (lambda* (#:key inputs #:allow-other-keys)
-                      (substitute* "diffoscope/comparators/utils/compare.py"
-                        (("\\['xxd',")
-                         (string-append "['" (which "xxd") "',")))
-                      (substitute* "diffoscope/comparators/elf.py"
-                        (("@tool_required\\('readelf'\\)") "")
-                        (("get_tool_name\\('readelf'\\)")
-                         (string-append "'" (which "readelf") "'")))
-                      (substitute* "diffoscope/comparators/directory.py"
-                        (("@tool_required\\('stat'\\)") "")
-                        (("@tool_required\\('getfacl'\\)") "")
-                        (("\\['stat',")
-                         (string-append "['" (which "stat") "',"))
-                        (("\\['getfacl',")
-                         (string-append "['" (which "getfacl") "',")))
-                      #t))
-                  (add-before 'check 'delete-failing-test
-                    (lambda _
-                      ;; this requires /sbin to be on the path
-                      (delete-file "tests/test_tools.py")
-                      #t)))))
-    (inputs `(("rpm" ,rpm)                        ;for rpm-python
-              ("python-file" ,python-file)
-              ("python-debian" ,python-debian)
-              ("python-libarchive-c" ,python-libarchive-c)
-              ("python-tlsh" ,python-tlsh)
-              ("acl" ,acl)                        ;for getfacl
-              ("colordiff" ,colordiff)
-              ("xxd" ,xxd)))
-    ;; Below are modules used for tests.
-    (native-inputs `(("python-pytest" ,python-pytest)
-                     ("python-chardet" ,python-chardet)))
-    (home-page "https://diffoscope.org/")
-    (synopsis "Compare files, archives, and directories in depth")
-    (description
-     "Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.")
-    (license license:gpl3+)))
-
-(define-public trydiffoscope
- (package
-   (name "trydiffoscope")
-   (version "67.0.1")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://salsa.debian.org/reproducible-builds/trydiffoscope.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "03b66cjii7l2yiwffj6ym6mycd5drx7prfp4j2550281pias6mjh"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((share (string-append (assoc-ref outputs "out") "/share/")))
-               (mkdir-p (string-append share "/man/man1/" ))
-               (invoke "rst2man.py"
-                       "trydiffoscope.1.rst"
-                       (string-append share "/man/man1/trydiffoscope.1"))
-               (mkdir-p (string-append share "/doc/" ,name "-" ,version))
-               (install-file "./README.rst"
-                          (string-append share "/doc/" ,name "-" ,version)))
-             #t)))))
-    (propagated-inputs
-     `(("python-requests" ,python-requests)))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("python-docutils" ,python-docutils)))
-    (build-system python-build-system)
-    (home-page "https://try.diffoscope.org")
-    (synopsis "Client for remote diffoscope service")
-    (description "This is a client for the @url{https://try.diffoscope.org,
-remote diffoscope service}.
-
-Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.
-
-Results are displayed by default, stored as local text or html files, or made
-available via a URL on @url{https://try.diffoscope.org}.  Results stored on the
-server are purged after 30 days.")
-    (license license:gpl3+)))
 
 (define-public python-anaconda-client
   (package
@@ -846,8 +710,7 @@ This package provides Conda as a library.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
                       (target (string-append out "/lib/python"
-                                             ((@@ (guix build python-build-system)
-                                                  get-python-version)
+                                             (python-version
                                               (assoc-ref inputs "python"))
                                              "/site-packages/")))
                  ;; The installer aborts if the target directory is not on
@@ -973,7 +836,7 @@ for packaging and deployment of cross-compiled Windows applications.")
 (define-public libostree
   (package
     (name "libostree")
-    (version "2018.9.1")
+    (version "2019.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -981,7 +844,7 @@ for packaging and deployment of cross-compiled Windows applications.")
                     (version-major+minor version) "/libostree-" version ".tar.xz"))
               (sha256
                (base32
-                "01mygpkbl9sk2vr3hjbpih6qlg8lwx0q5lklm09f7jfwfpnwyqzj"))))
+                "1r07yqbc9iiq0lzv1pryppd35fv695ym8r040msbfc93pmiy77y0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -993,13 +856,14 @@ for packaging and deployment of cross-compiled Windows applications.")
              (setenv "TEST_TMPDIR" (getenv "TMPDIR"))
              #t)))
        ;; XXX: fails with:
+       ;;     tap-driver.sh: missing test plan
        ;;     tap-driver.sh: internal error getting exit status
        ;;     tap-driver.sh: fatal: I/O or internal error
        #:tests? #f))
     (native-inputs
      `(("attr" ,attr)                   ; for tests
        ("bison" ,bison)
-       ("glib:bin" ,glib "bin")          ; for 'glib-mkenums'
+       ("glib:bin" ,glib "bin")         ; for 'glib-mkenums'
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("xsltproc" ,libxslt)))
@@ -1013,7 +877,6 @@ for packaging and deployment of cross-compiled Windows applications.")
        ("gpgme" ,gpgme)
        ("libarchive" ,libarchive)
        ("libsoup" ,libsoup)
-       ("nettle" ,nettle)               ; required by 'libarchive.la'
        ("util-linux" ,util-linux)))
     (home-page "https://ostree.readthedocs.io/en/latest/")
     (synopsis "Operating system and container binary deployment and upgrades")
@@ -1027,7 +890,7 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.4.2")
+   (version "1.4.3")
    (source
     (origin
      (method url-fetch)
@@ -1035,7 +898,7 @@ the boot loader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "08nmpp26mgv0vp3mlwk97rnp0j7i108h4hr9nllja19sjxnrlygj"))))
+       "11bfxmv8pxlb5x0lb2rsl45615fzfvq5r6wldf0l6ab2ngryd7i7"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.
@@ -1073,7 +936,6 @@ the boot loader configuration.")
              ("libsoup" ,libsoup)
              ("libxau" ,libxau)
              ("libxml2" ,libxml2)
-             ("nettle" ,nettle)
              ("util-linux" ,util-linux)))
    (home-page "https://flatpak.org")
    (synopsis "System for building, distributing, and running sandboxed desktop

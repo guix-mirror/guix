@@ -49,6 +49,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages hurd)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -91,14 +92,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "3.1")
+   (version "3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0zm0ywmyz9g8vn1plw14mn8kj74yipx5qsljndbyfgmvndx5qqnv"))
+              "055mqp6vrd0brkygmygb2673qwz409a7kyp1mzbfy6cn94f58q5r"))
             (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
@@ -106,15 +107,6 @@ command-line arguments, multiple languages, and so on.")
    (arguments
     `(#:phases
       (modify-phases %standard-phases
-        (add-before 'check 'disable-failing-tests
-          (lambda _
-            ;; These tests are expected to fail due to a glibc bug which has
-            ;; been fixed in 2.28, so they are unexpectedly passing.  They
-            ;; should be fixed for grep versions > 3.1.
-            (substitute* "tests/Makefile.in"
-              (("^[[:blank:]]+backref-alt[[:blank:]]+\\\\") "\\")
-              (("^[[:blank:]]+triple-backref[[:blank:]]+\\\\") "\\"))
-            #t))
         (add-after 'install 'fix-egrep-and-fgrep
           ;; Patch 'egrep' and 'fgrep' to execute 'grep' via its
           ;; absolute file name instead of searching for it in $PATH.
@@ -141,28 +133,16 @@ including, for example, recursive directory searching.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.5")
+   (version "4.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0h3b2jfj57wmz680vkbyavlsrkak556qhvs7m7fdlawwhg477bbs"))))
+              "0smxcx66vx29djzb542nxcynl7qnzxqa5032ibazi7x2s267d198"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'dont-rebuild-sed.1
-          (lambda _
-            ;; Make sure we do not attempt to rebuild 'doc/sed.1', which does
-            ;; not work when cross-compiling because we cannot run 'sed'.
-            ;; This is fixed upstream as commit a0a25e3.
-            (substitute* "Makefile.in"
-              (("^doc/sed\\.1:.*")
-               "doc/sed.1:\n"))
-            #t)))))
    (native-inputs
     `(("perl" ,perl)))                            ;for tests
    (description
@@ -177,14 +157,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.30")
+   (version "1.32")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1lyjyk8z8hdddsxw0ikchrsfg3i0x3fsh7l63a8jgaz1n7dr5gzi"))
+              "1n7xy657ii0sa42zx6944v2m4v9qrh6sqgmw17l3nch3y43sxlyh"))
             (patches (search-patches "tar-skip-unreliable-tests.patch"
                                      "tar-remove-wholesparse-check.patch"))))
    (build-system gnu-build-system)
@@ -198,27 +178,7 @@ implementation offers several extensions over the standard utility.")
                        (substitute* "src/system.c"
                          (("/bin/sh")
                           (string-append bash "/bin/sh")))
-                       #t))))
-
-      ;; Work around a cross-compilation bug whereby libgnu.a would provide
-      ;; '__mktime_internal', which conflicts with the one in libc.a.
-      ,@(if (%current-target-system)
-            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
-            '())
-
-      ;; Test #92 "link mismatch" expects "a/z: Not linked to a/y" but gets
-      ;; "a/y: Not linked to a/z" and fails, presumably due to differences in
-      ;; the order in which 'diff' traverses directories.  That leads to a
-      ;; test failure even though conceptually the test passes.  Skip it.
-      ;; Test 117 and 118 are prone to race conditions too, particularly
-      ;; when cross-compiling, so we skip those as well.  All issues have
-      ;; been fixed upstream in these commits:
-      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=847a36f>
-      ;; <https://git.savannah.gnu.org/cgit/tar.git/commit/?id=64b43fd>
-      #:make-flags (list (string-append
-                          "TESTSUITEFLAGS= -k '!link mismatch,"
-                          "!directory removed before reading,"
-                          "!explicitly named directory removed before reading'"))))
+                       #t))))))
 
    ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
    ;; to refer to the target Bash.
@@ -270,16 +230,16 @@ differences.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.6")
+   (version "3.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1mivg0fy3a6fcn535ln8nkgfj6vxh5hsxxs5h6692wxmsjyyh8fn"))
-            (patches (search-patches "diffutils-getopt.patch"))))
+              "09isrg0isjinv8c535nxsi1s86wfdfzml80dbw41dj9x3hiad9xk"))))
    (build-system gnu-build-system)
+   (native-inputs `(("perl" ,perl)))
    (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package containing tools for finding the
@@ -341,14 +301,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.30")
+   (version "8.31")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0mxhw43d4wpqmvg0l4znk1vm10fy92biyh90lzdnqjcic2lb6cg8"))))
+              "1zg9m79x1i2nifj4kb0waf9x3i5h6ydkypkjnbsb9rnwis8rqypz"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)                        ;bignums in 'expr', yay!
@@ -390,13 +350,7 @@ used to apply commands with arbitrarily long arguments.")
                      ;; environments with long prefixes (/tmp/guix-build-...).
                      (substitute* "Makefile"
                        (("^.*tests/misc/env-S.pl.*$") ""))
-                     #t)))
-
-      ;; Work around a cross-compilation bug whereby libcoreutils.a would
-      ;; provide '__mktime_internal', which conflicts with the one in libc.a.
-      ,@(if (%current-target-system)
-            `(#:configure-flags '("gl_cv_func_working_mktime=yes"))
-            '())))
+                     #t)))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "GNU Coreutils includes all of the basic command-line tools that are
@@ -460,14 +414,14 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.31.1")
+   (version "2.32")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1l34hn1zkmhr1wcrgf0d4z7r3najxnw3cx2y2fk7v55zjlk3ik7z"))
+              "0b8767nyal1bc4cyzg5h9iis8kpkln1i3wkamig75cifj1fb2f6y"))
             (patches (search-patches "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
@@ -613,15 +567,13 @@ the store.")
   ;; version 2.28, GNU/Hurd used a different glibc branch.
   (package
    (name "glibc")
-   ;; Note: Always use a dot after the minor version since various places rely
-   ;; on "version-major+minor" to determine where locales are found.
-   (version "2.28")
+   (version "2.29")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
             (sha256
              (base32
-              "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
+              "0jzh58728flfh939a8k9pi1zdyalfzlxmwra7k0rzji5gvavivpk"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -633,11 +585,14 @@ the store.")
                 #t))
             (modules '((guix build utils)))
             (patches (search-patches "glibc-ldd-x86_64.patch"
-                                     "glibc-2.28-git-fixes.patch"
+                                     "glibc-CVE-2019-7309.patch"
+                                     "glibc-CVE-2019-9169.patch"
+                                     "glibc-2.29-git-updates.patch"
                                      "glibc-hidden-visibility-ldconfig.patch"
                                      "glibc-versioned-locpath.patch"
                                      "glibc-allow-kernel-2.6.32.patch"
-                                     "glibc-reinstate-prlimit64-fallback.patch"))))
+                                     "glibc-reinstate-prlimit64-fallback.patch"
+                                     "glibc-supported-locales.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -712,18 +667,6 @@ the store.")
 
       #:tests? #f                                 ; XXX
       #:phases (modify-phases %standard-phases
-                 ,@(if (hurd-target?)
-                       `((add-after 'unpack 'apply-hurd-patch
-                           (lambda* (#:key inputs native-inputs
-                                     #:allow-other-keys)
-                             ;; TODO: Move this to 'patches' field.
-                             (let ((patch (or (assoc-ref native-inputs
-                                                         "hurd-magic-pid-patch")
-                                              (assoc-ref inputs
-                                                         "hurd-magic-pid-patch"))))
-                               (invoke "patch" "-p1" "--force" "--input"
-                                       patch)))))
-                       '())
                  (add-before
                   'configure 'pre-configure
                   (lambda* (#:key inputs native-inputs outputs
@@ -846,12 +789,11 @@ the store.")
                     ("perl" ,perl)
                     ("bison" ,bison)
                     ("gettext" ,gettext-minimal)
+                    ("python" ,python-minimal)
 
                     ,@(if (hurd-target?)
                           `(("mig" ,mig)
-                            ("perl" ,perl)
-                            ("hurd-magic-pid-patch"
-                             ,(search-patch "glibc-hurd-magic-pid.patch")))
+                            ("perl" ,perl))
                           '())))
 
    (native-search-paths
@@ -877,6 +819,25 @@ with the Linux kernel.")
 ;; Below are old libc versions, which we use mostly to build locale data in
 ;; the old format (which the new libc cannot cope with.)
 
+(define-public glibc-2.28
+  (package
+    (inherit glibc)
+    (version "2.28")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "10iha5ynvdj5m62vgpgqbq4cwvc2yhyl2w9yyyjgfxmdmx8h145i"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"
+                                       "glibc-2.28-git-fixes.patch"
+                                       "glibc-hidden-visibility-ldconfig.patch"
+                                       "glibc-versioned-locpath.patch"
+                                       "glibc-allow-kernel-2.6.32.patch"
+                                       "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-hurd-magic-pid.patch"
+                                       "glibc-2.28-supported-locales.patch"))))))
+
 (define-public glibc-2.27
   (package
     (inherit glibc)
@@ -893,6 +854,7 @@ with the Linux kernel.")
                                        "glibc-versioned-locpath.patch"
                                        "glibc-allow-kernel-2.6.32.patch"
                                        "glibc-reinstate-prlimit64-fallback.patch"
+                                       "glibc-2.27-supported-locales.patch"
                                        "glibc-CVE-2018-11236.patch"
                                        "glibc-CVE-2018-11237.patch"))))
     (properties `((lint-hidden-cve . ("CVE-2017-18269")))))) ; glibc-2.27-git-fixes
@@ -1037,7 +999,14 @@ with the Linux kernel.")
     (inherit glibc)
     (name "glibc-locales")
     (source (origin (inherit (package-source glibc))
-                    (patches (cons (search-patch "glibc-locales.patch")
+                    ;; The patch for glibc 2.28 and earlier replaces the same
+                    ;; content, but the context in the patch is different
+                    ;; enough to fail to merge.
+                    (patches (cons (search-patch
+                                    (if (version>=? (package-version glibc)
+                                                    "2.29")
+                                        "glibc-locales.patch"
+                                        "glibc-locales-2.28.patch"))
                                    (origin-patches (package-source glibc))))))
     (synopsis "All the locales supported by the GNU C Library")
     (description
@@ -1143,8 +1112,8 @@ to the @code{share/locale} sub-directory of this package.")
                                ;; tests---e.g., in Guile's i18n tests.
                                '("de_DE" "el_GR" "en_US" "fr_FR" "tr_TR"))
                      #t))))
-    (inputs `(("glibc" ,glibc)
-              ("gzip" ,gzip)))
+    (native-inputs `(("glibc" ,glibc)
+                     ("gzip" ,gzip)))
     (synopsis "Small sample of UTF-8 locales")
     (description
      "This package provides a small sample of UTF-8 locales mostly useful in
@@ -1157,12 +1126,19 @@ test environments.")
 (define-public glibc-utf8-locales
   (make-glibc-utf8-locales glibc))
 
-(define-public glibc-locales-2.27
-  (package (inherit (make-glibc-locales glibc-2.27))
-           (name "glibc-locales-2.27")))
+;; Packages provided to ease use of binaries linked against the previous libc.
+(define-public glibc-locales-2.28
+  (package (inherit (make-glibc-locales glibc-2.28))
+           (name "glibc-locales-2.28")))
+(define-public glibc-utf8-locales-2.28
+  (package (inherit (make-glibc-utf8-locales glibc-2.28))
+           (name "glibc-utf8-locales-2.28")))
+
+;; These should no longer be needed.
 (define-public glibc-utf8-locales-2.27
-  (package (inherit (make-glibc-utf8-locales glibc-2.27))
-           (name "glibc-utf8-locales-2.27")))
+  (deprecated-package "glibc-utf8-locales-2.27" glibc-utf8-locales-2.28))
+(define-public glibc-locales-2.27
+  (deprecated-package "glibc-locales-2.27" glibc-locales-2.28))
 
 (define-public which
   (package
@@ -1291,25 +1267,7 @@ and daylight-saving rules.")
 (define-public tzdata-for-tests
   (hidden-package
    (package
-     (inherit tzdata)
-     (version "2018g")
-     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://data.iana.org/time-zones/releases/tzdata"
-                    version ".tar.gz"))
-              (sha256
-               (base32
-                "05kayi3w9pvhj6ljx1hvwd0r8mxfzn436fjmwhx53xkj919xxpq2"))))
-     (inputs
-       `(("tzcode" ,(origin
-                     (method url-fetch)
-                     (uri (string-append
-                           "http://data.iana.org/time-zones/releases/tzcode"
-                           version ".tar.gz"))
-                     (sha256
-                      (base32
-                       "09y44fzcdq3c06saa8iqqa0a59cyw6ni3p31ps0j1w3hcpxz8lxa")))))))))
+     (inherit tzdata))))
 
 (define-public libiconv
   (package

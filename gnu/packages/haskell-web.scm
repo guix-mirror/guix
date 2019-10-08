@@ -6,6 +6,7 @@
 ;;; Copyright © 2017 rsiddharth <s@ricketyspace.net>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Robert Vollmert <rob@vllmrt.net>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1463,3 +1464,56 @@ Together with the snap-core library upon which it depends, it provides a
 clean and efficient Haskell programming interface to the HTTP
 protocol.")
     (license license:bsd-3)))
+
+(define-public ghc-js-jquery
+  (package
+    (name "ghc-js-jquery")
+    (version "3.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/js-jquery/js-jquery-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "16q68jzbs7kp07dnq8cprdcc8fd41rim38039vg0w4x11lgniq70"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; tests do network IO
+    (home-page "https://github.com/ndmitchell/js-jquery")
+    (synopsis "Obtain minified jQuery code")
+    (description "This package bundles the minified
+@url{http://jquery.com/, jQuery} code into a Haskell package, so it can
+be depended upon by Cabal packages.  The first three components of the
+version number match the upstream jQuery version.  The package is
+designed to meet the redistribution requirements of downstream
+users (e.g. Debian).")
+    (license license:expat)))
+
+(define-public ghc-js-flot
+  (package
+    (name "ghc-js-flot")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://hackage.haskell.org/package/js-flot/js-flot-"
+         version ".tar.gz"))
+       (sha256
+        (base32
+         "0yjyzqh3qzhy5h3nql1fckw0gcfb0f4wj9pm85nafpfqp2kg58hv"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-http" ,ghc-http)))
+    (home-page "https://github.com/ndmitchell/js-flot")
+    (synopsis "Obtain minified flot code")
+    (description "This package bundles the minified
+@url{http://www.flotcharts.org/, Flot} code (a jQuery plotting library)
+into a Haskell package, so it can be depended upon by Cabal packages.
+The first three components of the version number match the upstream flot
+version.  The package is designed to meet the redistribution
+requirements of downstream users (e.g. Debian).")
+    (license license:expat)))

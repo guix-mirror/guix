@@ -2,7 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Sergei Trofimovich <slyfox@inbox.ru>
@@ -15,6 +15,7 @@
 ;;; Copyright @ 2018, 2019 Katherine Cox-Buday <cox.katherine.e@gmail.com>
 ;;; Copyright @ 2019 Giovanni Biscuolo <g@xelera.eu>
 ;;; Copyright @ 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system go)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
@@ -197,11 +199,7 @@
     (inputs
      `(("tzdata" ,tzdata)
        ("pcre" ,pcre)
-       ;; Building Go 1.10 with the Go 1.4 bootstrap, Thread Sanitizer from GCC
-       ;; 5 finds a data race during the the test suite of Go 1.10. With GCC 6,
-       ;; the race doesn't seem to be present:
-       ;; https://github.com/golang/go/issues/24046
-       ("gcc:lib" ,gcc-6 "lib")))
+       ("gcc:lib" ,gcc "lib")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)
@@ -426,6 +424,12 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                        (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
                       (output (assoc-ref outputs "out")))
 
+                 ;; Having the patch in the 'patches' field of <origin> breaks
+                 ;; the 'TestServeContent' test due to the fact that
+                 ;; timestamps are reset.  Thus, apply it from here.
+                 (invoke "patch" "-p2" "--force" "-i"
+                         (assoc-ref inputs "go-skip-gc-test.patch"))
+
                  ;; A side effect of these test scripts is testing
                  ;; cgo. Attempts at using cgo flags and directives with these
                  ;; scripts as specified here (https://golang.org/cmd/cgo/)
@@ -577,6 +581,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                  #t)))))))
     (native-inputs
      `(("go" ,go-1.4)
+       ("go-skip-gc-test.patch" ,(search-patch "go-skip-gc-test.patch"))
        ,@(match (%current-system)
            ((or "armhf-linux" "aarch64-linux")
             `(("gold" ,binutils-gold)))
@@ -1222,8 +1227,8 @@ for a variety of protocols to proxy network data.")
       (license license:bsd-3))))
 
 (define-public go-golang-org-x-sys-unix
-  (let ((commit "5ed2794edfdc1c54dfb61d619c5944285f35d444")
-        (revision "3"))
+  (let ((commit "04f50cda93cbb67f2afa353c52f342100e80e625")
+        (revision "4"))
     (package
       (name "go-golang-org-x-sys-unix")
       (version (git-version "0.0.0" revision commit))
@@ -1235,7 +1240,7 @@ for a variety of protocols to proxy network data.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1qy8hmv5nwpcywk7sh1pg0s32jwpd4ykh492xzl4mmxy8galwsr5"))))
+                  "0hmfsz9y1ingwsn482hlzzmzs7kr3cklm0ana0mbdk70isw2bxnw"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "golang.org/x/sys/unix"
@@ -3122,30 +3127,28 @@ as conversion to and from @command{net.Addr}.")
       (license license:expat))))
 
 (define-public go-github-com-urfave-cli
-  (let ((commit "693af58b4d51b8fcc7f9d89576da170765980581")
-        (revision "0"))
-    (package
-      (name "go-github-com-urfave-cli")
-      (version (git-version "1.20.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/urfave/cli.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1krq752xgy658an1696vf4dc2zmp541clwjinhn11394sx2qksh6"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/urfave/cli"))
-      (home-page "https://github.com/urfave/cli")
-      (synopsis "Simple, fast, and fun package for building command line apps in Go")
-      (description "@command{cli} is a simple, fast, and fun package for
+  (package
+    (name "go-github-com-urfave-cli")
+    (version "1.21.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/urfave/cli.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "104jldhxn6d97l5vsbsl0q8hgy1bxrahbr6dbfqrlppva51jmydd"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/urfave/cli"))
+    (home-page "https://github.com/urfave/cli")
+    (synopsis "Simple, fast, and fun package for building command line apps in Go")
+    (description "@command{cli} is a simple, fast, and fun package for
 building command line apps in Go.  The goal is to enable developers to write
 fast and distributable command line applications in an expressive way.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public go-github-com-whyrusleeping-json-filter
   (let ((commit "ff25329a9528f01c5175414f16cc0a6a162a5b8b")
@@ -3621,7 +3624,7 @@ error handling primitives in Go.")
 (define-public go-github-com-maruel-panicparse
   (package
     (name "go-github-com-maruel-panicparse")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3630,7 +3633,7 @@ error handling primitives in Go.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "05hf68ifb7ww4rpmxyywbj9r0kyap45p1273ncq4qy2ydv042l8j"))))
+                "13qkn7f64yln8jdmma37h6ra4c7anxkp3vfgvfyb6lb07dpr1ibq"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "github.com/maruel/panicparse"))
@@ -3640,3 +3643,50 @@ stack traces.  It simplifies the traces to make salient information more visible
 and aid debugging.")
     (home-page "https://github.com/maruel/panicparse")
     (license license:asl2.0)))
+
+(define-public go-github-com-robfig-cron
+  (package
+    (name "go-github-com-robfig-cron")
+    (version "3.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/robfig/cron")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0bvq5gxkhyj21lq32nma23i4dpwp7bswnp2yks6372ilkcyisx2z"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/robfig/cron"))
+    (home-page "https://godoc.org/github.com/robfig/cron")
+    (synopsis "Cron library for Go")
+    (description "This package provides a cron library for Go.  It implements
+a cron spec parser and job runner.")
+    (license license:expat)))
+
+(define-public go-github-com-shirou-gopsutil
+  (let ((commit "47ef3260b6bf6ead847e7c8fc4101b33c365e399")
+        (revision "0"))
+    (package
+      (name "go-github-com-shirou-gopsutil")
+      (version (git-version "v2.19.7" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                       (url "https://github.com/shirou/gopsutil")
+                       (commit commit))) ; XXX
+                (sha256
+                 (base32
+                  "0x1g4r32q4201nr2b754xnrrndmwsrhfr7zg37spya86qrmijnws"))))
+      (build-system go-build-system)
+      (arguments
+       '(#:import-path "github.com/shirou/gopsutil"))
+      (synopsis "Process and system monitoring in Go")
+      (description "This package provides a library for retrieving information
+on running processes and system utilization (CPU, memory, disks, network,
+sensors).")
+      (home-page "https://github.com/shirou/gopsutil")
+      (license license:bsd-3))))
