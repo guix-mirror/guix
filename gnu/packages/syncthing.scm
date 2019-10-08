@@ -379,28 +379,26 @@ compression format.")
       (license bsd-3))))
 
 (define-public go-github-com-jackpal-gateway
-  (let ((commit "5795ac81146e01d3fab7bcf21c043c3d6a32b006")
-        (revision "0"))
-    (package
-      (name "go-github-com-jackpal-gateway")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/jackpal/gateway")
-                      (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0fkwkwmhfadwk3cha8616bhqxfkr9gjjnynhhxyldlphixgs3f25"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "github.com/jackpal/gateway"))
-      (synopsis "Discover the address of a LAN gateway")
-      (description "@code{gateway} is a Go library for discovering the IP
+  (package
+    (name "go-github-com-jackpal-gateway")
+    (version "1.0.5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/jackpal/gateway")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1ird5xmizj632l3dq24s2xgb8w1dn6v8xznlqz252gvngyr2gjl1"))))
+    (build-system go-build-system)
+    (arguments
+     `(#:import-path "github.com/jackpal/gateway"))
+    (synopsis "Discover the address of a LAN gateway")
+    (description "@code{gateway} is a Go library for discovering the IP
 address of the default LAN gateway.")
-      (home-page "https://github.com/jackpal/gateway")
-      (license bsd-3))))
+    (home-page "https://github.com/jackpal/gateway")
+    (license bsd-3)))
 
 (define-public go-github-com-lib-pq
   (package
