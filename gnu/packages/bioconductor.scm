@@ -2,6 +2,7 @@
 ;;; Copyright © 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016, 2017, 2018 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Simon Tournier <zimon.toutoune@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6078,3 +6079,36 @@ attributable to individual, tissue, time point, or technical variables.  The
 package includes dream differential expression analysis for repeated
 measures.")
     (license license:gpl2+)))
+
+(define-public r-htqpcr
+  (package
+    (name "r-htqpcr")
+    (version "1.38.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "HTqPCR" version))
+       (sha256
+        (base32
+         "09xgj797f0qsbm4jswxw7ijjwa4jxg06bfkq66xfhbvascyyrhg7"))))
+    (properties `((upstream-name . "HTqPCR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-affy" ,r-affy)
+       ("r-biobase" ,r-biobase)
+       ("r-gplots" ,r-gplots)
+       ("r-limma" ,r-limma)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://www.ebi.ac.uk/bertone/software")
+    (synopsis "Automated analysis of high-throughput qPCR data")
+    (description
+     "Analysis of Ct values from high throughput quantitative real-time
+PCR (qPCR) assays across multiple conditions or replicates.  The input data
+can be from spatially-defined formats such ABI TaqMan Low Density Arrays or
+OpenArray; LightCycler from Roche Applied Science; the CFX plates from Bio-Rad
+Laboratories; conventional 96- or 384-well plates; or microfluidic devices
+such as the Dynamic Arrays from Fluidigm Corporation.  HTqPCR handles data
+loading, quality assessment, normalization, visualization and parametric or
+non-parametric testing for statistical significance in Ct values between
+features (e.g.  genes, microRNAs).")
+    (license license:artistic2.0)))
