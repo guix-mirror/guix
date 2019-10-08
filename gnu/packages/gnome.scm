@@ -4623,6 +4623,17 @@ lifting is done by packages like yelp-xsl and itstool.  This package just
 wraps things up in a developer-friendly way.")
     (license license:gpl2+)))
 
+(define-public yelp-tools/fixed
+  ;; This variant fixes a python-libxml2 crash when processing UTF-8
+  ;; sequences: <https://bugs.gnu.org/37468>.  TODO: Remove this in
+  ;; the next rebuild cycle.
+  (hidden-package
+   (package/inherit
+    yelp-tools
+    (propagated-inputs
+     `(("itstool" ,itstool/fixed)
+       ,@(alist-delete "itstool" (package-propagated-inputs yelp-tools)))))))
+
 (define-public libgee
   (package
     (name "libgee")
