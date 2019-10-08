@@ -306,27 +306,25 @@ structs in the Go programming language.")
     (license expat)))
 
 (define-public go-github-com-gobwas-glob
-  (let ((commit "51eb1ee00b6d931c66d229ceeb7c31b985563420")
-        (revision "0"))
-    (package
-      (name "go-github-com-gobwas-glob")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/gobwas/glob")
-                       (commit commit)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "090wzpwsjana1qas8ipwh1pj959gvc4b7vwybzi01f3bmd79jwlp"))))
-      (build-system go-build-system)
-      (arguments
-        `(#:import-path "github.com/gobwas/glob"))
-      (synopsis "Go globbing library")
-      (description "This package provides a Go implementation of globs.")
-      (home-page "https://github.com/gobwas/glob")
-      (license expat))))
+  (package
+    (name "go-github-com-gobwas-glob")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/gobwas/glob")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0jxk1x806zn5x86342s72dq2qy64ksb3zrvrlgir2avjhwb18n6z"))))
+    (build-system go-build-system)
+    (arguments
+      `(#:import-path "github.com/gobwas/glob"))
+    (synopsis "Go globbing library")
+    (description "This package provides a Go implementation of globs.")
+    (home-page "https://github.com/gobwas/glob")
+    (license expat)))
 
 
 (define-public go-github-com-golang-groupcache-lru
