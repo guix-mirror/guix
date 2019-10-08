@@ -207,12 +207,7 @@ player daemon.")
                 "0hfjvm1p0z7x6gfn5xhl5c0jsmidvz0qfl04pq45x4chh9iiwkxx"))))
     (build-system meson-build-system)
     (arguments
-     `(#:configure-flags
-       ;; Otherwise, they are installed incorrectly, in
-       ;; '$out/share/man/man/man1'.
-       (list (string-append "-Dmandir=" (assoc-ref %outputs "out")
-                            "/share"))
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'configure 'expand-C++-include-path
            ;; Make <gcc>/include/c++/ext/string_conversions.h find <stdlib.h>.
