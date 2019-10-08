@@ -1919,7 +1919,7 @@ Authentication-Results header seen in the wild.")
 (define-public perl-mail-dkim
   (package
     (name "perl-mail-dkim")
-    (version "0.55")
+    (version "0.57")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1928,7 +1928,7 @@ Authentication-Results header seen in the wild.")
                      ".tar.gz"))
               (sha256
                (base32
-                "18nsh1ff6fkns4xk3y2ixmzmadgggydj11qkzj6nlnq2hzqxsafz"))))
+                "0fmfhwn4sh98w62rc8j584l23vlhr7vii8glm2njx14f81a56lvb"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
