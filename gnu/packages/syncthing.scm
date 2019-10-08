@@ -662,8 +662,8 @@ hashes.")
       (license expat))))
 
 (define-public go-github-com-petermattis-goid
-  (let ((commit "3db12ebb2a599ba4a96bea1c17b61c2f78a40e02")
-        (revision "0"))
+  (let ((commit "b0b1615b78e5ee59739545bb38426383b2cda4c9")
+        (revision "1"))
     (package
       (name "go-github-com-petermattis-goid")
       (version (git-version "0.0.0" revision commit))
@@ -674,9 +674,8 @@ hashes.")
                        (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
-
                  (base32
-                  "0z18a3mr72c52g7g94n08gxw0ksnaafbfwdl5p5jav2sffirb0kd"))))
+                  "0ghfxn045r0bbn2vszw897lxzmhnm4k59aypjvpxl0pbzsw9ab2c"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/petermattis/goid"))
