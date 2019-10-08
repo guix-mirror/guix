@@ -741,8 +741,8 @@ programs.")
   (deprecated-package "haskell-mode" emacs-haskell-mode))
 
 (define-public emacs-dante
-  (let ((commit "a25ae9e5b5425cffdd88d498777e90ea8655fa37")
-        (revision "2"))
+  (let ((commit "38b589417294c7ea44bf65b73b8046d950f9531b")
+        (revision "3"))
     (package
       (name "emacs-dante")
       (version (git-version "1.5" revision commit))
@@ -753,7 +753,7 @@ programs.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1ziw3snbs2z2cg8a3jbyjd48qkgrkzs4bh8lrbs0h2c87nzldvhd"))
+                  "1mnmn635552zlwd4zr68jbvdjipl6gi4mi6wiyck28fsmq8kw96h"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
