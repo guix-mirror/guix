@@ -978,8 +978,8 @@ relatively simple Bash script.")
     (license license:expat)))
 
 (define-public go-github-com-certifi-gocertifi
-  (let ((commit "d2eda712971317d7dd278bc2a52acda7e945f97e")
-        (revision "0"))
+  (let ((commit "a5e0173ced670013bfb649c7e806bc9529c986ec")
+        (revision "1"))
     (package
       (name "go-github-com-certifi-gocertifi")
       (version (git-version "2018.01.18" revision commit))
@@ -991,7 +991,7 @@ relatively simple Bash script.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0f3v26xps7gadw4qfmh1kxbpgp0cgqdd61a257xnnvnd7ll6k8dh"))))
+                  "1n9drccl3q1rr8wg3nf60slkf1lgsmz5ahifrglbdrc6har3rryj"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/certifi/gocertifi"))
