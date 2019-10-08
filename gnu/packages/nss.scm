@@ -70,7 +70,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.45")
+    (version "3.46.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -81,7 +81,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "12sfq9xvpwpc22qnjsg1if1lmchiy33byrh92wn91phz7li0abqi"))
+                "0l9ns44rlkp1bpblplspfbqmyhb8rhvc89y56kqh725rgpny1xrv"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"
                                        "nss-freebl-stubs.patch"
@@ -130,7 +130,7 @@ in the Mozilla clients.")
              ;; leading to test failures:
              ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=609734>.  To
              ;; work around that, set the time to roughly the release date.
-             (invoke "faketime" "2019-05-01" "./nss/tests/all.sh")))
+             (invoke "faketime" "2019-10-01" "./nss/tests/all.sh")))
            (replace 'install
              (lambda* (#:key outputs #:allow-other-keys)
                (let* ((out (assoc-ref outputs "out"))
