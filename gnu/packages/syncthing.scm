@@ -689,8 +689,8 @@ the current goroutine's ID.")
       (license asl2.0))))
 
 (define-public go-github-com-kballard-go-shellquote
-  (let ((commit "cd60e84ee657ff3dc51de0b4f55dd299a3e136f2")
-        (revision "0"))
+  (let ((commit "95032a82bc518f77982ea72343cc1ade730072f0")
+        (revision "1"))
     (package
       (name "go-github-com-kballard-go-shellquote")
       (version (git-version "0.0.0" revision commit))
@@ -702,7 +702,7 @@ the current goroutine's ID.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1xjpin4jq1zl84dcn96xhjmn9bsfyszf6g9aqyj2dc0xfi6c88y0"))))
+                  "1rspvmnsikdq95jmx3dykxd4k1rmgl98ryjrysvl0cf18hl1vq80"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/kballard/go-shellquote"))
