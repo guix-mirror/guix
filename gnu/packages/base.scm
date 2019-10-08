@@ -1191,7 +1191,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2019b")
+    (version "2019c")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1199,7 +1199,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0r0clnlslwm15m1c61dinf1fi9ffgl6aipng7i7yryfwj0n0kn85"))))
+               "0z7w1yv37cfk8yhix2cillam091vgp1j4g8fv84261q9mdnq1ivr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -1249,7 +1249,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "0vbmswvv3li25s31shyllq5v24449lxnrki9hr043nipjd09sirf"))))))
+                            "1m3y2rnf1nggxxhxplab5zdd5whvar3ijyrv7lifvm82irkd7szn"))))))
     (home-page "https://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -1267,7 +1267,25 @@ and daylight-saving rules.")
 (define-public tzdata-for-tests
   (hidden-package
    (package
-     (inherit tzdata))))
+     (inherit tzdata)
+     (version "2019b")
+     (source (origin
+               (method url-fetch)
+               (uri (string-append
+                     "https://data.iana.org/time-zones/releases/tzdata"
+                     version ".tar.gz"))
+               (sha256
+                (base32
+                 "0r0clnlslwm15m1c61dinf1fi9ffgl6aipng7i7yryfwj0n0kn85"))))
+     (inputs
+      `(("tzcode" ,(origin
+                     (method url-fetch)
+                     (uri (string-append
+                           "https://data.iana.org/time-zones/releases/tzcode"
+                           version ".tar.gz"))
+                     (sha256
+                      (base32
+                       "0vbmswvv3li25s31shyllq5v24449lxnrki9hr043nipjd09sirf")))))))))
 
 (define-public libiconv
   (package
