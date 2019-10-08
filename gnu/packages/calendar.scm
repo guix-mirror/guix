@@ -50,7 +50,7 @@
 (define-public libical
   (package
     (name "libical")
-    (version "3.0.5")
+    (version "3.0.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -58,7 +58,7 @@
                     version "/libical-" version ".tar.gz"))
               (sha256
                (base32
-                "1rkq9qkvbv76n6k6kc8pxhwj9vhyigkb6flfcn1rk6wwqk451mbs"))))
+                "15sdmh8w4vszd7jhv9fdpd48anpkniq2k1jw7siy9v1jnz1232jw"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; test suite appears broken
