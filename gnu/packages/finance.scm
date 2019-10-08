@@ -76,6 +76,7 @@
   #:use-module (gnu packages sphinx)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages upnp)
   #:use-module (gnu packages version-control)
@@ -413,7 +414,7 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
   (package
     (inherit electrum)
     (name "electron-cash")
-    (version "4.0.7")
+    (version "4.0.10")
     (source
      (origin
        (method url-fetch)
@@ -424,13 +425,17 @@ other machines/servers.  Electrum does not download the Bitcoin blockchain.")
                            ".tar.gz"))
        (sha256
         (base32
-         "0xswmr68cm1c77lzisi3z812jzqczm9dfrshfhdq42zz5kaz4gnn"))
+         "1rcywlma6hk52ymisx536jvkdwa73rhn1jxhsbs4wbvajl90w9s8"))
        (modules '((guix build utils)))
        (snippet
         '(begin
            ;; Delete the bundled dependencies.
            (delete-file-recursively "packages")
            #t))))
+    (inputs
+     `(,@(package-inputs electrum)
+       ("python-dateutil", python-dateutil)
+       ("python-dnspython", python-dnspython)))
     (home-page "https://electroncash.org/")
     (synopsis "Bitcoin Cash wallet")
     (description
