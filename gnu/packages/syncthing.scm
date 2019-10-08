@@ -328,8 +328,8 @@ structs in the Go programming language.")
 
 
 (define-public go-github-com-golang-groupcache-lru
-  (let ((commit "84a468cf14b4376def5d68c722b139b881c450a4")
-        (revision "1"))
+  (let ((commit "869f871628b6baa9cfbc11732cdf6546b17c1298")
+        (revision "2"))
     (package
       (name "go-github-com-golang-groupcache-lru")
       (version (git-version "0.0.0" revision commit))
@@ -341,7 +341,7 @@ structs in the Go programming language.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1ky1r9qh54yi9zp2769qrjngzndgd8fn7mja2qfac285n06chmcn"))))
+                  "0r4nk8129bvx50qb4xzjaay39b2h6k7cbdqqzdlanmc82ygczsbw"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/golang/groupcache/lru"
