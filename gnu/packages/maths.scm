@@ -4320,9 +4320,9 @@ reduction.")
     (version "201908.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.mcrl2.org/download/devel/mcrl2-"
-                                  version
-                                  ".tar.gz"))
+              (uri (string-append
+                    "https://www.mcrl2.org/download/release/mcrl2-"
+                    version ".tar.gz"))
               (sha256
                (base32
                 "1i4xgl2d5fgiz1mwi50cyfkrrcpm8nxfayfjgmhq7chs58wlhfsz"))))
