@@ -435,7 +435,8 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.3-source
   (source-with-patches linux-libre-5.3-pristine-source
-                       (list %boot-logo-patch
+                       (list (search-patch "linux-libre-active-entropy.patch")
+                             %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
 
 (define-public linux-libre-5.2-source
