@@ -72,6 +72,7 @@
   #:use-module (gnu packages dbm)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -779,6 +780,10 @@ Language.")
               #t))))))
     (native-inputs
      `(("bison" ,bison)
+       ;; XXX: On armhf, use GCC 5 to work around <https://bugs.gnu.org/37605>.
+       ,@(if (string-prefix? "armhf" (%current-system))
+             `(("gcc", gcc-5))
+             '())
        ("perl" ,perl)))
     (inputs
      `(("jemalloc" ,jemalloc)
