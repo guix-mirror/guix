@@ -6112,3 +6112,28 @@ loading, quality assessment, normalization, visualization and parametric or
 non-parametric testing for statistical significance in Ct values between
 features (e.g.  genes, microRNAs).")
     (license license:artistic2.0)))
+
+(define-public r-unifiedwmwqpcr
+  (package
+    (name "r-unifiedwmwqpcr")
+    (version "1.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "unifiedWMWqPCR" version))
+       (sha256
+        (base32
+         "10j70bp5y1x2prz2iagqmwf04y79yqinq08wz4ilh8wggb9f7l8a"))))
+    (properties
+     `((upstream-name . "unifiedWMWqPCR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-htqpcr" ,r-htqpcr)))
+    (home-page "https://bioconductor.org/packages/unifiedWMWqPCR")
+    (synopsis "Unified Wilcoxon-Mann Whitney Test for differential expression in qPCR data")
+    (description
+     "This packages implements the unified Wilcoxon-Mann-Whitney Test for qPCR
+data.  This modified test allows for testing differential expression in qPCR
+data.")
+    (license license:gpl2+)))
