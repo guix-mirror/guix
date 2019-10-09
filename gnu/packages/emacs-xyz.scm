@@ -11014,12 +11014,13 @@ to with quicklink-style selections.")
     (version "0.8")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://stable.melpa.org/packages/deft-"
-                           version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jrblevin/deft.git")
+             (commit (string-append "v" version))))
        (sha256
         (base32
-         "1vb9cjxskc7c0yyf9pvxy1fzypg1vrcgwnjz0m3hslinsgdyig58"))))
+         "0z7cilgiz6krvl5h2z72hkch43qxmypb0k6p5vxn5lx1p6v0mrf2"))))
     (build-system emacs-build-system)
     (home-page "https://jblevins.org/projects/deft/")
     (synopsis "Quickly browse, filter, and edit plain text notes")
