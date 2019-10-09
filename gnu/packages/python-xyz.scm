@@ -10972,6 +10972,16 @@ hardware-accelerated multitouch applications.")
                (base32
                 "0qc006986rb6bcbmiymwgcl1mns2jphr1j7sr7nk41nlr7gh359m"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-test
+           (lambda _
+             ;; TypeError: binary() got an unexpected keyword argument
+             ;; 'average_size'.
+             (substitute* "tests/test_check.py"
+              (("average_size=512") ""))
+             #t)))))
     (propagated-inputs
      `(("python-chardet" ,python-chardet)
        ("python-hypothesis" ,python-hypothesis)))
