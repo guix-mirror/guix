@@ -11746,34 +11746,40 @@ according to a parsing expression grammar.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ql
-  (package
-    (name "emacs-org-ql")
-    (version "0.2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/alphapapa/org-ql")
-                    (commit version)))
-              (sha256
-               (base32
-                "1xyabg9fhpip6426za6wjrn0msnaf10c5fzzaawwagk7zmjf9b48"))
-              (file-name (git-file-name name version))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-s" ,emacs-s)
-       ("emacs-ts" ,emacs-ts)
-       ("emacs-org" ,emacs-org)
-       ("emacs-dash" ,emacs-dash)))
-    (native-inputs
-     `(("emacs-buttercup" ,emacs-buttercup)))
-    (arguments
-     `(#:tests? #t
-       #:test-command '("buttercup" "-L" ".")))
-    (home-page "https://github.com/alphapapa/org-ql/")
-    (synopsis "Query language for Org buffers")
-    (description "This package provides a Lispy query language for Org
+  (let ((commit "af0ef304e1d50066787376a68bdf56491f549a39")
+        (revision "1"))
+    (package
+      (name "emacs-org-ql")
+      (version (git-version "0.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/alphapapa/org-ql")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1by3xslqr3wxkszbih5j9iwwpm7ajcczg22x5cgh7a7ihshnqbpb"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-s" ,emacs-s)
+         ("emacs-f" ,emacs-f)
+         ("emacs-ov" ,emacs-ov)
+         ("emacs-peg" ,emacs-peg)
+         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+         ("emacs-ts" ,emacs-ts)
+         ("emacs-org" ,emacs-org)
+         ("emacs-dash" ,emacs-dash)))
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)))
+      (arguments
+       `(#:tests? #t
+         #:test-command '("buttercup" "-L" ".")))
+      (home-page "https://github.com/alphapapa/org-ql/")
+      (synopsis "Query language for Org buffers")
+      (description "This package provides a Lispy query language for Org
 files, allowing for actions to be performed based on search criteria.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-org-auto-expand
   (let ((commit "4938d5f6460e2f8f051ba9ac000b291bfa43ef62")
