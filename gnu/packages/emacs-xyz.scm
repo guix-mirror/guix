@@ -16196,8 +16196,8 @@ other frame parameters.")
       (license license:gpl3+))))
 
 (define-public emacs-general
-  (let ((commit "f032c3a77079487d0ea563b17ee3e5b2fb084611")
-        (revision "2"))
+  (let ((commit "f38fb2294bd29261374b772f765730f2fa168b3e")
+        (revision "3"))
     (package
       (name "emacs-general")
       (version (git-version "0" revision commit))
@@ -16208,9 +16208,24 @@ other frame parameters.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0lgh5z17ag5wvvnqwagvam29cp1n1vd50amn6df02xln80bsbllx"))
+                  "1aqi5axkwfng6rm52sblf738c7rffp10sqs69dvkh2fv3ps8q28i"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+         ("emacs-evil" ,emacs-evil)
+         ("emacs-which-key" ,emacs-which-key)
+         ("emacs-use-package" ,emacs-use-package)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("cask exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
       (home-page "https://github.com/noctuid/general.el")
       (synopsis "More convenient key definitions in emacs")
       (description "@code{general.el} provides a more convenient method for
