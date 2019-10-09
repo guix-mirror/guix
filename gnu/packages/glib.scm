@@ -550,7 +550,7 @@ by GDBus included in Glib.")
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
-    (home-page "http://libsigc.sourceforge.net/")
+    (home-page "https://libsigcplusplus.github.io/libsigcplusplus/")
     (synopsis "Type-safe callback system for standard C++")
     (description
      "Libsigc++ implements a type-safe callback system for standard C++.  It
