@@ -9996,25 +9996,32 @@ It supports dired buffers and opens them in tree mode at destination.")
     (license license:gpl3+)))
 
 (define-public emacs-tiny
-  (package
-    (name "emacs-tiny")
-    (version "0.2.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/tiny-" version ".tar"))
-       (sha256
-        (base32
-         "1cr73a8gba549ja55x0c2s554f3zywf69zbnd7v82jz5q1k9wd2v"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/abo-abo/tiny")
-    (synopsis "Quickly generate linear ranges in Emacs")
-    (description
-     "The main command of the @code{tiny} extension for Emacs is @code{tiny-expand}.
+  (let ((commit "fd8a6b0b0c564d8242259e20e557ee6041f40908")
+        (revision "1"))
+    (package
+      (name "emacs-tiny")
+      (version (git-version "0.2.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/abo-abo/tiny.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "1498j392ap2mk4zmsm2id16pfgvj78r428da9vw7hdrzzibai2cx"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("make" "test")))
+      (home-page "https://github.com/abo-abo/tiny")
+      (synopsis "Quickly generate linear ranges in Emacs")
+      (description
+       "The main command of the @code{tiny} extension for Emacs is @code{tiny-expand}.
 It is meant to quickly generate linear ranges, e.g. 5, 6, 7, 8.  Some elisp
 proficiency is an advantage, since you can transform your numeric range with
 an elisp expression.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-emojify
   (package
