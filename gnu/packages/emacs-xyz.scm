@@ -11611,8 +11611,8 @@ as well as functions for navigating between these headings.")
 
 (define-public emacs-org-super-agenda
   ;; emacs-org-sidebar depends on a newer commit than the latest release version.
-  (let ((commit "f0ee7ed9766d352d16a787707d35695b48cbf153")
-        (revision "2"))
+  (let ((commit "a87ca11fbbe72ab6c1c4c3b55ae9e1e93ebfb8ba")
+        (revision "3"))
     (package
       (name "emacs-org-super-agenda")
       (version (git-version "1.1.1" revision commit))
@@ -11624,7 +11624,7 @@ as well as functions for navigating between these headings.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1b1qi96x83acv2frl94i4frx46i82vipaa8mfwpzyj2gyq2bq5zf"))))
+                  "08b7babdaqblb6jff57an4kbcxk6fkhf668620fipfjgbsnqv3ff"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-org" ,emacs-org)
