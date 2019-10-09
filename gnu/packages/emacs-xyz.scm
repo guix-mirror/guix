@@ -11072,25 +11072,27 @@ region of the buffer, while the latter works on rectangular selections.")
     (license license:gpl3+)))
 
 (define-public emacs-emmet-mode
-  (package
-    (name "emacs-emmet-mode")
-    (version "1.0.8")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/smihica/emmet-mode.git")
-                     (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1dsa85bk33j90h1ypaz1ylqh9yp2xvlga237h3kwa5y3sb0d5ydi"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/smihica/emmet-mode")
-    (synopsis "Unofficial Emmet's support for Emacs")
-    (description
-     "Unfold CSS-selector-like expressions to markup.  It is intended to be
+  (let ((commit "1acb821e0142136344ccf40c1e5fb664d7db2e70")
+        (revision "1"))
+    (package
+      (name "emacs-emmet-mode")
+      (version (git-version "1.0.8" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/smihica/emmet-mode.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1p25h191bm0h5b3w5apg7wks51k7pb7h4dlww4jbl9ri4d33fzcl"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/smihica/emmet-mode")
+      (synopsis "Unofficial Emmet's support for Emacs")
+      (description
+       "Unfold CSS-selector-like expressions to markup.  It is intended to be
 used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-ergoemacs-mode
   (let ((commit "3ce23bba3cb50562693860f87f3528c471d603ba")
