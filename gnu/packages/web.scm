@@ -439,7 +439,15 @@ APIs.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests included
-       #:make-flags (list "CC=gcc")))
+       #:make-flags (list "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-CFLAGS
+           ;; Remove broken options unconditionally added to CFLAGS.
+           (lambda _
+             (substitute* "configure.ac"
+               ((" -Werror") ""))
+             #t)))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
