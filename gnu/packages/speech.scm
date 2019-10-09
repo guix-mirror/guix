@@ -69,6 +69,8 @@
                           (string-append "LDFLAGS=-Wl,-rpath="
                                          (assoc-ref %outputs "out")
                                          "/lib")
+                          ;; The package fails to build with newer C++ standards.
+                          "CXXFLAGS=-std=c++98"
                           "AUDIO=pulseaudio")
        #:tests? #f ; no check target
        #:phases
