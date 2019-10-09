@@ -29,6 +29,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -68,19 +69,19 @@
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.29")
+    (version "0.4.30")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "1cisbbn69p9c8vikn0nin14q0zscby5m8cyvzxyw2pjb2kwh32ag"))))
-    (build-system gnu-build-system)
+                "0wj93im7i8a6546q2r8sp39yjfbxflkc0ygb0b8iqsd58qhvjhds"))))
+    (build-system meson-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'disable-faulty-test
+         (add-after 'unpack 'disable-faulty-test
            (lambda _
              ;; XXX Disable the 'test-limits' and 'exec_opcodes_sys'
              ;; tests, which fail on some machines.  See:
@@ -90,6 +91,8 @@
                (("if \\(error\\) return 1;")
                 "if (error) return 77;"))
              #t)))))
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)))
     (home-page "https://gstreamer.freedesktop.org/modules/orc.html")
     (synopsis "Oil runtime compiler")
     (description
