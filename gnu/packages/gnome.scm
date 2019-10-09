@@ -2428,7 +2428,10 @@ selection and URL hints.")))
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     ;; Disable -Werror and such, to avoid build failures on compilation
+     ;; warnings.
+     '(#:configure-flags '("--enable-compile-warnings=minimum")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
            (lambda _
