@@ -2435,7 +2435,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.14.7")
+    (version "1.14.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -2444,10 +2444,23 @@ falling, themeable graphics and sounds, and replays.")
                                   "wesnoth-" version ".tar.bz2"))
               (sha256
                (base32
-                "0j2yvkcggj5k0r2cqk8ndnj77m37a00srfd9qg7pdpqffbinqpj7"))))
+                "1mhdrlflxxyknf54lwdbvs7fazlc1scf7z6vxxa3j746fks533ga"))))
     (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f))                    ; no check target
+     `(#:tests? #f                      ;no check target
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'treat-boost-as-system-header
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((boost (assoc-ref inputs "boost")))
+                        ;; Ensure Boost is treated as "system headers" to
+                        ;; pacify compiler warnings induced by Boost headers.
+                        (for-each (lambda (variable)
+                                    (setenv variable
+                                            (string-append boost "/include:"
+                                                           (or (getenv variable)
+                                                               ""))))
+                                  '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+                        #t))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)))
