@@ -4453,36 +4453,34 @@ started with 20 minutes.  All values are customizable.")
       (license license:gpl3+))))
 
 (define-public emacs-org-sidebar
-  (let ((commit "b2a5a69b1ebbab63b55e7d1a9453f385624a642c")
-        (revision "2"))
-    (package
-      (name "emacs-org-sidebar")
-      (version (git-version "0.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/alphapapa/org-sidebar.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0dajwg92kj7998xl0x35dlqwdhgwjcwxa726kf4f3wgv1azpyff6"))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-dash" ,emacs-dash)
-         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
-         ("emacs-org" ,emacs-org)
-         ("emacs-org-ql" ,emacs-org-ql)
-         ("emacs-s" ,emacs-s)))
-      (home-page "https://github.com/alphapapa/org-sidebar")
-      (synopsis "Helpful sidebar for Org buffers")
-      (description "This package provides a sidebar for Org buffers.  At the
+  (package
+    (name "emacs-org-sidebar")
+    (version "0.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/alphapapa/org-sidebar.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "106h06vjfbqfj761vbxwymd6612ds8c6fk053yzgbrqzm3hn2c03"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+       ("emacs-org" ,emacs-org)
+       ("emacs-org-ql" ,emacs-org-ql)
+       ("emacs-s" ,emacs-s)))
+    (home-page "https://github.com/alphapapa/org-sidebar")
+    (synopsis "Helpful sidebar for Org buffers")
+    (description "This package provides a sidebar for Org buffers.  At the
 top is a chronological list of scheduled and deadlined tasks in the current
 buffer (similar to the Org agenda ,but without all its features), and below
 that is a list of all other non-done to-do items.  If the buffer is narrowed,
 the sidebar only shows items in the narrowed portion; this allows seeing an
 overview of tasks in a subtree.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-org-trello
   (package
