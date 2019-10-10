@@ -11757,6 +11757,9 @@ according to a parsing expression grammar.")
                 (sha256
                  (base32
                   "0apcg63xm0242mjgsgw0jrcda4p4iqj7fy3sgh0p7khi4hrs5ch0"))
+                (patches
+                 (search-patches
+                  "emacs-helm-org-ql.patch"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
@@ -11767,6 +11770,8 @@ according to a parsing expression grammar.")
          ("emacs-org-super-agenda" ,emacs-org-super-agenda)
          ("emacs-ts" ,emacs-ts)
          ("emacs-org" ,emacs-org)
+         ("emacs-helm" ,emacs-helm)
+         ("emacs-helm-org" ,emacs-helm-org)
          ("emacs-dash" ,emacs-dash)))
       (native-inputs
        `(("emacs-buttercup" ,emacs-buttercup)))
