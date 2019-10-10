@@ -2946,29 +2946,35 @@ completing keywords and smart indentation.")
       (license license:gpl3+))))
 
 (define-public emacs-rspec
-  (package
-    (name "emacs-rspec")
-    (version "1.11")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/pezra/rspec-mode.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0hrn5n7aaymwimk511kjij44vqaxbmhly1gwmlmsrnbvvma7f2mp"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/pezra/rspec-mode")
-    (synopsis "Provides a rspec mode for working with RSpec")
-    (description
-     "The Emacs RSpec mode provides keybindings for Ruby source files, e.g. to
+  (let ((commit "66ea7cc9699d6edc6115daa024818adbd85efc20")
+        (revision "1"))
+    (package
+      (name "emacs-rspec")
+      (version (git-version "1.11" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pezra/rspec-mode.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0b11s8r0pi7ah54km4yg4fqff8wkk409d25qnlwm1l94pdwjd1c8"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:include (cons "^snippets\\/rspec-mode\\/" %default-include)
+         #:tests? #t
+         #:test-command '("make" "test")))
+      (home-page "https://github.com/pezra/rspec-mode")
+      (synopsis "Provides a rspec mode for working with RSpec")
+      (description
+       "The Emacs RSpec mode provides keybindings for Ruby source files, e.g. to
 verify the spec associated with the current buffer, or entire project, as well
 as moving between the spec files, and corresponding code files.
 
 Also included are keybindings for spec files and Dired buffers, as well as
 snippets for yasnippet.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-smart-mode-line
   (package
