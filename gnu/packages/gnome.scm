@@ -2690,7 +2690,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.66.2")
+    (version "2.68.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2698,7 +2698,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "0amfw1yvy1kjrg41rfh2vvrw5gkwnyckqbw1fab50hm6xc1acbmx"))))
+                "0crr9qprmacr626fx83cx81ggk85zsgxr4mn577kpzj6m40k1bai"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2706,7 +2706,7 @@ libxml to ease remote use of the RESTful API.")
                   (guix build meson-build-system)
                   (ice-9 popen))
 
-       #:configure-flags '("-Ddoc=true")
+       #:configure-flags '("-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-tests
@@ -2715,6 +2715,16 @@ libxml to ease remote use of the RESTful API.")
              ;; in the build environment.
              (substitute* "tests/socket-test.c"
                ((".*/sockets/unconnected.*") ""))
+
+             ;; These fail because "subdomain.localhost" does not resolve in
+             ;; the build environment.
+             (substitute* "tests/hsts-test.c"
+               ((".*/hsts/basic.*") "")
+               ((".*/hsts/subdomains.*") "")
+               ((".*/hsts/superdomain.*") "")
+               ((".*/hsts/utf8-address.*") ""))
+             (substitute* "tests/hsts-db-test.c"
+               ((".*/hsts-db/subdomains.*") ""))
 
              ;; Generate a self-signed certificate that has "localhost" as its
              ;; 'dnsName'.  Failing to do that, and starting with GnuTLS
@@ -2784,10 +2794,12 @@ libxml to ease remote use of the RESTful API.")
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all these.
-     `(("glib" ,glib)
+     `(("brotli" ,google-brotli)
+       ("glib" ,glib)
        ("libpsl" ,libpsl)
        ("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)))
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("mit-krb5" ,mit-krb5)))
