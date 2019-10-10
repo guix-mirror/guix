@@ -816,6 +816,22 @@ supports coverage of subprocesses.")
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
 
+;; python-bleach 3.1.0 requires this ancient version of pytest-runner.
+;; Remove once no longer needed.
+(define-public python-pytest-runner-2
+  (package/inherit
+   python-pytest-runner
+   (version "2.12.2")
+   (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-runner" version))
+             (sha256
+              (base32
+               "11ivjj9hfphkv4yfb2g74av4yy86y8gcbf7gbif0p1hcdfnxg3w6"))))))
+
+(define-public python2-pytest-runner-2
+  (package-with-python2 python-pytest-runner-2))
+
 (define-public python-pytest-mock
   (package
     (name "python-pytest-mock")
