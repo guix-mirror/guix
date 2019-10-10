@@ -10657,20 +10657,22 @@ navigation with the grails mode.")
   (deprecated-package "groovy-emacs-modes" emacs-groovy-modes))
 
 (define-public emacs-org-tree-slide
-  (let ((commit "dff8f1a4a64c8dd0a1fde0b0131e2fe186747134")
-        (revision "0"))
+  (let ((commit "036a36eec1cf712d3db155572aed325daa372eb5")
+        (revision "2"))
     (package
       (name "emacs-org-tree-slide")
-      (version (git-version "0.1" revision commit))
-      (home-page "https://github.com/takaxp/org-tree-slide")
+      (version (git-version "2.8.4" revision commit))
       (source (origin
                 (method git-fetch)
-                (uri (git-reference (url home-page) (commit commit)))
+                (uri (git-reference
+                      (url "https://github.com/takaxp/org-tree-slide.git")
+                      (commit commit)))
                 (sha256
                  (base32
-                  "153bg0x7ypla11pq51jmsgzfjklwwnrq56xgpbfhk1j16xwz9hyf"))
+                  "1r8ncx25xmxicgciyv5przp68y8qgy40fm10ba55awvql4xcm0yk"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
+      (home-page "https://github.com/takaxp/org-tree-slide")
       (synopsis "Presentation tool for org-mode")
       (description
        "Org-tree-slide provides a slideshow mode to view org-mode files.  Use
