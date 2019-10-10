@@ -10975,7 +10975,7 @@ hardware-accelerated multitouch applications.")
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-test
+         (add-after 'unpack 'patch-tests
            (lambda _
              ;; TypeError: binary() got an unexpected keyword argument
              ;; 'average_size'.
