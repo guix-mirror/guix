@@ -22,6 +22,7 @@
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1027,7 +1028,7 @@ audio signals.")
 @enumerate
 @item Pulse-VCO, a dirac pulse oscillator with flat amplitude spectrum
 @item Saw-VCO, a sawtooth oscillator with 1/F amplitude spectrum
-@item Rec-VCO, a square / rectange oscillator
+@item Rec-VCO, a square / rectangle oscillator
 @end enumerate\n
 
 All oscillators are low-pass filtered to provide waveforms similar to the
@@ -1535,7 +1536,7 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jack-2
   (package (inherit jack-1)
     (name "jack2")
-    (version "1.9.12")
+    (version "1.9.13")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/jackaudio/jack2/releases/"
@@ -1544,40 +1545,38 @@ synchronous execution of all clients, and low latency operation.")
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0crf4y9a5j9miw8r5ji4l3w5w0y2frrf7xyfsfdgacnw6vwy5vyy"))))
+               "1d1d403jn4366mqig6g8ghr8057b3rn7gs26b5p3rkal34j20qw2"))))
     (build-system waf-build-system)
     (arguments
-     `(#:python ,python-2
-       #:tests? #f  ; no check target
+     `(#:tests? #f  ; no check target
        #:configure-flags '("--dbus"
                            "--alsa")
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-linkflags
-          (lambda _
-            ;; Add $libdir to the RUNPATH of all the binaries.
-            (substitute* "wscript"
-              ((".*CFLAGS.*-Wall.*" m)
-               (string-append m
-                              "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n")))
-            #t))
+         (add-before 'configure 'set-linkflags
+           (lambda _
+             ;; Add $libdir to the RUNPATH of all the binaries.
+             (substitute* "wscript"
+               ((".*CFLAGS.*-Wall.*" m)
+                (string-append m
+                               "    conf.env.append_unique('LINKFLAGS',"
+                               "'-Wl,-rpath=" %output "/lib')\n")))
+             #t))
          (add-after 'install 'wrap-python-scripts
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
-            (let* ((out (assoc-ref outputs "out"))
-                   (path (getenv "PYTHONPATH")))
-              (wrap-program (string-append out "/bin/jack_control")
-                `("PYTHONPATH" ":" prefix (,path))))
-            #t)))))
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PYTHONPATH")))
+               (wrap-program (string-append out "/bin/jack_control")
+                 `("PYTHONPATH" ":" prefix (,path))))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("libsamplerate" ,libsamplerate)
        ("opus" ,opus)
-       ("python2-dbus" ,python2-dbus)
+       ("python-dbus" ,python-dbus)
        ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2177,16 +2176,18 @@ background file post-processing.")
 (define-public supercollider
   (package
     (name "supercollider")
-    (version "3.10.2")
+    (version "3.10.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/supercollider/supercollider"
                     "/releases/download/Version-" version
                     "/SuperCollider-" version "-Source-linux.tar.bz2"))
+              (patches
+               (search-patches "supercollider-boost-1.70-build-fix.patch"))
               (sha256
                (base32
-                "0ynz1ydcpsd5h57h1n4a7avm6p1cif5a8rkmz4qpr46pr8z9p6iq"))))
+                "0srm6wbazidkrd4ckjy4ypyhkdwcnx2i7k9msjyngalh0mrc9zz1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags '("-DSYSTEM_BOOST=on" "-DSYSTEM_YAMLCPP=on"
@@ -2198,12 +2199,6 @@ background file post-processing.")
                   (ice-9 ftw))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'fix-build-with-boost-1.68
-           (lambda _
-             (substitute* "server/supernova/utilities/time_tag.hpp"
-               (("(time_duration offset = .+ microseconds\\().*" _ m)
-                (string-append m "static_cast<long>(get_nanoseconds()/1000));\n")))
-             #t))
          (add-after 'unpack 'rm-bundled-libs
            (lambda _
              ;; The build system doesn't allow us to unbundle the following

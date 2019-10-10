@@ -241,6 +241,7 @@ MODULES =					\
   guix/scripts/remove.scm			\
   guix/scripts/upgrade.scm			\
   guix/scripts/search.scm			\
+  guix/scripts/show.scm				\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pack.scm				\
@@ -306,12 +307,20 @@ STORE_MODULES =					\
 MODULES += $(STORE_MODULES)
 
 # Internal modules with test suite support.
-dist_noinst_DATA = guix/tests.scm guix/tests/http.scm
+dist_noinst_DATA =				\
+  guix/tests.scm				\
+  guix/tests/http.scm				\
+  guix/tests/git.scm
 
 # Auxiliary files for packages.
 AUX_FILES =						\
   gnu/packages/aux-files/chromium/master-preferences.json		\
   gnu/packages/aux-files/emacs/guix-emacs.el		\
+  gnu/packages/aux-files/linux-libre/5.3-arm.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-arm-veyron.conf       \
+  gnu/packages/aux-files/linux-libre/5.3-arm64.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-i686.conf	\
+  gnu/packages/aux-files/linux-libre/5.3-x86_64.conf	\
   gnu/packages/aux-files/linux-libre/5.2-arm.conf	\
   gnu/packages/aux-files/linux-libre/5.2-arm-veyron.conf       \
   gnu/packages/aux-files/linux-libre/5.2-arm64.conf	\
@@ -390,6 +399,7 @@ SCM_TESTS =					\
   tests/file-systems.scm			\
   tests/gem.scm				\
   tests/gexp.scm				\
+  tests/git.scm					\
   tests/glob.scm				\
   tests/gnu-maintenance.scm			\
   tests/grafts.scm				\
@@ -528,8 +538,10 @@ EXTRA_DIST +=						\
   TODO							\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
+  .guix-channel						\
   scripts/guix.in					\
   etc/guix-install.sh					\
+  etc/news.scm						\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
   build-aux/hydra/evaluate.scm				\
@@ -814,7 +826,8 @@ assert-no-store-file-names:
 	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     --exclude=*.info-[0-9] --exclude=*.dot				\
 	     --exclude=*.eps --exclude-dir=bootstrap				\
-		 --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-manual.pot --exclude=guix-manual.*.po		\
+	     --exclude=guix-cookbook.pot --exclude=guix-cookbook.*.po		\
 	     --exclude=guix-prettify.el						\
 	     --exclude=ChangeLog*						\
 	     --exclude=binutils-boot-2.20*.patch				\

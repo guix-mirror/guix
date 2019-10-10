@@ -28,6 +28,10 @@
   #:use-module (guix gexp)
   #:use-module ((guix utils)
                 #:select (error-location? error-location location-line))
+  #:use-module ((guix build utils) #:select (which))
+  #:use-module (git)
+  #:use-module (guix git)
+  #:use-module (guix tests git)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -245,5 +249,105 @@
                          (list drv1) (list drv3))
                (depends? drv3
                          (list drv2 drv0) (list))))))))
+
+(unless (which (git-command)) (test-skip 1))
+(test-equal "channel-news, no news"
+  '()
+  (with-temporary-git-repository directory
+      '((add "a.txt" "A")
+        (commit "the commit"))
+    (with-repository directory repository
+      (let ((channel (channel (url (string-append "file://" directory))
+                              (name 'foo)))
+            (latest  (reference-name->oid repository "HEAD")))
+        (channel-news-for-commit channel (oid->string latest))))))
+
+(unless (which (git-command)) (test-skip 1))
+(test-assert "channel-news, one entry"
+  (with-temporary-git-repository directory
+      `((add ".guix-channel"
+             ,(object->string
+               '(channel (version 0)
+                         (news-file "news.scm"))))
+        (commit "first commit")
+        (add "src/a.txt" "A")
+        (commit "second commit")
+        (tag "tag-for-first-news-entry")
+        (add "news.scm"
+             ,(lambda (repository)
+                (let ((previous
+                       (reference-name->oid repository "HEAD")))
+                  (object->string
+                   `(channel-news
+                     (version 0)
+                     (entry (commit ,(oid->string previous))
+                            (title (en "New file!")
+                                   (eo "Nova dosiero!"))
+                            (body (en "Yeah, a.txt."))))))))
+        (commit "third commit")
+        (add "src/b.txt" "B")
+        (commit "fourth commit")
+        (add "news.scm"
+             ,(lambda (repository)
+                (let ((second
+                       (commit-id
+                        (find-commit repository "second commit")))
+                      (previous
+                       (reference-name->oid repository "HEAD")))
+                  (object->string
+                   `(channel-news
+                     (version 0)
+                     (entry (commit ,(oid->string previous))
+                            (title (en "Another file!"))
+                            (body (en "Yeah, b.txt.")))
+                     (entry (tag "tag-for-first-news-entry")
+                            (title (en "Old news.")
+                                   (eo "Malnovaĵoj."))
+                            (body (en "For a.txt"))))))))
+        (commit "fifth commit"))
+    (with-repository directory repository
+      (define (find-commit* message)
+        (oid->string (commit-id (find-commit repository message))))
+
+      (let ((channel (channel (url (string-append "file://" directory))
+                              (name 'foo)))
+            (commit1 (find-commit* "first commit"))
+            (commit2 (find-commit* "second commit"))
+            (commit3 (find-commit* "third commit"))
+            (commit4 (find-commit* "fourth commit"))
+            (commit5 (find-commit* "fifth commit")))
+        ;; First try fetching all the news up to a given commit.
+        (and (null? (channel-news-for-commit channel commit2))
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit5))
+                    (list commit2 commit4))
+             (lset= equal?
+                    (map channel-news-entry-title
+                         (channel-news-for-commit channel commit5))
+                    '((("en" . "Another file!"))
+                      (("en" . "Old news.") ("eo" . "Malnovaĵoj."))))
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit3))
+                    (list commit2))
+
+             ;; Now fetch news entries that apply to a commit range.
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit3 commit1))
+                    (list commit2))
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit5 commit3))
+                    (list commit4))
+             (lset= string=?
+                    (map channel-news-entry-commit
+                         (channel-news-for-commit channel commit5 commit1))
+                    (list commit4 commit2))
+             (lset= equal?
+                    (map channel-news-entry-tag
+                         (channel-news-for-commit channel commit5 commit1))
+                    '(#f "tag-for-first-news-entry")))))))
 
 (test-end "channels")

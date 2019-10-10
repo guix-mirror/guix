@@ -38,13 +38,13 @@
 (define-public screen
   (package
     (name "screen")
-    (version "4.6.2")
+    (version "4.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0fps0fsipfbh7c2cnp7rjw9n79j0ysq21mk8hzifa33a1r924s8v"))))
+              (base32 "1h90bpy2wk304xw367y1zwz0kilrpm6h28nphykx4fvqz8l56xys"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("makeinfo" ,texinfo)))

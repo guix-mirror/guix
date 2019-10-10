@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,14 +109,14 @@ written in C, C++, Ada, Objective-C, Pascal and more.")
 (define-public gdb-8.3
   (package
     (inherit gdb-8.2)
-    (version "8.3")
+    (version "8.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdb/gdb-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0bnpzz0rl672xg5547q5qck2sxi6cnyixmk8bbb4gifw17ipwbw0"))))))
+                "1i2pjwaafrlz7wqm40b4znr77ai32rjsxkpl2az38yyarpbv8m8y"))))))
 
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely

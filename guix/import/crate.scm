@@ -40,6 +40,7 @@
   #:use-module (srfi srfi-26)
   #:export (crate->guix-package
             guix-package->crate-name
+            crate-recursive-import
             %crate-updater))
 
 
@@ -218,16 +219,24 @@ latest version of CRATE-NAME."
               (cargo-development-inputs
                (sort (map crate-dependency-id dev-dep-crates)
                      string-ci<?)))
-         (make-crate-sexp #:name crate-name
-                          #:version (crate-version-number version*)
-                          #:cargo-inputs cargo-inputs
-                          #:cargo-development-inputs cargo-development-inputs
-                          #:home-page (or (crate-home-page crate)
-                                          (crate-repository crate))
-                          #:synopsis (crate-description crate)
-                          #:description (crate-description crate)
-                          #:license (and=> (crate-version-license version*)
-                                           string->license)))))
+         (values
+          (make-crate-sexp #:name crate-name
+                           #:version (crate-version-number version*)
+                           #:cargo-inputs cargo-inputs
+                           #:cargo-development-inputs cargo-development-inputs
+                           #:home-page (or (crate-home-page crate)
+                                           (crate-repository crate))
+                           #:synopsis (crate-description crate)
+                           #:description (crate-description crate)
+                           #:license (and=> (crate-version-license version*)
+                                            string->license))
+          (append cargo-inputs cargo-development-inputs)))))
+
+(define (crate-recursive-import crate-name)
+  (recursive-import crate-name #f
+                    #:repo->guix-package (lambda (name repo)
+                                           (crate->guix-package name))
+                    #:guix-name crate-name->package-name))
 
 (define (guix-package->crate-name package)
   "Return the crate name of PACKAGE."

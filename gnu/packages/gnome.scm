@@ -2428,7 +2428,10 @@ selection and URL hints.")))
                 "10jya3jyrm18nbw3v410gbkc7677bqamax44pzgd3j15randn76d"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases
+     ;; Disable -Werror and such, to avoid build failures on compilation
+     ;; warnings.
+     '(#:configure-flags '("--enable-compile-warnings=minimum")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'install 'skip-gtk-update-icon-cache
            (lambda _
@@ -3118,15 +3121,15 @@ permission from user.")
 (define-public geocode-glib
   (package
     (name "geocode-glib")
-    (version "3.26.0")
+    (version "3.26.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/geocode-glib/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "geocode-glib-" version ".tar.xz"))
               (sha256
                (base32
-                "1vmydxs5xizcmaxpkfrq75xpj6pqrpdjizxyb30m00h54yqqch7a"))))
+                "076ydfpyc4n5c9dbqmf26i4pilfi5jpw6cjcgrbgrjbndavnmajv"))))
     (build-system meson-build-system)
     (arguments
      `(#:phases
@@ -3455,16 +3458,15 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.22.2")
+    (version "1.22.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://gnome/sources/" name "/"
+       (uri (string-append "mirror://gnome/sources/cogl/"
                            (version-major+minor version) "/"
-                           name "-" version ".tar.xz"))
+                           "cogl-" version ".tar.xz"))
        (sha256
-        (base32
-         "03f0ha3qk7ca0nnkkcr1garrm1n1vvfqhkz9lwjm592fnv6ii9rr"))))
+        (base32 "1q0drs82a8f6glg1v29bb6g2nf15fw0rvdx3d0rgcgfarfaby5sj"))))
     ;; NOTE: mutter exports a bundled fork of cogl, so when making changes to
     ;; cogl, corresponding changes may be appropriate in mutter as well.
     (build-system gnu-build-system)
@@ -3710,15 +3712,15 @@ queries upon that data.")
 (define-public libgnome-games-support
   (package
     (name "libgnome-games-support")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgnome-games-support/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgnome-games-support-" version ".tar.xz"))
               (sha256
                (base32
-                "02hirpk885jndwarbl3cl5fk7w2z5ziv677csyv1wi2n6rmpn088"))))
+                "1zkbmnrn161p74qg6jhsn9f66yjjzxfm13pl1klv9av8k1bax9pq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -4624,18 +4626,29 @@ lifting is done by packages like yelp-xsl and itstool.  This package just
 wraps things up in a developer-friendly way.")
     (license license:gpl2+)))
 
+(define-public yelp-tools/fixed
+  ;; This variant fixes a python-libxml2 crash when processing UTF-8
+  ;; sequences: <https://bugs.gnu.org/37468>.  TODO: Remove this in
+  ;; the next rebuild cycle.
+  (hidden-package
+   (package/inherit
+    yelp-tools
+    (propagated-inputs
+     `(("itstool" ,itstool/fixed)
+       ,@(alist-delete "itstool" (package-propagated-inputs yelp-tools)))))))
+
 (define-public libgee
   (package
     (name "libgee")
-    (version "0.20.1")
+    (version "0.20.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgee/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgee-" version ".tar.xz"))
               (sha256
                (base32
-                "0c26x8gi3ivmhlbqcmiag4jwrkvcy28ld24j55nqr3jikb904a5v"))))
+                "0g1mhl7nidg82v4cikkk8dakzc18hg7wv0dsf2pbyijzfm5mq0wy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -6549,6 +6562,17 @@ beautifying border effects.")
         (base32
          "06f736spn20s7qjsz00xw44v8r8bjhyrz1v3bix6v416jc5jp6ia"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-glib-minimum-version
+                    (lambda _
+                      ;; Change the minimum required GLib version so that
+                      ;; 'valac' is passed '--target-glib 2.60.0'; failing to
+                      ;; do that, it complains that "55" is not an even
+                      ;; number.  See <https://bugs.gnu.org/37503>.
+                      (substitute* "editor/meson.build"
+                        (("2\\.55\\.1") "2.60.0"))
+                      #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
        ("gtk+-bin" ,gtk+ "bin") ; for gtk-update-icon-cache
@@ -7259,9 +7283,9 @@ GLib/GObject code.")
     (version "3.26.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/libgnomekbd/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "libgnomekbd-" version ".tar.xz"))
               (sha256
                (base32
                 "0y962ykn3rr9gylj0pwpww7bi20lmhvsw6qvxs5bisbn2mih5jpp"))))
@@ -8185,7 +8209,7 @@ functionality.")
 (define-public gthumb
   (package
     (name "gthumb")
-    (version "3.8.0")
+    (version "3.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gthumb/"
@@ -8193,7 +8217,7 @@ functionality.")
                                   "gthumb-" version ".tar.xz"))
               (sha256
                (base32
-                "1l2s1facq1r6yvqjqc34aqfzlvb3nhkhn79xisxbbdlgrrxdq52f"))))
+                "184zn79w4s9y1zy42ar31p3jsg8rmkxy8k6iry51nz8aizbcs7jb"))))
     (build-system meson-build-system)
     (arguments
      `(#:glib-or-gtk? #t

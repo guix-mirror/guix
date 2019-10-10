@@ -58,3 +58,10 @@ if guix remove -i guile-bootstrap -p "$profile" --bootstrap
 then false; else true; fi
 
 guix search '\<board\>' game | grep '^name: gnubg'
+
+guix show --version
+guix show guile
+guix show python@3 | grep "^name: python"
+
+# "python@2" exists but is deprecated; make sure it doesn't show up.
+if guix show python@2; then false; else true; fi

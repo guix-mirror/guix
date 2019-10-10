@@ -29,6 +29,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
@@ -65,7 +67,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.22.4")
+    (version "1.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -73,28 +75,22 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "084ihxy6g86yczhln5vn1amxi4qzqhvk4lpz9005kx92i6wh4h25"))))
-    (outputs '("out"       ; 53 MB
-               "include")) ; 21 MB
-    (build-system gnu-build-system)
+                "1iawq5k1ggas41h3vrwc0y98hf83vr0vh3phfgw22iij3cb2b5nd"))))
+    (build-system meson-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("check" ,check)
+       ("gettext" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("curl" ,curl)
-       ("ghostscript" ,ghostscript)
+     `(("curl" ,curl)
        ("giflib" ,giflib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("libexif" ,libexif)
-       ("libjpeg" ,libjpeg)
+       ("ibus" ,ibus)
+       ("mesa" ,mesa)
        ("libraw" ,libraw)
        ("librsvg" ,librsvg)
-       ("libsndfile" ,libsndfile)
        ("libspectre" ,libspectre)
-       ("libtiff" ,libtiff)
-       ("libwebp" ,libwebp)
-       ("libx11" ,libx11)
        ("libxau" ,libxau)
        ("libxcomposite" ,libxcomposite)
        ("libxcursor" ,libxcursor)
@@ -107,55 +103,59 @@
        ("libxp" ,libxp)
        ("libxrandr" ,libxrandr)
        ("libxrender" ,libxrender)
-       ("libxscrnsaver" ,libxscrnsaver)
+       ("libxss" ,libxscrnsaver)
        ("libxtst" ,libxtst)
-       ("lz4" ,lz4)
-       ("openjpeg" ,openjpeg-1)
        ("poppler" ,poppler)
-       ("printproto" ,printproto)
-       ("pulseaudio" ,pulseaudio)
-       ("wayland-protocols" ,wayland-protocols)
-       ("xinput" ,xinput)
-       ("xpr" ,xpr)
-       ("xorgproto" ,xorgproto)))
+       ("wayland-protocols" ,wayland-protocols)))
     (propagated-inputs
      ;; All these inputs are in package config files in section
      ;; Requires.private.
-     `(("bullet" ,bullet) ; ephysics.pc
-       ("dbus" ,dbus) ; eldbus.pc, elementary.pc, elocation.pc, ethumb_client.pc
-       ("eudev" ,eudev) ; eeze.pc
-       ("fontconfig" ,fontconfig) ; evas.pc, evas-cxx.pc
-       ("freetype" ,freetype) ; evas.pc, evas-cxx.pc
-       ("fribidi" ,fribidi) ; evas.pc, evas-cxx.pc
-       ("glib" ,glib) ; ecore.pc, ecore-cxx.pc
-       ("harfbuzz" ,harfbuzz) ; evas.pc, evas-cxx.pc
-       ("luajit" ,luajit) ; elua.pc, evas.pc, evas-cxx.pc
-       ("libinput" ,libinput-minimal) ; elput.pc
-       ("libpng" ,libpng) ; evas.pc, evas-cxx.pc
-       ("libxkbcommon" ,libxkbcommon) ; ecore-wl2.pc, elementary.pc, elput.pc
-       ("mesa" ,mesa) ; ecore-drm2.pc
-       ("openssl" ,openssl) ; ecore-con.pc, eet.pc, eet-cxx.pc, emile.pc
-       ("util-linux" ,util-linux) ; mount: eeze.pc
-       ("wayland" ,wayland) ; ecore-wl2.pc, elementary.pc
-       ("zlib" ,zlib))) ; eet.pc, eet-cxx.pc, emile.pc
+     `(("avahi" ,avahi)
+       ("bullet" ,bullet)
+       ("dbus" ,dbus)
+       ("elogind" ,elogind)
+       ("eudev" ,eudev)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("glib" ,glib)
+       ("harfbuzz" ,harfbuzz)
+       ("luajit" ,luajit)
+       ("libinput" ,libinput-minimal)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libsndfile" ,libsndfile)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("libx11" ,libx11)
+       ("libxkbcommon" ,libxkbcommon)
+       ("lz4" ,lz4)
+       ("openssl" ,openssl)
+       ("pulseaudio" ,pulseaudio)
+       ("util-linux" ,util-linux)
+       ("wayland" ,wayland)
+       ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags '("--disable-silent-rules"
-                           "--disable-systemd"
-                           "--with-profile=release"
-                           "--enable-liblz4"
-                           "--enable-xinput22"
-                           "--enable-image-loader-webp"
-                           "--enable-multisense"
+     `(#:configure-flags '("-Dsystemd=false"
+                           "-Dembedded-lz4=false"
+                           "-Devas-loaders-disabler=json"
+                           "-Dbuild-examples=false"
+                           ;(string-append "-Ddictionaries-hyphen-dir="
+                           ;               (assoc-ref %build-inputs "hyphen")
+                           ;               "/share/hyphen")
+                           "-Delogind=true"
+                           "-Dnetwork-backend=connman"
                            ,@(match (%current-system)
                                ("armhf-linux"
-                                '("--with-opengl=es" "--with-egl"))
+                                '("-opengl=es-egl"))
                                (_
-                                '("--with-opengl=full")))
-                           "--enable-harfbuzz"
+                                '("-Dopengl=full")))
                            ;; for wayland
-                           "--enable-wayland"
-                           "--enable-elput"
-                           "--enable-drm")
+                           "-Dwl-deprecated=true" ; ecore_wayland
+                           "-Ddrm-deprecated=true" ; ecore_drm
+                           "-Dwl=true"
+                           "-Ddrm=true")
+       #:tests? #f ; Many tests fail due to timeouts and network requests.
        #:phases
        (modify-phases %standard-phases
          ;; If we don't hardcode the location of libcurl.so then we
@@ -168,6 +168,14 @@
                  (("libcurl.so.?" libcurl) ; libcurl.so.[45]
                   (string-append lib libcurl)))
                #t)))
+         (add-after 'unpack 'fix-install-paths
+           (lambda _
+             (substitute* "dbus-services/meson.build"
+               (("install_dir.*")
+                "install_dir: join_paths(dir_data, 'dbus-1', 'services'))\n"))
+             (substitute* "src/tests/elementary/meson.build"
+               (("dir_data") "meson.source_root(), 'test-output'"))
+             #t))
          (add-after 'unpack 'set-home-directory
            ;; FATAL: Cannot create run dir '/homeless-shelter/.run' - errno=2
            (lambda _ (setenv "HOME" "/tmp") #t)))))
@@ -273,7 +281,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.23.0")
+    (version "0.23.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -281,7 +289,7 @@ Libraries with some extra bells and whistles.")
                               "enlightenment/enlightenment-" version ".tar.xz"))
               (sha256
                (base32
-                "1y7x594gvyvl5zbb1rnf3clj2pm6j97n8wl5mp9x6xjmhx0d1idq"))
+                "0d1cyl07w9pvi2pf029kablazks2q9aislzl46b6fq5m1465jc75"))
               (patches (search-patches "enlightenment-fix-setuid-path.patch"))))
     (build-system meson-build-system)
     (arguments
@@ -531,7 +539,7 @@ directories.
 (define-public evisum
   (package
     (name "evisum")
-    (version "0.2.3")
+    (version "0.2.6")
     (source
       (origin
         (method url-fetch)
@@ -539,7 +547,7 @@ directories.
                             "evisum/evisum-" version ".tar.xz"))
         (sha256
          (base32
-          "1lj62n896kablsl687c66yxrwajrh6ralb3y6nmcqv34pglnigca"))))
+          "1rg3kri6j8nmab0kdljnmcc096c8ibgwzvbhqr0b25xpmrq8bcac"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f   ; no tests

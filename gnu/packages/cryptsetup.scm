@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,30 +26,43 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages web))
 
 (define-public cryptsetup
   (package
    (name "cryptsetup")
-   (version "1.7.5")
+   (version "2.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/linux/utils/cryptsetup/v"
                                 (version-major+minor version)
-                                "/" name "-" version ".tar.xz"))
+                                "/cryptsetup-" version ".tar.xz"))
             (sha256
              (base32
-              "1gail831j826lmpdx2gsc83lp3br6wfnwh3vqwxaa1nn1lfwsc1b"))))
+              "0q8w3khiwsw708169vahm0nccajsc2hwqz5gv6nb1g9qxlqrmrwl"))))
    (build-system gnu-build-system)
-   (inputs
-    `(("libgcrypt" ,libgcrypt)
-      ("lvm2" ,lvm2)
-      ("util-linux" ,util-linux)
-      ("popt" ,popt)))
+   (arguments
+    `(#:configure-flags
+      (list
+       ;; Argon2 is always enabled, this just selects the (faster) full version.
+       "--enable-libargon2"
+       ;; The default is OpenSSL which provides better PBKDF performance.
+       "--with-crypto_backend=gcrypt"
+       ;; GRUB as of 2.04 still can't read LUKS2 containers.
+       "--with-default-luks-format=LUKS1")))
    (native-inputs
-    `(("python" ,python-wrapper)))
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("argon2" ,argon2)
+      ("json-c" ,json-c)
+      ("libgcrypt" ,libgcrypt)
+      ("lvm2" ,lvm2)                    ; device-mapper
+      ("popt" ,popt)
+      ("util-linux" ,util-linux)))      ; libuuid
    (synopsis "Hard disk encryption tool")
    (description
     "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
@@ -81,6 +95,14 @@ files).  This assumes LIBRARY uses Libtool."
      '(#:configure-flags '("--disable-shared"
                            "--enable-static-cryptsetup"
 
+                           "--disable-veritysetup"
+                           "--disable-cryptsetup-reencrypt"
+                           "--disable-integritysetup"
+
+                           ;; The default is OpenSSL which provides better PBKDF performance.
+                           "--with-crypto_backend=gcrypt"
+
+                           "--disable-blkid"
                            ;; 'libdevmapper.a' pulls in libpthread, libudev and libm.
                            "LIBS=-ludev -pthread -lm")
 
@@ -94,8 +116,7 @@ files).  This assumes LIBRARY uses Libtool."
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'remove-cruft
                     (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Remove everything except the 'cryptsetup' command and
-                      ;; its friend.
+                      ;; Remove everything except the 'cryptsetup' command.
                       (let ((out (assoc-ref outputs "out")))
                         (with-directory-excursion out
                           (let ((dirs (scandir "."
@@ -109,7 +130,7 @@ files).  This assumes LIBRARY uses Libtool."
                                                                     ".static")
                                                      file)
                                         (remove-store-references file))
-                                      '("sbin/cryptsetup" "sbin/veritysetup"))
+                                      '("sbin/cryptsetup"))
                             #t))))))))
     (inputs
      (let ((libgcrypt-static
@@ -117,7 +138,8 @@ files).  This assumes LIBRARY uses Libtool."
               (inherit (static-library libgcrypt))
               (propagated-inputs
                `(("libgpg-error-host" ,(static-library libgpg-error)))))))
-       `(("libgcrypt" ,libgcrypt-static)
+       `(("json-c" ,json-c)
+         ("libgcrypt" ,libgcrypt-static)
          ("lvm2" ,lvm2-static)
          ("util-linux" ,util-linux "static")
          ("util-linux" ,util-linux)

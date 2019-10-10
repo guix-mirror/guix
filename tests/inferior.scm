@@ -27,6 +27,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages guile)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -185,6 +186,18 @@
                               '(lambda (store)
                                  (add-text-to-store store "foo"
                                                     "Hello, world!")))))
+
+(test-assert "inferior-eval-with-store, &store-protocol-error"
+  (let* ((inferior (open-inferior %top-builddir
+                                  #:command "scripts/guix")))
+    (guard (c ((store-protocol-error? c)
+               (string-contains (store-protocol-error-message c)
+                                "invalid character")))
+      (inferior-eval-with-store inferior %store
+                                '(lambda (store)
+                                   (add-text-to-store store "we|rd/?!@"
+                                                      "uh uh")))
+      #f)))
 
 (test-equal "inferior-package-derivation"
   (map derivation-file-name

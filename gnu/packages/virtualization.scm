@@ -965,7 +965,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
 (define-public skopeo
   (package
     (name "skopeo")
-    (version "0.1.28")
+    (version "0.1.39")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -974,7 +974,7 @@ Open Container Initiative (OCI) image layout and its tagged images.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "068nwrr3nr27alravcq1sxyhdd5jjr24213vdgn1dqva3885gbi0"))))
+                "1jkxmvh079pd9j4aa39ilmclwafnjs0yqdiigwh8cj7yf97x4vsi"))))
     (build-system go-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1050,7 +1050,7 @@ virtual machines.")
 (define-public bubblewrap
   (package
     (name "bubblewrap")
-    (version "0.3.1")
+    (version "0.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/projectatomic/bubblewrap/"
@@ -1058,7 +1058,7 @@ virtual machines.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1y2bdlxnlr84xcbf31lzirc292c5ak9bd2wvcvh4ppsliih6pjny"))))
+                "1zsd6rxryg97dkkhibr0fvq16x3s75qj84rvhdv8p42ag58mz966"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1078,6 +1078,9 @@ virtual machines.")
                  ;; Some tests try to access /usr, but that doesn't exist.
                  ;; Give them /gnu instead.
                  (("/usr") "/gnu")
+                 (("--ro-bind /bin /bin") "--ro-bind /gnu /bin")
+                 (("--ro-bind /sbin /sbin") "--ro-bind /gnu /sbin")
+                 (("--ro-bind /lib /lib") "--ro-bind /gnu /lib")
                  (("  */bin/bash") (which "bash"))
                  (("/bin/sh") (which "sh"))
                  (("findmnt") (which "findmnt"))))

@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016, 2017, 2019 Marius Bakke <mbakke@fastmail.com>
@@ -25,6 +25,8 @@
 ;;; Copyright © 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,6 +84,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages bison)
   #:use-module (ice-9 match))
 
@@ -809,15 +812,16 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.6.0")
+    (version "0.6.1")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/baskerville/sxhkd")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1cz4vkm7fqd51ly9qjkf5q76kdqdzfhaajgvrs4anz5dyzrdpw68"))))
+        (base32 "0j7bl2l06r0arrjzpz7al9j6cwzc730knbsijp7ixzz96pq7xa2h"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
@@ -997,7 +1001,8 @@ Wacom tablet applet.")
        (method url-fetch)
        (uri (string-append
              "https://github.com/linuxwacom/xf86-input-wacom/releases/download/"
-             name "-" version "/" name "-" version ".tar.bz2"))
+             "xf86-input-wacom-" version "/"
+             "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
         (base32
          "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
@@ -1176,7 +1181,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.5.3")
+    (version "1.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -1184,7 +1189,7 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "0y78ya2va2lg3ww17n11y9awn8lhcp1px2d8gxaimxfqlxczs8la"))))
+                "1nslmyqyzhfr4hxd4llqkkkb8ap8apkdna32rllvar7r576059ci"))))
     (build-system gnu-build-system)
     (inputs
      `(("pango" ,pango)
@@ -1318,6 +1323,46 @@ actions, a built-in clock, a battery monitor and a system tray.")
 program for X11.  It was designed to be fast, tiny and scriptable in any language.")
      (home-page "https://github.com/robm/dzen")
      (license license:expat))))
+
+(define-public xftwidth
+  (package
+    (name "xftwidth")
+    (version "20170402")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+	     (url "http://github.com/vixus0/xftwidth")
+	     (commit "35ff963908d41a8a6a7101c434c88255728025ee")))
+       (sha256
+	(base32
+	 "1jwl25785li24kbp0m1wxfwk4dgxkliynn03nsj813cjr34kq16h"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (inputs `(("freetype" ,freetype)
+              ("libx11" ,libx11)
+              ("fontconfig" ,fontconfig)
+              ("libxft" ,libxft)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-makefile ; /usr/bin doesn't show up in PATH
+           (lambda _ (substitute* "Makefile" (("usr/") "")) #t))
+         (delete 'check) ; no check included in Makefile
+         (delete 'configure))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "DESTDIR=" out)))))
+    (synopsis "Calculator for determining pixel widths of displayed text using Xft fonts")
+    (description "xftwidth is a small C program for calculating the pixel
+widths of displayed text using Xft fonts. It is especially useful in scripts
+for displaying text in graphical panels, menus, popups, and notification
+windows generated using dzen. These scripts are often used in conjunction with
+minimalistic tiling window managers such as herbstluftwm and bspwm.")
+    (home-page "http://github.com/vixus0/xftwidth")
+    (license license:expat)))
 
 (define-public xcb-util-xrm
   (package
@@ -1687,16 +1732,16 @@ temperature of the screen.")
 (define-public wl-clipboard
   (package
     (name "wl-clipboard")
-    (version "1.0.0")
+    (version "2.0.0_beta2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/bugaevc/wl-clipboard.git")
-             (commit (string-append "v" version))))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "03h6ajcc30w6928bkd4h6xfj4iy2359ww6hdlybq8mr1zwmb2h0q"))))
+        (base32 "0wyqbaph9v1v6lwfcjf8gjhdl70icpss4wapshzfxcz3l9m1p8hv"))))
     (build-system meson-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1708,3 +1753,28 @@ temperature of the screen.")
     (description "Wl-clipboard is a set of command-line copy/paste utilities for
 Wayland.")
     (license license:gpl3+)))
+
+(define-public autocutsel
+  (package
+    (name "autocutsel")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sigmike/autocutsel"
+                                  "/releases/download/" version "/"
+                                  "autocutsel-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gsys2dzh4az51ndcsabhlbbrjn2nm75lnjr45kg6r8sm8q66dx2"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f)) ; no "check" target
+    (native-inputs `(("libx11" ,libx11)
+                     ("libxaw" ,libxaw)))
+    (home-page "https://www.nongnu.org/autocutsel/")
+    (synopsis "Automated X11 clipboard and cutbuffer synchronization")
+    (description "@code{autocutsel} tracks changes in the server's cutbuffer
+and clipboard selection.  When the clipboard is changed, it updates the
+cutbuffer.  When the cutbuffer is changed, it owns the clipboard selection.
+The cutbuffer and clipboard selection are always synchronized.")
+    (license license:gpl2+)))

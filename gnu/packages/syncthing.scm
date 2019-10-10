@@ -1219,7 +1219,7 @@ quoting, commenting, and escaping.")
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/AudriusButkevicius/pfilter"))
-      (synopsis "Filter packets into mulitple virtual connections")
+      (synopsis "Filter packets into multiple virtual connections")
       (description "Pfilter is a Go package for filtering packets into multiple
 virtual connections from a single physical connection.")
       (home-page "https://github.com/AudriusButkevicius/pfilter")

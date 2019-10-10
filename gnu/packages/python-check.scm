@@ -110,17 +110,17 @@ interactions, which will update them to correspond to the new API.")
 (define-public python-pytest-checkdocs
   (package
     (name "python-pytest-checkdocs")
-    (version "1.2.0")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pytest-checkdocs" version))
        (sha256
-        (base32
-         "07c27cdjcw6jph5kbgpxchrvwlps4ggwb2j6m7y64imnik0asrq8"))))
+        (base32 "0j6j1gvj6x451y3qsx4xbaq9p1w9gg3mwk7n0w80cy8vdyjkngb0"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-importlib-metadata" ,python-importlib-metadata)))
+     `(("python-importlib-metadata" ,python-importlib-metadata)
+       ("python-more-itertools" ,python-more-itertools)))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://github.com/jaraco/pytest-checkdocs")

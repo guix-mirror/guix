@@ -24,7 +24,7 @@
 (define-module (gnu packages elixir)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages erlang)
@@ -34,15 +34,16 @@
   (package
     (name "elixir")
     (version "1.8.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/elixir-lang/elixir"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0ddqxw24zdqlg7glzk22m7qjal8f18divzp364a6gi1bv6rg16yg"))
-	      (patches (search-patches "elixir-path-length.patch"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/elixir-lang/elixir.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1n77cpcl2b773gmj3m9s24akvj9gph9byqbmj2pvlsmby4aqwckq"))
+       (patches (search-patches "elixir-path-length.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -51,7 +52,11 @@
                                          (assoc-ref %outputs "out")))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'replace-paths
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (add-after 'make-git-checkout-writable 'replace-paths
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (substitute* '("lib/elixir/lib/system.ex"

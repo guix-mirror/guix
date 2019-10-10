@@ -11,7 +11,7 @@
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Alex Vong <alexvong1995@gmail.com>
 # Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
-# Copyright © 2016, 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2016, 2017, 2018, 2019 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
 # Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 # Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 # Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
@@ -143,9 +143,11 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dejagnu.scm			\
   %D%/packages/dico.scm				\
   %D%/packages/dictionaries.scm			\
+  %D%/packages/diffoscope.scm			\
   %D%/packages/digest.scm			\
   %D%/packages/direct-connect.scm		\
-  %D%/packages/disk.scm				\
+  %D%/packages/disk.scm			\
+  %D%/packages/distributed.scm			\
   %D%/packages/display-managers.scm		\
   %D%/packages/django.scm			\
   %D%/packages/djvu.scm				\
@@ -270,6 +272,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/jrnl.scm				\
   %D%/packages/jose.scm				\
   %D%/packages/julia.scm			\
+  %D%/packages/jupyter.scm			\
   %D%/packages/kawa.scm				\
   %D%/packages/kde.scm				\
   %D%/packages/kde-frameworks.scm		\
@@ -472,6 +475,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
   %D%/packages/text-editors.scm			\
+  %D%/packages/tigervnc.scm			\
   %D%/packages/time.scm				\
   %D%/packages/tls.scm				\
   %D%/packages/tmux.scm				\
@@ -532,6 +536,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/authentication.scm		\
   %D%/services/games.scm			\
   %D%/services/getmail.scm				\
+  %D%/services/guix.scm			\
   %D%/services/kerberos.scm			\
   %D%/services/lirc.scm				\
   %D%/services/virtualization.scm		\
@@ -596,6 +601,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/tests/desktop.scm				\
   %D%/tests/dict.scm				\
   %D%/tests/docker.scm				\
+  %D%/tests/guix.scm				\
   %D%/tests/monitoring.scm                      \
   %D%/tests/nfs.scm				\
   %D%/tests/install.scm				\
@@ -669,6 +675,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/a2ps-CVE-2001-1593.patch	\
   %D%/packages/patches/a2ps-CVE-2014-0466.patch	\
   %D%/packages/patches/a2ps-CVE-2015-8107.patch	\
+  %D%/packages/patches/abcl-fix-build-xml.patch	\
   %D%/packages/patches/abiword-explictly-cast-bools.patch	\
   %D%/packages/patches/abiword-black-drawing-with-gtk322.patch	\
   %D%/packages/patches/adb-add-libraries.patch			\
@@ -686,7 +693,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
-  %D%/packages/patches/aria2-CVE-2019-3500.patch		\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/aspell-gcc-compat.patch			\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
@@ -701,13 +707,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/azr3.patch				\
-  %D%/packages/patches/bash-4.4-linux-pgrp-pipe.patch		\
+  %D%/packages/patches/bash-reproducible-linux-pgrp-pipe.patch	\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bash-linux-pgrp-pipe.patch		\
   %D%/packages/patches/bastet-change-source-of-unordered_set.patch	\
   %D%/packages/patches/bazaar-CVE-2017-14176.patch		\
   %D%/packages/patches/bc-fix-cross-compilation.patch		\
-  %D%/packages/patches/beets-python-3.7-fix.patch		\
   %D%/packages/patches/beignet-correct-file-names.patch		\
   %D%/packages/patches/benchmark-unbundle-googletest.patch	\
   %D%/packages/patches/biber-fix-encoding-write.patch		\
@@ -762,7 +767,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
-  %D%/packages/patches/dealii-mpi-deprecations.patch		\
+  %D%/packages/patches/debops-constants-for-external-program-names.patch \
+  %D%/packages/patches/debops-debops-defaults-fall-back-to-less.patch \
   %D%/packages/patches/deja-dup-use-ref-keyword-for-iter.patch	\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
@@ -787,14 +793,15 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
+  %D%/packages/patches/emacs-helm-org-ql.patch	                \
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
-  %D%/packages/patches/emacs-unpackaged-req.patch		\
   %D%/packages/patches/emacs-undohist-ignored.patch	\
   %D%/packages/patches/emacs-wordnut-require-adaptive-wrap.patch	\
   %D%/packages/patches/emacs-zones-called-interactively.patch	\
+  %D%/packages/patches/enjarify-setup-py.patch			\
   %D%/packages/patches/enlightenment-fix-setuid-path.patch	\
   %D%/packages/patches/erlang-man-path.patch			\
   %D%/packages/patches/eudev-rules-directory.patch		\
@@ -824,9 +831,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
-  %D%/packages/patches/freeimage-CVE-2015-0852.patch		\
-  %D%/packages/patches/freeimage-CVE-2016-5684.patch		\
-  %D%/packages/patches/freeimage-fix-build-with-gcc-5.patch	\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
@@ -853,6 +857,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-6-source-date-epoch-1.patch		\
   %D%/packages/patches/gcc-6-source-date-epoch-2.patch		\
+  %D%/packages/patches/gcc-7-cross-mingw.patch			\
   %D%/packages/patches/gcc-8-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-8-strmov-store-file-names.patch	\
   %D%/packages/patches/gcc-9-asan-fix-limits-include.patch	\
@@ -900,10 +905,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/glibc-2.27-git-fixes.patch		\
   %D%/packages/patches/glibc-2.28-git-fixes.patch		\
-  %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
   %D%/packages/patches/glibc-2.29-git-updates.patch     	\
-  %D%/packages/patches/glibc-supported-locales.patch     	\
   %D%/packages/patches/glibc-2.27-supported-locales.patch     	\
+  %D%/packages/patches/glibc-2.28-supported-locales.patch     	\
+  %D%/packages/patches/glibc-supported-locales.patch     	\
+  %D%/packages/patches/glm-restore-install-target.patch		\
   %D%/packages/patches/glusterfs-use-PATH-instead-of-hardcodes.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
   %D%/packages/patches/gmp-faulty-test.patch			\
@@ -971,8 +977,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/icedtea-6-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/icedtea-7-hotspot-gcc-segfault-workaround.patch  \
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
-  %D%/packages/patches/idris-test-no-node.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
+  %D%/packages/patches/ilmbase-openexr-pkg-config.patch		\
   %D%/packages/patches/inkscape-poppler-0.76.patch		\
   %D%/packages/patches/intltool-perl-compatibility.patch	\
   %D%/packages/patches/irrlicht-use-system-libs.patch		\
@@ -1075,6 +1081,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lierolibre-remove-arch-warning.patch	\
   %D%/packages/patches/lierolibre-try-building-other-arch.patch	\
   %D%/packages/patches/linkchecker-tests-require-network.patch	\
+  %D%/packages/patches/linux-libre-active-entropy.patch		\
   %D%/packages/patches/linux-pam-no-setfsuid.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/lirc-reproducible-build.patch		\
@@ -1095,7 +1102,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/lxsession-use-gapplication.patch         \
   %D%/packages/patches/make-glibc-compat.patch			\
   %D%/packages/patches/make-impure-dirs.patch			\
-  %D%/packages/patches/mame-rapidjson-fix.patch			\
   %D%/packages/patches/mariadb-client-test-32bit.patch		\
   %D%/packages/patches/mars-install.patch			\
   %D%/packages/patches/mars-sfml-2.3.patch			\
@@ -1179,7 +1185,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/osip-CVE-2017-7853.patch			\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/owncloud-disable-updatecheck.patch	\
-  %D%/packages/patches/p11-kit-jks-timestamps.patch		\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
@@ -1328,6 +1333,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/strace-ipc-tests.patch			\
   %D%/packages/patches/streamlink-update-test.patch		\
   %D%/packages/patches/stumpwm-fix-broken-read-one-line.patch	\
+  %D%/packages/patches/supercollider-boost-1.70-build-fix.patch	\
   %D%/packages/patches/superlu-dist-awpm-grid.patch		\
   %D%/packages/patches/superlu-dist-fix-mpi-deprecations.patch	\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\

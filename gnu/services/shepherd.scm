@@ -255,6 +255,22 @@ stored."
                                    #~(#$name #$doc #$proc)))
                                 (shepherd-service-actions service))))))))
 
+(define (scm->go file)
+  "Compile FILE, which contains code to be loaded by shepherd's config file,
+and return the resulting '.go' file."
+  (with-extensions (list shepherd)
+    (computed-file (string-append (basename (scheme-file-name file) ".scm")
+                                  ".go")
+                   #~(begin
+                       (use-modules (system base compile))
+
+                       ;; Do the same as the Shepherd's 'load-in-user-module'.
+                       (let ((env (make-fresh-user-module)))
+                         (module-use! env (resolve-interface '(oop goops)))
+                         (module-use! env (resolve-interface '(shepherd service)))
+                         (compile-file #$file #:output-file #$output
+                                       #:env env))))))
+
 (define (shepherd-configuration-file services)
   "Return the shepherd configuration file for SERVICES."
   (assert-valid-graph services)
@@ -269,36 +285,37 @@ stored."
           ;; than a kernel panic.
           (call-with-error-handling
             (lambda ()
-              (apply register-services (map primitive-load '#$files))
+              (apply register-services
+                     (map load-compiled '#$(map scm->go files)))))
 
-              ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around
-              ;; it.
-              (setenv "PATH" "/run/current-system/profile/bin")
+          ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around
+          ;; it.
+          (setenv "PATH" "/run/current-system/profile/bin")
 
-              (format #t "starting services...~%")
-              (for-each (lambda (service)
-                          ;; In the Shepherd 0.3 the 'start' method can raise
-                          ;; '&action-runtime-error' if it fails, so protect
-                          ;; against it.  (XXX: 'action-runtime-error?' is not
-                          ;; exported is 0.3, hence 'service-error?'.)
-                          (guard (c ((service-error? c)
-                                     (format (current-error-port)
-                                             "failed to start service '~a'~%"
-                                             service)))
-                            (start service)))
-                        '#$(append-map shepherd-service-provision
-                                       (filter shepherd-service-auto-start?
-                                               services)))
+          (format #t "starting services...~%")
+          (for-each (lambda (service)
+                      ;; In the Shepherd 0.3 the 'start' method can raise
+                      ;; '&action-runtime-error' if it fails, so protect
+                      ;; against it.  (XXX: 'action-runtime-error?' is not
+                      ;; exported is 0.3, hence 'service-error?'.)
+                      (guard (c ((service-error? c)
+                                 (format (current-error-port)
+                                         "failed to start service '~a'~%"
+                                         service)))
+                        (start service)))
+                    '#$(append-map shepherd-service-provision
+                                   (filter shepherd-service-auto-start?
+                                           services)))
 
-              ;; Hang up stdin.  At this point, we assume that 'start' methods
-              ;; that required user interaction on the console (e.g.,
-              ;; 'cryptsetup open' invocations, post-fsck emergency REPL) have
-              ;; completed.  User interaction becomes impossible after this
-              ;; call; this avoids situations where services wrongfully lead
-              ;; PID 1 to read from stdin (the console), which users may not
-              ;; have access to (see <https://bugs.gnu.org/23697>).
-              (redirect-port (open-input-file "/dev/null")
-                             (current-input-port))))))
+          ;; Hang up stdin.  At this point, we assume that 'start' methods
+          ;; that required user interaction on the console (e.g.,
+          ;; 'cryptsetup open' invocations, post-fsck emergency REPL) have
+          ;; completed.  User interaction becomes impossible after this
+          ;; call; this avoids situations where services wrongfully lead
+          ;; PID 1 to read from stdin (the console), which users may not
+          ;; have access to (see <https://bugs.gnu.org/23697>).
+          (redirect-port (open-input-file "/dev/null")
+                         (current-input-port))))
 
     (scheme-file "shepherd.conf" config)))
 

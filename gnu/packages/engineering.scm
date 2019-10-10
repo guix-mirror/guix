@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2018 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2017 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -13,6 +13,7 @@
 ;;; Copyright © 2019 Tim Stahel <swedneck@swedneck.xyz>
 ;;; Copyright © 2019 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,9 +51,11 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fpga)
@@ -66,10 +69,12 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages graphics)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages image-processing)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
   #:use-module (gnu packages m4)
@@ -84,6 +89,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages swig)
+  #:use-module (gnu packages tbb)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
@@ -1544,7 +1550,7 @@ unique design feature of Trilinos is its focus on packages.")
         (string-append "ARCHDIR="
                        (assoc-ref %build-inputs "trilinos")))))
     (native-inputs
-     `(("bison" ,bison)
+     `(("bison" ,bison-3.0)                  ;'configure' fails with Bison 3.4
        ("flex" ,flex)
        ("fortran" ,gfortran)))
     (inputs
@@ -1810,7 +1816,7 @@ simulations are also supported.")
 (define-public qucs-s
   (package
     (name "qucs-s")
-    (version "0.0.20")
+    (version "0.0.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ra3xdh/qucs_s/archive/"
@@ -1818,7 +1824,7 @@ simulations are also supported.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "01dizf4rjciqc8x7bmv3kbhdlz90bm6n9m9fz7dbzqcwvszcs1hx"))))
+                "12m1jwhb9qwvb141qzyskbxnw3wn1x22d02z4b4862p7xvccl5h7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -2214,3 +2220,214 @@ interactive modeler, OpenSCAD generates 3D models from a script, giving you
 full programmatic control over your models.")
     (home-page "https://www.openscad.org/")
     (license license:gpl2+)))
+
+(define-public freecad
+  (package
+    (name "freecad")
+    (version "0.18.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/FreeCAD/FreeCAD.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ny29y0h8smg1bwi5yn4kcnyfprqh3v7v2z8837cmmhcwp8dr95m"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("qttools" ,qttools)
+       ("pkg-config" ,pkg-config)
+       ("swig" ,swig)))
+    (inputs
+     `(("boost" ,boost)
+       ("coin3D" ,coin3D)
+       ("eigen" ,eigen)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("hdf5" ,hdf5-1.10)
+       ("libarea" ,libarea)
+       ("libmedfile" ,libmedfile)
+       ("libspnav" ,libspnav)
+       ("libxi" ,libxi)
+       ("libxmu" ,libxmu)
+       ("openmpi" ,openmpi)
+       ("opencascade-occt" ,opencascade-occt)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-pyside-2" ,python-pyside-2)
+       ("python-pyside-2-tools" ,python-pyside-2-tools)
+       ("python-shiboken-2" ,python-shiboken-2)
+       ("python-wrapper" ,python-wrapper)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ;; qtwebkit is optional. We remove it currently, because it takes
+       ;; much time to compile and substitutes are often unavailable
+       ;;("qtwebkit" ,qtwebkit)
+       ("tbb" ,tbb)
+       ("vtk" ,vtk)
+       ("xerces-c" ,xerces-c)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:configure-flags
+       (list
+        "-DBUILD_QT5=ON"
+        (string-append "-DCMAKE_INSTALL_LIBDIR="
+                       (assoc-ref %outputs "out") "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'restore-pythonpath
+           (lambda _
+             (substitute* "src/Main/MainGui.cpp"
+               (("_?putenv\\(\"PYTHONPATH=\"\\);") ""))
+             #t))
+         (add-after 'install 'wrap-pythonpath
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/FreeCAD")
+                 (list "PYTHONPATH"
+                       'prefix (list (getenv "PYTHONPATH")))))
+             #t)))))
+    (home-page "https://www.freecadweb.org/")
+    (synopsis "Your Own 3D Parametric Modeler")
+    (description
+     "FreeCAD is a general purpose feature-based, parametric 3D modeler for
+CAD, MCAD, CAx, CAE and PLM, aimed directly at mechanical engineering and
+product design but also fits a wider range of uses in engineering, such as
+architecture or other engineering specialties.  It is 100% Open Source (LGPL2+
+license) and extremely modular, allowing for very advanced extension and
+customization.")
+    (license
+     (list
+      license:lgpl2.1+
+      license:lgpl2.0+
+      license:gpl3+
+      license:bsd-3))))
+
+(define-public libmedfile
+  (package
+    (name "libmedfile")
+    (version "4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://files.salome-platform.org/Salome/other/med-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "017h9p0x533fm4gn6pwc8kmp72rvqmcn6vznx72nkkl2b05yjx54"))))
+    (build-system cmake-build-system)
+    (inputs `(("hdf5" ,hdf5-1.10)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'remove-test-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file-recursively
+                (string-append out "/bin/testc"))
+               #t))))))
+    (home-page "https://www.salome-platform.org")
+    (synopsis "Library to read and write MED files")
+    (description
+     "The purpose of the MED module is to provide a standard for storing and
+recovering computer data associated to numerical meshes and fields, and to
+facilitate the exchange between codes and solvers.
+
+The persistent data storage is based upon HDF format (like CGNS, a standard
+developed by Boeing and NASA in the area of Computational Fluid Dynamic).
+
+MED also provides structures to hold data on meshes and fields.  These
+structures are exchanged between solvers, hide the communication level (CORBA
+or MPI), and offer persistence (read/write in .med files).
+
+The main benefit of a common exchange format is reduced complexity of code
+coupling.  It also allows sharing such high level functionalities as
+computation of nodal connectivity of sub-elements (faces and edges),
+arithmetic operations on fields, entity location functionalities, and
+interpolation toolkit.")
+    (license license:gpl3+)))
+
+(define-public libarea
+  (let ((revision "1")
+        (commit "8f8bac811c10f1f01fda0d742a18591f61dd76ee"))
+    (package
+      (name "libarea")
+      (version (git-version "0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference (url "https://github.com/Heeks/libarea.git")
+                             (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0pvqz6cabxqdz5y26wnj6alkn8v5d7gkx0d3h8xmg4lvy9r3kh3g"))))
+      (build-system gnu-build-system)
+      (inputs `(("boost" ,boost)
+                ("python-wrapper" ,python-wrapper)))
+      (native-inputs
+       `(("cmake" ,cmake)))
+      (arguments
+       `(#:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'configure 'cmake-configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out"))
+                     (cmake (assoc-ref inputs "cmake")))
+                 (mkdir-p "build")
+                 (invoke "cmake"
+                         (string-append "-DCMAKE_INSTALL_PREFIX=" out)))))
+           (delete 'configure))))
+      (home-page "https://github.com/Heeks/libarea")
+      (synopsis
+       "Library and python module for pocketing and profiling operations")
+      (description
+       "Area is a CAM-related software for pocketing operation.
+
+This project provides library and associated python-module to compute pocket
+operations.")
+      (license (list
+                license:bsd-3
+                license:gpl3+)))))
+
+(define-public libspnav
+  (package
+    (name "libspnav")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/FreeSpacenav/libspnav.git")
+                    (commit (string-append "libspnav-" version))))
+              (sha256
+               (base32
+                "098h1jhlj87axpza5zgy58prp0zn94wyrbch6x0s7q4mzh7dc8ba"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (arguments `(#:tests? #f))
+    (home-page "http://spacenav.sourceforge.net/")
+    (synopsis
+     "Library for communicating with spacenavd or 3dxsrv")
+    (description
+     "The libspnav library is provided as a replacement of the magellan
+library.  It provides a cleaner, and more orthogonal interface.  libspnav
+supports both the original X11 protocol for communicating with the driver, and
+the new alternative non-X protocol.  Programs that choose to use the X11
+protocol, are automatically compatible with either the free spacenavd driver
+or the official 3dxserv, as if they were using the magellan SDK.
+
+Also, libspnav provides a magellan API wrapper on top of the new API.  So, any
+applications that were using the magellan library, can switch to libspnav
+without any changes.  And programmers that are familliar with the magellan API
+can continue using it with a free library without the restrictions of the
+official SDK.")
+    (license license:bsd-3)))

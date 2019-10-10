@@ -491,14 +491,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.7.4")
+    (version "1.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0wcvqkpin8w4i72alnn0nxnrc9ih543qs34hqpk9xmz6m0hjk8xi"))))
+                "08a7yb2xs85hyyz8dpzfbsfjwj2r6kcii022lj3l4rf8hl9ix558"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
@@ -996,18 +996,18 @@ messenger protocol.")
 (define-public utox
   (package
    (name "utox")
-   (version "0.17.0")
+   (version "0.17.1")
    (source
     (origin
      (method git-fetch)
      (uri (git-reference
            (url "https://github.com/uTox/uTox.git")
-           (commit "v0.17.0")
+           (commit (string-append "v" version))
            (recursive? #t))) ;; Needed for 'minini' git submodule.
      (file-name (string-append name "-" version "-checkout"))
      (sha256
       (base32
-       "12wbq883il7ikldayh8hm0cjfrkp45vn05xx9s1jbfz6gmkidyar"))))
+       "17kwqw24iqljp2icih9k6ikx12gzr8zzqr8y5h35bg8m5s8pasq5"))))
    (build-system cmake-build-system)
    (arguments
     `(#:configure-flags '("-DENABLE_TESTS=on")
@@ -1734,23 +1734,23 @@ notifications, and Python scripting support.")
 (define-public libqmatrixclient
   (package
     (name "libqmatrixclient")
-    (version "0.4.0")
+    (version "0.5.2")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/QMatrixClient/libqmatrixclient")
-              (commit (string-append "v" version))))
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1llzqjagvp91kcg26q5c4qw9aaz7wna3rh6k06rc3baivrjqf3cn"))))
+        (base32 "1bhlqfs7251fss4icx794ka614npr6zyrpp4qwc4q5408ykfm7lr"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)
+       ("qtmultimedia" ,qtmultimedia)))
     (arguments
      `(#:configure-flags (list "-DBUILD_SHARED_LIBS=ON")
-       #:tests? #f)) ; No tests
+       #:tests? #f))                    ; no tests
     (home-page "https://matrix.org/docs/projects/sdk/libqmatrixclient.html")
     (synopsis "Qt5 client library for the Matrix instant messaging protocol")
     (description "libqmatrixclient is a Qt5 library to write clients for the
@@ -1762,27 +1762,27 @@ QMatrixClient project.")
 (define-public quaternion
   (package
     (name "quaternion")
-    (version "0.0.9.3")
+    (version "0.0.9.4c")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
               (url "https://github.com/QMatrixClient/Quaternion")
-              (commit (string-append "v" version))))
+              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1hr9zqf301rg583n9jv256vzj7y57d8qgayk7c723bfknf1s6hh3"))))
+        (base32 "0gpv6b3nn3lsyym8809kiqkpdszfasldqjpk5s542zyn41gdlql4"))))
     (build-system cmake-build-system)
     (inputs
      `(("libqmatrixclient" ,libqmatrixclient)
        ("qtbase" ,qtbase)
        ("qtdeclarative" ,qtdeclarative)
+       ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
-     `(#:tests? #f ; No tests
+     `(#:tests? #f                      ; no tests
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
@@ -1804,8 +1804,8 @@ QMatrixClient project.")
 messaging protocol.  It uses libqmatrixclient and is its reference client
 implementation.  Quaternion and libqmatriclient together form the
 QMatrixClient project.")
-    (license (list license:gpl3+ ; all source code
-                   license:lgpl3+)))) ; icons/breeze
+    (license (list license:gpl3+        ; all source code
+                   license:lgpl3+))))   ; icons/breeze
 
 (define-public hangups
   (package

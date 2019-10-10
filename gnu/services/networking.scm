@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,7 +145,14 @@
             iptables-configuration-iptables
             iptables-configuration-ipv4-rules
             iptables-configuration-ipv6-rules
-            iptables-service-type))
+            iptables-service-type
+
+            nftables-service-type
+            nftables-configuration
+            nftables-configuration?
+            nftables-configuration-package
+            nftables-configuration-ruleset
+            %default-nftables-ruleset))
 
 ;;; Commentary:
 ;;;
@@ -1414,5 +1422,77 @@ COMMIT
    (extensions
     (list (service-extension shepherd-root-service-type
                              (compose list iptables-shepherd-service))))))
+
+;;;
+;;; nftables
+;;;
+
+(define %default-nftables-ruleset
+  (plain-file "nftables.conf"
+              "# A simple and safe firewall
+table inet filter {
+  chain input {
+    type filter hook input priority 0; policy drop;
+
+    # early drop of invalid connections
+    ct state invalid drop
+
+    # allow established/related connections
+    ct state { established, related } accept
+
+    # allow from loopback
+    iifname lo accept
+
+    # allow icmp
+    ip protocol icmp accept
+    ip6 nexthdr icmpv6 accept
+
+    # allow ssh
+    tcp dport ssh accept
+
+    # reject everything else
+    reject with icmpx type port-unreachable
+  }
+  chain forward {
+    type filter hook forward priority 0; policy drop;
+  }
+  chain output {
+    type filter hook output priority 0; policy accept;
+  }
+}
+"))
+
+(define-record-type* <nftables-configuration>
+  nftables-configuration
+  make-nftables-configuration
+  nftables-configuration?
+  (package nftables-configuration-package
+           (default nftables))
+  (ruleset nftables-configuration-ruleset ; file-like object
+           (default %default-nftables-ruleset)))
+
+(define nftables-shepherd-service
+  (match-lambda
+    (($ <nftables-configuration> package ruleset)
+     (let ((nft (file-append package "/sbin/nft")))
+       (shepherd-service
+        (documentation "Packet filtering and classification")
+        (provision '(nftables))
+        (start #~(lambda _
+                   (invoke #$nft "--file" #$ruleset)))
+        (stop #~(lambda _
+                  (invoke #$nft "flush" "ruleset"))))))))
+
+(define nftables-service-type
+  (service-type
+   (name 'nftables)
+   (description
+    "Run @command{nft}, setting up the specified ruleset.")
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list nftables-shepherd-service))
+          (service-extension profile-service-type
+                             (compose list nftables-configuration-package))))
+   (default-value (nftables-configuration))))
 
 ;;; networking.scm ends here

@@ -68,6 +68,7 @@
             statfs
             free-disk-space
             device-in-use?
+            add-to-entropy-count
 
             processes
             mkdtemp!
@@ -705,6 +706,33 @@ backend device."
       (throw 'system-error "ioctl" "~A"
              (list (strerror err))
              (list err))))))
+
+
+;;;
+;;; Random.
+;;;
+
+;; From <uapi/linux/random.h>.
+(define RNDADDTOENTCNT #x40045201)
+
+(define (add-to-entropy-count port-or-fd n)
+  "Add N to the kernel's entropy count (the value that can be read from
+/proc/sys/kernel/random/entropy_avail).  PORT-OR-FD must correspond to
+/dev/urandom or /dev/random.  Raise to 'system-error with EPERM when the
+caller lacks root privileges."
+  (let ((fd  (if (port? port-or-fd)
+                 (fileno port-or-fd)
+                 port-or-fd))
+        (box (make-bytevector (sizeof int))))
+    (bytevector-sint-set! box 0 n (native-endianness)
+                          (sizeof int))
+    (let-values (((ret err)
+                  (%ioctl fd RNDADDTOENTCNT
+                          (bytevector->pointer box))))
+      (unless (zero? err)
+        (throw 'system-error "add-to-entropy-count" "~A"
+               (list (strerror err))
+               (list err))))))
 
 
 ;;;

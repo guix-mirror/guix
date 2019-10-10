@@ -331,7 +331,7 @@ GUI.  It is based on PyQt5 and QtWebKit.")
 (define-public vimb
   (package
     (name "vimb")
-    (version "3.3.0")
+    (version "3.5.0")
     (source
      (origin
        (method git-fetch)
@@ -339,12 +339,11 @@ GUI.  It is based on PyQt5 and QtWebKit.")
              (url "https://github.com/fanglingsu/vimb/")
              (commit version)))
        (sha256
-        (base32
-         "1qg18z2gnsli9qgrqfhqfrsi6g9mcgr90w8yab28nxrq4aha6brf"))
+        (base32 "13q7mk1hhjri0s30a98r8ncy0skf6m6lrnbqaf0jimf6sbwgiirf"))
        (file-name (git-file-name name version))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     '(#:tests? #f                      ; no tests
        #:make-flags (list "CC=gcc"
                           "DESTDIR="
                           (string-append "PREFIX=" %output))
@@ -368,7 +367,7 @@ driven and does not detract you from your daily work.")
 (define next-gtk-webkit
   (package
     (name "next-gtk-webkit")
-    (version "1.3.1")
+    (version "1.3.4")
     (source
      (origin
        (method git-fetch)
@@ -379,7 +378,7 @@ driven and does not detract you from your daily work.")
              (commit version)))
        (sha256
         (base32
-         "01fn1f080ydk0wj1bwkyakqz93bdq9xb5x8qz820jpl9id17bqgj"))
+         "00iqv4xarabl98gdl1rzqkc5v0vfljx1nawsxqsx9x3a9mnxmgxi"))
        (file-name (git-file-name "next" version))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -417,18 +416,64 @@ features for productive professionals.")
        #:asd-file "next.asd"
        #:asd-system-name "next/download-manager"))
     (inputs
-     `(;; ASD libraries:
-       ("trivial-features" ,sbcl-trivial-features)
-       ;; Lisp libraries:
-       ("cl-ppcre" ,sbcl-cl-ppcre)
+     `(("cl-ppcre" ,sbcl-cl-ppcre)
        ("dexador" ,sbcl-dexador)
        ("log4cl" ,sbcl-log4cl)
        ("lparallel" ,sbcl-lparallel)
        ("quri" ,sbcl-quri)
        ("str" ,sbcl-cl-str)))
     (native-inputs
-     `(("prove-asdf" ,sbcl-prove-asdf)))
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
     (synopsis "Infinitely extensible web-browser (download manager)")))
+
+(define sbcl-next-ring
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-ring")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/ring"))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (ring)")))
+
+(define sbcl-next-history-tree
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-history-tree")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/history-tree"))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (history-tree)")))
+
+(define sbcl-next-password-manager
+  (package
+    (inherit next-gtk-webkit)
+    (name "sbcl-next-password-manager")
+    (build-system asdf-build-system/sbcl)
+    (arguments
+     `(#:tests? #t
+       #:asd-file "next.asd"
+       #:asd-system-name "next/password-manager"))
+    (inputs
+     `(("bordeaux-threads" ,sbcl-bordeaux-threads)
+       ("cl-annot" ,sbcl-cl-annot)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("str" ,sbcl-cl-str)
+       ("trivial-clipboard" ,sbcl-trivial-clipboard)))
+    (native-inputs
+     `(("trivial-features" ,sbcl-trivial-features)
+       ("prove-asdf" ,sbcl-prove-asdf)))
+    (synopsis "Infinitely extensible web-browser (password manager)")))
 
 (define-public next
   (let ((version (package-version next-gtk-webkit)))
@@ -491,22 +536,22 @@ features for productive professionals.")
                                 (string-append "PREFIX="
                                                (assoc-ref outputs "out"))))))))
       (inputs
-       `(("next-gtk-webkit" ,next-gtk-webkit)
-         ;; ASD libraries:
-         ("trivial-features" ,sbcl-trivial-features)
-         ("trivial-garbage" ,sbcl-trivial-garbage)
-         ;; Lisp libraries:
-         ("alexandria" ,sbcl-alexandria)
+       `(("alexandria" ,sbcl-alexandria)
          ("bordeaux-threads" ,sbcl-bordeaux-threads)
+         ("cl-annot" ,sbcl-cl-annot)
+         ("cl-ansi-text" ,sbcl-cl-ansi-text)
          ("cl-css" ,sbcl-cl-css)
+         ("cl-hooks" ,sbcl-cl-hooks)
          ("cl-json" ,sbcl-cl-json)
          ("cl-markup" ,sbcl-cl-markup)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("cl-ppcre-unicode" ,sbcl-cl-ppcre-unicode)
+         ("cl-prevalence" ,sbcl-cl-prevalence)
          ("closer-mop" ,sbcl-closer-mop)
          ("dbus" ,cl-dbus)
          ("dexador" ,sbcl-dexador)
          ("ironclad" ,sbcl-ironclad)
+         ("local-time" ,sbcl-local-time)
          ("log4cl" ,sbcl-log4cl)
          ("lparallel" ,sbcl-lparallel)
          ("mk-string-metrics" ,sbcl-mk-string-metrics)
@@ -514,14 +559,19 @@ features for productive professionals.")
          ("quri" ,sbcl-quri)
          ("sqlite" ,sbcl-cl-sqlite)
          ("str" ,sbcl-cl-str)
-         ("swank" ,sbcl-slime-swank)
+         ("swank" ,cl-slime-swank)
          ("trivia" ,sbcl-trivia)
          ("trivial-clipboard" ,sbcl-trivial-clipboard)
          ("unix-opts" ,sbcl-unix-opts)
          ;; Local deps
-         ("next-download-manager" ,sbcl-next-download-manager)))
+         ("next-gtk-webkit" ,next-gtk-webkit)
+         ("next-download-manager" ,sbcl-next-download-manager)
+         ("next-ring" ,sbcl-next-ring)
+         ("next-history-tree" ,sbcl-next-history-tree)
+         ("next-password-manager" ,sbcl-next-password-manager)))
       (native-inputs
-       `(("prove-asdf" ,sbcl-prove-asdf)))
+       `(("trivial-features" ,sbcl-trivial-features)
+         ("prove-asdf" ,sbcl-prove-asdf)))
       (synopsis "Infinitely extensible web-browser (with Lisp development files)"))))
 
 (define-public sbcl-next

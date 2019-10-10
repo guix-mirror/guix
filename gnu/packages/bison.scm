@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -63,3 +63,16 @@ deterministic or generalized LR parser from an annotated, context-free
 grammar.  It is versatile enough to have many applications, from parsers for
 simple tools through complex programming languages.")
     (license gpl3+)))
+
+(define-public bison-3.0
+  (package
+    (inherit bison)
+    (version "3.0.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/bison/bison-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "0f7kjygrckkx8vas2nm673592jif0a9mw5g8207f6hj6h4pfyp07"))))))

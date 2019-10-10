@@ -871,6 +871,13 @@
                    (eq? (derivation-input-derivation (lowered-gexp-guile lexp))
                         (%guile-for-build)))))))
 
+(test-eq "lower-gexp, non-self-quoting input"
+  +
+  (guard (c ((gexp-input-error? c)
+             (gexp-error-invalid-input c)))
+    (run-with-store %store
+      (lower-gexp #~(foo #$+)))))
+
 (test-assertm "gexp->derivation #:references-graphs"
   (mlet* %store-monad
       ((one (text-file "one" (random-text)))

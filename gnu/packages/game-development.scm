@@ -1137,7 +1137,7 @@ of use.")
        ("libxt" ,libxt)
        ("mygui" ,mygui-gl)              ; OpenMW does not need Ogre.
        ("openal" ,openal)
-       ("openscenegraph" ,openscenegraph)
+       ("openscenegraph" ,openmw-openscenegraph)
        ("qtbase" ,qtbase)
        ("sdl" ,sdl2)
        ("unshield" ,unshield)))

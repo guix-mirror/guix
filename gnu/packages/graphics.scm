@@ -7,13 +7,17 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017, 2018 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2018 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2019 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2019 Carlo Zancanaro <carlo@zancanaro.id.au>
 ;;; Copyright © 2019 Steve Sprang <scs@stevesprang.com>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,6 +79,7 @@
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils))
@@ -325,18 +330,26 @@ many more.")
 (define-public ilmbase
   (package
     (name "ilmbase")
-    (version "2.3.0")
+    (version "2.4.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openexr/openexr/releases"
-                                  "/download/v" version "/ilmbase-"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openexr/openexr")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name "ilmbase" version))
               (sha256
                (base32
-                "0qiq5bqq9rxhqjiym2k36sx4vq8adgrz6xf6qwizi9bqm78phsa5"))
-              (patches (search-patches "ilmbase-fix-tests.patch"))))
-    (build-system gnu-build-system)
-    (home-page "http://www.openexr.com/")
+                "0g3rz11cvb7gnphp2np9z7bfl7v4dprq4w5hnsvx7yrasgsdyn8s"))
+              (patches (search-patches "ilmbase-fix-tests.patch"
+                                       "ilmbase-openexr-pkg-config.patch"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'change-directory
+                    (lambda _
+                      (chdir "IlmBase")
+                      #t)))))
+    (home-page "https://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
     (description
      "IlmBase provides several utility libraries for C++.  Half is a class
@@ -407,27 +420,26 @@ graphics.")
 (define-public openexr
   (package
     (name "openexr")
-    (version "2.3.0")
+    (version (package-version ilmbase))
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/openexr/openexr/releases"
-                                  "/download/v" version "/openexr-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "19jywbs9qjvsbkvlvzayzi81s976k53wg53vw4xj66lcgylb6v7x"))
+              (inherit (package-source ilmbase))
+              (file-name (git-file-name "openexr" version))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (substitute* (find-files "." "tmpDir\\.h")
+                  (substitute* (find-files "OpenEXR" "tmpDir\\.h")
                     (("\"/var/tmp/\"")
                      "\"/tmp/\""))
                   #t))))
-    (build-system gnu-build-system)
+    (build-system cmake-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'disable-broken-test
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "OpenEXR")
+             #t))
+         (add-after 'change-directory 'disable-broken-test
            ;; This test fails on i686. Upstream developers suggest that
            ;; this test is broken on i686 and can be safely disabled:
            ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
@@ -443,7 +455,7 @@ graphics.")
     (propagated-inputs
      `(("ilmbase" ,ilmbase)                       ;used in public headers
        ("zlib" ,zlib)))                           ;OpenEXR.pc reads "-lz"
-    (home-page "http://www.openexr.com")
+    (home-page "https://www.openexr.com/")
     (synopsis "High-dynamic range file format library")
     (description
      "OpenEXR is a high dynamic-range (HDR) image file format developed for
@@ -510,7 +522,7 @@ visual effects work for film.")
 (define-public openscenegraph
   (package
     (name "openscenegraph")
-    (version "3.6.3")
+    (version "3.6.4")
     (source
      (origin
        (method git-fetch)
@@ -519,7 +531,7 @@ visual effects work for film.")
              (commit (string-append "OpenSceneGraph-" version))))
        (sha256
         (base32
-         "0h32z15sa8sbq276j0iib0n707m8bs4p5ji9z2ah411446paad9q"))
+         "0x8hdbzw0b71j91fzp9cwmy9a7ava8v8wwyj8nxijq942vdx1785"))
        (file-name (git-file-name name version))))
     (properties
      `((upstream-name . "OpenSceneGraph")))
@@ -538,6 +550,7 @@ visual effects work for film.")
        ("unzip" ,unzip)))
     (inputs
      `(("giflib" ,giflib)
+       ("libjpeg" ,libjpeg)             ; Required for the JPEG texture plugin.
        ("jasper" ,jasper)
        ("librsvg" ,librsvg)
        ("libxrandr" ,libxrandr)
@@ -578,6 +591,42 @@ virtual reality, scientific visualization and modeling.")
     (inputs
      `(("libjpeg" ,libjpeg)
        ,@(package-inputs openscenegraph)))))
+
+
+(define-public openmw-openscenegraph
+  ;; OpenMW prefers its own fork of openscenegraph:
+  ;; https://wiki.openmw.org/index.php?title=Development_Environment_Setup#OpenSceneGraph.
+  (let ((commit "36a962845a2c87a6671fd822157e0729d164e940"))
+    (hidden-package
+     (package
+       (inherit openscenegraph)
+       (version (git-version "3.6" "1" commit))
+       (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+                (url "https://github.com/OpenMW/osg/")
+                (commit commit)))
+          (file-name (git-file-name (package-name openscenegraph) version))
+          (sha256
+           (base32
+            "05yhgq3qm5q277y32n5sf36vx5nv5qd3zlhz4csgd3a6190jrnia"))))
+       (arguments
+        (substitute-keyword-arguments (package-arguments openscenegraph)
+          ((#:configure-flags flags)
+           ;; As per the above wiki link, the following plugins are enough:
+           `(append
+             '("-DBUILD_OSG_PLUGINS_BY_DEFAULT=0"
+               "-DBUILD_OSG_PLUGIN_OSG=1"
+               "-DBUILD_OSG_PLUGIN_DDS=1"
+               "-DBUILD_OSG_PLUGIN_TGA=1"
+               "-DBUILD_OSG_PLUGIN_BMP=1"
+               "-DBUILD_OSG_PLUGIN_JPEG=1"
+               "-DBUILD_OSG_PLUGIN_PNG=1"
+               "-DBUILD_OSG_DEPRECATED_SERIALIZERS=0"
+               ;; The jpeg plugin requires conversion between integers and booleans
+               "-DCMAKE_CXX_FLAGS=-fpermissive")
+             ,flags))))))))
 
 (define-public povray
   (package
@@ -867,28 +916,25 @@ rendering SVG graphics.")
 (define-public python-pastel
   (package
     (name "python-pastel")
-    (version "0.1.0")
+    (version "0.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pastel" version))
        (sha256
         (base32
-         "1hqbm934n5yjwn31aq8h7shrr0rcy326wrqfc856vyn0gr0sy21i"))))
+         "1qxcrcl8pzh66l8s6hym153mijdhwna0afcsmgca0bj4n80ijfxz"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _ (invoke "pytest" "pastel" "tests/"))))))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://github.com/sdispater/pastel")
     (synopsis "Library to colorize strings in your terminal")
     (description "Pastel is a simple library to help you colorize strings in
-your terminal.  It comes bundled with predefined styles:
-@enumerate
-@item info: green
-@item comment: yellow
-@item question: black on cyan
-@item error: white on red
-@end enumerate
-")
+your terminal.")
     (license license:expat)))
 
 (define-public python2-pastel
@@ -1060,3 +1106,54 @@ For example, two shapes can be combined by uniting them, by intersecting them,
 or by subtracting one shape from the other.")
       (home-page "http://www.opencsg.org/")
       (license license:gpl2))))
+
+(define-public coin3D
+  ;; The ‘4.0.0’ zip archive isn't stable, nor in fact a release.  See:
+  ;; https://bitbucket.org/Coin3D/coin/issues/179/coin-400-srczip-has-been-modified
+  (let ((revision 1)
+        (changeset "ab8d0e47a4de3230a8137feb39c142d6ba45f97d"))
+    (package
+      (name "coin3D")
+      (version
+       (simple-format #f "3.1.3-~A-~A" revision (string-take changeset 7)))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://bitbucket.org/Coin3D/coin")
+               (changeset changeset)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1ff44jz6lg4rylljvy69n1hcjh9y6achbv9jpn1cv2sf8cxn3r2j"))
+         (modules '((guix build utils)))
+         (snippet
+          '(begin
+             (for-each delete-file
+                       '("cfg/csubst.exe"
+                         "cfg/wrapmsvc.exe"))
+             #t))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("doxygen" ,doxygen)
+         ("graphviz" ,graphviz)))
+      (inputs
+       `(("boost" ,boost)
+         ("freeglut" ,freeglut)
+         ("glew" ,glew)))
+      (arguments
+       `(#:configure-flags
+         (list
+          "-DCOIN_BUILD_DOCUMENTATION_MAN=ON"
+          (string-append "-DBOOST_ROOT="
+                         (assoc-ref %build-inputs "boost")))))
+      (home-page "https://bitbucket.org/Coin3D/coin/wiki/Home")
+      (synopsis
+       "High-level 3D visualization library with Open Inventor 2.1 API")
+      (description
+       "Coin is a 3D graphics library with an Application Programming Interface
+based on the Open Inventor 2.1 API.  For those who are not familiar with
+Open Inventor, it is a scene-graph based retain-mode rendering and model
+interaction library, written in C++, which has become the de facto
+standard graphics library for 3D visualization and visual simulation
+software in the scientific and engineering community.")
+      (license license:bsd-3))))

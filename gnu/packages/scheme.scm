@@ -204,8 +204,8 @@
               (base32
                "05sjyz90xxfnmi87qv8x0yx0fcallnzl1dciygdafp317pn489is"))
              (_
-               (base32
-                ""))))))))
+              (base32
+               "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"))))))))
 
     ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
     ;; Also, the portable C version of MIT/GNU Scheme did not work in time for

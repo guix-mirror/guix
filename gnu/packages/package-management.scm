@@ -10,7 +10,6 @@
 ;;; Copyright © 2018 Sou Bunnbu <iyzsong@member.fsf.org>
 ;;; Copyright © 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2019 Vagrant Cascadian <vagrant@reproducible-builds.org>
 ;;; Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,7 +30,6 @@
 (define-module (gnu packages package-management)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
-  #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages autotools)
@@ -40,7 +38,6 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages bootstrap)          ;for 'bootstrap-guile-origin'
-  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
@@ -50,7 +47,6 @@
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
@@ -58,19 +54,12 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages guile-xyz)
-  #:use-module (gnu packages haskell)
-  #:use-module (gnu packages image)
-  #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lisp)
-  #:use-module (gnu packages llvm)
   #:use-module (gnu packages man)
-  #:use-module (gnu packages mono)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages patchutils)
-  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
@@ -82,10 +71,8 @@
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages video)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages virtualization)
   #:use-module (gnu packages web)
@@ -123,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "0ed97e69805253656df929a6ad678016aa81f08a")
-        (revision 6))
+        (commit "fc1fe722a05318ac05a71a0b127f231631e2843f")
+        (revision 7))
     (package
       (name "guix")
 
@@ -140,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1h2qlbbdqi72jslx17gp2cak5494nbm8j44rz57lnplnfcn6iwaw"))
+                  "1j2d9anxgybv86pxcn1zdv121hb4nmjjp5ngx365fnd0mcg8q1iw"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -188,23 +175,32 @@
                       (lambda* (#:key system inputs #:allow-other-keys)
                         ;; Copy the bootstrap guile tarball in the store used
                         ;; by the test suite.
-                        (define (intern tarball)
-                          (let ((base (strip-store-file-name tarball)))
-                            (copy-file tarball base)
-                            (invoke "./test-env" "guix" "download"
-                                    (string-append "file://" (getcwd)
-                                                   "/" base))
-                            (delete-file base)))
+                        (define (intern file recursive?)
+                          (let ((base (strip-store-file-name file)))
+                            ;; Note: don't use 'guix download' here because we
+                            ;; need to set the 'recursive?' argument.
+                            (invoke "./test-env" "guile" "-c"
+                                    (object->string
+                                     `(begin
+                                        (use-modules (guix))
+                                        (with-store store
+                                          (add-to-store store ,base ,recursive?
+                                                        "sha256" ,file)))))))
 
-
-                        (intern (assoc-ref inputs "boot-guile"))
+                        (intern (assoc-ref inputs "boot-guile") #f)
 
                         ;; On x86_64 some tests need the i686 Guile.
                         ,@(if (and (not (%current-target-system))
                                    (string=? (%current-system)
                                              "x86_64-linux"))
-                              '((intern (assoc-ref inputs "boot-guile/i686")))
+                              '((intern (assoc-ref inputs "boot-guile/i686") #f))
                               '())
+
+                        ;; Copy the bootstrap executables.
+                        (for-each (lambda (input)
+                                    (intern (assoc-ref inputs input) #t))
+                                  '("bootstrap/bash" "bootstrap/mkdir"
+                                    "bootstrap/tar" "bootstrap/xz"))
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
@@ -283,7 +279,7 @@
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
-         ("zlib" ,zlib)                           ;for 'guix publish'
+         ("zlib" ,zlib)              ;for 'guix publish'
          ("lzlib" ,lzlib)            ;for 'guix publish' and 'guix substitute'
 
          ("sqlite" ,sqlite)
@@ -291,15 +287,22 @@
 
          ("guile" ,guile-2.2)
 
+         ;; Some of the tests use "unshare" when it is available.
+         ("util-linux" ,util-linux)
+
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
          ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
-         ;; Some of the tests use "unshare" when it is available.
-         ("util-linux" ,util-linux)
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
                '())
+
+         ;; Tests also rely on these bootstrap executables.
+         ("bootstrap/bash" ,(bootstrap-executable "bash" (%current-system)))
+         ("bootstrap/mkdir" ,(bootstrap-executable "mkdir" (%current-system)))
+         ("bootstrap/tar" ,(bootstrap-executable "tar" (%current-system)))
+         ("bootstrap/xz" ,(bootstrap-executable "xz" (%current-system)))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
@@ -557,176 +560,6 @@ transactions from C or Python.")
     ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
     (license license:gpl2+)))
 
-(define-public diffoscope
-  (let ((version "123"))
-    (package
-      (name "diffoscope")
-      (version version)
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://salsa.debian.org/reproducible-builds/diffoscope.git")
-                      (commit version)))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "11bxms5rkhi0v4pxx29v4qgvhp3fmf0fkzci6gn5xcv4fl1zy4wj"))))
-      (build-system python-build-system)
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    ;; setup.py mistakenly requires python-magic from PyPi, even
-                    ;; though the Python bindings of `file` are sufficient.
-                    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
-                    (add-after 'unpack 'dependency-on-python-magic
-                      (lambda _
-                        (substitute* "setup.py"
-                          (("'python-magic',") ""))))
-                    ;; This test is broken because our `file` package has a
-                    ;; bug in berkeley-db file type detection.
-                    (add-after 'unpack 'remove-berkeley-test
-                      (lambda _
-                        (delete-file "tests/comparators/test_berkeley_db.py")
-                        #t))
-                    ;; Test is dynamically generated and may have false
-                    ;; negatives with different ocaml versions.  Further
-                    ;; background in: https://bugs.debian.org/939386
-                    (add-after 'unpack 'remove-ocaml-test
-                      (lambda _
-                        (delete-file "tests/comparators/test_ocaml.py")
-                        #t))
-                    (add-after 'unpack 'embed-tool-references
-                      (lambda* (#:key inputs #:allow-other-keys)
-                        (substitute* "diffoscope/comparators/utils/compare.py"
-                          (("\\['xxd',")
-                           (string-append "['" (which "xxd") "',")))
-                        (substitute* "diffoscope/comparators/elf.py"
-                          (("@tool_required\\('readelf'\\)") "")
-                          (("get_tool_name\\('readelf'\\)")
-                           (string-append "'" (which "readelf") "'")))
-                        (substitute* "diffoscope/comparators/directory.py"
-                          (("@tool_required\\('stat'\\)") "")
-                          (("@tool_required\\('getfacl'\\)") "")
-                          (("\\['stat',")
-                           (string-append "['" (which "stat") "',"))
-                          (("\\['getfacl',")
-                           (string-append "['" (which "getfacl") "',")))
-                        #t))
-                    (add-before 'check 'writable-test-data
-                      (lambda _
-                        ;; tests may need needs write access to tests
-                        ;; directory
-                        (for-each make-file-writable (find-files "tests"))
-                        #t))
-                    (add-before 'check 'delete-failing-test
-                      (lambda _
-                        ;; this requires /sbin to be on the path
-                        (delete-file "tests/test_tools.py")
-                        #t)))))
-      (inputs `(("rpm" ,rpm)                        ;for rpm-python
-                ("python-file" ,python-file)
-                ("python-debian" ,python-debian)
-                ("python-libarchive-c" ,python-libarchive-c)
-                ("python-tlsh" ,python-tlsh)
-                ("acl" ,acl)                        ;for getfacl
-                ("colordiff" ,colordiff)
-                ("xxd" ,xxd)))
-      ;; Below are modules used for tests.
-      (native-inputs `(("python-pytest" ,python-pytest)
-                       ("python-chardet" ,python-chardet)
-                       ;; test suite skips tests when tool is missing
-                       ("bdb" ,bdb)
-                       ("binutils" ,binutils)
-                       ("bzip2" ,bzip2)
-                       ("cdrtools" ,cdrtools)
-                       ("colord" ,colord)
-                       ("cpio" ,cpio)
-                       ("docx2txt" ,docx2txt)
-                       ("e2fsprogs" ,e2fsprogs)
-                       ("ffmpeg" ,ffmpeg)
-                       ("gettext" ,gettext-minimal)
-                       ("ghc" ,ghc)
-                       ("ghostscript" ,ghostscript)
-                       ("giflib:bin" ,giflib "bin")
-                       ("gnumeric" ,gnumeric)
-                       ("gnupg" ,gnupg)
-                       ("imagemagick" ,imagemagick)
-                       ("libarchive" ,libarchive)
-                       ("llvm" ,llvm)
-                       ("lz4" ,lz4)
-                       ("mono" ,mono)
-                       ("odt2txt" ,odt2txt)
-                       ;; no unversioned openjdk available
-                       ("openjdk:jdk" ,openjdk12 "jdk")
-                       ("openssh" ,openssh)
-                       ("pgpdump" ,pgpdump)
-                       ("poppler" ,poppler)
-                       ("rpm" ,rpm)
-                       ("sng" ,sng)
-                       ("sqlite" ,sqlite)
-                       ("squashfs-tools" ,squashfs-tools)
-                       ("tcpdump" ,tcpdump)
-                       ("unzip" ,unzip)
-                       ("xxd" ,xxd)
-                       ("xz" ,xz)
-                       ("zip" ,(@ (gnu packages compression) zip))))
-      (home-page "https://diffoscope.org/")
-      (synopsis "Compare files, archives, and directories in depth")
-      (description
-       "Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.")
-      (license license:gpl3+))))
-
-(define-public trydiffoscope
- (package
-   (name "trydiffoscope")
-   (version "67.0.1")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://salsa.debian.org/reproducible-builds/trydiffoscope.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "03b66cjii7l2yiwffj6ym6mycd5drx7prfp4j2550281pias6mjh"))))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'install-doc
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((share (string-append (assoc-ref outputs "out") "/share/")))
-               (mkdir-p (string-append share "/man/man1/" ))
-               (invoke "rst2man.py"
-                       "trydiffoscope.1.rst"
-                       (string-append share "/man/man1/trydiffoscope.1"))
-               (mkdir-p (string-append share "/doc/" ,name "-" ,version))
-               (install-file "./README.rst"
-                          (string-append share "/doc/" ,name "-" ,version)))
-             #t)))))
-    (propagated-inputs
-     `(("python-requests" ,python-requests)))
-    (native-inputs
-     `(("gzip" ,gzip)
-       ("python-docutils" ,python-docutils)))
-    (build-system python-build-system)
-    (home-page "https://try.diffoscope.org")
-    (synopsis "Client for remote diffoscope service")
-    (description "This is a client for the @url{https://try.diffoscope.org,
-remote diffoscope service}.
-
-Diffoscope tries to get to the bottom of what makes files or directories
-different.  It recursively unpacks archives of many kinds and transforms
-various binary formats into more human readable forms to compare them.  It can
-compare two tarballs, ISO images, or PDFs just as easily.
-
-Results are displayed by default, stored as local text or html files, or made
-available via a URL on @url{https://try.diffoscope.org}.  Results stored on the
-server are purged after 30 days.")
-    (license license:gpl3+)))
-
 (define-public python-anaconda-client
   (package
     (name "python-anaconda-client")
@@ -953,6 +786,90 @@ on top of GNU Guix.")
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
+(define-public guix-jupyter
+  (package
+    (name "guix-jupyter")
+    (version "0.1.0")
+    (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
+              (file-name (string-append "guix-jupyter-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  (ice-9 match)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'sed-kernel-json
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (guix  (assoc-ref inputs  "guix"))
+                    (guile (assoc-ref inputs  "guile"))
+                    (json  (assoc-ref inputs  "guile-json"))
+                    (git   (assoc-ref inputs  "guile-git"))
+                    (bs    (assoc-ref inputs  "guile-bytestructures"))
+                    (s-zmq (assoc-ref inputs  "guile-simple-zmq"))
+                    (gcrypt (assoc-ref inputs  "guile-gcrypt"))
+                    (deps  (list out s-zmq guix json git bs gcrypt))
+                    (effective
+                     (read-line
+                      (open-pipe* OPEN_READ
+                                  (string-append guile "/bin/guile")
+                                  "-c" "(display (effective-version))")))
+                    (path (map (cut string-append "-L\", \"" <>
+                                    "/share/guile/site/"
+                                    effective)
+                               deps))
+                    (gopath (map (cut string-append "-C\", \"" <>
+                                      "/lib/guile/" effective
+                                      "/site-ccache")
+                                 deps))
+                    (kernel-dir (string-append out "/share/jupyter/kernels/guix/")))
+               (substitute* (string-append kernel-dir "kernel.json")
+                 (("-s")
+                  (string-join
+                   (list (string-join path "\",\n\t\t\"")
+                         (string-join gopath "\",\n\t\t\"")
+                         "-s")
+                   "\",\n\t\t\""))
+                 (("guix-jupyter-kernel.scm")
+                  (string-append out "/share/guile/site/2.2/"
+                                 "guix-jupyter-kernel.scm")))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+
+       ;; For testing.
+       ("jupyter" ,jupyter)
+       ("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel)))
+    (inputs
+     `(("guix" ,guix)
+       ("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-json" ,guile-json-3)
+       ("guile-simple-zmq" ,guile-simple-zmq)
+       ("guile-gcrypt" ,guile-gcrypt)))
+    (synopsis "Guix kernel for Jupyter")
+    (description
+     "Guix-Jupyter is a Jupyter kernel.  It allows you to annotate notebooks
+with information about their software dependencies, such that code is executed
+in the right software environment.  Guix-Jupyter spawns the actual kernels
+such as @code{python-ipykernel} on behalf of the notebook user and runs them
+in an isolated environment, in separate namespaces.")
+    (license license:gpl3+)))
+
 (define-public gcab
   (package
     (name "gcab")
@@ -1073,7 +990,7 @@ the boot loader configuration.")
 (define-public flatpak
   (package
    (name "flatpak")
-   (version "1.4.2")
+   (version "1.4.3")
    (source
     (origin
      (method url-fetch)
@@ -1081,7 +998,7 @@ the boot loader configuration.")
                          version "/flatpak-" version ".tar.xz"))
      (sha256
       (base32
-       "08nmpp26mgv0vp3mlwk97rnp0j7i108h4hr9nllja19sjxnrlygj"))))
+       "11bfxmv8pxlb5x0lb2rsl45615fzfvq5r6wldf0l6ab2ngryd7i7"))))
 
    ;; Wrap 'flatpak' so that GIO_EXTRA_MODULES is set, thereby allowing GIO to
    ;; find the TLS backend in glib-networking.

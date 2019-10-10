@@ -19,7 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
-;;; Copyright © 2016, 2018 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2018-2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016, 2017 Troy Sankey <sankeytms@gmail.com>
@@ -65,6 +65,7 @@
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
+;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -393,6 +394,32 @@ certificate returned by the server to which a connection has been established,
 and verifies that it matches the intended target hostname.")
     (license license:psfl)))
 
+(define-public python-boolean.py
+  (package
+    (name "python-boolean.py")
+    (version "3.6")
+    (source
+     (origin
+       ;; There's no source tarball on PyPI.
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/bastikr/boolean.py")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1wc89y73va58cj7dsx6c199zpxsy9q53dsffsdj6zmc90inqz6qs"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/bastikr/boolean.py")
+    (synopsis "Boolean algebra in one Python module")
+    (description
+     "This is a small Python library that implements boolean algebra.
+It defines two base elements, @code{TRUE} and @code{FALSE}, and a
+@code{Symbol} class that can take on one of these two values.  Calculations
+are done only in terms of @code{AND}, @code{OR}, and @code{NOT}---other
+compositions like @code{XOR} and @code{NAND} are emulated on top of them.
+Expressions are constructed from parsed strings or directly in Python.")
+    (license license:bsd-2)))
+
 (define-public python-hdf4
   (package
    (name "python-hdf4")
@@ -588,6 +615,29 @@ to users of that module.")
 
 (define-public python2-netcdf4
   (package-with-python2 python-netcdf4))
+
+(define-public python-license-expression
+  (package
+    (name "python-license-expression")
+    (version "0.999")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "license-expression" version))
+       (sha256
+        (base32 "08ppb0bxbrsxazy88sgpl9yffvdsabw6dkk1nc332wcz2mphwwyf"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-boolean.py" ,python-boolean.py)))
+    (home-page "https://github.com/nexB/license-expression")
+    (synopsis "Apply boolean logic to license expressions")
+    (description
+     "This Python module defines a tiny language to evaluate and compare
+license expressions using boolean logic.  Logical combinations of licenses can
+be tested for equality, containment, and equivalence.  They can be normalised
+and simplified.  It supports SPDX license expressions as well as other naming
+conventions and aliases in the same expression.")
+    (license license:gpl2+)))
 
 (define-public python-lockfile
   (package
@@ -901,6 +951,27 @@ messages in color.")
 
 (define-public python2-coloredlogs
   (package-with-python2 python-coloredlogs))
+
+(define-public python-editorconfig
+  (package
+    (name "python-editorconfig")
+    (version "0.12.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "EditorConfig" version))
+       (sha256
+        (base32
+         "0v55z351p9qkyp3bbspwywwn28sbcknhirngjbj779n3z52z63hv"))))
+    (build-system python-build-system)
+    (home-page "https://editorconfig.org/")
+    (synopsis "EditorConfig bindings for python")
+    (description "The EditorConfig project consists of a file format for
+defining coding styles and a collection of text editor plugins that enable
+editors to read the file format and adhere to defined styles.  EditorConfig
+files are easily readable and they work nicely with version control systems.")
+    ;; "fnmatch.py" and "ini.py" are licensed under psfl, the rest is bsd-2.
+    (license (list license:bsd-2 license:psfl))))
 
 (define-public python-et-xmlfile
   (package
@@ -3962,7 +4033,7 @@ tests = True~%"
                         (assoc-ref inputs "tcl")
                         (assoc-ref inputs "tk")))))
              #t)))))
-    (home-page "http://matplotlib.org")
+    (home-page "https://matplotlib.org/")
     (synopsis "2D plotting library for Python")
     (description
      "Matplotlib is a Python 2D plotting library which produces publication
@@ -3977,14 +4048,29 @@ toolkits.")
   (let ((matplotlib (package-with-python2
                      (strip-python2-variant python-matplotlib))))
     (package (inherit matplotlib)
-      (version "2.2.3")
+      (version "2.2.4")
       (source
        (origin
          (method url-fetch)
          (uri (pypi-uri "matplotlib" version))
          (sha256
           (base32
-           "1rcc7x9ig3hpchkc4cwdvym3y451w74275fxr455zkfagrsvymbk"))))
+           "09i1gnrra1590brc1f8d5rh2zvnknmfgzp613ab0462qkrwj15h2"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments matplotlib)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (replace 'install-jquery-ui
+               (lambda* (#:key outputs inputs #:allow-other-keys)
+                 (let ((dir (string-append (assoc-ref outputs "out")
+                                           "/lib/python2.7/site-packages/"
+                                           "matplotlib/backends/web_backend/")))
+                   (mkdir-p dir)
+                   (invoke "unzip"
+                           (assoc-ref inputs "jquery-ui")
+                           "-d" dir))
+                 #t))
+             (delete 'check))))) ; These tests weren't run the the past.
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
       (propagated-inputs
@@ -5014,14 +5100,13 @@ older Python versions.")
 (define-public python-importlib-metadata
   (package
     (name "python-importlib-metadata")
-    (version "0.18")
+    (version "0.23")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "importlib_metadata" version))
        (sha256
-        (base32
-         "1nqj6vj2z4byi8flzf2lbldhqgicsz9mkpv4k69kjd8p8qxy4vnb"))))
+        (base32 "09mdqdfv5rdrwz80jh9m379gxmvk2vhjfz0fg53hid00icvxf65a"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-configparser" ,python-configparser)
@@ -5185,14 +5270,14 @@ away.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.3.2")
+    (version "4.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "0dbq7sx26xqz5ixs711k5nc88p8a0nqyz6162pwks5dpcz9d4jww"))))
+         "1xsrwgivpkxlbr4dfndfsi098s29yqgswgjc1qqn69yxklvfw8yh"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5200,7 +5285,7 @@ away.")
          (replace 'check (lambda _ (invoke "pytest" "-vv" "traitlets"))))))
     (propagated-inputs
      `(("python-ipython-genutils" ,python-ipython-genutils)
-       ("python-decorator" ,python-decorator)))    ;not needed for >4.3.2
+       ("python-decorator" ,python-decorator)))
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (properties `((python2-variant . ,(delay python2-traitlets))))
@@ -8008,6 +8093,45 @@ Jupyter kernels such as IJulia and IRKernel.")
     (description "This package provides a Qt-based console for Jupyter with
 support for rich media output.")
     (license license:bsd-3)))
+
+(define-public python-jsbeautifier
+  (package
+    (name "python-jsbeautifier")
+    (version "1.10.2")
+    (home-page "https://github.com/beautify-web/js-beautify")
+    (source (origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url home-page)
+                   (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
+             (sha256
+              (base32
+               "0wawb070ki1axb3jc9xvsrgpji52vcfif3zmjzc3z4g98m5xw4kg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      ;; The upstream Git repository contains all the code,
+                      ;; but this package only builds the python code.
+                      (chdir "python")
+                      #t))
+                  (add-after 'unpack 'patch-python-six-requirements
+                    (lambda _
+                      (substitute* "python/setup.py"
+                        (("six>=1.12.0")
+                         "six>=1.11.0"))
+                      #t)))))
+    (propagated-inputs
+     `(("python-editorconfig" ,python-editorconfig)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "JavaScript unobfuscator and beautifier")
+    (description "Beautify, unpack or deobfuscate JavaScript, leveraging
+popular online obfuscators.")
+    (license license:expat)))
 
 (define-public jupyter
   (package
@@ -10848,6 +10972,16 @@ hardware-accelerated multitouch applications.")
                (base32
                 "0qc006986rb6bcbmiymwgcl1mns2jphr1j7sr7nk41nlr7gh359m"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             ;; TypeError: binary() got an unexpected keyword argument
+             ;; 'average_size'.
+             (substitute* "tests/test_check.py"
+              (("average_size=512") ""))
+             #t)))))
     (propagated-inputs
      `(("python-chardet" ,python-chardet)
        ("python-hypothesis" ,python-hypothesis)))
@@ -10864,6 +10998,42 @@ binary or text.")
       (propagated-inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs base))))))
+
+(define-public python-binwalk
+  (let ((commit "64201acfb5b0a9cdd9faa58c40a36dcff8612e29")
+        (revision "0"))
+    (package
+      (name "python-binwalk")
+      (version (git-version "2.1.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ReFirmLabs/binwalk")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1z7ca6rfp887hw5jc3sb45mm4fa0xid4lsp2z8g4r590dr7k7w15"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'set-pythonpath
+             (lambda _
+               (setenv "PYTHONPATH"
+                       (string-append
+                        (getcwd) "/src/"
+                        ":" (getenv "PYTHONPATH")))
+               (setenv "HOME" "")
+               #t)))))
+      (native-inputs
+       `(("python-coverage" ,python-coverage)
+         ("python-nose" ,python-nose)))
+      (home-page "https://github.com/ReFirmLabs/binwalk")
+      (synopsis "Firmware analysis tool")
+      (description "Binwalk is a tool for analyzing, reverse engineering, and extracting firmware images")
+      (license license:expat))))
 
 (define-public python-nltk
   (package
@@ -13586,10 +13756,15 @@ ignoring formatting changes.")
       "Make loops show a progress bar on the console by just wrapping any
 iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
-    (license (list license:mpl2.0 license:expat))))
+    (license (list license:mpl2.0 license:expat))
+    (properties `((python2-variant . ,(delay python2-tqdm))))))
 
 (define-public python2-tqdm
-  (package-with-python2 python-tqdm))
+  (let ((tqdm (package-with-python2
+                (strip-python2-variant python-tqdm))))
+    (package (inherit tqdm)
+      (native-inputs `(("python2-functools32" ,python2-functools32)
+                        ,@(package-native-inputs tqdm))))))
 
 (define-public python-pkginfo
   (package
@@ -16264,3 +16439,51 @@ ElementTree library and for the @uref{http://lxml.de, lxml.etree} library.
 For lxml.etree this package can be useful for providing XPath 2.0 selectors,
 because lxml.etree already has it's own implementation of XPath 1.0.")
     (license license:expat)))
+
+(define-public python-bibtexparser
+  (package
+    (name "python-bibtexparser")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bibtexparser" version))
+       (sha256
+        (base32
+         "0zwhfkrzf3n5847dbnfng92k7ak199l9v6x6ax3dgdidfpm6d2fz"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyparsing" ,python-pyparsing)))
+    (native-inputs
+     `(("python-future" ,python-future)))
+    (home-page "https://github.com/sciunto-org/python-bibtexparser")
+    (synopsis "Python library to parse BibTeX files")
+    (description "BibtexParser is a Python library to parse BibTeX files.")
+    (license (list license:bsd-3 license:lgpl3))))
+
+(define-public python-distro
+  (package
+    (name "python-distro")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "distro" version))
+       (sha256
+        (base32
+         "0mrg75w4ap7mdzyga75yaid9n8bgb345ih5mwjp3plj6v1jxwb9n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/nir0s/distro")
+    (synopsis
+     "OS platform information API")
+    (description
+     "@code{distro} provides information about the OS distribution it runs on,
+such as a reliable machine-readable ID, or version information.
+
+It is the recommended replacement for Python's original
+`platform.linux_distribution` function (which will be removed in Python 3.8).
+@code{distro} also provides a command-line interface to output the platform
+information in various formats.")
+    (license license:asl2.0)))

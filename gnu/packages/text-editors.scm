@@ -607,7 +607,7 @@ The basic features of Geany are:
 arbitrary text regions; it is not bound to syntactic units.
 
 Fe has no configuration or extension language and requires no setup.
-Its user interface is emacs-like and it has menues for the very most
+Its user interface is emacs-like and it has menus for the very most
 important functions to help beginners.  Further there is a reference
 card.  It offers:
 

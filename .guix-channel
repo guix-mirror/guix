@@ -1,0 +1,5 @@
+;; This is a Guix channel.
+
+(channel
+  (version 0)
+  (news-file "etc/news.scm"))

@@ -525,7 +525,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
 
 (define (validate-uri uri package field)
   "Return #t if the given URI can be reached, otherwise return a warning for
-PACKAGE mentionning the FIELD."
+PACKAGE mentioning the FIELD."
   (let-values (((status argument)
                 (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status

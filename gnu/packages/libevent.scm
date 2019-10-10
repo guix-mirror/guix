@@ -132,14 +132,14 @@ resolution, asynchronous file system operations, and threading primitives.")
 (define-public perl-anyevent
   (package
     (name "perl-anyevent")
-    (version "7.15")
+    (version "7.17")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/"
                                   "AnyEvent-" version ".tar.gz"))
               (sha256
                (base32
-                "0m73r67ah9xmcwzxs50jxf8ncd8h71mi4wf2mvnqkxvibhrv478i"))))
+                "11drlj8r02czhjgzkb39axnr8zzyp506r043xfmf93q9kilfmgjh"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-canary-stability" ,perl-canary-stability)))

@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Vasile Dumitrascu <va511e@yahoo.com>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -418,14 +419,14 @@ receiving NDP messages.")
 (define-public ethtool
   (package
     (name "ethtool")
-    (version "4.19")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/software/network/"
                                   "ethtool/ethtool-" version ".tar.xz"))
               (sha256
                (base32
-                "1j6hyr809af2m3gqm11hdfwks5kljqy1ikspq3d9rhj29qv6r2mi"))))
+                "1i14zrg4a84zjpwvqi8an0zx0hm06g614a79zc2syrkhrvdw1npk"))))
     (build-system gnu-build-system)
     (home-page "https://www.kernel.org/pub/software/network/ethtool/")
     (synopsis "Display or change Ethernet device settings")
@@ -592,14 +593,14 @@ of the same name.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "3.0.3")
+    (version "3.0.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
                            version ".tar.xz"))
        (sha256
-        (base32 "0711jilp9sbgi46d105m3galw8n4wk5yncawi08031qxg2f754mg"))))
+        (base32 "087qv7nd7zlbckvcs37fkkg7v0mw0hjd5yfbghqym764fpjgqlf5"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1584,7 +1585,7 @@ procedure calls (RPCs).")
 (define-public openvswitch
   (package
     (name "openvswitch")
-    (version "2.11.1")
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1592,7 +1593,7 @@ procedure calls (RPCs).")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1p5mv44jaslvrr1ym15smqna19y0gi4vqcsyj58625vv9bj6laf1"))))
+                "1y78ix5inhhcvicbvyy2ij38am1215nr55vydhab3d4065q45z8k"))))
     (build-system gnu-build-system)
     (arguments
      '(;; FIXME: many tests fail with:
@@ -2325,7 +2326,7 @@ SNMP v3 using both IPv4 and IPv6.")
 (define-public ubridge
   (package
     (name "ubridge")
-    (version "0.9.15")
+    (version "0.9.16")
     (source
      (origin
        (method git-fetch)
@@ -2334,7 +2335,7 @@ SNMP v3 using both IPv4 and IPv6.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0fl07zyall04map6v2l1bclqh8y3rrhsx61s2v0sr8b00j201jg4"))))
+        (base32 "1bind7ylgxs743vfdmpdrpp4iamy461bc3i7nxza91kj7hyyjz6h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -2581,3 +2582,61 @@ communication.")
     (description "FRRouting (FRR) is an IP routing protocol suite which includes
 protocol daemons for BGP, IS-IS, LDP, OSPF, PIM, and RIP. ")
     (license license:gpl2+)))
+
+(define-public iwd
+  (package
+    (name "iwd")
+    (version "0.21")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.kernel.org/pub/scm/network/wireless/iwd.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "001dikinsa6kshwscjbvwipavzwpqnpvx9fpshcn63gbvbhyd393"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dbus" ,dbus)
+       ("libtool" ,libtool)
+       ("ell" ,ell)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkgconfig" ,pkg-config)
+       ("python" ,python)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags
+       (let ((dbus (assoc-ref %outputs "out")))
+         (list "--disable-systemd-service"
+               "--enable-external-ell"
+               "--enable-hwsim"
+               "--enable-tools"
+               "--enable-wired"
+               "--enable-docs"
+               "--localstatedir=/var"
+               (string-append "--with-dbus-datadir=" dbus "/share/")
+               (string-append "--with-dbus-busdir="
+                              dbus "/share/dbus-1/system-services")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'bootstrap 'pre-bootstrap
+           (lambda _
+             (substitute* "Makefile.am"
+               ;; Test disabled because it needs the kernel module
+               ;; 'pkcs8_key_parser' loaded.
+               (("unit\\/test-eapol.*? ") "")
+               ;; Don't try to 'mkdir /var'.
+               (("\\$\\(MKDIR_P\\) -m 700") "true"))
+             #t)))))
+    (home-page "https://git.kernel.org/pub/scm/network/wireless/iwd.git/")
+    (synopsis "Internet Wireless Daemon")
+    (description "iwd is a wireless daemon for Linux that aims to replace WPA
+Supplicant.  It optimizes resource utilization by not depending on any external
+libraries and instead utilizing features provided by the Linux kernel to the
+maximum extent possible.")
+    (license license:lgpl2.1+)))

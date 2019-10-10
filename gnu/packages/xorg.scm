@@ -216,7 +216,7 @@ which can be read by any architecture.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://xorg/individual/proto/"
-                                  name "-" version ".tar.bz2"))
+                                  "xorgproto-" version ".tar.bz2"))
               (sha256
                (base32
                 "16yll1kaffnslik5sizlw3qrigj1gpsgfgyq6903g3mwdixamnm6"))))
@@ -424,7 +424,7 @@ Resources file.")
 (define-public encodings
   (package
     (name "encodings")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -433,8 +433,7 @@ Resources file.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "0ffmaw80vmfwdgvdkp6495xgsqszb6s0iira5j0j6pd4i0lk3mnf"))))
+          (base32 "0caafx0yqqnqyvbalxhh3mb0r9v36xmcy5zjhygb2i508dhy35mx"))))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontscale" ,mkfontscale)))
@@ -840,7 +839,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
 (define-public font-util
   (package
     (name "font-util")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -849,8 +848,7 @@ For example: @code{6x10}, @code{9x15bold}, etc.")
                version
                ".tar.bz2"))
         (sha256
-          (base32
-            "08drjb6cf84pf5ysghjpb4i7xkd2p86k3wl2a0jxs1jif6qbszma"))))
+          (base32 "10i2a8b3d1h3w7klsqf31iz7zbd6l8wglil54fkhdb1385281n1s"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
@@ -2018,7 +2016,7 @@ information used in connecting to the X server.")
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
       (origin
         (method url-fetch)
@@ -2028,7 +2026,7 @@ information used in connecting to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0pmzaz4kp38qv2lqiw5rnqhwzmwrq65m1x5j001mmv99wh9isnk1"))))
+            "1plssg0s3pbslg6rfzxp9sx8ryvn8l32zyvc8zp9zsbsfwjg69rs"))))
     (build-system gnu-build-system)
     (inputs
      `(("libxcb" ,libxcb)
@@ -5063,7 +5061,7 @@ protocol.")
       (origin
         (method url-fetch)
         (uri (string-append "https://xcb.freedesktop.org/dist/"
-                            name "-" version ".tar.bz2"))
+                            "libxcb-" version ".tar.bz2"))
         (sha256
           (base32
            "1ahxhmdqp4bhb90zmc275rmf5wixqra4bnw9pqnzyl1w3598g30q"))))
@@ -5835,17 +5833,17 @@ to answer a question.  Xmessage can also exit after a specified time.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "335")
+    (version "349")
     (source (origin
               (method url-fetch)
               (uri (list
                     (string-append "http://invisible-mirror.net/archives/xterm/"
-                                   name "-" version ".tgz")
+                                   "xterm-" version ".tgz")
                     (string-append "ftp://ftp.invisible-island.net/xterm/"
-                                   name "-" version ".tgz")))
+                                   "xterm-" version ".tgz")))
               (sha256
                (base32
-                "15nbgys4s2idhx6jzzc24g9bb1s6yps5fyg2bafvs0gkkcm1ggz0"))))
+                "0ps7b2b2kbrkv5q49cmb8c51z0w21jmm7hwciw30m6jgfb9s79ir"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-load-vt-fonts"

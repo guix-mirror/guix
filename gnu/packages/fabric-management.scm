@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,7 +43,7 @@
 (define-public opensm
   (package
     (name "opensm")
-    (version "3.3.21")
+    (version "3.3.22")
     (source
      (origin
        (method url-fetch)
@@ -51,7 +51,7 @@
         (string-append "https://github.com/linux-rdma/opensm/releases/download/"
                        version "/opensm-" version ".tar.gz"))
        (sha256
-        (base32 "0j4vp118w1l47vs4had46ynybklyacxjlya0r15jg0y01l4j9l2h"))))
+        (base32 "19scwwpwqhqsyq4hbr5cflcmypss828lalxxd36yby7mbimca38y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

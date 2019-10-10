@@ -357,7 +357,7 @@ menu to select one of the installed operating systems.")
 (define-public dtc
   (package
     (name "dtc")
-    (version "1.5.0")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -365,7 +365,7 @@ menu to select one of the installed operating systems.")
                     "dtc-" version ".tar.xz"))
               (sha256
                (base32
-                "0wh10p42hf5403ipvs0dsxddb6kzfyk2sq4fgid9zqzpr51y8wn6"))))
+                "07q3mdsvl4smbiakriq3hnsyyd0q344lsm306q0kgz4hjq1p82v6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
@@ -379,6 +379,11 @@ menu to select one of the installed operating systems.")
     (arguments
      `(#:make-flags
        (list "CC=gcc"
+
+             ;; /bin/fdt{get,overlay,put} need help finding libfdt.so.1.
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out") "/lib")
+
              (string-append "PREFIX=" (assoc-ref %outputs "out"))
              (string-append "SETUP_PREFIX=" (assoc-ref %outputs "out"))
              "INSTALL=install")

@@ -413,28 +413,25 @@ Management Engine (ME).  You need to @code{sudo rmmod mei_me} and
 (define-public me-cleaner
   (package
     (name "me-cleaner")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/corna/me_cleaner/"
                                   "archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "1pgwdqy0jly80nhxmlmyibs343497yjzs6dwfbkcw0l1gjm8i5hw"))
+                "0hdnay1ai0r6l69z63jkiz6yfwdsqc2mrfyj77hgadv7xxxqm6na"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'create-setup.py
-           (lambda _
-             (call-with-output-file "setup.py"
-               (lambda (port)
-                 (format port "\
-from setuptools import setup
-setup(name='me_cleaner', version='~a', scripts=['me_cleaner.py'])
-" ,version)))
-             #t)))))
+         (add-after 'install 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (install-file "man/me_cleaner.1" man)
+               #t))))))
     (home-page "https://github.com/corna/me_cleaner")
     (synopsis "Intel ME cleaner")
     (description "This package provides tools for disabling Intel

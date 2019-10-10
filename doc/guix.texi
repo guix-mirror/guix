@@ -513,6 +513,7 @@ ready to use it.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
 * Invoking guix-daemon::        Running the build daemon.
 * Application Setup::           Application-specific setup.
+* Upgrading Guix::              Upgrading Guix and its build daemon.
 @end menu
 
 @node Binary Installation
@@ -793,22 +794,6 @@ script (@pxref{Directory Variables, @code{localstatedir},, standards,
 GNU Coding Standards}).  The @command{configure} script protects against
 unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
-
-@cindex Nix, compatibility
-When a working installation of @url{https://nixos.org/nix/, the Nix package
-manager} is available, you
-can instead configure Guix with @code{--disable-daemon}.  In that case,
-Nix replaces the three dependencies above.
-
-Guix is compatible with Nix, so it is possible to share the same store
-between both.  To do so, you must pass @command{configure} not only the
-same @code{--with-store-dir} value, but also the same
-@code{--localstatedir} value.  The latter is essential because it
-specifies where the database that stores metadata about the store is
-located, among other things.  The default values for Nix are
-@code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
-Note that @code{--disable-daemon} is not required if
-your goal is to share the store with Nix.
 
 @node Running the Test Suite
 @section Running the Test Suite
@@ -1777,6 +1762,40 @@ invoke the actual linker with this new set of arguments.  You can instruct the
 wrapper to refuse to link against libraries not in the store by setting the
 @code{GUIX_LD_WRAPPER_ALLOW_IMPURITIES} environment variable to @code{no}.
 
+@node Upgrading Guix
+@section Upgrading Guix
+
+@cindex Upgrading Guix, on a foreign distro
+
+To upgrade Guix, run:
+
+@example
+guix pull
+@end example
+
+@xref{Invoking guix pull}, for more information.
+
+@cindex upgrading Guix for the root user, on a foreign distro
+@cindex upgrading the Guix daemon, on a foreign distro
+@cindex @command{guix pull} for the root user, on a foreign distro
+
+On a foreign distro, you can upgrade the build daemon by running:
+
+@example
+sudo -i guix pull
+@end example
+
+@noindent
+followed by (assuming your distro uses the systemd service management
+tool):
+
+@example
+systemctl restart guix-daemon.service
+@end example
+
+On Guix System, upgrading the daemon is achieved by reconfiguring the
+system (@pxref{Invoking guix system, @code{guix system reconfigure}}).
+
 @c TODO What else?
 
 @c *********************************************************************
@@ -2431,7 +2450,7 @@ Create a disk image that will hold the installed system.  To make a
 qcow2-formatted disk image, use the @command{qemu-img} command:
 
 @example
-qemu-img create -f qcow2 guixsd.img 50G
+qemu-img create -f qcow2 guix-system.img 50G
 @end example
 
 The resulting file will be much smaller than 50 GB (typically less than
@@ -2442,17 +2461,13 @@ Boot the USB installation image in an VM:
 
 @example
 qemu-system-x86_64 -m 1024 -smp 1 -enable-kvm \
-  -net user -net nic,model=virtio -boot menu=on \
-  -drive file=guix-system-install-@value{VERSION}.@var{system}.iso \
-  -drive file=guixsd.img
+  -net user -net nic,model=virtio -boot menu=on,order=d \
+  -drive file=guix-system.img \
+  -drive media=cdrom,file=guix-system-install-@value{VERSION}.@var{system}.iso
 @end example
 
-The ordering of the drives matters.  @code{-enable-kvm} is optional, but
-significantly improves performance, @pxref{Running Guix in a VM}.
-
-In the VM console, quickly press the @kbd{F12} key to enter the boot
-menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
-selection.
+@code{-enable-kvm} is optional, but significantly improves performance,
+@pxref{Running Guix in a VM}.
 
 @item
 You're now root in the VM, proceed with the installation process.
@@ -2460,7 +2475,7 @@ You're now root in the VM, proceed with the installation process.
 @end enumerate
 
 Once installation is complete, you can boot the system that's on your
-@file{guixsd.img} image.  @xref{Running Guix in a VM}, for how to do
+@file{guix-system.img} image.  @xref{Running Guix in a VM}, for how to do
 that.
 
 @node Building the Installation Image
@@ -2657,7 +2672,9 @@ For your convenience, we also provide the following aliases:
 @item
 @command{guix remove} is an alias for @command{guix package -r},
 @item
-and @command{guix upgrade} is an alias for @command{guix package -u}.
+@command{guix upgrade} is an alias for @command{guix package -u},
+@item
+and @command{guix show} is an alias for @command{guix package --show=}.
 @end itemize
 
 These aliases are less expressive than @command{guix package} and provide
@@ -2757,7 +2774,7 @@ As an example, @var{file} might contain a definition like this
 (@pxref{Defining Packages}):
 
 @lisp
-@verbatiminclude package-hello.scm
+@include package-hello.scm
 @end lisp
 
 Developers may find it useful to include such a @file{guix.scm} file
@@ -2916,6 +2933,38 @@ variable, even though, taken individually, neither @file{foo} nor
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
 
+@var{profile} must be the name of a file that will be created upon
+completion.  Concretely, @var{profile} will be a mere symbolic link
+(``symlink'') pointing to the actual profile where packages are
+installed:
+
+@example
+$ guix install hello -p ~/code/my-profile
+@dots{}
+$ ~/code/my-profile/bin/hello
+Hello, world!
+@end example
+
+All it takes to get rid of the profile is to remove this symlink and its
+siblings that point to specific generations:
+
+@example
+$ rm ~/code/my-profile ~/code/my-profile-*-link
+@end example
+
+@item --list-profiles
+List all the user's profiles:
+
+@example
+$ guix package --list-profiles
+/home/charlie/.guix-profile
+/home/charlie/code/my-profile
+/home/charlie/code/devel-profile
+/home/charlie/tmp/test
+@end example
+
+When running as root, list all the profiles of all the users.
+
 @cindex collisions, in a profile
 @cindex colliding packages in profiles
 @cindex profile collisions
@@ -3020,9 +3069,9 @@ version: 3.3.5
 @end example
 
 You may also specify the full name of a package to only get details about a
-specific version of it:
+specific version of it (this time using the @command{guix show} alias):
 @example
-$ guix package --show=python@@3.4 | recsel -p name,version
+$ guix show python@@3.4 | recsel -p name,version
 name: python
 version: 3.4.3
 @end example
@@ -3673,11 +3722,20 @@ Generation 3	Jun 13 2018 23:31:07	(current)
 @xref{Invoking guix describe, @command{guix describe}}, for other ways to
 describe the current status of Guix.
 
-This @code{~/.config/guix/current} profile works like any other profile
-created by @command{guix package} (@pxref{Invoking guix package}).  That
+This @code{~/.config/guix/current} profile works exactly like the profiles
+created by @command{guix package} (@pxref{Invoking guix package}). That
 is, you can list generations, roll back to the previous
 generation---i.e., the previous Guix---and so on:
 
+@example
+$ guix pull --roll-back
+switched from generation 3 to 2
+$ guix pull --delete-generations=1
+deleting /var/guix/profiles/per-user/charlie/current-guix-1-link
+@end example
+
+You can also use @command{guix package} (@pxref{Invoking guix package})
+to manage the profile by naming it explicitly:
 @example
 $ guix package -p ~/.config/guix/current --roll-back
 switched from generation 3 to 2
@@ -3709,13 +3767,16 @@ Read the list of channels from @var{file} instead of
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
+@cindex channel news
 @item --news
 @itemx -N
-Display the list of packages added or upgraded since the previous generation.
+Display the list of packages added or upgraded since the previous
+generation, as well as, occasionally, news written by channel authors
+for their users (@pxref{Channels, Writing Channel News}).
 
-This is the same information as displayed upon @command{guix pull} completion,
-but without ellipses; it is also similar to the output of @command{guix pull
--l} for the last generation (see below).
+The package information is the same as displayed upon @command{guix
+pull} completion, but without ellipses; it is also similar to the output
+of @command{guix pull -l} for the last generation (see below).
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
@@ -3723,6 +3784,40 @@ List all the generations of @file{~/.config/guix/current} or, if @var{pattern}
 is provided, the subset of generations that match @var{pattern}.
 The syntax of @var{pattern} is the same as with @code{guix package
 --list-generations} (@pxref{Invoking guix package}).
+
+@item --roll-back
+@cindex rolling back
+@cindex undoing transactions
+@cindex transactions, undoing
+Roll back to the previous @dfn{generation} of @file{~/.config/guix/current}---i.e.,
+undo the last transaction.
+
+@item --switch-generation=@var{pattern}
+@itemx -S @var{pattern}
+@cindex generations
+Switch to a particular generation defined by @var{pattern}.
+
+@var{pattern} may be either a generation number or a number prefixed
+with ``+'' or ``-''.  The latter means: move forward/backward by a
+specified number of generations.  For example, if you want to return to
+the latest generation after @code{--roll-back}, use
+@code{--switch-generation=+1}.
+
+@item --delete-generations[=@var{pattern}]
+@itemx -d [@var{pattern}]
+When @var{pattern} is omitted, delete all generations except the current
+one.
+
+This command accepts the same patterns as @option{--list-generations}.
+When @var{pattern} is specified, delete the matching generations.  When
+@var{pattern} specifies a duration, generations @emph{older} than the
+specified duration match.  For instance, @code{--delete-generations=1m}
+deletes generations that are more than one month old.
+
+If the current generation matches, it is @emph{not} deleted.
+
+Note that deleting generations prevents rolling back to them.
+Consequently, this command must be used with care.
 
 @xref{Invoking guix describe}, for a way to display information about the
 current generation only.
@@ -3945,6 +4040,68 @@ add a meta-data file @file{.guix-channel} that contains:
   (version 0)
   (directory "guix"))
 @end lisp
+
+@cindex news, for channels
+@subsection Writing Channel News
+
+Channel authors may occasionally want to communicate to their users
+information about important changes in the channel.  You'd send them all
+an email, but that's not convenient.
+
+Instead, channels can provide a @dfn{news file}; when the channel users
+run @command{guix pull}, that news file is automatically read and
+@command{guix pull --news} can display the announcements that correspond
+to the new commits that have been pulled, if any.
+
+To do that, channel authors must first declare the name of the news file
+in their @file{.guix-channel} file:
+
+@lisp
+(channel
+  (version 0)
+  (news-file "etc/news.txt"))
+@end lisp
+
+The news file itself, @file{etc/news.txt} in this example, must look
+something like this:
+
+@lisp
+(channel-news
+  (version 0)
+  (entry (tag "the-bug-fix")
+         (title (en "Fixed terrible bug")
+                (fr "Oh la la"))
+         (body (en "@@emph@{Good news@}!  It's fixed!")
+               (eo "Certe ĝi pli bone funkcias nun!")))
+  (entry (commit "bdcabe815cd28144a2d2b4bc3c5057b051fa9906")
+         (title (en "Added a great package")
+                (ca "Què vol dir guix?"))
+         (body (en "Don't miss the @@code@{hello@} package!"))))
+@end lisp
+
+The file consists of a list of @dfn{news entries}.  Each entry is
+associated with a commit or tag: it describes changes made in this
+commit, possibly in preceding commits as well.  Users see entries only
+the first time they obtain the commit the entry refers to.
+
+The @code{title} field should be a one-line summary while @code{body}
+can be arbitrarily long, and both can contain Texinfo markup
+(@pxref{Overview,,, texinfo, GNU Texinfo}).  Both the title and body are
+a list of language tag/message tuples, which allows @command{guix pull}
+to display news in the language that corresponds to the user's locale.
+
+If you want to translate news using a gettext-based workflow, you can
+extract translatable strings with @command{xgettext} (@pxref{xgettext
+Invocation,,, gettext, GNU Gettext Utilities}).  For example, assuming
+you write news entries in English first, the command below creates a PO
+file containing the strings to translate:
+
+@example
+xgettext -o news.po -l scheme -ken etc/news.scm
+@end example
+
+To sum up, yes, you could use your channel as a blog.  But beware, this
+is @emph{not quite} what your users might expect.
 
 @subsection Replicating Guix
 
@@ -4835,7 +4992,9 @@ specified binaries and symlinks.
 @item docker
 This produces a tarball that follows the
 @uref{https://github.com/docker/docker/blob/master/image/spec/v1.2.md,
-Docker Image Specification}.
+Docker Image Specification}.  The ``repository name'' as it appears in
+the output of the @command{docker images} command is computed from
+package names passed on the command line or in the manifest file.
 
 @item squashfs
 This produces a SquashFS image containing all the specified binaries and
@@ -6050,7 +6209,7 @@ package, correctly capitalized.
 
 For packages requiring shared library dependencies, you may need to write the
 @file{/deps/deps.jl} file manually. It's usually a line of @code{const
-variable = /gnu/store/libary.so} for each dependency, plus a void function
+variable = /gnu/store/library.so} for each dependency, plus a void function
 @code{check_deps() = nothing}.
 
 Some older packages that aren't using @file{Package.toml} yet, will require
@@ -8104,7 +8263,7 @@ As an example, @var{file} might contain a package definition like this
 (@pxref{Defining Packages}):
 
 @lisp
-@verbatiminclude package-hello.scm
+@include package-hello.scm
 @end lisp
 
 @item --expression=@var{expr}
@@ -8924,6 +9083,16 @@ The crate importer also allows you to specify a version string:
 guix import crate constant-time-eq@@0.1.0
 @end example
 
+Additional options include:
+
+@table @code
+@item --recursive
+@itemx -r
+Traverse the dependency graph of the given upstream package recursively
+and generate package expressions for all those packages that are not yet
+in Guix.
+@end table
+
 @item opam
 @cindex OPAM
 @cindex OCaml
@@ -9343,7 +9512,7 @@ that Guix uses, as in this example:
   ;; @dots{}
   ;; CPE calls this package "grub2".
   (properties '((cpe-name . "grub2")
-                (cpe-version . "2.3")))
+                (cpe-version . "2.3"))))
 @end lisp
 
 @c See <https://www.openwall.com/lists/oss-security/2017/03/15/3>.
@@ -11657,6 +11826,7 @@ declaration.
 * Virtualization Services::     Virtualization services.
 * Version Control Services::    Providing remote access to Git repositories.
 * Game Services::               Game servers.
+* Guix Services::               Services relating specifically to Guix.
 * Miscellaneous Services::      Other services.
 @end menu
 
@@ -12261,7 +12431,7 @@ The following example showcases how we can use an existing rule file.
 @lisp
 (use-modules (guix download)     ;for url-fetch
              (guix packages)     ;for origin
-             ;; @dots{})
+             @dots{})
 
 (define %android-udev-rules
   (file->udev-rule
@@ -12295,7 +12465,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
 @lisp
 (use-modules (gnu packages android)  ;for android-udev-rules
              (gnu system shadow)     ;for user-group
-             ;; @dots{})
+             @dots{})
 
 (operating-system
   ;; @dots{}
@@ -12303,8 +12473,7 @@ well as in the @var{groups} field of the @var{operating-system} record.
                 ;; @dots{}
                 (supplementary-groups
                  '("adbusers"   ;for adb
-                   "wheel" "netdev" "audio" "video"))
-                ;; @dots{})))
+                   "wheel" "netdev" "audio" "video")))))
 
   (groups (cons (user-group (system? #t) (name "adbusers"))
                 %base-groups))
@@ -13041,6 +13210,33 @@ objects}).
 @end table
 @end deftp
 
+@cindex nftables
+@defvr {Scheme Variable} nftables-service-type
+This is the service type to set up a nftables configuration.  nftables is a
+netfilter project that aims to replace the existing iptables, ip6tables,
+arptables and ebtables framework.  It provides a new packet filtering
+framework, a new user-space utility @command{nft}, and a compatibility layer
+for iptables.  This service comes with a default ruleset
+@code{%default-nftables-ruleset} that rejecting all incomming connections
+except those to the ssh port 22.  To use it, simply write:
+
+@lisp
+(service nftables-service-type)
+@end lisp
+@end defvr
+
+@deftp {Data Type} nftables-configuration
+The data type representing the configuration of nftables.
+
+@table @asis
+@item @code{package} (default: @code{nftables})
+The nftables package that provides @command{nft}.
+@item @code{ruleset} (default: @code{%default-nftables-ruleset})
+The nftables ruleset to use.  This may be any ``file-like'' object
+(@pxref{G-Expressions, file-like objects}).
+@end table
+@end deftp
+
 @cindex NTP (Network Time Protocol), service
 @cindex ntpd, service for the Network Time Protocol daemon
 @cindex real time clock
@@ -13194,7 +13390,7 @@ gateway @code{hostname}:
              (program (file-append openssh "/bin/ssh"))
              (arguments
               '("ssh" "-qT" "-i" "/path/to/ssh_key"
-                "-W" "smtp-server:25" "user@@hostname")))))
+                "-W" "smtp-server:25" "user@@hostname")))))))
 @end lisp
 
 See below for more details about @code{inetd-configuration}.
@@ -19223,13 +19419,13 @@ Other services can also extend the @code{httpd-service-type} to add to
 the configuration.
 
 @lisp
-(simple-service 'my-extra-server httpd-service-type
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
 @end lisp
 @end deffn
 
@@ -19363,13 +19559,13 @@ This data type represents a virtualhost configuration block for the httpd servic
 These should be added to the extra-config for the httpd-service.
 
 @lisp
-(simple-service 'my-extra-server httpd-service-type
+(simple-service 'www.example.com-server httpd-service-type
                 (list
                   (httpd-virtualhost
                     "*:80"
-                    (list (string-append
-                           "ServerName "www.example.com
-                            DocumentRoot \"/srv/http/www.example.com\"")))))
+                    (list (string-join '("ServerName www.example.com"
+                                          "DocumentRoot /srv/http/www.example.com")
+                                       "\n")))))
 @end lisp
 
 @table @asis
@@ -19664,13 +19860,12 @@ can do something along these lines:
 
 @lisp
 (define %gnu-mirror
-  (plain-file
-   "gnu.vcl"
-   "vcl 4.1;
-backend gnu @{ .host = "www.gnu.org"; @}"))
+  (plain-file "gnu.vcl"
+              "vcl 4.1;
+backend gnu @{ .host = \"www.gnu.org\"; @}"))
 
 (operating-system
-  ...
+  ;; @dots{}
   (services (cons (service varnish-service-type
                            (varnish-configuration
                             (listen '(":80"))
@@ -24168,6 +24363,57 @@ The wesnoth server package to use.
 The port to bind the server to.
 @end table
 @end deftp
+
+
+@node Guix Services
+@subsection Guix Services
+
+@subsubheading Guix Data Service
+The @uref{http://data.guix.gnu.org,Guix Data Service} processes, stores
+and provides data about GNU Guix.  This includes information about
+packages, derivations and lint warnings.
+
+The data is stored in a PostgreSQL database, and available through a web
+interface.
+
+@defvar {Scheme Variable} guix-data-service-type
+Service type for the Guix Data Service.  Its value must be a
+@code{guix-data-service-configuration} object.  The service optionally
+extends the getmail service, as the guix-commits mailing list is used to
+find out about changes in the Guix git repository.
+@end defvar
+
+@deftp {Data Type} guix-data-service-configuration
+Data type representing the configuration of the Guix Data Service.
+
+@table @asis
+@item @code{package} (default: @code{guix-data-service})
+The Guix Data Service package to use.
+
+@item @code{user} (default: @code{"guix-data-service"})
+The system user to run the service as.
+
+@item @code{group} (default: @code{"guix-data-service"})
+The system group to run the service as.
+
+@item @code{port} (default: @code{8765})
+The port to bind the web service to.
+
+@item @code{host} (default: @code{"127.0.0.1"})
+The host to bind the web service to.
+
+@item @code{getmail-idle-mailboxes} (default: @code{#f})
+If set, this is the list of mailboxes that the getmail service will be
+configured to listen to.
+
+@item @code{commits-getmail-retriever-configuration} (default: @code{#f})
+If set, this is the @code{getmail-retriever-configuration} object with
+which to configure getmail to fetch mail from the guix-commits mailing
+list.
+
+@end table
+@end deftp
+
 
 @node Miscellaneous Services
 @subsection Miscellaneous Services

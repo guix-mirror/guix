@@ -243,7 +243,8 @@ instead of '~a' of type '~a'~%")
   ;; of these; if we fail, that means all the build slots are already taken.
   ;; Inspired by Nix's build-remote.pl.
   (string-append  (string-append %state-directory "/offload/"
-                                 (build-machine-name machine)
+                                 (build-machine-name machine) ":"
+                                 (number->string (build-machine-port machine))
                                  "/" (number->string slot))))
 
 (define (acquire-build-slot machine)

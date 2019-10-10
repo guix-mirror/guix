@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -159,14 +159,14 @@ USER-PARTITIONS list. Return this list with password fields filled-in."
                     (format #f (G_ "Please enter the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password required")
-                    #:input-hide-checkbox? #t)))
+                    #:input-visibility-checkbox? #t)))
                 (password-confirm-page
                  (lambda ()
                    (run-input-page
                     (format #f (G_ "Please confirm the password for the \
 encryption of partition ~a (label: ~a).") file-name crypt-label)
                     (G_ "Password confirmation required")
-                    #:input-hide-checkbox? #t))))
+                    #:input-visibility-checkbox? #t))))
            (if crypt-label
                (let loop ()
                  (let ((password (password-page))
@@ -587,7 +587,6 @@ edit it."
                                           disks))
                      (new-user-partitions
                       (remove-user-partition-by-disk user-partitions item)))
-                (disk-destroy item)
                 `((disks . ,(cons new-disk other-disks))
                   (user-partitions . ,new-user-partitions)))
               `((disks . ,disks)
@@ -625,7 +624,7 @@ edit it."
                                       info-text)))
           (case result
             ((1)
-             (disk-delete-all item)
+             (disk-remove-all-partitions item)
              `((disks . ,disks)
                (user-partitions
                 . ,(remove-user-partition-by-disk user-partitions item))))
@@ -649,7 +648,7 @@ edit it."
                  (let ((new-user-partitions
                         (remove-user-partition-by-partition user-partitions
                                                             item)))
-                   (disk-delete-partition disk item)
+                   (disk-remove-partition* disk item)
                    `((disks . ,disks)
                      (user-partitions . ,new-user-partitions))))
                 (else
@@ -696,9 +695,7 @@ by pressing the Exit button.~%~%")))
                        #f))
                  (check-user-partitions user-partitions))))
           (if user-partitions-ok?
-              (begin
-                (for-each (cut disk-destroy <>) disks)
-                user-partitions)
+              user-partitions
               (run-disk-page disks user-partitions
                              #:guided? guided?)))
         (let* ((result-disks (assoc-ref result 'disks))

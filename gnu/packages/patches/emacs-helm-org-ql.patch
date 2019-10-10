@@ -1,0 +1,42 @@
+From 3918944856834ef4a7ed613243a1612424d2daba Mon Sep 17 00:00:00 2001
+From: Brian Leung <leungbk@mailfence.com>
+Date: Thu, 10 Oct 2019 06:54:33 +0200
+Subject: [PATCH] Use require statements.
+
+---
+ helm-org-ql.el | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
+
+diff --git a/helm-org-ql.el b/helm-org-ql.el
+index 26beab9..113b7f2 100644
+--- a/helm-org-ql.el
++++ b/helm-org-ql.el
+@@ -35,23 +35,8 @@
+ (require 'org-ql)
+ (require 'org-ql-search)
+ 
+-;; (require 'helm)
+-;; (require 'helm-org)
+-
+-;;;; Compatibility
+-
+-;; Declare Helm functions since Helm may not be installed.
+-(declare-function helm "ext:helm")
+-(declare-function helm-run-after-exit "ext:helm")
+-(declare-function helm-window "ext:helm-lib")
+-(declare-function helm-buffer-get "ext:helm-lib")
+-(declare-function helm-make-source "ext:helm-source")
+-(declare-function helm-org-goto-marker "ext:helm-org")
+-
+-;; Silence byte-compiler about variables.
+-(defvar helm-map)
+-(defvar helm-pattern)
+-(defvar helm-input-idle-delay)
++(require 'helm)
++(require 'helm-org)
+ 
+ ;;;; Variables
+ 
+-- 
+2.23.0
+

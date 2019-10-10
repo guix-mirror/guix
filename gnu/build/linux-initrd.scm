@@ -71,8 +71,7 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
       (cpio:write-cpio-archive files port
                                #:file->header cpio:file->cpio-header*)))
 
-  (or (not compress?)
-
+  (if compress?
       ;; Gzip insists on adding a '.gz' suffix and does nothing if the input
       ;; file already has that suffix.  Shuffle files around to placate it.
       (let* ((gz-suffix? (string-suffix? ".gz" output))
@@ -88,7 +87,6 @@ COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
                (unless gz-suffix?
                  (rename-file (string-append output ".gz") output))
                output)))
-
       output))
 
 (define (cache-compiled-file-name file)

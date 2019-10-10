@@ -216,7 +216,7 @@ to code blocks.")
     (arguments
      `(#:tests? #f))                    ;XXX: circular dependency on Sphinx
     (home-page "https://github.com/sphinx-doc/sphinxcontrib-htmlhelp")
-    (synopsis "Sphinx exension for rendering HTML help files")
+    (synopsis "Sphinx extension for rendering HTML help files")
     (description
      "@code{sphinxcontrib-htmlhelp} is a Sphinx extension which renders
 HTML help files.")

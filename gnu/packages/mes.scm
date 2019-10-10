@@ -34,9 +34,11 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix licenses)
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (guix utils))
 
 (define-public nyacc-0.86
+  ;; Nyacc used for bootstrap.
   (package
     (name "nyacc")
     (version "0.86.0")
@@ -90,22 +92,23 @@ extensive examples, including parsers for the Javascript and C99 languages.")
     (inputs
      `(("guile" ,guile-2.2)))))
 
-(define-public mes
+(define-public mes-0.19
+  ;; Mes used for bootstrap.
   (package
     (name "mes")
-    (version "0.20")
+    (version "0.19")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/mes/"
                                   "mes-" version ".tar.gz"))
               (sha256
                (base32
-                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+                "15h4yhaywdc0djpjlin2jz1kzahpqxfki0r0aav1qm9nxxmnp1l0"))))
     (build-system gnu-build-system)
     (supported-systems '("i686-linux" "x86_64-linux"))
     (propagated-inputs
-     `(("mescc-tools" ,mescc-tools)
-       ("nyacc" ,nyacc)))
+     `(("mescc-tools" ,mescc-tools-0.5.2)
+       ("nyacc" ,nyacc-0.86)))
     (native-inputs
      `(("guile" ,guile-2.2)
        ,@(let ((target-system (or (%current-target-system)
@@ -134,7 +137,23 @@ Guile.")
     (home-page "https://gnu.org/software/mes")
     (license gpl3+)))
 
-(define-public mescc-tools
+(define-public mes
+  (package
+    (inherit mes-0.19)
+    (version "0.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/mes/"
+                                  "mes-" version ".tar.gz"))
+              (sha256
+               (base32
+                "04pajp8v31na34ls4730ig5f6miiplhdvkmsb9ls1b8bbmw2vb4n"))))
+    (propagated-inputs
+     `(("mescc-tools" ,mescc-tools)
+       ("nyacc" ,nyacc)))))
+
+(define-public mescc-tools-0.5.2
+  ;; Mescc-tools used for bootstrap.
   (let ((commit "bb062b0da7bf2724ca40f9002b121579898d4ef7")
         (revision "0")
         (version "0.5.2"))
@@ -166,9 +185,9 @@ get_machine.")
     (home-page "https://savannah.nongnu.org/projects/mescc-tools")
     (license gpl3+))))
 
-(define-public mescc-tools-0.6.1
+(define-public mescc-tools
   (package
-    (inherit mescc-tools)
+    (inherit mescc-tools-0.5.2)
     (name "mescc-tools")
     (version "0.6.1")
     (source (origin
@@ -180,4 +199,9 @@ get_machine.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))))
+                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
+       ((#:make-flags _)
+        `(list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+               "CC=gcc"))))))

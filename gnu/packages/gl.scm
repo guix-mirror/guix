@@ -10,6 +10,7 @@
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system meson)
@@ -348,7 +350,8 @@ also known as DXTn or DXTC) for Mesa.")
              (substitute* "src/intel/genxml/gen_pack_header.py"
                (("/usr/bin/env python2") (which "python")))
              #t))
-         ,@(if (string-prefix? "i686" (%current-system))
+         ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                          (%current-system)))
                ;; Disable new test from Mesa 19 that fails on i686.  Upstream
                ;; report: <https://bugs.freedesktop.org/show_bug.cgi?id=110612>.
                `((add-after 'unpack 'disable-failing-test
@@ -809,3 +812,81 @@ applications to 3D accelerator hardware in a dedicated server and displays the
 rendered output interactively to a thin client located elsewhere on the
 network.")
     (license license:wxwindows3.1+)))
+
+(define-public mojoshader
+  (let ((changeset "5887634ea695"))
+    (package
+      (name "mojoshader")
+      (version (string-append "20190825" "-" changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://hg.icculus.org/icculus/mojoshader/")
+               (changeset changeset)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ibl4z1696jiifv9j5drir7jm0b5px0vwkwckbi7cfd46p7p6wcy"))))
+      (arguments
+       ;; Tests only for COMPILER_SUPPORT=ON.
+       `(#:tests? #f
+         #:configure-flags '("-DBUILD_SHARED=ON"
+                             "-DFLIP_VIEWPORT=ON"
+                             "-DDEPTH_CLIPPING=ON")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (lib (string-append out "/lib"))
+                      (header (string-append out "/include")))
+                 (install-file "libmojoshader.so" lib)
+                 (for-each (lambda (f)
+                             (install-file f header))
+                           (find-files "../source" "mojoshader.*\\.h$"))
+                 (let ((profiles-header (string-append header "/profiles")))
+                   (mkdir-p profiles-header)
+                   (rename-file (string-append header "/mojoshader_profile.h")
+                                (string-append profiles-header "/mojoshader_profile.h"))))
+               #t)))))
+      (build-system cmake-build-system)
+      (home-page "https://www.icculus.org/mojoshader/")
+      (synopsis "Work with Direct3D shaders on alternate 3D APIs")
+      (description "MojoShader is a library to work with Direct3D shaders on
+alternate 3D APIs and non-Windows platforms.  The primary motivation is moving
+shaders to OpenGL languages on the fly.  The developer deals with \"profiles\"
+that represent various target languages, such as GLSL or ARB_*_program.
+
+This allows a developer to manage one set of shaders, presumably written in
+Direct3D HLSL, and use them across multiple rendering backends.  This also
+means that the developer only has to worry about one (offline) compiler to
+manage program complexity, while MojoShader itself deals with the reduced
+complexity of the bytecode at runtime.
+
+MojoShader provides both a simple API to convert bytecode to various profiles,
+and (optionally) basic glue to rendering APIs to abstract the management of
+the shaders at runtime.")
+      (license license:zlib))))
+
+(define-public mojoshader-with-viewport-flip
+  ;; Changeset c586d4590241 replaced glProgramViewportFlip with
+  ;; glProgramViewportInfo.
+  ;; https://hg.icculus.org/icculus/mojoshader/rev/c586d4590241
+  (let ((changeset "2e37299b13d8"))
+    (package
+      (inherit mojoshader)
+      (name "mojoshader-with-viewport-flip")
+      (version (string-append "20190725" "-" changeset))
+      (source
+       (origin
+         (method hg-fetch)
+         (uri (hg-reference
+               (url "https://hg.icculus.org/icculus/mojoshader/")
+               (changeset changeset)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ffws7cqbskxwc3hjsnnzq4r2bbf008kdr3b11pa3kr7dsi50y6i"))))
+      (synopsis "Work with Direct3D shaders on alternate 3D APIs (with viewport flip)")
+      (description "This is the last version of the mojoshader library with
+the glProgramViewportFlip before it was replaced with glProgramViewportInfo.")
+      (license license:zlib))))

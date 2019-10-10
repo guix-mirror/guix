@@ -22,7 +22,7 @@
 ;;; Copyright © 2017, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Dave Love <me@fx@gnu.org>
-;;; Copyright © 2018 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2018, 2019 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2018 Joshua Sierles, Nextjournal <joshua@nextjournal.com>
 ;;; Copyright © 2018 Nadya Voronova <voronovank@gmail.com>
 ;;; Copyright © 2018 Adam Massmann <massmannak@gmail.com>
@@ -1553,7 +1553,7 @@ script files.")
        ,@(package-inputs octave-cli)))
     (native-inputs
      `(("qttools" , qttools) ;for lrelease
-       ("texlive" ,texlive) ;for texi2dvi
+       ("texlive" ,(texlive-union (list texlive-epsf))) ; for texi2dvi
        ,@(package-native-inputs octave-cli)))
     (arguments
      (substitute-keyword-arguments (package-arguments octave-cli)
@@ -1775,18 +1775,20 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public maxflow
   (package
     (name "maxflow")
-    (version "3.04")
+    ;; Versioning is ambiguous: the git tag matching this commit is ‘3.0.5’,
+    ;; which matches CMakeLists.txt, but README.md and CHANGES say ‘3.04’.
+    (version "3.0.5")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/gerddie/maxflow.git")
-                    (commit "42401fa54823d16b9da47716f04e5d9ef1605875")))
-              (file-name (string-append name "-" version "-checkout"))
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0rll38whw55h0vcjrrwdnh9ascvxby0ph7n1l0d12z17cg215kkb"))))
     (build-system cmake-build-system)
-    (home-page "http://pub.ist.ac.at/~vnk/software.html")
+    (home-page "https://pub.ist.ac.at/~vnk/software.html")
     (synopsis "Library implementing Maxflow algorithm")
     (description "An implementation of the maxflow algorithm described in
 @cite{An Experimental Comparison of Min-Cut/Max-Flow Algorithms for
@@ -2982,7 +2984,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "19.08.0")
+    (version "19.09.0")
     (source
      (origin
        (method git-fetch)
@@ -2991,8 +2993,7 @@ point numbers.")
              (commit (string-append "Version-" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "028g4g2081vsgslbdliskfy5q2wknvknw89lk3zp89py6wranxas"))))
+        (base32 "195j6j8z0jd6xg3a63ywbrbsc6dany795m3fb95nbx1vq0bqqvvn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)))
@@ -3553,15 +3554,15 @@ Failure to do so will result in a library with poor performance.")
 (define-public glm
   (package
     (name "glm")
-    (version "0.9.9.5")
+    (version "0.9.9.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/g-truc/glm/releases/download/"
                            version  "/glm-" version ".zip"))
        (sha256
-        (base32
-         "1vmg7hb4xvsa77zpbwiw6lqc7pyaj56dihx6xriny5b9rrh4iqsg"))))
+        (base32 "1l0pi1qi37mk6s0yrkrw07lspv4gcqnr9ryg3521hrl77ff37dwx"))
+       (patches (search-patches "glm-restore-install-target.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("unzip" ,unzip)))
@@ -3646,7 +3647,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "9.0.1")
+    (version "9.1.1")
     (source
      (origin
        (method url-fetch)
@@ -3654,8 +3655,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "0r7f8rhl3xr94imd372plizdcbqk0a70w73lwc3vw912dxk0sbyz"))
-       (patches (search-patches "dealii-mpi-deprecations.patch"))
+         "0xhjv0gzswpjbc43xbrpwfc5848g508l01855nszx3g5gwzlhnzw"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
@@ -4117,7 +4117,7 @@ as equations, scalars, vectors, and matrices.")
 (define-public z3
   (package
     (name "z3")
-    (version "4.8.4")
+    (version "4.8.6")
     (home-page "https://github.com/Z3Prover/z3")
     (source (origin
               (method git-fetch)
@@ -4126,7 +4126,7 @@ as equations, scalars, vectors, and matrices.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "014igqm5vwswz0yhz0cdxsj3a6dh7i79hvhgc3jmmmz3z0xm1gyn"))))
+                "1sywcqj5y8yp28m4cdvzsgw74kd6zr1s3y1x17ky8pr9prvpvl6x"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -4317,17 +4317,15 @@ reduction.")
 (define-public mcrl2
   (package
     (name "mcrl2")
-    (version "201707.1.15162")
+    (version "201908.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.mcrl2.org/download/devel/mcrl2-"
-                                  version
-                                  ".tar.gz"))
+              (uri (string-append
+                    "https://www.mcrl2.org/download/release/mcrl2-"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "1ziww2fchsklm25hl9p2mngssxfh9w07nc114cncqaxfibqp2p8f"))))
-    (native-inputs
-     `(("subversion" ,subversion)))
+                "1i4xgl2d5fgiz1mwi50cyfkrrcpm8nxfayfjgmhq7chs58wlhfsz"))))
     (inputs
      `(("boost" ,boost)
        ("glu" ,glu)
@@ -4344,6 +4342,15 @@ specifications.  Also, state spaces can be manipulated, visualised and
 analysed.")
     (home-page "https://mcrl2.org")
     (license license:boost1.0)))
+
+(define-public mcrl2-minimal
+  (package
+    (inherit mcrl2)
+    (name "mcrl2-minimal")
+    (inputs
+     `(("boost" ,boost)))
+    (arguments
+     '(#:configure-flags '("-DMCRL2_ENABLE_GUI_TOOLS=OFF")))))
 
 (define-public r-subplex
   (package

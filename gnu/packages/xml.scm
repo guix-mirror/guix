@@ -1249,14 +1249,14 @@ files.  It is designed to be fast and to handle large input files.")
 (define-public python-defusedxml
   (package
     (name "python-defusedxml")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "defusedxml" version))
        (sha256
         (base32
-         "1x54n0h8hl92vvwyymx883fbqpqjwn2mc8fb383bcg3z9zwz5mr4"))))
+         "1xbp8fivl3wlbyg2jrvs4lalaqv1xp9a9f29p75wdx2s2d6h717n"))))
     (build-system python-build-system)
     (home-page "https://bitbucket.org/tiran/defusedxml")
     (synopsis "XML bomb protection for Python stdlib modules")
@@ -1367,7 +1367,7 @@ maintaining each reference encountered.")
      "This module provides an XPath engine, that can be re-used by other
 modules/classes that implement trees.
 
-In order to use the XPath engine, nodes in the user module need to mimick DOM
+In order to use the XPath engine, nodes in the user module need to mimic DOM
 nodes.  The degree of similitude between the user tree and a DOM dictates how
 much of the XPath features can be used.  A module implementing all of the DOM
 should be able to use this module very easily (you might need to add the
@@ -1768,7 +1768,7 @@ package is in maintenance mode.")
 (define-public java-dom4j
   (package
     (name "java-dom4j")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1777,7 +1777,7 @@ package is in maintenance mode.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1827jljs8mps489fm7xw63cakdqwc5grilrr5n9spr2rlk76jpx3"))
+                "0q907srj9v4hwicpcrn4slyld5npf2jv7hzchsgrg29q2xmbwkdl"))
               (modules '((guix build utils)))
               (snippet
                 '(begin ;; Delete bundled jar archives.
