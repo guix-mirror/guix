@@ -835,9 +835,9 @@ on top of GNU Guix.")
        ("pkg-config" ,pkg-config)
 
        ;; For testing.
-       ("jupyter" ,(specification->package "jupyter"))
-       ("python-ipython" ,(specification->package "python-ipython"))
-       ("python-ipykernel" ,(specification->package "python-ipykernel"))))
+       ("jupyter" ,jupyter)
+       ("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel)))
     (inputs
      `(("guix" ,guix)
        ("guile" ,guile-2.2)))
