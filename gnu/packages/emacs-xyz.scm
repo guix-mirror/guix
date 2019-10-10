@@ -14612,45 +14612,46 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
     (license license:gpl3+)))
 
 (define-public emacs-gif-screencast
-  (let ((commit "12b25442b97b84abae74ecb5190a9d14ff7cfe5a"))
+  (let ((commit "248d1e158405e6cba2c65ecaed40e2c59b089cd8")
+        (revision "2"))
     (package
       (name "emacs-gif-screencast")
-      (version (git-version "20180616" "1" commit))
+      (version (git-version "1.0" revision commit))
       (source
        (origin
-         (method url-fetch)
-         (uri (string-append
-               "https://gitlab.com/Ambrevar/emacs-gif-screencast/"
-               "repository/archive.tar.gz?ref="
-               commit))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
+               (commit commit)))
          (sha256
           (base32
-           "0lc457i78xjkn5idr2aaiadkh76zcsksj84z0qh80a9y775syrgh"))))
+           "19xqi5mgalnnhb4hw0fh7py2s2dllldx1xxbhwhknkdpifai8hl8"))))
       (build-system emacs-build-system)
       (inputs
        `(("scrot" ,scrot)
          ("imagemagick" ,imagemagick)
          ("gifsicle" ,gifsicle)))
-     (arguments
-      `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((scrot (assoc-ref inputs "scrot"))
-                   (imagemagick (assoc-ref inputs "imagemagick"))
-                   (gifsicle (assoc-ref inputs "gifsicle")))
-               ;; Specify the absolute file names of the various
-               ;; programs so that everything works out-of-the-box.
-               (emacs-substitute-variables
-                   "gif-screencast.el"
-                 ("gif-screencast-program"
-                  (string-append scrot "/bin/scrot"))
-                 ("gif-screencast-convert-program"
-                  (string-append imagemagick "/bin/convert"))
-                 ("gif-screencast-cropping-program"
-                  (string-append imagemagick "/bin/mogrify"))
-                 ("gif-screencast-optimize-program"
-                  (string-append gifsicle "/bin/gifsicle")))))))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'configure
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((scrot (assoc-ref inputs "scrot"))
+                     (imagemagick (assoc-ref inputs "imagemagick"))
+                     (gifsicle (assoc-ref inputs "gifsicle")))
+                 (make-file-writable "gif-screencast.el")
+                 ;; Specify the absolute file names of the various
+                 ;; programs so that everything works out-of-the-box.
+                 (emacs-substitute-variables
+                     "gif-screencast.el"
+                   ("gif-screencast-program"
+                    (string-append scrot "/bin/scrot"))
+                   ("gif-screencast-convert-program"
+                    (string-append imagemagick "/bin/convert"))
+                   ("gif-screencast-cropping-program"
+                    (string-append imagemagick "/bin/mogrify"))
+                   ("gif-screencast-optimize-program"
+                    (string-append gifsicle "/bin/gifsicle")))))))))
       (home-page
        "https://gitlab.com/Ambrevar/emacs-gif-screencast")
       (synopsis "One-frame-per-action GIF recording")
