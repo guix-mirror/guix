@@ -11744,11 +11744,11 @@ according to a parsing expression grammar.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ql
-  (let ((commit "af0ef304e1d50066787376a68bdf56491f549a39")
-        (revision "1"))
+  (let ((commit "949a06c3ab50482b749fd2d4350837a197660d96")
+        (revision "2"))
     (package
       (name "emacs-org-ql")
-      (version (git-version "0.3" revision commit))
+      (version (git-version "0.3.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -11756,7 +11756,7 @@ according to a parsing expression grammar.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1by3xslqr3wxkszbih5j9iwwpm7ajcczg22x5cgh7a7ihshnqbpb"))
+                  "0apcg63xm0242mjgsgw0jrcda4p4iqj7fy3sgh0p7khi4hrs5ch0"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
