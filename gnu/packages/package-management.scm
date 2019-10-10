@@ -770,6 +770,90 @@ on top of GNU Guix.")
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
 
+(define-public guix-jupyter
+  (package
+    (name "guix-jupyter")
+    (version "0.1.0")
+    (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
+              (file-name (string-append "guix-jupyter-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  (ice-9 match)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'sed-kernel-json
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (guix  (assoc-ref inputs  "guix"))
+                    (guile (assoc-ref inputs  "guile"))
+                    (json  (assoc-ref inputs  "guile-json"))
+                    (git   (assoc-ref inputs  "guile-git"))
+                    (bs    (assoc-ref inputs  "guile-bytestructures"))
+                    (s-zmq (assoc-ref inputs  "guile-simple-zmq"))
+                    (gcrypt (assoc-ref inputs  "guile-gcrypt"))
+                    (deps  (list out s-zmq guix json git bs gcrypt))
+                    (effective
+                     (read-line
+                      (open-pipe* OPEN_READ
+                                  (string-append guile "/bin/guile")
+                                  "-c" "(display (effective-version))")))
+                    (path (map (cut string-append "-L\", \"" <>
+                                    "/share/guile/site/"
+                                    effective)
+                               deps))
+                    (gopath (map (cut string-append "-C\", \"" <>
+                                      "/lib/guile/" effective
+                                      "/site-ccache")
+                                 deps))
+                    (kernel-dir (string-append out "/share/jupyter/kernels/guix/")))
+               (substitute* (string-append kernel-dir "kernel.json")
+                 (("-s")
+                  (string-join
+                   (list (string-join path "\",\n\t\t\"")
+                         (string-join gopath "\",\n\t\t\"")
+                         "-s")
+                   "\",\n\t\t\""))
+                 (("guix-jupyter-kernel.scm")
+                  (string-append out "/share/guile/site/2.2/"
+                                 "guix-jupyter-kernel.scm")))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+
+       ;; For testing.
+       ("jupyter" ,(specification->package "jupyter"))
+       ("python-ipython" ,(specification->package "python-ipython"))
+       ("python-ipykernel" ,(specification->package "python-ipykernel"))))
+    (inputs
+     `(("guix" ,guix)
+       ("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-json" ,guile-json-3)
+       ("guile-simple-zmq" ,guile-simple-zmq)
+       ("guile-gcrypt" ,guile-gcrypt)))
+    (synopsis "Guix kernel for Jupyter")
+    (description
+     "Guix-Jupyter is a Jupyter kernel.  It allows you to annotate notebooks
+with information about their software dependencies, such that code is executed
+in the right software environment.  Guix-Jupyter spawns the actual kernels
+such as @code{python-ipykernel} on behalf of the notebook user and runs them
+in an isolated environment, in separate namespaces.")
+    (license license:gpl3+)))
+
 (define-public gcab
   (package
     (name "gcab")
