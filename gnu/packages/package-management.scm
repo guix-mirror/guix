@@ -175,23 +175,32 @@
                       (lambda* (#:key system inputs #:allow-other-keys)
                         ;; Copy the bootstrap guile tarball in the store used
                         ;; by the test suite.
-                        (define (intern tarball)
-                          (let ((base (strip-store-file-name tarball)))
-                            (copy-file tarball base)
-                            (invoke "./test-env" "guix" "download"
-                                    (string-append "file://" (getcwd)
-                                                   "/" base))
-                            (delete-file base)))
+                        (define (intern file recursive?)
+                          (let ((base (strip-store-file-name file)))
+                            ;; Note: don't use 'guix download' here because we
+                            ;; need to set the 'recursive?' argument.
+                            (invoke "./test-env" "guile" "-c"
+                                    (object->string
+                                     `(begin
+                                        (use-modules (guix))
+                                        (with-store store
+                                          (add-to-store store ,base ,recursive?
+                                                        "sha256" ,file)))))))
 
-
-                        (intern (assoc-ref inputs "boot-guile"))
+                        (intern (assoc-ref inputs "boot-guile") #f)
 
                         ;; On x86_64 some tests need the i686 Guile.
                         ,@(if (and (not (%current-target-system))
                                    (string=? (%current-system)
                                              "x86_64-linux"))
-                              '((intern (assoc-ref inputs "boot-guile/i686")))
+                              '((intern (assoc-ref inputs "boot-guile/i686") #f))
                               '())
+
+                        ;; Copy the bootstrap executables.
+                        (for-each (lambda (input)
+                                    (intern (assoc-ref inputs input) #t))
+                                  '("bootstrap/bash" "bootstrap/mkdir"
+                                    "bootstrap/tar" "bootstrap/xz"))
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
@@ -270,7 +279,7 @@
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
-         ("zlib" ,zlib)                           ;for 'guix publish'
+         ("zlib" ,zlib)              ;for 'guix publish'
          ("lzlib" ,lzlib)            ;for 'guix publish' and 'guix substitute'
 
          ("sqlite" ,sqlite)
@@ -278,15 +287,22 @@
 
          ("guile" ,guile-2.2)
 
+         ;; Some of the tests use "unshare" when it is available.
+         ("util-linux" ,util-linux)
+
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
          ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
-         ;; Some of the tests use "unshare" when it is available.
-         ("util-linux" ,util-linux)
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
                '())
+
+         ;; Tests also rely on these bootstrap executables.
+         ("bootstrap/bash" ,(bootstrap-executable "bash" (%current-system)))
+         ("bootstrap/mkdir" ,(bootstrap-executable "mkdir" (%current-system)))
+         ("bootstrap/tar" ,(bootstrap-executable "tar" (%current-system)))
+         ("bootstrap/xz" ,(bootstrap-executable "xz" (%current-system)))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
