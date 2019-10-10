@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1j2d9anxgybv86pxcn1zdv121hb4nmjjp5ngx365fnd0mcg8q1iw"))
+                  "0yx19hxvmkr6ar65ym87xd83n6hz02mr7ibwis7i8wah85ypfq26"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
