@@ -24573,6 +24573,10 @@ The type of device to connect to.  Run @command{inputattach --help}, from the
 @item @code{device} (default: @code{"/dev/ttyS0"})
 The device file to connect to the device.
 
+@item @code{baud-rate} (default: @code{#f})
+Baud rate to use for the serial connection.
+Should be a number or @code{#f}.
+
 @item @code{log-file} (default: @code{#f})
 If true, this must be the name of a file to log messages to.
 @end table

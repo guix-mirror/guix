@@ -1028,23 +1028,29 @@ as expected.")))
                (default "wacom"))
   (device inputattach-configuration-device
           (default "/dev/ttyS0"))
+  (baud-rate inputattach-configuration-baud-rate
+             (default #f))
   (log-file inputattach-configuration-log-file
             (default #f)))
 
 (define inputattach-shepherd-service
   (match-lambda
-    (($ <inputattach-configuration> type device log-file)
-     (list (shepherd-service
-            (provision '(inputattach))
-            (requirement '(udev))
-            (documentation "inputattach daemon")
-            (start #~(make-forkexec-constructor
-                      (list (string-append #$inputattach
-                                           "/bin/inputattach")
-                            (string-append "--" #$type)
-                            #$device)
-                      #:log-file #$log-file))
-            (stop #~(make-kill-destructor)))))))
+    (($ <inputattach-configuration> type device baud-rate log-file)
+     (let ((args (append (if baud-rate
+                             (list "--baud-rate" (number->string baud-rate))
+                             '())
+                         (list (string-append "--" type)
+                               device))))
+       (list (shepherd-service
+              (provision '(inputattach))
+              (requirement '(udev))
+              (documentation "inputattach daemon")
+              (start #~(make-forkexec-constructor
+                        (cons (string-append #$inputattach
+                                             "/bin/inputattach")
+                              (quote #$args))
+                        #:log-file #$log-file))
+              (stop #~(make-kill-destructor))))))))
 
 (define inputattach-service-type
   (service-type
