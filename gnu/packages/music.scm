@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4677,3 +4678,33 @@ easier to perform.  Features include:
 sqlite.  It is constructed to be fast, light, and simultaneously tries to be
 complete without obstructing your daily work.")
     (license license:gpl3+)))
+
+(define-public playerctl
+  (package
+    (name "playerctl")
+    (version "2.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/altdesktop/playerctl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f3njnpd52djx3dmhh9a8p5a67f0jmr1gbk98icflr2q91149gjz"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Dintrospection=false" "-Dgtk-doc=false")))
+    (inputs `(("python-pygobject" ,python-pygobject)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Control MPRIS-supporting media player applications")
+    (description
+     "Playerctl is a command-line utility and library for controlling media
+players that implement the MPRIS D-Bus Interface Specification.  Playerctl
+makes it easy to bind player actions, such as play and pause, to media keys.
+You can also get metadata about the playing track such as the artist and title
+for integration into status line generators or other command-line tools.")
+    (home-page "https://github.com/altdesktop/playerctl")
+    (license license:lgpl3+)))
