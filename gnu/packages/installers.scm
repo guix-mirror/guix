@@ -27,7 +27,7 @@
   #:use-module (guix build-system scons)
   #:use-module (guix utils))
 
-(define(make-nsis machine target-arch nsis-target-type)
+(define (make-nsis machine target-arch nsis-target-type)
   (let ((triplet (string-append machine "-" "w64-mingw32")))
     (package
       (name (string-append "nsis-" machine))
