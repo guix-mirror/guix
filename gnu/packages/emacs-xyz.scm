@@ -16228,6 +16228,42 @@ other frame parameters.")
       (home-page "https://github.com/bookest/arduino-mode")
       (license license:gpl3+))))
 
+(define-public emacs-annalist
+  (let ((commit "e0601539c9ac0171a684ea3ff6266d215d1d08e6")
+        (revision "1"))
+    (package
+      (name "emacs-annalist")
+      (version (git-version "1.0.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/noctuid/annalist.el.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "10bmimdzpi6cql4sb2hbgdvrza83xbac50bi9qng4z662pfnlaam"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (native-inputs
+       `(("emacs-buttercup" ,emacs-buttercup)
+         ("emacs-lispy" ,emacs-lispy)
+         ("emacs-evil" ,emacs-evil)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'fix-makefile
+             (lambda _
+               (substitute* "Makefile"
+                 (("cask exec ") ""))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "test")))
+      (home-page "https://github.com/noctuid/annalist.el")
+      (synopsis "Record and display information with Org headings and tables")
+      (description "This package allows for keybindings, settings, hooks, and
+advice to be recorded and displayed.")
+      (license license:gpl3+))))
+
 (define-public emacs-general
   (let ((commit "f38fb2294bd29261374b772f765730f2fa168b3e")
         (revision "3"))
