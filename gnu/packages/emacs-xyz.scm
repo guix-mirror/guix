@@ -11753,7 +11753,7 @@ according to a parsing expression grammar.")
 
 (define-public emacs-org-ql
   (let ((commit "949a06c3ab50482b749fd2d4350837a197660d96")
-        (revision "2"))
+        (revision "3"))
     (package
       (name "emacs-org-ql")
       (version (git-version "0.3.1" revision commit))
@@ -11765,9 +11765,6 @@ according to a parsing expression grammar.")
                 (sha256
                  (base32
                   "0apcg63xm0242mjgsgw0jrcda4p4iqj7fy3sgh0p7khi4hrs5ch0"))
-                (patches
-                 (search-patches
-                  "emacs-helm-org-ql.patch"))
                 (file-name (git-file-name name version))))
       (build-system emacs-build-system)
       (propagated-inputs
@@ -11784,7 +11781,15 @@ according to a parsing expression grammar.")
       (native-inputs
        `(("emacs-buttercup" ,emacs-buttercup)))
       (arguments
-       `(#:tests? #t
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'require-helm
+             (lambda _
+               (substitute* "helm-org-ql.el"
+                 (("^;;;; Requirements")
+                  ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
+               #t)))
+         #:tests? #t
          #:test-command '("buttercup" "-L" ".")))
       (home-page "https://github.com/alphapapa/org-ql/")
       (synopsis "Query language for Org buffers")

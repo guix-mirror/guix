@@ -791,7 +791,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-dired-toggle-sudo-emacs-26.patch   \
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
-  %D%/packages/patches/emacs-helm-org-ql.patch	                \
   %D%/packages/patches/emacs-json-reformat-fix-tests.patch	\
   %D%/packages/patches/emacs-highlight-stages-add-gexp.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
