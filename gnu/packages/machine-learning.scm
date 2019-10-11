@@ -794,7 +794,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.20.3")
+    (version "0.20.4")
     (source
      (origin
        (method git-fetch)
@@ -804,7 +804,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08aaby5zphfxy83mggg35bwyka7wk91l2qijh8kk0bl08dikq8dl"))))
+         "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
