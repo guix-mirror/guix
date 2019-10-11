@@ -7013,11 +7013,11 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "986ca7eb0b75eccd843bdad2f7fdb48f4ca6ac22")
-        (revision "10"))
+  (let ((commit "bf4200a57c81c2302a3bf5b2058d74c6f90a3e6c")
+        (revision "11"))
     (package
       (name "emacs-evil-collection")
-      (version (git-version "0.0.2" revision commit))
+      (version (git-version "0.0.3" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -7026,10 +7026,13 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "172sx5w50x5wrs5w0sb6rkbj3q22s7mmsnk4c6pwknhbz3vwlvwz"))))
+                  "01xw0m5gj14ly42y8ikvldpab5my28sylf6l9gvwd5cf909bd445"))))
       (build-system emacs-build-system)
       (propagated-inputs
-       `(("emacs-evil" ,emacs-evil)))
+       `(("emacs-evil" ,emacs-evil)
+         ("emacs-annalist" ,emacs-annalist)))
+      (arguments
+       `(#:include (cons* "^modes\\/" %default-include)))
       (home-page "https://github.com/emacs-evil/evil-collection")
       (synopsis "Collection of Evil bindings for many major and minor modes")
       (description "This is a collection of Evil bindings for the parts of
