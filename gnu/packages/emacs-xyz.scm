@@ -15578,11 +15578,11 @@ few (like NOTE).")
 
 (define-public emacs-git-annex
   ;; Unreleased version has a fontification fix.
-  (let ((commit "ebdb44aef1883f1b2b8058e05d30fb9315b03707")
-        (revision "1"))
+  (let ((commit "1324d3f23c534fe79391a2c256bb8803054e383b")
+        (revision "2"))
     (package
       (name "emacs-git-annex")
-      (version (string-append "1.1-" revision "." (string-take commit 8)))
+      (version (git-version "1.1" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -15592,7 +15592,7 @@ few (like NOTE).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1mzv40gj7k10h7h5s43my8msgzjpj680qprqa9pp8nbyhl49v3wh"))))
+           "1lfky2nsrlndlbvk6vwbswnvbvkz1sxgg0n3r5q6xykdkjym0lrh"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/jwiegley/git-annex-el")
       (synopsis "Emacs integration for git-annex")
