@@ -41,6 +41,7 @@
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8394,4 +8395,41 @@ intefaces for mobile devices using GTK+.")
 access library.  It only implements the core plumbing functions, not really the
 higher level porcelain stuff.")
     (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
+    (license license:gpl2+)))
+
+(define-public gnome-mahjongg
+  (package
+    (name "gnome-mahjongg")
+    (version "3.35.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/gnome-mahjongg.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "019a66a4m5w4kkb0sm6gxj0wi54n06zdxdlmyqw7h8kbakjizv7l"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ;; For glib-compile-resources
+       ("gtk+" ,gtk+ "bin")     ;; For gtk-update-icon-cache
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (synopsis "Mahjongg tile-matching game")
+    (description "GNOME Mahjongg is a game based on the classic Chinese
+tile-matching game Mahjong.  It features multiple board layouts, tile themes,
+and a high score table.")
+    (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))
