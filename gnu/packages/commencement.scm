@@ -2403,34 +2403,33 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs gnu-make
-                                 (lambda _
-                                   `(("guile" ,guile-final)
-                                     ,@(%boot5-inputs)))
-                                 (current-source-location))))
+  (package-with-explicit-inputs (package-with-bootstrap-guile gnu-make)
+                                (lambda _
+                                  `(("guile" ,guile-final)
+                                    ,@(%boot5-inputs)))
+                                (current-source-location)))
 
 (define coreutils-final
   ;; The final Coreutils.  Treat them specially because some packages, such as
   ;; Findutils, keep a reference to the Coreutils they were built with.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs coreutils
-                                 %boot5-inputs
-                                 (current-source-location)
+  (package-with-explicit-inputs (package-with-bootstrap-guile coreutils)
+                                %boot5-inputs
+                                (current-source-location)
 
-                                 ;; Use the final Guile, linked against the
-                                 ;; final libc with working iconv, so that
-                                 ;; 'substitute*' works well when touching
-                                 ;; test files in Gettext.
-                                 #:guile guile-final)))
+                                ;; Use the final Guile, linked against the
+                                ;; final libc with working iconv, so that
+                                ;; 'substitute*' works well when touching
+                                ;; test files in Gettext.
+                                #:guile guile-final))
 
 (define grep-final
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
-  (let ((grep (package-with-bootstrap-guile
-               (package-with-explicit-inputs grep %boot5-inputs
-                                             (current-source-location)
-                                             #:guile guile-final))))
+  (let ((grep (package-with-explicit-inputs
+               (package-with-bootstrap-guile grep)
+               %boot5-inputs
+               (current-source-location)
+               #:guile guile-final)))
     (package/inherit grep
                      (inputs (alist-delete "pcre" (package-inputs grep)))
                      (native-inputs `(("perl" ,perl-boot0))))))
@@ -2443,10 +2442,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define sed-final
   ;; The final sed.
-  (let ((sed (package-with-bootstrap-guile
-              (package-with-explicit-inputs sed %boot6-inputs
-                                            (current-source-location)
-                                            #:guile guile-final))))
+  (let ((sed (package-with-explicit-inputs (package-with-bootstrap-guile sed)
+                                           %boot6-inputs
+                                           (current-source-location)
+                                           #:guile guile-final)))
     (package/inherit sed (native-inputs `(("perl" ,perl-boot0))))))
 
 (define-public %final-inputs
@@ -2454,12 +2453,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
-  (let ((finalize (compose package-with-bootstrap-guile
-                           (cut package-with-explicit-inputs <> %boot6-inputs
-                                (current-source-location)))))
+  (let ((finalize (compose (cut package-with-explicit-inputs <> %boot6-inputs
+                                (current-source-location))
+                           package-with-bootstrap-guile)))
     `(,@(map (match-lambda
-              ((name package)
-               (list name (finalize package))))
+               ((name package)
+                (list name (finalize package))))
              `(("tar" ,tar)
                ("gzip" ,gzip)
                ("bzip2" ,bzip2)
