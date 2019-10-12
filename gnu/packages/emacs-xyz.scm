@@ -6898,14 +6898,14 @@ are pretty much the same (and SLIME served as the principle inspiration for
 CIDER).")
     (license license:gpl3+)))
 
-;; There hasn't been a tag or release since 2015, so we take the latest
+;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "486bfbe95612bcdc0960c490207970a188e0fbb9")
-        (revision "1"))
+  (let ((commit "29dccc0735283897a6dbd97e0b6828a45c2985e2")
+        (revision "2"))
     (package
       (name "emacs-sly")
-      (version (string-append "1.0.0-" revision "." (string-take commit 9)))
+      (version (git-version "1.0.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -6915,14 +6915,45 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0ib4q4k3h3qn88pymyjjmlmnpizdn1mfg5gpk5a715nqsgxlg09l"))))
+           "0d0skgyqn422130xn8lrdp04m5cjk3sl18w6lf2wrmrndc1crqxk"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (arguments
-       `(#:include (cons "^lib\\/" %default-include)
+       `(#:include (cons* "^contrib\\/" "^lib\\/" "^slynk\\/" %default-include)
          #:phases
          ;; The package provides autoloads.
          (modify-phases %standard-phases
-           (delete 'make-autoloads))))
+           (delete 'make-autoloads)
+           (add-before 'install 'install-doc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (info-dir (string-append out "/share/info"))
+                      (doc-dir (string-append out "/share/doc/"
+                                              ,name "-" ,version))
+                      (doc-files '(;; "doc/sly-refcard.pdf" ; See sly-refcard.pdf below.
+                                   "README.md" "NEWS.md" "PROBLEMS.md"
+                                   "CONTRIBUTING.md")))
+                 (with-directory-excursion "doc"
+                   (substitute* "Makefile"
+                     (("infodir=/usr/local/info")
+                      (string-append "infodir=" info-dir))
+                     ;; Don't rebuild contributors.texi since we are not in
+                     ;; the git repo.
+                     (("contributors.texi: Makefile texinfo-tabulate.awk")
+                      "contributors.texi:"))
+                   (invoke "make" "html/index.html")
+                   (invoke "make" "sly.info")
+                   ;; TODO: We need minimal texlive with "preprint" package
+                   ;; (for fullpage.sty).  (invoke "make" "sly-refcard.pdf")
+                   (install-file "sly.info" info-dir)
+                   (copy-recursively "html" (string-append doc-dir "/html")))
+                 (for-each (lambda (f)
+                             (install-file f doc-dir)
+                             (delete-file f))
+                           doc-files)
+                 (delete-file-recursively "doc")
+                 #t))))))
       (home-page "https://github.com/joaotavora/sly")
       (synopsis "Sylvester the Cat's Common Lisp IDE")
       (description
@@ -6931,13 +6962,13 @@ contains the following improvements over it:
 
 @enumerate
 @item Completely redesigned REPL based on Emacs's own full-featured
-  @code{comint.el}
-@item Live code annotations via a new @code{sly-stickers} contrib
+  @code{comint.el}.
+@item Live code annotations via a new @code{sly-stickers} contrib.
 @item Consistent interactive button interface.  Everything can be copied to
   the REPL.
-@item Multiple inspectors with independent history
-@item Regexp-capable @code{M-x sly-apropos}
-@item Contribs are first class SLY citizens and enabled by default
+@item Multiple inspectors with independent history.
+@item Regexp-capable @code{M-x sly-apropos}.
+@item Contribs are first class SLY citizens and enabled by default.
 @item Use ASDF to loads contribs on demand.
 @end enumerate
 
