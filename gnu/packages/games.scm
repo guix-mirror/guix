@@ -6828,13 +6828,12 @@ game field is extended to 4D space, which has to filled up by the gamer with
        ("innoextract" ,innoextract)))
     (home-page "https://arx-libertatis.org/")
     (synopsis "Port of Arx Fatalis, a first-person role-playing game")
-    (description "Arx Libertatis is a cross-platform, open source port of Arx
-Fatalis, a 2002 first-person role-playing game / dungeon crawler developed by
-Arkane Studios.  This port however does not include the game data, so you need
-to obtain a copy of the original Arx Fatalis or its demo to play Arx
-Libertatis.  Arx Fatalis features crafting, melee and ranged combat, as well
-as a unique casting system where the player draws runes in real time to effect
-the desired spell.")
+    (description "Arx Libertatis is a cross-platform port of Arx Fatalis, a 2002
+first-person role-playing game / dungeon crawler developed by Arkane Studios.
+This port however does not include the game data, so you need to obtain a copy
+of the original Arx Fatalis or its demo to play Arx Libertatis.  Arx Fatalis
+features crafting, melee and ranged combat, as well as a unique casting system
+where the player draws runes in real time to effect the desired spell.")
     (license license:gpl3+)))
 
 (define-public edgar
