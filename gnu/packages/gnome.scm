@@ -3410,9 +3410,9 @@ which are easy to play with the aid of a mouse.")
     (version "5.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/amtk/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "amtk-" version ".tar.xz"))
               (sha256
                (base32
                 "09yy95w1s83c43mh9vha1jbb780yighf5pd2j0ygjmc68sjg871d"))))
