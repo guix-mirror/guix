@@ -109,9 +109,9 @@
       (home-page "http://leenissen.dk/fann/wp/")
       (synopsis "Fast Artificial Neural Network")
       (description
-       "FANN is a free open source neural network library, which implements
-multilayer artificial neural networks in C with support for both fully
-connected and sparsely connected networks.")
+       "FANN is a neural network library, which implements multilayer
+artificial neural networks in C with support for both fully connected and
+sparsely connected networks.")
       (license license:lgpl2.1))))
 
 (define-public libsvm
