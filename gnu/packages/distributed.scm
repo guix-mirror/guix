@@ -18,6 +18,7 @@
 
 (define-module (gnu packages distributed)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -47,8 +48,9 @@
               (uri (git-reference
                     (url "https://github.com/boinc/boinc.git")
                     (commit (string-append "client_release/"
-                                           "7.16/"
-                                           version))))
+                                           (version-major+minor version)
+                                           "/" version))))
+              (file-name (git-file-name "boinc" version))
               (sha256
                (base32
                 "0w2qimcwyjhapk3z7zyq7jkls23hsnmm35iw7m4s4if04fp70dx0"))))
