@@ -34,17 +34,17 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define-public gdb-8.2
+(define-public gdb-8.3
   (package
     (name "gdb")
-    (version "8.2.1")
+    (version "8.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "00i27xqawjv282a07i73lp1l02n0a3ywzhykma75qg500wll6sha"))))
+               "1i2pjwaafrlz7wqm40b4znr77ai32rjsxkpl2az38yyarpbv8m8y"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
@@ -106,19 +106,7 @@ the program is running to try to fix bugs.  It can be used to debug programs
 written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))
 
-(define-public gdb-8.3
-  (package
-    (inherit gdb-8.2)
-    (version "8.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1i2pjwaafrlz7wqm40b4znr77ai32rjsxkpl2az38yyarpbv8m8y"))))))
-
 (define-public gdb
   ;; This is the fixed version that packages depend on.  Update it rarely
   ;; enough to avoid massive rebuilds.
-  gdb-8.2)
+  gdb-8.3)
