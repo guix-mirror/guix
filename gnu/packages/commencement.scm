@@ -1425,43 +1425,46 @@ exec " gcc "/bin/" program
     (inputs (%bootstrap-inputs+toolchain))))
 
 (define diffutils-boot0
-  (package-with-bootstrap-guile
-   (let ((p (package-with-explicit-inputs diffutils
-                                          (lambda _
-                                            `(("make" ,gnu-make-boot0)
-                                              ,@(%bootstrap-inputs+toolchain)))
-                                          #:guile %bootstrap-guile)))
-     (package (inherit p)
-       (name "diffutils-boot0")
-       (native-inputs `())
-       (arguments `(#:tests? #f         ; the test suite needs diffutils
-                    ,@(package-arguments p)))))))
+  (package
+    (inherit diffutils)
+    (name "diffutils-boot0")
+    (native-inputs `())
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:tests? #f                            ; the test suite needs diffutils
+       #:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       ,@(package-arguments diffutils)))))
 
 (define findutils-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package
-                                   (inherit findutils)
-                                   (name "findutils-boot0"))
-                                 (lambda _
-                                   `(("make" ,gnu-make-boot0)
-                                     ("diffutils" ,diffutils-boot0) ; for tests
-                                     ,@(%bootstrap-inputs+toolchain)))
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (package
+    (inherit findutils)
+    (name "findutils-boot0")
+    (source (bootstrap-origin (package-source findutils)))
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ("diffutils" ,diffutils-boot0) ; for tests
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       ,@(package-arguments findutils)))))
 
 (define file-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (package
-                                   (inherit file)
-                                   (name "file-boot0")
-                                   (arguments
-                                    '(#:strip-binaries? #f
-                                      #:validate-runpath? #f)))
-                                 (lambda _
-                                   `(("make" ,gnu-make-boot0)
-                                     ,@(%bootstrap-inputs+toolchain)))
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (package
+    (inherit file)
+    (source (bootstrap-origin (package-source file)))
+    (name "file-boot0")
+    (inputs
+     `(("make" ,gnu-make-boot0)
+       ,@(%bootstrap-inputs+toolchain)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:strip-binaries? #f
+       #:validate-runpath? #f))))
 
 (define (%boot0-inputs)
   `(("make" ,gnu-make-boot0)
@@ -1482,47 +1485,49 @@ exec " gcc "/bin/" program
 ;; reference to the target libc.
 
 (define binutils-boot0
-  (package-with-bootstrap-guile
-   (package (inherit binutils)
-     (name "binutils-cross-boot0")
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
+  (package
+    (inherit binutils)
+    (source (bootstrap-origin (package-source binutils)))
+    (name "binutils-cross-boot0")
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
 
-        #:modules ((guix build gnu-build-system)
-                   (guix build utils)
-                   (ice-9 ftw))                    ; for 'scandir'
-        #:phases (modify-phases %standard-phases
-                   (add-after 'install 'add-symlinks
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       ;; The cross-gcc invokes 'as', 'ld', etc, without the
-                       ;; triplet prefix, so add symlinks.
-                       (let ((out (assoc-ref outputs "out"))
-                             (triplet-prefix (string-append ,(boot-triplet) "-")))
-                         (define (has-triplet-prefix? name)
-                           (string-prefix? triplet-prefix name))
-                         (define (remove-triplet-prefix name)
-                           (substring name (string-length triplet-prefix)))
-                         (with-directory-excursion (string-append out "/bin")
-                           (for-each (lambda (name)
-                                       (symlink name (remove-triplet-prefix name)))
-                                     (scandir "." has-triplet-prefix?)))
-                         #t))))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 ftw))                    ; for 'scandir'
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'add-symlinks
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; The cross-gcc invokes 'as', 'ld', etc, without the
+                      ;; triplet prefix, so add symlinks.
+                      (let ((out (assoc-ref outputs "out"))
+                            (triplet-prefix (string-append ,(boot-triplet) "-")))
+                        (define (has-triplet-prefix? name)
+                          (string-prefix? triplet-prefix name))
+                        (define (remove-triplet-prefix name)
+                          (substring name (string-length triplet-prefix)))
+                        (with-directory-excursion (string-append out "/bin")
+                          (for-each (lambda (name)
+                                      (symlink name (remove-triplet-prefix name)))
+                                    (scandir "." has-triplet-prefix?)))
+                        #t))))
 
-        ,@(substitute-keyword-arguments (package-arguments binutils)
-            ((#:configure-flags cf)
-             `(cons ,(string-append "--target=" (boot-triplet))
-                    ,cf)))))
-     (inputs (%boot0-inputs)))))
+       ,@(substitute-keyword-arguments (package-arguments binutils)
+           ((#:configure-flags cf)
+            `(cons ,(string-append "--target=" (boot-triplet))
+                   ,cf)))))
+    (inputs (%boot0-inputs))))
 
 (define libstdc++-boot0
   ;; GCC's libcc1 is always built as a shared library (the top-level
   ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
   ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
   ;; C++14 features missing in some of our bootstrap compilers.
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
+  (let ((lib (make-libstdc++ gcc-4.9)))
     (package
       (inherit lib)
+      (source (bootstrap-origin (package-source lib)))
       (name "libstdc++-boot0")
       (arguments
        `(#:guile ,%bootstrap-guile
@@ -1548,86 +1553,87 @@ exec " gcc "/bin/" program
       (native-inputs '()))))
 
 (define gcc-boot0
-  (package-with-bootstrap-guile
-   (package (inherit gcc)
-     (name "gcc-cross-boot0")
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
-        #:modules ((guix build gnu-build-system)
-                   (guix build utils)
-                   (ice-9 regex)
-                   (srfi srfi-1)
-                   (srfi srfi-26))
-        ,@(substitute-keyword-arguments (package-arguments gcc)
-            ((#:configure-flags flags)
-             `(append (list ,(string-append "--target=" (boot-triplet))
+  (package
+    (inherit gcc)
+    (name "gcc-cross-boot0")
+    (source (bootstrap-origin (package-source gcc)))
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 regex)
+                  (srfi srfi-1)
+                  (srfi srfi-26))
+       ,@(substitute-keyword-arguments (package-arguments gcc)
+           ((#:configure-flags flags)
+            `(append (list ,(string-append "--target=" (boot-triplet))
 
-                            ;; No libc yet.
-                            "--without-headers"
+                           ;; No libc yet.
+                           "--without-headers"
 
-                            ;; Disable features not needed at this stage.
-                            "--disable-shared"
-                            "--enable-languages=c,c++"
+                           ;; Disable features not needed at this stage.
+                           "--disable-shared"
+                           "--enable-languages=c,c++"
 
-                            ;; libstdc++ cannot be built at this stage
-                            ;; ("Link tests are not allowed after
-                            ;; GCC_NO_EXECUTABLES.").
-                            "--disable-libstdc++-v3"
+                           ;; libstdc++ cannot be built at this stage
+                           ;; ("Link tests are not allowed after
+                           ;; GCC_NO_EXECUTABLES.").
+                           "--disable-libstdc++-v3"
 
-                            "--disable-threads"
-                            "--disable-libmudflap"
-                            "--disable-libatomic"
-                            "--disable-libsanitizer"
-                            "--disable-libitm"
-                            "--disable-libgomp"
-                            "--disable-libmpx"
-                            "--disable-libcilkrts"
-                            "--disable-libvtv"
-                            "--disable-libssp"
-                            "--disable-libquadmath"
-                            "--disable-decimal-float")
-                      (remove (cut string-match
-                                "--(with-system-zlib|enable-languages.*)" <>)
-                              ,flags)))
-            ((#:make-flags flags)
-             `(let* ((libc        (assoc-ref %build-inputs "libc"))
-                     (libc-native (or (assoc-ref %build-inputs "libc-native")
-                                      libc)))
-                `(,(string-append "LDFLAGS="
-                                  "-Wl,-rpath=" libc-native "/lib "
-                                  "-Wl,-dynamic-linker "
-                                  "-Wl," libc-native ,(glibc-dynamic-linker
-                                                       (match (%current-system)
-                                                         ("x86_64-linux" "i686-linux")
-                                                         (_ (%current-system))))))))
-            ((#:phases phases)
-             `(modify-phases ,phases
-                (add-after 'unpack 'unpack-gmp&co
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                          (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                          (mpc  (assoc-ref %build-inputs "mpc-source")))
+                           "--disable-threads"
+                           "--disable-libmudflap"
+                           "--disable-libatomic"
+                           "--disable-libsanitizer"
+                           "--disable-libitm"
+                           "--disable-libgomp"
+                           "--disable-libmpx"
+                           "--disable-libcilkrts"
+                           "--disable-libvtv"
+                           "--disable-libssp"
+                           "--disable-libquadmath"
+                           "--disable-decimal-float")
+                     (remove (cut string-match
+                               "--(with-system-zlib|enable-languages.*)" <>)
+                             ,flags)))
+           ((#:make-flags flags)
+            `(let* ((libc        (assoc-ref %build-inputs "libc"))
+                    (libc-native (or (assoc-ref %build-inputs "libc-native")
+                                     libc)))
+               `(,(string-append "LDFLAGS="
+                                 "-Wl,-rpath=" libc-native "/lib "
+                                 "-Wl,-dynamic-linker "
+                                 "-Wl," libc-native ,(glibc-dynamic-linker
+                                                      (match (%current-system)
+                                                        ("x86_64-linux" "i686-linux")
+                                                        (_ (%current-system))))))))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-after 'unpack 'unpack-gmp&co
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                         (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                         (mpc  (assoc-ref %build-inputs "mpc-source")))
 
-                      ;; To reduce the set of pre-built bootstrap inputs, build
-                      ;; GMP & co. from GCC.
-                      (for-each (lambda (source)
-                                  (invoke "tar" "xvf" source))
-                                (list gmp mpfr mpc))
+                     ;; To reduce the set of pre-built bootstrap inputs, build
+                     ;; GMP & co. from GCC.
+                     (for-each (lambda (source)
+                                 (invoke "tar" "xvf" source))
+                               (list gmp mpfr mpc))
 
-                      ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
-                      ,@(map (lambda (lib)
-                               ;; Drop trailing letters, as gmp-6.0.0a unpacks
-                               ;; into gmp-6.0.0.
-                               `(symlink ,(string-trim-right
-                                           (package-full-name lib "-")
-                                           char-set:letter)
-                                         ,(package-name lib)))
-                             (list gmp-6.0 mpfr mpc))
-                      #t)))
-                ,(match (%current-system)
-                   ((or "i686-linux" "x86_64-linux")
-                    '(add-before 'configure 'fix-libcc1
+                     ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
+                     ,@(map (lambda (lib)
+                              ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                              ;; into gmp-6.0.0.
+                              `(symlink ,(string-trim-right
+                                          (package-full-name lib "-")
+                                          char-set:letter)
+                                        ,(package-name lib)))
+                            (list gmp-6.0 mpfr mpc))
+                     #t)))
+               ,(match (%current-system)
+                  ((or "i686-linux" "x86_64-linux")
+                   '(add-before 'configure 'fix-libcc1
                       (lambda* (#:key inputs #:allow-other-keys)
                         ;; libcc1.so NEEDs libgcc_s.so, so provide one here
                         ;; to placate the 'validate-runpath' phase.
@@ -1639,127 +1645,137 @@ exec " gcc "/bin/" program
                         (substitute* "libcc1/configure"
                           (("g\\+\\+ -v") "true"))
                         #t)))
-                   (_ '(add-before 'configure 'return-true
-                         (lambda _ #t))))
-                (add-after 'install 'symlink-libgcc_eh
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "lib")))
-                      ;; Glibc wants to link against libgcc_eh, so provide
-                      ;; it.
-                      (with-directory-excursion
-                          (string-append out "/lib/gcc/"
-                                         ,(boot-triplet)
-                                         "/" ,(package-version gcc))
-                        (symlink "libgcc.a" "libgcc_eh.a"))
-                      #t))))))))
+                  (_ '(add-before 'configure 'return-true
+                        (lambda _ #t))))
+               (add-after 'install 'symlink-libgcc_eh
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "lib")))
+                     ;; Glibc wants to link against libgcc_eh, so provide
+                     ;; it.
+                     (with-directory-excursion
+                         (string-append out "/lib/gcc/"
+                                        ,(boot-triplet)
+                                        "/" ,(package-version gcc))
+                       (symlink "libgcc.a" "libgcc_eh.a"))
+                     #t))))))))
 
-     (inputs `(("gmp-source" ,(package-source gmp-6.0))
-               ("mpfr-source" ,(package-source mpfr))
-               ("mpc-source" ,(package-source mpc))
-               ("binutils-cross" ,binutils-boot0)
+    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
+              ("mpfr-source" ,(bootstrap-origin (package-source mpfr)))
+              ("mpc-source" ,(bootstrap-origin (package-source mpc)))
+              ("binutils-cross" ,binutils-boot0)
 
-               ;; The libstdc++ that libcc1 links against.
-               ("libstdc++" ,libstdc++-boot0)
+              ;; The libstdc++ that libcc1 links against.
+              ("libstdc++" ,libstdc++-boot0)
 
-               ;; Call it differently so that the builder can check whether
-               ;; the "libc" input is #f.
-               ("libc-native" ,@(assoc-ref (%boot0-inputs) "libc"))
-               ,@(alist-delete "libc" (%boot0-inputs))))
+              ;; Call it differently so that the builder can check whether
+              ;; the "libc" input is #f.
+              ("libc-native" ,@(assoc-ref (%boot0-inputs) "libc"))
+              ,@(alist-delete "libc" (%boot0-inputs))))
 
-     ;; No need for the native-inputs to build the documentation at this stage.
-     (native-inputs `()))))
+    ;; No need for the native-inputs to build the documentation at this stage.
+    (native-inputs `())))
 
 (define perl-boot0
-  (let ((perl (package
-                (inherit perl)
-                (name "perl-boot0")
-                (arguments
-                 ;; At the very least, this must not depend on GCC & co.
-                 (let ((args `(#:validate-runpath? #f
-                               #:disallowed-references
-                               ,(list %bootstrap-binutils))))
-                   `(,@args
-                     ,@(substitute-keyword-arguments (package-arguments perl)
-                         ((#:phases phases)
-                          `(modify-phases ,phases
-                             ;; Pthread support is missing in the bootstrap compiler
-                             ;; (broken spec file), so disable it.
-                             (add-before 'configure 'disable-pthreads
-                               (lambda _
-                                 (substitute* "Configure"
-                                   (("^libswanted=(.*)pthread" _ before)
-                                    (string-append "libswanted=" before)))
-                                 #t))))
-                         ;; Do not configure with '-Dusethreads' since pthread
-                         ;; support is missing.
-                         ((#:configure-flags configure-flags)
-                          `(delete "-Dusethreads" ,configure-flags)))))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs perl
-                                   %boot0-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+  (package
+    (inherit perl)
+    (name "perl-boot0")
+    (source (bootstrap-origin (package-source perl)))
+    (inputs (%boot0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:validate-runpath? #f
+
+       ;; At the very least, this must not depend on GCC & co.
+       #:disallowed-references ,(list %bootstrap-binutils)
+
+       ,@(substitute-keyword-arguments (package-arguments perl)
+           ((#:phases phases)
+            `(modify-phases ,phases
+               ;; Pthread support is missing in the bootstrap compiler
+               ;; (broken spec file), so disable it.
+               (add-before 'configure 'disable-pthreads
+                 (lambda _
+                   (substitute* "Configure"
+                     (("^libswanted=(.*)pthread" _ before)
+                      (string-append "libswanted=" before)))
+                   #t))))
+           ;; Do not configure with '-Dusethreads' since pthread
+           ;; support is missing.
+           ((#:configure-flags configure-flags)
+            `(delete "-Dusethreads" ,configure-flags)))))))
 
 (define m4-boot0
-  (package-with-bootstrap-guile
-   (package
-     (inherit m4)
-     (name "m4-boot0")
-     (inputs (%boot0-inputs))
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
-        ,@(package-arguments m4))))))
+  (package
+    (inherit m4)
+    (name "m4-boot0")
+    (source (bootstrap-origin (package-source m4)))
+    (inputs (%boot0-inputs))
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       ,@(package-arguments m4)))))
+
+(define m4-boot0*
+  (package
+    ;; TODO: On the next rebuild cycle, use M4-BOOT0 as is.
+    (inherit m4-boot0)
+    (name "m4")))
 
 (define bison-boot0
   ;; This Bison is needed to build MiG so we need it early in the process.
   ;; Recent versions of Linux-Libre headers also depend on this.
-  (let* ((bison (package (inherit bison)
-                  (propagated-inputs `(("m4" ,m4)))
-                  (inputs '())                    ;remove Flex...
-                  (arguments
-                   `(#:tests? #f                  ;... and thus disable tests
+  (package
+    (inherit bison)
+    ;; TODO: On the next build cycle, do:
+    ;;(name "bison-boot0")
+    (propagated-inputs `(("m4" ,m4-boot0*)))
+    (native-inputs `(("perl" ,perl-boot0)))
+    (inputs (%boot0-inputs))                      ;remove Flex...
+    (arguments
+     `(#:tests? #f                                ;... and thus disable tests
+       #:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
 
-                     ;; XXX: These flags should be unconditional, but for now
-                     ;; we just add them on x86 to avoid a full rebuild.
-                     ;; TODO: On the next core-updates, use
-                     ;; 'substitute-keyword-arguments' to inherit them from
-                     ;; BISON.
-                     ,@(if (member (%current-system)
-                                   '("x86_64-linux" "i686-linux"))
-                           '(#:parallel-build? #f
-                             #:parallel-tests? #f)
-                           '())
+       ;; XXX: These flags should be unconditional, but for now
+       ;; we just add them on x86 to avoid a full rebuild.
+       ;; TODO: On the next core-updates, use
+       ;; 'substitute-keyword-arguments' to inherit them from
+       ;; BISON.
+       ,@(if (member (%current-system)
+                     '("x86_64-linux" "i686-linux"))
+             '(#:parallel-build? #f
+               #:parallel-tests? #f)
+             '())
 
-                     ;; Zero timestamps in liby.a; this must be done
-                     ;; explicitly here because the bootstrap Binutils don't
-                     ;; do that (default is "cru".)
-                     #:make-flags `("ARFLAGS=crD"
-                                    ,,(match (%current-system)
-                                        ;; ranlib: '-D': No such file
-                                        ((or "i686-linux" "x86_64-linux")
-                                         "RANLIB=ranlib")
-                                        (_
-                                         "RANLIB=ranlib -D"))
-                                    "V=1"))))))
-    (package
-      (inherit (package-with-bootstrap-guile
-                (package-with-explicit-inputs bison %boot0-inputs
-                                              (current-source-location)
-                                              #:guile %bootstrap-guile)))
-      (native-inputs `(("perl" ,perl-boot0))))))
+       ;; Zero timestamps in liby.a; this must be done
+       ;; explicitly here because the bootstrap Binutils don't
+       ;; do that (default is "cru".)
+       #:make-flags `("ARFLAGS=crD"
+                      ,,(match (%current-system)
+                          ;; ranlib: '-D': No such file
+                          ((or "i686-linux" "x86_64-linux")
+                           "RANLIB=ranlib")
+                          (_
+                           "RANLIB=ranlib -D"))
+                      "V=1")))))
 
 (define flex-boot0
   ;; This Flex is needed to build MiG as well as Linux-Libre headers.
-  (let* ((flex (package (inherit flex)
-                 (native-inputs `(("bison" ,bison-boot0)))
-                 (propagated-inputs `(("m4" ,m4)))
-                 (inputs '())
-                 (arguments '(#:tests? #f)))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs flex %boot0-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+  (package
+    (inherit flex)
+    (native-inputs `(("bison" ,bison-boot0)))
+    (propagated-inputs
+     ;; XXX: Here we use an 'm4-boot0' package that's not eq? so that it
+     ;; appears twice in '%build-inputs', like when we were using
+     ;; 'package-with-explicit-inputs'.
+     ;; TODO: Remove this hack on the next rebuild cycle.
+     `(("m4" ,(package (inherit m4-boot0*)))))
+    (inputs (%boot0-inputs))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:tests? #f))))
 
 (define linux-libre-headers-boot0
   (mlambda ()
@@ -1768,18 +1784,19 @@ exec " gcc "/bin/" program
     ;; between (gnu packages linux) and this module.  Additionally, memoize
     ;; the result to play well with further memoization and code that relies
     ;; on pointer identity; see <https://bugs.gnu.org/30155>.
-    (package-with-bootstrap-guile
-     (package (inherit linux-libre-headers)
-              (arguments `(#:guile ,%bootstrap-guile
-                           #:implicit-inputs? #f
-                           ,@(package-arguments linux-libre-headers)))
-              (native-inputs
-               `(("perl" ,perl-boot0)
+    (package
+      (inherit linux-libre-headers)
+      (arguments
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
+         ,@(package-arguments linux-libre-headers)))
+      (native-inputs
+       `(("perl" ,perl-boot0)
 
-                 ;; Flex and Bison are required since version 4.16.
-                 ("flex" ,flex-boot0)
-                 ("bison" ,bison-boot0)
-                 ,@(%boot0-inputs)))))))
+         ;; Flex and Bison are required since version 4.16.
+         ("flex" ,flex-boot0)
+         ("bison" ,bison-boot0)
+         ,@(%boot0-inputs))))))
 
 (define gnumach-headers-boot0
   (package-with-bootstrap-guile
@@ -1844,81 +1861,86 @@ the bootstrap environment."
   ;; We build without ncurses because it fails to build at this stage, and
   ;; because we don't need the stand-alone Info reader.
   ;; Also, use (%BOOT0-INPUTS) to avoid building Perl once more.
-  (let ((texinfo (package (inherit texinfo)
-                   (native-inputs '())
-                   (inputs `(("perl" ,perl-boot0)))
+  (package
+    (inherit texinfo)
+    (native-inputs '())
+    (inputs `(,@(%boot0-inputs)
+              ("perl" ,perl-boot0)))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
 
-                   ;; Some of Texinfo 6.1's tests would fail with "Couldn't
-                   ;; set UTF-8 character type in locale" but we don't have a
-                   ;; UTF-8 locale at this stage, so skip them.
-                   (arguments '(#:tests? #f)))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs texinfo %boot0-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+       ;; Some of Texinfo 6.1's tests would fail with "Couldn't set UTF-8
+       ;; character type in locale" but we don't have a UTF-8 locale at this
+       ;; stage, so skip them.
+       #:tests? #f))))
 
 (define expat-sans-tests
   (package
     (inherit expat)
+    (inputs (%boot0-inputs))
     (arguments
      ;; XXX: Linking 'runtestscpp' fails with things like:
      ;;
      ;;   ld: Dwarf Error: found dwarf version '3789', this reader only handles version 2 and 3 information.
      ;;
      ;; Skip tests altogether.
-     (substitute-keyword-arguments (package-arguments expat)
-       ((#:configure-flags flags ''())
-        ;; Since we're not passing the right -Wl,-rpath flags, build the
-        ;; static library to avoid RUNPATH validation failure.
-        `(cons "--disable-shared" ,flags))
-       ((#:tests? _ #f) #f)))))
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+
+       ,@(substitute-keyword-arguments (package-arguments expat)
+           ((#:configure-flags flags ''())
+            ;; Since we're not passing the right -Wl,-rpath flags, build the
+            ;; static library to avoid RUNPATH validation failure.
+            `(cons "--disable-shared" ,flags))
+           ((#:tests? _ #f) #f))))))
 
 (define python-boot0
-  (let ((python (package
-                  (inherit python-minimal)
-                  ;; We cannot use Python 3.7 and later here, because they require
-                  ;; pthreads, which is missing on non-x86 platforms at this stage.
-                  ;; Python 3.6 technically supports being built without threading
-                  ;; support, but requires additional patches.
-                  (version "3.5.7")
-                  (source (origin
-                            (inherit (package-source python))
-                            (uri (string-append "https://www.python.org/ftp/python/"
-                                                version "/Python-" version ".tar.xz"))
-                            (patches '())
-                            (sha256
-                             (base32
-                              "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18"))))
-                  (inputs
-                   `(("expat" ,expat-sans-tests))) ;remove OpenSSL, zlib, etc.
-                  (native-inputs '())              ;and pkg-config
-                  (arguments
-                   (substitute-keyword-arguments (package-arguments
-                                                  python-minimal)
-                     ;; Disable features that cannot be built at this stage.
-                     ((#:configure-flags _ ''())
-                      `(list "--without-ensurepip"
-                             "--without-threads"))
-                     ;; Clear #:make-flags, such that changes to the regular
-                     ;; Python package won't interfere with this one.
-                     ((#:make-flags _ ''()) ''())
-                     ((#:phases phases)
-                      `(modify-phases ,phases
-                         (add-before 'configure 'disable-modules
-                           (lambda _
-                             (substitute* "setup.py"
-                               ;; Disable ctypes, since it requires libffi.
-                               (("extensions\\.append\\(ctypes\\)") "")
-                               ;; Prevent the 'ossaudiodev' extension from being
-                               ;; built, since it requires Linux headers.
-                               (("'linux', ") ""))
-                             #t))
-                         (delete 'set-TZDIR)))
-                     ((#:tests? _ #f) #f))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs python %boot0-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+  (package
+    (inherit python-minimal)
+    ;; We cannot use Python 3.7 and later here, because they require
+    ;; pthreads, which is missing on non-x86 platforms at this stage.
+    ;; Python 3.6 technically supports being built without threading
+    ;; support, but requires additional patches.
+    (version "3.5.7")
+    (source (bootstrap-origin
+             (origin
+               (inherit (package-source python))
+               (uri (string-append "https://www.python.org/ftp/python/"
+                                   version "/Python-" version ".tar.xz"))
+               (patches '())
+               (sha256
+                (base32
+                 "1p67pnp2ca5przx2s45r8m55dcn6f5hsm0l4s1zp7mglkf4r4n18")))))
+    (inputs
+     `(,@(%boot0-inputs)
+       ("expat" ,expat-sans-tests)))              ;remove OpenSSL, zlib, etc.
+    (native-inputs '())                           ;and pkg-config
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+
+       ,@(substitute-keyword-arguments (package-arguments python-minimal)
+           ;; Disable features that cannot be built at this stage.
+           ((#:configure-flags _ ''())
+            `(list "--without-ensurepip"
+                   "--without-threads"))
+           ;; Clear #:make-flags, such that changes to the regular
+           ;; Python package won't interfere with this one.
+           ((#:make-flags _ ''()) ''())
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-before 'configure 'disable-modules
+                 (lambda _
+                   (substitute* "setup.py"
+                     ;; Disable ctypes, since it requires libffi.
+                     (("extensions\\.append\\(ctypes\\)") "")
+                     ;; Prevent the 'ossaudiodev' extension from being
+                     ;; built, since it requires Linux headers.
+                     (("'linux', ") ""))
+                   #t))
+               (delete 'set-TZDIR)))
+           ((#:tests? _ #f) #f))))))
 
 (define (ld-wrapper-boot0)
   ;; We need this so binaries on Hurd will have libmachuser and libhurduser
@@ -1942,65 +1964,66 @@ the bootstrap environment."
   ;; store path has no dependencies.  Actually, the really-final libc is
   ;; built just below; the only difference is that this one uses the
   ;; bootstrap Bash.
-  (package-with-bootstrap-guile
-   (package (inherit glibc)
-     (name "glibc-intermediate")
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
+  (package
+    (inherit glibc)
+    (name "glibc-intermediate")
+    (source (bootstrap-origin (package-source glibc)))
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
 
-        ,@(substitute-keyword-arguments (package-arguments glibc)
-            ((#:configure-flags flags)
-             `(append (list ,(string-append "--host=" (boot-triplet))
-                            ,(string-append "--build="
-                                            (nix-system->gnu-triplet)))
-                      ,flags))
-            ((#:phases phases)
-             `(modify-phases ,phases
-                (add-before 'configure 'pre-configure
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    ;; Don't clobber CPATH with the bootstrap libc.
-                    (setenv "NATIVE_CPATH" (getenv "CPATH"))
-                    (unsetenv "CPATH")
+       ,@(substitute-keyword-arguments (package-arguments glibc)
+           ((#:configure-flags flags)
+            `(append (list ,(string-append "--host=" (boot-triplet))
+                           ,(string-append "--build="
+                                           (nix-system->gnu-triplet)))
+                     ,flags))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (add-before 'configure 'pre-configure
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Don't clobber CPATH with the bootstrap libc.
+                   (setenv "NATIVE_CPATH" (getenv "CPATH"))
+                   (unsetenv "CPATH")
 
-                    ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
-                    ,@(if (hurd-triplet? (%current-system))
-                          `((substitute* "libpthread/Makefile"
-                              (("LDLIBS-pthread.so =.*")
-                               (string-append "LDLIBS-pthread.so = "
-                                              (assoc-ref %build-inputs "kernel-headers")
-                                              "/lib/libihash.a\n"))))
-                          '())
+                   ;; Tell 'libpthread' where to find 'libihash' on Hurd systems.
+                   ,@(if (hurd-triplet? (%current-system))
+                         `((substitute* "libpthread/Makefile"
+                             (("LDLIBS-pthread.so =.*")
+                              (string-append "LDLIBS-pthread.so = "
+                                             (assoc-ref %build-inputs "kernel-headers")
+                                             "/lib/libihash.a\n"))))
+                         '())
 
-                    ;; 'rpcgen' needs native libc headers to be built.
-                    (substitute* "sunrpc/Makefile"
-                      (("sunrpc-CPPFLAGS =.*" all)
-                       (string-append "CPATH = $(NATIVE_CPATH)\n"
-                                      "export CPATH\n"
-                                      all "\n")))
-                    #t)))))))
-     (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
-     (native-inputs
-      `(("bison" ,bison-boot0)
-        ("texinfo" ,texinfo-boot0)
-        ("perl" ,perl-boot0)
-        ("python" ,python-boot0)))
-     (inputs
-      `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
-        ;; it in $CPATH, hence the 'pre-configure' phase above.
-        ,@(%boot1-inputs)
+                   ;; 'rpcgen' needs native libc headers to be built.
+                   (substitute* "sunrpc/Makefile"
+                     (("sunrpc-CPPFLAGS =.*" all)
+                      (string-append "CPATH = $(NATIVE_CPATH)\n"
+                                     "export CPATH\n"
+                                     all "\n")))
+                   #t)))))))
+    (propagated-inputs `(("kernel-headers" ,(kernel-headers-boot0))))
+    (native-inputs
+     `(("bison" ,bison-boot0)
+       ("texinfo" ,texinfo-boot0)
+       ("perl" ,perl-boot0)
+       ("python" ,python-boot0)))
+    (inputs
+     `( ;; The boot inputs.  That includes the bootstrap libc.  We don't want
+       ;; it in $CPATH, hence the 'pre-configure' phase above.
+       ,@(%boot1-inputs)
 
-        ;; A native MiG is needed to build Glibc on Hurd.
-        ,@(if (hurd-triplet? (%current-system))
-              `(("mig" ,mig-boot0))
-              '())
+       ;; A native MiG is needed to build Glibc on Hurd.
+       ,@(if (hurd-triplet? (%current-system))
+             `(("mig" ,mig-boot0))
+             '())
 
-        ;; A native GCC is needed to build `cross-rpcgen'.
-        ("native-gcc" ,@(assoc-ref (%boot0-inputs) "gcc"))
+       ;; A native GCC is needed to build `cross-rpcgen'.
+       ("native-gcc" ,@(assoc-ref (%boot0-inputs) "gcc"))
 
-        ;; Here, we use the bootstrap Bash, which is not satisfactory
-        ;; because we don't want to depend on bootstrap tools.
-        ("static-bash" ,@(assoc-ref (%boot0-inputs) "bash")))))))
+       ;; Here, we use the bootstrap Bash, which is not satisfactory
+       ;; because we don't want to depend on bootstrap tools.
+       ("static-bash" ,@(assoc-ref (%boot0-inputs) "bash"))))))
 
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
@@ -2064,99 +2087,92 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
-  (let ((bash (package
-                (inherit static-bash)
-                (arguments
-                 (substitute-keyword-arguments
-                     (package-arguments static-bash)
-                   ((#:guile _ #f)
-                    '%bootstrap-guile)
-                   ((#:configure-flags flags '())
-                    ;; Add a '-L' flag so that the pseudo-cross-ld of
-                    ;; BINUTILS-BOOT0 can find libc.a.
-                    `(append ,flags
-                             (list (string-append "LDFLAGS=-static -L"
-                                                  (assoc-ref %build-inputs
-                                                             "libc:static")
-                                                  "/lib")))))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs
-      bash
-      (lambda _
-        `(("gcc" ,(gcc-boot0-intermediate-wrapped))
-          ("libc" ,glibc-final-with-bootstrap-bash)
-          ("libc:static" ,glibc-final-with-bootstrap-bash "static")
-          ,@(fold alist-delete (%boot1-inputs)
-                  '("gcc" "libc"))))
-      (current-source-location)
-      #:guile %bootstrap-guile))))
+  (package
+    (inherit static-bash)
+    (source (bootstrap-origin (package-source static-bash)))
+    (inputs `(("gcc" ,(gcc-boot0-intermediate-wrapped))
+              ("libc" ,glibc-final-with-bootstrap-bash)
+              ("libc:static" ,glibc-final-with-bootstrap-bash "static")
+              ,@(fold alist-delete (%boot1-inputs)
+                      '("gcc" "libc"))))
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+
+       ,@(substitute-keyword-arguments (package-arguments static-bash)
+           ((#:configure-flags flags '())
+            ;; Add a '-L' flag so that the pseudo-cross-ld of
+            ;; BINUTILS-BOOT0 can find libc.a.
+            `(append ,flags
+                     (list (string-append "LDFLAGS=-static -L"
+                                          (assoc-ref %build-inputs
+                                                     "libc:static")
+                                          "/lib")))))))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
-  (let ((gettext-minimal
-         (package (inherit gettext-minimal)
-           (name "gettext-boot0")
-           ;; Newer versions of GNU gettext depends on libxml2 and ncurses.  To
-           ;; simplify the dependency chain, we stick to this version here.
-           (version "0.19.8.1")
-           (source (origin
-                     (method url-fetch)
-                     (uri (string-append "mirror://gnu/gettext/gettext-"
-                                         version ".tar.gz"))
-                     (sha256
-                      (base32
-                       "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))))
-           (inputs '())                           ;zero dependencies
-           (arguments
-            `(#:tests? #f
-              #:phases (modify-phases %standard-phases
-                         ;; Build only the tools.
-                         (add-after 'unpack 'chdir
-                           (lambda _
-                             (chdir "gettext-tools")
-                             #t))
+  (package
+    (inherit gettext-minimal)
+    (name "gettext-boot0")
+    ;; Newer versions of GNU gettext depends on libxml2 and ncurses.  To
+    ;; simplify the dependency chain, we stick to this version here.
+    (version "0.19.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gettext/gettext-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hsw28f9q9xaggjlsdp2qmbp2rbd1mp0njzan2ld9kiqwkq2m57z"))))
+    (inputs (%boot1-inputs))                      ;zero dependencies
+    (arguments
+     `(#:implicit-inputs? #f
+       #:guile ,%bootstrap-guile
+       #:tests? #f
+       #:phases (modify-phases %standard-phases
+                  ;; Build only the tools.
+                  (add-after 'unpack 'chdir
+                    (lambda _
+                      (chdir "gettext-tools")
+                      #t))
 
-                         ;; Some test programs require pthreads, which we don't have.
-                         (add-before 'configure 'no-test-programs
-                           (lambda _
-                             (substitute* "tests/Makefile.in"
-                               (("^PROGRAMS =.*$")
-                                "PROGRAMS =\n"))
-                             #t))))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs gettext-minimal
-                                   %boot1-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+                  ;; Some test programs require pthreads, which we don't have.
+                  (add-before 'configure 'no-test-programs
+                    (lambda _
+                      (substitute* "tests/Makefile.in"
+                        (("^PROGRAMS =.*$")
+                         "PROGRAMS =\n"))
+                      #t)))))))
 
 (define glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
   ;; Use 'package/inherit' so we get the 'replacement' of 'glibc', if any.
-  (let ((glibc (package-with-bootstrap-guile glibc)))
-    (package/inherit glibc
-      (name "glibc")
-      (inputs `(("static-bash" ,static-bash-for-glibc)
-                ,@(alist-delete
-                   "static-bash"
-                   (package-inputs glibc-final-with-bootstrap-bash))))
+  (package/inherit
+   glibc
+   (name "glibc")
+   (source (bootstrap-origin (package-source glibc)))
+   (inputs `(("static-bash" ,static-bash-for-glibc)
+             ,@(alist-delete
+                "static-bash"
+                (package-inputs glibc-final-with-bootstrap-bash))))
 
-      ;; This time we need 'msgfmt' to install all the libc.mo files.
-      (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
-                       ("gettext" ,gettext-boot0)))
+   ;; This time we need 'msgfmt' to install all the libc.mo files.
+   (native-inputs `(,@(package-native-inputs glibc-final-with-bootstrap-bash)
+                    ("gettext" ,gettext-boot0)))
 
-      (propagated-inputs
-       (package-propagated-inputs glibc-final-with-bootstrap-bash))
+   (propagated-inputs
+    (package-propagated-inputs glibc-final-with-bootstrap-bash))
 
-      ;; The final libc only refers to itself, but the 'debug' output contains
-      ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
-      ;; if 'allowed-references' were per-output.
-      (arguments
-       `(#:allowed-references
-         ,(cons* `(,gcc-boot0 "lib") (kernel-headers-boot0)
-                 static-bash-for-glibc
-                 (package-outputs glibc-final-with-bootstrap-bash))
+   ;; The final libc only refers to itself, but the 'debug' output contains
+   ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
+   ;; if 'allowed-references' were per-output.
+   (arguments
+    `(#:allowed-references
+      ,(cons* `(,gcc-boot0 "lib") (kernel-headers-boot0)
+              static-bash-for-glibc
+              (package-outputs glibc-final-with-bootstrap-bash))
 
-         ,@(package-arguments glibc-final-with-bootstrap-bash))))))
+      ,@(package-arguments glibc-final-with-bootstrap-bash)))))
 
 (define (gcc-boot0-wrapped)
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
@@ -2172,21 +2188,23 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ,@(fold alist-delete (%boot1-inputs) '("libc" "gcc" "linux-libre-headers"))))
 
 (define binutils-final
-  (package-with-bootstrap-guile
-   (package (inherit binutils)
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
-        #:allowed-references ("out" ,glibc-final)
-        ,@(package-arguments binutils)))
-     (inputs (%boot2-inputs)))))
+  (package
+    (inherit binutils)
+    (source (bootstrap-origin (package-source binutils)))
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       #:allowed-references ("out" ,glibc-final)
+       ,@(package-arguments binutils)))
+    (inputs (%boot2-inputs))))
 
 (define libstdc++
   ;; Intermediate libstdc++ that will allow us to build the final GCC
   ;; (remember that GCC-BOOT0 cannot build libstdc++.)
-  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc))))
+  (let ((lib (make-libstdc++ gcc)))
     (package
       (inherit lib)
+      (source (bootstrap-origin (package-source lib)))
       (arguments
        `(#:guile ,%bootstrap-guile
          #:implicit-inputs? #f
@@ -2211,15 +2229,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define zlib-final
   ;; Zlib used by GCC-FINAL.
-  (package-with-bootstrap-guile
-   (package
-     (inherit zlib)
-     (arguments
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
-        #:allowed-references ("out" ,glibc-final)
-        ,@(package-arguments zlib)))
-     (inputs (%boot2-inputs)))))
+  (package
+    (inherit zlib)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
+       #:allowed-references ("out" ,glibc-final)
+       ,@(package-arguments zlib)))
+    (inputs (%boot2-inputs))))
 
 (define (ld-wrapper-boot3)
   ;; A linker wrapper that uses the bootstrap Guile.
@@ -2328,17 +2345,18 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.  Use "bash-minimal" to avoid an extra dependency
   ;; on Readline and ncurses.
-  (let ((bash (package
-                (inherit bash-minimal)
-                (arguments
-                 `(#:disallowed-references
-                   ,(assoc-ref (%boot3-inputs) "coreutils&co")
-                   ,@(package-arguments bash-minimal))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs (static-libgcc-package bash)
-                                   %boot3-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+  (let ((bash (static-libgcc-package bash-minimal)))
+    (package
+      (inherit bash)
+      (source (bootstrap-origin (package-source bash)))
+      (inputs (%boot3-inputs))
+      (arguments
+       `(#:implicit-inputs? #f
+         #:guile ,%bootstrap-guile
+
+         #:disallowed-references ,(assoc-ref (%boot3-inputs) "coreutils&co")
+
+         ,@(package-arguments bash))))))
 
 (define (%boot4-inputs)
   ;; Now use the final Bash.
