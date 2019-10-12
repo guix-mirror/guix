@@ -74,7 +74,8 @@ scale (thousands or millions of computers).  It can be used for volunteer
 computing (using consumer devices) or grid computing (using organizational
 resources).  It supports virtualized, parallel, and GPU-based applications.")
     (home-page "https://boinc.berkeley.edu/")
-    (license license:gpl3+)))
+    ;; BOINC is distributed as LGPL3+, with some individual modules under GPL3+.
+    (license (list license:lgpl3+ license:gpl3+))))
 
 (define-public boinc-server
   (package (inherit boinc-client)
