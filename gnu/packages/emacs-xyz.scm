@@ -6601,26 +6601,29 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
     (license license:gpl3+)))
 
 (define-public emacs-wgrep
-  (package
-    (name "emacs-wgrep")
-    (version "2.3.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/mhayashi1120/Emacs-wgrep")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0pgyf9vfcahb495q01hi1mvkmv846w4rj6zyf52is8x7sjj7x44s"))))
-    (build-system emacs-build-system)
-    (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
-    (synopsis "Edit a grep buffer and apply those changes to the files")
-    (description
-     "Emacs wgrep allows you to edit a grep buffer and apply those changes
+  ;; Tag is missing, so we use the commit directly.
+  ;; https://github.com/mhayashi1120/Emacs-wgrep/issues/64
+  (let ((commit "379afd89ebd76f63842c8589127d66096a8bb595"))
+    (package
+      (name "emacs-wgrep")
+      (version "2.3.1")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/mhayashi1120/Emacs-wgrep")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0v1qx8z1xj9qzirlycbihnkpwcklyi3a0j8lil78pmdpixdbgh47"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/mhayashi1120/Emacs-wgrep")
+      (synopsis "Edit a grep buffer and apply those changes to the files")
+      (description
+       "Emacs wgrep allows you to edit a grep buffer and apply those changes
 to the file buffer.  Several backends are supported beside the classic grep:
 ack, ag, helm and pt.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-helm
   (package
