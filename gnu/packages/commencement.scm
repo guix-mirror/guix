@@ -1942,15 +1942,16 @@ the bootstrap environment."
                (delete 'set-TZDIR)))
            ((#:tests? _ #f) #f))))))
 
-(define (ld-wrapper-boot0)
-  ;; We need this so binaries on Hurd will have libmachuser and libhurduser
-  ;; in their RUNPATH, otherwise validate-runpath will fail.
-  (make-ld-wrapper "ld-wrapper-boot0"
-                   #:target boot-triplet
-                   #:binutils binutils-boot0
-                   #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref (%boot0-inputs) "bash"))
-                   #:guile-for-build %bootstrap-guile))
+(define ld-wrapper-boot0
+  (mlambda ()
+    ;; We need this so binaries on Hurd will have libmachuser and libhurduser
+    ;; in their RUNPATH, otherwise validate-runpath will fail.
+    (make-ld-wrapper "ld-wrapper-boot0"
+                     #:target boot-triplet
+                     #:binutils binutils-boot0
+                     #:guile %bootstrap-guile
+                     #:bash (car (assoc-ref (%boot0-inputs) "bash"))
+                     #:guile-for-build %bootstrap-guile)))
 
 (define (%boot1-inputs)
   ;; 2nd stage inputs.
@@ -2238,13 +2239,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ,@(package-arguments zlib)))
     (inputs (%boot2-inputs))))
 
-(define (ld-wrapper-boot3)
-  ;; A linker wrapper that uses the bootstrap Guile.
-  (make-ld-wrapper "ld-wrapper-boot3"
-                   #:binutils binutils-final
-                   #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref (%boot2-inputs) "bash"))
-                   #:guile-for-build %bootstrap-guile))
+(define ld-wrapper-boot3
+  (mlambda ()
+    ;; A linker wrapper that uses the bootstrap Guile.
+    (make-ld-wrapper "ld-wrapper-boot3"
+                     #:binutils binutils-final
+                     #:guile %bootstrap-guile
+                     #:bash (car (assoc-ref (%boot2-inputs) "bash"))
+                     #:guile-for-build %bootstrap-guile)))
 
 (define gcc-final
   ;; The final GCC.
