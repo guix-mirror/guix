@@ -21,6 +21,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -379,6 +380,28 @@ style.")
 asynchronously, and wait for their results.  It is a higher-level interface
 over threads in Haskell, in which @code{Async a} is a concurrent thread that
 will eventually deliver a value of type @code{a}.")
+    (license license:bsd-3)))
+
+(define-public ghc-atomic-primops
+  (package
+    (name "ghc-atomic-primops")
+    (version "0.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/atomic-primops"
+                           "/atomic-primops-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0cyr2x6xqz6s233znrz9rnrfj56m9bmnawwnka0lsqqy1hp8gy37"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-primitive" ,ghc-primitive)))
+    (home-page "https://github.com/rrnewton/haskell-lockfree/wiki")
+    (synopsis "Safe approach to CAS and other atomic ops")
+    (description
+     "GHC 7.4 introduced a new @code{casMutVar} PrimOp which is difficult to
+use safely, because pointer equality is a highly unstable property in Haskell.
+This library provides a safer method based on the concept of @code{Ticket}s.")
     (license license:bsd-3)))
 
 (define-public ghc-atomic-write
