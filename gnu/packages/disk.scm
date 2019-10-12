@@ -78,7 +78,7 @@
 (define-public parted
   (package
     (name "parted")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/parted/parted-"
@@ -86,7 +86,7 @@
               (patches (search-patches "parted-glibc-compat.patch"))
               (sha256
                (base32
-                "1r3qpg3bhz37mgvp9chsaa3k0csby3vayfvz8ggsqz194af5i2w5"))))
+                "0i1xp367wpqw75b20c3jnism3dg3yqj4a7a22p2jb1h1hyyv9qjp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
