@@ -2771,22 +2771,14 @@ conversion.  It may be used, for example, to resample PCM-encoded audio.")
 (define-public twolame
   (package
     (name "twolame")
-    (version "0.3.13")
+    (version "0.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/twolame/twolame/" version
                            "/twolame-" version ".tar.gz"))
        (sha256
-        (base32 "0ahiqqng5pidwhj1wzph4vxxgxxgcfa3gl0gywipzx2ii7s35wwq"))
-       (modules '((guix build utils)))
-       ;; The tests break with Perl 5.24:
-       ;; https://github.com/njh/twolame/issues/21
-       ;; TODO: Remove this snippet when upgrading twolame.
-       (snippet
-        '(begin
-           (substitute* "tests/test.pl" (("\\(@_\\)") "($_[0])"))
-           #t))))
+        (base32 "0zf8sxqb02w07ah55b1y7ab643zmpbhn62spa9pqra0rc17l4dfc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libsndfile" ,libsndfile)))
