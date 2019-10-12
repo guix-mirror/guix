@@ -159,16 +159,16 @@ Guile.")
         (version "0.5.2"))
     (package
       (name "mescc-tools")
-      (version (string-append version "-" revision "." (string-take commit 7)))
+      (version (git-version version revision commit))
       (source (origin
-                (method url-fetch)
-                (uri (string-append
-                      "https://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
-                      name "-" commit
-                      ".tar.gz"))
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1h6j57wyf91i42b26f8msbv6451cw3nm4nmpl1fckp9c7vi8mwkh"))))
+                  "1nc6rnax66vmhqsjg0kgx23pihdcxmww6v325ywf59vsq1jqjvff"))))
       (build-system gnu-build-system)
       (supported-systems '("i686-linux" "x86_64-linux"))
       (arguments
@@ -191,15 +191,14 @@ get_machine.")
     (name "mescc-tools")
     (version "0.6.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://git.savannah.nongnu.org/cgit/mescc-tools.git/snapshot/"
-                    name "-Release_" version
-                    ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.savannah.nongnu.org/r/mescc-tools.git")
+                    (commit (string-append "Release_" version))))
+              (file-name (string-append "mescc-tools-" version "-checkout"))
               (sha256
                (base32
-                "06jpvq6xfjzn2al6b4rdwd3zv3h4cvilc4n9gqcnjr9cr6wjpw2n"))))
+                "1cgxcdza6ws725x84i31la7jxmlk5a3nsij5shz1zljg0i36kj99"))))
     (arguments
      (substitute-keyword-arguments (package-arguments mescc-tools-0.5.2)
        ((#:make-flags _)
