@@ -4967,7 +4967,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.11")
+    (version "1.0.12")
     (source
       (origin
         (method url-fetch)
@@ -4977,7 +4977,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0bb2c996p0smp2lwckffcfh4701bzv7266xh230ag0x68ka38bja"))))
+            "1kbdjsvkm5l7axv7g477qj18sab2wnqhliy6197syzizgfbsfgbb"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
