@@ -6976,6 +6976,38 @@ SLY tracks SLIME's bugfixes and all its familiar features (debugger, inspector,
 xref, etc...) are still available, but with better integration.")
       (license license:gpl3+))))
 
+(define-public emacs-sly-quicklisp
+  (let ((commit "01ebe3976a244309f2e277c09206831135a0b66c")
+        (revision "1"))
+    (package
+      (name "emacs-sly-quicklisp")
+      (version (git-version "0.0.0" revision commit))
+      (home-page "https://github.com/joaotavora/sly-quicklisp")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1vfqmvayf35g6y3ljsm3rlzv5jm50qikhh4lv2zkkswj6gkkb1cv"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       `(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (synopsis "Quicklisp support for SLY")
+      (description
+       "@command{sly-quicklisp} is an external contrib for SLY that provides a
+sly-quickload command that prompts the user for a package to install. ")
+      (license license:gpl3+))))
+
 (define-public emacs-lua-mode
   (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
         (revision "2"))
