@@ -4724,9 +4724,9 @@ metadata in photo and video files of various formats.")
     (version "0.30.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/shotwell/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "shotwell-" version ".tar.xz"))
               (sha256
                (base32
                 "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
