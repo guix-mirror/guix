@@ -72,10 +72,7 @@
     (description "BOINC is a platform for high-throughput computing on a large
 scale (thousands or millions of computers).  It can be used for volunteer
 computing (using consumer devices) or grid computing (using organizational
-resources).  It supports virtualized, parallel, and GPU-based applications.
-
-BOINC is distributed under the LGPL open source license.  It can be used for
-commercial purposes, and applications need not be open source.")
+resources).  It supports virtualized, parallel, and GPU-based applications.")
     (home-page "https://boinc.berkeley.edu/")
     (license license:gpl3+)))
 
