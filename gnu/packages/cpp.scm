@@ -206,7 +206,7 @@ as ordering relation.")
 (define-public json-modern-cxx
   (package
     (name "json-modern-cxx")
-    (version "3.1.2")
+    (version "3.7.0")
     (home-page "https://github.com/nlohmann/json")
     (source
      (origin
@@ -215,30 +215,34 @@ as ordering relation.")
                            (commit (string-append "v" version))))
        (sha256
         (base32
-         "1mpr781fb2dfbyscrr7nil75lkxsazg4wkm749168lcf2ksrrbfi"))
+         "0v7xih4zjixxxfvkfbs7a8j9qcvpwlsv4vrkbyns3hc7b44nb8ap"))
        (file-name (git-file-name name version))
        (modules '((guix build utils)))
        (snippet
         '(begin
-           (delete-file-recursively "./third_party")
-           (delete-file-recursively "./test/thirdparty")
-           (delete-file-recursively "./benchmarks/thirdparty")
-           ;; Splits catch and fifo_map
+           ;; Delete bundled software.  Preserve doctest_compatibility.h, which
+           ;; is a wrapper library added by this package.
+           (install-file "./test/thirdparty/doctest/doctest_compatibility.h" "/tmp")
+           (for-each delete-file-recursively
+                     '("./third_party" "./test/thirdparty" "./benchmarks/thirdparty"))
+           (install-file "/tmp/doctest_compatibility.h" "./test/thirdparty/doctest")
+
+           ;; Adjust for the unbundled fifo_map and doctest.
+           (substitute* "./test/thirdparty/doctest/doctest_compatibility.h"
+             (("#include \"doctest\\.h\"")
+              "#include <doctest/doctest.h>"))
            (with-directory-excursion "test/src"
-             (let ((files (find-files "." ".*\\.cpp")))
-               (substitute* files
-                 (("#include ?\"(catch.hpp)\"" all catch-hpp)
-                  (string-append "#include <catch/" catch-hpp ">")))
+             (let ((files (find-files "." "\\.cpp$")))
                (substitute* files
                  (("#include ?\"(fifo_map.hpp)\"" all fifo-map-hpp)
                   (string-append
                    "#include <fifo_map/" fifo-map-hpp ">")))))
            #t))))
     (native-inputs
-     `(("amalgamate" ,amalgamate)))
+     `(("amalgamate" ,amalgamate)
+       ("doctest" ,doctest)))
     (inputs
-     `(("catch2" ,catch-framework2)
-       ("fifo-map" ,fifo-map)))
+     `(("fifo-map" ,fifo-map)))
     (build-system cmake-build-system)
     (synopsis "JSON parser and printer library for C++")
     (description "JSON for Modern C++ is a C++ JSON library that provides
