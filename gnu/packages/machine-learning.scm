@@ -1306,12 +1306,12 @@ Python.")
        ("python" ,python-wrapper)))
     (home-page "https://grpc.io")
     (synopsis "High performance universal RPC framework")
-    (description "gRPC is a modern open source high performance @dfn{Remote
-Procedure Call} (RPC) framework that can run in any environment.  It can
-efficiently connect services in and across data centers with pluggable support
-for load balancing, tracing, health checking and authentication.  It is also
-applicable in last mile of distributed computing to connect devices, mobile
-applications and browsers to backend services.")
+    (description "gRPC is a modern high performance @dfn{Remote Procedure Call}
+(RPC) framework that can run in any environment.  It can efficiently connect
+services in and across data centers with pluggable support for load balancing,
+tracing, health checking and authentication.  It is also applicable in last
+mile of distributed computing to connect devices, mobile applications and
+browsers to backend services.")
     (license license:asl2.0)))
 
 ;; Note that Tensorflow includes a "third_party" directory, which seems to not
