@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
@@ -593,12 +593,17 @@ enable professional yet simple and intuitive pattern-based drum programming.")
                      "prefix=~@*~a~@
                       libdir=${prefix}/lib~@
                       includedir=${prefix}/include~@
+
+                      Name: libid3tag~@
+                      Description:~@
+                      Version:~@
                       Libs: -L${libdir} -lid3tag -lz~@
                       Cflags: -I${includedir}~%"
                      libid3tag)))
                (setenv "PKG_CONFIG_PATH"
                  (string-append (getenv "PKG_CONFIG_PATH")
-                   ":" (getcwd) "/pkgconfig")))))
+                   ":" (getcwd) "/pkgconfig"))
+               #t)))
          (add-after 'unpack 'patch-makefile
            (lambda _
              (substitute* "Makefile.in"
@@ -606,7 +611,8 @@ enable professional yet simple and intuitive pattern-based drum programming.")
                ;; script with /bin/sh hard-coded.
                (("/bin/sh") (which "sh"))
                ;; Don't create 'icon-theme.cache'.
-               (("gtk-update-icon-cache") "true")))))))
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (home-page "https://wiki.gnome.org/Apps/EasyTAG")
     (synopsis "Simple application for viewing and editing tags in audio files")
     (description
