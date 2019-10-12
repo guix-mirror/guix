@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -497,6 +498,64 @@ XTerm-256colour codes), HTML 3.2 with font tags, HTML 4.01 with CSS, HTML 4.01
 with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
 and mIRC chat codes.")
     (license license:bsd-3)))
+
+(define-public kmonad
+  (package
+    (name "kmonad")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/david-janssen/kmonad.git")
+             (commit "06d7b8c709efa695be35df9bde91275cbb2ba099")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1rjr4h5yq63x3kad6yn4p8v26389sd9dgr5n2w73s1chafapzwwd"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'haddock)             ; Haddock fails to generate docs
+         (add-after 'install 'install-udev-rules
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (rules (string-append out "/lib/udev/rules.d")))
+               (mkdir-p rules)
+               (call-with-output-file (string-append rules "/70-kmonad.rules")
+                 (lambda (port)
+                   (display
+                    (string-append
+                     "KERNEL==\"uinput\", MODE=\"0660\", "
+                     "GROUP=\"input\", OPTIONS+=\"static_node=uinput\"\n")
+                    port)))
+               #t)))
+         (add-after 'install-udev-rules 'install-documentation
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/kmonad-" ,version)))
+               (install-file "README.md" doc)
+               (copy-recursively "doc" doc)
+               (copy-recursively "example" (string-append doc "/example"))
+               #t))))))
+    (inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-megaparsec" ,ghc-megaparsec-7)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-unagi-chan" ,ghc-unagi-chan)
+       ("ghc-unliftio" ,ghc-unliftio)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "https://github.com/david-janssen/kmonad")
+    (synopsis "Advanced keyboard manager")
+    (description "KMonad is a keyboard remapping utility that supports
+advanced functionality, such as custom keymap layers and modifiers, macros,
+and conditional mappings that send a different keycode when tapped or held.
+By operating at a lower level than most similar tools, it supports X11,
+Wayland, and Linux console environments alike.")
+    (license license:expat)))
 
 (define-public raincat
   (package
