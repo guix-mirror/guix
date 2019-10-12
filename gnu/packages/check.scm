@@ -354,6 +354,25 @@ a CxxTest testing library, it employs no advanced features of C++ (e.g. RTTI)
 and it supports a very flexible form of test discovery.")
     (license license:lgpl3+)))
 
+(define-public doctest
+  (package
+    (name "doctest")
+    (version "2.3.5")
+    (home-page "https://github.com/onqtam/doctest")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rddlzhnv0f5036q0m0p019pismka7sx6x8cnzk65sk77b1dsbhg"))))
+    (build-system cmake-build-system)
+    (synopsis "C++ test framework")
+    (description
+     "doctest is a single-header testing framework for C++11 and later.  It
+has been designed to be fast, light and unintrusive.")
+    (license license:expat)))
+
 (define-public go-gopkg.in-check.v1
   (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
         (revision "1"))
