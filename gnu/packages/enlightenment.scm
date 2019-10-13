@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
@@ -361,6 +362,19 @@ file manager, wide range of configuration options, plugin system allowing to
 unload unused functionality, with support for touchscreen and suitable for
 embedded systems.")
     (license license:bsd-2)))
+
+(define-public enlightenment-wayland
+  (package
+    (inherit enlightenment)
+    (name "enlightenment-wayland")
+    (arguments
+     (substitute-keyword-arguments (package-arguments enlightenment)
+       ((#:configure-flags flags)
+        `(cons* "-Dwl=true" ,flags))))
+    (inputs
+     `(("wayland-protocols" ,wayland-protocols)
+       ("xorg-server-xwayland" ,xorg-server-xwayland)
+       ,@(package-inputs enlightenment)))))
 
 (define-public python-efl
   (package
