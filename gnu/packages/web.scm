@@ -464,15 +464,14 @@ servers that may need it).")
 (define-public starman
   (package
     (name "starman")
-    (version "0.4014")
+    (version "0.4015")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MI/MIYAGAWA/"
                            "Starman-" version ".tar.gz"))
        (sha256
-        (base32
-         "1sbb5rb3vs82rlh1fjkgkcmj5pj62b4y9si4ihh45sl9m8c2qxx5"))))
+        (base32 "1y1kn4929k299fbf6sw9lxcsdlq9fvq777p6yrzk591rr9xhkx8h"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-libwww" ,perl-libwww)
