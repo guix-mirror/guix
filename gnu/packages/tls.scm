@@ -392,6 +392,7 @@ required structures.")
     (inherit openssl)
     (name "openssl")
     (version "1.0.2s")
+    (replacement openssl-1.0.2t)
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://www.openssl.org/source/openssl-"
@@ -472,6 +473,27 @@ required structures.")
                  (delete-file-recursively (string-append out "/share/openssl-"
                                                          ,version "/misc"))
                  #t)))))))))
+
+(define openssl-1.0.2t
+  (package
+    (inherit openssl)
+    (version "1.0.2t")
+    (source (origin
+              (inherit (package-source openssl-1.0))
+              (uri (list (string-append "https://www.openssl.org/source/openssl-"
+                                        version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/"
+                                        "openssl-" version ".tar.gz")
+                         (string-append "ftp://ftp.openssl.org/source/old/"
+                                        (string-trim-right version char-set:letter)
+                                        "/openssl-" version ".tar.gz")))
+              (sha256
+               (base32
+                "1g67ra0ph7gpz6fgvv1i96d792jmd6ymci5kk53vbikszr74djql"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl-1.0)
+       ;; Parallel build is not supported in 1.0.x.
+       ((#:parallel-build? _ #f) #f)))))
 
 (define-public libressl
   (package
