@@ -90,13 +90,13 @@
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'fix-locales-and-python
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "tests/t0251-gpt-unicode.sh"
-              (("C.UTF-8") "en_US.utf8")) ;not in Glibc locales
-            (substitute* "tests/msdos-overlap"
-              (("/usr/bin/python") (which "python"))))))))
+         (add-after 'unpack 'fix-locales-and-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/t0251-gpt-unicode.sh"
+               (("C.UTF-8") "en_US.utf8")) ;not in Glibc locales
+             (substitute* "tests/msdos-overlap"
+               (("/usr/bin/python") (which "python")))
+             #t)))))
     (inputs
      `(("lvm2" ,lvm2)
        ("readline" ,readline)
