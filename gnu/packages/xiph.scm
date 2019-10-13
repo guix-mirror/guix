@@ -230,6 +230,7 @@ It currently supports:
 @end enumerate
 ")
     (license license:gpl2+)
+    (properties '((cpe-name . "libao")))
     (home-page "https://www.xiph.org/ao/")))
 
 (define flac
