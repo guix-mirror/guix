@@ -1798,15 +1798,16 @@ exec " gcc "/bin/" program
          ("bison" ,bison-boot0)
          ,@(%boot0-inputs))))))
 
+(define with-boot0
+  (package-with-explicit-inputs %boot0-inputs
+                                %bootstrap-guile))
+
 (define gnumach-headers-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs gnumach-headers
-                                 (%boot0-inputs)
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (with-boot0 (package-with-bootstrap-guile gnumach-headers)))
 
 (define mig-boot0
-  (let* ((mig (package (inherit mig)
+  (let* ((mig (package
+                 (inherit (package-with-bootstrap-guile mig))
                  (native-inputs `(("bison" ,bison-boot0)
                                   ("flex" ,flex-boot0)))
                  (inputs `(("flex" ,flex-boot0)))
@@ -1814,42 +1815,32 @@ exec " gcc "/bin/" program
                   `(#:configure-flags
                     `(,(string-append "LDFLAGS=-Wl,-rpath="
                                       (assoc-ref %build-inputs "flex") "/lib/")))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs mig (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 mig)))
 
 (define hurd-headers-boot0
   (let ((hurd-headers (package (inherit hurd-headers)
                         (native-inputs `(("mig" ,mig-boot0)))
                         (inputs '()))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs hurd-headers (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 (package-with-bootstrap-guile hurd-headers))))
 
 (define hurd-minimal-boot0
   (let ((hurd-minimal (package (inherit hurd-minimal)
                         (native-inputs `(("mig" ,mig-boot0)))
                         (inputs '()))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs hurd-minimal (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 (package-with-bootstrap-guile hurd-minimal))))
 
 (define hurd-core-headers-boot0
   (mlambda ()
     "Return the Hurd and Mach headers as well as initial Hurd libraries for
 the bootstrap environment."
-    (package-with-bootstrap-guile
-     (package (inherit hurd-core-headers)
-              (arguments `(#:guile ,%bootstrap-guile
-                           ,@(package-arguments hurd-core-headers)))
-              (inputs
-               `(("gnumach-headers" ,gnumach-headers-boot0)
-                 ("hurd-headers" ,hurd-headers-boot0)
-                 ("hurd-minimal" ,hurd-minimal-boot0)
-                 ,@(%boot0-inputs)))))))
+    (package (inherit (package-with-bootstrap-guile hurd-core-headers))
+             (arguments `(#:guile ,%bootstrap-guile
+                          ,@(package-arguments hurd-core-headers)))
+             (inputs
+              `(("gnumach-headers" ,gnumach-headers-boot0)
+                ("hurd-headers" ,hurd-headers-boot0)
+                ("hurd-minimal" ,hurd-minimal-boot0)
+                ,@(%boot0-inputs))))))
 
 (define* (kernel-headers-boot0 #:optional (system (%current-system)))
   (match system
