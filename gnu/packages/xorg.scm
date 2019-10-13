@@ -4400,7 +4400,7 @@ dump and twice whenthe dump is completed.")
 (define-public xwininfo
   (package
     (name "xwininfo")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -4410,7 +4410,7 @@ dump and twice whenthe dump is completed.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00avrpw4h5mr1klp41lv2j4dmq465v6l5kb5bhm4k5ml8sm9i543"))))
+            "03h8clirhw5ki1xxp18xbf5vynm7r0dwspsgfin6cxn4vx0m8h3s"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
