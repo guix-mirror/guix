@@ -18327,7 +18327,7 @@ as:
 (define-public emacs-nhexl-mode
   (package
     (name "emacs-nhexl-mode")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -18335,8 +18335,7 @@ as:
              "https://elpa.gnu.org/packages/nhexl-mode-"
              version ".el"))
        (sha256
-        (base32
-         "031h22p564qdvr9khs05qcba06pmsk68cr7zyc7c04hfr3y3ziaf"))))
+        (base32 "1fcy4ybr12dvswmzaqkv4798snb1x1y7ldxwrsgjv5sx7bb5j60z"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/nhexl-mode.html")
     (synopsis "Minor mode to edit files via hex-dump format")
