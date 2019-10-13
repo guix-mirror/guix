@@ -652,8 +652,8 @@ from within Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-unpackaged-el
-  (let ((commit "c0d58cf81e531b2b6fa1bd5dd612dc1b93d4d186")
-        (revision "2"))
+  (let ((commit "746801a677ada6cd6fa076e423aa0953779f3fad")
+        (revision "3"))
     (package
       (name "emacs-unpackaged-el")
       (version (git-version "0" revision commit))
@@ -666,7 +666,7 @@ from within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0y3sgvd51l4pb3acps92bazfk49da6nim1f1hyxzy1ravg4kbw83"))))
+           "0jvb2ci0h0lj368qhbff3pzkxj3nhlligpbkjzi525k9rkjgm7l8"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
