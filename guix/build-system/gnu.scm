@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,12 +57,16 @@
   '((guix build gnu-build-system)
     (guix build utils)))
 
-(define* (package-with-explicit-inputs p inputs
-                                       #:optional
-                                       (loc (current-source-location))
-                                       #:key (native-inputs '())
-                                       guile)
-  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take INPUTS and
+(define* (package-with-explicit-inputs/deprecated p inputs
+                                                  #:optional
+                                                  (loc (current-source-location))
+                                                  #:key (native-inputs '())
+                                                  guile)
+  "This variant is deprecated because it is inefficient: it memoizes only
+temporarily instead of memoizing across all transformations where INPUTS is
+the same.
+
+Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take INPUTS and
 NATIVE-INPUTS as explicit inputs instead of the implicit default, and return
 it.  INPUTS and NATIVE-INPUTS can be either input lists or thunks; in the
 latter case, they will be called in a context where the `%current-system' and
@@ -123,6 +127,47 @@ builder, or the distro's final Guile when GUILE is #f."
          `(,@(call inputs*)
            ,@(map rewritten-input
                   (filtered (package-inputs p)))))))))
+
+(define* (package-with-explicit-inputs* inputs #:optional guile)
+  "Return a procedure that rewrites the given package and all its dependencies
+so that they use INPUTS (a thunk) instead of implicit inputs."
+  (define (duplicate-filter package-inputs)
+    (let ((names (match (inputs)
+                   (((name _ ...) ...)
+                    name))))
+      (fold alist-delete package-inputs names)))
+
+  (define (add-explicit-inputs p)
+    (if (and (eq? (package-build-system p) gnu-build-system)
+             (not (memq #:implicit-inputs? (package-arguments p))))
+        (package
+          (inherit p)
+          (inputs (append (inputs)
+                          (duplicate-filter (package-inputs p))))
+          (arguments
+           (ensure-keyword-arguments (package-arguments p)
+                                     `(#:implicit-inputs? #f
+                                       #:guile ,guile))))
+        p))
+
+  (define (cut? p)
+    (and (eq? (package-build-system p) gnu-build-system)
+         (memq #:implicit-inputs? (package-arguments p))))
+
+  (package-mapping add-explicit-inputs cut?))
+
+(define package-with-explicit-inputs
+  (case-lambda*
+   ((inputs #:optional guile)
+    (package-with-explicit-inputs* inputs guile))
+   ((p inputs #:optional (loc (current-source-location))
+       #:key (native-inputs '()) guile)
+    ;; deprecated
+    (package-with-explicit-inputs/deprecated p inputs
+                                             loc
+                                             #:native-inputs
+                                             native-inputs
+                                             #:guile guile))))
 
 (define (package-with-extra-configure-variable p variable value)
   "Return a version of P with VARIABLE=VALUE specified as an extra `configure'
