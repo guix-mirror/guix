@@ -83,7 +83,6 @@
               (method url-fetch)
               (uri (string-append "mirror://gnu/parted/parted-"
                                   version ".tar.xz"))
-              (patches (search-patches "parted-glibc-compat.patch"))
               (sha256
                (base32
                 "0i1xp367wpqw75b20c3jnism3dg3yqj4a7a22p2jb1h1hyyv9qjp"))))
@@ -105,6 +104,7 @@
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ;; For the tests.
+       ("e2fsprogs" ,e2fsprogs)
        ("perl" ,perl)
        ("python" ,python-2)))
     (home-page "https://www.gnu.org/software/parted/")
