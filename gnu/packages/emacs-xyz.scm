@@ -18337,7 +18337,7 @@ as:
        (sha256
         (base32 "1fcy4ybr12dvswmzaqkv4798snb1x1y7ldxwrsgjv5sx7bb5j60z"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/nhexl-mode.html")
+    (home-page "https://elpa.gnu.org/packages/nhexl-mode.html")
     (synopsis "Minor mode to edit files via hex-dump format")
     (description
      "This package implements NHexl mode, a minor mode for editing files
