@@ -13547,14 +13547,14 @@ It s customizable: it's easy to add or redefine what exactly consitutes a
 (define-public emacs-darkroom
   (package
     (name "emacs-darkroom")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/darkroom-"
                                   version ".el"))
               (sha256
                (base32
-                "0fif8fm1h7x7g16949shfnaik5f5488clsvkf8bi5izpqp3vi6ak"))))
+                "1a528brhz4vckhp77n2c1phkyqdliykpj9kzk3f834f4rwnb5mp0"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/darkroom.html")
     (synopsis "Remove visual distractions and focus on writing")
