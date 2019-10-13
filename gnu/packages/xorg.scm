@@ -4393,7 +4393,7 @@ file.  This file can then be read by various other X utilities for
 redisplay, printing, editing, formatting, archiving, image processing,
 etc.  The target window is selected by clicking the pointer in the
 desired window.  The keyboard bell is rung once at the beginning of the
-dump and twice whenthe dump is completed.")
+dump and twice when the dump is completed.")
     (license license:x11)))
 
 
