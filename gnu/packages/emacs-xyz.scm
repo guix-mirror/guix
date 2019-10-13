@@ -12583,15 +12583,14 @@ for operating over the contents of Emacs buffers.")
 (define-public emacs-let-alist
   (package
     (name "emacs-let-alist")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/let-alist-" version ".el"))
        (sha256
-        (base32
-         "0r7b9jni50la1m79kklml11syg8d2fmdlr83pv005sv1wh02jszw"))))
+        (base32 "0szj7vnjzz4zci5fvz7xqgcpi4pzdyyf4qi2s8xar2hi7v3yaawr"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
