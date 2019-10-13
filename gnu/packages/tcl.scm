@@ -81,7 +81,7 @@
        ;; likely related to name resolution), but that doesn't cause
        ;; `make' to fail.
        #:test-target "test"))
-    (home-page "http://www.tcl.tk/")
+    (home-page "https://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
     (license license:tcl/tk)))
