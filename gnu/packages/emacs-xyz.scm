@@ -54,6 +54,7 @@
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19160,4 +19161,27 @@ Emacs that integrate with major modes like Org-mode.")
     (description
      "Elixir-Mode Provides font-locking, indentation and navigation support
  for the Elixir programming language.")
+    (license license:gpl3+)))
+
+(define-public emacs-dimmer
+  (package
+    (name "emacs-dimmer")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gonewest818/dimmer.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jv9rrv15nb5hpwcaqlpjj932gyisrkwbv11czkg3v0bn7qn6yif"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/gonewest818/dimmer.el")
+    (synopsis "Visually highlights the selected buffer in Emacs")
+    (description "Dimmer provides a minor mode that indicates which buffer is
+currently active by dimming the faces in the other buffers.  It does this
+nondestructively, and computes the dimmed faces dynamically such that your
+overall color scheme is shown in a muted form without requiring you to define
+what is a \"dim\" version of every face.")
     (license license:gpl3+)))
