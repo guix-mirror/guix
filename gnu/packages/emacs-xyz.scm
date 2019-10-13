@@ -5313,12 +5313,11 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
 (define-public emacs-ivy-rich
   ;; The latest release version has a small mistake that has since been fixed,
   ;; so we use a more recent commit.
-  (let ((commit "f6bfa293c6df0b43cc411876b665816ec3f03d08")
-        (version "0.1.4")
-        (revision "1"))
+  (let ((commit "7a667b135983a1f3ad33d6db8514638e2a3bdfb3")
+        (revision "2"))
     (package
       (name "emacs-ivy-rich")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -5327,7 +5326,7 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1s8nwwb1z6lkc58g02pi8w99qms948k8d02lw8k8cq47dw87i219"))))
+          (base32 "1v5j6pak2j1wjw19y7rx9rhxif0bj2h47xyl2knfcl6fi4qiqm9y"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)))
