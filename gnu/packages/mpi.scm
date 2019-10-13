@@ -161,7 +161,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "4.0.1")
+    (version "4.0.2")
     (source
      (origin
       (method url-fetch)
@@ -169,7 +169,7 @@ bind processes, and much more.")
                           (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
-       (base32 "02cpzcp113gj5hb0j2xc0cqma2fn04i2i0bzf80r71120p9bdryc"))))
+       (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc "lib")

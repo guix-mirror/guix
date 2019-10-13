@@ -18,6 +18,7 @@
 
 (define-module (gnu packages distributed)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
@@ -47,8 +48,9 @@
               (uri (git-reference
                     (url "https://github.com/boinc/boinc.git")
                     (commit (string-append "client_release/"
-                                           "7.16/"
-                                           version))))
+                                           (version-major+minor version)
+                                           "/" version))))
+              (file-name (git-file-name "boinc" version))
               (sha256
                (base32
                 "0w2qimcwyjhapk3z7zyq7jkls23hsnmm35iw7m4s4if04fp70dx0"))))
@@ -72,12 +74,10 @@
     (description "BOINC is a platform for high-throughput computing on a large
 scale (thousands or millions of computers).  It can be used for volunteer
 computing (using consumer devices) or grid computing (using organizational
-resources).  It supports virtualized, parallel, and GPU-based applications.
-
-BOINC is distributed under the LGPL open source license.  It can be used for
-commercial purposes, and applications need not be open source.")
+resources).  It supports virtualized, parallel, and GPU-based applications.")
     (home-page "https://boinc.berkeley.edu/")
-    (license license:gpl3+)))
+    ;; BOINC is distributed as LGPL3+, with some individual modules under GPL3+.
+    (license (list license:lgpl3+ license:gpl3+))))
 
 (define-public boinc-server
   (package (inherit boinc-client)

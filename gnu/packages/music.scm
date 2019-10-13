@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
@@ -11,7 +11,7 @@
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
-;;; Copyright © 2017, 2018 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2017 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 nee <nee.git@hidamari.blue>
@@ -593,12 +593,17 @@ enable professional yet simple and intuitive pattern-based drum programming.")
                      "prefix=~@*~a~@
                       libdir=${prefix}/lib~@
                       includedir=${prefix}/include~@
+
+                      Name: libid3tag~@
+                      Description:~@
+                      Version:~@
                       Libs: -L${libdir} -lid3tag -lz~@
                       Cflags: -I${includedir}~%"
                      libid3tag)))
                (setenv "PKG_CONFIG_PATH"
                  (string-append (getenv "PKG_CONFIG_PATH")
-                   ":" (getcwd) "/pkgconfig")))))
+                   ":" (getcwd) "/pkgconfig"))
+               #t)))
          (add-after 'unpack 'patch-makefile
            (lambda _
              (substitute* "Makefile.in"
@@ -606,7 +611,8 @@ enable professional yet simple and intuitive pattern-based drum programming.")
                ;; script with /bin/sh hard-coded.
                (("/bin/sh") (which "sh"))
                ;; Don't create 'icon-theme.cache'.
-               (("gtk-update-icon-cache") "true")))))))
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (home-page "https://wiki.gnome.org/Apps/EasyTAG")
     (synopsis "Simple application for viewing and editing tags in audio files")
     (description
@@ -4622,3 +4628,52 @@ easier to perform.  Features include:
 @item Adjust tempo; Playback speed of loops can be adjusted on the fly.
 @end itemize\n")
       (license license:gpl2))))
+
+(define-public pragha
+  (package
+    (name "pragha")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pragha-music-player/pragha/"
+                                  "releases/download/v" version "/pragha-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "19kbhq99bkimx3aqrdzln0vlr4slkpx6kq66j731jvqyq76nlkp5"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("grilo" ,grilo)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gst-plugins-good" ,gst-plugins-good)
+       ("gtk+" ,gtk+)
+       ("libcddb" ,libcddb)
+       ("libcdio" ,libcdio)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libgudev" ,libgudev)
+       ("libnotify" ,libnotify)
+       ("libpeas" ,libpeas)
+       ("libsoup" ,libsoup)
+       ("sqlite" ,sqlite)
+       ("taglib" ,taglib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+               (wrap-program (string-append out "/bin/pragha")
+                 `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path)))
+               #t))))))
+    (home-page "https://pragha-music-player.github.io")
+    (synopsis "Music player")
+    (description "Pragha is a lightweight music player based on Gtk and
+sqlite.  It is constructed to be fast, light, and simultaneously tries to be
+complete without obstructing your daily work.")
+    (license license:gpl3+)))

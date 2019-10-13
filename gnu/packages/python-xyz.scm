@@ -2197,14 +2197,14 @@ somewhat intelligible.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "1.5.3")
+    (version "1.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "1rxsg14i33vm2i6lz0my628108c81k43v10n4h3p0gx62xdyf2sh"))
+         "15hflax5qkw1v6nssk1r0wkj83jgghskcmn875m3wgvpzdvajncd"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -7742,20 +7742,21 @@ Jupyter Notebook format and Python APIs for working with notebooks.")
 (define-public python-bleach
   (package
     (name "python-bleach")
-    (version "1.4.3")
+    (version "3.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bleach" version))
        (sha256
         (base32
-         "0jvg3jxrvnx7xmm9gj262v60ib452xlnwlb0navyp7jsvcd0d4qj"))))
+         "1yhrgrhkln8bd6gn3imj69g1h4xqah9gaz9q26crqr6gmmvpzprz"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-html5lib" ,python-html5lib-0.9)
+     `(("python-webencodings" ,python-webencodings)
        ("python-six" ,python-six)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner-2)))
     (home-page "https://github.com/jsocol/bleach")
     (synopsis "Whitelist-based HTML-sanitizing tool")
     (description "Bleach is an easy whitelist-based HTML-sanitizing tool.")
@@ -10972,6 +10973,16 @@ hardware-accelerated multitouch applications.")
                (base32
                 "0qc006986rb6bcbmiymwgcl1mns2jphr1j7sr7nk41nlr7gh359m"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-tests
+           (lambda _
+             ;; TypeError: binary() got an unexpected keyword argument
+             ;; 'average_size'.
+             (substitute* "tests/test_check.py"
+              (("average_size=512") ""))
+             #t)))))
     (propagated-inputs
      `(("python-chardet" ,python-chardet)
        ("python-hypothesis" ,python-hypothesis)))
@@ -13746,10 +13757,15 @@ ignoring formatting changes.")
       "Make loops show a progress bar on the console by just wrapping any
 iterable with @code{|tqdm(iterable)|}.  Offers many options to define
 design and layout.")
-    (license (list license:mpl2.0 license:expat))))
+    (license (list license:mpl2.0 license:expat))
+    (properties `((python2-variant . ,(delay python2-tqdm))))))
 
 (define-public python2-tqdm
-  (package-with-python2 python-tqdm))
+  (let ((tqdm (package-with-python2
+                (strip-python2-variant python-tqdm))))
+    (package (inherit tqdm)
+      (native-inputs `(("python2-functools32" ,python2-functools32)
+                        ,@(package-native-inputs tqdm))))))
 
 (define-public python-pkginfo
   (package

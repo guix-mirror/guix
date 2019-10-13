@@ -110,8 +110,8 @@
   ;; Note: the 'update-guix-package.scm' script expects this definition to
   ;; start precisely like this.
   (let ((version "1.0.1")
-        (commit "0ed97e69805253656df929a6ad678016aa81f08a")
-        (revision 6))
+        (commit "fc1fe722a05318ac05a71a0b127f231631e2843f")
+        (revision 7))
     (package
       (name "guix")
 
@@ -127,7 +127,7 @@
                       (commit commit)))
                 (sha256
                  (base32
-                  "1h2qlbbdqi72jslx17gp2cak5494nbm8j44rz57lnplnfcn6iwaw"))
+                  "0yx19hxvmkr6ar65ym87xd83n6hz02mr7ibwis7i8wah85ypfq26"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (build-system gnu-build-system)
       (arguments
@@ -175,23 +175,32 @@
                       (lambda* (#:key system inputs #:allow-other-keys)
                         ;; Copy the bootstrap guile tarball in the store used
                         ;; by the test suite.
-                        (define (intern tarball)
-                          (let ((base (strip-store-file-name tarball)))
-                            (copy-file tarball base)
-                            (invoke "./test-env" "guix" "download"
-                                    (string-append "file://" (getcwd)
-                                                   "/" base))
-                            (delete-file base)))
+                        (define (intern file recursive?)
+                          (let ((base (strip-store-file-name file)))
+                            ;; Note: don't use 'guix download' here because we
+                            ;; need to set the 'recursive?' argument.
+                            (invoke "./test-env" "guile" "-c"
+                                    (object->string
+                                     `(begin
+                                        (use-modules (guix))
+                                        (with-store store
+                                          (add-to-store store ,base ,recursive?
+                                                        "sha256" ,file)))))))
 
-
-                        (intern (assoc-ref inputs "boot-guile"))
+                        (intern (assoc-ref inputs "boot-guile") #f)
 
                         ;; On x86_64 some tests need the i686 Guile.
                         ,@(if (and (not (%current-target-system))
                                    (string=? (%current-system)
                                              "x86_64-linux"))
-                              '((intern (assoc-ref inputs "boot-guile/i686")))
+                              '((intern (assoc-ref inputs "boot-guile/i686") #f))
                               '())
+
+                        ;; Copy the bootstrap executables.
+                        (for-each (lambda (input)
+                                    (intern (assoc-ref inputs input) #t))
+                                  '("bootstrap/bash" "bootstrap/mkdir"
+                                    "bootstrap/tar" "bootstrap/xz"))
                         #t))
                     (add-after 'unpack 'disable-failing-tests
                       ;; XXX FIXME: These tests fail within the build container.
@@ -270,7 +279,7 @@
       (inputs
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
-         ("zlib" ,zlib)                           ;for 'guix publish'
+         ("zlib" ,zlib)              ;for 'guix publish'
          ("lzlib" ,lzlib)            ;for 'guix publish' and 'guix substitute'
 
          ("sqlite" ,sqlite)
@@ -278,15 +287,22 @@
 
          ("guile" ,guile-2.2)
 
+         ;; Some of the tests use "unshare" when it is available.
+         ("util-linux" ,util-linux)
+
          ;; Many tests rely on the 'guile-bootstrap' package, which is why we
          ;; have it here.
          ("boot-guile" ,(bootstrap-guile-origin (%current-system)))
-         ;; Some of the tests use "unshare" when it is available.
-         ("util-linux" ,util-linux)
          ,@(if (and (not (%current-target-system))
                     (string=? (%current-system) "x86_64-linux"))
                `(("boot-guile/i686" ,(bootstrap-guile-origin "i686-linux")))
                '())
+
+         ;; Tests also rely on these bootstrap executables.
+         ("bootstrap/bash" ,(bootstrap-executable "bash" (%current-system)))
+         ("bootstrap/mkdir" ,(bootstrap-executable "mkdir" (%current-system)))
+         ("bootstrap/tar" ,(bootstrap-executable "tar" (%current-system)))
+         ("bootstrap/xz" ,(bootstrap-executable "xz" (%current-system)))
 
          ("glibc-utf8-locales" ,glibc-utf8-locales)))
       (propagated-inputs
@@ -769,6 +785,90 @@ on top of GNU Guix.")
     ;; the web interface modules in gwl/ are licensed AGPL3+,
     ;; and the fonts included in this package are licensed OFL1.1.
     (license (list license:gpl3+ license:agpl3+ license:silofl1.1))))
+
+(define-public guix-jupyter
+  (package
+    (name "guix-jupyter")
+    (version "0.1.0")
+    (home-page "https://gitlab.inria.fr/guix-hpc/guix-kernel")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page)
+                                  (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "01z7jjkc7r7lj6637rcgpz40v8xqqyfp6871h94yvcnwm7zy9h1n"))
+              (file-name (string-append "guix-jupyter-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  (ice-9 match)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'sed-kernel-json
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (guix  (assoc-ref inputs  "guix"))
+                    (guile (assoc-ref inputs  "guile"))
+                    (json  (assoc-ref inputs  "guile-json"))
+                    (git   (assoc-ref inputs  "guile-git"))
+                    (bs    (assoc-ref inputs  "guile-bytestructures"))
+                    (s-zmq (assoc-ref inputs  "guile-simple-zmq"))
+                    (gcrypt (assoc-ref inputs  "guile-gcrypt"))
+                    (deps  (list out s-zmq guix json git bs gcrypt))
+                    (effective
+                     (read-line
+                      (open-pipe* OPEN_READ
+                                  (string-append guile "/bin/guile")
+                                  "-c" "(display (effective-version))")))
+                    (path (map (cut string-append "-L\", \"" <>
+                                    "/share/guile/site/"
+                                    effective)
+                               deps))
+                    (gopath (map (cut string-append "-C\", \"" <>
+                                      "/lib/guile/" effective
+                                      "/site-ccache")
+                                 deps))
+                    (kernel-dir (string-append out "/share/jupyter/kernels/guix/")))
+               (substitute* (string-append kernel-dir "kernel.json")
+                 (("-s")
+                  (string-join
+                   (list (string-join path "\",\n\t\t\"")
+                         (string-join gopath "\",\n\t\t\"")
+                         "-s")
+                   "\",\n\t\t\""))
+                 (("guix-jupyter-kernel.scm")
+                  (string-append out "/share/guile/site/2.2/"
+                                 "guix-jupyter-kernel.scm")))
+               #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+
+       ;; For testing.
+       ("jupyter" ,jupyter)
+       ("python-ipython" ,python-ipython)
+       ("python-ipykernel" ,python-ipykernel)))
+    (inputs
+     `(("guix" ,guix)
+       ("guile" ,guile-2.2)))
+    (propagated-inputs
+     `(("guile-json" ,guile-json-3)
+       ("guile-simple-zmq" ,guile-simple-zmq)
+       ("guile-gcrypt" ,guile-gcrypt)))
+    (synopsis "Guix kernel for Jupyter")
+    (description
+     "Guix-Jupyter is a Jupyter kernel.  It allows you to annotate notebooks
+with information about their software dependencies, such that code is executed
+in the right software environment.  Guix-Jupyter spawns the actual kernels
+such as @code{python-ipykernel} on behalf of the notebook user and runs them
+in an isolated environment, in separate namespaces.")
+    (license license:gpl3+)))
 
 (define-public gcab
   (package

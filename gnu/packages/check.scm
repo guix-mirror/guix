@@ -354,6 +354,25 @@ a CxxTest testing library, it employs no advanced features of C++ (e.g. RTTI)
 and it supports a very flexible form of test discovery.")
     (license license:lgpl3+)))
 
+(define-public doctest
+  (package
+    (name "doctest")
+    (version "2.3.5")
+    (home-page "https://github.com/onqtam/doctest")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0rddlzhnv0f5036q0m0p019pismka7sx6x8cnzk65sk77b1dsbhg"))))
+    (build-system cmake-build-system)
+    (synopsis "C++ test framework")
+    (description
+     "doctest is a single-header testing framework for C++11 and later.  It
+has been designed to be fast, light and unintrusive.")
+    (license license:expat)))
+
 (define-public go-gopkg.in-check.v1
   (let ((commit "788fd78401277ebd861206a03c884797c6ec5541")
         (revision "1"))
@@ -815,6 +834,22 @@ supports coverage of subprocesses.")
 
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
+
+;; python-bleach 3.1.0 requires this ancient version of pytest-runner.
+;; Remove once no longer needed.
+(define-public python-pytest-runner-2
+  (package/inherit
+   python-pytest-runner
+   (version "2.12.2")
+   (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-runner" version))
+             (sha256
+              (base32
+               "11ivjj9hfphkv4yfb2g74av4yy86y8gcbf7gbif0p1hcdfnxg3w6"))))))
+
+(define-public python2-pytest-runner-2
+  (package-with-python2 python-pytest-runner-2))
 
 (define-public python-pytest-mock
   (package

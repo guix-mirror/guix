@@ -78,26 +78,25 @@
 (define-public parted
   (package
     (name "parted")
-    (version "3.2")
+    (version "3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/parted/parted-"
                                   version ".tar.xz"))
-              (patches (search-patches "parted-glibc-compat.patch"))
               (sha256
                (base32
-                "1r3qpg3bhz37mgvp9chsaa3k0csby3vayfvz8ggsqz194af5i2w5"))))
+                "0i1xp367wpqw75b20c3jnism3dg3yqj4a7a22p2jb1h1hyyv9qjp"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'fix-locales-and-python
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "tests/t0251-gpt-unicode.sh"
-              (("C.UTF-8") "en_US.utf8")) ;not in Glibc locales
-            (substitute* "tests/msdos-overlap"
-              (("/usr/bin/python") (which "python"))))))))
+         (add-after 'unpack 'fix-locales-and-python
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/t0251-gpt-unicode.sh"
+               (("C.UTF-8") "en_US.utf8")) ;not in Glibc locales
+             (substitute* "tests/msdos-overlap"
+               (("/usr/bin/python") (which "python")))
+             #t)))))
     (inputs
      `(("lvm2" ,lvm2)
        ("readline" ,readline)
@@ -105,6 +104,7 @@
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ;; For the tests.
+       ("e2fsprogs" ,e2fsprogs)
        ("perl" ,perl)
        ("python" ,python-2)))
     (home-page "https://www.gnu.org/software/parted/")

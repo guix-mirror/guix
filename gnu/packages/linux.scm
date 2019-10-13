@@ -1090,7 +1090,7 @@ providing the system administrator with some help in common tasks.")
                   #t))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "static"))      ; >2 MiB of static .a libraries
+               "static"))               ;>2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
                                "--enable-fs-paths-default=/run/current-system/profile/sbin"
@@ -1102,45 +1102,42 @@ providing the system administrator with some help in common tasks.")
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
        #:phases (modify-phases %standard-phases
-                  (add-before
-                   'build 'set-umount-file-name
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; Tell 'eject' the right file name of 'umount'.
-                     (let ((out (assoc-ref outputs "out")))
-                       (substitute* "sys-utils/eject.c"
-                         (("\"/bin/umount\"")
-                          (string-append "\"" out "/bin/umount\"")))
-                       #t)))
-                  (add-before
-                   'check 'pre-check
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let ((out (assoc-ref outputs "out"))
-                           (net (assoc-ref inputs "net-base")))
-                       ;; Change the test to refer to the right file.
-                       (substitute* "tests/ts/misc/mcookie"
-                         (("/etc/services")
-                          (string-append net "/etc/services")))
-                       #t)))
-                  (add-after
-                   'install 'move-static-libraries
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out    (assoc-ref outputs "out"))
-                           (static (assoc-ref outputs "static")))
-                       (mkdir-p (string-append static "/lib"))
-                       (with-directory-excursion out
-                         (for-each (lambda (file)
-                                     (rename-file file
-                                                  (string-append static "/"
-                                                                 file)))
-                                   (find-files "lib" "\\.a$"))
+                  (add-before 'build 'set-umount-file-name
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Tell 'eject' the right file name of 'umount'.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "sys-utils/eject.c"
+                          (("\"/bin/umount\"")
+                           (string-append "\"" out "/bin/umount\"")))
+                        #t)))
+                  (add-before 'check 'pre-check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (net (assoc-ref inputs "net-base")))
+                        ;; Change the test to refer to the right file.
+                        (substitute* "tests/ts/misc/mcookie"
+                          (("/etc/services")
+                           (string-append net "/etc/services")))
+                        #t)))
+                  (add-after 'install 'move-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out    (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static")))
+                        (mkdir-p (string-append static "/lib"))
+                        (with-directory-excursion out
+                          (for-each (lambda (file)
+                                      (rename-file file
+                                                   (string-append static "/"
+                                                                  file)))
+                                    (find-files "lib" "\\.a$"))
 
-                         ;; Remove references to the static library from the '.la'
-                         ;; files so that Libtool does the right thing when both
-                         ;; the shared and static library is available.
-                         (substitute* (find-files "lib" "\\.la$")
-                           (("old_library=.*") "old_library=''\n")))
+                          ;; Remove references to the static library from the '.la'
+                          ;; files so that Libtool does the right thing when both
+                          ;; the shared and static library is available.
+                          (substitute* (find-files "lib" "\\.la$")
+                            (("old_library=.*") "old_library=''\n")))
 
-                       #t))))))
+                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
 
@@ -1150,7 +1147,7 @@ providing the system administrator with some help in common tasks.")
                     '())))
     (native-inputs
      `(("perl" ,perl)
-       ("net-base" ,net-base)))                   ;for tests
+       ("net-base" ,net-base)))         ;for tests
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
@@ -1279,7 +1276,7 @@ slabtop, and skill.")
 (define-public e2fsprogs
   (package
     (name "e2fsprogs")
-    (version "1.45.2")
+    (version "1.45.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1288,7 +1285,7 @@ slabtop, and skill.")
                    name "-" version ".tar.xz"))
              (sha256
               (base32
-               "02g0cm72sgz709s9pkg4mvj56m7bgs7rwnyc2cp7cvg3j6pcjlj9"))))
+               "00nwl1ppjalxbnx40dsm895r3q793p8nni6n81saj7faj2szdyk5"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (native-inputs `(("pkg-config" ,pkg-config)
@@ -1459,18 +1456,15 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
 (define-public strace
   (package
     (name "strace")
-    (version "5.2")
+    (version "5.3")
     (home-page "https://strace.io")
     (source (origin
              (method url-fetch)
              (uri (string-append home-page "/files/" version
                                  "/strace-" version ".tar.xz"))
-             ;; XXX Remove the 'regenerate-tests' phase below when
-             ;; "strace-ipc-tests.patch" is no longer applied.
-             (patches (search-patches "strace-ipc-tests.patch"))
              (sha256
               (base32
-               "1li49i75wrdw91hchyyd8spnzfcmxcfyfb5g9zbaza89aq4bq4ym"))))
+               "0ix06z4vnc49mv76f22kixz8dsh7daqv9mpgwcgl0mlnfjc124vc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -1479,14 +1473,7 @@ Zerofree requires the file system to be unmounted or mounted read-only.")
            (lambda _
              (substitute* "strace.c"
                (("/bin/sh") (which "sh")))
-             #t))
-         (add-before 'configure 'regenerate-tests
-           ;; XXX Remove this phase when "strace-ipc-tests.patch" is no longer
-           ;; applied in the 'source' field above.  This phase is needed to
-           ;; regenerate many other files from tests/gen_tests.in, which is
-           ;; modified by the aforementioned patch.
-           (lambda _
-             (invoke "tests/gen_tests.sh"))))
+             #t)))
        ;; Don't fail if the architecture doesn't support different personalities.
        #:configure-flags '("--enable-mpers=check")
        ;; See <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=32459>.

@@ -118,9 +118,7 @@ launching and using Jupyter kernels.")
                   (replace 'install
                     (lambda* (#:key inputs outputs #:allow-other-keys)
                       (let* ((out (assoc-ref outputs "out"))
-                             (version ((@@ (guix build python-build-system)
-                                           get-python-version)
-                                       (assoc-ref inputs "python")))
+                             (version (python-version (assoc-ref inputs "python")))
                              (pydir (string-append out "/lib/python"
                                                    version "/site-packages/"
                                                    "jupyter_kernel_test")))

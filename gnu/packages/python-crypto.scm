@@ -232,21 +232,18 @@ Python interface around SSH networking concepts.")
 (define-public python-ecdsa
   (package
     (name "python-ecdsa")
-    (version "0.13")
+    (version "0.13.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ecdsa" version))
        (sha256
-        (base32
-         "1yj31j0asmrx4an9xvsaj2icdmzy6pw0glfpqrrkrphwdpi1xkv4"))))
+        (base32 "0k9xxklf865g6x43gkfarwb25ffrkmpvkzkh71rylqx7cjq80g0n"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
-    (home-page
-     "https://github.com/warner/python-ecdsa")
-    (synopsis
-     "ECDSA cryptographic signature library (pure python)")
+    (home-page "https://github.com/warner/python-ecdsa")
+    (synopsis "ECDSA cryptographic signature library (pure python)")
     (description
      "This is an easy-to-use implementation of ECDSA cryptography (Elliptic
 Curve Digital Signature Algorithm), implemented purely in Python.  With this
