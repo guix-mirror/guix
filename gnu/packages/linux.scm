@@ -1090,7 +1090,7 @@ providing the system administrator with some help in common tasks.")
                   #t))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "static"))      ; >2 MiB of static .a libraries
+               "static"))               ;>2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
                                "--enable-fs-paths-default=/run/current-system/profile/sbin"
@@ -1102,45 +1102,42 @@ providing the system administrator with some help in common tasks.")
                                               (assoc-ref %outputs "out")
                                               "/etc/bash_completion.d"))
        #:phases (modify-phases %standard-phases
-                  (add-before
-                   'build 'set-umount-file-name
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     ;; Tell 'eject' the right file name of 'umount'.
-                     (let ((out (assoc-ref outputs "out")))
-                       (substitute* "sys-utils/eject.c"
-                         (("\"/bin/umount\"")
-                          (string-append "\"" out "/bin/umount\"")))
-                       #t)))
-                  (add-before
-                   'check 'pre-check
-                   (lambda* (#:key inputs outputs #:allow-other-keys)
-                     (let ((out (assoc-ref outputs "out"))
-                           (net (assoc-ref inputs "net-base")))
-                       ;; Change the test to refer to the right file.
-                       (substitute* "tests/ts/misc/mcookie"
-                         (("/etc/services")
-                          (string-append net "/etc/services")))
-                       #t)))
-                  (add-after
-                   'install 'move-static-libraries
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out    (assoc-ref outputs "out"))
-                           (static (assoc-ref outputs "static")))
-                       (mkdir-p (string-append static "/lib"))
-                       (with-directory-excursion out
-                         (for-each (lambda (file)
-                                     (rename-file file
-                                                  (string-append static "/"
-                                                                 file)))
-                                   (find-files "lib" "\\.a$"))
+                  (add-before 'build 'set-umount-file-name
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Tell 'eject' the right file name of 'umount'.
+                      (let ((out (assoc-ref outputs "out")))
+                        (substitute* "sys-utils/eject.c"
+                          (("\"/bin/umount\"")
+                           (string-append "\"" out "/bin/umount\"")))
+                        #t)))
+                  (add-before 'check 'pre-check
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            (net (assoc-ref inputs "net-base")))
+                        ;; Change the test to refer to the right file.
+                        (substitute* "tests/ts/misc/mcookie"
+                          (("/etc/services")
+                           (string-append net "/etc/services")))
+                        #t)))
+                  (add-after 'install 'move-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out    (assoc-ref outputs "out"))
+                            (static (assoc-ref outputs "static")))
+                        (mkdir-p (string-append static "/lib"))
+                        (with-directory-excursion out
+                          (for-each (lambda (file)
+                                      (rename-file file
+                                                   (string-append static "/"
+                                                                  file)))
+                                    (find-files "lib" "\\.a$"))
 
-                         ;; Remove references to the static library from the '.la'
-                         ;; files so that Libtool does the right thing when both
-                         ;; the shared and static library is available.
-                         (substitute* (find-files "lib" "\\.la$")
-                           (("old_library=.*") "old_library=''\n")))
+                          ;; Remove references to the static library from the '.la'
+                          ;; files so that Libtool does the right thing when both
+                          ;; the shared and static library is available.
+                          (substitute* (find-files "lib" "\\.la$")
+                            (("old_library=.*") "old_library=''\n")))
 
-                       #t))))))
+                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)
 
@@ -1150,7 +1147,7 @@ providing the system administrator with some help in common tasks.")
                     '())))
     (native-inputs
      `(("perl" ,perl)
-       ("net-base" ,net-base)))                   ;for tests
+       ("net-base" ,net-base)))         ;for tests
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description "Util-linux is a diverse collection of Linux kernel
