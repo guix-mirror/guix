@@ -10506,12 +10506,12 @@ let users kill or mark things easily.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/csv-mode-"
+       (uri (string-append "https://elpa.gnu.org/packages/csv-mode-"
                            version ".el"))
        (sha256
         (base32 "0sdnyi9in904k49yy5imapypnmk75lv14k9c1yyjhjpalvvh6br1"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/csv-mode.html")
+    (home-page "https://elpa.gnu.org/packages/csv-mode.html")
     (synopsis "Major mode for editing comma/char separated values")
     (description
      "This Emacs package implements CSV mode, a major mode for editing records
