@@ -1397,7 +1397,7 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.44.12")
+    (version "2.46.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1405,7 +1405,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1h3qnqhr0l7pd2bxg69ki6ckl4srdwgr471dpp4jq9i4784hp0v6"))))
+                "1la3az2af2ccm6rp86b6wh0kq7kxzl4n8pli5qxhyic1rd91xj4n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1423,6 +1423,7 @@ library.")
            (lambda _
              (for-each patch-shebang '("tap-driver.sh" "tap-test"))
              (patch-/usr/bin/file "configure")
+             (patch-makefile-SHELL "po/Makefile.in.in")
              #t))
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1460,9 +1461,9 @@ library.")
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ;; This is the minimum supported Rust version in Librsvg 2.44.
-       ("rust" ,rust-1.27)
-       ("cargo" ,rust-1.27 "cargo")
+       ;; This is the minimum supported Rust version in Librsvg 2.46.
+       ("rust" ,rust-1.34)
+       ("cargo" ,rust-1.34 "cargo")
        ("vala" ,vala)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
