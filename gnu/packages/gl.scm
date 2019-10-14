@@ -243,7 +243,8 @@ also known as DXTn or DXTC) for Mesa.")
          (base32
           "1s81kwcjkkahnf5y5mshmd3q9j057hhsai7awpq6yb6im2hkriac"))
         (patches
-         (search-patches "mesa-skip-disk-cache-test.patch"))))
+         (search-patches "mesa-skip-disk-cache-test.patch"
+                         "mesa-timespec-test-32bit.patch"))))
     (build-system meson-build-system)
     (propagated-inputs
       `(;; The following are in the Requires.private field of gl.pc.

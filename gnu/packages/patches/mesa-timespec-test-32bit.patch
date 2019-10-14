@@ -1,0 +1,17 @@
+Fix a test failure on 32-bit systems.
+
+Taken from upstream:
+https://gitlab.freedesktop.org/mesa/mesa/commit/dd1dba80b9ee74ec8b90761285a8262e374bf8ef
+
+diff --git a/src/util/tests/timespec/timespec_test.cpp b/src/util/tests/timespec/timespec_test.cpp
+--- a/src/util/tests/timespec/timespec_test.cpp
++++ b/src/util/tests/timespec/timespec_test.cpp
+@@ -206,7 +206,7 @@ TEST(timespec_test, timespec_from_nsec)
+ 
+    timespec_from_nsec(&a, UINT64_MAX);
+    EXPECT_EQ(a.tv_nsec, UINT64_MAX % NSEC_PER_SEC);
+-   EXPECT_EQ(a.tv_sec, UINT64_MAX / NSEC_PER_SEC);
++   EXPECT_EQ(a.tv_sec, (time_t)(UINT64_MAX / NSEC_PER_SEC));
+ }
+ 
+ TEST(timespec_test, timespec_from_usec)
