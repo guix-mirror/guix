@@ -7050,8 +7050,8 @@ sly-quickload command that prompts the user for a package to install. ")
       (license license:gpl3+))))
 
 (define-public emacs-sly-asdf
-  (let ((commit "355739e42c91b9b2339f84453292b938b6d17b0d")
-        (revision "1"))
+  (let ((commit "4e323bc28da2f07fd799b6a31b94fd93848b5f3c")
+        (revision "2"))
     (package
       (name "emacs-sly-asdf")
       (version (git-version "0.1.0" revision commit))
@@ -7065,21 +7065,12 @@ sly-quickload command that prompts the user for a package to install. ")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1plkqh4dj35c3cf8ykan8fcvqmxcdqragh4j6xg0sls27mjjz1bq"))))
+           "16sc33jhc6ik4ilsyqc3cjpi6v0wdmwjlwrzjwd6yym11bscsmad"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
-       `(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-autoload
-             ;; TODO: Reported upstream: https://github.com/mmgeorge/sly-asdf/pull/11
-             (lambda _
-               (substitute* "sly-asdf.el"
-                 (("\\(add-to-list 'sly-contribs 'sly-asdf 'append\\)")
-                  "(with-eval-after-load 'sly
- (add-to-list 'sly-contribs 'sly-asdf 'append))")))))))
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
       (synopsis "ASDF contrib for SLY")
       (description
        "@command{sly-asdf} is an external contrib for SLY that provides
