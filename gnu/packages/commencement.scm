@@ -1716,12 +1716,6 @@ exec " gcc "/bin/" program
        #:implicit-inputs? #f
        ,@(package-arguments m4)))))
 
-(define m4-boot0*
-  (package
-    ;; TODO: On the next rebuild cycle, use M4-BOOT0 as is.
-    (inherit m4-boot0)
-    (name "m4")))
-
 (define bison-boot0
   ;; This Bison is needed to build MiG so we need it early in the process.
   ;; Recent versions of Linux-Libre headers also depend on this.
@@ -1729,7 +1723,7 @@ exec " gcc "/bin/" program
     (inherit bison)
     ;; TODO: On the next build cycle, do:
     ;;(name "bison-boot0")
-    (propagated-inputs `(("m4" ,m4-boot0*)))
+    (propagated-inputs `(("m4" ,m4-boot0)))
     (native-inputs `(("perl" ,perl-boot0)))
     (inputs (%boot0-inputs))                      ;remove Flex...
     (arguments
@@ -1765,12 +1759,7 @@ exec " gcc "/bin/" program
   (package
     (inherit flex)
     (native-inputs `(("bison" ,bison-boot0)))
-    (propagated-inputs
-     ;; XXX: Here we use an 'm4-boot0' package that's not eq? so that it
-     ;; appears twice in '%build-inputs', like when we were using
-     ;; 'package-with-explicit-inputs'.
-     ;; TODO: Remove this hack on the next rebuild cycle.
-     `(("m4" ,(package (inherit m4-boot0*)))))
+    (propagated-inputs `(("m4" ,m4-boot0)))
     (inputs (%boot0-inputs))
     (arguments
      `(#:implicit-inputs? #f
