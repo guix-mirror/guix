@@ -1008,14 +1008,13 @@ forms using your favorite CSS framework, without writing template code.")
 (define-public python-django-override-storage
   (package
     (name "python-django-override-storage")
-    (version "0.1.4")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "django-override-storage" version))
        (sha256
-        (base32
-         "0sqz1mh0yn8b1bzz2gr2azfiynljigm5gkzavp5n17zd3j2jg57x"))))
+        (base32 "022arq94lxnlyykn8wvfnkykhi2dldnsn93pa2i41na551i0wpiv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-django" ,python-django)))
