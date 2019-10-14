@@ -1730,17 +1730,6 @@ exec " gcc "/bin/" program
        #:implicit-inputs? #f
        #:guile ,%bootstrap-guile
 
-       ;; XXX: These flags should be unconditional, but for now
-       ;; we just add them on x86 to avoid a full rebuild.
-       ;; TODO: On the next core-updates, use
-       ;; 'substitute-keyword-arguments' to inherit them from
-       ;; BISON.
-       ,@(if (member (%current-system)
-                     '("x86_64-linux" "i686-linux"))
-             '(#:parallel-build? #f
-               #:parallel-tests? #f)
-             '())
-
        ;; Zero timestamps in liby.a; this must be done
        ;; explicitly here because the bootstrap Binutils don't
        ;; do that (default is "cru".)
@@ -1751,7 +1740,9 @@ exec " gcc "/bin/" program
                            "RANLIB=ranlib")
                           (_
                            "RANLIB=ranlib -D"))
-                      "V=1")))))
+                      "V=1")
+
+       ,@(package-arguments bison)))))
 
 (define flex-boot0
   ;; This Flex is needed to build MiG as well as Linux-Libre headers.
