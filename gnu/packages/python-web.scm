@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -302,6 +303,34 @@ other HTTP libraries.")
 
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
+
+(define-public httpie
+  (package
+    (name "httpie")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpie" version))
+       (sha256
+        (base32
+         "103fcigpxf4nqmrdqjnyz7d9n4n16906slwmmqqc0gkxv8hnw6vd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests attempt to access external web servers, so we cannot run them.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-pygments" ,python-pygments)
+       ("python-requests" ,python-requests)))
+    (home-page "https://httpie.org/")
+    (synopsis "cURL-like tool for humans")
+    (description
+     "A command line HTTP client with an intuitive UI, JSON support,
+syntax highlighting, wget-like downloads, plugins, and more.  It consists of
+a single http command designed for painless debugging and interaction with
+HTTP servers, RESTful APIs, and web services.")
+    (license license:bsd-3)))
 
 (define-public python-html2text
   (package
