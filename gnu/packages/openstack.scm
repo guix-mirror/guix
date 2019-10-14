@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017, 2019 Clément Lassieur <clement@lassieur.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -853,17 +853,16 @@ permanence.")
 (define-public python-git-review
   (package
     (name "python-git-review")
-    (version "1.27.0")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "git-review" version))
        (sha256
-        (base32
-         "0xkllc8ql401sfqbjqf7i451mkgwgv0j4gysxdlyzqb27kfsyc3s"))))
+        (base32 "0nn17mfqvsa3ryjz53qjslmf60clc0vx2115kkj66h28p6vsnflf"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f ; tests require a running Gerrit server
+     '(#:tests? #f                     ; tests require a running Gerrit server
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
