@@ -7173,17 +7173,16 @@ call.")
     (version "1.0.5")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub because the rubygems version does not contain
        ;; Rakefile.
-       (uri (string-append
-             "https://github.com/ruby-concurrency/concurrent-ruby/archive/v"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/ruby-concurrency/concurrent-ruby")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qhv0qzsby4iijgwa4s9r88zj8123pmyz1dwaqzdk57xgqll9pny"))
+         "1618ald6mhz86hapgw9hs3cvb518k48fk6fxficdrdg3zcx8n302"))
        ;; Exclude failing test reported at
        ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
        (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"
