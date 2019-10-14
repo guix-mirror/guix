@@ -652,14 +652,14 @@ easy to use abstraction of the file system or shared memory.")
 (define-public perl-cache-fastmmap
   (package
     (name "perl-cache-fastmmap")
-    (version "1.47")
+    (version "1.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RO/ROBM/"
                            "Cache-FastMmap-" version ".tar.gz"))
        (sha256
-        (base32 "0fdni3iyjfnx8ldgrz3h6z6yxbklrx76klcghg6xvmzd878yqlmi"))))
+        (base32 "118y5lxwa092zrii7mcwnqypff7424w1dpgfkg8zlnz7h2mmnd9c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Cache-FastMmap")
     (synopsis "Shared memory interprocess cache via mmap")
