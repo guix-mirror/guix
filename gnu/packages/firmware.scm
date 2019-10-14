@@ -410,7 +410,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (bin (find-files "." ".*\\.bin$")))
+                   (bin (find-files "." ".*\\.(bin|elf)$")))
                (for-each
                  (lambda (file)
                    (install-file file out))
@@ -485,6 +485,16 @@ such as:
           (sha256
            (base32
             "0vqhwqqh8h9qlkpybg2v94911091c1418bc4pnzq5fd7zf0fjkf8")))))))
+
+(define-public arm-trusted-firmware-rk3399
+  (let ((base (make-arm-trusted-firmware "rk3399")))
+    (package
+      (inherit base)
+      (name "arm-trusted-firmware-rk3399")
+      (native-inputs
+       `(("cross32-gcc" ,(cross-gcc "arm-none-eabi"))
+         ("cross32-binutils", (cross-binutils "arm-none-eabi"))
+         ,@(package-native-inputs base))))))
 
 (define-public rk3399-cortex-m0
   (package
