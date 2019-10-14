@@ -18052,7 +18052,7 @@ url-encoded parameters, as well as web sockets.")
        ("emacs-web-server" ,emacs-web-server)))
     (arguments '(#:include '("\\.el$" "\\.html$")))
     (home-page "https://github.com/ancane/markdown-preview-mode")
-    (synopsis "Live web development in Emacs")
+    (synopsis "Preview Markdown files")
     (description "This package provides a minor mode for preview of Markdown
 files, and sends rendered Markdown to a web browser.")
     (license license:gpl3+)))
