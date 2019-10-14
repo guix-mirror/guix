@@ -7106,6 +7106,39 @@ enables different readtables to be active in different parts of the same
 file.")
       (license license:gpl3+))))
 
+(define-public emacs-sly-macrostep
+  (let ((commit "be2d24545092d164be1a91031d8881afd29c9ec0")
+        (revision "1"))
+    (package
+      (name "emacs-sly-macrostep")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/joaotavora/sly-macrostep")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0v8m3zkccpqd2l8m9340y672l2mm3mrry8422nva5kfvpcwdayqb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)
+         ("emacs-macrostep" ,emacs-macrostep)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (synopsis "Expand Common Lisp macros inside source files with SLY")
+      (description
+       "@command{sly-macrostep} is a SLY contrib for expanding CL macros right
+inside the source file.")
+      (license license:gpl3+))))
+
 (define-public emacs-lua-mode
   (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
         (revision "2"))
