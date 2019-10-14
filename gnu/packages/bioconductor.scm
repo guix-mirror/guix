@@ -832,6 +832,36 @@ Disease Ontology.")
 using data from public repositories.")
     (license license:artistic2.0)))
 
+(define-public r-phastcons100way-ucsc-hg19
+  (package
+    (name "r-phastcons100way-ucsc-hg19")
+    (version "3.7.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "phastCons100way.UCSC.hg19"
+                              version 'annotation))
+       (sha256
+        (base32
+         "1jmc4k4zgkx5vr2plnidnd9bidlwlb0kr7mjg60cqjw7dq7jl1fa"))))
+    (properties
+     `((upstream-name . "phastCons100way.UCSC.hg19")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bsgenome" ,r-bsgenome)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-genomicscores" ,r-genomicscores)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "https://bioconductor.org/packages/phastCons100way.UCSC.hg19")
+    (synopsis "UCSC phastCons conservation scores for hg19")
+    (description
+     "This package provides UCSC phastCons conservation scores for the human
+genome (hg19) calculated from multiple alignments with other 99 vertebrate
+species.")
+    (license license:artistic2.0)))
+
 
 ;;; Experiment data
 
