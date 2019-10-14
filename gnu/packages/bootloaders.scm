@@ -430,6 +430,19 @@ tree binary files.  These are board description files used by Linux and BSD.")
 also initializes the boards (RAM etc).")
     (license license:gpl2+)))
 
+(define u-boot-2019.10
+  (package
+    (inherit u-boot)
+    (version "2019.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.denx.de/pub/u-boot/"
+                    "u-boot-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "053hcrwwlacqh2niisn0zas95zkbffw5aw5sdhixs8lmfdq60vcd"))))))
+
 (define-public u-boot-tools
   (package
     (inherit u-boot)
@@ -744,6 +757,28 @@ to Novena upstream, does not load u-boot.img from the first partition.")
       (native-inputs
        `(("firmware" ,arm-trusted-firmware-puma-rk3399)
          ("firmware-m0" ,rk3399-cortex-m0)
+         ,@(package-native-inputs base))))))
+
+(define-public u-boot-rockpro64-rk3399
+  (let ((base (make-u-boot-package "rockpro64-rk3399" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (version (package-version u-boot-2019.10))
+      (source (package-source u-boot-2019.10))
+      (arguments
+        (substitute-keyword-arguments (package-arguments base)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'set-environment
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
+                                                "/bl31.elf"))
+                  #t))
+              ;; Phases do not succeed on the bl31 ELF.
+              (delete 'strip)
+              (delete 'validate-runpath)))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-rk3399)
          ,@(package-native-inputs base))))))
 
 (define-public vboot-utils
