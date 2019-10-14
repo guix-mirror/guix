@@ -15260,3 +15260,47 @@ and/or unmapped/clipped reads to a separate FASTQ file. When marking
 duplicates, samblaster will require approximately 20MB of memory per 1M read
 pairs.")
     (license license:expat)))
+
+(define-public r-velocyto
+  (let ((commit "d7790346cb99f49ab9c2b23ba70dcf9d2c9fc350")
+        (revision "1"))
+    (package
+      (name "r-velocyto")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/velocyto-team/velocyto.R.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16wqf70j7rd7pay2q513iyz12i8n9vrpg1bisah4lddbcpx5dz1n"))))
+      (build-system r-build-system)
+      (inputs
+       `(("boost" ,boost)))
+      (propagated-inputs
+       `(("r-hdf5r" ,r-hdf5r)
+         ("r-mass" ,r-mass)
+         ("r-mgcv" ,r-mgcv)
+         ("r-pcamethods" ,r-pcamethods)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)
+         ;; Suggested packages
+         ("r-rtsne" ,r-rtsne)
+         ("r-cluster" ,r-cluster)
+         ("r-abind" ,r-abind)
+         ("r-h5" ,r-h5)
+         ("r-biocgenerics" ,r-biocgenerics)
+         ("r-genomicalignments" ,r-genomicalignments)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-edger" ,r-edger)
+         ("r-igraph" ,r-igraph)))
+      (home-page "http://velocyto.org")
+      (synopsis "RNA velocity estimation in R")
+      (description
+       "This package provides basic routines for estimation of gene-specific
+transcriptional derivatives and visualization of the resulting velocity
+patterns.")
+      (license license:gpl3))))
