@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Roel Janssen <roel@gnu.org>
@@ -51,6 +51,7 @@
   (package
    (name "curl")
    (version "7.65.3")
+   (replacement curl-7.66.0)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
@@ -141,6 +142,18 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "https://curl.haxx.se/")))
+
+(define curl-7.66.0
+  (package
+    (inherit curl)
+    (version "7.66.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://curl.haxx.se/download/curl-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1hcqxpibhknhjy56wcxz5vd6m9ggx3ykwp3wp5wx05ih36481d6v"))))))
 
 (define-public kurly
   (package

@@ -109,9 +109,9 @@
       (home-page "http://leenissen.dk/fann/wp/")
       (synopsis "Fast Artificial Neural Network")
       (description
-       "FANN is a free open source neural network library, which implements
-multilayer artificial neural networks in C with support for both fully
-connected and sparsely connected networks.")
+       "FANN is a neural network library, which implements multilayer
+artificial neural networks in C with support for both fully connected and
+sparsely connected networks.")
       (license license:lgpl2.1))))
 
 (define-public libsvm
@@ -794,7 +794,7 @@ computing environments.")
 (define-public python-scikit-learn
   (package
     (name "python-scikit-learn")
-    (version "0.20.3")
+    (version "0.20.4")
     (source
      (origin
        (method git-fetch)
@@ -804,7 +804,7 @@ computing environments.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "08aaby5zphfxy83mggg35bwyka7wk91l2qijh8kk0bl08dikq8dl"))))
+         "08zbzi8yx5wdlxfx9jap61vg1malc9ajf576w7a0liv6jvvrxlpj"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1306,12 +1306,12 @@ Python.")
        ("python" ,python-wrapper)))
     (home-page "https://grpc.io")
     (synopsis "High performance universal RPC framework")
-    (description "gRPC is a modern open source high performance @dfn{Remote
-Procedure Call} (RPC) framework that can run in any environment.  It can
-efficiently connect services in and across data centers with pluggable support
-for load balancing, tracing, health checking and authentication.  It is also
-applicable in last mile of distributed computing to connect devices, mobile
-applications and browsers to backend services.")
+    (description "gRPC is a modern high performance @dfn{Remote Procedure Call}
+(RPC) framework that can run in any environment.  It can efficiently connect
+services in and across data centers with pluggable support for load balancing,
+tracing, health checking and authentication.  It is also applicable in last
+mile of distributed computing to connect devices, mobile applications and
+browsers to backend services.")
     (license license:asl2.0)))
 
 ;; Note that Tensorflow includes a "third_party" directory, which seems to not

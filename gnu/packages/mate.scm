@@ -1279,7 +1279,7 @@ can be used as backgrounds in the MATE Desktop environment.")
        ("pkg-config" ,pkg-config)
        ("scrollkeeper" ,scrollkeeper)
        ("xorgproto" ,xorgproto)
-       ("yelp-tools" ,yelp-tools)))
+       ("yelp-tools" ,yelp-tools/fixed)))
     (inputs
      `(("atk" ,atk)
        ("cairo" ,cairo)

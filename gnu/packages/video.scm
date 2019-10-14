@@ -2637,14 +2637,14 @@ supported players in addition to this package.")
 (define-public handbrake
   (package
     (name "handbrake")
-    (version "1.2.0")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.handbrake.fr/releases/"
                                   version "/HandBrake-" version "-source.tar.bz2"))
               (sha256
                (base32
-                "03clkknaq3mz84p85cvr21gsy9b8vv2g4vvyfz44hz8la253jfqi"))
+                "0k2yaqy7zi06k8mkp9az2mn9dlgj3a1339vacakfh2nn2zsics6z"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove "contrib" and source not necessary for

@@ -14,7 +14,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017 Petter <petter@mykolab.ch>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
-;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -136,6 +136,7 @@ Daemon and possibly more in the future.")
   (package
     (name "libgcrypt")
     (version "1.8.4")
+    (replacement libgcrypt-1.8.5)
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
@@ -167,6 +168,18 @@ generation.")
     (license license:lgpl2.0+)
     (properties '((ftp-server . "ftp.gnupg.org")
                   (ftp-directory . "/gcrypt/libgcrypt")))))
+
+(define-public libgcrypt-1.8.5
+  (package
+    (inherit libgcrypt)
+    (version "1.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1hvsazms1bfd769q0ngl0r9g5i4m9mpz9jmvvrdzyzk3rfa2ljiv"))))))
 
 (define-public libassuan
   (package

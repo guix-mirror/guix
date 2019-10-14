@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
-;;; Copyright © 2017 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2017, 2019 Pierre Langlois <pierre.langlois@gmx.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -123,7 +123,8 @@ versions of ID3v2.")
             (modules '((guix build utils)))
             ;; Don't use bundled zlib
             (snippet '(begin (delete-file-recursively "zlib") #t))
-            (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
+            (patches (search-patches "id3lib-CVE-2007-4460.patch"
+                                     "id3lib-UTF16-writing-bug.patch"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
    (arguments

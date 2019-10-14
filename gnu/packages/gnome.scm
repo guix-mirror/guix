@@ -1397,7 +1397,7 @@ library.")
 (define-public librsvg-next
   (package
     (name "librsvg")
-    (version "2.44.12")
+    (version "2.46.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1405,7 +1405,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1h3qnqhr0l7pd2bxg69ki6ckl4srdwgr471dpp4jq9i4784hp0v6"))))
+                "1la3az2af2ccm6rp86b6wh0kq7kxzl4n8pli5qxhyic1rd91xj4n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1423,6 +1423,7 @@ library.")
            (lambda _
              (for-each patch-shebang '("tap-driver.sh" "tap-test"))
              (patch-/usr/bin/file "configure")
+             (patch-makefile-SHELL "po/Makefile.in.in")
              #t))
          (add-before 'configure 'pre-configure
            (lambda* (#:key inputs #:allow-other-keys)
@@ -1460,9 +1461,9 @@ library.")
              #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ;; This is the minimum supported Rust version in Librsvg 2.44.
-       ("rust" ,rust-1.27)
-       ("cargo" ,rust-1.27 "cargo")
+       ;; This is the minimum supported Rust version in Librsvg 2.46.
+       ("rust" ,rust-1.34)
+       ("cargo" ,rust-1.34 "cargo")
        ("vala" ,vala)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
@@ -2690,7 +2691,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.66.2")
+    (version "2.68.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -2698,7 +2699,7 @@ libxml to ease remote use of the RESTful API.")
                                   "libsoup-" version ".tar.xz"))
               (sha256
                (base32
-                "0amfw1yvy1kjrg41rfh2vvrw5gkwnyckqbw1fab50hm6xc1acbmx"))))
+                "0crr9qprmacr626fx83cx81ggk85zsgxr4mn577kpzj6m40k1bai"))))
     (build-system meson-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2706,7 +2707,7 @@ libxml to ease remote use of the RESTful API.")
                   (guix build meson-build-system)
                   (ice-9 popen))
 
-       #:configure-flags '("-Ddoc=true")
+       #:configure-flags '("-Dgtk_doc=true")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'adjust-tests
@@ -2715,6 +2716,16 @@ libxml to ease remote use of the RESTful API.")
              ;; in the build environment.
              (substitute* "tests/socket-test.c"
                ((".*/sockets/unconnected.*") ""))
+
+             ;; These fail because "subdomain.localhost" does not resolve in
+             ;; the build environment.
+             (substitute* "tests/hsts-test.c"
+               ((".*/hsts/basic.*") "")
+               ((".*/hsts/subdomains.*") "")
+               ((".*/hsts/superdomain.*") "")
+               ((".*/hsts/utf8-address.*") ""))
+             (substitute* "tests/hsts-db-test.c"
+               ((".*/hsts-db/subdomains.*") ""))
 
              ;; Generate a self-signed certificate that has "localhost" as its
              ;; 'dnsName'.  Failing to do that, and starting with GnuTLS
@@ -2784,10 +2795,12 @@ libxml to ease remote use of the RESTful API.")
        ("httpd" ,httpd)))
     (propagated-inputs
      ;; libsoup-2.4.pc refers to all these.
-     `(("glib" ,glib)
+     `(("brotli" ,google-brotli)
+       ("glib" ,glib)
        ("libpsl" ,libpsl)
        ("libxml2" ,libxml2)
-       ("sqlite" ,sqlite)))
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
     (inputs
      `(("glib-networking" ,glib-networking)
        ("mit-krb5" ,mit-krb5)))
@@ -3395,21 +3408,21 @@ which are easy to play with the aid of a mouse.")
 (define-public amtk
   (package
     (name "amtk")
-    (version "5.0.0")
+    (version "5.0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/amtk/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "amtk-" version ".tar.xz"))
               (sha256
                (base32
-                "1zriix7bdwcg0868mfc7jy6zbwjwdmjwbh0ah6dbddrhiabrda8j"))))
+                "09yy95w1s83c43mh9vha1jbb780yighf5pd2j0ygjmc68sjg871d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk-doc")))
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
-       ("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("glib:bin" ,glib "bin")         ; for glib-mkenums
        ("gtk-doc" ,gtk-doc)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -4134,7 +4147,7 @@ supports image conversion, rotation, and slideshows.")
   ;; 'XDG_DATA_DIRS' appropriately set.
   (package
     (name "eog-plugins")
-    (version "3.26.3")
+    (version "3.26.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/eog-plugins/"
@@ -4142,7 +4155,7 @@ supports image conversion, rotation, and slideshows.")
                                   "eog-plugins-" version ".tar.xz"))
               (sha256
                (base32
-                "06fnjs2p18ad5vk07z685cx26sc7d3azywss00w9xvz794b2i1g3"))))
+                "0pd7fqa4ciy5844k5s1c6rlsqkk8pxd8cchxjcjhxlsngm9lynnx"))))
     (build-system gnu-build-system)
     (home-page "https://wiki.gnome.org/Apps/EyeOfGnome/Plugins")
     (synopsis "Extensions for the Eye of GNOME image viewer")
@@ -4709,15 +4722,15 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.30.4")
+    (version "0.30.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/shotwell/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "shotwell-" version ".tar.xz"))
               (sha256
                (base32
-                "1yiz3j0y2yg6985y3alb3hpkfbv68n8ibys5gpwcjdhmhf3czg5p"))))
+                "1m9i8r4gyd2hzlxjjwfyck4kz7gdg2vz2k6l6d0ga9hdfq2l4p9l"))))
     (build-system meson-build-system)
     (arguments
      '(#:glib-or-gtk? #t))

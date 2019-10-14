@@ -245,7 +245,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20190912")
+    (version "7.20191009")
     (source
      (origin
        (method url-fetch)
@@ -253,7 +253,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
         (base32
-         "1a3jvl5cx32v78s3015i10cx00jprm1391rpww4mzkk1vskzn9cv"))))
+         "10ycvjl9b3aa81zdz239ngjbbambfjrzds1a23wdlbjkn12nsg4g"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags

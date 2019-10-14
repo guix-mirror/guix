@@ -16,6 +16,7 @@
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Jesse John Gildersleve <jessejohngildersleve@zohomail.eu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,12 +50,13 @@
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnome) ; for librsvg
+  #:use-module (gnu packages gnome)     ; for librsvg
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
-  #:use-module (gnu packages linux) ; alsa-lib
+  #:use-module (gnu packages linux)     ; alsa-lib
+  #:use-module (gnu packages mail)      ; for mailutils
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
@@ -145,6 +147,10 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
+
+       ;; Avoid Emacs's limited movemail substitute that retrieves POP3 email
+       ;; only via insecure channels.  This is not needed for (modern) IMAP.
+       ("mailutils" ,mailutils)
 
        ;; TODO: Add the optional dependencies.
        ("libx11" ,libx11)

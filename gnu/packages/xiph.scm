@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;;
@@ -27,6 +27,7 @@
 
 (define-module (gnu packages xiph)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -41,6 +42,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:export (libogg
             libvorbis
@@ -185,15 +187,17 @@ work from the @code{speex} codec.")
 (define ao
   (package
     (name "ao")
-    (version "1.2.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://downloads.xiph.org/releases/ao/libao-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "1bwwv1g9lchaq6qmhvj1pp3hnyqr64ydd4j38x94pmprs4d27b83"))))
+    ;; We need a few commits on top of 1.2.2 to fix CVE-2017-11548.
+    (version "1.2.2-5-g20dc8ed")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.xiph.org/libao.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1d1b3g2a7jd43c32242yq6nfysqsmp7rjslhvbrmpgk119l5fnbj"))))
     (build-system gnu-build-system)
     ;; FIXME: Add further backends, see the summary printed after configure.
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
@@ -203,7 +207,10 @@ work from the @code{speex} codec.")
      `(("alsa-lib" ,alsa-lib)
        ("pulseaudio" ,pulseaudio)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (synopsis "Cross platform audio library")
     (description
      "Libao is a cross-platform audio library that allows programs to
@@ -230,6 +237,7 @@ It currently supports:
 @end enumerate
 ")
     (license license:gpl2+)
+    (properties '((cpe-name . "libao")))
     (home-page "https://www.xiph.org/ao/")))
 
 (define flac

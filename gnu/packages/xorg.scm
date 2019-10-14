@@ -4394,14 +4394,14 @@ file.  This file can then be read by various other X utilities for
 redisplay, printing, editing, formatting, archiving, image processing,
 etc.  The target window is selected by clicking the pointer in the
 desired window.  The keyboard bell is rung once at the beginning of the
-dump and twice whenthe dump is completed.")
+dump and twice when the dump is completed.")
     (license license:x11)))
 
 
 (define-public xwininfo
   (package
     (name "xwininfo")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -4411,7 +4411,7 @@ dump and twice whenthe dump is completed.")
                ".tar.bz2"))
         (sha256
           (base32
-            "00avrpw4h5mr1klp41lv2j4dmq465v6l5kb5bhm4k5ml8sm9i543"))))
+            "03h8clirhw5ki1xxp18xbf5vynm7r0dwspsgfin6cxn4vx0m8h3s"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)

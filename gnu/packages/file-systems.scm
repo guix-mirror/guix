@@ -316,7 +316,6 @@ network.  LIBNFS offers three different APIs, for different use :
                  (install-file "apfs-dump-quick" bin)
                  (install-file "apfs-fuse" bin)
                  (install-file "libapfs.a" lib)
-                 (install-file "../source/LICENSE" doc)
                  #t))))))
       (inputs
        `(("bzip2" ,bzip2)

@@ -14,6 +14,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
+;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1414,3 +1415,26 @@ This package also contains two related utilities:
 their MIME type.
 @end itemize")
     (license license:perl-license)))
+
+(define-public uchardet
+  (package
+    (name "uchardet")
+    (version "0.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://www.freedesktop.org/software/"
+                            name "/releases/" name "-" version ".tar.xz"))
+        (sha256
+          (base32 "0q9c02b6nmw41yfsiqsnphgc3f0yg3fj31wkccp47cmwvy634lc3"))))
+    (build-system cmake-build-system)
+    (home-page "https://www.freedesktop.org/wiki/Software/uchardet/")
+    (synopsis "Encoding detector library")
+    (description "uchardet is an encoding detector library, which takes a
+sequence of bytes in an unknown character encoding without any additional
+information, and attempts to determine the encoding of the text.  Returned
+encoding names are iconv-compatible.")
+
+    ;; This combines code under MPL 1.1, LGPL 2.1+, and GPL 2.0+, so the
+    ;; combination is GPL 2.0+.
+    (license license:gpl2+)))
