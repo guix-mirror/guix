@@ -1721,8 +1721,7 @@ exec " gcc "/bin/" program
   ;; Recent versions of Linux-Libre headers also depend on this.
   (package
     (inherit bison)
-    ;; TODO: On the next build cycle, do:
-    ;;(name "bison-boot0")
+    (name "bison-boot0")
     (propagated-inputs `(("m4" ,m4-boot0)))
     (native-inputs `(("perl" ,perl-boot0)))
     (inputs (%boot0-inputs))                      ;remove Flex...
