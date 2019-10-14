@@ -5854,7 +5854,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "4.20.0")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5862,7 +5862,7 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
+                "0q5xd4gb9g83h82mg68cx616ifzl8qkzzlgg5xna698117ph3wky"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
