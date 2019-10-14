@@ -2340,6 +2340,34 @@ Stack Overflow, Super User, and other StackExchange sites.")
 files and directories.")
     (license license:gpl3+)))
 
+(define-public emacs-fringe-helper
+  (let ((commit "ef4a9c023bae18ec1ddd7265f1f2d6d2e775efdd")
+        (revision "1"))
+    (package
+      (name "emacs-fringe-helper")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nschum/fringe-helper.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ra9rc53l1gvkqank8apasl3r7wz2yfjrcvmfk3wpxhh24ppxv9d"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/nschum/fringe-helper.el")
+      (synopsis "Helper functions for fringe bitmaps")
+      (description
+       "This package allows fringe bitmaps to be defined with a visual string
+representation.")
+      (license license:gpl2+))))
+
 (define-public emacs-git-gutter
   (package
     (name "emacs-git-gutter")
