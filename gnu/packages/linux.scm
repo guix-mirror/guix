@@ -5864,15 +5864,30 @@ IP addresses and routes, and configure IPsec.")
                (base32
                 "0q5xd4gb9g83h82mg68cx616ifzl8qkzzlgg5xna698117ph3wky"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
-     `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'install-headers
-                    (lambda _
-                      (invoke "make" "install-dev"))))))
+     `(#:tests? #f   ; kernel/user integration tests are in package "xfstests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (python (assoc-ref outputs "python")))
+               (for-each
+                (lambda (script)
+                  (mkdir-p (string-append python (dirname script)))
+                  (rename-file (string-append out script)
+                               (string-append python script)))
+                (list "/sbin/xfs_scrub_all"))
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda _
+             (invoke "make" "install-dev"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
+    (inputs
+     `(("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
     (description "This package provides commands to create and check XFS
