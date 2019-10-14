@@ -2394,6 +2394,32 @@ Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
 display and behaviour is easily customisable.")
     (license license:gpl3+)))
 
+(define-public emacs-git-gutter-fringe
+  (let ((commit "16226caab44174301f1659f7bf8cc67a76153445")
+        (revision "1"))
+    (package
+      (name "emacs-git-gutter-fringe")
+      (version (git-version "0.23" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/syohex/git-gutter-fringe.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1y77gjl0yznamdj0f55d418zb75k22izisjg7ikvrfsl2yfqf3pm"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-git-gutter" ,emacs-git-gutter)
+         ("emacs-fringe-helper" ,emacs-fringe-helper)))
+      (home-page "https://github.com/syohex/git-gutter-fringe")
+      (synopsis "See and manage hunks of text in a version control system")
+      (description
+       "This package extends @code{git-gutter} to use the fringe area of a
+window.")
+      (license license:gpl3+))))
+
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
