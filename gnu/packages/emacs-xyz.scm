@@ -566,8 +566,8 @@ deliver data to mobile and web apps.")
 
 (define-public emacs-ghub
   ;; We need a newer commit to avoid problems in emacs-forge.
-  (let ((commit "cf0b13aeba4df3798e49c205cac2d8fefd53a137")
-        (revision "1"))
+  (let ((commit "e19cd86ca4768a6d89285123933baa3f1460d696")
+        (revision "2"))
     (package
       (name "emacs-ghub")
       (version (git-version "3.2.0" revision commit))
@@ -579,7 +579,7 @@ deliver data to mobile and web apps.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0fzayvcysk80vv4q332axcjf80x6gsnpcbl0svmpb017ii6wxhid"))))
+                  "1d6f8sxlsl0fpkzwbpnaw77d1a5pkg63zfvf6a2fxir357lbdizx"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -591,6 +591,7 @@ deliver data to mobile and web apps.")
        `(("texinfo" ,texinfo)))
       (propagated-inputs
        `(("dash" ,emacs-dash)
+         ("emacs-let-alist" ,emacs-let-alist)
          ("treepy" ,emacs-treepy)))
       (home-page "https://github.com/magit/ghub")
       (synopsis "Emacs client libraries for the APIs of various Git forges")
