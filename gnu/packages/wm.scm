@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1194,14 +1195,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.3.1")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/jaagr/polybar/releases/"
                            "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "0758na059vpgnsrcdrxmh9wsahs80wnmizb9g7bmixlrkxr2m65h"))
+        (base32 "06yd9ffak53qbhpw35xh422v2lhjh23zdbrh81cynwks5pr9i839"))
        (file-name (string-append name "-" version ".tar"))))
     (build-system cmake-build-system)
     (arguments
