@@ -7139,6 +7139,39 @@ file.")
 inside the source file.")
       (license license:gpl3+))))
 
+(define-public emacs-sly-package-inferred
+  (let ((commit "800e71e2be631422277e2ec77e6d6f6ea20e95ef")
+        (revision "1"))
+    (package
+      (name "emacs-sly-package-inferred")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/40ants/sly-package-inferred")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1216idyp034nkqddhw4p53jkhhdxa6xnjjmsvijpf4rxqnfqvapg"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (synopsis "Improved package inferred systems support for SLY")
+      (description
+       "@command{sly-package-inferred} is an external contrib for SLY that
+replaces its completion with a function which is better suited for systems
+using package inferred style.")
+      (license license:gpl3+))))
+
 (define-public emacs-lua-mode
   (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
         (revision "2"))
