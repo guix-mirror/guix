@@ -10898,7 +10898,7 @@ Differences with other sparse matrix packages are:
        ("r-spam" ,r-spam)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www.image.ucar.edu/fields")
+    (home-page "https://www.image.ucar.edu/fields")
     (synopsis "Tools for spatial data")
     (description
      "This is a package for curve, surface and function fitting with an
