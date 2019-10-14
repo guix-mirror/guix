@@ -4998,9 +4998,9 @@ powerful general purpose text editor.")
     (version "3.32.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/zenity/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "zenity-" version ".tar.xz"))
               (sha256
                (base32
                 "15fdh8xfdhnwcynyh4byx3mrjxbyprqnwxzi7qn3g5wwaqryg1p7"))))
