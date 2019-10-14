@@ -9962,14 +9962,13 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.16")
+    (version "3.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
-        (base32
-         "1xrfph277bgjln3jbpzpgkhxad04fjvj7s3xfil42q1sxi4s3q3g"))))
+        (base32 "16z8zq83hxy48g6hh4xczbdz50qvxv9k1aahr4fqq7jis60cc262"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
