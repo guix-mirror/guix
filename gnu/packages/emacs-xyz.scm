@@ -2420,6 +2420,31 @@ display and behaviour is easily customisable.")
 window.")
       (license license:gpl3+))))
 
+(define-public emacs-git-link
+  (package
+    (name "emacs-git-link")
+    (version "0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sshaw/git-link.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04xa6lp8wkjb6zs096bf4sz124grcjj15xv1h009bmn2j95rggj6"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/sshaw/git-link")
+    (synopsis "Create links for files and commits in GitHub/GitLab/etc. repos")
+    (description
+     "@code{git-link} returns the URL for the current buffer's file location
+at the current line number or active region.  @code{git-link-commit} returns
+the URL for a commit.  URLs are added to the kill ring.")
+    (license license:gpl3+)))
+
 (define-public emacs-apheleia
   (package
     (name "emacs-apheleia")
