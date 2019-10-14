@@ -2420,6 +2420,28 @@ display and behaviour is easily customisable.")
 window.")
       (license license:gpl3+))))
 
+(define-public emacs-apheleia
+  (package
+    (name "emacs-apheleia")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/apheleia.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04pls7zahy4jfkikv6fvd9vfpm4glhyanmmkx79hgi9pwdv966rf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/apheleia")
+    (synopsis "Reformat buffer stably")
+    (description
+     "This package allows for a buffer to be reformatted without moving point,
+so that running a formatting tool like @code{Prettier} or @code{Black} upon
+saving won't move point back to the beginning of the buffer.")
+    (license license:gpl3+)))
+
 (define-public emacs-git-timemachine
   (package
     (name "emacs-git-timemachine")
