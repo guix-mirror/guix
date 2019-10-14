@@ -1156,17 +1156,15 @@ for example from a shell script.")
 (define-public sqitch
   (package
     (name "sqitch")
-    (version "0.9999")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-"
-             version
-             ".tar.gz"))
+             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-v"
+             version ".tar.gz"))
        (sha256
-        (base32
-         "1cvj8grs3bzc4g7dw1zc26g4biv1frav18sq0fkvi2kk0q1aigzm"))))
+        (base32 "0p4wraqiscvwmmsvfqfy65blgsilwpvd9zj4d2zvm2xdx70ncr7l"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
