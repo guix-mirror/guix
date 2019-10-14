@@ -1302,8 +1302,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/rtags-separate-rct.patch			\
   %D%/packages/patches/racket-store-checksum-override.patch	\
   %D%/packages/patches/ruby-rubygems-276-for-ruby24.patch	\
-  %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
-  %D%/packages/patches/ruby-concurrent-test-arm.patch		\
   %D%/packages/patches/ruby-rack-ignore-failing-test.patch      \
   %D%/packages/patches/ruby-safe-yaml-add-require-time.patch	\
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
