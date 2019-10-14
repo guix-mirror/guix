@@ -228,9 +228,7 @@ package module."
                              #:outputs (package-outputs package)
                              #:location (package-location package)
                              #:supported?
-                             (->bool
-                              (member (%current-system)
-                                      (package-supported-systems package)))
+                             (->bool (supported-package? package))
                              #:deprecated?
                              (->bool
                               (package-superseded package))))
