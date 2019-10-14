@@ -15065,16 +15065,16 @@ manager compatible with @code{asyncio}.")
 (define-public python-glob2
   (package
     (name "python-glob2")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/miracle2k/python-glob2.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lm1xz3k3l0k1c5bcp9hlzmi3gp5j8dl1k3xhpiq5mnm0xq6n163"))))
+        (base32 "160nh2ay9lw2hi0rixpzb2k87r6ql56k0j2cm87lqz8xc8zbw919"))))
     (build-system python-build-system)
     (home-page "https://github.com/miracle2k/python-glob2/")
     (synopsis "Extended Version of the python buildin glob module")
