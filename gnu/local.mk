@@ -1132,6 +1132,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/mtools-mformat-uninitialized.patch	\
   %D%/packages/patches/mumble-1.2.19-abs.patch			\
   %D%/packages/patches/mumps-build-parallelism.patch		\
+  %D%/packages/patches/mumps-shared-libseq.patch		\
+  %D%/packages/patches/mumps-shared-mumps.patch			\
+  %D%/packages/patches/mumps-shared-pord.patch			\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mupen64plus-video-z64-glew-correct-path.patch    \
   %D%/packages/patches/mutt-store-references.patch		\
