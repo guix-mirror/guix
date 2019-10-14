@@ -2375,13 +2375,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
-  ;; FIXME: This is a mistake: we shouldn't be propagating GUILE-FINAL to
-  ;; PKG-CONFIG.
-  ;; TODO: Fix that on the next rebuild cycle.
   (let ((pkg-config (package
                       (inherit pkg-config)
-                      (inputs `(("guile" ,guile-final)
-                                ,@(%boot5-inputs)))
+                      (inputs (%boot5-inputs))
                       (arguments
                        `(#:implicit-inputs? #f
                          ,@(package-arguments pkg-config))))))
