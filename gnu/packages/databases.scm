@@ -3085,13 +3085,13 @@ NumPy, and other traditional Python scientific computing packages.")
 (define-public python-crate
   (package
     (name "python-crate")
-    (version "0.23.0")
+    (version "0.23.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "crate" version))
               (sha256
                (base32
-                "0s3s7yg4m2zflg9q96aibwb5hizsn10ql63fsj6h5z624qkavnlp"))))
+                "0ngmlvi320c5gsxab0s7qgq0ck4jdlcwvb6lbjhnfprafdp56vvx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urllib3" ,python-urllib3)))
