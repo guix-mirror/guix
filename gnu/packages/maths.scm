@@ -2171,7 +2171,7 @@ bindings to almost all functions of SLEPc.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.1.2")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2179,7 +2179,7 @@ bindings to almost all functions of SLEPc.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1s9asin08zqzmh08257sdghhivvy9vjif7c53fhaxaax2kd5qd7b"))
+         "0jklh54x4y3ik1zkw6db7766kakjm5910diyaghfxxf8vwsgr26r"))
        (patches (search-patches "mumps-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
