@@ -3892,7 +3892,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
 (define-public python-colorspacious
   (package
     (name "python-colorspacious")
-    (version "1.1.0")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -3901,7 +3901,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g0lxqiscy5g5rq9421vv7abg0c90jzy0zmas2z3hya6k2dr5aid"))))
+        (base32 "0x7nkphr6g5ql5fvgss8l56rgiyjgh6fm8zzs73i94ci9wzlm63w"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
