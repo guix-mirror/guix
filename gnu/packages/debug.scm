@@ -264,21 +264,21 @@ down the road.")
       (license asl2.0))))
 
 (define-public stress-make
-  (let ((commit "506e6cfd98d165f22bee91c408b7c20117a682c4")
-        (revision "0"))                 ;No official source distribution
+  (let ((commit "9e92dff8f0157f012aaf31de5b8b8112ad720100")
+        (revision "1"))                 ;No official source distribution
     (package
       (name "stress-make")
-      (version (string-append "1.0-" revision "." (string-take commit 7)))
+      (version (git-version "1.0" revision commit))
       (source
        (origin
          (method git-fetch)
          (uri (git-reference
-               (url "https://github.com/losalamos/stress-make.git")
+               (url "https://github.com/lanl/stress-make.git")
                (commit commit)))
-         (file-name (string-append name "-" version "-checkout"))
+         (file-name (git-file-name name version))
          (sha256
           (base32
-           "1j330yqhc7plwin04qxbh8afpg5nfnw1xvnmh8rk6mmqg9w6ik70"))))
+           "1z1yiwnqyzv3v6152fnjbfh2lr8q8fi5xxfdclnr8l8sd4c1rasp"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("autoconf" ,autoconf)
@@ -308,8 +308,12 @@ down the road.")
                             (which "sh"))))))
              (add-before 'configure 'repack-make
                (lambda _
-                 (invoke "tar" "cJf" "./make.tar.xz" ,make-dir)))))))
-      (home-page "https://github.com/losalamos/stress-make")
+                 (invoke "tar" "cJf" "./make.tar.xz" ,make-dir)))
+             (add-before 'build 'setup-go
+               ;; The Go cache is required starting in Go 1.12, and it needs
+               ;; to be writable.
+               (lambda _ (setenv "GOCACHE" "/tmp/go-cache") #t))))))
+      (home-page "https://github.com/lanl/stress-make")
       (synopsis "Expose race conditions in Makefiles")
       (description
        "Stress Make is a customized GNU Make that explicitly manages the order
@@ -320,7 +324,7 @@ Stress Make, then it is likely that the @code{Makefile} contains no race
 conditions.")
       ;; stress-make wrapper is under BSD-3-modifications-must-be-indicated,
       ;; and patched GNU Make is under its own license.
-      (license (list (non-copyleft "COPYING.md")
+      (license (list (non-copyleft "LICENSE.md")
                      (package-license gnu-make))))))
 
 (define-public zzuf
