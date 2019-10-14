@@ -7077,6 +7077,35 @@ sly-quickload command that prompts the user for a package to install. ")
 additional support for working with ASDF projects.")
       (license license:gpl3+))))
 
+(define-public emacs-sly-named-readtables
+  (let ((commit "a5a42674ccffa97ccd5e4e9742beaf3ea719931f")
+        (revision "1"))
+    (package
+      (name "emacs-sly-named-readtables")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/joaotavora/sly-named-readtables")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16asd119rzqrlclps2q6yrkis8jy5an5xgzzqvb7jdyq39zxg54q"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
+      (synopsis "Named-readtables support for SLY")
+      (description
+       "@command{sly-named-readtables} is an external contrib for SLY that
+enables different readtables to be active in different parts of the same
+file.")
+      (license license:gpl3+))))
+
 (define-public emacs-lua-mode
   (let ((commit "95c64bb5634035630e8c59d10d4a1d1003265743")
         (revision "2"))
