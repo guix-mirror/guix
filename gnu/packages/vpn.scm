@@ -518,7 +518,7 @@ WireGuard support.")
 (define-public xl2tpd
   (package
     (name "xl2tpd")
-    (version "1.3.14")
+    (version "1.3.15")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -527,7 +527,7 @@ WireGuard support.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1c2ahxz2zmmxwmk951d2qhijgz67zhwa1hn0r59fgz0y14w22myi"))))
+                "0ppwza8nwm1av1vldw40gin9wrjrs4l9si50jad414js3k8ycaag"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
