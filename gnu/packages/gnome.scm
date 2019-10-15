@@ -5664,9 +5664,9 @@ Cisco's AnyConnect SSL VPN.")
     (version "1.8.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/network-manager-applet/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
                 "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
