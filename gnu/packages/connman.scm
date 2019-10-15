@@ -125,9 +125,9 @@ sharing) to clients via USB, ethernet, WiFi, cellular and Bluetooth.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("efl" ,efl)
-       ("python-2" ,python-2)
-       ("python2-dbus" ,python2-dbus)
-       ("python2-efl" ,python2-efl)))
+       ("python" ,python-wrapper)
+       ("python-dbus" ,python-dbus)
+       ("python-efl" ,python-efl)))
     (home-page "https://www.enlightenment.org")
     (synopsis "Connman User Interface written using the EFL")
     (description
