@@ -31,6 +31,7 @@
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
+;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2641,3 +2642,37 @@ Supplicant.  It optimizes resource utilization by not depending on any external
 libraries and instead utilizing features provided by the Linux kernel to the
 maximum extent possible.")
     (license license:lgpl2.1+)))
+
+(define-public batctl
+  (package
+   (name "batctl")
+   (version "2019.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "https://downloads.open-mesh.org/batman/releases/batman-adv-"
+                         version "/batctl-" version ".tar.gz"))
+     (sha256
+      (base32
+       "0307a01n72kg7vcm60mi8jna6bydiin2cr3ylrixra1596hkzn9b"))))
+   (inputs
+    `(("libnl" ,libnl)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f
+      ;; Batctl only has a makefile. Thus we disable tests and
+      ;; configuration, passing in a few make-flags.
+      #:phases (modify-phases %standard-phases (delete 'configure))
+      #:make-flags
+      (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+            (string-append "PKG_CONFIG=" (assoc-ref %build-inputs "pkg-config")
+                           "/bin/pkg-config")
+            "CC=gcc")))
+   (home-page "https://www.open-mesh.org/projects/batman-adv/wiki/Wiki")
+   (synopsis "Management tool for the mesh networking BATMAN protocol")
+   (description "This package provides a control tool for the
+B.A.T.M.A.N. mesh networking routing protocol provided by the Linux kernel
+module @code{batman-adv}, for Layer 2.")
+   (license license:gpl2+)))
