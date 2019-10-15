@@ -9148,6 +9148,42 @@ server with very acceptable performance.")
 designed to work across multiple versions of Python.")
     (license license:bsd-3)))
 
+(define-public python-cookiecutter
+  (package
+    (name "python-cookiecutter")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cookiecutter" version))
+       (sha256
+        (base32
+         "0glsvaz8igi2wy1hsnhm9fkn6560vdvdixzvkq6dn20z3hpaa5hk"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-catchlog" ,python-pytest-catchlog)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-binaryornot" ,python-binaryornot)
+       ("python-click" ,python-click)
+       ("python-future" ,python-future)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jinja2-time" ,python-jinja2-time)
+       ("python-poyo" ,python-poyo)
+       ("python-requests" ,python-requests)
+       ("python-whichcraft" ,python-whichcraft)))
+    (home-page "https://github.com/audreyr/cookiecutter")
+    (synopsis
+     "Command-line utility that creates projects from project templates")
+    (description
+     "This package provides a command-line utility that creates projects from
+project templates, e.g. creating a Python package project from a Python package
+project template.")
+    (license license:bsd-3)))
+
 (define-public python-pyquery
   (package
     (name "python-pyquery")
