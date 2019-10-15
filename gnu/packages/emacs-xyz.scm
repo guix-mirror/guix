@@ -281,6 +281,11 @@ on stdout instead of using a socket as the Emacsclient does.")
                 (sha256
                  (base32
                   "16qx0404l05q1m6w7y5j8ck1z5nfmpinm00w0p2yh1hn5zzwy6dd"))
+                ;; FIXME: emacs-forge uses a function defined in this patch,
+                ;; which is newer than the current commit.
+                (patches
+                 (search-patches
+                  "emacs-magit-log-format-author-margin.patch"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
