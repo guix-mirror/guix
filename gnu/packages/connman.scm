@@ -56,11 +56,10 @@
     (arguments
      `(#:configure-flags
        (list "--enable-nmcompat"
-             "--enable-polkit"
+             "--enable-polkit" ; Polkit doesn't need to be present at build time.
              "--enable-openconnect"
              "--enable-openvpn"
              "--enable-vpnc"
-             "--enable-pptp"
              "--enable-l2tp"
              "--localstatedir=/var"
              (string-append
@@ -69,13 +68,12 @@
               "--with-dbusdatadir=" (assoc-ref %outputs "out") "/share"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
+       ("python" ,python-wrapper)))
     (inputs
      `(("dbus" ,dbus)
        ("glib" ,glib)
        ("gnutls" ,gnutls)
        ("iptables" ,iptables)
-       ("polkit" ,polkit)        ;so connman can be used by unprivileged users
        ("readline" ,readline)
        ;; These inputs are needed for connman to include the interface to
        ;; these technologies so IF they are installed they can be used.
@@ -84,7 +82,8 @@
        ("openvpn" ,openvpn)
        ("ppp" ,ppp)
        ("vpnc" ,vpnc)
-       ("wpa-supplicant" ,wpa-supplicant)))
+       ("wpa-supplicant" ,wpa-supplicant)
+       ("xl2tpd" ,xl2tpd)))
     (home-page "https://01.org/connman")
     (synopsis "Connection management daemon")
     (description "Connman provides a daemon for managing Internet connections.
