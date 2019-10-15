@@ -1572,6 +1572,27 @@ existing ones.")
                    ;; Tests don't work with python2.
                    #:tests? #f)))))
 
+(define-public python-poyo
+  (package
+    (name "python-poyo")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poyo" version))
+       (sha256
+        (base32
+         "1pflivs6j22frz0v3dqxnvc8yb8fb52g11lqr88z0i8cg2m5csg2"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/hackebrot/poyo")
+    (synopsis "Lightweight YAML Parser for Python")
+    (description
+     "This package provides a lightweight YAML Parser for Python.  It supports
+only a chosen subset of the YAML format that is required to parse cookiecutter
+user configuration files.  It does not have support for serializing into YAML
+and is not compatible with JSON.")
+    (license license:expat)))
+
 (define-public scons
   (package
     (name "scons")
