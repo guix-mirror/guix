@@ -1212,6 +1212,7 @@ its size
      `(("alsa-lib" ,alsa-lib)
        ("cairo" ,cairo)
        ("i3-wm" ,i3-wm)
+       ("jsoncpp" ,jsoncpp)
        ("libmpdclient" ,libmpdclient)
        ("libnl" ,libnl)
        ("libxcb" ,libxcb)
