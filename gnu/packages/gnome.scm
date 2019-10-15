@@ -5487,6 +5487,7 @@ services.")
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
+    ;; Updating?  Check whether network-manager-applet still needs libnm_gtk.
     (version "1.8.4")
     (source (origin
               (method url-fetch)
@@ -5671,7 +5672,10 @@ Cisco's AnyConnect SSL VPN.")
                 "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:configure-flags
+       ;; ‘Nobody should be using this’ but network-manager-openvpn 1.8.10 does.
+       (list "-Dlibnm_gtk=true")
+       #:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
