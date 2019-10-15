@@ -1077,7 +1077,7 @@ private (reserved).")
 (define-public perl-net-dns
  (package
   (name "perl-net-dns")
-  (version "1.20")
+  (version "1.21")
   (source
     (origin
       (method url-fetch)
@@ -1088,7 +1088,7 @@ private (reserved).")
         (string-append "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
                        version ".tar.gz")))
       (sha256
-       (base32 "06z09igd42s0kg2ps5k7vpypg77zswfryqzbyalbllvjd0mnknbz"))))
+       (base32 "0yknrsh0wqr9s43c0wf3dyzrsi2r7k0v75hay74gqkq850xy3vyx"))))
   (build-system perl-build-system)
   (inputs
     `(("perl-digest-hmac" ,perl-digest-hmac)))
