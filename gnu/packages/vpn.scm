@@ -530,7 +530,7 @@ WireGuard support.")
                 "1c2ahxz2zmmxwmk951d2qhijgz67zhwa1hn0r59fgz0y14w22myi"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:make-flags (list (string-append "DESTDIR=" %output)
+     `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
        #:phases (modify-phases %standard-phases
                   (delete 'configure))  ; no configure script
