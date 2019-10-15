@@ -4938,29 +4938,33 @@ them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-prescient
-  (package
-    (name "emacs-prescient")
-    (version "3.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/raxod502/prescient.el/")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wqk1g8fjpcbpiz32k7arnisncd4n9zs84dn3qn9y8ggjzldqy91"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-company" ,emacs-company)
-       ("emacs-ivy" ,emacs-ivy)))
-    (home-page "https://github.com/raxod502/prescient.el/")
-    (synopsis "Library that sorts and filters lists of candidates")
-    (description
-     "This package provides a library for sorting and filtering, as well as
+  ;; XXX: emacs-ivy introduced a commit that disables sorting for counsel-M-x
+  ;; by default, so we use a non-release version ahead by one commit
+  (let ((commit "95056580ed743da92b05aaf86f943ee05600c28d")
+        (revision "1"))
+    (package
+      (name "emacs-prescient")
+      (version (git-version "3.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/raxod502/prescient.el/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06qxs8p66jr4gg9m1gd27v5may32f3n28la56cv4f4prinqyyfj7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/raxod502/prescient.el/")
+      (synopsis "Library that sorts and filters lists of candidates")
+      (description
+       "This package provides a library for sorting and filtering, as well as
 extensions for @code{ivy-mode} and @code{company-mode} that make use of the
 library.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-smartparens
   (package
