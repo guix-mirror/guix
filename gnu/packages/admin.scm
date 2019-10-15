@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1880,21 +1880,16 @@ import re
 sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
 ")))
              #t))
-         (add-after 'wrap 'fix-symlinks
+         (add-after 'install 'replace-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Replace symlinks with duplicate copies of the ansible
+             ;; executable.
              (let ((out (assoc-ref outputs "out")))
                (for-each
                 (lambda (subprogram)
-                  ;; The symlinks point to the ansible wrapper script. Make
-                  ;; them point to the real executable (.ansible-real).
-                  (delete-file (string-append out "/bin/.ansible-" subprogram "-real"))
-                  (symlink (string-append out "/bin/.ansible-real")
-                           (string-append out "/bin/.ansible-" subprogram "-real"))
-                  ;; The wrapper scripts of the symlinks invoke the ansible
-                  ;; wrapper script. Fix them to invoke the correct executable.
-                  (substitute* (string-append out "/bin/ansible-" subprogram)
-                    (("/bin/ansible")
-                     (string-append "/bin/.ansible-" subprogram "-real"))))
+                  (delete-file (string-append out "/bin/ansible-" subprogram))
+                  (copy-file (string-append out "/bin/ansible")
+                             (string-append out "/bin/ansible-" subprogram)))
                 (list "config" "console" "doc" "galaxy"
                       "inventory" "playbook" "pull" "vault")))
              #t)))))
