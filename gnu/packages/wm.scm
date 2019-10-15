@@ -1199,11 +1199,10 @@ its size
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/jaagr/polybar/releases/"
+       (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "06yd9ffak53qbhpw35xh422v2lhjh23zdbrh81cynwks5pr9i839"))
-       (file-name (string-append name "-" version ".tar"))))
+        (base32 "06yd9ffak53qbhpw35xh422v2lhjh23zdbrh81cynwks5pr9i839"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the
