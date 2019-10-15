@@ -1,0 +1,17 @@
+Orc 0.4.30 has a bug that causes duplicate symbols due to a missing typedef.
+
+Taken from upstream:
+https://gitlab.freedesktop.org/gstreamer/orc/merge_requests/32
+
+diff --git a/orc/orctarget.h b/orc/orctarget.h
+--- a/orc/orctarget.h
++++ b/orc/orctarget.h
+@@ -19,7 +19,7 @@ enum {
+   ORC_TARGET_FAST_DENORMAL = (1<<31)
+ };
+ 
+-enum {
++typedef enum {
+   ORC_TARGET_POWERPC_64BIT = (1<<0),
+   ORC_TARGET_POWERPC_LE = (1<<1),
+   ORC_TARGET_POWERPC_ALTIVEC = (1<<2),

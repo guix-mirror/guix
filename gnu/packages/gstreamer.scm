@@ -74,6 +74,7 @@
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
+              (patches (search-patches "orc-typedef-enum.patch"))
               (sha256
                (base32
                 "0wj93im7i8a6546q2r8sp39yjfbxflkc0ygb0b8iqsd58qhvjhds"))))
