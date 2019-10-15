@@ -66,6 +66,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2494,6 +2495,30 @@ written in pure Python.")
 
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
+
+(define-public python-jinja2-time
+  (package
+    (name "python-jinja2-time")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jinja2-time" version))
+       (sha256
+        (base32
+         "0h0dr7cfpjnjj8bgl2vk9063a53649pn37wnlkd8hxjy656slkni"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-arrow" ,python-arrow)
+       ("python-jinja2" ,python-jinja2)))
+    (home-page
+     "https://github.com/hackebrot/jinja2-time")
+    (synopsis "Jinja2 Extension for Dates and Times")
+    (description
+     "This package provides an extension for the template engine Jinja2.  It
+adds a 'now' tag providing a convenient access to the arrow.now() API from
+templates.  A format string can be provided to control the output.")
+    (license license:expat)))
 
 (define-public python-pystache
   (package
