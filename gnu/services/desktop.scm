@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -907,15 +908,21 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
   xfce-desktop-configuration
   (xfce xfce-package (default xfce)))
 
+(define (xfce-polkit-settings config)
+  "Return the list of XFCE dependencies that provide polkit actions and
+rules."
+  (let ((xfce (xfce-package config)))
+    (map (lambda (name)
+           ((package-direct-input-selector name) xfce))
+         '("thunar"
+           "xfce4-power-manager"))))
+
 (define xfce-desktop-service-type
   (service-type
    (name 'xfce-desktop)
    (extensions
     (list (service-extension polkit-service-type
-                             (compose list
-                                      (package-direct-input-selector
-                                       "thunar")
-                                      xfce-package))
+                             xfce-polkit-settings)
           (service-extension profile-service-type
                              (compose list xfce-package))))
    (default-value (xfce-desktop-configuration))
