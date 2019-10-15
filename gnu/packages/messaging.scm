@@ -1779,25 +1779,23 @@ QMatrixClient project.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f                      ; no tests
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/quaternion")
-               `("QT_PLUGIN_PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "qtsvg")
-                                  "/lib/qt5/plugins")))
-               `("QML2_IMPORT_PATH" ":" prefix
-                 ,(map (lambda (label)
-                         (string-append (assoc-ref inputs label)
-                                        "/lib/qt5/qml"))
-                       '("qtdeclarative" "qtquickcontrols"))))
-             #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "quaternion")
+               #t))))))
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
     (description "Quaternion is a Qt5 desktop client for the Matrix instant
