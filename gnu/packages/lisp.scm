@@ -7720,3 +7720,35 @@ supplement, not a competitor, to Alexandria.")
 
 (define-public cl-serapeum
   (sbcl-package->cl-source-package sbcl-serapeum))
+
+(define-public sbcl-arrows
+  (let ((commit "df7cf0067e0132d9697ac8b1a4f1b9c88d4f5382")
+        (revision "0"))
+    (package
+      (name "sbcl-arrows")
+      (version (git-version "0.2.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.com/Harleqin/arrows.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "042k9vkssrqx9nhp14wdzm942zgdxvp35mba0p2syz98i75im2yy"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("hu.dwim.stefil" ,sbcl-hu.dwim.stefil)))
+      (synopsis "Clojure-like arrow macros for Common Lisp")
+      (description
+       "This library implements the @code{->} and @code{->>} macros from
+Clojure, as well as several expansions on the idea.")
+      (home-page "https://gitlab.com/Harleqin/arrows")
+      (license license:public-domain))))
+
+(define-public cl-arrows
+  (sbcl-package->cl-source-package sbcl-arrows))
+
+(define-public ecl-arrows
+  (sbcl-package->ecl-package sbcl-arrows))
