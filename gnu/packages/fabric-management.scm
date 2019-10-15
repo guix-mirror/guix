@@ -2,6 +2,7 @@
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -175,3 +177,51 @@ interface to this library is not guaranteed to be stable.")
 testing InfiniBand networks.")
     (home-page "https://www.openfabrics.org/downloads/ibutils/")
     (license bsd-2)))
+
+(define-public ucx
+  (package
+    (name "ucx")
+    (version "1.6.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/openucx/ucx.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x3clvy716i7va4m4adgx6ihjsfnzrkdizhxz5v52944dkglpc8n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '( ;; These are the flags found in 'contrib/configure-release'.
+       #:configure-flags (list "--enable-optimizations"
+                               "--disable-logging"
+                               "--disable-debug"
+                               "--disable-assertions"
+                               "--disable-params-check"
+
+                               (string-append "--with-rdmacm="
+                                              (assoc-ref %build-inputs
+                                                         "rdma-core")))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("numactl" ,numactl)
+       ("rdma-core" ,rdma-core)))
+    (synopsis "Optimized communication layer for message passing in HPC")
+    (description
+     "Unified Communication X (UCX) provides an optimized communication layer
+for message passing (MPI), portable global address space (PGAS) languages and
+run-time support libraries, as well as RPC and data-centric applications.
+
+UCX utilizes high-speed networks for inter-node communication, and shared
+memory mechanisms for efficient intra-node communication.")
+    (home-page "https://www.openucx.org/")
+    (license bsd-3)
+
+    ;; <ucm/bistro/bistro.h> lists only PowerPC64, AArch64, and x86_64 as
+    ;; supported.
+    (supported-systems '("x86_64-linux" "aarch64-linux"))))
