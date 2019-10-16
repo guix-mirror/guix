@@ -5311,59 +5311,54 @@ automatically.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy
-  ;; The latest release version introduced a new feature, swiper-isearch, that
-  ;; generally works well but had some noticeable bugs; this later commit
-  ;; includes fixes for several of them.
-  (let ((commit "79333e9edfee38ec3b367c33711a68bdf7783259")
-        (revision "2"))
-    (package
-      (name "emacs-ivy")
-      (version (git-version "0.12.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/abo-abo/swiper.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0dyclc51sprhmr5fi4lylhwsrn8v1jgyblwk9ly60jj84lj6278z"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (info (string-append out "/share/info")))
-                 (with-directory-excursion "doc"
-                   (invoke "makeinfo" "ivy.texi")
-                   (install-file "ivy.info" info)
-                   #t))))
-           (add-before 'check 'make-dummy-git-directory
-             (lambda _
-               (mkdir-p ".git")))
-           (add-after 'check 'delete-dummy-git-directory
-             (lambda _
-               (delete-file-recursively ".git"))))
-         #:tests? #t
-         #:test-command '("make" "test")))
-      (propagated-inputs
-       `(("emacs-hydra" ,emacs-hydra)))
-      (native-inputs
-       `(("texinfo" ,texinfo)
-         ("emacs-wgrep" ,emacs-wgrep)))
-      (home-page "http://oremacs.com/swiper/")
-      (synopsis "Incremental vertical completion for Emacs")
-      (description
-       "This package provides @code{ivy-read} as an alternative to
+  (package
+    (name "emacs-ivy")
+    (version "0.13.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/swiper.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ghcwrg8a6r5q6fw2x8s08cwlmnz2d8qjhisnjwbnc2l4cgqpd9p"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (with-directory-excursion "doc"
+                 (invoke "makeinfo" "ivy.texi")
+                 (install-file "ivy.info" info)
+                 #t))))
+         (add-before 'check 'make-dummy-git-directory
+           (lambda _
+             (mkdir-p ".git")))
+         (add-after 'check 'delete-dummy-git-directory
+           (lambda _
+             (delete-file-recursively ".git"))))
+       #:tests? #t
+       #:test-command '("make" "test")))
+    (propagated-inputs
+     `(("emacs-hydra" ,emacs-hydra)))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("emacs-wgrep" ,emacs-wgrep)))
+    (home-page "http://oremacs.com/swiper/")
+    (synopsis "Incremental vertical completion for Emacs")
+    (description
+     "This package provides @code{ivy-read} as an alternative to
 @code{completing-read} and similar functions.  No attempt is made to determine
 the best candidate.  Instead, the user can navigate candidates with
 @code{ivy-next-line} and @code{ivy-previous-line}.  The matching is done by
 splitting the input text by spaces and re-building it into a regular
 expression.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-ivy-pass
   (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
