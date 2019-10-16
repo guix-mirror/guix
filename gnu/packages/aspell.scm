@@ -38,7 +38,7 @@
 (define-public aspell
   (package
     (name "aspell")
-    (version "0.60.6.1")
+    (version "0.60.8")
     (source
      (origin
       (method url-fetch)
@@ -46,9 +46,8 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))
-      (patches (search-patches "aspell-default-dict-dir.patch"
-                               "aspell-gcc-compat.patch"))))
+        "1wi60ankalmh8ds7nplz434jd7j94gdvbahdwsr539rlad8pxdzr"))
+      (patches (search-patches "aspell-default-dict-dir.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -144,7 +143,7 @@ dictionaries, including personal ones.")
 (define-public aspell-dict-ar
   (aspell-dictionary "ar" "Arabic"
                      #:version "1.2-0"
-		     #:prefix "aspell6-"
+                     #:prefix "aspell6-"
                      #:sha256
                      (base32
                       "1avw40bp8yi5bnkq64ihm2rldgw34lk89yz281q9bmndh95a47h4")))
