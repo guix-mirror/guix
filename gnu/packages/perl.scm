@@ -2410,7 +2410,7 @@ to do this without writing reams of structural code.")
        ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-test-mocktime" ,perl-test-mocktime)))
     (home-page "https://metacpan.org/release/DateTime-Format-Flexible")
-    (synopsis "Parse data/time strings")
+    (synopsis "Parse date and time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
 give it and parse it into a DateTime object.")
     (license (package-license perl))))
