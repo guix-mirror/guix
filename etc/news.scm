@@ -79,7 +79,7 @@ naar @file{/var/guix/profiles/per-user/$USER}.  Tot op heden kon om het even wie
 in @file{/var/guix/profiles/per-user} schrijven, wat het @command{guix}-commando
 toestond de @code{$USER} submap aan te maken.
 
-Op systemen met meerdere gebuikers kon hierdoor een kwaadaardige gebruiker een
+Op systemen met meerdere gebruikers kon hierdoor een kwaadaardige gebruiker een
 @code{$USER} submap met inhoud aanmaken voor een andere gebruiker die nog niet
 was ingelogd.  Omdat @code{/var/@dots{}/$USER} zich in @code{$PATH} bevindt,
 kon het doelwit zo code uitvoeren die door de aanvaller zelf werd aangeleverd.
