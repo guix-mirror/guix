@@ -1170,7 +1170,7 @@ reported, and the tests skipped.")
 (define-public perl-test-runvalgrind
   (package
     (name "perl-test-runvalgrind")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -1179,8 +1179,7 @@ reported, and the tests skipped.")
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0cfndkn2k9pcx290wcblwmrwh1ybs0grxjlsrp8fbqqbmmjpb53h"))))
+        (base32 "175hlycrhgwrp7j4rwx5bk4fd6775242wjdqv107rvgsrszsi915"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build)))
