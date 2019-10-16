@@ -377,14 +377,13 @@ the API, and provides features such as:
 (define-public python-pylibmc
   (package
     (name "python-pylibmc")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pylibmc" version))
        (sha256
-        (base32
-         "1n6nvvhl0g52gpzzwdj1my6049xljkfwyxxygnwda9smrbj7pyay"))))
+        (base32 "1sg7d9j0v6g3xg3finf4l1hb72c13vcyyi6rqrc9shbx903d93ca"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -400,10 +399,8 @@ the API, and provides features such as:
      `(("libmemcached" ,libmemcached)
        ("zlib" ,zlib)
        ("cyrus-sasl" ,cyrus-sasl)))
-    (home-page
-     "http://sendapatch.se/projects/pylibmc/")
-    (synopsis
-     "Python client for memcached")
+    (home-page "http://sendapatch.se/projects/pylibmc/")
+    (synopsis "Python client for memcached")
     (description
      "@code{pylibmc} is a client in Python for memcached.  It is a wrapper
 around TangentOrg’s libmemcached library, and can be used as a drop-in
