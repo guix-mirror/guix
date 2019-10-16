@@ -935,18 +935,19 @@ sophisticated C3 method resolution order.")
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-C3-Adopt-NEXT-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rwgbx6dsy4rpas94p8wakzj7hrla1p15jnbm24kwhsv79gp91ld"))))
+        (base32 "1xsbydmiskpa1qbmnf6n39cb83nlb432xgkad9kfhxnvm8jn4rw5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-mro-compat" ,perl-mro-compat)))
