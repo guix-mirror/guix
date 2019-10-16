@@ -1158,19 +1158,18 @@ write accessor methods for your objects that perform standard tasks.")
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-Method-Modifiers-" version ".tar.gz"))
        (sha256
-        (base32
-         "1j3swa212wh14dq5r6zjarm2lzpx6mrdfplpjy65px8b09ri0k74"))))
+        (base32 "0qzx83mgd71hlc2m1kpw15dqsjzjq7b2cj3sdgg45a0q23vhfn5b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)))
     (home-page "https://metacpan.org/release/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
     (description "Class::Method::Modifiers provides three modifiers:
