@@ -18,6 +18,7 @@
 
 (define-module (test-store)
   #:use-module (guix tests)
+  #:use-module (guix config)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix monads)
@@ -102,7 +103,17 @@
               "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))
        (not (direct-store-path? (%store-prefix)))))
 
-(test-skip (if %store 0 13))
+(test-skip (if %store 0 15))
+
+(test-equal "profiles/per-user exists and is not writable"
+  #o755
+  (stat:perms (stat (string-append %state-directory "/profiles/per-user"))))
+
+(test-equal "profiles/per-user/$USER exists"
+  (list (getuid) #o755)
+  (let ((s (stat (string-append %state-directory "/profiles/per-user/"
+                                (passwd:name (getpwuid (getuid)))))))
+    (list (stat:uid s) (stat:perms s))))
 
 (test-equal "add-data-to-store"
   #vu8(1 2 3 4 5)

@@ -88,8 +88,9 @@ LocalStore::LocalStore(bool reserveSpace)
 
         Path perUserDir = profilesDir + "/per-user";
         createDirs(perUserDir);
-        if (chmod(perUserDir.c_str(), 01777) == -1)
-            throw SysError(format("could not set permissions on '%1%' to 1777") % perUserDir);
+        if (chmod(perUserDir.c_str(), 0755) == -1)
+            throw SysError(format("could not set permissions on '%1%' to 755")
+                           % perUserDir);
 
         mode_t perm = 01775;
 
@@ -1639,6 +1640,18 @@ void LocalStore::vacuumDB()
 {
     if (sqlite3_exec(db, "vacuum;", 0, 0, 0) != SQLITE_OK)
         throwSQLiteError(db, "vacuuming SQLite database");
+}
+
+
+void LocalStore::createUser(const std::string & userName, uid_t userId)
+{
+    auto dir = settings.nixStateDir + "/profiles/per-user/" + userName;
+
+    createDirs(dir);
+    if (chmod(dir.c_str(), 0755) == -1)
+	throw SysError(format("changing permissions of directory '%s'") % dir);
+    if (chown(dir.c_str(), userId, -1) == -1)
+	throw SysError(format("changing owner of directory '%s'") % dir);
 }
 
 

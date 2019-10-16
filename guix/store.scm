@@ -748,6 +748,14 @@ encoding conversion errors."
            (cut string-append "http://" <>))
        '("ci.guix.gnu.org")))
 
+(define (current-user-name)
+  "Return the name of the calling user."
+  (catch #t
+    (lambda ()
+      (passwd:name (getpwuid (getuid))))
+    (lambda _
+      (getenv "USER"))))
+
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
@@ -759,6 +767,7 @@ encoding conversion errors."
                             (build-verbosity 0)
                             (log-type 0)
                             (print-build-trace #t)
+                            (user-name (current-user-name))
 
                             ;; When true, provide machine-readable "build
                             ;; traces" for use by (guix status).  Old clients
@@ -848,6 +857,9 @@ encoding conversion errors."
                      ,@(if rounds
                            `(("build-repeat"
                               . ,(number->string (max 0 (1- rounds)))))
+                           '())
+                     ,@(if user-name
+                           `(("user-name" . ,user-name))
                            '())
                      ,@(if terminal-columns
                            `(("terminal-columns"
