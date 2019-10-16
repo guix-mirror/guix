@@ -502,8 +502,8 @@ higher-level API for doing so.")
       (license expat))))
 
 (define-public go-github-com-rcrowley-go-metrics
-  (let ((commit "e181e095bae94582363434144c61a9653aff6e50")
-        (revision "1"))
+  (let ((commit "cac0b30c2563378d434b5af411844adff8e32960")
+        (revision "2"))
     (package
       (name "go-github-com-rcrowley-go-metrics")
       (version (git-version "0.0.0" revision commit))
@@ -515,7 +515,7 @@ higher-level API for doing so.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "1pwkyw801hy7n94skzk6h177zqcil6ayrmb5gs3jdpsfayh8ia5w"))))
+                  "1hfxffnpaw49pr3wrkbzq3pnv3nyzsvk5dxndv0yz70xlrbg8a04"))))
       (build-system go-build-system)
       (arguments
        `(#:import-path "github.com/rcrowley/go-metrics"))
