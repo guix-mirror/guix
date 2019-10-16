@@ -2390,16 +2390,18 @@ to do this without writing reams of structural code.")
 (define-public perl-datetime-format-flexible
   (package
     (name "perl-datetime-format-flexible")
-    (version "0.28")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TH/THINC/"
                            "DateTime-Format-Flexible-" version ".tar.gz"))
        (sha256
-        (base32
-         "1g63zs0q2x40h29r7in50c55g6kxiw3m2faw2p6c4rg74sj2k2b5"))))
+        (base32 "1vnq3a8bwhidcv3z9cvcmfiq2qa84hikr993ffr19fw7nbzbk9sh"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
