@@ -290,11 +290,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-pt-br
   (aspell-dictionary "pt_BR" "Brazilian Portuguese"
-                     #:version "20090702-0"
-                     #:prefix "aspell6-"
+                     #:version "20131030-12-0"
                      #:sha256
                      (base32
-                      "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
+                      "1xqlpk21s93c6blkdnpk7l62q9fxjvzdv2x86chl8p2x1gdrj3gb")))
 
 (define-public aspell-dict-pt-pt
   (aspell-dictionary "pt_PT" "Portuguese"
