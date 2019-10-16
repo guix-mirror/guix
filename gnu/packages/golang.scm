@@ -1957,27 +1957,25 @@ needing to use secp256k1 elliptic curve cryptography.")
       (license license:isc))))
 
 (define-public go-github-com-minio-sha256-simd
-  (let ((commit "cc1980cb03383b1d46f518232672584432d7532d")
-        (revision "3"))
-    (package
-      (name "go-github-com-minio-sha256-simd")
-      (version (git-version "0.0.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/minio/sha256-simd.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "04fp98nal0wsb26zwhw82spn5camxslc68g3xp8g4af9w6k9g31j"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/minio/sha256-simd"))
-      (home-page "https://github.com/minio/sha256-simd")
-      (synopsis "Accelerate SHA256 computations in pure Go")
-      (description "Accelerate SHA256 computations in pure Go using AVX512 and
+  (package
+    (name "go-github-com-minio-sha256-simd")
+    (version "0.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/minio/sha256-simd.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ym7vkjc3ps9fm8p6qk8rq7c3dj6a3nwihfryzig9g07rqnxr49k"))))
+    (build-system go-build-system)
+    (arguments
+     '(#:import-path "github.com/minio/sha256-simd"))
+    (home-page "https://github.com/minio/sha256-simd")
+    (synopsis "Accelerate SHA256 computations in pure Go")
+    (description "Accelerate SHA256 computations in pure Go using AVX512 and
 AVX2 for Intel and ARM64 for ARM.  On AVX512 it provides an up to 8x
 improvement (over 3 GB/s per core) in comparison to AVX2.
 
@@ -1990,7 +1988,7 @@ This package uses Golang assembly.  The AVX512 version is based on the Intel's
 \"multi-buffer crypto library for IPSec\" whereas the other Intel
 implementations are described in \"Fast SHA-256 Implementations on Intel
 Architecture Processors\" by J. Guilford et al.")
-      (license license:asl2.0))))
+    (license license:asl2.0)))
 
 (define-public go-github-com-libp2p-go-libp2p-crypto
   (let ((commit "7240b40a3ddc47c4d17c15baabcbe45e5219171b")
