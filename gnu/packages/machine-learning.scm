@@ -2051,3 +2051,39 @@ includes an implementation of Global Refinement of Random Forest.")
 
 (define-public ecl-cl-random-forest
   (sbcl-package->ecl-package sbcl-cl-random-forest))
+
+(define-public gloo
+  (let ((version "0.0.0") ; no proper version tag
+        (commit "ca528e32fea9ca8f2b16053cff17160290fc84ce")
+        (revision "0"))
+    (package
+      (name "gloo")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/facebookincubator/gloo.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1q9f80zy75f6njrzrqkmhc0g3qxs4gskr7ns2jdqanxa2ww7a99w"))))
+      (build-system cmake-build-system)
+      (native-inputs
+       `(("googletest" ,googletest)))
+      (arguments
+       `(#:configure-flags '("-DBUILD_TEST=1")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (invoke "make" "gloo_test")
+               #t)))))
+      (synopsis "Collective communications library")
+      (description
+       "Gloo is a collective communications library.  It comes with a
+number of collective algorithms useful for machine learning applications.
+These include a barrier, broadcast, and allreduce.")
+      (home-page "https://github.com/facebookincubator/gloo")
+      (license license:bsd-3))))
