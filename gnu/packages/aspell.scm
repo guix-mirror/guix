@@ -165,10 +165,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-de
   (aspell-dictionary "de" "German"
-                     #:version "20030222-1"
+                     #:version "20161207-7-0"
                      #:sha256
                      (base32
-                      "01p92qj66cqb346gk7hjfynaap5sbcn85xz07kjfdq623ghr8v5s")))
+                      "0wamclvp66xfmv5wff96v6gdlnfv4y8lx3f8wvxyzm5imwgms4n2")))
 
 (define-public aspell-dict-da
   (aspell-dictionary "da" "Danish"
