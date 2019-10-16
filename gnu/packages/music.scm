@@ -3403,8 +3403,9 @@ slow gear audio effect to produce volume swells."))))
 a simulation of an analog Wah pedal with switchless activation."))))
 
 (define-public rkrlv2
-  (let ((commit "d8c17d3c976107e5c012970276d7cf0aa059f15b")
-        (revision "1"))
+  ;; This commit corresponds to the beta_3 tag
+  (let ((commit "7edcb4e29a358623bfd57fa2c27e5da60adfcec3")
+        (revision "2"))
     (package
       (name "rkrlv2")
       (version (git-version "0" revision commit))
@@ -3415,7 +3416,7 @@ a simulation of an analog Wah pedal with switchless activation."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "035z068rlafb7ibgqf34ck2lm4fab8yzlx41qh061x2xi4hxkvp0"))
+                  "16i4ajrib7kb0abdcn4901g8a4lkwkp2fyqyms38dhqq84slyfjs"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments '(#:tests? #f)) ; there are no tests
