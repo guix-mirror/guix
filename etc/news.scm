@@ -11,6 +11,7 @@
 
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
         (title (en "Insecure @file{/var/guix/profiles/per-user} permissions")
+               (de "Sicherheitslücke bei Profilen in Mehrbenutzersystemen")
                (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user}")
                (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten"))
         (body
@@ -32,6 +33,26 @@ To do that, run @code{sudo guix pull} if you're on a foreign distro, or run
 @code{guix pull && sudo guix system reconfigure @dots{}} on Guix System.  In
 both cases, make sure to restart the service afterwards, with @code{herd} or
 @code{systemctl}.")
+         (de "Das voreingestellte Benutzerprofil, @file{~/.guix-profile},
+verweist auf @file{/var/guix/profiles/per-user/$USER}. Bisher hatte jeder
+Benutzer Schreibzugriff auf @file{/var/guix/profiles/per-user}, wodurch der
+@command{guix}-Befehl berechtigt war, das Unterverzeichnis @code{$USER}
+anzulegen.
+
+Wenn mehrere Benutzer dasselbe System benutzen, kann ein böswilliger Benutzer
+so das Unterverzeichnis @code{/var/@dots{}/$USER} und Dateien darin für einen anderen
+Benutzer anlegen, wenn sich dieser noch nie angemeldet hat. Weil @code{$USER}
+auch in @code{$PATH} aufgeführt ist, kann der betroffene Nutzer dazu gebracht
+werden, vom Angreifer vorgegebenen Code auszuführen. Siehe
+@uref{https://issues.guix.gnu.org/issue/37744} für weitere Informationen.
+
+Der Fehler wurde nun behoben, indem @command{guix-daemon} diese Verzeichnisse
+jetzt selbst anlegt statt das dem jeweiligen Benutzerkonto zu überlassen. Der
+Schreibzugriff auf @code{per-user} wird den Benutzern entzogen. Auf einem
+System mit mehreren Benutzern empfehlen wir, den Daemon jetzt zu
+aktualisieren. Auf einer Fremddistribution führen Sie dazu @code{sudo guix
+pull} aus; auf einem Guix-System führen Sie @code{guix pull && sudo guix
+system reconfigure …} aus.")
          (fr "Le profil utilisateur par défaut, @file{~/.guix-profile},
 pointe vers @file{/var/guix/profiles/per-user/$USER}.  Jusqu'à
 maintenant, @file{/var/guix/profiles/per-user} était disponible en
