@@ -956,7 +956,7 @@ server tools for Prometheus metrics.")
 (define-public go-gopkg.in-asn1-ber.v1
   (package
     (name "go-gopkg.in-asn1-ber.v1")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -965,7 +965,7 @@ server tools for Prometheus metrics.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1y8bvzbxpw0lfnn7pbcdwzqj4l90qj6xf88dvv9pxd9yl5g6cskx"))))
+                "00ixms8x3lrhywbvq5v2sagcqsxa1pcnlk17dp5lnwckv3xg4psb"))))
     (build-system go-build-system)
     (arguments
      '(#:import-path "gopkg.in/asn1-ber.v1"
