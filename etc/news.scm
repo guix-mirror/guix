@@ -10,7 +10,8 @@
  (version 0)
 
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
-        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions"))
+        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions")
+               (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten"))
         (body
          (en "The default user profile, @file{~/.guix-profile}, points to
 @file{/var/guix/profiles/per-user/$USER}.  Until now,
@@ -29,7 +30,25 @@ behalf of users and removing the world-writable permissions on
 To do that, run @code{sudo guix pull} if you're on a foreign distro, or run
 @code{guix pull && sudo guix system reconfigure @dots{}} on Guix System.  In
 both cases, make sure to restart the service afterwards, with @code{herd} or
-@code{systemctl}.")))
+@code{systemctl}.")
+         (nl "Het standaard gebruikersprofiel, @file{~/.guix-profile}, verwijst
+naar @file{/var/guix/profiles/per-user/$USER}.  Tot op heden kon om het even wie
+in @file{/var/guix/profiles/per-user} schrijven, wat het @command{guix}-commando
+toestond de @code{$USER} submap aan te maken.
+
+Op systemen met meerdere gebuikers kon hierdoor een kwaadaardige gebruiker een
+@code{$USER} submap met inhoud aanmaken voor een andere gebruiker die nog niet
+was ingelogd.  Omdat @code{/var/@dots{}/$USER} zich in @code{$PATH} bevindt,
+kon het doelwit zo code uitvoeren die door de aanvaller zelf werd aangeleverd.
+Zie @uref{https://issues.guix.gnu.org/issue/37744} voor meer informatie.
+
+Dit probleem is nu verholpen: schrijven door iedereen in @code{per-user} is niet
+meer toegestaan en @command{guix-daemon} maakt zelf submappen aan namens de
+gebruiker.  Op systemen met meerdere gebruikers raden we aan om
+@code{guix-daemon} nu bij te werken.  Op Guix System kan dit met
+@code{guix pull && sudo guix system reconfigure @dots{}}, op andere distributies
+met @code{sudo guix pull}.  Herstart vervolgens in beide gevallen
+@code{guix-daemon} met @code{herd} of @code{systemctl}.")))
 
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
