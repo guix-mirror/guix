@@ -2760,7 +2760,7 @@ to deprecate classes, functions or methods.")
 (define-public python-pygithub
   (package
     (name "python-pygithub")
-    (version "1.43.7")
+    (version "1.43.8")
     (source
      ;; We fetch from the Git repo because there are no tests in the PyPI
      ;; archive.
@@ -2771,8 +2771,7 @@ to deprecate classes, functions or methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0ww92zz0ja9w6rw83vphmn8rwmcn6abg16j4q7zxjc0rrg2cfj9i"))))
+        (base32 "1625v558xga5mwhl9jqmibywy5qafmg1vqrirqz6zfq1la1d22mw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
