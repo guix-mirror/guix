@@ -19430,3 +19430,29 @@ nondestructively, and computes the dimmed faces dynamically such that your
 overall color scheme is shown in a muted form without requiring you to define
 what is a \"dim\" version of every face.")
     (license license:gpl3+)))
+
+(define-public emacs-minibuffer-line
+  (package
+    (name "emacs-minibuffer-line")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/minibuffer-line-"
+             version
+             ".el"))
+       (sha256
+        (base32 "1ny4iirp26na5118wfgxlv6fxlrdclzdbd9m0lkrv51w0qw7spil"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/minibuffer-line.html")
+    (synopsis "Display status info in the minibuffer window")
+    (description
+     "This package lets you display various status information in the
+minibuffer window instead of the mode-line.  Of course, this is only displayed
+when the minibuffer window is not already used for other things (e.g. a
+minibuffer or an each area message).
+
+The contents and aspect is controlled by the @code{minibuffer-line-format}
+variable and the @code{minibuffer-line} face.")
+    (license license:gpl3+)))
