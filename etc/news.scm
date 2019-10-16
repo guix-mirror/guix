@@ -11,6 +11,7 @@
 
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
         (title (en "Insecure @file{/var/guix/profiles/per-user} permissions")
+               (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user}")
                (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten"))
         (body
          (en "The default user profile, @file{~/.guix-profile}, points to
@@ -31,6 +32,27 @@ To do that, run @code{sudo guix pull} if you're on a foreign distro, or run
 @code{guix pull && sudo guix system reconfigure @dots{}} on Guix System.  In
 both cases, make sure to restart the service afterwards, with @code{herd} or
 @code{systemctl}.")
+         (fr "Le profil utilisateur par défaut, @file{~/.guix-profile},
+pointe vers @file{/var/guix/profiles/per-user/$USER}.  Jusqu'à
+maintenant, @file{/var/guix/profiles/per-user} était disponible en
+écriture pour tout le monde, ce qui permettait à la commande
+@command{guix} de créér le sous-répertoire @code{$USER}.
+
+Sur un système multi-utilisateur, cela permet à un utilisateur
+malveillant de créer et de remplir le sous-répertoire @code{USER} pour
+n'importe quel utilisateur qui ne s'est jamais connecté.  Comme
+@code{/var/@dots{}/$USER} fait partie de @code{$PATH}, l'utilisateur
+ciblé pouvait exécuter des programmes fournis par l'attaquant.  Voir
+@uref{https://issues.guix.gnu.org/issue/37744} pour plus de détails.
+
+Cela est maintenant corrigé en laissant à @command{guix-daemon} le soin
+de créer ces répertoire pour le compte des utilisateurs et en
+supprimant les permissions en écriture pour tout le monde sur
+@code{per-user}.  Nous te recommandons de mettre à jour le démon
+immédiatement.  Pour cela, lance @code{sudo guix pull} si tu es sur
+une distro externe ou @code{guix pull && sudo guix system reconfigure
+@dots{}} sur le système Guix.  Dans tous les cas, assure-toi ensuite de
+redémarrer le service avec @code{herd} ou @code{systemctl}.")
          (nl "Het standaard gebruikersprofiel, @file{~/.guix-profile}, verwijst
 naar @file{/var/guix/profiles/per-user/$USER}.  Tot op heden kon om het even wie
 in @file{/var/guix/profiles/per-user} schrijven, wat het @command{guix}-commando
