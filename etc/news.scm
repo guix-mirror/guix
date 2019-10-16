@@ -9,6 +9,28 @@
 (channel-news
  (version 0)
 
+ (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
+        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions"))
+        (body
+         (en "The default user profile, @file{~/.guix-profile}, points to
+@file{/var/guix/profiles/per-user/$USER}.  Until now,
+@file{/var/guix/profiles/per-user} was world-writable, allowing the
+@command{guix} command to create the @code{$USER} sub-directory.
+
+On a multi-user system, this allowed a malicious user to create and populate
+that @code{$USER} sub-directory for another user that had not yet logged in.
+Since @code{/var/@dots{}/$USER} is in @code{$PATH}, the target user could end
+up running attacker-provided code.  See
+@uref{https://issues.guix.gnu.org/issue/37744} for more information.
+
+This is now fixed by letting @command{guix-daemon} create these directories on
+behalf of users and removing the world-writable permissions on
+@code{per-user}.  On multi-user systems, we recommend updating the daemon now.
+To do that, run @code{sudo guix pull} if you're on a foreign distro, or run
+@code{guix pull && sudo guix system reconfigure @dots{}} on Guix System.  In
+both cases, make sure to restart the service afterwards, with @code{herd} or
+@code{systemctl}.")))
+
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
                (de "GNU-C-Bibliothek aktualisiert")
