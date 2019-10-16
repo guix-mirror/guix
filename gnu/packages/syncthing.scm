@@ -894,7 +894,7 @@ Prometheus metrics.")
 (define-public go-github-com-prometheus-procfs
     (package
       (name "go-github-com-prometheus-procfs")
-      (version "0.0.3")
+      (version "0.0.4")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -903,7 +903,7 @@ Prometheus metrics.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "18c4m795fwng8f8qa395f3crvamlbk5y5afk8b5rzyisnmjq774y"))))
+                  "1z5jq5rjala0a0di4nwk1rai0z9f73qwqj6mgcbpjbg2qknlb544"))))
       (build-system go-build-system)
       (arguments
        '(#:import-path "github.com/prometheus/procfs"
