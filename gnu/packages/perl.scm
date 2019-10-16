@@ -9416,21 +9416,18 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.78")
+    (version "0.80")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
-        (base32 "03plv3wfqqqf7g8mxr8f6wlki2af8w3rg9xcfii1z5l1f1iarxx1"))))
+        (base32 "1nhn4w52kpq757rxl052f61h36rdzsy416k740m3fy5ih7axhq4x"))))
     (build-system perl-build-system)
-    (home-page
-     "https://metacpan.org/release/YAML-LibYAML")
-    (synopsis
-     "Perl YAML Serialization using XS and libyaml")
+    (home-page "https://metacpan.org/release/YAML-LibYAML")
+    (synopsis "Perl YAML Serialization using XS and libyaml")
     (description
      "@code{YAML::XS} is a Perl XS binding to libyaml which offers Perl the
 best YAML support to date.")
