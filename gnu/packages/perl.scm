@@ -2401,14 +2401,14 @@ to do this without writing reams of structural code.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-exception" ,perl-test-exception)
-       ("perl-test-nowarnings" ,perl-test-nowarnings)))
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-mocktime" ,perl-test-mocktime)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-test-mocktime" ,perl-test-mocktime)))
+       ("perl-module-pluggable" ,perl-module-pluggable)))
     (home-page "https://metacpan.org/release/DateTime-Format-Flexible")
     (synopsis "Parse date and time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
