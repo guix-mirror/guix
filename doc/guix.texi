@@ -5662,9 +5662,6 @@ The URL to the home-page of the package, as a string.
 The list of systems supported by the package, as strings of the form
 @code{architecture-kernel}, for example @code{"x86_64-linux"}.
 
-@item @code{maintainers} (default: @code{'()})
-The list of maintainers of the package, as @code{maintainer} objects.
-
 @item @code{location} (default: source location of the @code{package} form)
 The source location of the package.  It is useful to override this when
 inheriting from another package, in which case this field is not
