@@ -775,7 +775,15 @@ are detected, the user is notified.")))
                        (string-join (map lua-path-spec lua-inputs) ";"))
                (setenv "LUA_CPATH"
                        (string-join (map lua-cpath-spec lua-inputs) ";"))
-               #t))))))
+               #t)))
+         (add-after 'unpack 'prevent-embedding-gcc-store-path
+           (lambda _
+             ;; nvim remembers its build options, including the compiler with
+             ;; its complete path.  This adds gcc to the closure of nvim, which
+             ;; doubles its size.  We remove the refirence here.
+             (substitute* "cmake/GetCompileFlags.cmake"
+               (("\\$\\{CMAKE_C_COMPILER\\}") "/gnu/store/.../bin/gcc"))
+             #t)))))
     (inputs
      `(("libuv" ,libuv)
        ("msgpack" ,msgpack)
