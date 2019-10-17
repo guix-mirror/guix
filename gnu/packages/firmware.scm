@@ -391,7 +391,8 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
         (file-name (git-file-name "arm-trusted-firmware" version))
         (patches (search-patches
                   "arm-trusted-firmware-optional-bin-generation.patch"
-                  "arm-trusted-firmware-rockchip-disable-binary.patch"))
+                  "arm-trusted-firmware-rockchip-disable-binary.patch"
+                  "arm-trusted-firmware-disable-hdcp.patch"))
        (sha256
         (base32
          "1gy5qskrjy8n3kxdcm1dx8b45l5b75n0pm8pq80wl6xic1ycy24r"))))
@@ -400,6 +401,12 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure) ; no configure script
+         ;; Remove binary blobs which do not contain source or proper license.
+         (add-after 'unpack 'remove-binary-blobs
+           (lambda _
+             (for-each (lambda (file)
+                         (delete-file file))
+                       (find-files "." ".*\\.bin$"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
