@@ -6258,6 +6258,9 @@ cookie headers, cookie creation, cookie jar creation and more.")
 neat APIs and connection-pooling.  It is meant to supersede Drakma.")
       (license license:expat))))
 
+(define-public ecl-dexador
+  (sbcl-package->ecl-package sbcl-dexador))
+
 (define-public sbcl-lisp-namespace
   (let ((commit "28107cafe34e4c1c67490fde60c7f92dc610b2e0")
         (revision "1"))
