@@ -5149,6 +5149,9 @@ mime-type of a file.")
 (define-public cl-trivial-mimes
   (sbcl-package->cl-source-package sbcl-trivial-mimes))
 
+(define-public ecl-trivial-mimes
+  (sbcl-package->ecl-package sbcl-trivial-mimes))
+
 (define-public sbcl-lack-middleware-static
   (let ((commit "abff8efeb0c3a848e6bb0022f2b8b7fa3a1bc88b")
         (revision "1"))
