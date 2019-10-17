@@ -389,6 +389,9 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
                (url "https://github.com/ARM-software/arm-trusted-firmware.git")
                (commit (string-append "v" version))))
         (file-name (git-file-name "arm-trusted-firmware" version))
+        (patches (search-patches
+                  "arm-trusted-firmware-optional-bin-generation.patch"
+                  "arm-trusted-firmware-rockchip-disable-binary.patch"))
        (sha256
         (base32
          "1gy5qskrjy8n3kxdcm1dx8b45l5b75n0pm8pq80wl6xic1ycy24r"))))
