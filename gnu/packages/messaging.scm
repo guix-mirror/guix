@@ -1853,7 +1853,7 @@ messaging that aren’t available to clients that connect over XMPP.")
 (define-public telegram-purple
   (package
     (name "telegram-purple")
-    (version "1.4.1")
+    (version "1.4.2")
     (home-page "https://github.com/majn/telegram-purple")
     (source (origin
               (method git-fetch)
@@ -1863,7 +1863,7 @@ messaging that aren’t available to clients that connect over XMPP.")
                     (recursive? #t)))
               (sha256
                (base32
-                "0xlmqnlp2dqkgsq052d6dwgvqbwch2w0dnwpjslk5na4ih3lfr7k"))
+                "0imbzhhq9qbj6gvkckrnjhls2vvmmy8db7l6gsd7lng2pbfcn522"))
               (modules '((guix build utils)))
               (snippet
                '(begin
