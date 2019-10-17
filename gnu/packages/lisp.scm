@@ -5132,7 +5132,9 @@ performance and simplicity in mind.")
                    ((anchor all)
                     (string-append
                      anchor "\n"
-                     "(asdf:system-relative-pathname :trivial-mimes \"../../share/common-lisp/sbcl-source/trivial-mimes/mime.types\")")))))))))
+                     "(asdf:system-relative-pathname :trivial-mimes "
+                     "\"../../share/common-lisp/" (%lisp-type)
+                     "-source/trivial-mimes/mime.types\")")))))))))
       (native-inputs
        `(("stefil" ,sbcl-hu.dwim.stefil)))
       (inputs
