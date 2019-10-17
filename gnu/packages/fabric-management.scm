@@ -193,16 +193,21 @@ testing InfiniBand networks.")
                 "0x3clvy716i7va4m4adgx6ihjsfnzrkdizhxz5v52944dkglpc8n"))))
     (build-system gnu-build-system)
     (arguments
-     '( ;; These are the flags found in 'contrib/configure-release'.
-       #:configure-flags (list "--enable-optimizations"
-                               "--disable-logging"
-                               "--disable-debug"
-                               "--disable-assertions"
-                               "--disable-params-check"
+     '( ;; These are some of the flags found in 'contrib/configure-release'.
+       #:configure-flags (list
+                          ;; XXX: Disable optimizations specific to the build
+                          ;; machine (AVX, etc.)  There's apparently no way to
+                          ;; have them picked up at load time.
+                          "--disable-optimizations"
 
-                               (string-append "--with-rdmacm="
-                                              (assoc-ref %build-inputs
-                                                         "rdma-core")))))
+                          "--disable-logging"
+                          "--disable-debug"
+                          "--disable-assertions"
+                          "--disable-params-check"
+
+                          (string-append "--with-rdmacm="
+                                         (assoc-ref %build-inputs
+                                                    "rdma-core")))))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
