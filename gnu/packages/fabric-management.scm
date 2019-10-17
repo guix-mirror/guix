@@ -207,7 +207,10 @@ testing InfiniBand networks.")
 
                           (string-append "--with-rdmacm="
                                          (assoc-ref %build-inputs
-                                                    "rdma-core")))))
+                                                    "rdma-core")))
+
+       ;; Be verbose so that compiler flags are displayed.
+       #:make-flags '("V=1")))
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
