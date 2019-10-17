@@ -16346,6 +16346,36 @@ correctly.")
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public emacs-helm-sly
+  (package
+    (name "emacs-helm-sly")
+    (version "0.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-sly")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0agsigwnxm1czi7pzcfbjaks8kg63xskqqavvfqjwzj9xakh5id2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-sly" ,emacs-sly)))
+    (home-page "https://github.com/emacs-helm/helm-sly")
+    (synopsis "Helm for SLY, a Common Lisp interaction mode for Emacs")
+    (description "Helm-SLY defines a few new commands:
+
+@itemize
+@item helm-sly-list-connections: Yet another Lisp connection list with Helm.
+@item: helm-sly-apropos: Yet another @command{apropos} with Helm.
+@item helm-sly-mini: Like @command{helm-sly-list-connections}, but include an
+extra source of Lisp-related buffers, like the events buffer or the scratch
+buffer.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public emacs-gtk-look
   (package
     (name "emacs-gtk-look")
