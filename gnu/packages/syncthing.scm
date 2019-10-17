@@ -77,9 +77,9 @@
        ("go-golang-org-x-time" ,go-golang-org-x-time)
        ("go-gopkg.in-ldap.v2" ,go-gopkg.in-ldap.v2)
        ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
-       ("go-github-com-prometheus-client-golang-prometheus"
-        ,go-github-com-prometheus-client-golang-prometheus)
        ("go-github-com-shirou-gopsutil" ,go-github-com-shirou-gopsutil)
+       ("go-github-com-prometheus-client-golang"
+        ,go-github-com-prometheus-client-golang)
        ("go-golang-org-x-net" ,go-golang-org-x-net)
        ("go-golang-org-x-text" ,go-golang-org-x-text)
        ("go-github-com-audriusbutkevicius-recli"
@@ -796,11 +796,11 @@ data serialization format.")
       (home-page "https://github.com/golang/protobuf")
       (license bsd-3)))
 
-(define-public go-github-com-prometheus-client-model-go
+(define-public go-github-com-prometheus-client-model
   (let ((commit "fd36f4220a901265f90734c3183c5f0c91daa0b8")
         (revision "1"))
     (package
-      (name "go-github-com-prometheus-client-model-go")
+      (name "go-github-com-prometheus-client-model")
       (version (git-version "0.0.2" revision commit))
       (source (origin
                 (method git-fetch)
@@ -813,8 +813,12 @@ data serialization format.")
                   "1bs5d72k361llflgl94c22n0w53j30rsfh84smgk8mbjbcmjsaa5"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/prometheus/client_model/go"
-         #:unpack-path "github.com/prometheus/client_model"))
+       '(#:import-path "github.com/prometheus/client_model"
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)))
@@ -854,9 +858,9 @@ message streaming.")
       (home-page "https://github.com/matttproud/golang_protobuf_extensions")
       (license asl2.0))))
 
-(define-public go-github-com-prometheus-common-expfmt
+(define-public go-github-com-prometheus-common
     (package
-      (name "go-github-com-prometheus-common-expfmt")
+      (name "go-github-com-prometheus-common")
       (version "0.4.1")
       (source (origin
                 (method git-fetch)
@@ -869,8 +873,8 @@ message streaming.")
                   "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
       (build-system go-build-system)
       (arguments
-       '(#:import-path "github.com/prometheus/common/expfmt"
-         #:unpack-path "github.com/prometheus/common"
+       '(#:import-path "github.com/prometheus/common"
+         #:tests? #f
          #:phases
          (modify-phases %standard-phases
            (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
@@ -882,46 +886,18 @@ message streaming.")
                                      "/src/github.com/prometheus/common/expfmt/testdata/")
                       ".*\\.gz$"))
                #t))
-           (replace 'check
-             ;; Tests don't pass "vet" on go-1.11.  See
-             ;; https://github.com/syncthing/syncthing/issues/5311.
-             (lambda* (#:key import-path #:allow-other-keys)
-               (invoke "go" "test"
-                       "-vet=off"
-                       import-path))))))
+           ;; Source-only package
+           (delete 'build))))
       (propagated-inputs
        `(("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
          ("go-github-com-matttproud-golang-protobuf-extensions-pbutil"
           ,go-github-com-matttproud-golang-protobuf-extensions-pbutil)
-         ("go-github-com-prometheus-client-model-go"
-          ,go-github-com-prometheus-client-model-go)))
+         ("go-github-com-prometheus-client-model"
+          ,go-github-com-prometheus-client-model)))
       (synopsis "Prometheus metrics")
       (description "This package provides tools for reading and writing
 Prometheus metrics.")
-      (home-page "https://github.com/prometheus/common")
-      (license asl2.0)))
-
-(define-public go-github-com-prometheus-common-model
-    (package
-      (name "go-github-com-prometheus-common-model")
-      (version "0.4.1")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/prometheus/common.git")
-                       (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/prometheus/common/model"
-         #:unpack-path "github.com/prometheus/common"))
-      (synopsis "Prometheus component")
-      (description "This package provides a component of the Go Prometheus
-implementation.")
       (home-page "https://github.com/prometheus/common")
       (license asl2.0)))
 
@@ -950,9 +926,9 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
       (home-page "https://github.com/prometheus/procfs")
       (license asl2.0)))
 
-(define-public go-github-com-client-golang-prometheus-promhttp
+(define-public go-github-com-prometheus-client-golang
     (package
-      (name "go-github-com-client-golang-prometheus-promhttp")
+      (name "go-github-com-prometheus-client-golang")
       (version "0.9.4")
       (source (origin
                 (method git-fetch)
@@ -965,63 +941,25 @@ system, kernel, and process metrics from the @file{/proc} pseudo file system.")
                   "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
       (build-system go-build-system)
       (arguments
-       '(#:tests? #f ; The tests require internet access
-         #:import-path "github.com/prometheus/client_golang/prometheus/promhttp"
-         #:unpack-path "github.com/prometheus/client_golang"))
+       '(#:tests? #f
+         #:import-path "github.com/prometheus/client_golang"
+         #:phases
+         (modify-phases %standard-phases
+           ;; Source-only package
+           (delete 'build))))
       (propagated-inputs
        `(("go-github-com-beorn7-perks-quantile"
           ,go-github-com-beorn7-perks-quantile)
          ("go-github-com-golang-protobuf-proto"
           ,go-github-com-golang-protobuf-proto)
-         ("go-github-com-prometheus-common-model"
-          ,go-github-com-prometheus-common-model)
-         ("go-github-com-prometheus-client-model-go"
-          ,go-github-com-prometheus-client-model-go)
-         ("go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg"
-          ,go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg)
-         ("go-github-com-prometheus-common-expfmt"
-          ,go-github-com-prometheus-common-expfmt)
+         ("go-github-com-prometheus-client-model"
+          ,go-github-com-prometheus-client-model)
+         ("go-github-com-prometheus-common"
+          ,go-github-com-prometheus-common)
          ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)))
       (synopsis "HTTP server and client tools for Prometheus")
       (description "This package @code{promhttp} provides HTTP client and
 server tools for Prometheus metrics.")
-      (home-page "https://github.com/prometheus/client_golang")
-      (license asl2.0)))
-
-(define-public go-github-com-prometheus-client-golang-prometheus
-    (package
-      (name "go-github-com-prometheus-client-golang-prometheus")
-      (version "0.9.4")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                       (url "https://github.com/prometheus/client_golang.git")
-                       (commit (string-append "v" version))))
-                (file-name (git-file-name name version))
-                (sha256
-                 (base32
-                  "0s134fj4i7k6pxdmxwkdi7amb1882yq33spv15hg3pkpbd3h311p"))))
-      (build-system go-build-system)
-      (arguments
-       '(#:import-path "github.com/prometheus/client_golang/prometheus"
-         #:unpack-path "github.com/prometheus/client_golang"
-         #:tests? #f)) ; 'TestHandler' test fails in this non-critical dependency
-      (propagated-inputs
-       `(("go-github-com-beorn7-perks-quantile"
-          ,go-github-com-beorn7-perks-quantile)
-         ("go-github-com-prometheus-common-model" ,go-github-com-prometheus-common-model)
-         ("go-github-com-prometheus-client-model-go"
-          ,go-github-com-prometheus-client-model-go)
-         ("go-github-com-prometheus-common-expfmt"
-          ,go-github-com-prometheus-common-expfmt)
-         ("go-github-com-prometheus-procfs" ,go-github-com-prometheus-procfs)
-         ("go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg"
-          ,go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg)))
-      (synopsis "Prometheus instrumentation library for Go applications")
-      (description "This package provides the Go client library for the
-Prometheus monitoring and alerting system.  It has two separate parts, one for
-instrumenting application code, and one for creating clients that talk to the
-Prometheus HTTP API.")
       (home-page "https://github.com/prometheus/client_golang")
       (license asl2.0)))
 
@@ -1104,28 +1042,6 @@ language.")
 quoting, commenting, and escaping.")
       (home-page "https://github.com/flynn-archive/go-shlex")
       (license asl2.0))))
-
-(define-public go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg
-  (package
-    (name "go-github-com-prometheus-common-internal-bitbucket-org-ww-goautoneg")
-    (version "0.4.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                     (url "https://github.com/prometheus/common.git")
-                     (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0sf4sjdckblz1hqdfvripk3zyp8xq89w7q75kbsyg4c078af896s"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:import-path "github.com/prometheus/common/internal/bitbucket.org/ww/goautoneg"
-       #:unpack-path "github.com/prometheus/common"))
-    (synopsis "Internal Prometheus component")
-    (description "This package is an internal component of Prometheus.")
-    (home-page "https://github.com/prometheus/common")
-    (license asl2.0)))
 
 (define-public go-github-com-audriusbutkevicius-pfilter
   (let ((commit "c55ef6137fc6f075801eac099cc2687ede0f101d")
