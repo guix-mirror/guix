@@ -62,6 +62,7 @@
             novena-installation-os
             pine64-plus-installation-os
             pinebook-installation-os
+            rock64-installation-os
             rockpro64-installation-os
             rk3399-puma-installation-os
             wandboard-installation-os
@@ -583,6 +584,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
   (embedded-installation-os u-boot-pinebook-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
+
+(define rock64-installation-os
+  (embedded-installation-os u-boot-rock64-rk3328-bootloader
+                            "/dev/mmcblk0" ; SD card/eMMC (SD priority) storage
+                            "ttyS2")) ; UART2 connected on the Pi2 bus
 
 (define rockpro64-installation-os
   (embedded-installation-os u-boot-rockpro64-rk3399-bootloader

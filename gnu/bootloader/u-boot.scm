@@ -34,6 +34,7 @@
             u-boot-pine64-plus-bootloader
             u-boot-pinebook-bootloader
             u-boot-puma-rk3399-bootloader
+            u-boot-rock64-rk3328-bootloader
             u-boot-rockpro64-rk3399-bootloader
             u-boot-wandboard-bootloader))
 
@@ -90,6 +91,15 @@
                               device (* 64 512))
         (write-file-on-device u-boot (stat:size (stat u-boot))
                               device (* 512 512)))))
+
+(define install-rock64-rk3328-u-boot
+  #~(lambda (bootloader device mount-point)
+      (let ((idb (string-append bootloader "/libexec/idbloader.img"))
+            (u-boot (string-append bootloader "/libexec/u-boot.itb")))
+        (write-file-on-device idb (stat:size (stat idb))
+                              device (* 64 512))
+        (write-file-on-device u-boot (stat:size (stat u-boot))
+                              device (* 16384 512)))))
 
 (define install-rockpro64-rk3399-u-boot
   #~(lambda (bootloader device mount-point)
@@ -189,6 +199,13 @@
    (inherit u-boot-bootloader)
    (package u-boot-puma-rk3399)
    (installer install-puma-rk3399-u-boot)))
+
+(define u-boot-rock64-rk3328-bootloader
+  ;; SD and eMMC use the same format
+  (bootloader
+   (inherit u-boot-bootloader)
+   (package u-boot-rock64-rk3328)
+   (installer install-rock64-rk3328-u-boot)))
 
 (define u-boot-rockpro64-rk3399-bootloader
   ;; SD and eMMC use the same format

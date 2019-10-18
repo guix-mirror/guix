@@ -759,6 +759,32 @@ to Novena upstream, does not load u-boot.img from the first partition.")
          ("firmware-m0" ,rk3399-cortex-m0)
          ,@(package-native-inputs base))))))
 
+(define-public u-boot-rock64-rk3328
+  (let ((base (make-u-boot-package "rock64-rk3328" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (version (package-version u-boot-2019.10))
+      (source (package-source u-boot-2019.10))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'set-environment
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((bl31 (string-append (assoc-ref inputs "firmware")
+                                            "/bl31.elf")))
+                   (setenv "BL31" bl31))
+                 #t))
+             (add-after 'unpack 'add-u-boot-itb
+               (lambda _
+                 (substitute* "Kconfig"
+                   (("default .u-boot.itb. if SPL_LOAD_FIT && .ROCKCHIP_RK3399")
+                    "default \"u-boot.itb\" if SPL_LOAD_FIT && (ARCH_ROCKCHIP"))
+                 #t))))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-rk3328)
+         ,@(package-native-inputs base))))))
+
 (define-public u-boot-rockpro64-rk3399
   (let ((base (make-u-boot-package "rockpro64-rk3399" "aarch64-linux-gnu")))
     (package
