@@ -10457,14 +10457,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "0niz9dh66fcwbvqpkpsdlz9d06kwi3kfh45dhk3qz9g9qqyiakr1"))
+         "0q68n5jm7w99paibj8vkxbdksbyrxilzwc9dkp3zf8zrdc5qfxzy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10510,8 +10510,8 @@ block processing.")
                  (("HDF5_CXX_INCLUDE=.*") "HDF5_CXX_INCLUDE=./hdf5/c++/src\n")
                  (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
                  ;; szip is non-free software
-                 (("cp \\$\\{SZIP_LIB\\}.*") "")
-                 (("\\$\\{USER_LIB_DIR\\}libsz.a") "")))
+                 (("cp \"\\$\\{SZIP_LIB\\}.*") "")
+                 (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n")))
              #t)))))
     (inputs
      `(("zlib" ,zlib)))
