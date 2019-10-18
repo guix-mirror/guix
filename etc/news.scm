@@ -10,10 +10,10 @@
  (version 0)
 
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
-        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions")
-               (de "Sicherheitslücke in @file{/var/guix/profiles/per-user}-Berechtigungen")
-               (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user}")
-               (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten"))
+        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions (CVE-2019-18192)")
+               (de "Sicherheitslücke in @file{/var/guix/profiles/per-user}-Berechtigungen (CVE-2019-18192)")
+               (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user} (CVE-2019-18192)")
+               (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten (CVE-2019-18192)"))
         (body
          (en "The default user profile, @file{~/.guix-profile}, points to
 @file{/var/guix/profiles/per-user/$USER}.  Until now,
