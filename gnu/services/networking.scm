@@ -51,6 +51,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix modules)
+  #:use-module (guix packages)
   #:use-module (guix deprecation)
   #:use-module (rnrs enums)
   #:use-module (srfi srfi-1)
@@ -1006,6 +1007,33 @@ and @command{wicd-curses} user interfaces."
   "Return a directory containing PLUGINS, the NM VPN plugins."
   (directory-union "network-manager-vpn-plugins" plugins))
 
+(define (network-manager-accounts config)
+  "Return the list of <user-account> and <user-group> for CONFIG."
+  (define nologin
+    (file-append shadow "/sbin/nologin"))
+
+  (define accounts
+    (append-map (lambda (package)
+                  (map (lambda (name)
+                         (user-account (system? #t)
+                                       (name name)
+                                       (group "network-manager")
+                                       (comment "NetworkManager helper")
+                                       (home-directory "/var/empty")
+                                       (create-home-directory? #f)
+                                       (shell nologin)))
+                       (or (assoc-ref (package-properties package)
+                                      'user-accounts)
+                           '())))
+                (network-manager-configuration-vpn-plugins config)))
+
+  (match accounts
+    (()
+     '())
+    (_
+     (cons (user-group (name "network-manager") (system? #t))
+           accounts))))
+
 (define network-manager-environment
   (match-lambda
     (($ <network-manager-configuration> network-manager dns vpn-plugins)
@@ -1055,6 +1083,8 @@ and @command{wicd-curses} user interfaces."
                                (compose
                                 list
                                 network-manager-configuration-network-manager))
+            (service-extension account-service-type
+                               network-manager-accounts)
             (service-extension activation-service-type
                                network-manager-activation)
             (service-extension session-environment-service-type

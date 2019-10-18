@@ -5635,7 +5635,12 @@ Compatible with Cisco VPN concentrators configured to use IPsec.")
 to @acronym{VPNs, virtual private networks} via OpenConnect, an open client for
 Cisco's AnyConnect SSL VPN.")
     (license license:gpl2+)
-    (properties `((upstream-name . "NetworkManager-openconnect")))))
+    (properties `((upstream-name . "NetworkManager-openconnect")
+
+                  ;; The 'etc/dbus-1/system.d/nm-openconnect-service.conf'
+                  ;; file refers to account "nm-openconnect".  Specify it here
+                  ;; so that 'network-manager-service-type' creates it.
+                  (user-accounts . ("nm-openconnect"))))))
 
 (define-public mobile-broadband-provider-info
   (package
