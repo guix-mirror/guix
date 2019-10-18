@@ -785,6 +785,28 @@ to Novena upstream, does not load u-boot.img from the first partition.")
        `(("firmware" ,arm-trusted-firmware-rk3328)
          ,@(package-native-inputs base))))))
 
+(define-public u-boot-firefly-rk3399
+  (let ((base (make-u-boot-package "firefly-rk3399" "aarch64-linux-gnu")))
+    (package
+      (inherit base)
+      (version (package-version u-boot-2019.10))
+      (source (package-source u-boot-2019.10))
+      (arguments
+        (substitute-keyword-arguments (package-arguments base)
+          ((#:phases phases)
+           `(modify-phases ,phases
+              (add-after 'unpack 'set-environment
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (setenv "BL31" (string-append (assoc-ref inputs "firmware")
+                                                "/bl31.elf"))
+                  #t))
+              ;; Phases do not succeed on the bl31 ELF.
+              (delete 'strip)
+              (delete 'validate-runpath)))))
+      (native-inputs
+       `(("firmware" ,arm-trusted-firmware-rk3399)
+         ,@(package-native-inputs base))))))
+
 (define-public u-boot-rockpro64-rk3399
   (let ((base (make-u-boot-package "rockpro64-rk3399" "aarch64-linux-gnu")))
     (package

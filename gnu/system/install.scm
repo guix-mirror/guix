@@ -60,6 +60,7 @@
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
+            firefly-rk3399-installation-os
             pine64-plus-installation-os
             pinebook-installation-os
             rock64-installation-os
@@ -559,6 +560,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
   (embedded-installation-os u-boot-bananapi-m2-ultra-bootloader
                             "/dev/mmcblk1" ; eMMC storage
                             "ttyS0"))
+
+(define firefly-rk3399-installation-os
+  (embedded-installation-os u-boot-firefly-rk3399-bootloader
+                            "/dev/mmcblk0" ; SD card/eMMC (SD priority) storage
+                            "ttyS2")) ; UART2 connected on the Pi2 bus
 
 (define mx6cuboxi-installation-os
   (embedded-installation-os u-boot-mx6cuboxi-bootloader
