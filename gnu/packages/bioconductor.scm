@@ -3484,14 +3484,14 @@ profiles (GO and KEGG) of gene and gene clusters.")
 (define-public r-mlinterfaces
   (package
     (name "r-mlinterfaces")
-    (version "1.64.0")
+    (version "1.64.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "MLInterfaces" version))
        (sha256
         (base32
-         "0zqvxmvbkig3cc4r5k405s53d7y5ccvrf8kf5j6v8s1kkrklai4j"))))
+         "1c1hciwy37zpr5bzdjj2xxx2r4jdfmr5w0zmg010lm2985z41gqh"))))
     (properties `((upstream-name . "MLInterfaces")))
     (build-system r-build-system)
     (propagated-inputs
