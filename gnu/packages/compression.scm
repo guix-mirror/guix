@@ -1903,7 +1903,8 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (build-system gnu-build-system)
     (arguments
      `(;; UCL 1.03 fails to build with newer C standards.
-       #:configure-flags '("CFLAGS=-std=gnu90")))
+       #:configure-flags '("CFLAGS=-std=gnu90"
+                           "--enable-shared" "--disable-static")))
     (home-page "https://www.oberhumer.com/opensource/ucl/")
     (synopsis "Portable lossless data compression library")
     (description "UCL implements a number of compression algorithms that
