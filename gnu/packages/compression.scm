@@ -1928,9 +1928,11 @@ decompression is a little bit slower.")
                "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
              (patches (search-patches "upx-fix-CVE-2017-15056.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-                     ("ucl" ,ucl)))
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("ucl" ,ucl)
+       ("zlib" ,zlib)))
     (arguments
      `(#:make-flags
        (list "all"
