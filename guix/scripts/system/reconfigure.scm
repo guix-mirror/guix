@@ -136,7 +136,10 @@ canonical names (symbols)."
                      (srfi srfi-1))
 
         ;; Load the service files for any new services.
-        (load-services/safe '#$service-files)
+        ;; Silence messages coming from shepherd such as "Evaluating
+        ;; expression ..." since they are unhelpful.
+        (parameterize ((shepherd-message-port (%make-void-port "w")))
+          (load-services/safe '#$service-files))
 
         ;; Unload obsolete services and start new services.
         (for-each unload-service '#$to-unload)
