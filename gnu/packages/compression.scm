@@ -1895,7 +1895,7 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (version "1.03")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.oberhumer.com/opensource/"
+             (uri (string-append "https://www.oberhumer.com/opensource/"
                                  name "/download/" name "-" version ".tar.gz"))
              (sha256
               (base32
@@ -1904,7 +1904,7 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (arguments
      `(;; UCL 1.03 fails to build with newer C standards.
        #:configure-flags '("CFLAGS=-std=gnu90")))
-    (home-page "http://www.oberhumer.com/opensource/ucl/")
+    (home-page "https://www.oberhumer.com/opensource/ucl/")
     (synopsis "Portable lossless data compression library")
     (description "UCL implements a number of compression algorithms that
 achieve an excellent compression ratio while allowing fast decompression.
