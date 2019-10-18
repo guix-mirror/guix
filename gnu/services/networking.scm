@@ -110,6 +110,7 @@
             network-manager-configuration
             network-manager-configuration?
             network-manager-configuration-dns
+            network-manager-configuration-vpn-plugins
             network-manager-service-type
 
             connman-configuration
@@ -986,7 +987,7 @@ and @command{wicd-curses} user interfaces."
                    (default network-manager))
   (dns network-manager-configuration-dns
        (default "default"))
-  (vpn-plugins network-manager-vpn-plugins        ;list of <package>
+  (vpn-plugins network-manager-configuration-vpn-plugins ;list of <package>
                (default '())))
 
 (define network-manager-activation
