@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -44,14 +44,14 @@
 (define-public clamav
   (package
     (name "clamav")
-    (version "0.101.2")
+    (version "0.102.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.clamav.net/downloads/production/"
                                   "clamav-" version ".tar.gz"))
               (sha256
                (base32
-                "0d3n4y8i5q594h4cjglmvpk4jd73r9ajpp1bvq5lr9zpdzgyn4ha"))
+                "1qdyj4r39266bmbsd2nwyspm20k9wh3c30awrg8c54y78s61izj8"))
               (modules '((guix build utils)))
               (snippet
                '(begin

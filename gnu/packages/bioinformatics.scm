@@ -15261,3 +15261,91 @@ and/or unmapped/clipped reads to a separate FASTQ file. When marking
 duplicates, samblaster will require approximately 20MB of memory per 1M read
 pairs.")
     (license license:expat)))
+
+(define-public r-velocyto
+  (let ((commit "d7790346cb99f49ab9c2b23ba70dcf9d2c9fc350")
+        (revision "1"))
+    (package
+      (name "r-velocyto")
+      (version (git-version "0.6" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/velocyto-team/velocyto.R.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16wqf70j7rd7pay2q513iyz12i8n9vrpg1bisah4lddbcpx5dz1n"))))
+      (build-system r-build-system)
+      (inputs
+       `(("boost" ,boost)))
+      (propagated-inputs
+       `(("r-hdf5r" ,r-hdf5r)
+         ("r-mass" ,r-mass)
+         ("r-mgcv" ,r-mgcv)
+         ("r-pcamethods" ,r-pcamethods)
+         ("r-rcpp" ,r-rcpp)
+         ("r-rcpparmadillo" ,r-rcpparmadillo)
+         ;; Suggested packages
+         ("r-rtsne" ,r-rtsne)
+         ("r-cluster" ,r-cluster)
+         ("r-abind" ,r-abind)
+         ("r-h5" ,r-h5)
+         ("r-biocgenerics" ,r-biocgenerics)
+         ("r-genomicalignments" ,r-genomicalignments)
+         ("r-rsamtools" ,r-rsamtools)
+         ("r-edger" ,r-edger)
+         ("r-igraph" ,r-igraph)))
+      (home-page "http://velocyto.org")
+      (synopsis "RNA velocity estimation in R")
+      (description
+       "This package provides basic routines for estimation of gene-specific
+transcriptional derivatives and visualization of the resulting velocity
+patterns.")
+      (license license:gpl3))))
+
+(define-public methyldackel
+  (package
+    (name "methyldackel")
+    (version "0.4.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/dpryan79/MethylDackel.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "10gh8k0ca92kywnrw5pkacq3g6r8s976s12k8jhp8g3g49q9a97g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix="
+                            (assoc-ref %outputs "out") "/bin/"))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("install MethylDackel \\$\\(prefix\\)" match)
+                (string-append "install -d $(prefix); " match)))
+             #t)))))
+    (inputs
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
+    ;; Needed for tests
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (home-page "https://github.com/dpryan79/MethylDackel")
+    (synopsis "Universal methylation extractor for BS-seq experiments")
+    (description
+     "MethylDackel will process a coordinate-sorted and indexed BAM or CRAM
+file containing some form of BS-seq alignments and extract per-base
+methylation metrics from them.  MethylDackel requires an indexed fasta file
+containing the reference genome as well.")
+    ;; See https://github.com/dpryan79/MethylDackel/issues/85
+    (license license:expat)))

@@ -9,6 +9,92 @@
 (channel-news
  (version 0)
 
+ (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
+        (title (en "Insecure @file{/var/guix/profiles/per-user} permissions (CVE-2019-18192)")
+               (de "Sicherheitslücke in @file{/var/guix/profiles/per-user}-Berechtigungen (CVE-2019-18192)")
+               (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user} (CVE-2019-18192)")
+               (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten (CVE-2019-18192)"))
+        (body
+         (en "The default user profile, @file{~/.guix-profile}, points to
+@file{/var/guix/profiles/per-user/$USER}.  Until now,
+@file{/var/guix/profiles/per-user} was world-writable, allowing the
+@command{guix} command to create the @code{$USER} sub-directory.
+
+On a multi-user system, this allowed a malicious user to create and populate
+that @code{$USER} sub-directory for another user that had not yet logged in.
+Since @code{/var/@dots{}/$USER} is in @code{$PATH}, the target user could end
+up running attacker-provided code.  See
+@uref{https://issues.guix.gnu.org/issue/37744} for more information.
+
+This is now fixed by letting @command{guix-daemon} create these directories on
+behalf of users and removing the world-writable permissions on
+@code{per-user}.  On multi-user systems, we recommend updating the daemon now.
+To do that, run @code{sudo guix pull} if you're on a foreign distro, or run
+@code{guix pull && sudo guix system reconfigure @dots{}} on Guix System.  In
+both cases, make sure to restart the service afterwards, with @code{herd} or
+@code{systemctl}.")
+         (de "Das voreingestellte Benutzerprofil, @file{~/.guix-profile},
+verweist auf @file{/var/guix/profiles/per-user/$USER}.  Bisher hatte jeder
+Benutzer Schreibzugriff auf @file{/var/guix/profiles/per-user}, wodurch der
+@command{guix}-Befehl berechtigt war, das Unterverzeichnis @code{$USER}
+anzulegen.
+
+Wenn mehrere Benutzer dasselbe System benutzen, kann ein böswilliger Benutzer
+so das Unterverzeichnis @code{$USER} und Dateien darin für einen anderen
+Benutzer anlegen, wenn sich dieser noch nie angemeldet hat.  Weil
+@code{/var/…/$USER} auch in @code{$PATH} aufgeführt ist, kann der betroffene
+Nutzer dazu gebracht werden, vom Angreifer vorgegebenen Code auszuführen.
+Siehe @uref{https://issues.guix.gnu.org/issue/37744} für weitere
+Informationen.
+
+Der Fehler wurde nun behoben, indem @command{guix-daemon} diese Verzeichnisse
+jetzt selbst anlegt statt das dem jeweiligen Benutzerkonto zu überlassen.  Der
+Schreibzugriff auf @code{per-user} wird den Benutzern entzogen.  Für Systeme
+mit mehreren Benutzern empfehlen wir, den Daemon jetzt zu aktualisieren.  Auf
+einer Fremddistribution führen Sie dazu @code{sudo guix pull} aus; auf einem
+Guix-System führen Sie @code{guix pull && sudo guix system reconfigure …}
+aus.  Achten Sie in beiden Fällen darauf, den Dienst mit @code{herd} oder
+@code{systemctl} neuzustarten.")
+         (fr "Le profil utilisateur par défaut, @file{~/.guix-profile},
+pointe vers @file{/var/guix/profiles/per-user/$USER}.  Jusqu'à
+maintenant, @file{/var/guix/profiles/per-user} était disponible en
+écriture pour tout le monde, ce qui permettait à la commande
+@command{guix} de créér le sous-répertoire @code{$USER}.
+
+Sur un système multi-utilisateur, cela permet à un utilisateur
+malveillant de créer et de remplir le sous-répertoire @code{USER} pour
+n'importe quel utilisateur qui ne s'est jamais connecté.  Comme
+@code{/var/@dots{}/$USER} fait partie de @code{$PATH}, l'utilisateur
+ciblé pouvait exécuter des programmes fournis par l'attaquant.  Voir
+@uref{https://issues.guix.gnu.org/issue/37744} pour plus de détails.
+
+Cela est maintenant corrigé en laissant à @command{guix-daemon} le soin
+de créer ces répertoire pour le compte des utilisateurs et en
+supprimant les permissions en écriture pour tout le monde sur
+@code{per-user}.  Nous te recommandons de mettre à jour le démon
+immédiatement.  Pour cela, lance @code{sudo guix pull} si tu es sur
+une distro externe ou @code{guix pull && sudo guix system reconfigure
+@dots{}} sur le système Guix.  Dans tous les cas, assure-toi ensuite de
+redémarrer le service avec @code{herd} ou @code{systemctl}.")
+         (nl "Het standaard gebruikersprofiel, @file{~/.guix-profile}, verwijst
+naar @file{/var/guix/profiles/per-user/$USER}.  Tot op heden kon om het even wie
+in @file{/var/guix/profiles/per-user} schrijven, wat het @command{guix}-commando
+toestond de @code{$USER} submap aan te maken.
+
+Op systemen met meerdere gebruikers kon hierdoor een kwaadaardige gebruiker een
+@code{$USER} submap met inhoud aanmaken voor een andere gebruiker die nog niet
+was ingelogd.  Omdat @code{/var/@dots{}/$USER} zich in @code{$PATH} bevindt,
+kon het doelwit zo code uitvoeren die door de aanvaller zelf werd aangeleverd.
+Zie @uref{https://issues.guix.gnu.org/issue/37744} voor meer informatie.
+
+Dit probleem is nu verholpen: schrijven door iedereen in @code{per-user} is niet
+meer toegestaan en @command{guix-daemon} maakt zelf submappen aan namens de
+gebruiker.  Op systemen met meerdere gebruikers raden we aan om
+@code{guix-daemon} nu bij te werken.  Op Guix System kan dit met
+@code{guix pull && sudo guix system reconfigure @dots{}}, op andere distributies
+met @code{sudo guix pull}.  Herstart vervolgens in beide gevallen
+@code{guix-daemon} met @code{herd} of @code{systemctl}.")))
+
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
                (de "GNU-C-Bibliothek aktualisiert")

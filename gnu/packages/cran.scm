@@ -1531,14 +1531,13 @@ processes.  Most of its code is based on the @code{psutil} Python package.")
 (define-public r-pkgbuild
   (package
     (name "r-pkgbuild")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "pkgbuild" version))
        (sha256
-        (base32
-         "0y4i85axwajrk67h3w6fiqfm6wxmhn3dr240w5l2nvqg3ahpxc8q"))))
+        (base32 "0xnlz6ivhkbmncg9hfw5p69lm4rjy3wn5lyxmygxyf4rrfnnqwxx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-callr" ,r-callr)
@@ -10886,21 +10885,20 @@ Differences with other sparse matrix packages are:
 (define-public r-fields
   (package
     (name "r-fields")
-    (version "9.8-6")
+    (version "9.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "fields" version))
        (sha256
-        (base32
-         "07x95vk1idjfzi5ikn0ijal754mssdmgr1p4nswmx9w3i5ndcqaz"))))
+        (base32 "1qbqdqq76xgnlbc9z643zn4s8k493h1jmav2f465hfvp63306br6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-maps" ,r-maps)
        ("r-spam" ,r-spam)))
     (native-inputs
      `(("gfortran" ,gfortran)))
-    (home-page "http://www.image.ucar.edu/fields")
+    (home-page "https://www.image.ucar.edu/fields")
     (synopsis "Tools for spatial data")
     (description
      "This is a package for curve, surface and function fitting with an
@@ -11129,14 +11127,13 @@ But it can also be used to do data analysis for small scale data sets.")
 (define-public r-cmprsk
   (package
     (name "r-cmprsk")
-    (version "2.2-8")
+    (version "2.2-9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "cmprsk" version))
        (sha256
-        (base32
-         "1nacbzx950ygaqgnj0949skhwpzar5i3xlscd44jsimk2gsppx6z"))))
+        (base32 "0xhgfg5b4i9skkaxp7gzkafgg5bqs5q1rp4hpw2jjmykg2nifn99"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-survival" ,r-survival)))
@@ -11633,14 +11630,13 @@ identifying outliers.")
 (define-public r-bayesm
   (package
     (name "r-bayesm")
-    (version "3.1-3")
+    (version "3.1-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "bayesm" version))
        (sha256
-        (base32
-         "041ach2f2vrqzd5kz17v7wmkjz6z8cjjihpk4qvczm4cr9z85r2i"))))
+        (base32 "154glks7rsjkza0sfi1kj7wj727py9sl1ba6sswflwmwc9n226q6"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
@@ -15302,14 +15298,13 @@ function and interfaces to external frameworks.")
 (define-public r-covr
   (package
     (name "r-covr")
-    (version "3.3.1")
+    (version "3.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "covr" version))
        (sha256
-        (base32
-         "0fvd7v53w11x6kaw61hbml8n1j2ck9l2fv2wvqdsg689xic9rqcs"))))
+        (base32 "160w0m2d06kdd8dar57lpph39rxx55xwncbpl3b21l7j9drh1s5f"))))
     (properties `((upstream-name . "covr")))
     (build-system r-build-system)
     (propagated-inputs

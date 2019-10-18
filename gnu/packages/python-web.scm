@@ -30,6 +30,7 @@
 ;;; Copyright © 2019 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2019 Brendan Tildesley <mail@brendan.scot>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -302,6 +303,34 @@ other HTTP libraries.")
 
 (define-public python2-httplib2
   (package-with-python2 python-httplib2))
+
+(define-public httpie
+  (package
+    (name "httpie")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "httpie" version))
+       (sha256
+        (base32
+         "103fcigpxf4nqmrdqjnyz7d9n4n16906slwmmqqc0gkxv8hnw6vd"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests attempt to access external web servers, so we cannot run them.
+     '(#:tests? #f))
+    (propagated-inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-pygments" ,python-pygments)
+       ("python-requests" ,python-requests)))
+    (home-page "https://httpie.org/")
+    (synopsis "cURL-like tool for humans")
+    (description
+     "A command line HTTP client with an intuitive UI, JSON support,
+syntax highlighting, wget-like downloads, plugins, and more.  It consists of
+a single http command designed for painless debugging and interaction with
+HTTP servers, RESTful APIs, and web services.")
+    (license license:bsd-3)))
 
 (define-public python-html2text
   (package
@@ -817,21 +846,18 @@ connection to each user.")
 (define-public python-tornado-http-auth
   (package
     (name "python-tornado-http-auth")
-    (version "1.1.0")
+    (version "1.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "tornado-http-auth" version))
        (sha256
-        (base32
-         "0znrgqd7k2s4ia474xizi6h3061zj4sn5n6cq76bkwl3wwshifn5"))))
+        (base32 "0hyc5f0a09i5yb99pk4bxpg6w9ichbrb5cv7hc9hff7rxd8w0v0x"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tornado" ,python-tornado)))
-    (home-page
-     "https://github.com/gvalkov/tornado-http-auth")
-    (synopsis
-     "Digest and basic authentication module for Tornado")
+    (home-page "https://github.com/gvalkov/tornado-http-auth")
+    (synopsis "Digest and basic authentication module for Tornado")
     (description
      "Provides support for adding authentication to services using the Tornado
 web framework, either via the basic or digest authentication schemes.")
@@ -2616,7 +2642,7 @@ for Flask programs that are using @code{python-alembic}.")
 (define-public python-genshi
   (package
     (name "python-genshi")
-    (version "0.7.1")
+    (version "0.7.2")
     (source
      (origin
        (method git-fetch)
@@ -2625,7 +2651,7 @@ for Flask programs that are using @code{python-alembic}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01fx8fnpay5w048ppyjivg2dgfpp5rybn07y3pfsgj2knram3nhl"))))
+        (base32 "06rch30x10l105k5b6rahd839lkhmgrzn6691wbci0cb2fzps32w"))))
     (build-system python-build-system)
     (home-page "https://genshi.edgewall.org/")
     (synopsis "Toolkit for generation of output for the web")

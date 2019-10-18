@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3402,8 +3403,9 @@ slow gear audio effect to produce volume swells."))))
 a simulation of an analog Wah pedal with switchless activation."))))
 
 (define-public rkrlv2
-  (let ((commit "d8c17d3c976107e5c012970276d7cf0aa059f15b")
-        (revision "1"))
+  ;; This commit corresponds to the beta_3 tag
+  (let ((commit "7edcb4e29a358623bfd57fa2c27e5da60adfcec3")
+        (revision "2"))
     (package
       (name "rkrlv2")
       (version (git-version "0" revision commit))
@@ -3414,7 +3416,7 @@ a simulation of an analog Wah pedal with switchless activation."))))
                       (commit commit)))
                 (sha256
                  (base32
-                  "035z068rlafb7ibgqf34ck2lm4fab8yzlx41qh061x2xi4hxkvp0"))
+                  "16i4ajrib7kb0abdcn4901g8a4lkwkp2fyqyms38dhqq84slyfjs"))
                 (file-name (git-file-name name version))))
       (build-system cmake-build-system)
       (arguments '(#:tests? #f)) ; there are no tests
@@ -4052,43 +4054,32 @@ notation and includes basic support for digital audio.")
     (license license:gpl2)))
 
 (define-public patchmatrix
-  ;; There have been no releases for more than a year.
-  (let ((commit "a0b0b1e791f4574d5abd059cfe1819c71e8b18d5")
-        (revision "1"))
-    (package
-      (name "patchmatrix")
-      (version (git-version "0.12.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
-                      (commit commit)))
-                (file-name (string-append "patchmatrix-" version "-checkout"))
-                (sha256
-                 (base32
-                  "0pph4ra7aci3rbpqvvr564pi16vxrk448bmvp8985cd9lbjlrp3m"))))
-      (build-system meson-build-system)
-      (arguments
-       '(#:tests? #f          ; no test target
-         #:phases
-         (modify-phases %standard-phases
-           (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-             (lambda* (#:key outputs #:allow-other-keys)
-               (map make-file-writable
-                    (find-files (assoc-ref outputs "out") ".*\\.gz$"))
-               #t)))))
-      (inputs
-       `(("jack" ,jack-1)
-         ("lv2" ,lv2)
-         ("mesa" ,mesa)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
-      (synopsis "Simple JACK patch bay")
-      (description "PatchMatrix is a patch bay for the JACK audio connection
+  (package
+    (name "patchmatrix")
+    (version "0.16.0")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/OpenMusicKontrollers/patchmatrix.git")
+                    (commit version)))
+              (file-name (git-file-name "patchmatrix" version))
+              (sha256
+               (base32
+                "020vp7zzxxzzjfic57vkpg68dm8hi98ilr1bj88xjsv6i47xmjbn"))))
+    (build-system meson-build-system)
+    (arguments '(#:tests? #f))          ; no test target
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/OpenMusicKontrollers/patchmatrix")
+    (synopsis "Simple JACK patch bay")
+    (description "PatchMatrix is a patch bay for the JACK audio connection
 kit.  It provides a patch bay in flow matrix style for audio, MIDI, CV, and
 OSC connections.")
-      (license license:artistic2.0))))
+    (license license:artistic2.0)))
 
 (define-public sorcer
   (package
@@ -4677,3 +4668,33 @@ easier to perform.  Features include:
 sqlite.  It is constructed to be fast, light, and simultaneously tries to be
 complete without obstructing your daily work.")
     (license license:gpl3+)))
+
+(define-public playerctl
+  (package
+    (name "playerctl")
+    (version "2.0.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/altdesktop/playerctl.git")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1f3njnpd52djx3dmhh9a8p5a67f0jmr1gbk98icflr2q91149gjz"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags '("-Dintrospection=false" "-Dgtk-doc=false")))
+    (inputs `(("python-pygobject" ,python-pygobject)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Control MPRIS-supporting media player applications")
+    (description
+     "Playerctl is a command-line utility and library for controlling media
+players that implement the MPRIS D-Bus Interface Specification.  Playerctl
+makes it easy to bind player actions, such as play and pause, to media keys.
+You can also get metadata about the playing track such as the artist and title
+for integration into status line generators or other command-line tools.")
+    (home-page "https://github.com/altdesktop/playerctl")
+    (license license:lgpl3+)))

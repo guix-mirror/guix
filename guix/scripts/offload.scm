@@ -174,7 +174,7 @@ can interpret meaningfully."
 private key from '~a': ~a")
                                          file str))))))))
 
-(define (open-ssh-session machine)
+(define* (open-ssh-session machine #:optional (max-silent-time -1))
   "Open an SSH session for MACHINE and return it.  Throw an error on failure."
   (let ((private (private-key-from-file* (build-machine-private-key machine)))
         (public  (public-key-from-file
@@ -183,7 +183,7 @@ private key from '~a': ~a")
         (session (make-session #:user (build-machine-user machine)
                                #:host (build-machine-name machine)
                                #:port (build-machine-port machine)
-                               #:timeout 10       ;seconds
+                               #:timeout 10       ;initial timeout (seconds)
                                ;; #:log-verbosity 'protocol
                                #:identity (build-machine-private-key machine)
 
@@ -224,6 +224,10 @@ instead of '~a' of type '~a'~%")
            (disconnect! session)
            (leave (G_ "SSH public key authentication failed for '~a': ~a~%")
                   (build-machine-name machine) (get-error session))))
+
+       ;; From then on use MAX-SILENT-TIME as the absolute timeout when
+       ;; reading from or write to a channel for this session.
+       (session-set! session 'timeout max-silent-time)
 
        session)
       (x
@@ -313,7 +317,7 @@ hook."
 INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
 MACHINE."
   (define session
-    (open-ssh-session machine))
+    (open-ssh-session machine max-silent-time))
 
   (define store
     (connect-to-remote-daemon session
@@ -472,7 +476,8 @@ slot (which must later be released with 'release-build-slot'), or #f and #f."
        ;; Return the best machine unless it's already overloaded.
        ;; Note: We call 'node-load' only as a last resort because it is
        ;; too costly to call it once for every machine.
-       (let* ((session (false-if-exception (open-ssh-session best)))
+       (let* ((session (false-if-exception (open-ssh-session best
+                                                             %short-timeout)))
               (node    (and session (remote-inferior session)))
               (load    (and node (normalized-load best (node-load node))))
               (space   (and node (node-free-disk-space node))))
@@ -573,6 +578,11 @@ If TIMEOUT is #f, simply evaluate EXP..."
 ;;; Installation tests.
 ;;;
 
+(define %short-timeout
+  ;; Timeout in seconds used on SSH connections where reads and writes
+  ;; shouldn't take long.
+  15)
+
 (define (assert-node-repl node name)
   "Bail out if NODE is not running Guile."
   (match (node-guile-version node)
@@ -658,7 +668,7 @@ machine."
           (length machines) machine-file)
     (let* ((names    (map build-machine-name machines))
            (sockets  (map build-machine-daemon-socket machines))
-           (sessions (map open-ssh-session machines))
+           (sessions (map (cut open-ssh-session <> %short-timeout) machines))
            (nodes    (map remote-inferior sessions)))
       (for-each assert-node-has-guix nodes names)
       (for-each assert-node-repl nodes names)
@@ -682,7 +692,7 @@ machine."
           (length machines) machine-file)
     (for-each (lambda (machine)
                 (define session
-                  (open-ssh-session machine))
+                  (open-ssh-session machine %short-timeout))
 
                 (match (remote-inferior session)
                   (#f

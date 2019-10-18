@@ -41,6 +41,7 @@
 ;;; Copyright © 2019 Jonathan Frederickson <jonathan@terracrypt.net>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4995,15 +4996,15 @@ powerful general purpose text editor.")
 (define-public zenity
   (package
     (name "zenity")
-    (version "3.30.0")
+    (version "3.32.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/zenity/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "zenity-" version ".tar.xz"))
               (sha256
                (base32
-                "1wipnp46pd238z9ck5rsckbaw7yla6c936fswq5w94k4c6bgcplr"))))
+                "15fdh8xfdhnwcynyh4byx3mrjxbyprqnwxzi7qn3g5wwaqryg1p7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
@@ -5486,7 +5487,8 @@ services.")
 (define-public network-manager-openvpn
   (package
     (name "network-manager-openvpn")
-    (version "1.8.4")
+    ;; Updating?  Check whether network-manager-applet still needs libnm_gtk.
+    (version "1.8.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5495,7 +5497,7 @@ services.")
                     "/NetworkManager-openvpn-" version ".tar.xz"))
               (sha256
                (base32
-                "0gyrv46h9k17qym48qacq4zpxbap6hi17shn921824zm98m2bdvr"))))
+                "1vri49yff4lj13dnzkpq9nx3a4z1bmbrv807r151plj8m1mwhg5g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-absolute-paths" "--localstatedir=/var")
@@ -5659,18 +5661,21 @@ Cisco's AnyConnect SSL VPN.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.8.18")
+    (version "1.8.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/network-manager-applet/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "network-manager-applet-" version ".tar.xz"))
               (sha256
                (base32
-                "0y31g0lxr93370xi74hbpvcy9m81n5wdkdhq8xy2nqp0y4219p13"))))
+                "1gzvz4wfqfsfclqg56y954al8x6fmz71cnxlx1i4nqr7a25bp2qi"))))
     (build-system meson-build-system)
     (arguments
-     '(#:glib-or-gtk? #t))
+     '(#:configure-flags
+       ;; ‘Nobody should be using this’ but network-manager-openvpn 1.8.10 does.
+       (list "-Dlibnm_gtk=true")
+       #:glib-or-gtk? #t))
     (native-inputs
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
@@ -7679,7 +7684,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
 (define-public gspell
   (package
     (name "gspell")
-    (version "1.8.1")
+    (version "1.8.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -7687,7 +7692,7 @@ that support the Assistive Technology Service Provider Interface (AT-SPI).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rdv873ixhwr15jwgc2z6k6y0hj353fqnwsy7zkh0c30qwiiv6l1"))
+                "1miybm1z5cl91i25l7mfqlxhv7j8yy8rcgi0s1bgbb2vm71rb4dv"))
               (patches (search-patches "gspell-dash-test.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -8394,4 +8399,41 @@ intefaces for mobile devices using GTK+.")
 access library.  It only implements the core plumbing functions, not really the
 higher level porcelain stuff.")
     (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
+    (license license:gpl2+)))
+
+(define-public gnome-mahjongg
+  (package
+    (name "gnome-mahjongg")
+    (version "3.35.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.gnome.org/GNOME/gnome-mahjongg.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "019a66a4m5w4kkb0sm6gxj0wi54n06zdxdlmyqw7h8kbakjizv7l"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t))
+    (native-inputs
+     `(("appstream-glib" ,appstream-glib)
+       ("gettext" ,gettext-minimal)
+       ("glib:bin" ,glib "bin") ;; For glib-compile-resources
+       ("gtk+" ,gtk+ "bin")     ;; For gtk-update-icon-cache
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("librsvg" ,librsvg)))
+    (synopsis "Mahjongg tile-matching game")
+    (description "GNOME Mahjongg is a game based on the classic Chinese
+tile-matching game Mahjong.  It features multiple board layouts, tile themes,
+and a high score table.")
+    (home-page "https://wiki.gnome.org/Apps/Mahjongg")
     (license license:gpl2+)))

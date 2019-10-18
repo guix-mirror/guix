@@ -672,6 +672,10 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-8 "gfortran" '("fortran")
               %generic-search-paths))
 
+(define-public gfortran-9
+  (custom-gcc gcc-9 "gfortran" '("fortran")
+              %generic-search-paths))
+
 (define-public gfortran
   ;; Note: Update this when GCC changes!  We cannot use
   ;; (custom-gcc gcc "fortran" …) because that would lead to a package object

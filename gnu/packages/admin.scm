@@ -19,7 +19,7 @@
 ;;; Copyright © 2017 Ethan R. Jones <doubleplusgood23@gmail.com>
 ;;; Copyright © 2017 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2018, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
@@ -1128,7 +1128,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.27")
+    (version "1.8.28p1")
     (source (origin
               (method url-fetch)
               (uri
@@ -1138,7 +1138,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1h1f7v9pv0rzp14cxzv8kaa8mdd717fbqv83l7c5dvvi8jwnisvv"))
+                "09xhx2k7j6wlqs9bl7snamd4k6lkyv9ycjwdspgbbqrimy25mfi3"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1839,13 +1839,13 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "2.8.1")
+    (version "2.8.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ansible" version))
        (sha256
-        (base32 "0ia4x17ywym3r1m96ar4h0wc2xlylhbjp6x4wzwkh4p2i0x1vmg1"))))
+        (base32 "11k94ifp42psivzx147xwbmq1ak7qnjdgkb6c1xz53nfapkh754f"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-bcrypt" ,python-bcrypt)
@@ -1880,21 +1880,16 @@ import re
 sys.argv[0] = re.sub(r'\\.([^/]*)-real$', r'\\1', sys.argv[0])
 ")))
              #t))
-         (add-after 'wrap 'fix-symlinks
+         (add-after 'install 'replace-symlinks
            (lambda* (#:key outputs #:allow-other-keys)
+             ;; Replace symlinks with duplicate copies of the ansible
+             ;; executable.
              (let ((out (assoc-ref outputs "out")))
                (for-each
                 (lambda (subprogram)
-                  ;; The symlinks point to the ansible wrapper script. Make
-                  ;; them point to the real executable (.ansible-real).
-                  (delete-file (string-append out "/bin/.ansible-" subprogram "-real"))
-                  (symlink (string-append out "/bin/.ansible-real")
-                           (string-append out "/bin/.ansible-" subprogram "-real"))
-                  ;; The wrapper scripts of the symlinks invoke the ansible
-                  ;; wrapper script. Fix them to invoke the correct executable.
-                  (substitute* (string-append out "/bin/ansible-" subprogram)
-                    (("/bin/ansible")
-                     (string-append "/bin/.ansible-" subprogram "-real"))))
+                  (delete-file (string-append out "/bin/ansible-" subprogram))
+                  (copy-file (string-append out "/bin/ansible")
+                             (string-append out "/bin/ansible-" subprogram)))
                 (list "config" "console" "doc" "galaxy"
                       "inventory" "playbook" "pull" "vault")))
              #t)))))
@@ -2611,22 +2606,24 @@ Kerberos and Heimdal and FAST is supported with recent MIT Kerberos.")
                                           environment-variable-names)
                (for-each
                 (lambda (env-name)
-                  (let* ((env-value (getenv env-name))
-                         (search-path (search-path-as-string->list env-value))
-                         (new-search-path (filter filter-predicate
-                                                  search-path))
-                         (new-env-value (list->search-path-as-string
-                                         new-search-path ":")))
-                    (setenv env-name new-env-value)))
+                  (when (getenv env-name)
+                    (let* ((env-value (getenv env-name))
+                           (search-path (search-path-as-string->list env-value))
+                           (new-search-path (filter filter-predicate
+                                                    search-path))
+                           (new-env-value (list->search-path-as-string
+                                           new-search-path ":")))
+                      (setenv env-name new-env-value))))
                 environment-variable-names))
+             (setenv "CROSS_CPATH" (getenv "CPATH"))
              (setenv "CROSS_C_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
              (setenv "CROSS_CPLUS_INCLUDE_PATH" (getenv "CPLUS_INCLUDE_PATH"))
              (setenv "CROSS_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
              (filter-environment! cross?
-              '("CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
+              '("CROSS_CPATH" "CROSS_C_INCLUDE_PATH" "CROSS_CPLUS_INCLUDE_PATH"
                 "CROSS_LIBRARY_PATH"))
              (filter-environment! (lambda (e) (not (cross? e)))
-              '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
+              '("CPATH" "C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"
                 "LIBRARY_PATH"))
              #t))
          (replace 'build

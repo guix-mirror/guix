@@ -6,7 +6,7 @@
 ;;; Copyright © 2015, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
-;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Clément Lassieur <clement@lassieur.org>
@@ -7171,27 +7171,22 @@ call.")
 (define-public ruby-concurrent
   (package
     (name "ruby-concurrent")
-    (version "1.0.5")
+    (version "1.1.5")
     (source
      (origin
-       (method url-fetch)
+       (method git-fetch)
        ;; Download from GitHub because the rubygems version does not contain
        ;; Rakefile.
-       (uri (string-append
-             "https://github.com/ruby-concurrency/concurrent-ruby/archive/v"
-             version
-             ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (git-reference
+             (url "https://github.com/ruby-concurrency/concurrent-ruby")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qhv0qzsby4iijgwa4s9r88zj8123pmyz1dwaqzdk57xgqll9pny"))
-       ;; Exclude failing test reported at
-       ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
-       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"
-                                "ruby-concurrent-test-arm.patch"))))
+         "193q2k47vk7qdvv9hlhmmdxgy91xl4imapyk1ijdg9vgf46knyzj"))))
     (build-system ruby-build-system)
     (arguments
-     `(#:test-target "spec"
+     `(#:test-target "ci"
        #:phases
        (modify-phases %standard-phases
          (add-before 'replace-git-ls-files 'remove-extra-gemspecs
@@ -7201,15 +7196,31 @@ call.")
              (delete-file "concurrent-ruby-edge.gemspec")
              (delete-file "concurrent-ruby-ext.gemspec")
              #t))
-         (add-before 'build 'replace-git-ls-files2
+         (replace 'replace-git-ls-files
            (lambda _
-             (substitute* "support/file_map.rb"
-               (("git ls-files") "find * |sort"))
+             ;; XXX: The default substitution made by this phase is not fully
+             ;; compatible with "git ls-files".  The latter produces file names
+             ;; such as "lib/foo", whereas ruby-build-system uses "find . [...]"
+             ;; which gives "./lib/foo".  That difference in turn breaks the
+             ;; comparison against a glob pattern in this script.
+             (substitute* "concurrent-ruby.gemspec"
+               (("git ls-files") "find * -type f | sort"))
              #t))
-         (add-before 'check 'rake-compile
-           ;; Fix the test error described at
-           ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
-           (lambda _ (invoke "rake" "compile")))
+         (add-before 'build 'remove-jar-from-gemspec
+           (lambda _
+             ;; The gemspec wants to include a JAR file that we do not build
+             ;; nor need.
+             (substitute* "concurrent-ruby.gemspec"
+               (("'lib/concurrent/concurrent_ruby.jar'")
+                ""))
+             #t))
+         (add-before 'build 'remove-rake_compiler_dock-dependency
+           (lambda _
+             ;; This library is only used when building for non-MRI targets.
+             (substitute* "Rakefile"
+               (("require 'rake_compiler_dock'")
+                ""))
+             #t))
          (add-before 'check 'remove-timecop-dependency
            ;; Remove timecop-dependent tests as having timecop as a depedency
            ;; causes circular depedencies.

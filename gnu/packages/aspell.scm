@@ -166,10 +166,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-de
   (aspell-dictionary "de" "German"
-                     #:version "20030222-1"
+                     #:version "20161207-7-0"
                      #:sha256
                      (base32
-                      "01p92qj66cqb346gk7hjfynaap5sbcn85xz07kjfdq623ghr8v5s")))
+                      "0wamclvp66xfmv5wff96v6gdlnfv4y8lx3f8wvxyzm5imwgms4n2")))
 
 (define-public aspell-dict-da
   (aspell-dictionary "da" "Danish"
@@ -189,10 +189,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "2018.04.16-0"
+                     #:version "2019.10.06-0"
                      #:sha256
                      (base32
-                      "0bxxdzkk9g27plg22y9qzsx9cfjw3aa29w5bmzs561qc9gkp247i")))
+                      "1zai9wrqwgb9z9vfgb22qhrvxvg73jg0ix44j1khm2f6m96lncr4")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
@@ -291,19 +291,17 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-pt-br
   (aspell-dictionary "pt_BR" "Brazilian Portuguese"
-                     #:version "20090702-0"
-                     #:prefix "aspell6-"
+                     #:version "20131030-12-0"
                      #:sha256
                      (base32
-                      "1y09lx9zf2rnp55r16b2vgj953l3538z1vaqgflg9mdvm555bz3p")))
+                      "1xqlpk21s93c6blkdnpk7l62q9fxjvzdv2x86chl8p2x1gdrj3gb")))
 
 (define-public aspell-dict-pt-pt
   (aspell-dictionary "pt_PT" "Portuguese"
-                     #:version "20070510-0"
-                     #:prefix "aspell6-"
+                     #:version "20190329-1-0"
                      #:sha256
                      (base32
-                      "1mnr994cwlag6shy8865ky99lymysiln07mbldcncahg90dagdxq")))
+                      "0ld0d0ily4jqifjfsxfv4shbicz6ymm2gk56fq9gbzra1j4qnw75")))
 
 (define-public aspell-dict-ru
   (aspell-dictionary "ru" "Russian"

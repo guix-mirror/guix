@@ -21,7 +21,7 @@
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
-;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
+;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -183,23 +183,25 @@ algorithms AES or Twofish.")
 (define-public pwsafe
   (package
     (name "pwsafe")
-    (version "3.48.0")
-    (home-page "https://www.pwsafe.org/" )
+    (version "3.50.0")
+    (home-page "https://www.pwsafe.org/")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/pwsafe/pwsafe.git")
              (commit version)))
-       (sha256 (base32 "0hxv23yh76liggxbjn4m132z15sklra8ms341xgzl4n5vjx30ihi"))
-       (file-name (string-append name "-" version "-checkout"))))
+       (sha256
+        (base32 "01kfssd2vr64yh4dqhch58x36n3aj3hpj5n560f41rsxym69c6qs"))
+       (file-name (git-file-name name version))))
     (build-system cmake-build-system)
-    (native-inputs `(("gettext" ,gettext-minimal)
-                     ("perl" ,perl)
-                     ("zip" ,zip)))
+    (native-inputs
+     `(("gettext" ,gettext-minimal)
+       ("gtest" ,googletest)
+       ("perl" ,perl)
+       ("zip" ,zip)))
     (inputs `(("curl" ,curl)
               ("file" ,file)
-              ("gtest" ,googletest)
               ("libuuid" ,util-linux)
               ("libxt" ,libxt)
               ("libxtst" ,libxtst)

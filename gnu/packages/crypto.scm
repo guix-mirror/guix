@@ -13,6 +13,7 @@
 ;;; Copyright © 2018 Nicolò Balzarotti <nicolo@nixo.xyz>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -209,6 +210,15 @@ OpenBSD tool of the same name.")
              (mkdir-p "vendor/github.com/google/googletest")
              (copy-recursively (assoc-ref inputs "googletest-source")
                                "vendor/github.com/google/googletest")
+             #t))
+         (add-before 'configure 'patch-CMakeLists.txt
+           (lambda _
+             ;; Prevent CMake from adding libc on the system include path.
+             ;; Otherwise it will interfere with the libc used by GCC and
+             ;; ultimately cause #include_next errors.
+             (substitute* "CMakeLists.txt"
+               (("include_directories \\(SYSTEM \\$\\{Intl_INCLUDE_DIRS\\}\\)")
+                ""))
              #t))
          (add-before 'check 'make-unittests
            (lambda _
@@ -974,3 +984,36 @@ pre-shared keys out of band.  It is designed to handle large amounts of data
 quickly by using all your CPU cores and hardware acceleration.")
     (home-page "https://github.com/vstakhov/hpenc")
     (license license:bsd-3)))
+
+(define-public minisign
+  (package
+    (name "minisign")
+    (version "0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/jedisct1/minisign/releases/download/"
+                       version "/minisign-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10hhgwxf9rcdlr00shrkcyxndrc22dh5lj8k5z27xg3nc0jba3hk"))))
+    (build-system cmake-build-system)
+    (arguments
+     ; No test suite
+     `(#:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsodium" ,libsodium)))
+    (home-page "https://jedisct1.github.io/minisign")
+    (synopsis "Tool to sign files and verify signatures")
+    (description
+     "Minisign is a dead simple tool to sign files and verify signatures.  It is
+portable, lightweight, and uses the highly secure Ed25519 public-key signature
+system.  Signature written by minisign can be verified using OpenBSD's
+signify tool: public key files and signature files are compatible.  However,
+minisign uses a slightly different format to store secret keys.  Minisign
+signatures include trusted comments in addition to untrusted comments.
+Trusted comments are signed, thus verified, before being displayed.")
+    (license license:isc)))

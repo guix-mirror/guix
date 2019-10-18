@@ -1779,25 +1779,23 @@ QMatrixClient project.")
        ("qtdeclarative" ,qtdeclarative)
        ("qtmultimedia" ,qtmultimedia)
        ("qtquickcontrols" ,qtquickcontrols)
+       ("qtquickcontrols2" ,qtquickcontrols2)
        ("qtsvg" ,qtsvg)
        ("qttools" ,qttools)))
     (arguments
      `(#:tests? #f                      ; no tests
+       #:modules ((guix build cmake-build-system)
+                  (guix build qt-utils)
+                  (guix build utils))
+       #:imported-modules (,@%cmake-build-system-modules
+                           (guix build qt-utils))
        #:phases
        (modify-phases %standard-phases
          (add-after 'install 'wrap-program
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (wrap-program (string-append (assoc-ref outputs "out")
-                                          "/bin/quaternion")
-               `("QT_PLUGIN_PATH" ":" prefix
-                 (,(string-append (assoc-ref inputs "qtsvg")
-                                  "/lib/qt5/plugins")))
-               `("QML2_IMPORT_PATH" ":" prefix
-                 ,(map (lambda (label)
-                         (string-append (assoc-ref inputs label)
-                                        "/lib/qt5/qml"))
-                       '("qtdeclarative" "qtquickcontrols"))))
-             #t)))))
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-qt-program out "quaternion")
+               #t))))))
     (home-page "https://matrix.org/docs/projects/client/quaternion.html")
     (synopsis "Graphical client for the Matrix instant messaging protocol")
     (description "Quaternion is a Qt5 desktop client for the Matrix instant
@@ -1855,7 +1853,7 @@ messaging that aren’t available to clients that connect over XMPP.")
 (define-public telegram-purple
   (package
     (name "telegram-purple")
-    (version "1.4.1")
+    (version "1.4.2")
     (home-page "https://github.com/majn/telegram-purple")
     (source (origin
               (method git-fetch)
@@ -1865,7 +1863,7 @@ messaging that aren’t available to clients that connect over XMPP.")
                     (recursive? #t)))
               (sha256
                (base32
-                "0xlmqnlp2dqkgsq052d6dwgvqbwch2w0dnwpjslk5na4ih3lfr7k"))
+                "0imbzhhq9qbj6gvkckrnjhls2vvmmy8db7l6gsd7lng2pbfcn522"))
               (modules '((guix build utils)))
               (snippet
                '(begin

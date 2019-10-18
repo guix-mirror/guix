@@ -54,6 +54,7 @@
 ;;; Copyright © 2019 Amin Bandali <bandali@gnu.org>
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
+;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -280,6 +281,11 @@ on stdout instead of using a socket as the Emacsclient does.")
                 (sha256
                  (base32
                   "16qx0404l05q1m6w7y5j8ck1z5nfmpinm00w0p2yh1hn5zzwy6dd"))
+                ;; FIXME: emacs-forge uses a function defined in this patch,
+                ;; which is newer than the current commit.
+                (patches
+                 (search-patches
+                  "emacs-magit-log-format-author-margin.patch"))
                 (modules '((guix build utils)))
                 (snippet
                  '(begin
@@ -565,8 +571,8 @@ deliver data to mobile and web apps.")
 
 (define-public emacs-ghub
   ;; We need a newer commit to avoid problems in emacs-forge.
-  (let ((commit "cf0b13aeba4df3798e49c205cac2d8fefd53a137")
-        (revision "1"))
+  (let ((commit "e19cd86ca4768a6d89285123933baa3f1460d696")
+        (revision "2"))
     (package
       (name "emacs-ghub")
       (version (git-version "3.2.0" revision commit))
@@ -578,7 +584,7 @@ deliver data to mobile and web apps.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0fzayvcysk80vv4q332axcjf80x6gsnpcbl0svmpb017ii6wxhid"))))
+                  "1d6f8sxlsl0fpkzwbpnaw77d1a5pkg63zfvf6a2fxir357lbdizx"))))
       (build-system emacs-build-system)
       (arguments
        `(#:phases
@@ -590,6 +596,7 @@ deliver data to mobile and web apps.")
        `(("texinfo" ,texinfo)))
       (propagated-inputs
        `(("dash" ,emacs-dash)
+         ("emacs-let-alist" ,emacs-let-alist)
          ("treepy" ,emacs-treepy)))
       (home-page "https://github.com/magit/ghub")
       (synopsis "Emacs client libraries for the APIs of various Git forges")
@@ -652,8 +659,8 @@ from within Emacs.")
     (license license:gpl3+)))
 
 (define-public emacs-unpackaged-el
-  (let ((commit "c0d58cf81e531b2b6fa1bd5dd612dc1b93d4d186")
-        (revision "2"))
+  (let ((commit "746801a677ada6cd6fa076e423aa0953779f3fad")
+        (revision "3"))
     (package
       (name "emacs-unpackaged-el")
       (version (git-version "0" revision commit))
@@ -666,7 +673,7 @@ from within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0y3sgvd51l4pb3acps92bazfk49da6nim1f1hyxzy1ravg4kbw83"))))
+           "0jvb2ci0h0lj368qhbff3pzkxj3nhlligpbkjzi525k9rkjgm7l8"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash" ,emacs-dash)
@@ -2339,6 +2346,34 @@ Stack Overflow, Super User, and other StackExchange sites.")
 files and directories.")
     (license license:gpl3+)))
 
+(define-public emacs-fringe-helper
+  (let ((commit "ef4a9c023bae18ec1ddd7265f1f2d6d2e775efdd")
+        (revision "1"))
+    (package
+      (name "emacs-fringe-helper")
+      (version (git-version "1.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/nschum/fringe-helper.el.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0ra9rc53l1gvkqank8apasl3r7wz2yfjrcvmfk3wpxhh24ppxv9d"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-l" "tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/nschum/fringe-helper.el")
+      (synopsis "Helper functions for fringe bitmaps")
+      (description
+       "This package allows fringe bitmaps to be defined with a visual string
+representation.")
+      (license license:gpl2+))))
+
 (define-public emacs-git-gutter
   (package
     (name "emacs-git-gutter")
@@ -2363,6 +2398,79 @@ can be used to move between and perform actions on these hunks.
 
 Git, Mercurial, Subversion and Bazaar are supported, and many parts of the
 display and behaviour is easily customisable.")
+    (license license:gpl3+)))
+
+(define-public emacs-git-gutter-fringe
+  (let ((commit "16226caab44174301f1659f7bf8cc67a76153445")
+        (revision "1"))
+    (package
+      (name "emacs-git-gutter-fringe")
+      (version (git-version "0.23" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/syohex/git-gutter-fringe.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1y77gjl0yznamdj0f55d418zb75k22izisjg7ikvrfsl2yfqf3pm"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-git-gutter" ,emacs-git-gutter)
+         ("emacs-fringe-helper" ,emacs-fringe-helper)))
+      (home-page "https://github.com/syohex/git-gutter-fringe")
+      (synopsis "See and manage hunks of text in a version control system")
+      (description
+       "This package extends @code{git-gutter} to use the fringe area of a
+window.")
+      (license license:gpl3+))))
+
+(define-public emacs-git-link
+  (package
+    (name "emacs-git-link")
+    (version "0.7.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sshaw/git-link.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04xa6lp8wkjb6zs096bf4sz124grcjj15xv1h009bmn2j95rggj6"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("make" "test")))
+    (home-page "https://github.com/sshaw/git-link")
+    (synopsis "Create links for files and commits in GitHub/GitLab/etc. repos")
+    (description
+     "@code{git-link} returns the URL for the current buffer's file location
+at the current line number or active region.  @code{git-link-commit} returns
+the URL for a commit.  URLs are added to the kill ring.")
+    (license license:gpl3+)))
+
+(define-public emacs-apheleia
+  (package
+    (name "emacs-apheleia")
+    (version "1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/raxod502/apheleia.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "04pls7zahy4jfkikv6fvd9vfpm4glhyanmmkx79hgi9pwdv966rf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/raxod502/apheleia")
+    (synopsis "Reformat buffer stably")
+    (description
+     "This package allows for a buffer to be reformatted without moving point,
+so that running a formatting tool like @code{Prettier} or @code{Black} upon
+saving won't move point back to the beginning of the buffer.")
     (license license:gpl3+)))
 
 (define-public emacs-git-timemachine
@@ -3354,14 +3462,14 @@ source code using IPython.")
 (define-public emacs-debbugs
   (package
     (name "emacs-debbugs")
-    (version "0.19")
+    (version "0.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/debbugs-"
                                   version ".tar"))
               (sha256
                (base32
-                "0cpby8f088cqb5mpd756a2mb706x763k15cg2xdmmsxl415k3yw4"))))
+                "03mmb1zvbqlsznl5agq8k3xrlcz310vnsa2zn0y8myanm4ra51zm"))))
     (build-system emacs-build-system)
     (arguments '(#:include '("\\.el$" "\\.wsdl$" "\\.info$")))
     (propagated-inputs
@@ -4835,29 +4943,33 @@ them easier to distinguish from other, less important buffers.")
     (license license:expat)))
 
 (define-public emacs-prescient
-  (package
-    (name "emacs-prescient")
-    (version "3.3")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/raxod502/prescient.el/")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "1wqk1g8fjpcbpiz32k7arnisncd4n9zs84dn3qn9y8ggjzldqy91"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-company" ,emacs-company)
-       ("emacs-ivy" ,emacs-ivy)))
-    (home-page "https://github.com/raxod502/prescient.el/")
-    (synopsis "Library that sorts and filters lists of candidates")
-    (description
-     "This package provides a library for sorting and filtering, as well as
+  ;; XXX: emacs-ivy introduced a commit that disables sorting for counsel-M-x
+  ;; by default, so we use a non-release version ahead by one commit
+  (let ((commit "95056580ed743da92b05aaf86f943ee05600c28d")
+        (revision "1"))
+    (package
+      (name "emacs-prescient")
+      (version (git-version "3.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/raxod502/prescient.el/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "06qxs8p66jr4gg9m1gd27v5may32f3n28la56cv4f4prinqyyfj7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-company" ,emacs-company)
+         ("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/raxod502/prescient.el/")
+      (synopsis "Library that sorts and filters lists of candidates")
+      (description
+       "This package provides a library for sorting and filtering, as well as
 extensions for @code{ivy-mode} and @code{company-mode} that make use of the
 library.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public emacs-smartparens
   (package
@@ -5026,15 +5138,14 @@ test tags.  It supports both interactive and non-interactive use.")
 (define-public emacs-load-relative
   (package
     (name "emacs-load-relative")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/load-relative-"
                            version ".el"))
        (sha256
-        (base32
-         "1hfxb2436jdsi9wfmsv47lkkpa5galjf5q81bqabbsv79rv59dps"))))
+        (base32 "1m37scr82lqqy954fchjxrmdh4lngrl4d1yzxhp3yfjhsydizhrj"))))
     (build-system emacs-build-system)
     (home-page "http://github.com/rocky/emacs-load-relative")
     (synopsis "Emacs Lisp relative file loading related functions")
@@ -5200,59 +5311,54 @@ automatically.")
     (license license:gpl3+)))
 
 (define-public emacs-ivy
-  ;; The latest release version introduced a new feature, swiper-isearch, that
-  ;; generally works well but had some noticeable bugs; this later commit
-  ;; includes fixes for several of them.
-  (let ((commit "79333e9edfee38ec3b367c33711a68bdf7783259")
-        (revision "2"))
-    (package
-      (name "emacs-ivy")
-      (version (git-version "0.12.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/abo-abo/swiper.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "0dyclc51sprhmr5fi4lylhwsrn8v1jgyblwk9ly60jj84lj6278z"))))
-      (build-system emacs-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'install 'install-doc
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (info (string-append out "/share/info")))
-                 (with-directory-excursion "doc"
-                   (invoke "makeinfo" "ivy.texi")
-                   (install-file "ivy.info" info)
-                   #t))))
-           (add-before 'check 'make-dummy-git-directory
-             (lambda _
-               (mkdir-p ".git")))
-           (add-after 'check 'delete-dummy-git-directory
-             (lambda _
-               (delete-file-recursively ".git"))))
-         #:tests? #t
-         #:test-command '("make" "test")))
-      (propagated-inputs
-       `(("emacs-hydra" ,emacs-hydra)))
-      (native-inputs
-       `(("texinfo" ,texinfo)
-         ("emacs-wgrep" ,emacs-wgrep)))
-      (home-page "http://oremacs.com/swiper/")
-      (synopsis "Incremental vertical completion for Emacs")
-      (description
-       "This package provides @code{ivy-read} as an alternative to
+  (package
+    (name "emacs-ivy")
+    (version "0.13.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/abo-abo/swiper.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0ghcwrg8a6r5q6fw2x8s08cwlmnz2d8qjhisnjwbnc2l4cgqpd9p"))))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (with-directory-excursion "doc"
+                 (invoke "makeinfo" "ivy.texi")
+                 (install-file "ivy.info" info)
+                 #t))))
+         (add-before 'check 'make-dummy-git-directory
+           (lambda _
+             (mkdir-p ".git")))
+         (add-after 'check 'delete-dummy-git-directory
+           (lambda _
+             (delete-file-recursively ".git"))))
+       #:tests? #t
+       #:test-command '("make" "test")))
+    (propagated-inputs
+     `(("emacs-hydra" ,emacs-hydra)))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("emacs-wgrep" ,emacs-wgrep)))
+    (home-page "http://oremacs.com/swiper/")
+    (synopsis "Incremental vertical completion for Emacs")
+    (description
+     "This package provides @code{ivy-read} as an alternative to
 @code{completing-read} and similar functions.  No attempt is made to determine
 the best candidate.  Instead, the user can navigate candidates with
 @code{ivy-next-line} and @code{ivy-previous-line}.  The matching is done by
 splitting the input text by spaces and re-building it into a regular
 expression.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-ivy-pass
   (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
@@ -5314,12 +5420,11 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
 (define-public emacs-ivy-rich
   ;; The latest release version has a small mistake that has since been fixed,
   ;; so we use a more recent commit.
-  (let ((commit "f6bfa293c6df0b43cc411876b665816ec3f03d08")
-        (version "0.1.4")
-        (revision "1"))
+  (let ((commit "7a667b135983a1f3ad33d6db8514638e2a3bdfb3")
+        (revision "2"))
     (package
       (name "emacs-ivy-rich")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.4" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -5328,7 +5433,7 @@ use it, call @code{M-x ivy-yasnippet} (but make sure you have enabled
                (commit commit)))
          (file-name (git-file-name name version))
          (sha256
-          (base32 "1s8nwwb1z6lkc58g02pi8w99qms948k8d02lw8k8cq47dw87i219"))))
+          (base32 "1v5j6pak2j1wjw19y7rx9rhxif0bj2h47xyl2knfcl6fi4qiqm9y"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)))
@@ -5559,8 +5664,8 @@ state and will work even without lispy being enabled.")
       (license license:gpl3+))))
 
 (define-public emacs-lpy
-  (let ((commit "dfd9a0fc8f84674fc669eab2942cfa038d7dc590")
-        (revision "2"))
+  (let ((commit "43b401fe15f0f0d01edb189378b9498121e9f766")
+        (revision "3"))
     (package
       (name "emacs-lpy")
       (version (git-version "0.1.0" revision commit))
@@ -5572,7 +5677,7 @@ state and will work even without lispy being enabled.")
                (commit commit)))
          (sha256
           (base32
-           "15y1fvn1sjngpiqlq090hxqhmxp32f88rspfapwcisxa3hcg5r5a"))
+           "0xj1r7cn1rivaxhvawvmgx9fg3xilpfw4lkf2x2aqplr4s85ijas"))
          (file-name (git-file-name name version))))
       (propagated-inputs
        `(("emacs-zoutline" ,emacs-zoutline)
@@ -6943,8 +7048,8 @@ CIDER).")
 ;; There hasn't been a tag or release since 2016, so we take the latest
 ;; commit.
 (define-public emacs-sly
-  (let ((commit "29dccc0735283897a6dbd97e0b6828a45c2985e2")
-        (revision "2"))
+  (let ((commit "0a3b81770e46b93b9ffd8b9ac5254e0b88d1b13d")
+        (revision "3"))
     (package
       (name "emacs-sly")
       (version (git-version "1.0.0" revision commit))
@@ -6957,7 +7062,7 @@ CIDER).")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "0d0skgyqn422130xn8lrdp04m5cjk3sl18w6lf2wrmrndc1crqxk"))))
+           "1q5ga4mxa0ffa4zb2y0zfwmgzjggx4fn1y4bl2x7ac6ynvb32zkj"))))
       (build-system emacs-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)))
@@ -7051,8 +7156,8 @@ sly-quickload command that prompts the user for a package to install. ")
       (license license:gpl3+))))
 
 (define-public emacs-sly-asdf
-  (let ((commit "355739e42c91b9b2339f84453292b938b6d17b0d")
-        (revision "1"))
+  (let ((commit "4e323bc28da2f07fd799b6a31b94fd93848b5f3c")
+        (revision "2"))
     (package
       (name "emacs-sly-asdf")
       (version (git-version "0.1.0" revision commit))
@@ -7066,25 +7171,111 @@ sly-quickload command that prompts the user for a package to install. ")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1plkqh4dj35c3cf8ykan8fcvqmxcdqragh4j6xg0sls27mjjz1bq"))))
+           "16sc33jhc6ik4ilsyqc3cjpi6v0wdmwjlwrzjwd6yym11bscsmad"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-sly" ,emacs-sly)))
       (arguments
-       `(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
-         #:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'fix-autoload
-             ;; TODO: Reported upstream: https://github.com/mmgeorge/sly-asdf/pull/11
-             (lambda _
-               (substitute* "sly-asdf.el"
-                 (("\\(add-to-list 'sly-contribs 'sly-asdf 'append\\)")
-                  "(with-eval-after-load 'sly
- (add-to-list 'sly-contribs 'sly-asdf 'append))")))))))
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
       (synopsis "ASDF contrib for SLY")
       (description
        "@command{sly-asdf} is an external contrib for SLY that provides
 additional support for working with ASDF projects.")
+      (license license:gpl3+))))
+
+(define-public emacs-sly-named-readtables
+  (let ((commit "a5a42674ccffa97ccd5e4e9742beaf3ea719931f")
+        (revision "1"))
+    (package
+      (name "emacs-sly-named-readtables")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/joaotavora/sly-named-readtables")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "16asd119rzqrlclps2q6yrkis8jy5an5xgzzqvb7jdyq39zxg54q"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)))
+      (synopsis "Named-readtables support for SLY")
+      (description
+       "@command{sly-named-readtables} is an external contrib for SLY that
+enables different readtables to be active in different parts of the same
+file.")
+      (license license:gpl3+))))
+
+(define-public emacs-sly-macrostep
+  (let ((commit "be2d24545092d164be1a91031d8881afd29c9ec0")
+        (revision "1"))
+    (package
+      (name "emacs-sly-macrostep")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/joaotavora/sly-macrostep")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0v8m3zkccpqd2l8m9340y672l2mm3mrry8422nva5kfvpcwdayqb"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)
+         ("emacs-macrostep" ,emacs-macrostep)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (synopsis "Expand Common Lisp macros inside source files with SLY")
+      (description
+       "@command{sly-macrostep} is a SLY contrib for expanding CL macros right
+inside the source file.")
+      (license license:gpl3+))))
+
+(define-public emacs-sly-package-inferred
+  (let ((commit "800e71e2be631422277e2ec77e6d6f6ea20e95ef")
+        (revision "1"))
+    (package
+      (name "emacs-sly-package-inferred")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/40ants/sly-package-inferred")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1216idyp034nkqddhw4p53jkhhdxa6xnjjmsvijpf4rxqnfqvapg"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-sly" ,emacs-sly)))
+      (arguments
+       '(#:include (cons* "\\.lisp$" "\\.asd$" %default-include)
+         #:phases
+         ;; The package provides autoloads.
+         (modify-phases %standard-phases
+           (delete 'make-autoloads))))
+      (synopsis "Improved package inferred systems support for SLY")
+      (description
+       "@command{sly-package-inferred} is an external contrib for SLY that
+replaces its completion with a function which is better suited for systems
+using package inferred style.")
       (license license:gpl3+))))
 
 (define-public emacs-lua-mode
@@ -7158,8 +7349,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "bf4200a57c81c2302a3bf5b2058d74c6f90a3e6c")
-        (revision "11"))
+  (let ((commit "38e916d5d56b391f1ad4c72ad3909491e86cda3c")
+        (revision "12"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.3" revision commit))
@@ -7171,7 +7362,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "01xw0m5gj14ly42y8ikvldpab5my28sylf6l9gvwd5cf909bd445"))))
+                  "00a1ya3c92ymhfj4ai1ygljnxa147d4cgi6jmvccngicphn99782"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -8129,13 +8320,14 @@ been adapted to work with mu4e.")
     (name "emacs-yasnippet")
     (version "0.13.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/joaotavora/yasnippet/"
-                                  "archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/joaotavora/yasnippet.git")
+                    (commit version)))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "12ls2x17agzbrj1xynjbmfa11igqxia4hj4fv6fpr66yci2r1plc"))
+                "0fkkplycrw8f8r30hjjxl1wm7p2irq2ipzzc1g7cc52abaal796p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -8149,6 +8341,28 @@ been adapted to work with mu4e.")
                      "))\n"))
                   #t))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "yasnippet-tests.el"
+                        "-f" "ert-run-tests-batch-and-exit")
+       ;; FIXME: one failing test
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'make-tests-writable
+           (lambda _
+             (make-file-writable "yasnippet-tests.el")
+             #t))
+         (add-before 'check 'delete-rebinding-test
+           (lambda _
+             (emacs-batch-edit-file "yasnippet-tests.el"
+               `(progn (progn (goto-char (point-min))
+                              (re-search-forward
+                               "ert-deftest test-rebindings")
+                              (beginning-of-line)
+                              (kill-sexp))
+                       (basic-save-buffer)))
+             #t)))))
     (home-page "https://github.com/joaotavora/yasnippet")
     (synopsis "Yet another snippet extension for Emacs")
     (description
@@ -10503,20 +10717,17 @@ let users kill or mark things easily.")
 (define-public emacs-csv-mode
   (package
     (name "emacs-csv-mode")
-    (version "1.7")
+    (version "1.9")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://elpa.gnu.org/packages/csv-mode-"
+       (uri (string-append "https://elpa.gnu.org/packages/csv-mode-"
                            version ".el"))
        (sha256
-        (base32
-         "0r4bip0w3h55i8h6sxh06czf294mrhavybz0zypzrjw91m1bi7z6"))))
+        (base32 "0sdnyi9in904k49yy5imapypnmk75lv14k9c1yyjhjpalvvh6br1"))))
     (build-system emacs-build-system)
-    (home-page
-     "http://elpa.gnu.org/packages/csv-mode.html")
-    (synopsis
-     "Major mode for editing comma/char separated values")
+    (home-page "https://elpa.gnu.org/packages/csv-mode.html")
+    (synopsis "Major mode for editing comma/char separated values")
     (description
      "This Emacs package implements CSV mode, a major mode for editing records
 in a generalized CSV (character-separated values) format.")
@@ -12588,15 +12799,14 @@ for operating over the contents of Emacs buffers.")
 (define-public emacs-let-alist
   (package
     (name "emacs-let-alist")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "https://elpa.gnu.org/packages/let-alist-" version ".el"))
        (sha256
-        (base32
-         "0r7b9jni50la1m79kklml11syg8d2fmdlr83pv005sv1wh02jszw"))))
+        (base32 "0szj7vnjzz4zci5fvz7xqgcpi4pzdyyf4qi2s8xar2hi7v3yaawr"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
@@ -13553,14 +13763,14 @@ It s customizable: it's easy to add or redefine what exactly consitutes a
 (define-public emacs-darkroom
   (package
     (name "emacs-darkroom")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://elpa.gnu.org/packages/darkroom-"
                                   version ".el"))
               (sha256
                (base32
-                "0fif8fm1h7x7g16949shfnaik5f5488clsvkf8bi5izpqp3vi6ak"))))
+                "1a528brhz4vckhp77n2c1phkyqdliykpj9kzk3f834f4rwnb5mp0"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/darkroom.html")
     (synopsis "Remove visual distractions and focus on writing")
@@ -16137,6 +16347,36 @@ correctly.")
 @end itemize\n")
     (license license:gpl3+)))
 
+(define-public emacs-helm-sly
+  (package
+    (name "emacs-helm-sly")
+    (version "0.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/emacs-helm/helm-sly")
+                    (commit version)))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0b2dx9nzh5233lkix3lz81c9cv626lk2hjpcjiikwvyp6y0q92ys"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-helm" ,emacs-helm)
+       ("emacs-sly" ,emacs-sly)))
+    (home-page "https://github.com/emacs-helm/helm-sly")
+    (synopsis "Helm for SLY, a Common Lisp interaction mode for Emacs")
+    (description "Helm-SLY defines a few new commands:
+
+@itemize
+@item helm-sly-list-connections: Yet another Lisp connection list with Helm.
+@item: helm-sly-apropos: Yet another @command{apropos} with Helm.
+@item helm-sly-mini: Like @command{helm-sly-list-connections}, but include an
+extra source of Lisp-related buffers, like the events buffer or the scratch
+buffer.
+@end itemize\n")
+    (license license:gpl3+)))
+
 (define-public emacs-gtk-look
   (package
     (name "emacs-gtk-look")
@@ -17871,7 +18111,7 @@ url-encoded parameters, as well as web sockets.")
        ("emacs-web-server" ,emacs-web-server)))
     (arguments '(#:include '("\\.el$" "\\.html$")))
     (home-page "https://github.com/ancane/markdown-preview-mode")
-    (synopsis "Live web development in Emacs")
+    (synopsis "Preview Markdown files")
     (description "This package provides a minor mode for preview of Markdown
 files, and sends rendered Markdown to a web browser.")
     (license license:gpl3+)))
@@ -18333,7 +18573,7 @@ as:
 (define-public emacs-nhexl-mode
   (package
     (name "emacs-nhexl-mode")
-    (version "1.2")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
@@ -18341,10 +18581,9 @@ as:
              "https://elpa.gnu.org/packages/nhexl-mode-"
              version ".el"))
        (sha256
-        (base32
-         "031h22p564qdvr9khs05qcba06pmsk68cr7zyc7c04hfr3y3ziaf"))))
+        (base32 "1c2q4w6hkvc7z4026hiqdcsm2scd6q35x7b0dk80h8qicsbi14c8"))))
     (build-system emacs-build-system)
-    (home-page "http://elpa.gnu.org/packages/nhexl-mode.html")
+    (home-page "https://elpa.gnu.org/packages/nhexl-mode.html")
     (synopsis "Minor mode to edit files via hex-dump format")
     (description
      "This package implements NHexl mode, a minor mode for editing files
@@ -19168,4 +19407,53 @@ Emacs that integrate with major modes like Org-mode.")
     (description
      "Elixir-Mode Provides font-locking, indentation and navigation support
  for the Elixir programming language.")
+    (license license:gpl3+)))
+
+(define-public emacs-dimmer
+  (package
+    (name "emacs-dimmer")
+    (version "0.3.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gonewest818/dimmer.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1jv9rrv15nb5hpwcaqlpjj932gyisrkwbv11czkg3v0bn7qn6yif"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/gonewest818/dimmer.el")
+    (synopsis "Visually highlights the selected buffer in Emacs")
+    (description "Dimmer provides a minor mode that indicates which buffer is
+currently active by dimming the faces in the other buffers.  It does this
+nondestructively, and computes the dimmed faces dynamically such that your
+overall color scheme is shown in a muted form without requiring you to define
+what is a \"dim\" version of every face.")
+    (license license:gpl3+)))
+
+(define-public emacs-minibuffer-line
+  (package
+    (name "emacs-minibuffer-line")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://elpa.gnu.org/packages/minibuffer-line-"
+             version
+             ".el"))
+       (sha256
+        (base32 "1ny4iirp26na5118wfgxlv6fxlrdclzdbd9m0lkrv51w0qw7spil"))))
+    (build-system emacs-build-system)
+    (home-page "https://elpa.gnu.org/packages/minibuffer-line.html")
+    (synopsis "Display status info in the minibuffer window")
+    (description
+     "This package lets you display various status information in the
+minibuffer window instead of the mode-line.  Of course, this is only displayed
+when the minibuffer window is not already used for other things (e.g. a
+minibuffer or an each area message).
+
+The contents and aspect is controlled by the @code{minibuffer-line-format}
+variable and the @code{minibuffer-line} face.")
     (license license:gpl3+)))

@@ -1798,15 +1798,16 @@ exec " gcc "/bin/" program
          ("bison" ,bison-boot0)
          ,@(%boot0-inputs))))))
 
+(define with-boot0
+  (package-with-explicit-inputs %boot0-inputs
+                                %bootstrap-guile))
+
 (define gnumach-headers-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs gnumach-headers
-                                 (%boot0-inputs)
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (with-boot0 (package-with-bootstrap-guile gnumach-headers)))
 
 (define mig-boot0
-  (let* ((mig (package (inherit mig)
+  (let* ((mig (package
+                 (inherit (package-with-bootstrap-guile mig))
                  (native-inputs `(("bison" ,bison-boot0)
                                   ("flex" ,flex-boot0)))
                  (inputs `(("flex" ,flex-boot0)))
@@ -1814,42 +1815,32 @@ exec " gcc "/bin/" program
                   `(#:configure-flags
                     `(,(string-append "LDFLAGS=-Wl,-rpath="
                                       (assoc-ref %build-inputs "flex") "/lib/")))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs mig (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 mig)))
 
 (define hurd-headers-boot0
   (let ((hurd-headers (package (inherit hurd-headers)
                         (native-inputs `(("mig" ,mig-boot0)))
                         (inputs '()))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs hurd-headers (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 (package-with-bootstrap-guile hurd-headers))))
 
 (define hurd-minimal-boot0
   (let ((hurd-minimal (package (inherit hurd-minimal)
                         (native-inputs `(("mig" ,mig-boot0)))
                         (inputs '()))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs hurd-minimal (%boot0-inputs)
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+    (with-boot0 (package-with-bootstrap-guile hurd-minimal))))
 
 (define hurd-core-headers-boot0
   (mlambda ()
     "Return the Hurd and Mach headers as well as initial Hurd libraries for
 the bootstrap environment."
-    (package-with-bootstrap-guile
-     (package (inherit hurd-core-headers)
-              (arguments `(#:guile ,%bootstrap-guile
-                           ,@(package-arguments hurd-core-headers)))
-              (inputs
-               `(("gnumach-headers" ,gnumach-headers-boot0)
-                 ("hurd-headers" ,hurd-headers-boot0)
-                 ("hurd-minimal" ,hurd-minimal-boot0)
-                 ,@(%boot0-inputs)))))))
+    (package (inherit (package-with-bootstrap-guile hurd-core-headers))
+             (arguments `(#:guile ,%bootstrap-guile
+                          ,@(package-arguments hurd-core-headers)))
+             (inputs
+              `(("gnumach-headers" ,gnumach-headers-boot0)
+                ("hurd-headers" ,hurd-headers-boot0)
+                ("hurd-minimal" ,hurd-minimal-boot0)
+                ,@(%boot0-inputs))))))
 
 (define* (kernel-headers-boot0 #:optional (system (%current-system)))
   (match system
@@ -2365,14 +2356,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   `(("bash" ,bash-final)
     ,@(alist-delete "bash" (%boot3-inputs))))
 
+(define with-boot4
+  (package-with-explicit-inputs %boot4-inputs %bootstrap-guile))
+
 (define-public guile-final
   ;; This package must be public because other modules refer to it.  However,
   ;; mark it as hidden so that 'fold-packages' ignores it.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (hidden-package guile-2.2/fixed)
-                                 %boot4-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (with-boot4 (hidden-package
+               (package-with-bootstrap-guile guile-2.2/fixed))))
 
 (define glibc-utf8-locales-final
   ;; Now that we have GUILE-FINAL, build the UTF-8 locales.  They are needed
@@ -2384,10 +2375,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inherit glibc-utf8-locales)
     (native-inputs
      `(("glibc" ,glibc-final)
-       ("gzip"
-        ,(package-with-explicit-inputs gzip %boot4-inputs
-                                       (current-source-location)
-                                       #:guile %bootstrap-guile))))))
+       ("gzip" ,(with-boot4 gzip))))))
 
 (define-public ld-wrapper
   ;; The final 'ld' wrapper, which uses the final Guile and Binutils.
@@ -2403,35 +2391,45 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   `(("locales" ,glibc-utf8-locales-final)
     ,@(%boot4-inputs)))
 
+(define with-boot5
+  (package-with-explicit-inputs %boot5-inputs))
+
 (define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
-  (package-with-explicit-inputs (package-with-bootstrap-guile gnu-make)
-                                (lambda _
-                                  `(("guile" ,guile-final)
-                                    ,@(%boot5-inputs)))
-                                (current-source-location)))
+  ;; FIXME: This is a mistake: we shouldn't be propagating GUILE-FINAL to
+  ;; PKG-CONFIG.
+  ;; TODO: Fix that on the next rebuild cycle.
+  (let ((pkg-config (package
+                      (inherit pkg-config)
+                      (inputs `(("guile" ,guile-final)
+                                ,@(%boot5-inputs)))
+                      (arguments
+                       `(#:implicit-inputs? #f
+                         ,@(package-arguments pkg-config))))))
+    (package
+      (inherit (package-with-bootstrap-guile gnu-make))
+      (inputs `(("guile" ,guile-final)
+                ,@(%boot5-inputs)))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (arguments
+       `(#:implicit-inputs? #f
+         ,@(package-arguments gnu-make))))))
+
 
 (define coreutils-final
   ;; The final Coreutils.  Treat them specially because some packages, such as
   ;; Findutils, keep a reference to the Coreutils they were built with.
-  (package-with-explicit-inputs (package-with-bootstrap-guile coreutils)
-                                %boot5-inputs
-                                (current-source-location)
-
-                                ;; Use the final Guile, linked against the
-                                ;; final libc with working iconv, so that
-                                ;; 'substitute*' works well when touching
-                                ;; test files in Gettext.
-                                #:guile guile-final))
+  (with-boot5 (package-with-bootstrap-guile coreutils)
+              ;; Use the final Guile, linked against the
+              ;; final libc with working iconv, so that
+              ;; 'substitute*' works well when touching
+              ;; test files in Gettext.
+              ))
 
 (define grep-final
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
-  (let ((grep (package-with-explicit-inputs
-               (package-with-bootstrap-guile grep)
-               %boot5-inputs
-               (current-source-location)
-               #:guile guile-final)))
+  (let ((grep (with-boot5 (package-with-bootstrap-guile grep))))
     (package/inherit grep
                      (inputs (alist-delete "pcre" (package-inputs grep)))
                      (native-inputs `(("perl" ,perl-boot0))))))
@@ -2442,12 +2440,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ("grep" ,grep-final)
     ,@(%boot5-inputs)))
 
+(define with-boot6
+  (package-with-explicit-inputs %boot6-inputs))
+
 (define sed-final
   ;; The final sed.
-  (let ((sed (package-with-explicit-inputs (package-with-bootstrap-guile sed)
-                                           %boot6-inputs
-                                           (current-source-location)
-                                           #:guile guile-final)))
+  (let ((sed (with-boot6 (package-with-bootstrap-guile sed))))
     (package/inherit sed (native-inputs `(("perl" ,perl-boot0))))))
 
 (define-public %final-inputs
@@ -2455,8 +2453,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
-  (let ((finalize (compose (cut package-with-explicit-inputs <> %boot6-inputs
-                                (current-source-location))
+  (let ((finalize (compose with-boot6
                            package-with-bootstrap-guile)))
     `(,@(map (match-lambda
                ((name package)

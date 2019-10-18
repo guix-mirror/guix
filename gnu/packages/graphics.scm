@@ -1026,12 +1026,13 @@ requirements.")
 (define-public opensubdiv
   (package
     (name "opensubdiv")
-    (version "3_4_0")
+    (version "3.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/PixarAnimationStudios/OpenSubdiv")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/PixarAnimationStudios/OpenSubdiv")
+                    (commit (string-append "v" (string-join (string-split version #\.)
+                                                            "_")))))
               (file-name (git-file-name name version))
               (sha256
                (base32

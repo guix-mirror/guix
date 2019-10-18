@@ -2171,7 +2171,7 @@ bindings to almost all functions of SLEPc.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.1.2")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2179,8 +2179,11 @@ bindings to almost all functions of SLEPc.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1s9asin08zqzmh08257sdghhivvy9vjif7c53fhaxaax2kd5qd7b"))
-       (patches (search-patches "mumps-build-parallelism.patch"))))
+         "0jklh54x4y3ik1zkw6db7766kakjm5910diyaghfxxf8vwsgr26r"))
+       (patches (search-patches "mumps-build-parallelism.patch"
+                                "mumps-shared-libseq.patch"
+                                "mumps-shared-mumps.patch"
+                                "mumps-shared-pord.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("fortran" ,gfortran)
@@ -2210,15 +2213,17 @@ CC           = gcc
 FC           = gfortran
 FL           = gfortran
 INCSEQ       = -I$(topdir)/libseq
-LIBSEQ       = -L$(topdir)/libseq -lmpiseq
+LIBSEQ       = $(topdir)/libseq/libmpiseq.a
 LIBSEQNEEDED = libseqneeded~;
 CC           = mpicc
 FC           = mpifort
 FL           = mpifort~]
 AR           = ar vr # rules require trailing space, ugh...
 RANLIB       = ranlib
-LIBBLAS      = -L~a -lopenblas~@[
-SCALAP       = -L~a -lscalapack~]
+BLASDIR      = ~a
+LIBBLAS      = -Wl,-rpath=$(BLASDIR) -Wl,-rpath='$$ORIGIN' -L$(BLASDIR) -lopenblas~@[
+SCALAPDIR    = ~a
+SCALAP       = -Wl,-rpath=$(SCALAPDIR) -Wl,-rpath='$$ORIGIN' -L$(SCALAPDIR) -lscalapack~]
 LIBOTHERS    = -pthread
 CDEFS        = -DAdd_
 PIC          = -fPIC
@@ -2229,18 +2234,18 @@ INCS         = $(INCSEQ)
 LIBS         = $(SCALAP) $(LIBSEQ)
 LPORDDIR     = $(topdir)/PORD/lib
 IPORD        = -I$(topdir)/PORD/include
-LPORD        = -L$(LPORDDIR) -lpord
+LPORD        = $(LPORDDIR)/libpord.a
 ORDERINGSF   = -Dpord~@[
 METISDIR     = ~a
 IMETIS       = -I$(METISDIR)/include
-LMETIS       = -L$(METISDIR)/lib -lmetis
+LMETIS       = -Wl,-rpath $(METISDIR)/lib -L$(METISDIR)/lib -lmetis
 ORDERINGSF  += -Dmetis~]~@[~:{
 SCOTCHDIR    = ~a
 ISCOTCH      = -I$(SCOTCHDIR)/include
-LSCOTCH      = -L$(SCOTCHDIR)/lib ~a-lesmumps -lscotch -lscotcherr
+LSCOTCH      = -Wl,-rpath $(SCOTCHDIR)/lib -L$(SCOTCHDIR)/lib ~a-lesmumps -lscotch -lscotcherr
 ORDERINGSF  += ~a~}~]
 ORDERINGSC   = $(ORDERINGSF)
-LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH)
+LORDERINGS   = $(LPORD) $(LMETIS) $(LSCOTCH) $(LIBSEQ)
 IORDERINGSF  = $(ISCOTCH)
 IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                         (assoc-ref inputs "mpi")
@@ -2294,6 +2299,8 @@ IORDERINGSC  = $(IPORD) $(IMETIS) $(ISCOTCH)"
                (copy-recursively "include" (string-append out "/include"))
                (when (file-exists? "libseq/libmpiseq.a")
                  (install-file "libseq/libmpiseq.a" libdir))
+               (when (file-exists? "libseq/libmpiseq.so")
+                 (install-file "libseq/libmpiseq.so" libdir))
                #t))))))
     (home-page "http://mumps.enseeiht.fr")
     (synopsis "Multifrontal sparse direct solver")

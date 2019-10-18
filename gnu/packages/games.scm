@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2016 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015, 2016, 2017, 2018 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016, 2017, 2018, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
@@ -5514,7 +5514,7 @@ elements to achieve a simple goal in the most complex way possible.")
 (define-public pioneer
   (package
     (name "pioneer")
-    (version "20180203")
+    (version "20190203")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -5523,16 +5523,15 @@ elements to achieve a simple goal in the most complex way possible.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0hp2mf36kj2v93hka8m8lxw2qhmnjc62wjlpw7c7ix0r8xa01i6h"))))
-    (build-system gnu-build-system)
+                "1g34wvgyvz793dhm1k64kl82ib0cavkbg0f2p3fp05b457ycljff"))))
+    (build-system cmake-build-system)
     (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("assimp" ,assimp)
        ("curl" ,curl)
        ("freetype" ,freetype)
+       ("glew" ,glew)
        ("glu" ,glu)
        ("libpng" ,libpng)
        ("libsigc++" ,libsigc++)
@@ -5542,16 +5541,9 @@ elements to achieve a simple goal in the most complex way possible.")
        ("sdl" ,(sdl-union (list sdl2 sdl2-image)))))
     (arguments
      `(#:tests? #f                      ;tests are broken
-       #:configure-flags (list "--with-external-liblua"
-                               (string-append "PIONEER_DATA_DIR="
-                                              %output "/share/games/pioneer"))
-       #:phases (modify-phases %standard-phases
-                  (add-before 'bootstrap 'fix-lua-check
-                    (lambda _
-                      (substitute* "configure.ac"
-                        (("lua5.2")
-                         (string-append "lua-" ,(version-major+minor
-                                                 (package-version lua-5.2))))))))))
+       #:configure-flags (list "-DUSE_SYSTEM_LIBLUA:BOOL=YES"
+                               (string-append "-DPIONEER_DATA_DIR="
+                                              %output "/share/games/pioneer"))))
     (home-page "http://pioneerspacesim.net")
     (synopsis "Game of lonely space adventure")
     (description

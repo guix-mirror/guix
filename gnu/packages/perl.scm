@@ -652,14 +652,14 @@ easy to use abstraction of the file system or shared memory.")
 (define-public perl-cache-fastmmap
   (package
     (name "perl-cache-fastmmap")
-    (version "1.47")
+    (version "1.48")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RO/ROBM/"
                            "Cache-FastMmap-" version ".tar.gz"))
        (sha256
-        (base32 "0fdni3iyjfnx8ldgrz3h6z6yxbklrx76klcghg6xvmzd878yqlmi"))))
+        (base32 "118y5lxwa092zrii7mcwnqypff7424w1dpgfkg8zlnz7h2mmnd9c"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Cache-FastMmap")
     (synopsis "Shared memory interprocess cache via mmap")
@@ -935,18 +935,19 @@ sophisticated C3 method resolution order.")
 (define-public perl-class-c3-adopt-next
   (package
     (name "perl-class-c3-adopt-next")
-    (version "0.13")
+    (version "0.14")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/F/FL/FLORA/"
+       (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-C3-Adopt-NEXT-" version ".tar.gz"))
        (sha256
-        (base32
-         "1rwgbx6dsy4rpas94p8wakzj7hrla1p15jnbm24kwhsv79gp91ld"))))
+        (base32 "1xsbydmiskpa1qbmnf6n39cb83nlb432xgkad9kfhxnvm8jn4rw5"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-module-build-tiny" ,perl-module-build-tiny)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-mro-compat" ,perl-mro-compat)))
@@ -1157,19 +1158,18 @@ write accessor methods for your objects that perform standard tasks.")
 (define-public perl-class-method-modifiers
   (package
     (name "perl-class-method-modifiers")
-    (version "2.12")
+    (version "2.13")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                            "Class-Method-Modifiers-" version ".tar.gz"))
        (sha256
-        (base32
-         "1j3swa212wh14dq5r6zjarm2lzpx6mrdfplpjy65px8b09ri0k74"))))
+        (base32 "0qzx83mgd71hlc2m1kpw15dqsjzjq7b2cj3sdgg45a0q23vhfn5b"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires" ,perl-test-requires)))
+       ("perl-test-needs" ,perl-test-needs)))
     (home-page "https://metacpan.org/release/Class-Method-Modifiers")
     (synopsis "Moose-like method modifiers")
     (description "Class::Method::Modifiers provides three modifiers:
@@ -2390,25 +2390,27 @@ to do this without writing reams of structural code.")
 (define-public perl-datetime-format-flexible
   (package
     (name "perl-datetime-format-flexible")
-    (version "0.28")
+    (version "0.32")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TH/THINC/"
                            "DateTime-Format-Flexible-" version ".tar.gz"))
        (sha256
-        (base32
-         "1g63zs0q2x40h29r7in50c55g6kxiw3m2faw2p6c4rg74sj2k2b5"))))
+        (base32 "1vnq3a8bwhidcv3z9cvcmfiq2qa84hikr993ffr19fw7nbzbk9sh"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-mocktime" ,perl-test-mocktime)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-list-moreutils" ,perl-list-moreutils)
-       ("perl-module-pluggable" ,perl-module-pluggable)
-       ("perl-test-mocktime" ,perl-test-mocktime)))
+       ("perl-module-pluggable" ,perl-module-pluggable)))
     (home-page "https://metacpan.org/release/DateTime-Format-Flexible")
-    (synopsis "Parse data/time strings")
+    (synopsis "Parse date and time strings")
     (description "DateTime::Format::Flexible attempts to take any string you
 give it and parse it into a DateTime object.")
     (license (package-license perl))))
@@ -9395,15 +9397,14 @@ neither visible nor modifiable from Perl space).")
 (define-public perl-yaml
   (package
     (name "perl-yaml")
-    (version "1.27")
+    (version "1.29")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/T/TI/TINITA/"
                            "YAML-" version ".tar.gz"))
        (sha256
-        (base32
-         "1yc2yqjyrcdlhp209f3a63f9xx6v5klisli25fv221yy43la34n9"))))
+        (base32 "0gl5ssvrdajlbc85cy6z873n9cwlssk5q8z97a31vyiikhw5fp4w"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-yaml" ,perl-test-yaml)))
@@ -9416,21 +9417,18 @@ on the YAML 1.0 specification.")
 (define-public perl-yaml-libyaml
   (package
     (name "perl-yaml-libyaml")
-    (version "0.78")
+    (version "0.80")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://cpan/authors/id/T/TI/TINITA/YAML-LibYAML-"
-             version
-             ".tar.gz"))
+             version ".tar.gz"))
        (sha256
-        (base32 "03plv3wfqqqf7g8mxr8f6wlki2af8w3rg9xcfii1z5l1f1iarxx1"))))
+        (base32 "1nhn4w52kpq757rxl052f61h36rdzsy416k740m3fy5ih7axhq4x"))))
     (build-system perl-build-system)
-    (home-page
-     "https://metacpan.org/release/YAML-LibYAML")
-    (synopsis
-     "Perl YAML Serialization using XS and libyaml")
+    (home-page "https://metacpan.org/release/YAML-LibYAML")
+    (synopsis "Perl YAML Serialization using XS and libyaml")
     (description
      "@code{YAML::XS} is a Perl XS binding to libyaml which offers Perl the
 best YAML support to date.")
@@ -9707,7 +9705,7 @@ File::Find replacement in Perl.")
 (define-public perl-file-find-object-rule
  (package
   (name "perl-file-find-object-rule")
-  (version "0.0309")
+  (version "0.0311")
   (source
     (origin
       (method url-fetch)
@@ -9716,7 +9714,7 @@ File::Find replacement in Perl.")
              version
              ".tar.gz"))
       (sha256
-        (base32 "1qr1rrp9gn0bpsixsrkan710sxc7bnhirh0anjsw2ihn4wdy3151"))))
+        (base32 "0gjzfd5fz7mhr5abafxr7qic7nwhk7y9iv17as6l880973j952h3"))))
   (build-system perl-build-system)
   (native-inputs
     `(("perl-module-build" ,perl-module-build)))

@@ -1898,13 +1898,17 @@ The specification of the Brotli Compressed Data Format is defined in RFC 7932.")
     (version "1.03")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.oberhumer.com/opensource/"
+             (uri (string-append "https://www.oberhumer.com/opensource/"
                                  name "/download/" name "-" version ".tar.gz"))
              (sha256
               (base32
                "0j036lkwsxvm15gr29n8wn07cqq79dswjs9k54939ms5zngjjrdq"))))
     (build-system gnu-build-system)
-    (home-page "http://www.oberhumer.com/opensource/ucl/")
+    (arguments
+     `(;; UCL 1.03 fails to build with newer C standards.
+       #:configure-flags '("CFLAGS=-std=gnu90"
+                           "--enable-shared" "--disable-static")))
+    (home-page "https://www.oberhumer.com/opensource/ucl/")
     (synopsis "Portable lossless data compression library")
     (description "UCL implements a number of compression algorithms that
 achieve an excellent compression ratio while allowing fast decompression.
@@ -1927,9 +1931,11 @@ decompression is a little bit slower.")
                "08anybdliqsbsl6x835iwzljahnm9i7v26icdjkcv33xmk6p5vw1"))
              (patches (search-patches "upx-fix-CVE-2017-15056.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-                     ("ucl" ,ucl)))
-    (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("ucl" ,ucl)
+       ("zlib" ,zlib)))
     (arguments
      `(#:make-flags
        (list "all"

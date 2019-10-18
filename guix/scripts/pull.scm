@@ -772,11 +772,11 @@ Use '~/.config/guix/channels.scm' instead."))
               (process-generation-change opts profile))
              (else
               (with-store store
-                (ensure-default-profile)
                 (with-status-verbosity (assoc-ref opts 'verbosity)
                   (parameterize ((%current-system (assoc-ref opts 'system))
                                  (%graft? (assoc-ref opts 'graft?)))
                     (set-build-options-from-command-line store opts)
+                    (ensure-default-profile)
                     (honor-x509-certificates store)
 
                     (let ((instances (latest-channel-instances store channels)))

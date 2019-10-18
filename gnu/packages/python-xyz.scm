@@ -66,6 +66,7 @@
 ;;; Copyright © 2019 Jacob MacDonald <jaccarmac@gmail.com>
 ;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1571,6 +1572,27 @@ existing ones.")
                    ;; Tests don't work with python2.
                    #:tests? #f)))))
 
+(define-public python-poyo
+  (package
+    (name "python-poyo")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poyo" version))
+       (sha256
+        (base32
+         "1pflivs6j22frz0v3dqxnvc8yb8fb52g11lqr88z0i8cg2m5csg2"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/hackebrot/poyo")
+    (synopsis "Lightweight YAML Parser for Python")
+    (description
+     "This package provides a lightweight YAML Parser for Python.  It supports
+only a chosen subset of the YAML format that is required to parse cookiecutter
+user configuration files.  It does not have support for serializing into YAML
+and is not compatible with JSON.")
+    (license license:expat)))
+
 (define-public scons
   (package
     (name "scons")
@@ -2173,13 +2195,13 @@ cutting and pasting that code over and over.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "1.1.0")
+    (version "1.1.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "00pi0czzwvbf7djhkkjyvimj60wqdx0llbddzfnax650g9b8yscc"))))
+               "1s6cp2lv4m0f00hjckjz8p6m7d3n3v16jvg353llf5ia1iqsnsib"))))
     (build-system python-build-system)
     (home-page "https://pypi.python.org/pypi/Unidecode")
     (synopsis "ASCII transliterations of Unicode text")
@@ -2495,6 +2517,30 @@ written in pure Python.")
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
 
+(define-public python-jinja2-time
+  (package
+    (name "python-jinja2-time")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "jinja2-time" version))
+       (sha256
+        (base32
+         "0h0dr7cfpjnjj8bgl2vk9063a53649pn37wnlkd8hxjy656slkni"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-arrow" ,python-arrow)
+       ("python-jinja2" ,python-jinja2)))
+    (home-page
+     "https://github.com/hackebrot/jinja2-time")
+    (synopsis "Jinja2 Extension for Dates and Times")
+    (description
+     "This package provides an extension for the template engine Jinja2.  It
+adds a 'now' tag providing a convenient access to the arrow.now() API from
+templates.  A format string can be provided to control the output.")
+    (license license:expat)))
+
 (define-public python-pystache
   (package
     (name "python-pystache")
@@ -2714,7 +2760,7 @@ to deprecate classes, functions or methods.")
 (define-public python-pygithub
   (package
     (name "python-pygithub")
-    (version "1.43.7")
+    (version "1.43.8")
     (source
      ;; We fetch from the Git repo because there are no tests in the PyPI
      ;; archive.
@@ -2725,8 +2771,7 @@ to deprecate classes, functions or methods.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0ww92zz0ja9w6rw83vphmn8rwmcn6abg16j4q7zxjc0rrg2cfj9i"))))
+        (base32 "1625v558xga5mwhl9jqmibywy5qafmg1vqrirqz6zfq1la1d22mw"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -3075,44 +3120,39 @@ Language (TOML) configuration files.")
 Server (PLS).")
     (license license:expat)))
 
-;; XXX: We must use a non-release version since the latest release version
-;; requires python-jedi version < 0.15.
 (define-public python-language-server
-  (let ((commit "c3cab77a85b1de4af1aec1bafea6a7320d6baec5")
-        (revision "1"))
-    (package
-      (name "python-language-server")
-      (version (git-version "0.28.3" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/palantir/python-language-server.git")
-               (commit commit)))
-         (sha256
-          (base32
-           "1q0xdwgln09sh58j0ryygj92hfgdhwcs57zjvqihya23jr5v0bz4"))))
-      (build-system python-build-system)
-      (propagated-inputs
-       `(("python-pluggy" ,python-pluggy)
-         ("python-jsonrpc-server" ,python-jsonrpc-server)
-         ("python-jedi" ,python-jedi)
-         ("python-yapf" ,python-yapf)
-         ("python-pyflakes" ,python-pyflakes)
-         ("python-pydocstyle" ,python-pydocstyle)
-         ("python-pycodestyle" ,python-pycodestyle)
-         ("python-mccabe" ,python-mccabe)
-         ("python-rope" ,python-rope)
-         ("python-autopep8" ,python-autopep8)
-         ("python-pylint" ,python-pylint)))
-      (home-page "https://github.com/palantir/python-language-server")
-      (synopsis "Python implementation of the Language Server Protocol")
-      (description
-       "The Python Language Server (pyls) is an implementation of the Python 3
+  (package
+    (name "python-language-server")
+    (version "0.29.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-language-server" version))
+       (sha256
+        (base32
+         "1f8qlflh6j3s7qfmzhirpl8fgidl6f0qbakdmiml96wdxzvka0s3"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pluggy" ,python-pluggy)
+       ("python-jsonrpc-server" ,python-jsonrpc-server)
+       ("python-jedi" ,python-jedi)
+       ("python-yapf" ,python-yapf)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pydocstyle" ,python-pydocstyle)
+       ("python-pycodestyle" ,python-pycodestyle)
+       ("python-mccabe" ,python-mccabe)
+       ("python-rope" ,python-rope)
+       ("python-autopep8" ,python-autopep8)
+       ("python-flake8" ,python-flake8)
+       ("python-pylint" ,python-pylint)))
+    (home-page "https://github.com/palantir/python-language-server")
+    (synopsis "Python implementation of the Language Server Protocol")
+    (description
+     "The Python Language Server (pyls) is an implementation of the Python 3
 language specification for the Language Server Protocol (LSP).  This tool is
 used in text editing environments to provide a complete and integrated
 feature-set for programming Python effectively.")
-      (license license:expat))))
+    (license license:expat)))
 
 (define-public python-black
   (package
@@ -3892,7 +3932,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
 (define-public python-colorspacious
   (package
     (name "python-colorspacious")
-    (version "1.1.0")
+    (version "1.1.2")
     (source
      (origin
        (method git-fetch)
@@ -3901,7 +3941,7 @@ To address this and enable easy cycling over arbitrary @code{kwargs}, the
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0g0lxqiscy5g5rq9421vv7abg0c90jzy0zmas2z3hya6k2dr5aid"))))
+        (base32 "0x7nkphr6g5ql5fvgss8l56rgiyjgh6fm8zzs73i94ci9wzlm63w"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -9081,6 +9121,63 @@ server with very acceptable performance.")
 (define-public python2-waitress
   (package-with-python2 python-waitress))
 
+(define-public python-whichcraft
+  (package
+    (name "python-whichcraft")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "whichcraft" version))
+       (sha256
+        (base32
+         "11yfkzyplizdgndy34vyd5qlmr1n5mxis3a3svxmx8fnccdvknxc"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/pydanny/whichcraft")
+    (synopsis "Cross-platform cross-python shutil.which functionality")
+    (description
+     "This package provides a shim of the shutil.which function that's
+designed to work across multiple versions of Python.")
+    (license license:bsd-3)))
+
+(define-public python-cookiecutter
+  (package
+    (name "python-cookiecutter")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cookiecutter" version))
+       (sha256
+        (base32
+         "0glsvaz8igi2wy1hsnhm9fkn6560vdvdixzvkq6dn20z3hpaa5hk"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-freezegun" ,python-freezegun)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-catchlog" ,python-pytest-catchlog)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-mock" ,python-pytest-mock)))
+    (propagated-inputs
+     `(("python-binaryornot" ,python-binaryornot)
+       ("python-click" ,python-click)
+       ("python-future" ,python-future)
+       ("python-jinja2" ,python-jinja2)
+       ("python-jinja2-time" ,python-jinja2-time)
+       ("python-poyo" ,python-poyo)
+       ("python-requests" ,python-requests)
+       ("python-whichcraft" ,python-whichcraft)))
+    (home-page "https://github.com/audreyr/cookiecutter")
+    (synopsis
+     "Command-line utility that creates projects from project templates")
+    (description
+     "This package provides a command-line utility that creates projects from
+project templates, e.g. creating a Python package project from a Python package
+project template.")
+    (license license:bsd-3)))
+
 (define-public python-pyquery
   (package
     (name "python-pyquery")
@@ -9962,14 +10059,13 @@ to occurrences in strings and comments.")
 (define-public python-py3status
   (package
     (name "python-py3status")
-    (version "3.16")
+    (version "3.21")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "py3status" version))
        (sha256
-        (base32
-         "1xrfph277bgjln3jbpzpgkhxad04fjvj7s3xfil42q1sxi4s3q3g"))))
+        (base32 "16z8zq83hxy48g6hh4xczbdz50qvxv9k1aahr4fqq7jis60cc262"))))
     (build-system python-build-system)
     (inputs
      `(("file" ,file)))
@@ -15065,16 +15161,16 @@ manager compatible with @code{asyncio}.")
 (define-public python-glob2
   (package
     (name "python-glob2")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/miracle2k/python-glob2.git")
-             (commit version)))
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1lm1xz3k3l0k1c5bcp9hlzmi3gp5j8dl1k3xhpiq5mnm0xq6n163"))))
+        (base32 "160nh2ay9lw2hi0rixpzb2k87r6ql56k0j2cm87lqz8xc8zbw919"))))
     (build-system python-build-system)
     (home-page "https://github.com/miracle2k/python-glob2/")
     (synopsis "Extended Version of the python buildin glob module")

@@ -377,14 +377,13 @@ the API, and provides features such as:
 (define-public python-pylibmc
   (package
     (name "python-pylibmc")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pylibmc" version))
        (sha256
-        (base32
-         "1n6nvvhl0g52gpzzwdj1my6049xljkfwyxxygnwda9smrbj7pyay"))))
+        (base32 "1sg7d9j0v6g3xg3finf4l1hb72c13vcyyi6rqrc9shbx903d93ca"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -400,10 +399,8 @@ the API, and provides features such as:
      `(("libmemcached" ,libmemcached)
        ("zlib" ,zlib)
        ("cyrus-sasl" ,cyrus-sasl)))
-    (home-page
-     "http://sendapatch.se/projects/pylibmc/")
-    (synopsis
-     "Python client for memcached")
+    (home-page "http://sendapatch.se/projects/pylibmc/")
+    (synopsis "Python client for memcached")
     (description
      "@code{pylibmc} is a client in Python for memcached.  It is a wrapper
 around TangentOrg’s libmemcached library, and can be used as a drop-in
@@ -1179,17 +1176,15 @@ for example from a shell script.")
 (define-public sqitch
   (package
     (name "sqitch")
-    (version "0.9999")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-"
-             version
-             ".tar.gz"))
+             "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-v"
+             version ".tar.gz"))
        (sha256
-        (base32
-         "1cvj8grs3bzc4g7dw1zc26g4biv1frav18sq0fkvi2kk0q1aigzm"))))
+        (base32 "0p4wraqiscvwmmsvfqfy65blgsilwpvd9zj4d2zvm2xdx70ncr7l"))))
     (build-system perl-build-system)
     (arguments
      '(#:phases
@@ -1233,7 +1228,6 @@ for example from a shell script.")
        ("perl-dbi" ,perl-dbi)
        ("perl-devel-stacktrace" ,perl-devel-stacktrace)
        ("perl-encode-locale" ,perl-encode-locale)
-       ("perl-file-homedir" ,perl-file-homedir)
        ("perl-hash-merge" ,perl-hash-merge)
        ("perl-ipc-run3" ,perl-ipc-run3)
        ("perl-ipc-system-simple" ,perl-ipc-system-simple)
@@ -3113,13 +3107,13 @@ NumPy, and other traditional Python scientific computing packages.")
 (define-public python-crate
   (package
     (name "python-crate")
-    (version "0.23.0")
+    (version "0.23.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "crate" version))
               (sha256
                (base32
-                "0s3s7yg4m2zflg9q96aibwb5hizsn10ql63fsj6h5z624qkavnlp"))))
+                "0ngmlvi320c5gsxab0s7qgq0ck4jdlcwvb6lbjhnfprafdp56vvx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-urllib3" ,python-urllib3)))

@@ -1508,7 +1508,7 @@ are searched for in PATH.  Return #f when MODULES and EXTENSIONS are empty."
          (gexp (eval-when (expand load eval)
                  ;; Augment the load paths and delete duplicates.  Do that
                  ;; without loading (srfi srfi-1) or anything.
-                 (let ((extensions '((ungexp-native-splicing extensions)))
+                 (let ((extensions '((ungexp-splicing extensions)))
                        (prepend (lambda (items lst)
                                   ;; This is O(N²) but N is typically small.
                                   (let loop ((items items)

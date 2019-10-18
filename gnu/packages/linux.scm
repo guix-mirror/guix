@@ -183,37 +183,31 @@ defconfig.  Return the appropriate make target if applicable, otherwise return
 
 (define deblob-scripts-5.3
   (linux-libre-deblob-scripts
-   "5.3.4"
+   "5.3.6"
    (base32 "15n09zq38d69y1wl28s3nasf3377qp2yil5b887zpqrm00dif7i4")
    (base32 "0nrimraf46nf6y1hwkg29fyl0a83wnj0mwq54ggxvffn9gk5h9pa")))
 
-(define deblob-scripts-5.2
-  (linux-libre-deblob-scripts
-   "5.2.19"
-   (base32 "076fwxlm6jq6z4vg1xq3kr474zz7qk71r90sf9dnfia3rw2pb4fa")
-   (base32 "1vghzpvlsvz5q8baxjza8jdryjmcx61g2pmnm6dd1k7glr6jy1a9")))
-
 (define deblob-scripts-4.19
   (linux-libre-deblob-scripts
-   "4.19.77"
+   "4.19.79"
    (base32 "02zs405awaxydbapka4nz8h6lmnc0dahgczqsrs5s2bmzjyyqkcy")
    (base32 "1fyacg28aym6virxyn7wk99qil2fjbks3iwm7p3hxy51pccn34za")))
 
 (define deblob-scripts-4.14
   (linux-libre-deblob-scripts
-   "4.14.147"
+   "4.14.149"
    (base32 "091jk9jkn9jf39bxpc7395bhcb7p96nkg3a8047380ki06lnfxh6")
    (base32 "0x9nd3hnyrm753cbgdqmy92mbnyw86w64g4hvyibnkpq5n7s3z9n")))
 
 (define deblob-scripts-4.9
   (linux-libre-deblob-scripts
-   "4.9.195"
+   "4.9.196"
    (base32 "1wvldzlv7q2xdbadas87dh593nxr4a8p5n0f8zpm72lja6w18hmg")
    (base32 "0is8gn4qdd7h5l6lacvhqdch26lmrbgxfm8ab7fx8n85ha7y358w")))
 
 (define deblob-scripts-4.4
   (linux-libre-deblob-scripts
-   "4.4.194"
+   "4.4.196"
    (base32 "0x2j1i88am54ih2mk7gyl79g25l9zz4r08xhl482l3fvjj2irwbw")
    (base32 "12ac4g3ky8yma8sylmxvvysqvd4hnaqjiwmxrxb6wlxggfd7zkbx")))
 
@@ -357,50 +351,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.4")
+(define-public linux-libre-5.3-version "5.3.7")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "0vi4bgcr921z5l6fbcrcgmhaji5gl2avpmp7njna6v0f7sxism0r")))
+        (hash (base32 "00j8sdrmmppqf38vl50a4zas5gy7yv37n43b61f8472k45773jf6")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-5.2-version "5.2.19")
-(define-public linux-libre-5.2-pristine-source
-  (let ((version linux-libre-5.2-version)
-        (hash (base32 "12mi857lyd5vj8qhj2f505hqnwzsnd829hxd78n9kk88iv1f966y")))
-   (make-linux-libre-source version
-                            (%upstream-linux-source version hash)
-                            deblob-scripts-5.2)))
-
-(define-public linux-libre-4.19-version "4.19.77")
+(define-public linux-libre-4.19-version "4.19.80")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1agksl35amjzc6g6d9zjwz6p5qir2cligb5c1d9s2bag9766jav1")))
+        (hash (base32 "1v776s6q5wxn8ci86dwa8s8y41b94g09fnpgvzysg2h89rvbmac0")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.147")
+(define-public linux-libre-4.14-version "4.14.150")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "04jvp05spszcxmkdsl21dylbcf76ns9bwxf1zlk4x7cxiil97mwg")))
+        (hash (base32 "1c2pxfvv31af0mzcqnbfjk8pc0wrhg4yhspl8a3ab2w5dfwa9ib5")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.195")
+(define-public linux-libre-4.9-version "4.9.197")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "0s4xj8f1dpnz3fbrqmgwq02smhcrq1ni8hgn2bbfqvm15lm5dgjl")))
+        (hash (base32 "032as6g4xvqjarqhvx7mr14yhn6idak4g0ps1skmsl4dfav6hdam")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.194")
+(define-public linux-libre-4.4-version "4.4.197")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0kvlp2v4nvkilaanhpgwf8dkyfj24msaw0m38rbc4y51y69yhqvz")))
+        (hash (base32 "0ypfl1q1bdbk81hk0bm8a0grqzz4z5rp7z7asa3191ji3r8q9x4w")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -435,12 +421,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 
 (define-public linux-libre-5.3-source
   (source-with-patches linux-libre-5.3-pristine-source
-                       (list (search-patch "linux-libre-active-entropy.patch")
-                             %boot-logo-patch
-                             %linux-libre-arm-export-__sync_icache_dcache-patch)))
-
-(define-public linux-libre-5.2-source
-  (source-with-patches linux-libre-5.2-pristine-source
                        (list (search-patch "linux-libre-active-entropy.patch")
                              %boot-logo-patch
                              %linux-libre-arm-export-__sync_icache_dcache-patch)))
@@ -538,10 +518,6 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
 (define-public linux-libre-headers-5.3
   (make-linux-libre-headers* linux-libre-5.3-version
                              linux-libre-5.3-source))
-
-(define-public linux-libre-headers-5.2
-  (make-linux-libre-headers* linux-libre-5.2-version
-                             linux-libre-5.2-source))
 
 (define-public linux-libre-headers-4.19
   (make-linux-libre-headers* linux-libre-4.19-version
@@ -803,12 +779,6 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-pristine-source linux-libre-5.3-pristine-source)
 (define-public linux-libre-source          linux-libre-5.3-source)
 (define-public linux-libre                 linux-libre-5.3)
-
-(define-public linux-libre-5.2
-  (make-linux-libre* linux-libre-5.2-version
-                     linux-libre-5.2-source
-                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
-                     #:configuration-file kernel-config))
 
 (define-public linux-libre-4.19
   (make-linux-libre* linux-libre-4.19-version
@@ -5854,7 +5824,7 @@ IP addresses and routes, and configure IPsec.")
 (define-public xfsprogs
   (package
     (name "xfsprogs")
-    (version "4.20.0")
+    (version "5.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5862,17 +5832,32 @@ IP addresses and routes, and configure IPsec.")
                     "xfsprogs-" version ".tar.gz"))
               (sha256
                (base32
-                "0ss0r6jlxxinf9fhpc0fgf7b89n9mzirpa85xxjmi1ix9l6cls6x"))))
+                "0q5xd4gb9g83h82mg68cx616ifzl8qkzzlgg5xna698117ph3wky"))))
     (build-system gnu-build-system)
+    (outputs (list "out" "python"))
     (arguments
-     `(#:tests? #f    ;kernel/user integration tests are in package "xfstests"
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'install-headers
-                    (lambda _
-                      (invoke "make" "install-dev"))))))
+     `(#:tests? #f   ; kernel/user integration tests are in package "xfstests"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'separate-python-output
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (python (assoc-ref outputs "python")))
+               (for-each
+                (lambda (script)
+                  (mkdir-p (string-append python (dirname script)))
+                  (rename-file (string-append out script)
+                               (string-append python script)))
+                (list "/sbin/xfs_scrub_all"))
+               #t)))
+         (add-after 'install 'install-headers
+           (lambda _
+             (invoke "make" "install-dev"))))))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("util-linux" ,util-linux)))
+    (inputs
+     `(("python" ,python-wrapper)))
     (home-page "https://xfs.wiki.kernel.org/")
     (synopsis "XFS file system tools")
     (description "This package provides commands to create and check XFS

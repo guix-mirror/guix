@@ -1085,7 +1085,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.24.0")
+    (version "3.24.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1093,7 +1093,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0hxaq4x9jqj8vvnv3sb6nwapz83v8lclbm887qqci0g50llcjpyg"))))
+               "1zfj89spr8ianib5y10wcw63ybdmyjy58a15vqs0m8jq4knl5znx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")        ;for 'glib-compile-resources'
@@ -1311,14 +1311,14 @@ produces identical output on all those targets.")
 (define-public perl-gtk2
   (package
     (name "perl-gtk2")
-    (version "1.24992")
+    (version "1.24993")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/X/XA/XAOC/Gtk2-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1044rj3wbfmgaif2jb0k28m2aczli6ai2n5yvn6pr7zjyw16kvd2"))))
+                "0ry9jfvfgdwzalxcvwsgr7plhk3agx7p40l0fqdf3vrf7ds47i29"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-extutils-depends" ,perl-extutils-depends)

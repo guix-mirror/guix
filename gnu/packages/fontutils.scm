@@ -46,6 +46,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages freedesktop)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -53,7 +56,8 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system meson))
 
 (define-public freetype
   (package
@@ -725,3 +729,48 @@ maintain the Noto Fonts project.")
                    (license:non-copyleft
                     "file://sample_texts/attributions.txt"
                     "See sample_texts/attributions.txt in the distribution.")))))
+
+(define-public fontmanager
+  (package
+   (name "fontmanager")
+   (version "0.7.5")
+   (source
+    (origin
+      (method git-fetch)
+      (uri (git-reference
+            (url "https://github.com/FontManager/font-manager")
+            (commit version)))
+      (file-name (git-file-name name version))
+      (sha256
+       (base32
+        "16hma8rrkam6ngn5vbdaryn31vdixvii6920g9z928gylz9xkd3g"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:glib-or-gtk? #t
+      #:build-type "release"
+      #:configure-flags
+      (list (string-append "-Dc_link_args=-Wl,-rpath="
+                           (assoc-ref %outputs "out")
+                           "/lib/font-manager"))))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("vala" ,vala)
+      ("yelp-tools" ,yelp-tools)
+      ("gettext" ,gettext-minimal)
+      ("glib" ,glib "bin")
+      ("gobject-introspection" ,gobject-introspection)
+      ("desktop-file-utils" ,desktop-file-utils)))
+   (inputs
+    `(("json-glib" ,json-glib)
+      ("sqlite-with-column-metadata" ,sqlite-with-column-metadata)
+      ("fonconfig" ,fontconfig)
+      ("freetype" ,freetype)
+      ("gtk+" ,gtk+)))
+   (home-page "https://fontmanager.github.io/")
+   (synopsis "Simple font management for GTK+ desktop environments")
+   (description "Font Manager is intended to provide a way for users to
+easily manage desktop fonts, without having to resort to command-line
+tools or editing configuration files by hand.
+While designed primarily with the GNOME Desktop Environment in mind, it should
+work well with other GTK+ desktop environments.")
+   (license license:gpl3+)))
