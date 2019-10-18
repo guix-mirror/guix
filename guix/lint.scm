@@ -1319,11 +1319,17 @@ or a list thereof")
      (name        'github-url)
      (description "Suggest GitHub URLs")
      (check       check-github-url))
-   (lint-checker
-     (name        'cve)
-     (description "Check the Common Vulnerabilities and Exposures\
- (CVE) database")
-     (check       check-vulnerabilities))
+
+   ;; FIXME: Commented out as a consequence of the XML CVE feed retirement:
+   ;; <https://nvd.nist.gov/General/News/XML-Vulnerability-Feed-Retirement-Phase-3>.
+   ;; Reinstate it once the JSON feed is supported.
+
+ ;;   (lint-checker
+ ;;     (name        'cve)
+ ;;     (description "Check the Common Vulnerabilities and Exposures\
+ ;; (CVE) database")
+ ;;     (check       check-vulnerabilities))
+
    (lint-checker
      (name        'refresh)
      (description "Check the package for new upstream releases")
