@@ -1556,14 +1556,14 @@ gapped, local, and paired-end alignment modes.")
 (define-public bowtie1
   (package
     (name "bowtie1")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/bowtie-bio/bowtie/"
-                                  version "/bowtie-" version "-src.zip"))
+                                  version "/bowtie-src-x86_64.zip"))
               (sha256
                (base32
-                "1jl2cj9bz8lwz8dwnxbycn8yp8g4kky62fkcxifyf1ri0y6n2vc0"))
+                "0vmiqdhc9dzyfy9sh6vgi7k9xy2hiw8g87vbamnc6cgpm179zsa4"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
