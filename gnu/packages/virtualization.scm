@@ -848,13 +848,20 @@ Machine Protocol.")
                      (lambda* (#:key outputs #:allow-other-keys)
                        (chdir "client")
                        #t))
+                   (add-after 'chdir-to-client 'add-missing-include
+                     (lambda _
+                       ;; Mimic upstream commit b9797529893, required since the
+                       ;; update to Mesa 19.2.
+                       (substitute* "renderers/egl/shader.h"
+                         (("#include <stdbool\\.h>")
+                          "#include <stdbool.h>\n#include <stddef.h>"))
+                       #t))
                    (replace 'install
                      (lambda* (#:key outputs #:allow-other-keys)
                        (install-file "looking-glass-client"
                                      (string-append (assoc-ref outputs "out")
                                                     "/bin"))
-                       #t))
-                   )))
+                       #t)))))
      (home-page "https://looking-glass.hostfission.com")
      (synopsis "KVM Frame Relay (KVMFR) implementation")
      (description "Looking Glass allows the use of a KVM (Kernel-based Virtual
