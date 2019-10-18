@@ -972,6 +972,8 @@ Escape key when Left Control is pressed and released on its own.")
                (base32
                 "00lyv419ijyng6ak5vpw0swnn4qg6lbfh7zysf92wcvn6rcq7d4c"))))
     (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
