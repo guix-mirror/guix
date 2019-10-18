@@ -780,6 +780,8 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                        "rust-1.25-accept-more-detailed-gdb-lines.patch"
                                        "rust-reproducible-builds.patch")))))
       (native-inputs
+       ;; FIXME: Rust 1.27 and some later versions require GDB 8.2 specifically.
+       ;; See <https://bugs.gnu.org/37810>.
        (alist-replace "gdb" (list gdb-8.2)
                       (package-native-inputs base-rust)))
       (arguments
