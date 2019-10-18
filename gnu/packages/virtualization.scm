@@ -817,7 +817,17 @@ Machine Protocol.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "02bq46ndmzq9cihazzn7xq1x7q5nzm7iw4l9lqzihxcxp9famkhw"))))
+         "02bq46ndmzq9cihazzn7xq1x7q5nzm7iw4l9lqzihxcxp9famkhw"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Do not create binaries optimized for the CPU of the build machine,
+           ;; for reproducibility and compatibility.  TODO: in the next version
+           ;; of looking glass, this is exposed as a CMake configure option.
+           (substitute* "client/CMakeLists.txt"
+             (("-march=native")
+              ""))
+           #t))))
      (build-system cmake-build-system)
      (inputs `(("fontconfig" ,fontconfig)
                ("glu" ,glu)
