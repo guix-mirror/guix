@@ -779,6 +779,9 @@ jemalloc = \"" jemalloc "/lib/libjemalloc_pic.a" "\"
                                        "rust-bootstrap-stage0-test.patch"
                                        "rust-1.25-accept-more-detailed-gdb-lines.patch"
                                        "rust-reproducible-builds.patch")))))
+      (native-inputs
+       (alist-replace "gdb" (list gdb-8.2)
+                      (package-native-inputs base-rust)))
       (arguments
        (substitute-keyword-arguments (package-arguments base-rust)
          ((#:phases phases)
