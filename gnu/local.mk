@@ -1015,6 +1015,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
   %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
+  %D%/packages/patches/kwindowsystem-qt-compat.patch		\
   %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/lcalc-default-parameters-1.patch		\
   %D%/packages/patches/lcalc-default-parameters-2.patch		\

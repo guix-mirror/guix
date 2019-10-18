@@ -1081,6 +1081,7 @@ configuration pages, message boxes, and password requests.")
                     "mirror://kde/stable/frameworks/"
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
+              (patches (search-patches "kwindowsystem-qt-compat.patch"))
               (sha256
                (base32
                 "10zdxm08d758zbwlrbsn0ghxjpf39ids2s5pnca072gbrbrxv656"))))
@@ -1096,7 +1097,8 @@ configuration pages, message boxes, and password requests.")
      `(("libxrender" ,libxrender)
        ("qtbase" ,qtbase)
        ("qtx11extras" ,qtx11extras)
-       ("xcb-utils-keysyms" ,xcb-util-keysyms)))
+       ("xcb-utils-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-wm" ,xcb-util-wm)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
