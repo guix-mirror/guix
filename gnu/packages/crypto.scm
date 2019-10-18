@@ -211,6 +211,15 @@ OpenBSD tool of the same name.")
              (copy-recursively (assoc-ref inputs "googletest-source")
                                "vendor/github.com/google/googletest")
              #t))
+         (add-before 'configure 'patch-CMakeLists.txt
+           (lambda _
+             ;; Prevent CMake from adding libc on the system include path.
+             ;; Otherwise it will interfere with the libc used by GCC and
+             ;; ultimately cause #include_next errors.
+             (substitute* "CMakeLists.txt"
+               (("include_directories \\(SYSTEM \\$\\{Intl_INCLUDE_DIRS\\}\\)")
+                ""))
+             #t))
          (add-before 'check 'make-unittests
            (lambda _
              (invoke "make" "unittests"))))))
