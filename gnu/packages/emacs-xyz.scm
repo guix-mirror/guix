@@ -16358,7 +16358,7 @@ correctly.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0agsigwnxm1czi7pzcfbjaks8kg63xskqqavvfqjwzj9xakh5id2"))))
+                "0b2dx9nzh5233lkix3lz81c9cv626lk2hjpcjiikwvyp6y0q92ys"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-helm" ,emacs-helm)
