@@ -1463,6 +1463,9 @@ multiple inspectors with independent history.")
 JavaScript (ECMAScript 3).  It has basic support for ECMAScript 5.")
       (license license:zlib))))
 
+(define-public cl-parse-js
+  (sbcl-package->cl-source-package sbcl-parse-js))
+
 (define-public sbcl-parse-number
   (package
     (name "sbcl-parse-number")
@@ -1485,6 +1488,9 @@ reader.  @code{parse-number} accepts an arbitrary string and attempts to parse
 the string into one of the standard Common Lisp number types, if possible, or
 else @code{parse-number} signals an error of type @code{invalid-number}.")
     (license license:bsd-3)))
+
+(define-public cl-parse-number
+  (sbcl-package->cl-source-package sbcl-parse-number))
 
 (define-public sbcl-iterate
   (package
@@ -1514,6 +1520,9 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
 @item it isn't part of the ANSI standard for Common Lisp.
 @end itemize\n")
     (license license:expat)))
+
+(define-public cl-iterate
+  (sbcl-package->cl-source-package sbcl-iterate))
 
 (define-public sbcl-cl-uglify-js
   ;; There have been many bug fixes since the 2010 release.
@@ -1555,6 +1564,9 @@ compressor.  It works on data produced by @code{parse-js} to generate a
 @item remove some unreachable code
 @end itemize\n")
       (license license:zlib))))
+
+(define-public cl-uglify-js
+  (sbcl-package->cl-source-package sbcl-cl-uglify-js))
 
 (define-public uglify-js
   (package
@@ -3128,6 +3140,9 @@ package.")
        ("bordeaux-threads" ,sbcl-bordeaux-threads)
        ,@(package-native-inputs sbcl-cffi-bootstrap)))))
 
+(define-public cl-cffi
+  (sbcl-package->cl-source-package sbcl-cffi))
+
 (define-public sbcl-cl-sqlite
   (let ((commit "c738e66d4266ef63a1debc4ef4a1b871a068c112"))
     (package
@@ -3168,6 +3183,9 @@ package.")
        "The @command{cl-sqlite} package is an interface to the SQLite embedded
 relational database engine.")
       (license license:public-domain))))
+
+(define-public cl-sqlite
+  (sbcl-package->cl-source-package sbcl-cl-sqlite))
 
 (define-public sbcl-parenscript
   (let ((commit "061d8e286c81c3f45c84fb2b11ee7d83f590a8f8"))
@@ -3543,6 +3561,9 @@ is a library for creating graphical user interfaces.")
        ;; See https://github.com/Ferada/cl-cffi-gtk/issues/24.
        #:tests? #f))))
 
+(define-public cl-cffi-gtk
+  (sbcl-package->cl-source-package sbcl-cl-cffi-gtk))
+
 (define-public sbcl-cl-webkit
   (let ((commit "cd2a9008e0c152e54755e8a7f07b050fe36bab31"))
     (package
@@ -3582,6 +3603,9 @@ currently targeting WebKit version 2.  The WebKitGTK+ library adds web
 browsing capabilities to an application, leveraging the full power of the
 WebKit browsing engine.")
       (license license:expat))))
+
+(define-public cl-webkit
+  (sbcl-package->cl-source-package sbcl-cl-webkit))
 
 (define-public sbcl-lparallel
   (package
@@ -5949,6 +5973,9 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
                 "")))))))
     (synopsis "Common Lisp I/O library")))
 
+(define-public cl-iolib
+  (sbcl-package->cl-source-package sbcl-iolib))
+
 (define sbcl-iolib+multiplex
   (package
     (inherit sbcl-iolib)
@@ -6005,6 +6032,9 @@ and @code{kqueue(2)}), a pathname library and file-system utilities.")
       (description "This is a Common Lisp library that allows to convert
 floating point values to IEEE 754 binary representation.")
       (license license:bsd-3))))
+
+(define-public cl-ieee-floats
+  (sbcl-package->cl-source-package sbcl-ieee-floats))
 
 (define sbcl-closure-common
   (let ((commit "e3c5f5f454b72b01b89115e581c3c52a7e201e5c")
@@ -6138,6 +6168,9 @@ offered, one SAX-like, the other similar to StAX.")
                  ((" *\\(\\(:compiled-file \"cxml--system\"\\)\\)")
                   ""))))))))))
 
+(define-public cl-cxml
+  (sbcl-package->cl-source-package sbcl-cxml))
+
 (define-public sbcl-cl-reexport
   (let ((commit "312f3661bbe187b5f28536cd7ec2956e91366c3b")
         (revision "1"))
@@ -6165,6 +6198,9 @@ offered, one SAX-like, the other similar to StAX.")
       (description "cl-cookie is a Common Lisp library featuring parsing of
 cookie headers, cookie creation, cookie jar creation and more.")
       (license license:llgpl))))
+
+(define-public cl-reexport
+  (sbcl-package->cl-source-package sbcl-cl-reexport))
 
 (define-public sbcl-cl-cookie
   (let ((commit "cea55aed8b9ad25fafd13defbcb9fe8f41b29546")
@@ -6200,6 +6236,9 @@ cookie headers, cookie creation, cookie jar creation and more.")
       (description "cl-cookie is a Common Lisp library featuring parsing of
 cookie headers, cookie creation, cookie jar creation and more.")
       (license license:bsd-2))))
+
+(define-public cl-cookie
+  (sbcl-package->cl-source-package sbcl-cl-cookie))
 
 (define-public sbcl-dexador
   (let ((commit "a2714d126cc94bc7a9a6e1e3c08de455b3a66378")
@@ -6243,7 +6282,6 @@ cookie headers, cookie creation, cookie jar creation and more.")
          ("clack" ,sbcl-clack)
          ("babel" ,sbcl-babel)
          ("alexandria" ,sbcl-alexandria)
-         ("quri" ,sbcl-quri)
          ("cl-ppcre" ,sbcl-cl-ppcre)
          ("local-time" ,sbcl-local-time)))
       (arguments
@@ -6257,6 +6295,17 @@ cookie headers, cookie creation, cookie jar creation and more.")
       (description "Dexador is yet another HTTP client for Common Lisp with
 neat APIs and connection-pooling.  It is meant to supersede Drakma.")
       (license license:expat))))
+
+(define-public cl-dexador
+  (package
+    (inherit (sbcl-package->cl-source-package sbcl-dexador))
+    (arguments
+     `(#:phases
+       ;; asdf-build-system/source has its own phases and does not inherit
+       ;; from asdf-build-system/sbcl phases.
+       (modify-phases %standard-phases/source
+         (add-after 'unpack 'fix-permissions
+           (lambda _ (make-file-writable "t/data/test.gz") #t)))))))
 
 (define-public ecl-dexador
   (sbcl-package->ecl-package sbcl-dexador))
@@ -6294,6 +6343,9 @@ more — e.g., class namespace.
 This library offers macros to deal with symbols from any namespace.")
       (license license:llgpl))))
 
+(define-public cl-lisp-namespace
+  (sbcl-package->cl-source-package sbcl-lisp-namespace))
+
 (define-public sbcl-trivial-cltl2
   (let ((commit "8eec8407df833e8f27df8a388bc10913f16d9e83")
         (revision "1"))
@@ -6318,6 +6370,9 @@ This library offers macros to deal with symbols from any namespace.")
 Edition\" (@url{https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node102.html})
 and it exports symbols from implementation-specific packages.")
       (license license:llgpl))))
+
+(define-public cl-trivial-cltl2
+  (sbcl-package->cl-source-package sbcl-trivial-cltl2))
 
 (define-public sbcl-introspect-environment
   (let ((commit "fff42f8f8fd0d99db5ad6c5812e53de7d660020b")
@@ -6360,6 +6415,9 @@ implementations have implementations of the functions that do as much as they
 can and/or provide reasonable defaults.")
       (license license:wtfpl2))))
 
+(define-public cl-introspect-environment
+  (sbcl-package->cl-source-package sbcl-introspect-environment))
+
 (define-public sbcl-type-i
   (let ((commit "dea233f45f94064105ec09f0767de338f67dcbe2")
         (revision "1"))
@@ -6392,6 +6450,9 @@ type the given predicate is trying to check.  This is different from inferring
 the return type of a function.")
       (license license:llgpl))))
 
+(define-public cl-type-i
+  (sbcl-package->cl-source-package sbcl-type-i))
+
 (define-public sbcl-optima
   (let ((commit "373b245b928c1a5cce91a6cb5bfe5dd77eb36195")
         (revision "1"))
@@ -6423,6 +6484,9 @@ the return type of a function.")
       (description "Optima is a fast pattern matching library which uses
 optimizing techniques widely used in the functional programming world.")
       (license license:expat))))
+
+(define-public cl-optima
+  (sbcl-package->cl-source-package sbcl-optima))
 
 (define-public sbcl-fare-quasiquote
   (package
@@ -6698,6 +6762,9 @@ This system contains the CFFI foreign slot access extension.")))
 with Optima, another pattern matching library for Common Lisp.  It is meant to
 be faster and more extensible than Optima.")))
 
+(define-public cl-trivia
+  (sbcl-package->cl-source-package sbcl-trivia))
+
 (define-public sbcl-mk-string-metrics
   (package
     (name "sbcl-mk-string-metrics")
@@ -6728,6 +6795,9 @@ various string metrics in Common Lisp:
 @item Overlap coefficient
 @end itemize\n")
     (license license:x11)))
+
+(define-public cl-mk-string-metrics
+  (sbcl-package->cl-source-package sbcl-mk-string-metrics))
 
 (define-public sbcl-cl-str
   (let ((commit "3d5ec86e3a0199e5973aacde951086dfd754b5e5"))
@@ -6763,6 +6833,9 @@ discoverable library instead of many; consistency and composability, where
 @code{s} is always the last argument, which makes it easier to feed pipes and
 arrows.")
       (license license:expat))))
+
+(define-public cl-str
+  (sbcl-package->cl-source-package sbcl-cl-str))
 
 (define-public sbcl-cl-xmlspam
   (let ((commit "ea06abcca2a73a9779bcfb09081e56665f94e22a"))
