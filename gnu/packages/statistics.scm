@@ -523,17 +523,17 @@ for reading and writing some dBase files.")
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
-    (version "2.23-15")
+    (version "2.23-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "KernSmooth" version))
        (sha256
         (base32
-         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
+         "1acrkbdn3a74y4dndkcdl1njnpfqz7gk3bsz03g8lfj8l7z53hmq"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/KernSmooth")
     (synopsis "Functions for kernel smoothing")
