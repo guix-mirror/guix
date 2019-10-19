@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -5110,6 +5110,18 @@ child application and control it as if a human were typing commands.")
 @dfn{software configuration management} (SCM) metadata instead of declaring
 them as the version argument or in a SCM managed file.")
     (license license:expat)))
+
+;; Needed by python-lazy-object-proxy, remove on next update cycle.
+(define-public python-setuptools-scm-3.3
+  (package
+    (inherit python-setuptools-scm)
+    (version "3.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "setuptools_scm" version))
+              (sha256
+               (base32
+                "19cyndx23xmpbhz4qrwmfwsmnnaczd0dw7qg977ksq2dbvxy29dx"))))))
 
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
