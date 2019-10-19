@@ -910,10 +910,18 @@ some helpful Python 2 compatibility convenience methods.")
         (base32
          "09z4d1jiasn7k1hs5af2ckmnrd0i1d1m04bhfjhv7z6svzfdwgg3"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Do not run pylint plugin test, as astroid is an old
+             ;; unsupported version.
+             (invoke "pytest" "-v" "-k" "not test_pylint_plugin"
+                     "verboselogs/tests.py"))))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-astroid" ,python-astroid)
-       ("python-pylint" ,python-pylint)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://verboselogs.readthedocs.io")
     (synopsis "Verbose logging level for Python's logging module")
     (description
