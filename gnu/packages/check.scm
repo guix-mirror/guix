@@ -21,7 +21,7 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
@@ -1703,19 +1703,22 @@ unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
 
+;; Further releases, up to 2.4.3, have failing unit tests. See:
+;; https://github.com/PyCQA/pylint/issues/3198.
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "1.7.2")
+    (version "2.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/PyCQA/pylint/archive/pylint-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyCQA/pylint")
+             (commit (string-append "pylint-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mzn1czhf1mgr2wiqfihb274sja02h899b85kywdpivppa9nwrmp"))))
+         "17vvzbcqmkhr4icq5p3737nbiiyj1y3g1pa08n9mb1bsnvxmqq0z"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -1726,22 +1729,6 @@ statements in the module it tests.")
        ("python-isort" ,python-isort)
        ("python-mccabe" ,python-mccabe)
        ("python-six" ,python-six)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    ;; Somehow, tests for python2-pylint
-                    ;; fail if run from the build directory
-                    (let ((work "/tmp/work"))
-                      (mkdir-p work)
-                      (setenv "PYTHONPATH"
-                              (string-append (getenv "PYTHONPATH") ":" work))
-                      (copy-recursively "." work)
-                      (with-directory-excursion "/tmp"
-                        (invoke "python" "-m" "unittest" "discover"
-                                "-s" (string-append work "/pylint/test")
-                                "-p" "*test_*.py"))))))))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
