@@ -6145,6 +6145,32 @@ provides the following features:
 in Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-markdown
+  (let ((commit "46cd81b37991c4325fc24015a610f832b0ff995d")
+        (revision "1"))
+    (package
+      (name "emacs-evil-markdown")
+      (version (git-version "0.0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Somelauw/evil-markdown.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mad8sp5y9vyk28595qygspnyh8bfmb1fbxjlw70qwc1kdn822n4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-markdown-mode" ,emacs-markdown-mode)
+         ("emacs-evil" ,emacs-evil)))
+      (home-page "http://jblevins.org/projects/evil-markdown/")
+      (synopsis "Evil keybindings for @code{markdown-mode}")
+      (description
+       "This package provides custom text objects and bindings for
+@code{markdown-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-edit-indirect
   (package
     (name "emacs-edit-indirect")
@@ -6153,8 +6179,8 @@ in Emacs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/Fanael/edit-indirect")
-              (commit version)))
+             (url "https://github.com/Fanael/edit-indirect")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
