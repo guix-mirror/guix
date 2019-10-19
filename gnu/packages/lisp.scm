@@ -7833,3 +7833,36 @@ Clojure, as well as several expansions on the idea.")
 
 (define-public ecl-arrows
   (sbcl-package->ecl-package sbcl-arrows))
+
+(define-public sbcl-simple-parallel-tasks
+  (let ((commit "db460f7a3f7bbfe2d3a2223ed21e162068d04dda")
+        (revision "0"))
+    (package
+      (name "sbcl-simple-parallel-tasks")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/simple-parallel-tasks.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0amw3qk23wnlyrsgzszs6rs7y4zvxv8dr03rnqhc60mnm8ds4dd5"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("chanl" ,sbcl-chanl)))
+      (synopsis "Common Lisp library to evaluate some forms in parallel")
+      (description "This is a simple Common Lisp library to evaluate some
+forms in parallel.")
+      (home-page "https://github.com/glv2/simple-parallel-tasks")
+      (license license:gpl3))))
+
+(define-public cl-simple-parallel-tasks
+  (sbcl-package->cl-source-package sbcl-simple-parallel-tasks))
+
+(define-public ecl-simple-parallel-tasks
+  (sbcl-package->ecl-package sbcl-simple-parallel-tasks))
