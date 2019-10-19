@@ -180,7 +180,7 @@ common build settings used in software produced by the KDE community.")
 (define-public phonon-backend-gstreamer
   (package
     (name "phonon-backend-gstreamer")
-    (version "4.9.0")
+    (version "4.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -189,7 +189,7 @@ common build settings used in software produced by the KDE community.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1wc5p1rqglf0n1avp55s50k7fjdzdrhg0gind15k8796w7nfbhyf"))))
+                "1wk1ip2w7fkh65zk6rilj314dna0hgsv2xhjmpr5w08xa8sii1y5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
@@ -198,6 +198,7 @@ common build settings used in software produced by the KDE community.")
      `(("qtbase" ,qtbase)
        ("phonon" ,phonon)
        ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
        ("qtx11extras" ,qtx11extras)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
