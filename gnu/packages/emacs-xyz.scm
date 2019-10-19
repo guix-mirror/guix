@@ -13099,12 +13099,11 @@ within Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-ibuffer-projectile
-  (let ((commit "c18ac540ee46cb759fc5df18747f6e8d23563011")
-        (revision "1"))
+  (let ((commit "76496214144687cee0b5139be2e61b1e400cac87")
+        (revision "2"))
     (package
       (name "emacs-ibuffer-projectile")
-      (version (string-append "0.2" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13114,7 +13113,7 @@ within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1nd26cwwdpnwj0g4w393rd59klpyr6wqrnyr6scmwb5d06bsm44n"))))
+           "0vv9xwb1qd5x8zhqmmsn1nrpd11cql9hxb7483nsdhcfwl4apqav"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-projectile" ,emacs-projectile)))
