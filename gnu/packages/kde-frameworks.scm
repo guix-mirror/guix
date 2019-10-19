@@ -139,7 +139,7 @@ common build settings used in software produced by the KDE community.")
 (define-public phonon
   (package
     (name "phonon")
-    (version "4.10.1")
+    (version "4.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -148,7 +148,7 @@ common build settings used in software produced by the KDE community.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1dwdw0hm6685psrp7v9frhkhqvsxrbdnm3gw794j5z7g3brqvag5"))))
+                "0bfy8iqmjhlg3ma3iqd3kxjc2zkzpjgashbpf5x17y0dc2i1whxl"))))
     (build-system cmake-build-system)
     (native-inputs
      ;; TODO: Think about adding pulseaudio. Is it required for sound?
