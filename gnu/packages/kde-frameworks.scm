@@ -41,7 +41,6 @@
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages disk)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages freedesktop)
@@ -213,38 +212,6 @@ common build settings used in software produced by the KDE community.")
 Phonon-GStreamer is a backend based on the GStreamer multimedia library.")
     ;; license: source files mention "either version 2.1 or 3"
     (license (list license:lgpl2.1 license:lgpl3))))
-
-(define-public kpmcore
-  (package
-    (name "kpmcore")
-    (version "3.3.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "mirror://kde/stable/kpmcore"
-                    "/" version "/src/"
-                    name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "0s6v0jfrhjg31ri5p6h9n4w29jvasf5dj954j3vfpzl91lygmmmq"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("kconfigwidgets" ,kconfigwidgets)
-       ("kiconthemes" ,kiconthemes)
-       ("kio" ,kio)
-       ("ki18n" ,ki18n)
-       ("kservice" ,kservice)
-       ("libatasmart" ,libatasmart)
-       ("parted" ,parted)
-       ("qtbase" ,qtbase)
-       ("util-linux" ,util-linux)))
-    (home-page "https://community.kde.org/Frameworks")
-    (synopsis "Library for managing partitions")
-    (description "Library for managing partitions.")
-    (license license:gpl3+)))
 
 
 ;; Tier 1

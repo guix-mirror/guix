@@ -1,10 +1,12 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Mark Meyer <mark@ofosos.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2018, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +44,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages kde-plasma)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pdf)
@@ -463,6 +466,38 @@ straightforward and cross-platform API for a range of cryptographic features,
 including SSL/TLS, X.509 certificates, SASL, OpenPGP, S/MIME CMS, and smart
 cards.")
     (license license:lgpl2.1)))
+
+(define-public kpmcore
+  (package
+    (name "kpmcore")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/kpmcore"
+                    "/" version "/src/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0s6v0jfrhjg31ri5p6h9n4w29jvasf5dj954j3vfpzl91lygmmmq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("kconfigwidgets" ,kconfigwidgets)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("ki18n" ,ki18n)
+       ("kservice" ,kservice)
+       ("libatasmart" ,libatasmart)
+       ("parted" ,parted)
+       ("qtbase" ,qtbase)
+       ("util-linux" ,util-linux)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Library for managing partitions")
+    (description "Library for managing partitions.")
+    (license license:gpl3+)))
 
 (define-public snorenotify
   (package
