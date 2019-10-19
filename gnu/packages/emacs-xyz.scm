@@ -17376,8 +17376,8 @@ and code peeking.")
     (license license:gpl3+)))
 
 (define-public emacs-lsp-ivy
-  (let ((commit "6fd55316dd62d290429c25ea9b0c1f66069b2f37")
-        (revision "1"))
+  (let ((commit "caf1e1d7e22ed0b5fe18dd508d1a6f83dd163288")
+        (revision "2"))
     (package
       (name "emacs-lsp-ivy")
       (version (git-version "0.1" revision commit))
@@ -17389,7 +17389,7 @@ and code peeking.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0hx9rs66ahl2rqgnmyiyrwk12v7iv8c6gnn7b66985mxjqyyh94r"))))
+                  "084ds4qhzhivfnicy3h7z4mblxgcqx8pfnkbjr9qjrfng7cisy4z"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)
