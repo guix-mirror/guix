@@ -1,0 +1,18 @@
+Increase thread timeout to reduce flakiness.
+
+Taken from upstream:
+https://github.com/xbmc/xbmc/commit/574b0182d8b641fd24029f372ebdcccc897123e2
+
+diff --git a/xbmc/threads/test/TestEvent.cpp b/xbmc/threads/test/TestEvent.cpp
+index 42fb8c2fc609..40e644c0ed3c 100644
+--- a/xbmc/threads/test/TestEvent.cpp
++++ b/xbmc/threads/test/TestEvent.cpp
+@@ -484,7 +484,7 @@ TEST(TestEvent, GroupTimedWait)
+   EXPECT_TRUE(w3.result == NULL);
+ 
+   // this should end given the wait is for only 50 millis
+-  EXPECT_TRUE(waitThread3.timed_join(MILLIS(100)));
++  EXPECT_TRUE(waitThread3.timed_join(MILLIS(200)));
+ 
+   EXPECT_TRUE(!w3.waiting);
+   EXPECT_TRUE(w3.result == NULL);

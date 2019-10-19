@@ -282,6 +282,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
                (base32
                 "1m0295czxabdcqyqf5m94av9d88pzhnzjvyfs1q07xqq82h313p7"))
               (patches (search-patches "kodi-skip-test-449.patch"
+                                       "kodi-increase-test-timeout.patch"
                                        "kodi-set-libcurl-ssl-parameters.patch"))
               (snippet
                '(begin
