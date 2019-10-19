@@ -12538,18 +12538,19 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.1.0")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
         (base32
-         "08hz675knh4294bancdapql392fmbjyimhbyrmfkz1ka7l035c1m"))))
+         "0crfhpblcy5a6nh694hc2073gw389f01yilamzqi34si2skgp8q9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-six" ,python-six)
+       ("python-typed-ast" ,python-typed-ast)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
