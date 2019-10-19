@@ -25,7 +25,7 @@
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -2328,6 +2328,38 @@ record the properties and behaviour of particular devices, and to run a
 program or test suite under a test bed with the previously recorded devices
 loaded.")
     (license license:lgpl2.1+)))
+
+(define-public virtest
+  ;; No releases yet, so we take the commit that "vc" expects.
+  (let ((commit "f7d03ef39fceba168745bd29e1b20af6e7971e04")
+        (revision "0"))
+    (package
+      (name "virtest")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://github.com/mattkretz/virtest")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07pjyb0mk7y2w1dg1bhl26nb7416xa1mw16ifj6mmps5y6aq054l"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'adjust-install-directory
+                      (lambda _
+                        ;; Vc is the only consumer of this library, and expects
+                        ;; to find it in "virtest/vir/" instead of "vir/vir/".
+                        (substitute* "CMakeLists.txt"
+                          (("DESTINATION include/vir")
+                           "DESTINATION include/virtest"))
+                        #t)))))
+      (synopsis "Header-only test framework")
+      (description
+       "@code{virtest} is a small header-only test framework for C++.  It
+grew out of the @dfn{Vc} project.")
+      (license license:bsd-3))))
 
 (define-public python-pyfakefs
   (package
