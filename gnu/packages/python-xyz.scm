@@ -12617,7 +12617,8 @@ builds partial trees by inspecting living objects.")
          ,python2-backports-functools-lru-cache)
         ("python2-enum34" ,python2-enum34)
         ("python2-singledispatch" ,python2-singledispatch)
-        ,@(package-propagated-inputs base))))))
+        ,@(alist-delete "python-typed-ast"
+                        (package-propagated-inputs base)))))))
 
 (define-public python-isort
   (package
