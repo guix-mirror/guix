@@ -14735,14 +14735,16 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typed-ast
   (package
     (name "python-typed-ast")
-    (version "1.3.5")
+    (version "1.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "typed-ast" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/typed_ast.git")
+             (commit version)))
        (sha256
-        (base32
-         "1m7pr6qpana3cvqwiw7mlvrgvmw27ch5mx1592572xhlki8g85ak"))))
+        (base32 "0l0hz809f7i356kmqkvfsaswiidb98j9hs9rrjnfawzqcbffzgyb"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
