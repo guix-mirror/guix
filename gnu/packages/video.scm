@@ -315,6 +315,8 @@ a shared library and encoder and decoder command-line executables.")
               ;; because the SourceForge project is misconfigured.
               (uri (string-append "http://libmpeg2.sourceforge.net/files/"
                                   name "-" version ".tar.gz"))
+              (patches (search-patches "libmpeg2-arm-private-symbols.patch"
+                                       "libmpeg2-global-symbol-test.patch"))
               (sha256
                (base32
                 "1m3i322n2fwgrvbs1yck7g5md1dbg22bhq5xdqmjpz5m7j4jxqny"))))

@@ -1,0 +1,48 @@
+Set visibility of global symbols used in ARM specific assembly file to
+internal.
+
+Taken from Debian:
+https://salsa.debian.org/multimedia-team/mpeg2dec/blob/master/debian/patches/60_arm-private-symbols.patch
+
+--- mpeg2dec.orig/libmpeg2/motion_comp_arm_s.S
++++ mpeg2dec/libmpeg2/motion_comp_arm_s.S
+@@ -23,7 +23,8 @@
+ 
+ @ ----------------------------------------------------------------
+ 	.align
+-	.global MC_put_o_16_arm
++	.global   MC_put_o_16_arm
++	.internal MC_put_o_16_arm
+ MC_put_o_16_arm:
+ 	@@ void func(uint8_t * dest, const uint8_t * ref, int stride, int height)
+ 	pld [r1]
+@@ -83,7 +84,8 @@ MC_put_o_16_arm_align_jt:
+ 
+ @ ----------------------------------------------------------------
+ 	.align
+-	.global MC_put_o_8_arm
++	.global   MC_put_o_8_arm
++	.internal MC_put_o_8_arm
+ MC_put_o_8_arm:
+ 	@@ void func(uint8_t * dest, const uint8_t * ref, int stride, int height)
+ 	pld [r1]
+@@ -152,7 +154,8 @@ MC_put_o_8_arm_align_jt:
+ .endm
+ 
+ 	.align
+-	.global MC_put_x_16_arm
++	.global   MC_put_x_16_arm
++	.internal MC_put_x_16_arm
+ MC_put_x_16_arm:
+ 	@@ void func(uint8_t * dest, const uint8_t * ref, int stride, int height)
+ 	pld [r1]
+@@ -244,7 +247,8 @@ MC_put_x_16_arm_align_jt:
+ 
+ @ ----------------------------------------------------------------
+ 	.align
+-	.global MC_put_x_8_arm
++	.global   MC_put_x_8_arm
++	.internal MC_put_x_8_arm
+ MC_put_x_8_arm:
+ 	@@ void func(uint8_t * dest, const uint8_t * ref, int stride, int height)
+ 	pld [r1]
