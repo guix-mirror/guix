@@ -10628,13 +10628,15 @@ docstring and colored output.")
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
-    (version "1.3.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lazy-object-proxy" version))
               (sha256
                (base32
-                "0yha7q9bhw857fwaby785d63mffhngl9npwzlk9i0pwlkwvbx4gb"))))
+                "1wgl0fmddi0ind78a74yyk2qrr9pb5llvj1892cdpp6z6n6mn4zx"))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm-3.3)))
     (build-system python-build-system)
     (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
     (synopsis "Lazy object proxy for python")
