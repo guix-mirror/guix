@@ -1743,10 +1743,42 @@ possible to write plugins to add your own checks.")
     (properties `((python2-variant . ,(delay python2-pylint))))
     (license license:gpl2+)))
 
+;; Python2 is not supported anymore by Pylint. See:
+;; https://github.com/PyCQA/pylint/issues/1763.
 (define-public python2-pylint
   (let ((pylint (package-with-python2
-                  (strip-python2-variant python-pylint))))
+                 (strip-python2-variant python-pylint))))
     (package (inherit pylint)
+             (version "1.7.2")
+             (source
+              (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PyCQA/pylint")
+                      (commit (string-append "pylint-" version))))
+                (file-name (git-file-name (package-name pylint) version))
+                (sha256
+                 (base32
+                  "0yyc1gxq66li2adyx8njs83dh1pliylzkdmihw0k5bn6z4aakh8s"))))
+             (arguments
+              `(,@(package-arguments pylint)
+                #:phases
+                (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Somehow, tests fail if run from the build directory.
+                      (let ((work "/tmp/work"))
+                        (mkdir-p work)
+                        (setenv "PYTHONPATH"
+                                (string-append (getenv "PYTHONPATH") ":" work))
+                        (copy-recursively "." work)
+                        (with-directory-excursion "/tmp"
+                          (invoke "python" "-m" "unittest" "discover"
+                                  "-s" (string-append work "/pylint/test")
+                                  "-p" "*test_*.py"))))))))
+             (native-inputs
+              `(("python2-futures" ,python2-futures)
+                ,@(package-native-inputs pylint)))
              (propagated-inputs
               `(("python2-backports-functools-lru-cache"
                  ,python2-backports-functools-lru-cache)
