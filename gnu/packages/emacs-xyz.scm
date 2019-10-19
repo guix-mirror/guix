@@ -17536,10 +17536,10 @@ a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
 (define-public emacs-forge
-  (let ((commit "a6721c071226ae8da6852e9330f2bdcba92a4577"))
+  (let ((commit "63cbf81f166fc71861d8e3d246df8e5ccedcb9bb"))
     (package
       (name "emacs-forge")
-      (version (git-version "0.1.0" "1" commit))
+      (version (git-version "0.1.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -17549,7 +17549,7 @@ a suffix) we prefer to call it just a \"transient\".")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1gzr1di29a9szkzm6kjznq7c8md71cm5761pznf08nmmk63dl3zm"))))
+           "1yf2xjx3459py6rji740jm8bmh2pv66ghnbjxsvjd4jf9kcdav83"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)
