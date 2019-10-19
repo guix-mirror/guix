@@ -1133,15 +1133,35 @@ Trezor wallet.")
   (package
     (inherit bitcoin-core)
     (name "bitcoin-abc")
-    (version "0.19.8")
+    (version "0.20.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.bitcoinabc.org/"
-                                  version "/linux/src/bitcoin-abc-"
+                                  version "/src/bitcoin-abc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ndvkxv5m8346bdhfqzgdiz1k9wyjycj05jp7daf9pml3cw79sz5"))))
+                "0fld54z3l7z7k5n35rrjichjnx37j9xp0rv8i69m3x4qfj1xk2np"))))
+    (inputs
+     `(("bdb" ,bdb-5.3)
+       ("boost" ,boost)
+       ("libevent" ,libevent)
+       ("miniupnpc" ,miniupnpc)
+       ("openssl" ,openssl)
+       ("protobuf" ,protobuf)
+       ("qtbase" ,qtbase)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments bitcoin-core)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'fix-tests
+             ;; Disable 'check-devtools' test which tries to run a
+             ;; python script that doesn't exist.
+             (lambda _
+               (substitute* "Makefile.in"
+                 (("^check-local: check-devtools")
+                  "check-local:"))
+               #t))))))
     (home-page "https://www.bitcoinabc.org/")
     (synopsis "Bitcoin ABC peer-to-peer full node for the Bitcoin Cash protocol")
     (description
