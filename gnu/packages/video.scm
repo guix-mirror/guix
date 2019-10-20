@@ -3552,6 +3552,7 @@ transitions, and effects and then export your film to many common formats.")
         (method url-fetch)
         (uri (string-append "https://downloads.videolan.org/pub/videolan"
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
+        (patches (search-patches "dav1d-aarch64-symbol-alignment.patch"))
         (sha256
          (base32
           "1586k439fm8db9lsxxywm34iqibj5mw4xrppr4g2wqr0hjlhcbxn"))))
