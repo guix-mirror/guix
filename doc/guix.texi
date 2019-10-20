@@ -9484,7 +9484,7 @@ that limit has been reset.
 @cindex CVE, Common Vulnerabilities and Exposures
 Report known vulnerabilities found in the Common Vulnerabilities and
 Exposures (CVE) databases of the current and past year
-@uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
+@uref{https://nvd.nist.gov/vuln/data-feeds, published by the US
 NIST}.
 
 To view information about a particular vulnerability, visit pages such as:
@@ -9501,7 +9501,7 @@ where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 @code{CVE-2015-7554}.
 
 Package developers can specify in package recipes the
-@uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
+@uref{https://nvd.nist.gov/products/cpe,Common Platform Enumeration (CPE)}
 name and version of the package when they differ from the name or version
 that Guix uses, as in this example:
 
