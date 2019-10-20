@@ -5362,6 +5362,31 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-xref
+  (let ((commit "1a35fc0f070388701b05b0a455cbe262e924d547")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-xref")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alexmurray/ivy-xref.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0d71nm9d9ajp5i6dnl8h1hw9jqp8gd1ajgninb1h13i80rplzl9k"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/alexmurray/ivy-xref")
+      (synopsis "Ivy interface for @code{xref}")
+      (description "This package provides an Ivy interface for selecting from
+@code{xref} results.")
+      (license license:gpl3))))
+
 (define-public emacs-ivy-pass
   (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
         (revision "1"))
