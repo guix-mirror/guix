@@ -7100,7 +7100,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20181022")
+    (version "20190917")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7109,7 +7109,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08951dk1irfadwpr3p323a4fprmxg53rk2r2niwq3v62ryhi3663"))))
+                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
