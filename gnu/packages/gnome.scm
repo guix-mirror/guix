@@ -2339,7 +2339,7 @@ editors, IDEs, etc.")
   (package
     (inherit vte)
     (name "vte-ng")
-    (version "0.56.2.a")
+    (version "0.58.2.a")
     (home-page "https://github.com/thestinger/vte-ng")
     (source (origin
               (method git-fetch)
@@ -2347,20 +2347,13 @@ editors, IDEs, etc.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1lmba6i0abifmvvfb1q63ql6zh6d38148kp6skmkggiib2hi5dki"))))
+                "0rnm5c6m3abbm81jsfdas0y80z299ny54gr4syn4bfrms3s4g19l"))))
+    (build-system meson-build-system)
     (native-inputs
      `(("gtk-doc" ,gtk-doc)
-       ("gperf" ,gperf)
-       ("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
        ,@(package-native-inputs vte)))
     (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (replace 'bootstrap
-                    (lambda _
-                      (setenv "NOCONFIGURE" "true")
-                      (invoke "sh" "autogen.sh"))))))
+     `(#:configure-flags '("-Ddocs=true")))
   (synopsis "Enhanced VTE terminal widget")
   (description
    "VTE is a library (libvte) implementing a terminal emulator widget for
