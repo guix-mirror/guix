@@ -161,7 +161,7 @@
                       (string-append (assoc-ref inputs "vulkan-loader")
                                      "/lib/libvulkan.so")))
                  (chdir "docs")
-                 (invoke "bash" "-c" "g++ -O2 -std=c++11 $(freetype-config \
+                 (invoke "bash" "-c" "g++ -O2 $(freetype-config \
 --cflags --libs) gc-font-tool.cpp -o gc-font-tool")
                  (invoke "./gc-font-tool" "a" fontfile "font_western.bin")
                  (invoke "./gc-font-tool" "s" fontfile "font_japanese.bin")

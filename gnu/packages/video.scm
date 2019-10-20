@@ -1180,8 +1180,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `("CXXFLAGS=-std=gnu++11"
-         "BUILDCC=gcc"
+       `("BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
@@ -2219,7 +2218,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
+       #:make-flags '("CC=gcc" "CXX=g++")
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
@@ -2278,8 +2277,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
      '(#:configure-flags
        (list (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev")
-             "CXXFLAGS=-std=gnu++11")))
+                            "/lib/udev"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))

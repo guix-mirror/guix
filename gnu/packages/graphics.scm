@@ -673,7 +673,6 @@ virtual reality, scientific visualization and modeling.")
        (list "COMPILED_BY=Guix"
              (string-append "--with-boost-libdir="
                             (assoc-ref %build-inputs "boost") "/lib")
-             "CXXFLAGS=-std=c++11"
              "--disable-optimiz-arch")
        #:phases
        (modify-phases %standard-phases

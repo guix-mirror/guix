@@ -521,8 +521,6 @@ formant warp.")
      `(#:tests? #f ; no check target
        #:make-flags
        (list "LV2PEG=ttl2c"
-             "CXXFLAGS=-std=gnu++11"
-             "CFLAGS=-std=gnu++11"
              (string-append "prefix=" %output)
              (string-append "pkgdatadir=" %output "/share/azr3-jack"))
        #:phases
@@ -1328,8 +1326,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
-        "--cxxflags=-std=c++11")
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-boost-includes
@@ -2427,9 +2424,7 @@ the Turtle syntax.")
                 "0ay7hl6nr6ip1nn9k2m8ri3b52b6sx9mhixmcy4fy3kr2a88ksd1"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f                      ; no check target
-       #:configure-flags
-       '("CXXFLAGS=-std=gnu++11")))
+     `(#:tests? #f))                    ;no check target
     (inputs
      `(("lv2" ,lv2)
        ("gtk+" ,gtk+-2)

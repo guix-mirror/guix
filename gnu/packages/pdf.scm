@@ -200,10 +200,7 @@ When present, Poppler is able to correctly render CJK and Cyrillic text.")
              (substitute* "setup.py"
                ;; This check always fails, so disable it.
                (("if not check_qtxml\\(\\)")
-                "if True")
-               ;; Enable C++11, which is needed because of Qt5.
-               (("\\*\\*ext_args" line)
-                (string-append "extra_compile_args=['-std=gnu++11'], " line)))
+                "if True"))
              ;; We need to pass an extra flag here.  This cannot be in
              ;; configure-flags because it should not be passed for the
              ;; installation phase.

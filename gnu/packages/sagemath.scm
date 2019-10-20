@@ -404,11 +404,7 @@ used as internal storage type for polynomial structures.")
                   (string-append "INSTALL_DIR=" out))
                  ;; Sage renames the include directory, so we do it also.
                  (("include/Lfunction")
-                  "include/libLfunction")
-                 ;; Add --std=c++11 to be compatible with the "auto" keyword
-                 ;; introduced by lcalc-using-namespace-std.patch.
-                 (("^#EXTRA= -pg")
-                  "EXTRA=--std=c++11")))
+                  "include/libLfunction")))
              #t))
          (add-before 'install 'make-output-dirs
            (lambda* (#:key outputs #:allow-other-keys)

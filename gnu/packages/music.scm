@@ -1514,14 +1514,6 @@ special variant of additive synthesis.")
         (base32
          "1882pfcmf3rqg3vd4qflzkppcv158d748i603spqjbxqi8z7x7w0"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-flags
-           (lambda _
-             ;; Compile with C++11, required by gtkmm.
-             (setenv "CXXFLAGS" "-std=c++11")
-             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
@@ -3569,8 +3561,7 @@ develop custom plugins for use in other applications without programming.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--enable-qt5"
-             "CXXFLAGS=-std=gnu++11")))
+       (list "--enable-qt5")))
     (inputs
      `(("qtbase" ,qtbase)
        ("alsa-lib" ,alsa-lib)
@@ -3601,8 +3592,7 @@ modules running in parallel.")
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
-       (list "--enable-qt5"
-             "CXXFLAGS=-std=gnu++11")))
+       (list "--enable-qt5")))
     (inputs
      `(("qtbase" ,qtbase)
        ("alsa-lib" ,alsa-lib)))
@@ -3631,9 +3621,6 @@ defined as tabs in the main control surface.")
                 "12dphdhnvfk1k0vmagi1v2lhyxjyj1j3cz6ksjw0ydcvid1x8ap2"))
               (patches (search-patches "seq24-rename-mutex.patch"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags
-       (list "CXXFLAGS=-std=gnu++11")))
     (inputs
      `(("gtkmm" ,gtkmm-2)
        ("alsa-lib" ,alsa-lib)

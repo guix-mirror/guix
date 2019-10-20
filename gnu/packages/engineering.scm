@@ -1546,7 +1546,7 @@ unique design feature of Trilinos is its focus on packages.")
      `(#:tests? #f
        #:configure-flags
        (list
-        "CXXFLAGS=-O3 -std=c++11"
+        "CXXFLAGS=-O3"
         (string-append "ARCHDIR="
                        (assoc-ref %build-inputs "trilinos")))))
     (native-inputs
@@ -1586,7 +1586,7 @@ parallel computing platforms.  It also supports serial execution.")
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments xyce-serial)
            ((#:configure-flags flags)
-            `(list "CXXFLAGS=-O3 -std=c++11"
+            `(list "CXXFLAGS=-O3"
                    "CXX=mpiCC"
                    "CC=mpicc"
                    "F77=mpif77"

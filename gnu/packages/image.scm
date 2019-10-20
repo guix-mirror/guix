@@ -973,11 +973,7 @@ supplies a generic doubly-linked list and some string functions.")
             ;; We need '-fpermissive' for Source/FreeImage.h.
             ;; libjxr doesn't have a pkg-config file.
             (string-append "CFLAGS+=-O2 -fPIC -fvisibility=hidden -fpermissive "
-                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib "
-
-                           ;; FIXME: OpenEXR 2.4.0 requires C++11 or later.
-                           ;; Remove when the default compiler is > GCC 5.
-                           "-std=gnu++11"))
+                           "-I" (assoc-ref %build-inputs "libjxr") "/include/jxrlib"))
       #:tests? #f)) ; no check target
    (native-inputs
     `(("pkg-config" ,pkg-config)

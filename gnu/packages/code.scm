@@ -431,7 +431,6 @@ functionality such as HTML output.")
      '(#:build-type "RelWithDebInfo"
        #:configure-flags
        '("-DRTAGS_NO_ELISP_FILES=1"
-         "-DCMAKE_CXX_FLAGS=-std=c++11"
          "-DBUILD_TESTING=FALSE")
        #:tests? #f))
     (native-inputs

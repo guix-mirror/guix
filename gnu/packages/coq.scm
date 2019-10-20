@@ -256,8 +256,7 @@ inside Coq.")
     (arguments
      `(#:configure-flags
        (list (string-append "--libdir=" (assoc-ref %outputs "out")
-                            "/lib/coq/user-contrib/Gappa")
-             "CXXFLAGS=-std=c++11")
+                            "/lib/coq/user-contrib/Gappa"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'fix-remake

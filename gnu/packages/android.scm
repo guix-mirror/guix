@@ -217,7 +217,6 @@ in Main, System, Radio and Events sub-logs.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:tests? #f ; Test failure: logging.UNIMPLEMENTED
-       #:make-flags '("CXXFLAGS=-std=gnu++11")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
@@ -257,7 +256,7 @@ various Android core host applications.")
                    "CC = gcc\n"
 
                    "CFLAGS += -fPIC\n"
-                   "CXXFLAGS += -std=gnu++11 -fPIC\n"
+                   "CXXFLAGS += -fPIC\n"
                    "CPPFLAGS += -Iinclude -I../include\n"
                    "LDFLAGS += -shared -Wl,-soname,$(NAME).so.0\n"
 
@@ -312,7 +311,7 @@ various Android core host applications.")
     (build-system android-ndk-build-system)
     (arguments
      `(#:make-flags '("CFLAGS=-Wno-error"
-                      "CXXFLAGS=-fpermissive -Wno-error -std=gnu++11")
+                      "CXXFLAGS=-fpermissive -Wno-error")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
@@ -631,8 +630,7 @@ file system.")
     (source (android-platform-system-core version))
     (build-system android-ndk-build-system)
     (arguments
-     `(#:make-flags (list "CXXFLAGS=-std=gnu++11")
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source
            (lambda _

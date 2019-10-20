@@ -1443,8 +1443,7 @@ confidence to have in an alignment.")
                                            "-lboost_system"
                                            "-lboost_iostreams"
                                            "-lz"
-                                           "-fopenmp"
-                                           "-std=c++11"))))
+                                           "-fopenmp"))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-build-bundled-pigz
