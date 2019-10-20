@@ -14,6 +14,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2019 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2019 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -710,63 +711,6 @@ NTFS volumes using @code{ntfs-3g}, preserving NTFS-specific attributes.")
     (license (list license:gpl3+
                    license:lgpl3+
                    license:cc0))))
-
-(define-public obnam
-  (package
-    (name "obnam")
-    (version "1.21")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://code.liw.fi/debian/pool/main/o/obnam/obnam_"
-             version ".orig.tar.xz"))
-       (sha256
-        (base32
-         "0qlipsq50hca71zc0dp1mg9zs12qm0sbblw7qfzl0hj6mk2rv1by"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:python ,python-2
-       #:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    (substitute* "obnamlib/vfs_local_tests.py"
-                      ;; Check for the nobody user instead of root.
-                      (("self.fs.get_username\\(0\\), 'root'")
-                       "self.fs.get_username(65534), 'nobody'")
-                      ;; Disable tests checking for root group.
-                      (("self.fs.get_groupname\\(0\\)") "'root'"))
-                    (substitute* "obnamlib/vfs_local.py"
-                      ;; Don't cover get_groupname function.
-                      (("def get_groupname\\(self, gid\\):")
-                       "def get_groupname(self, gid):  # pragma: no cover"))
-                    ;; Can't run network tests.
-                    (invoke "./check" "--unit-tests"))))))
-    (inputs
-     `(("python2-cliapp" ,python2-cliapp)
-       ("python2-larch" ,python2-larch)
-       ("python2-paramiko" ,python2-paramiko)
-       ("python2-pyaml" ,python2-pyaml)
-       ("python2-tracing" ,python2-tracing)
-       ("python2-ttystatus" ,python2-ttystatus)))
-    (native-inputs
-     `(("gnupg" ,gnupg)
-       ("python2-coverage" ,python2-coverage)
-       ("python2-coverage-test-runner" ,python2-coverage-test-runner)
-       ("python2-pep8" ,python2-pep8)
-       ("python2-pylint" ,python2-pylint)))
-    (home-page "https://obnam.org/")
-    (synopsis "Retired backup program")
-    (description
-     "Warning: @uref{https://blog.liw.fi/posts/2017/08/13/retiring_obnam/,
-the Obnam project is retired}.  You should use another backup solution instead.
-
-Obnam was an easy, secure backup program.  Features included snapshot backups,
-data de-duplication and encrypted backups using GnuPG.  Backups can be stored on
-local hard disks, or online via the SSH SFTP protocol.  The backup server, if
-used, does not require any special software, on top of SSH.")
-    (license license:gpl3+)))
 
 (define-public dirvish
   (package
