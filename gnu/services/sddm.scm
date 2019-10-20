@@ -316,7 +316,8 @@ Relogin="              (if (sddm-configuration-relogin? config)
                         (service-extension account-service-type
                                            (const %sddm-accounts))
                         (service-extension profile-service-type
-                                           sddm-profile-service)))))
+                                           sddm-profile-service)))
+                (default-value (sddm-configuration))))
 
 (define* (sddm-service #:optional (config (sddm-configuration)))
   "Run the @uref{https://github.com/sddm/sddm,SSDM display manager}
