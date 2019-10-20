@@ -6146,13 +6146,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.4")
+    (version "5.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0gj0xxgiq3mp9qyyrbfzldiaq1giliqw0in64nqiz7vx49myqj7z"))))
+        (base32 "1pnpvvn8n2a78cg360wz3ldmpqrsm2wzi0c0dmvki9fnsw6fxdas"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -6180,6 +6180,7 @@ Python.")
        ("python-jinja2" ,python-jinja2)
        ("python-jsonschema" ,python-jsonschema)
        ("python-networkx" ,python-networkx)
+       ("python-psutil" ,python-psutil)
        ("python-pyyaml" ,python-pyyaml)
        ("python-ratelimiter" ,python-ratelimiter)))
     (home-page "https://snakemake.readthedocs.io")
