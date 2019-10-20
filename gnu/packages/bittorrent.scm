@@ -110,7 +110,7 @@
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.transmissionbt.com/")
+    (home-page "https://transmissionbt.com/")
     (synopsis "Fast and easy BitTorrent client")
     (description
      "Transmission is a BitTorrent client that comes with graphical,
