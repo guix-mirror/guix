@@ -6191,24 +6191,6 @@ providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
 
-;; This is currently needed for the pigx-* packages.
-(define-public snakemake-4
-  (package (inherit snakemake)
-    (version "4.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "snakemake" version))
-       (sha256
-        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
-    (propagated-inputs
-     `(("python-wrapt" ,python-wrapt)
-       ("python-requests" ,python-requests)
-       ("python-appdirs" ,python-appdirs)
-       ("python-configargparse" ,python-configargparse)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-ratelimiter" ,python-ratelimiter)))))
-
 (define-public python-pyqrcode
   (package
     (name "python-pyqrcode")
