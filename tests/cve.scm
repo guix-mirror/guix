@@ -25,7 +25,7 @@
   (search-path %load-path "tests/cve-sample.xml"))
 
 (define (vulnerability id packages)
-  (make-struct (@@ (guix cve) <vulnerability>) 0 id packages))
+  (make-struct/no-tail (@@ (guix cve) <vulnerability>) id packages))
 
 (define %expected-vulnerabilities
   ;; What we should get when reading %SAMPLE.
