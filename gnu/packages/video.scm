@@ -688,8 +688,8 @@ streams.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/" name "/" name "/"
-                    version "/" name "-" version ".tar.gz"))
+                    "mirror://sourceforge/libdv/libdv/"
+                    version "/libdv-" version ".tar.gz"))
               (sha256
                (base32
                 "1fl96f2xh2slkv1i1ix7kqk576a0ak1d33cylm0mbhm96d0761d3"))))
