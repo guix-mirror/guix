@@ -75,7 +75,7 @@ data in motion, or as a file format for data at rest.")
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "3.5.1")
+    (version "3.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/google/protobuf/releases/"
@@ -83,7 +83,7 @@ data in motion, or as a file format for data at rest.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14j0427ykjzrd9a66c2mpk0sjcccjlsx6q8ww6hzwb6sha3vm3f2"))))
+                "06xnqpsa79jrk3k55fsycnp7jac546299v7gdyx9yf4c5q81xfgz"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (outputs (list "out"
@@ -112,9 +112,9 @@ yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
     (license license:bsd-3)))
 
-(define-public protobuf-next
-  (package (inherit protobuf)
-    (name "protobuf")
+;; Tensorflow requires version 3.6 specifically.
+(define-public protobuf-3.6
+  (package/inherit protobuf
     (version "3.6.1")
     (source (origin
               (method url-fetch)
@@ -124,6 +124,20 @@ internal RPC protocols and file formats.")
               (sha256
                (base32
                 "0a955bz59ihrb5wg7dwi12xajdi5pmz4bl0g147rbdwv393jwwxk"))))))
+
+;; The 3.5 series are the last versions that do not require C++ 11.
+(define-public protobuf-3.5
+  (package/inherit
+   protobuf
+   (version "3.5.1")
+   (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/protobuf/releases/"
+                                  "download/v" version "/protobuf-cpp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14j0427ykjzrd9a66c2mpk0sjcccjlsx6q8ww6hzwb6sha3vm3f2"))))))
 
 ;; XXX Remove this old version when no other packages depend on it.
 (define-public protobuf-2
@@ -189,14 +203,14 @@ encoder in C++.  The developer using protozero has to manually translate the
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.5.2")
+    (version "3.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "1q4b1m55w4gvcbzklbk8iylaii98n4in41k27d94w8ypbwlrm1q9"))))
+         "1zjq3qi0wgqi0fwxgqlgwvj9ri1m4kmnz3jnpd803lqc5k0vb0yv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)))
@@ -210,10 +224,11 @@ mechanism for serializing structured data.")
 (define-public python2-protobuf
   (package-with-python2 python-protobuf))
 
-(define-public python-protobuf-next
-  (package (inherit python-protobuf)
+;; For tensorflow.
+(define-public python-protobuf-3.6
+  (package/inherit python-protobuf
     (name "python-protobuf")
-    (version (package-version protobuf-next) )
+    (version (package-version protobuf-3.6) )
     (source
      (origin
        (method url-fetch)
