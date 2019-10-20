@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -974,6 +975,41 @@ manage or manipulate PDFs.")
 Note: This module isn't maintained anymore.  For new projects please use
 python-pypdf2 instead.")
     (license license:bsd-3)))
+
+(define-public pdfarranger
+  (package
+    (name "pdfarranger")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jeromerobert/pdfarranger.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f8m8r81322i97wkqpmf7a4kiwnq244n6cnbldh03jc49vwq2kxx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f))  ; no tests
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("python-distutils-extra" ,python-distutils-extra)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pypdf2" ,python-pypdf2)))
+    (home-page "https://github.com/jeromerobert/pdfarranger")
+    (synopsis "Merge, split and re-arrange pages from PDF documents")
+    (description
+     "PDF Arranger is a small application which allows one to merge or split
+PDF documents and rotate, crop and rearrange their pages using an interactive
+and intuitive graphical interface.
+
+PDF Arranger was formerly known as PDF-Shuffler.")
+    (license license:gpl3+)))
 
 (define-public pdfposter
   (package
