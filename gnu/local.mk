@@ -694,6 +694,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/antlr3-3_1-fix-java8-compilation.patch	\
   %D%/packages/patches/antlr3-3_3-fix-java8-compilation.patch	\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
+  %D%/packages/patches/arm-trusted-firmware-disable-hdcp.patch	\
+  %D%/packages/patches/arm-trusted-firmware-optional-bin-generation.patch	\
+  %D%/packages/patches/arm-trusted-firmware-rockchip-disable-binary.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/aspell-gcc-compat.patch			\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
@@ -763,6 +766,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/cvs-CVE-2017-12836.patch		\
   %D%/packages/patches/darkice-workaround-fpermissive-error.patch	\
+  %D%/packages/patches/dav1d-aarch64-symbol-alignment.patch	\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dbus-c++-gcc-compat.patch		\
   %D%/packages/patches/dbus-c++-threading-mutex.patch		\
@@ -1013,6 +1017,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/kobodeluxe-manpage-minus-not-hyphen.patch	\
   %D%/packages/patches/kobodeluxe-midicon-segmentation-fault.patch	\
   %D%/packages/patches/kobodeluxe-graphics-window-signed-char.patch	\
+  %D%/packages/patches/kodi-increase-test-timeout.patch		\
   %D%/packages/patches/kodi-set-libcurl-ssl-parameters.patch		\
   %D%/packages/patches/kodi-skip-test-449.patch		\
   %D%/packages/patches/kwindowsystem-qt-compat.patch		\
@@ -1053,6 +1058,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-md_size.patch			\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libmp4v2-c++11.patch			\
+  %D%/packages/patches/libmpeg2-arm-private-symbols.patch	\
+  %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
   %D%/packages/patches/libreoffice-boost.patch			\

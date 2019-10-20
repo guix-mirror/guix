@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:export (%shepherd-socket-file
+            shepherd-message-port
 
             shepherd-error?
             service-not-found-error?
@@ -140,8 +141,12 @@ does not denote an error."
     (#f                                           ;not an error
      #t)))
 
+(define shepherd-message-port
+  ;; Port where messages coming from shepherd are printed.
+  (make-parameter (current-error-port)))
+
 (define (display-message message)
-  (format (current-error-port) "shepherd: ~a~%" message))
+  (format (shepherd-message-port) "shepherd: ~a~%" message))
 
 (define* (invoke-action service action arguments cont)
   "Invoke ACTION on SERVICE with ARGUMENTS.  On success, call CONT with the

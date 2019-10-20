@@ -3977,14 +3977,14 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
 (define-public vc
   (package
     (name "vc")
-    (version "1.3.3")
+    (version "1.4.1")
     (source
       (origin (method url-fetch)
               (uri (string-append "https://github.com/VcDevel/Vc/releases/"
                                   "download/" version "/Vc-" version ".tar.gz"))
               (sha256
                (base32
-                "1zmlpn32jzb38smp3j834llmbix3whsrbw0h397qxysbw792kih8"))))
+                "17qili8bf8r78cng65yf4qmgna8kiqjqbgcqbric6v9j6nkhkrk8"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -3992,7 +3992,30 @@ supports compressed MAT files, as well as newer (version 7.3) MAT files.")
          ;; By default, Vc will optimize for the CPU of the build machine.
          ;; Setting this to "none" makes it create portable binaries.  See
          ;; "cmake/OptimizeForArchitecture.cmake".
-         "-DTARGET_ARCHITECTURE=none")))
+         "-DTARGET_ARCHITECTURE=none")
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'copy-testdata
+                    (lambda* (#:key inputs native-inputs #:allow-other-keys)
+                      (let ((testdata (assoc-ref (or native-inputs inputs)
+                                                 "testdata")))
+                        (copy-recursively testdata "tests/testdata")
+                        #t))))))
+    (native-inputs
+     `(("virtest" ,virtest)
+
+       ;; This is a submodule in the git project, but not part of the
+       ;; released sources.  See the git branch for the commit to take.
+       ("testdata" ,(let ((commit "9ada1f34d6a41f1b5553d6223f277eae72c039d3"))
+                      (origin
+                        (method git-fetch)
+                        (uri (git-reference
+                              (url "https://github.com/VcDevel/vc-testdata")
+                              (commit "9ada1f34d6a41f1b5553d6223f277eae72c039d3")))
+                        (file-name (git-file-name "vc-testdata"
+                                                  (string-take commit 7)))
+                        (sha256
+                         (base32
+                          "1hkhqib03qlcq412ym2dciynfxcdr2ygqhnplz4l1vissr1wnqn2")))))))
     (synopsis "SIMD vector classes for C++")
     (description "Vc provides portable, zero-overhead C++ types for explicitly
 data-parallel programming.  It is a library designed to ease explicit

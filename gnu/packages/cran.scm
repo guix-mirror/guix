@@ -546,13 +546,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "1.5")
+    (version "1.5.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "1h2sj5h9vcssb73nz63gmw5bajs73m9q807fsypvr621gb1s124i"))))
+                "10fp306l1nybkah6jrlrqwwdb6zvklbddp8i3w9v9naj8la5jbnl"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3089,14 +3089,14 @@ color labels, layout, etc.")
 (define-public r-stringdist
   (package
     (name "r-stringdist")
-    (version "0.9.5.2")
+    (version "0.9.5.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringdist" version))
        (sha256
         (base32
-         "0nw8c317qkfq63pr0prl0hx522ddfq4cbgixb5r4pq3fxk9z303l"))))
+         "1vbhn6qwj3bzplhq06bw1yqqq1qpf1zinnj27cr7pf1nqsbyx2nq"))))
     (build-system r-build-system)
     (home-page "https://github.com/markvanderloo/stringdist")
     (synopsis "Approximate string matching and string distance functions")
@@ -6177,14 +6177,14 @@ other add-on packages.")
 (define-public r-insight
   (package
     (name "r-insight")
-    (version "0.5.0")
+    (version "0.6.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "insight" version))
        (sha256
         (base32
-         "0lrh2l9n2zd9n3zzknsxz6nlasnrayx3bplxlz7m616g56gr5nfp"))))
+         "1izqh4j0gzyk25cga67gs0i6rl0j471h5y2c3y1maz79r32fs7fd"))))
     (build-system r-build-system)
     (home-page "https://easystats.github.io/insight/")
     (synopsis "Easy access to model information for various model objects")
@@ -8997,14 +8997,14 @@ netCDF files.")
 (define-public r-biocmanager
   (package
     (name "r-biocmanager")
-    (version "1.30.4")
+    (version "1.30.8")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "BiocManager" version))
        (sha256
         (base32
-         "0kxs76pixk1d2lpvkyrq6nnvv1rqf55ph5f7igkadyyqirf3y2ah"))))
+         "0pqgb7j4aqpcp3bapl313rmyxxj3j96s9csip4f65444gjy5r2x2"))))
     (properties `((upstream-name . "BiocManager")))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/BiocManager/")
@@ -10216,14 +10216,14 @@ decomposition is shared between datasets.")
 (define-public r-strucchange
   (package
     (name "r-strucchange")
-    (version "1.5-1")
+    (version "1.5-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "strucchange" version))
        (sha256
         (base32
-         "0cdgvl6kphm2i59bmnppn1y3kv65ml111bk7yzpcx7vv8wh2w3kl"))))
+         "1y022363a4pp0mnji91sjh1qiyspkh09sybqwj03r9pmwrd7q93x"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-sandwich" ,r-sandwich)
@@ -12698,14 +12698,14 @@ utilities for sequence data management under the ACNUC system.")
 (define-public r-units
   (package
     (name "r-units")
-    (version "0.6-4")
+    (version "0.6-5")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "units" version))
         (sha256
           (base32
-            "1jz0mzd78sdfxkhqw041ji50hmhjk2ha55i31yjvz35nsw30lwi5"))))
+            "02nls8m0r1r7kljs4x35naz3szq62hyqyd5vracf1xwi1kz5kdsh"))))
     (build-system r-build-system)
     (inputs
      `(("udunits" ,udunits)))
@@ -12724,14 +12724,14 @@ classes.")
 (define-public r-classint
   (package
     (name "r-classint")
-    (version "0.4-1")
+    (version "0.4-2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "classInt" version))
        (sha256
         (base32
-         "00q1bpgblrldckn1rk166q1b0hgap2sjjyfmfcyh6ydk6y73ziir"))))
+         "0w980hrw8sgfdfyd5dsimalq7gwhvqm7507abk7k363pvgks23dv"))))
     (properties `((upstream-name . "classInt")))
     (build-system r-build-system)
     (propagated-inputs
@@ -14543,14 +14543,14 @@ batch correction, and data correction.")
 (define-public r-styler
   (package
     (name "r-styler")
-    (version "1.1.1")
+    (version "1.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "styler" version))
        (sha256
         (base32
-         "1k660lpjvd64gnf6bndcb1cq3qxsvik928kcn6271zmkhja5rgyb"))))
+         "0rdbz60x8bymis6r6188ia1y0ip3nhf5y363i4cmakr618irjab9"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-backports" ,r-backports)

@@ -60,8 +60,11 @@
             mx6cuboxi-installation-os
             nintendo-nes-classic-edition-installation-os
             novena-installation-os
+            firefly-rk3399-installation-os
             pine64-plus-installation-os
             pinebook-installation-os
+            rock64-installation-os
+            rockpro64-installation-os
             rk3399-puma-installation-os
             wandboard-installation-os
             os-with-u-boot))
@@ -558,6 +561,11 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
                             "/dev/mmcblk1" ; eMMC storage
                             "ttyS0"))
 
+(define firefly-rk3399-installation-os
+  (embedded-installation-os u-boot-firefly-rk3399-bootloader
+                            "/dev/mmcblk0" ; SD card/eMMC (SD priority) storage
+                            "ttyS2")) ; UART2 connected on the Pi2 bus
+
 (define mx6cuboxi-installation-os
   (embedded-installation-os u-boot-mx6cuboxi-bootloader
                             "/dev/mmcblk0" ; SD card storage
@@ -582,6 +590,16 @@ The bootloader BOOTLOADER is installed to BOOTLOADER-TARGET."
   (embedded-installation-os u-boot-pinebook-bootloader
                             "/dev/mmcblk0" ; SD card storage
                             "ttyS0"))
+
+(define rock64-installation-os
+  (embedded-installation-os u-boot-rock64-rk3328-bootloader
+                            "/dev/mmcblk0" ; SD card/eMMC (SD priority) storage
+                            "ttyS2")) ; UART2 connected on the Pi2 bus
+
+(define rockpro64-installation-os
+  (embedded-installation-os u-boot-rockpro64-rk3399-bootloader
+                            "/dev/mmcblk0" ; SD card/eMMC (SD priority) storage
+                            "ttyS2")) ; UART2 connected on the Pi2 bus
 
 (define rk3399-puma-installation-os
   (embedded-installation-os u-boot-puma-rk3399-bootloader

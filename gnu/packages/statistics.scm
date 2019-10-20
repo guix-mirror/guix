@@ -523,17 +523,17 @@ for reading and writing some dBase files.")
 (define-public r-kernsmooth
   (package
     (name "r-kernsmooth")
-    (version "2.23-15")
+    (version "2.23-16")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "KernSmooth" version))
        (sha256
         (base32
-         "1xhha8kw10jv8pv8b61hb5in9qiw3r2a9kdji3qlm991s4zd4wlb"))))
+         "1acrkbdn3a74y4dndkcdl1njnpfqz7gk3bsz03g8lfj8l7z53hmq"))))
     (properties `((upstream-name . "KernSmooth")))
     (build-system r-build-system)
-    (inputs
+    (native-inputs
      `(("gfortran" ,gfortran)))
     (home-page "https://cran.r-project.org/web/packages/KernSmooth")
     (synopsis "Functions for kernel smoothing")
@@ -1200,14 +1200,14 @@ agnes cluster diagrams.")
 (define-public r-gdtools
   (package
     (name "r-gdtools")
-    (version "0.2.0")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gdtools" version))
        (sha256
         (base32
-         "1mvpkp8cj30fwd4bwlz96x3cff7yzfbfz7iswmf77zl0a6122inh"))))
+         "1aax50wyrs4336zpf247l8wmp4spab2n70msziy1ip4gbjn26wa1"))))
     (build-system r-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2610,13 +2610,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.9.700.2.0")
+    (version "0.9.800.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "0g25w32dnqrvhnri8x4yxqawxd8qhn7w3m8d29nxxy0gybx3y8x9"))))
+                "1frg7y3fb571jf9dp1kkc75x0nxvw8j3qccsrm1brg5l1z2jmlaz"))))
     (properties `((upstream-name . "RcppArmadillo")))
     (build-system r-build-system)
     ;; All needed for vignettes
@@ -3605,13 +3605,13 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.43.1")
+    (version "0.43.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "0i01p8jxc4j4zl2v2ykvvpfnm5hv650zj1wi1dh8hq0c98xi2yfr"))))
+                "128zqyvbq9hm9gy86jzhj609lkfw57vr24mdxgh46ncmx66ag4gj"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
@@ -3818,14 +3818,14 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-purrr
   (package
     (name "r-purrr")
-    (version "0.3.2")
+    (version "0.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "purrr" version))
        (sha256
         (base32
-         "0ccs78a2ylr60f3z0f7iywi8h1pwr8mz4ga78bs4pwgnwkclvir7"))))
+         "17lyys7dxjrwsfkq7a7hw65iy3qn3pp1sn70srdy64jf8adahc8g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-magrittr" ,r-magrittr)

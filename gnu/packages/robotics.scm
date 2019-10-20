@@ -106,7 +106,7 @@ hundred times faster than real-time.")
       (inputs
        `(("dashel" ,dashel)
          ("enki" ,enki)
-         ("protobuf" ,protobuf)                   ;for logging
+         ("protobuf" ,protobuf-3.5)               ;for logging
          ("qtbase" ,qtbase)
          ("qtsvg" ,qtsvg)
          ("qttools" ,qttools)              ;for libQt5Help, needed by "studio"

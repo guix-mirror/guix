@@ -1443,8 +1443,7 @@ confidence to have in an alignment.")
                                            "-lboost_system"
                                            "-lboost_iostreams"
                                            "-lz"
-                                           "-fopenmp"
-                                           "-std=c++11"))))
+                                           "-fopenmp"))))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-build-bundled-pigz
@@ -1556,14 +1555,14 @@ gapped, local, and paired-end alignment modes.")
 (define-public bowtie1
   (package
     (name "bowtie1")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/bowtie-bio/bowtie/"
-                                  version "/bowtie-" version "-src.zip"))
+                                  version "/bowtie-src-x86_64.zip"))
               (sha256
                (base32
-                "1jl2cj9bz8lwz8dwnxbycn8yp8g4kky62fkcxifyf1ri0y6n2vc0"))
+                "0vmiqdhc9dzyfy9sh6vgi7k9xy2hiw8g87vbamnc6cgpm179zsa4"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -7731,13 +7730,13 @@ biological sequences or sets of sequences.")
 (define-public r-rsamtools
   (package
     (name "r-rsamtools")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "Rsamtools" version))
               (sha256
                (base32
-                "188k5g40lbli7dxr96hldyvg9r9hmlbh2fp0qs5nnd12b8zbf338"))))
+                "03qfpaqbffirpnby88mv6h45njfapli28crdvg35h2zi2jkkmhvp"))))
     (properties
      `((upstream-name . "Rsamtools")))
     (build-system r-build-system)
@@ -8283,14 +8282,14 @@ secondary structure and comparative analysis in R.")
 (define-public r-rhtslib
   (package
     (name "r-rhtslib")
-    (version "1.16.2")
+    (version "1.16.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhtslib" version))
        (sha256
         (base32
-         "07qaqj2hypmrg40m3pci082bzar6wi10dh77r4a8x74dfppcwdzf"))))
+         "1lmrfr32nrz36abn440kvzzck53y2320xjxqzs2jw7m2a9h3ryak"))))
     (properties `((upstream-name . "Rhtslib")))
     (build-system r-build-system)
     ;; Without this a temporary directory ends up in the Rhtslib.so binary,
@@ -8571,13 +8570,13 @@ of gene-level counts.")
 (define-public r-rhdf5
   (package
     (name "r-rhdf5")
-    (version "2.28.0")
+    (version "2.28.1")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rhdf5" version))
               (sha256
                (base32
-                "0y1w3cs7wg2b3jlkd6wyyz6626xg011nrg36si8gg371iqck9a1i"))))
+                "027cv1kh3xl66lrrahv2jgfmvgcwfpcj9dpgdj5fd9ybf5nyjcwb"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rhdf5lib" ,r-rhdf5lib)))
@@ -9705,14 +9704,14 @@ microarrays or GRanges for sequencing data.")
 (define-public r-keggrest
   (package
     (name "r-keggrest")
-    (version "1.24.0")
+    (version "1.24.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "KEGGREST" version))
        (sha256
         (base32
-         "1yjrpbm5zfg0h3nb5gg06q2f19ydbhjqwi0jb6q3p8dyrgww9mqp"))))
+         "0yxp3iajdy61q6mjgp1nxdgmf2yb58cvqmdgab7lqxr0ky1wkfkr"))))
     (properties `((upstream-name . "KEGGREST")))
     (build-system r-build-system)
     (propagated-inputs
@@ -9852,14 +9851,14 @@ originally made available by Holmes, Harris, and Quince, 2012, PLoS ONE 7(2):
 (define-public r-ensembldb
   (package
     (name "r-ensembldb")
-    (version "2.8.0")
+    (version "2.8.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ensembldb" version))
        (sha256
         (base32
-         "09s5g9xm9m8mqvzk6pkp9fyhx3zyb4p8yziz49mhfji5n35nydjr"))))
+         "103z902104ljdp6s9y2dmgrl5wkdz8vvlbbqgk8r4drkg7m3d4lj"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10188,14 +10187,14 @@ by Ernst and Kellis.")
 (define-public r-ldblock
   (package
     (name "r-ldblock")
-    (version "1.14.2")
+    (version "1.14.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "ldblock" version))
        (sha256
         (base32
-         "0xx04cghx6ads1ackwnw3z0gf72qv461nznzmcnkgmp7w5n9m2af"))))
+         "154yvrvs8ik7ifcny1681cmqra0i163j00k4vbvkvl701p5gsp5q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -10322,14 +10321,14 @@ with your data.")
 (define-public r-gwascat
   (package
     (name "r-gwascat")
-    (version "2.16.0")
+    (version "2.16.1")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "gwascat" version))
        (sha256
         (base32
-         "0akb36mrybmxbb1bc9kgxbnj3cdypfylj3yzrmhjwqxml03mg61i"))))
+         "0d4krqx8zjniwp6k2vzwqgfws39w03x51kqiwd5dks1fp05sw4xh"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-annotationdbi" ,r-annotationdbi)
@@ -10428,14 +10427,14 @@ provided.")
 (define-public r-hdf5array
   (package
     (name "r-hdf5array")
-    (version "1.12.2")
+    (version "1.12.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "HDF5Array" version))
        (sha256
         (base32
-         "0afradisrr5gn0lf2kxjw55vdm3lm9mlgx53qlr9r40c1hrydpf5"))))
+         "1037j6f0yyw4cf6p051810qamxi1sji5w4d0fgq5lyzyl5d36fm6"))))
     (properties `((upstream-name . "HDF5Array")))
     (build-system r-build-system)
     (inputs
@@ -10457,14 +10456,14 @@ block processing.")
 (define-public r-rhdf5lib
   (package
     (name "r-rhdf5lib")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (bioconductor-uri "Rhdf5lib" version))
        (sha256
         (base32
-         "0niz9dh66fcwbvqpkpsdlz9d06kwi3kfh45dhk3qz9g9qqyiakr1"))
+         "0q68n5jm7w99paibj8vkxbdksbyrxilzwc9dkp3zf8zrdc5qfxzy"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -10510,8 +10509,8 @@ block processing.")
                  (("HDF5_CXX_INCLUDE=.*") "HDF5_CXX_INCLUDE=./hdf5/c++/src\n")
                  (("HDF5_INCLUDE=.*") "HDF5_INCLUDE=./hdf5/src\n")
                  ;; szip is non-free software
-                 (("cp \\$\\{SZIP_LIB\\}.*") "")
-                 (("\\$\\{USER_LIB_DIR\\}libsz.a") "")))
+                 (("cp \"\\$\\{SZIP_LIB\\}.*") "")
+                 (("PKG_LIBS =.*") "PKG_LIBS = -lz -lhdf5\n")))
              #t)))))
     (inputs
      `(("zlib" ,zlib)))

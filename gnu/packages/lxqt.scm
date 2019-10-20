@@ -1279,6 +1279,52 @@ easily publishing them on internet image hosting services.")
 like @command{tar} and @command{zip}.")
     (license license:gpl2+)))
 
+(define-public lxqt-connman-applet
+  ;; since the main developers didn't release any version yet,  their 
+  ;; latest commit on `master` branch at the moment used for this version.
+  (let ((commit "3db374eebd8d851f68a50fc5d1ef5fa9478c275e")
+        (revision "0"))
+    (package
+      (name "lxqt-connman-applet")
+      (version (git-version "0.14.1" revision commit))
+      (source
+        (origin
+          (method git-fetch)
+          (uri (git-reference
+            (url (string-append "https://github.com/lxqt/" name ".git"))
+            (commit commit)))
+          (file-name (git-file-name name version))
+          (sha256 (base32 "1brkyzjmpa7hiv8p8rvmkcgagchh2zn71ry4pjiplga05as3jc11"))))
+      (build-system cmake-build-system)
+      (inputs
+        `(("kwindowsystem" ,kwindowsystem)
+          ("qtbase" ,qtbase)
+          ("qtsvg" ,qtsvg)
+          ("liblxqt" ,liblxqt)
+          ("qtx11extras" ,qtx11extras)
+          ("libqtxdg" ,libqtxdg)))
+      (native-inputs
+        `(("lxqt-build-tools" ,lxqt-build-tools)
+          ("qtlinguist" ,qttools)))
+      (arguments
+        `(#:tests? #f                   ; no tests
+          #:phases
+            (modify-phases %standard-phases
+              (add-after 'unpack 'patch-translations-dir
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (substitute* "CMakeLists.txt"
+                    (("\\$\\{LXQT_TRANSLATIONS_DIR\\}")
+                     (string-append (assoc-ref outputs "out")
+                                    "/share/lxqt/translations"))
+                    (("\\$\\{LXQT_ETC_XDG_DIR\\}") "etc/xdg"))
+                  #t)))))
+      (home-page "https://github.com/lxqt/lxqt-connman-applet")
+      (synopsis "System-tray applet for connman")
+      (description "This package provides a Qt-based system-tray applet for
+the network management tool Connman, originally developed for the LXQT
+desktop.")
+      (license license:lgpl2.1+))))
+
 ;; The LXQt Desktop Environment
 
 (define-public lxqt

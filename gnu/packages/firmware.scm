@@ -389,6 +389,10 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
                (url "https://github.com/ARM-software/arm-trusted-firmware.git")
                (commit (string-append "v" version))))
         (file-name (git-file-name "arm-trusted-firmware" version))
+        (patches (search-patches
+                  "arm-trusted-firmware-optional-bin-generation.patch"
+                  "arm-trusted-firmware-rockchip-disable-binary.patch"
+                  "arm-trusted-firmware-disable-hdcp.patch"))
        (sha256
         (base32
          "1gy5qskrjy8n3kxdcm1dx8b45l5b75n0pm8pq80wl6xic1ycy24r"))))
@@ -397,10 +401,16 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
      `(#:phases
        (modify-phases %standard-phases
          (delete 'configure) ; no configure script
+         ;; Remove binary blobs which do not contain source or proper license.
+         (add-after 'unpack 'remove-binary-blobs
+           (lambda _
+             (for-each (lambda (file)
+                         (delete-file file))
+                       (find-files "." ".*\\.bin$"))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
-                   (bin (find-files "." ".*\\.bin$")))
+                   (bin (find-files "." ".*\\.(bin|elf)$")))
                (for-each
                  (lambda (file)
                    (install-file file out))
@@ -456,6 +466,9 @@ such as:
       (inherit base)
       (name "arm-trusted-firmware-sun50i-a64"))))
 
+(define-public arm-trusted-firmware-rk3328
+  (make-arm-trusted-firmware "rk3328"))
+
 (define-public arm-trusted-firmware-puma-rk3399
   (let ((base (make-arm-trusted-firmware "rk3399"))
         ;; Vendor's arm trusted firmware branch hasn't been upstreamed yet.
@@ -475,6 +488,16 @@ such as:
           (sha256
            (base32
             "0vqhwqqh8h9qlkpybg2v94911091c1418bc4pnzq5fd7zf0fjkf8")))))))
+
+(define-public arm-trusted-firmware-rk3399
+  (let ((base (make-arm-trusted-firmware "rk3399")))
+    (package
+      (inherit base)
+      (name "arm-trusted-firmware-rk3399")
+      (native-inputs
+       `(("cross32-gcc" ,(cross-gcc "arm-none-eabi"))
+         ("cross32-binutils", (cross-binutils "arm-none-eabi"))
+         ,@(package-native-inputs base))))))
 
 (define-public rk3399-cortex-m0
   (package

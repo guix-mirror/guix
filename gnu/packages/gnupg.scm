@@ -866,8 +866,6 @@ software.")))
     (inputs
      `(("qtbase" ,qtbase)
        ,@(package-inputs pinentry-tty)))
-    (arguments
-     `(#:configure-flags '("CXXFLAGS=-std=gnu++11")))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
 passphrase when @code{gpg} is run and needs it.")))

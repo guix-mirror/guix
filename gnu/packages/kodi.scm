@@ -104,14 +104,12 @@
            (replace 'build
              (lambda _
                (invoke "g++" "-c" "guid.cpp" "-o" "guid.o"
-                       "-std=c++11" "-DGUID_LIBUUID")
+                        "-DGUID_LIBUUID")
                (invoke "ar" "rvs" "libcrossguid.a" "guid.o")))
            (replace 'check
              (lambda _
-               (invoke "g++" "-c" "test.cpp" "-o" "test.o"
-                       "-std=c++11")
-               (invoke "g++" "-c" "testmain.cpp" "-o" "testmain.o"
-                       "-std=c++11")
+               (invoke "g++" "-c" "test.cpp" "-o" "test.o")
+               (invoke "g++" "-c" "testmain.cpp" "-o" "testmain.o")
                (invoke "g++" "test.o" "guid.o" "testmain.o"
                        "-o" "test" "-luuid")
                (invoke (string-append (getcwd) "/test"))))
@@ -282,6 +280,7 @@ alternatives. In compilers, this can reduce the cascade of secondary errors.")
                (base32
                 "1m0295czxabdcqyqf5m94av9d88pzhnzjvyfs1q07xqq82h313p7"))
               (patches (search-patches "kodi-skip-test-449.patch"
+                                       "kodi-increase-test-timeout.patch"
                                        "kodi-set-libcurl-ssl-parameters.patch"))
               (snippet
                '(begin

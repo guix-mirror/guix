@@ -315,6 +315,8 @@ a shared library and encoder and decoder command-line executables.")
               ;; because the SourceForge project is misconfigured.
               (uri (string-append "http://libmpeg2.sourceforge.net/files/"
                                   name "-" version ".tar.gz"))
+              (patches (search-patches "libmpeg2-arm-private-symbols.patch"
+                                       "libmpeg2-global-symbol-test.patch"))
               (sha256
                (base32
                 "1m3i322n2fwgrvbs1yck7g5md1dbg22bhq5xdqmjpz5m7j4jxqny"))))
@@ -1178,8 +1180,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)))
     (arguments
      `(#:configure-flags
-       `("CXXFLAGS=-std=gnu++11"
-         "BUILDCC=gcc"
+       `("BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
@@ -2217,7 +2218,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
-       #:make-flags '("CC=gcc" "CXX=g++ -std=gnu++11")
+       #:make-flags '("CC=gcc" "CXX=g++")
        #:configure-flags
        (list "--enable-gpl3"
              "--enable-gpl")
@@ -2276,8 +2277,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
      '(#:configure-flags
        (list (string-append "--with-udevdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev")
-             "CXXFLAGS=-std=gnu++11")))
+                            "/lib/udev"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -3545,20 +3545,16 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.4.0")
+    (version "0.5.0")
     (source
       (origin
         (method url-fetch)
-        (uri (list ;; The canonical download site.
-                   (string-append "https://downloads.videolan.org/pub/videolan/"
-                                  "dav1d/" version "/dav1d-" version ".tar.xz")
-
-                   ;; Auto-generated tarballs from the Git repo?
-                   (string-append "https://code.videolan.org/videolan/dav1d/-/"
-                                  "archive/" version "/dav1d-" version ".tar.bz2")))
+        (uri (string-append "https://downloads.videolan.org/pub/videolan"
+                            "/dav1d/" version "/dav1d-" version ".tar.xz"))
+        (patches (search-patches "dav1d-aarch64-symbol-alignment.patch"))
         (sha256
          (base32
-          "08yqml01lbcpflrshdpvn88jv3xd8gm559qikiwyrh41a3kb4lr5"))))
+          "1586k439fm8db9lsxxywm34iqibj5mw4xrppr4g2wqr0hjlhcbxn"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

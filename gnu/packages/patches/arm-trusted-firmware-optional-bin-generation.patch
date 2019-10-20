@@ -1,0 +1,86 @@
+From b02de4cb14ee9c2bfff53d36f0b7ec6a2065bc94 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Christoph=20M=C3=BCllner?= <christophm30@gmail.com>
+Date: Wed, 24 Apr 2019 09:45:30 +0200
+Subject: [PATCH 1/2] build_macros: Add mechanism to prevent bin generation.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+On certain platforms it does not make sense to generate
+TF-A binary images. For example a platform could make use of serveral
+memory areas, which are non-continuous and the resulting binary
+therefore would suffer from the padding-bytes.
+Typically these platforms use the ELF image.
+
+This patch introduces a variable DISABLE_BIN_GENERATION, which
+can be set to '1' in the platform makefile to prevent the binary
+generation.
+
+Signed-off-by: Christoph Müllner <christophm30@gmail.com>
+Change-Id: I62948e88bab685bb055fe6167d9660d14e604462
+---
+ docs/user-guide.rst          | 4 ++++
+ make_helpers/build_macros.mk | 9 +++++++++
+ make_helpers/defaults.mk     | 3 +++
+ 3 files changed, 16 insertions(+)
+
+diff --git a/docs/user-guide.rst b/docs/user-guide.rst
+index 0848769b3..19919f112 100644
+--- a/docs/user-guide.rst
++++ b/docs/user-guide.rst
+@@ -369,6 +369,10 @@ Common build options
+ -  ``DEBUG``: Chooses between a debug and release build. It can take either 0
+    (release) or 1 (debug) as values. 0 is the default.
+ 
++-  ``DISABLE_BIN_GENERATION``: Boolean option to disable the generation
++   of the binary image. If set to 1, then only the ELF image is built.
++   0 is the default.
++
+ -  ``DYN_DISABLE_AUTH``: Provides the capability to dynamically disable Trusted
+    Board Boot authentication at runtime. This option is meant to be enabled only
+    for development platforms. ``TRUSTED_BOARD_BOOT`` flag must be set if this
+diff --git a/make_helpers/build_macros.mk b/make_helpers/build_macros.mk
+index 5d33954ad..2d41b2db1 100644
+--- a/make_helpers/build_macros.mk
++++ b/make_helpers/build_macros.mk
+@@ -438,6 +438,11 @@ else
+ 		--script $(LINKERFILE) $(BUILD_DIR)/build_message.o \
+ 		$(OBJS) $(LDPATHS) $(LIBWRAPPER) $(LDLIBS) $(BL_LIBS)
+ endif
++ifeq ($(DISABLE_BIN_GENERATION),1)
++	@${ECHO_BLANK_LINE}
++	@echo "Built $$@ successfully"
++	@${ECHO_BLANK_LINE}
++endif
+ 
+ $(DUMP): $(ELF)
+ 	$${ECHO} "  OD      $$@"
+@@ -451,7 +456,11 @@ $(BIN): $(ELF)
+ 	@${ECHO_BLANK_LINE}
+ 
+ .PHONY: bl$(1)
++ifeq ($(DISABLE_BIN_GENERATION),1)
++bl$(1): $(ELF) $(DUMP)
++else
+ bl$(1): $(BIN) $(DUMP)
++endif
+ 
+ all: bl$(1)
+ 
+diff --git a/make_helpers/defaults.mk b/make_helpers/defaults.mk
+index be84f7791..dc797ed1f 100644
+--- a/make_helpers/defaults.mk
++++ b/make_helpers/defaults.mk
+@@ -62,6 +62,9 @@ DEBUG				:= 0
+ # Build platform
+ DEFAULT_PLAT			:= fvp
+ 
++# Disable the generation of the binary image (ELF only).
++DISABLE_BIN_GENERATION		:= 0
++
+ # Enable capability to disable authentication dynamically. Only meant for
+ # development platforms.
+ DYN_DISABLE_AUTH		:= 0
+-- 
+2.20.1
+

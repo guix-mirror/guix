@@ -21,11 +21,11 @@
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
-;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017, 2019 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2015, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016, 2017, 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2016, 2017, 2018, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2019 Pierre Langlois <pierre.langlois@gmx.com>
@@ -1703,19 +1703,22 @@ unit tests and failing them if the unit test module does not exercise all
 statements in the module it tests.")
     (license license:gpl3+)))
 
+;; Further releases, up to 2.4.3, have failing unit tests. See:
+;; https://github.com/PyCQA/pylint/issues/3198.
 (define-public python-pylint
   (package
     (name "python-pylint")
-    (version "1.7.2")
+    (version "2.3.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/PyCQA/pylint/archive/pylint-"
-             version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/PyCQA/pylint")
+             (commit (string-append "pylint-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mzn1czhf1mgr2wiqfihb274sja02h899b85kywdpivppa9nwrmp"))))
+         "17vvzbcqmkhr4icq5p3737nbiiyj1y3g1pa08n9mb1bsnvxmqq0z"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)
@@ -1726,22 +1729,6 @@ statements in the module it tests.")
        ("python-isort" ,python-isort)
        ("python-mccabe" ,python-mccabe)
        ("python-six" ,python-six)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-                  (lambda _
-                    ;; Somehow, tests for python2-pylint
-                    ;; fail if run from the build directory
-                    (let ((work "/tmp/work"))
-                      (mkdir-p work)
-                      (setenv "PYTHONPATH"
-                              (string-append (getenv "PYTHONPATH") ":" work))
-                      (copy-recursively "." work)
-                      (with-directory-excursion "/tmp"
-                        (invoke "python" "-m" "unittest" "discover"
-                                "-s" (string-append work "/pylint/test")
-                                "-p" "*test_*.py"))))))))
     (home-page "https://github.com/PyCQA/pylint")
     (synopsis "Python source code analyzer which looks for coding standard
 errors")
@@ -1756,10 +1743,42 @@ possible to write plugins to add your own checks.")
     (properties `((python2-variant . ,(delay python2-pylint))))
     (license license:gpl2+)))
 
+;; Python2 is not supported anymore by Pylint. See:
+;; https://github.com/PyCQA/pylint/issues/1763.
 (define-public python2-pylint
   (let ((pylint (package-with-python2
-                  (strip-python2-variant python-pylint))))
+                 (strip-python2-variant python-pylint))))
     (package (inherit pylint)
+             (version "1.7.2")
+             (source
+              (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/PyCQA/pylint")
+                      (commit (string-append "pylint-" version))))
+                (file-name (git-file-name (package-name pylint) version))
+                (sha256
+                 (base32
+                  "0yyc1gxq66li2adyx8njs83dh1pliylzkdmihw0k5bn6z4aakh8s"))))
+             (arguments
+              `(,@(package-arguments pylint)
+                #:phases
+                (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      ;; Somehow, tests fail if run from the build directory.
+                      (let ((work "/tmp/work"))
+                        (mkdir-p work)
+                        (setenv "PYTHONPATH"
+                                (string-append (getenv "PYTHONPATH") ":" work))
+                        (copy-recursively "." work)
+                        (with-directory-excursion "/tmp"
+                          (invoke "python" "-m" "unittest" "discover"
+                                  "-s" (string-append work "/pylint/test")
+                                  "-p" "*test_*.py"))))))))
+             (native-inputs
+              `(("python2-futures" ,python2-futures)
+                ,@(package-native-inputs pylint)))
              (propagated-inputs
               `(("python2-backports-functools-lru-cache"
                  ,python2-backports-functools-lru-cache)
@@ -2309,6 +2328,38 @@ record the properties and behaviour of particular devices, and to run a
 program or test suite under a test bed with the previously recorded devices
 loaded.")
     (license license:lgpl2.1+)))
+
+(define-public virtest
+  ;; No releases yet, so we take the commit that "vc" expects.
+  (let ((commit "f7d03ef39fceba168745bd29e1b20af6e7971e04")
+        (revision "0"))
+    (package
+      (name "virtest")
+      (version (git-version "0.0" revision commit))
+      (home-page "https://github.com/mattkretz/virtest")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference (url home-page) (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "07pjyb0mk7y2w1dg1bhl26nb7416xa1mw16ifj6mmps5y6aq054l"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'adjust-install-directory
+                      (lambda _
+                        ;; Vc is the only consumer of this library, and expects
+                        ;; to find it in "virtest/vir/" instead of "vir/vir/".
+                        (substitute* "CMakeLists.txt"
+                          (("DESTINATION include/vir")
+                           "DESTINATION include/virtest"))
+                        #t)))))
+      (synopsis "Header-only test framework")
+      (description
+       "@code{virtest} is a small header-only test framework for C++.  It
+grew out of the @dfn{Vc} project.")
+      (license license:bsd-3))))
 
 (define-public python-pyfakefs
   (package

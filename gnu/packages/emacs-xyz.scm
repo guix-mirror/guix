@@ -89,6 +89,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
   #:use-module (gnu packages emacs)
@@ -117,6 +118,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
@@ -5360,6 +5362,31 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy-xref
+  (let ((commit "1a35fc0f070388701b05b0a455cbe262e924d547")
+        (revision "1"))
+    (package
+      (name "emacs-ivy-xref")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/alexmurray/ivy-xref.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0d71nm9d9ajp5i6dnl8h1hw9jqp8gd1ajgninb1h13i80rplzl9k"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-ivy" ,emacs-ivy)))
+      (home-page "https://github.com/alexmurray/ivy-xref")
+      (synopsis "Ivy interface for @code{xref}")
+      (description "This package provides an Ivy interface for selecting from
+@code{xref} results.")
+      (license license:gpl3))))
+
 (define-public emacs-ivy-pass
   (let ((commit "5b523de1151f2109fdd6a8114d0af12eef83d3c5")
         (revision "1"))
@@ -6013,6 +6040,34 @@ strings, and code folding.")
                (base32
                 "1kkj888k9x5n0i7xkia177gzsa84my3g8n0n7v65281cc4f1yhk5"))))
     (build-system emacs-build-system)
+    (inputs
+     `(("node" ,node)))
+    (native-inputs
+     `(("emacs-ert-expectations" ,emacs-ert-expectations)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-shell
+           ;; Setting the SHELL environment variable is required for the tests
+           ;; to find sh.
+           (lambda _
+             (setenv "SHELL" (which "sh"))
+             #t))
+         (add-after 'unpack 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((node (assoc-ref inputs "node")))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (make-file-writable "nodejs-repl.el")
+               (emacs-substitute-variables
+                   "nodejs-repl.el"
+                 ("nodejs-repl-command"
+                  (string-append node "/bin/node")))))))
+       #:tests? #t
+       #:test-command '("emacs" "-Q" "--batch"
+                        "-L" "."
+                        "-l" "test/test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (home-page "https://github.com/abicky/nodejs-repl.el")
     (synopsis "Node.js REPL inside Emacs")
     (description
@@ -6115,6 +6170,32 @@ provides the following features:
 in Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-evil-markdown
+  (let ((commit "46cd81b37991c4325fc24015a610f832b0ff995d")
+        (revision "1"))
+    (package
+      (name "emacs-evil-markdown")
+      (version (git-version "0.0.2" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/Somelauw/evil-markdown.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0mad8sp5y9vyk28595qygspnyh8bfmb1fbxjlw70qwc1kdn822n4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-markdown-mode" ,emacs-markdown-mode)
+         ("emacs-evil" ,emacs-evil)))
+      (home-page "http://jblevins.org/projects/evil-markdown/")
+      (synopsis "Evil keybindings for @code{markdown-mode}")
+      (description
+       "This package provides custom text objects and bindings for
+@code{markdown-mode}.")
+      (license license:gpl3+))))
+
 (define-public emacs-edit-indirect
   (package
     (name "emacs-edit-indirect")
@@ -6123,8 +6204,8 @@ in Emacs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/Fanael/edit-indirect")
-              (commit version)))
+             (url "https://github.com/Fanael/edit-indirect")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -13070,12 +13151,11 @@ within Emacs.")
       (license license:gpl3+))))
 
 (define-public emacs-ibuffer-projectile
-  (let ((commit "c18ac540ee46cb759fc5df18747f6e8d23563011")
-        (revision "1"))
+  (let ((commit "76496214144687cee0b5139be2e61b1e400cac87")
+        (revision "2"))
     (package
       (name "emacs-ibuffer-projectile")
-      (version (string-append "0.2" "-" revision "."
-                              (string-take commit 7)))
+      (version (git-version "0.2" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -13085,7 +13165,7 @@ within Emacs.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1nd26cwwdpnwj0g4w393rd59klpyr6wqrnyr6scmwb5d06bsm44n"))))
+           "0vv9xwb1qd5x8zhqmmsn1nrpd11cql9hxb7483nsdhcfwl4apqav"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-projectile" ,emacs-projectile)))
@@ -17377,8 +17457,8 @@ and code peeking.")
     (license license:gpl3+)))
 
 (define-public emacs-lsp-ivy
-  (let ((commit "6fd55316dd62d290429c25ea9b0c1f66069b2f37")
-        (revision "1"))
+  (let ((commit "caf1e1d7e22ed0b5fe18dd508d1a6f83dd163288")
+        (revision "2"))
     (package
       (name "emacs-lsp-ivy")
       (version (git-version "0.1" revision commit))
@@ -17390,7 +17470,7 @@ and code peeking.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0hx9rs66ahl2rqgnmyiyrwk12v7iv8c6gnn7b66985mxjqyyh94r"))))
+                  "084ds4qhzhivfnicy3h7z4mblxgcqx8pfnkbjr9qjrfng7cisy4z"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-ivy" ,emacs-ivy)
@@ -17537,10 +17617,10 @@ a suffix) we prefer to call it just a \"transient\".")
       (license license:gpl3+))))
 
 (define-public emacs-forge
-  (let ((commit "a6721c071226ae8da6852e9330f2bdcba92a4577"))
+  (let ((commit "63cbf81f166fc71861d8e3d246df8e5ccedcb9bb"))
     (package
       (name "emacs-forge")
-      (version (git-version "0.1.0" "1" commit))
+      (version (git-version "0.1.0" "2" commit))
       (source
        (origin
          (method git-fetch)
@@ -17550,7 +17630,7 @@ a suffix) we prefer to call it just a \"transient\".")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "1gzr1di29a9szkzm6kjznq7c8md71cm5761pznf08nmmk63dl3zm"))))
+           "1yf2xjx3459py6rji740jm8bmh2pv66ghnbjxsvjd4jf9kcdav83"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("texinfo" ,texinfo)
@@ -18068,11 +18148,10 @@ invoked.")
 
 (define-public emacs-web-server
   (let ((commit "cafa5b7582c57252a0884b2c33da9b18fb678713")
-        (version "0.1.1")
         (revision "1"))
     (package
       (name "emacs-web-server")
-      (version (git-version version revision commit))
+      (version (git-version "0.1.0" revision commit))
       (source
        (origin
          (method git-fetch)
@@ -18084,6 +18163,19 @@ invoked.")
           (base32
            "1c0lfqmbs5hvz3fh3c8wgp6ipwmxrwx9xj264bjpj3phixd5419y"))))
       (build-system emacs-build-system)
+      (native-inputs
+       `(("curl" ,curl)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-shell
+             ;; Setting the SHELL environment variable is required for the tests
+             ;; to find sh.
+             (lambda _
+               (setenv "SHELL" (which "sh"))
+               #t)))
+         #:tests? #t
+         #:test-command '("make" "check")))
       (home-page "https://github.com/eschulte/emacs-web-server/")
       (synopsis "Web server with handlers in Emacs Lisp")
       (description "This package supports HTTP GET and POST requests with

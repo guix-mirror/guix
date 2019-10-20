@@ -38,7 +38,7 @@
 ;;; Copyright © 2017 Frederick M. Muriithi <fredmanglis@gmail.com>
 ;;; Copyright © 2017, 2018 Adriano Peluso <catonano@gmail.com>
 ;;; Copyright © 2017 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2017, 2018 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2017, 2018, 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
 ;;; Copyright © 2017 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2017, 2018 Kei Kebreau <kkebreau@posteo.net>
@@ -910,10 +910,18 @@ some helpful Python 2 compatibility convenience methods.")
         (base32
          "09z4d1jiasn7k1hs5af2ckmnrd0i1d1m04bhfjhv7z6svzfdwgg3"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Do not run pylint plugin test, as astroid is an old
+             ;; unsupported version.
+             (invoke "pytest" "-v" "-k" "not test_pylint_plugin"
+                     "verboselogs/tests.py"))))))
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-astroid" ,python-astroid)
-       ("python-pylint" ,python-pylint)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://verboselogs.readthedocs.io")
     (synopsis "Verbose logging level for Python's logging module")
     (description
@@ -5110,6 +5118,18 @@ child application and control it as if a human were typing commands.")
 @dfn{software configuration management} (SCM) metadata instead of declaring
 them as the version argument or in a SCM managed file.")
     (license license:expat)))
+
+;; Needed by python-lazy-object-proxy, remove on next update cycle.
+(define-public python-setuptools-scm-3.3
+  (package
+    (inherit python-setuptools-scm)
+    (version "3.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "setuptools_scm" version))
+              (sha256
+               (base32
+                "19cyndx23xmpbhz4qrwmfwsmnnaczd0dw7qg977ksq2dbvxy29dx"))))))
 
 (define-public python2-setuptools-scm
   (package-with-python2 python-setuptools-scm))
@@ -10616,13 +10636,15 @@ docstring and colored output.")
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
-    (version "1.3.1")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lazy-object-proxy" version))
               (sha256
                (base32
-                "0yha7q9bhw857fwaby785d63mffhngl9npwzlk9i0pwlkwvbx4gb"))))
+                "1wgl0fmddi0ind78a74yyk2qrr9pb5llvj1892cdpp6z6n6mn4zx"))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm-3.3)))
     (build-system python-build-system)
     (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
     (synopsis "Lazy object proxy for python")
@@ -12524,18 +12546,19 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.1.0")
+    (version "2.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
         (base32
-         "08hz675knh4294bancdapql392fmbjyimhbyrmfkz1ka7l035c1m"))))
+         "0crfhpblcy5a6nh694hc2073gw389f01yilamzqi34si2skgp8q9"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-six" ,python-six)
+       ("python-typed-ast" ,python-typed-ast)
        ("python-wrapt" ,python-wrapt)))
     (native-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -12602,7 +12625,8 @@ builds partial trees by inspecting living objects.")
          ,python2-backports-functools-lru-cache)
         ("python2-enum34" ,python2-enum34)
         ("python2-singledispatch" ,python2-singledispatch)
-        ,@(package-propagated-inputs base))))))
+        ,@(alist-delete "python-typed-ast"
+                        (package-propagated-inputs base)))))))
 
 (define-public python-isort
   (package
@@ -14721,14 +14745,16 @@ source bytes using the UTF-8 encoding and then rewrites Python 3.6 style
 (define-public python-typed-ast
   (package
     (name "python-typed-ast")
-    (version "1.3.5")
+    (version "1.4.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "typed-ast" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/python/typed_ast.git")
+             (commit version)))
        (sha256
-        (base32
-         "1m7pr6qpana3cvqwiw7mlvrgvmw27ch5mx1592572xhlki8g85ak"))))
+        (base32 "0l0hz809f7i356kmqkvfsaswiidb98j9hs9rrjnfawzqcbffzgyb"))
+       (file-name (git-file-name name version))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)

@@ -433,23 +433,31 @@ graphics.")
                   #t))))
     (build-system cmake-build-system)
     (arguments
-     '(#:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'change-directory
            (lambda _
              (chdir "OpenEXR")
              #t))
-         (add-after 'change-directory 'disable-broken-test
-           ;; This test fails on i686. Upstream developers suggest that
-           ;; this test is broken on i686 and can be safely disabled:
-           ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
+         (add-before 'check 'increase-test-timeout
            (lambda _
-             (substitute* "IlmImfTest/main.cpp"
-               (("#include \"testOptimizedInterleavePatterns.h\"")
-                 "//#include \"testOptimizedInterleavePatterns.h\"")
-               (("TEST \\(testOptimizedInterleavePatterns")
-                 "//TEST (testOptimizedInterleavePatterns"))
-             #t)))))
+             ;; On armhf-linux, we need to override the CTest default
+             ;; timeout of 1500 seconds for the OpenEXR.IlmImf test.
+             (setenv "CTEST_TEST_TIMEOUT" "2000")
+             #t))
+         ,@(if (not (target-64bit?))
+               `((add-after 'change-directory 'disable-broken-test
+                   ;; This test fails on i686. Upstream developers suggest that
+                   ;; this test is broken on i686 and can be safely disabled:
+                   ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
+                   (lambda _
+                     (substitute* "IlmImfTest/main.cpp"
+                       ((".*testOptimizedInterleavePatterns.*") "")
+                       ;; This test is broken in 2.4.0 and will be fixed in a later
+                       ;; release: <https://github.com/openexr/openexr/issues/571>.
+                       ((".*testLargeDataWindowOffsets.*") ""))
+                     #t)))
+               '()))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -665,7 +673,6 @@ virtual reality, scientific visualization and modeling.")
        (list "COMPILED_BY=Guix"
              (string-append "--with-boost-libdir="
                             (assoc-ref %build-inputs "boost") "/lib")
-             "CXXFLAGS=-std=c++11"
              "--disable-optimiz-arch")
        #:phases
        (modify-phases %standard-phases

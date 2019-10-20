@@ -464,7 +464,7 @@ address of one of the participants.")
                          (find-files "release/plugins" "\\.so$"))))))))
     (inputs
      `(("avahi" ,avahi)
-       ("protobuf" ,protobuf)
+       ("protobuf" ,protobuf-3.5)
        ("openssl" ,openssl)
        ("libsndfile" ,libsndfile)
        ("boost" ,boost)

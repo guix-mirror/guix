@@ -758,10 +758,10 @@
   "probably vulnerable to CVE-2015-1234"
   (mock ((guix lint) package-vulnerabilities
          (lambda (package)
-           (list (make-struct (@@ (guix cve) <vulnerability>) 0
-                              "CVE-2015-1234"
-                              (list (cons (package-name package)
-                                          (package-version package)))))))
+           (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
+                                      "CVE-2015-1234"
+                                      (list (cons (package-name package)
+                                                  (package-version package)))))))
         (single-lint-warning-message
          (check-vulnerabilities (dummy-package "pi" (version "3.14"))))))
 
@@ -769,10 +769,10 @@
   '()
   (mock ((guix lint) package-vulnerabilities
          (lambda (package)
-           (list (make-struct (@@ (guix cve) <vulnerability>) 0
-                              "CVE-2015-1234"
-                              (list (cons (package-name package)
-                                          (package-version package)))))))
+           (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
+                                      "CVE-2015-1234"
+                                      (list (cons (package-name package)
+                                                  (package-version package)))))))
         (check-vulnerabilities
          (dummy-package "pi"
                         (version "3.14")
@@ -785,10 +785,10 @@
   '()
   (mock ((guix lint) package-vulnerabilities
          (lambda (package)
-           (list (make-struct (@@ (guix cve) <vulnerability>) 0
-                              "CVE-2015-1234"
-                              (list (cons (package-name package)
-                                          (package-version package)))))))
+           (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
+                                      "CVE-2015-1234"
+                                      (list (cons (package-name package)
+                                                  (package-version package)))))))
         (check-vulnerabilities
          (dummy-package "pi"
                         (version "3.14")
@@ -800,10 +800,10 @@
          (lambda (package)
            (match (package-version package)
              ("0"
-              (list (make-struct (@@ (guix cve) <vulnerability>) 0
-                                 "CVE-2015-1234"
-                                 (list (cons (package-name package)
-                                             (package-version package))))))
+              (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
+                                         "CVE-2015-1234"
+                                         (list (cons (package-name package)
+                                                     (package-version package))))))
              ("1"
               '()))))
         (check-vulnerabilities
@@ -815,10 +815,10 @@
   '()
   (mock ((guix lint) package-vulnerabilities
          (lambda (package)
-           (list (make-struct (@@ (guix cve) <vulnerability>) 0
-                              "CVE-2015-1234"
-                              (list (cons (package-name package)
-                                          (package-version package)))))))
+           (list (make-struct/no-tail (@@ (guix cve) <vulnerability>)
+                                      "CVE-2015-1234"
+                                      (list (cons (package-name package)
+                                                  (package-version package)))))))
         (check-vulnerabilities
          (dummy-package
           "pi" (version "3.14") (source (dummy-origin))
