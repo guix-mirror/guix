@@ -5733,7 +5733,7 @@ shaped points?  Now you can!")
 (define-public r-colorout
   (package
     (name "r-colorout")
-    (version "1.2-0")
+    (version "1.2-2")
     (source
      (origin
        (method url-fetch)
@@ -5741,8 +5741,7 @@ shaped points?  Now you can!")
                            "v" version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32
-         "07vqx5ihgnq4dzn5jnfjfhdm3957v4prvf8vhnb3cwvlly4l7p9v"))))
+        (base32 "1ylwxnaq5l6ldls44wij4i6080fv002wj33q63h8nqbp52fmkl67"))))
     (build-system r-build-system)
     (home-page "https://github.com/jalvesaq/colorout")
     (synopsis "Colorize output in the R REPL")
