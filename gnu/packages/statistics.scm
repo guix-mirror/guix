@@ -5736,12 +5736,13 @@ shaped points?  Now you can!")
     (version "1.2-2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jalvesaq/colorout/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jalvesaq/colorout.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "1ylwxnaq5l6ldls44wij4i6080fv002wj33q63h8nqbp52fmkl67"))))
+        (base32 "1rsx69wjpa73c6x2hacvvvbzdzxn7wg06gizf97kasjdlb7azmp3"))))
     (build-system r-build-system)
     (home-page "https://github.com/jalvesaq/colorout")
     (synopsis "Colorize output in the R REPL")
