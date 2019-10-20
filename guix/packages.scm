@@ -241,9 +241,9 @@ name of its URI."
 (define %hydra-supported-systems
   ;; This is the list of system types for which build machines are available.
   ;;
-  ;; XXX: MIPS is temporarily unavailable on Hydra:
+  ;; XXX: MIPS is unavailable in CI:
   ;; <https://lists.gnu.org/archive/html/guix-devel/2017-03/msg00790.html>.
-  (fold delete %supported-systems '("aarch64-linux" "mips64el-linux")))
+  (fold delete %supported-systems '("mips64el-linux")))
 
 
 ;; A package.
