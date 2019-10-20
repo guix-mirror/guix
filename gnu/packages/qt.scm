@@ -1806,6 +1806,7 @@ module provides support functions to the automatically generated code.")
          (base32
           "041155bdzp57jy747p5d59740c55yy3241cy1x2lgcdsvqvzmc0d"))
        (patches (search-patches "pyqt-configure.patch"
+                                "pyqt-unbundled-qt.patch"
                                 "pyqt-public-sip.patch"))))
     (build-system gnu-build-system)
     (native-inputs
