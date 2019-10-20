@@ -298,6 +298,11 @@ Libraries with some extra bells and whistles.")
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap) ; We don't want to run the autogen script.
+         (add-after 'unpack 'fix-dot-desktop-creation
+           (lambda _
+             (substitute* "data/session/meson.build"
+               (("HAVE_WAYLAND'.*") "HAVE_WAYLAND') == true\n"))
+             #t))
          (add-before 'configure 'set-system-actions
            (lambda* (#:key inputs #:allow-other-keys)
             (setenv "HOME" "/tmp")
