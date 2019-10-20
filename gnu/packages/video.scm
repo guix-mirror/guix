@@ -3550,13 +3550,8 @@ transitions, and effects and then export your film to many common formats.")
     (source
       (origin
         (method url-fetch)
-        (uri (list ;; The canonical download site.
-                   (string-append "https://downloads.videolan.org/pub/videolan/"
-                                  "dav1d/" version "/dav1d-" version ".tar.xz")
-
-                   ;; Auto-generated tarballs from the Git repo?
-                   (string-append "https://code.videolan.org/videolan/dav1d/-/"
-                                  "archive/" version "/dav1d-" version ".tar.bz2")))
+        (uri (string-append "https://downloads.videolan.org/pub/videolan"
+                            "/dav1d/" version "/dav1d-" version ".tar.xz"))
         (sha256
          (base32
           "1586k439fm8db9lsxxywm34iqibj5mw4xrppr4g2wqr0hjlhcbxn"))))
