@@ -318,7 +318,10 @@ Relogin="              (if (sddm-configuration-relogin? config)
                                            (const %sddm-accounts))
                         (service-extension profile-service-type
                                            sddm-profile-service)))
-                (default-value (sddm-configuration))))
+                (default-value (sddm-configuration))
+                (description
+                 "Run SDDM, a display and log-in manager for X11 and
+Wayland.")))
 
 (define-deprecated (sddm-service #:optional (config (sddm-configuration)))
   sddm-service-type
