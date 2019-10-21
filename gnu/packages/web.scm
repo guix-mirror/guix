@@ -4044,11 +4044,11 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                   "0awfvps7k9bpg3gpgc93y401g7pjabx7mr9960vigad8vddhixqi"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f                    ; TODO Tests require PostgreSQL
-         #:modules ((guix build utils)
+       '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
+         #:test-target "check-with-tmp-database"
          #:phases
          (modify-phases %standard-phases
            (add-after 'set-paths 'set-GUIX_ENVIRONMENT
@@ -4106,6 +4106,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
        `(("guile" ,guile-2.2)
          ("autoconf" ,autoconf)
          ("automake" ,automake)
+         ("ephemeralpg" ,ephemeralpg)
          ("emacs-with-modules" ,(directory-union
                                  "emacs-union"
                                  (list emacs-no-x
