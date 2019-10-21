@@ -7930,3 +7930,34 @@ of function partial application and composition.")
 
 (define-public ecl-curry-compose-reader-macros
   (sbcl-package->ecl-package sbcl-curry-compose-reader-macros))
+
+(define-public sbcl-yason
+  (package
+    (name "sbcl-yason")
+    (version "0.7.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phmarek/yason.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0479rbjgbj80jpk5bby18inlv1kfp771a82rlcq5psrz65qqa9bj"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "Common Lisp JSON parser/encoder")
+    (description
+     "YASON is a Common Lisp library for encoding and decoding data in the
+JSON interchange format.")
+    (home-page "https://github.com/phmarek/yason")
+    (license license:bsd-3)))
+
+(define-public cl-yason
+  (sbcl-package->cl-source-package sbcl-yason))
+
+(define-public ecl-yason
+  (sbcl-package->ecl-package sbcl-yason))
