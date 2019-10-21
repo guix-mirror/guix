@@ -8009,3 +8009,43 @@ interactive development.")
 
 (define-public cl-stefil
   (sbcl-package->cl-source-package sbcl-stefil))
+
+(define-public sbcl-graph
+  (let ((commit "78bf9ec930d8eae4f0861b5be76765fb1e45e24f")
+        (revision "0"))
+    (package
+      (name "sbcl-graph")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/eschulte/graph.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qpij4xh8bqwc2myahpilcbh916v7vg0acz2fij14d3y0jm02h0g"))
+         (patches (search-patches "sbcl-graph-asdf-definitions.patch"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-heap" ,sbcl-cl-heap)
+         ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (arguments
+       '(#:test-asd-file "graph.test.asd"))
+      (synopsis "Graph data structure and algorithms for Common Lisp")
+      (description
+       "The GRAPH Common Lisp library provides a data structures to represent
+graphs, as well as some graph manipulation and analysis algorithms (shortest
+path, maximum flow, minimum spanning tree, etc.).")
+      (home-page "https://eschulte.github.io/graph/")
+      (license license:gpl3+))))
+
+(define-public cl-graph
+  (sbcl-package->cl-source-package sbcl-graph))
