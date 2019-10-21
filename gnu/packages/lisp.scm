@@ -8049,3 +8049,20 @@ path, maximum flow, minimum spanning tree, etc.).")
 
 (define-public cl-graph
   (sbcl-package->cl-source-package sbcl-graph))
+
+(define-public sbcl-graph-dot
+  (package
+    (inherit sbcl-graph)
+    (name "sbcl-graph-dot")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+       ("graph" ,sbcl-graph)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("named-readtables" ,sbcl-named-readtables)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-graph)
+       ((#:asd-file _ "") "graph.dot.asd")
+       ((#:asd-system-name _ #f) "graph-dot")))
+    (synopsis "Serialize graphs to and from DOT format")))
