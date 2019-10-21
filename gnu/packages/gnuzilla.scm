@@ -34,6 +34,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix hg-download)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -64,10 +65,12 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages node)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages assembly)
   #:use-module (gnu packages rust)
+  #:use-module (gnu packages rust-cbindgen)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages nss)
   #:use-module (gnu packages icu4c)
@@ -404,6 +407,127 @@ in C/C++.")
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))))
 
+(define mozilla-compare-locales
+  (origin
+    (method hg-fetch)
+    (uri (hg-reference
+          (url "https://hg.mozilla.org/l10n/compare-locales/")
+          (changeset "RELEASE_3_3_0")))
+    (file-name "mozilla-compare-locales")
+    (sha256 (base32 "0biazbq7vbi99b99rfn4szwyx032dkpi09c9z4zs6f1br0f86iy1"))))
+
+(define (mozilla-locale locale changeset hash-string)
+  (origin
+    (method hg-fetch)
+    (uri (hg-reference
+          (url (string-append "https://hg.mozilla.org/l10n-central/"
+                              locale))
+          (changeset changeset)))
+    (file-name (string-append "mozilla-locale-" locale))
+    (sha256 (base32 hash-string))))
+
+(define-syntax-rule (mozilla-locales (hash-string changeset locale) ...)
+  (list (mozilla-locale locale changeset hash-string)
+        ...))
+
+(define all-mozilla-locales
+  (mozilla-locales
+   ;;                      sha256                            changeset    locale
+   ;;---------------------------------------------------------------------------
+   ("0pybx6j2ycbrr1xmv0spv19sd8a1dyzcs8kf6pzn71w8y6kiagcf" "35959cf2343c" "ach")
+   ("0dixmkha738w7fkx20nx95xkfyrqb9vczpy6m03qnqfvb76xaxj5" "e8dc1010f909" "af")
+   ("124j09va25gwfxdzyfixrli0skxv53c7niagjyp7g3a3kcv2lbhc" "4c67f6b96a7b" "an")
+   ("0flgqll3xx0ym0zj0w9j2jw3fmhs6h9m4l5da6m0bpnk5ff80r06" "34cbea5f44a5" "ar")
+   ("0kdb1yqfbfz508f4p77z3p1v6fwy190vs5ipj58hgdixjgbxkqay" "b4790b27633c" "ast")
+   ("1vm5xw6wg12pygswd3p0qpkaxyryah6nif5n15chb4sb42c1gqcm" "96d341bf49d4" "az")
+   ("1j2qrrws51qij6haz5b77n5vzqhsxgs1ppqqw4mdrkacwvz4ciwh" "4adaede00646" "be")
+   ("0ydr8f9lbd51prgcbjb5yacb461j8va0s5bqfs0rnglkvhmk6ard" "d1140972aefe" "bg")
+   ("0wyw90zjp8kpd1gljng00in9wr2cf59ww6z002lgx5k4gibnqcfd" "2b3ce92c2310" "bn")
+   ("0kkq621h1qdmimyrmms9g5p70m54z2ddw4cd962nqbkrnmabq9vn" "426896350893" "br")
+   ("0vibhnb3cbpbgf10db04g6vm372kb9i27p0jkwif019f7qprswd8" "7463f339ce07" "bs")
+   ("1l8cn2fqfvx7bswzfy9vavv8cd32ha9ygdxxdbxi64wcgw0f80bf" "dab3f05125e4" "ca")
+   ("0fik17y8zyg9w82lq501ic73a53c0q9r8v4zgn9bnzgsygig8qpq" "ebb9d989275a" "cak")
+   ("0sj29v6144h39wzb4rvxph3cwgvs4gzkgpr0463d3fcs6jdi0kjs" "522352780348" "cs")
+   ("1nz8jlx62l69jcdi59hlk8jysm15sh3d1cxqginjmx7w351wsidm" "0791b954c333" "cy")
+   ("1vc01q1vlq26xm1vm1x0119jawxxp975p9k8ashmiwncl1bvqb48" "121f5f876f4c" "da")
+   ("1iqny61rg57banfbbskc2y3pr6d35fabnxmynv7vxm9jd86pndz3" "95fb3e99a2bc" "de")
+   ("06v9j8acx5h8za7m65v6qm0wjbkx6vm46m8sigcp69phyg3fjc96" "90e681b74587" "dsb")
+   ("0lbk90x2dxdbh63fycqxspx6jqq2zlzys6grg45balw8yyvzqrkz" "58ba4c13fd42" "el")
+   ("0c2ypvy0z8g78s5158v6h9khckq1xps34r5wbiiciix289m43dgl" "8953d8c98a30" "en-CA")
+   ("0z3riz3w2z6p710p90ridmwwam4snnz5mn90gd4jc1h2n7vc9mr0" "5a2b9bca3f52" "en-GB")
+   ("102gn3h4ap8c3x1p7vfc88vapkfiz6264y6byhxy1axxjk3x3a77" "e87cb1c61d6e" "eo")
+   ("148wj6wsx0aq7cpaxk8njj7cb1wfjr2m96dgxq6b3qcv781ldvjn" "5db15fdf95d5" "es-AR")
+   ("0r11d8vzvbyz17n371byvkrnszcv1zhr7rg64i58xra3y6d7is7n" "ce2ee0e51a92" "es-CL")
+   ("1xmqa8p7lpqvkgg879hfnmf6kxcpawjk8z31cdzfp1hrdlmxg8n7" "7346617620f3" "es-ES")
+   ("0jxv3jh2018lnybr9mzqrffvwmr87yab9bh8lxqjj294fxw1hrxm" "687f05eb0c58" "es-MX")
+   ("1rpgv7pajv4xldsn1xxsia5j72vn3x8zl5wmbzkyw56lvn9fckvf" "839a5029c496" "et")
+   ("0hxp4fr3y05rkpamdb1hlmybn6d3bv3rcawjm3axbpqxbyfdpfzc" "54e8d87230c9" "eu")
+   ("1y50knymnmcihw8bhvahicc386mjm6dx4hx0j6fv8sl23wzx2h9m" "c5ffca960f9c" "fa")
+   ("0pj9zgi0c3yl3myhvb5afiijayp2lqzhlk630ahxn5hgjgkz0lx7" "75c000a8538d" "ff")
+   ("199jg0zv7wp1cq0ik2hf84j99jx5vq2jwac0gaayvjzkh2z83jqr" "f11b2e689e7b" "fi")
+   ("1vxkiwwni7470ywy99arxxa56ljkhjrhxslsp1l1l61g6gdbbspr" "49ec4f791806" "fr")
+   ("0d8gwdcj0jpjv03nhjds8jrg86pg371xpylaibwri76wlyl7m54i" "faa761a5cfdc" "fy-NL")
+   ("0nipbxx11a2sjadzhbi88vgknw5hzr4nqy2722q3kc1212jbi754" "5bd9466f9f9d" "ga-IE")
+   ("0bay8mrm65cvmnvqpwqgzr0h3cb18ifzg5kbsbxcvdfm9xv0zi9g" "a4f6a47e82dd" "gd")
+   ("00kn5w3nnpw1pxg6hhrn9asf9hgpjd6ia4038iwzcqs68w887qcy" "6c2aa01ada4e" "gl")
+   ("0jj13i0ach85c975vaz2rr83mibs29ipssa7qsjkb0y2ch6xya1k" "c2d607e36cb5" "gn")
+   ("1nhqbgzilcb0pr7941dxkhg079bf8v7ldikp1s5xli34wf9sabm2" "f34465d6ac1c" "gu-IN")
+   ("11bh0541d996cfin1zy72l66753q94i4idgv2waf0h40h9g3z1bm" "c2ecb2762274" "he")
+   ("1lslji7hh5lx5ig1xgfjh4cdindsgh3n2a7qlvzwz96gda43lvv4" "94d2bb10ee03" "hi-IN")
+   ("1nx5yw00l25i3m3grdm29mi9mi7h0cy5qx02pypir754pk3hiwcc" "08df0d94edd5" "hr")
+   ("19yc9dk2pwqycynmx58d1ik6x4mnyfxscgr6sg676dpl613xd7nq" "21b614e77025" "hsb")
+   ("0l3z64jlx6b6ivk1b5hwqyx9hm1m5721ywnb2m4zmg3g9fw4vn7f" "f82cad7170af" "hu")
+   ("1sn0dxbbf2zwcpybwcw77qb4p0hf6fxapnsnn4avaab5g55dlgz4" "d94c30920396" "hy-AM")
+   ("0c92cqxrhv4317kirmhpjk7mrq44yn6fp3v6syxnhz7xwxnhshjm" "6a5f176b0626" "ia")
+   ("03gyg9gqsd6pwb9nydglhm46fi2wk2p2qygmhmrf8hnav3ba7n0r" "94e4302e0f85" "id")
+   ("0ky8aaps92mn56rvkwn0i13wg8av8hzi1fvr0ahqhjcpj5sfgdwq" "eca348a59888" "is")
+   ("01py0sfg7nljcsgpivryrvai4p4wzbcvhgc2ymr19r579nv1vw7g" "d541a6197359" "it")
+   ("0iv7vmj43njmi7g1gjzsv68ax4j502d2wnkvbfz1rx11lrqs7yw1" "a5ab3a1d95b7" "ja")
+   ("1sr9ccshcw6agbj4hbnpblxixb1jz0m36glas6f9ahxmi7m605si" "63763ffa5a94" "ja-JP-mac")
+   ("1as33pzcsdkynrj16dv7w642vl6plbhk650am4l5djwm64f2rgms" "aa83e8555ddc" "ka")
+   ("1jwaqb5qps3i5y9iw8l2hrwa0n8lfnx1k9x0p54y3jkh6p3q3fzc" "0e0e25c26247" "kab")
+   ("0cjfiwv0q5i8d7fpwb4m2w5ahq687dqjlwlicgpa443yi2zsxr4s" "33117723ceb1" "kk")
+   ("0k5b56cv39aaxf9r0p9c27f3fp6yq2ffd4w6qmd0ibpl69sm629d" "aff7b2a7825e" "km")
+   ("1a0zg96jgq4zn9cz0h2qwc0vv1fbkfzs5qrgabg62wqgz286jvvv" "ea91638cb1dd" "kn")
+   ("0jhmv2n3yx55r6fg3myg7j1c1nhsv25g016m6lh2j023xbr723gp" "88821009b5b3" "ko")
+   ("06bybgv4m4i7r9p0qld65j31vbrnljhsdj649dl93msv2r69ilif" "88685d5f07b3" "lij")
+   ("1bzjf8smw6ngi88j5g3fawrg54m8fifbhshwjbgkpj7rnrpjgh4w" "e046c7ffa7d0" "lt")
+   ("18dmzmpavijb7fwzffas0j5nb6byqp8h6ki7hhf6qb35diqgfq6n" "c520ef4f576c" "lv")
+   ("055zf7xj5h1h8mzxj1cjzhngpcvg2p5vs2dmffsa5zfprj02d0dm" "9e43723f18ad" "mk")
+   ("1496fbyyzcl075gzcd3xy50h9jyhnzgb544k1scji56yhyfajacb" "ce615fef92c1" "mr")
+   ("1wc1q8ksry181pvnysqsq4dhhsg5adw5vgqafmmq5sf6i2bwn2z0" "4fefe88cfaee" "ms")
+   ("0awf6mrdwdhy2yvxynssvp1zg1nc2fqbmg2d2bhjcib69zx944xw" "3987a06866fd" "my")
+   ("1hycvz7i4jd40hfs5abx6sgfdkafg0jhdgqih9b7lb08aqcl35pj" "2b3b8997d9a1" "nb-NO")
+   ("048z1ib46izwryyy8l1x71kq4775n7l2ilbskhsyrbxqryma13k8" "f25324281615" "ne-NP")
+   ("1qkxqpyr4la9bn1bqsgc2h9869arglh9n2kwpkq6722jzdbynkz2" "04c7d32c57f6" "nl")
+   ("08gnmdll55dbqj7qs63gq1kljbvg24nzns6q4m0av3sszsic0jv5" "5587520e5019" "nn-NO")
+   ("1yh2p4ipj5p2b7gh0xxj0n7ndvwn5bw2773ibrh7vz932mkzhhjn" "499386b02695" "oc")
+   ("0kjbnixjzv9hvyba4ll20gs76vx84pviy134fvpjp9lfjpnpib55" "31c01c325675" "pa-IN")
+   ("0g61imvr4639bbydyi0kwc1il7l1gzlfij4ywx7hdcmq2x6vgb9v" "fb5f3b8dea09" "pl")
+   ("13n68d7z94d7943m6fwl4kizbqm3wp82xz69vng4w9vyqlvv7d41" "9a541cbdc748" "pt-BR")
+   ("1j8afvrl1afmj2zixrp91rrhag5w4xw90raca1ic6mxyih9kvdi4" "edc959a685c2" "pt-PT")
+   ("0wf4a6q9nvcmam2g8ksbymjdnrz59pdr5nirfpjprfhifjmxx4nn" "d2699db715cd" "rm")
+   ("1k9qalir5pbh490w1mxyq31yhy9hbxsyrrk11hwlwlgn6syp9nvp" "b5460a9017bc" "ro")
+   ("1avy6wyfa5lbvy36wai6mwhhh6x1y8a0jyjk8hvjn52yfxj1gypk" "59ffa8ad047a" "ru")
+   ("1cakhm4jxcw1ij0l1vhxw74hsp5wg68i3319dkdncyyc5a2s1qv9" "8b3c8a7ebdfa" "si")
+   ("0s534r09bqdfvw3q17y9b1035kzzlafjv656v73mqhyz3fkffsx5" "cb39dc77980e" "sk")
+   ("1s58vgmnb9aiaiaqwwcivq3iyzpzj527w2aqh2nrh6xmaw7f43sr" "17d7969b1d9a" "sl")
+   ("147qm7x5z8rkf24jpqvkdlqg0fjz1l3zwnaxvkh9y2jpzv7m0x7z" "c55b0e9ff99d" "son")
+   ("0nn4r1rxi8cy7x9nmn5ljd8gcsn2rjl2ma2j7waxkafkm4rs6n20" "2bb3808072da" "sq")
+   ("0jsb01b94z7qbm59yaj56nb7yx7a6hpgw8v6nzwhbvmnmcsird4p" "c323c0d02d61" "sr")
+   ("1n7vv9y4sk3gig56rgfd2jk8jr2160grxk31bd1wkm7fvbndd259" "4220ce487cbc" "sv-SE")
+   ("06270mq7gajxfrsb8gqd25v2dac68ask5vvlh6kkkp3hrgy02vid" "6a1dbc2fe1d3" "ta")
+   ("10az7pd3npa7n8wq0qywvsj2qrx9592i2wffs3rnc1fviv1i1q0y" "028505b5ecd1" "te")
+   ("0yj0c3iyibb3jyypvyiyhbr9asxa48v0nq21kcf9gphi8fnyp5if" "e44d38b6a67b" "th")
+   ("1qc4nvhw834lx7p304fxma0fjdr4xfj4lf69dhh6biqz795lx45p" "1e0771d95708" "tr")
+   ("1g4y2yq5xp61ncy7c08j7fqqr1jc0m1hjxmbg5659wzif3b3dkg4" "e3c96943e98f" "uk")
+   ("1zbi28z1c3p5il7ndixyjsv4nrimzq36zjvlmq10am38ycqr9df8" "f35da1b02691" "ur")
+   ("1jrxjjj8k771y0wljqbadxdj4pasg0771jmg4l3hvpgs929i3j9g" "6fd2084b3efe" "uz")
+   ("1f8sqgxzgqmw6vzjv3f49lg43q09i3j62f471864vr71815agl8n" "33b5dfd0cd63" "vi")
+   ("0ssnsbxw3q5k88fa081gkn1mbqn4j7bm6vb7yvz6h44j214xkz9x" "2d87c0740715" "xh")
+   ("0kd3mrvvgczhsmw4rvpxxxc71bb469ayr8r4azf7gc0y5nmlm950" "a2b6625688d3" "zh-CN")
+   ("0qy1asyfplkyc89z3g3gfm7b32aka92350b3ayv9d9dcgwxmfdwz" "4d6e959a13d1" "zh-TW")))
+
 (define (mozilla-patch file-name changeset hash)
   "Return an origin for CHANGESET from the mozilla-esr60 repository."
   (origin
@@ -426,7 +550,7 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "60.9.0-guix1")
+(define %icecat-version "68.2.0-guix0-preview1")
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -448,24 +572,11 @@ from forcing GEXP-PROMISE."
                   "firefox-" upstream-firefox-version ".source.tar.xz"))
             (sha256
              (base32
-              "0gy5x2rnnbkqmjd9sq93s3q5na9nkba68xwpizild7k6qn63qicz"))))
+              "0f3gf5gwhxabm6xs29nlxmfqdw3fs7v458vq1fydrglfyvmc5wc5"))))
 
-         (upstream-icecat-base-version "60.7.0") ; maybe older than base-version
-         (upstream-icecat-gnu-version "1")
-         (upstream-icecat-version (string-append upstream-icecat-base-version
-                                                 "-gnu"
-                                                 upstream-icecat-gnu-version))
-         (upstream-icecat-source
-          (origin
-            (method url-fetch)
-            (uri (string-append
-                  "mirror://gnu/gnuzilla/" upstream-icecat-base-version
-                  "/icecat-" upstream-icecat-version ".tar.bz2"))
-            (sha256
-             (base32
-              "09xqdfd8rwbn2n6m7n059qf1psbrj5v5kfzm7gg5xng22ddxawv8"))))
-
-         (gnuzilla-commit (string-append "v" upstream-icecat-base-version))
+         (upstream-icecat-base-version "68.1.0") ; maybe older than base-version
+         ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
+         (gnuzilla-commit "395cc0798600cde44a30abaa3f5d08ce8b68f782")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -475,7 +586,7 @@ from forcing GEXP-PROMISE."
             (file-name (git-file-name "gnuzilla" upstream-icecat-base-version))
             (sha256
              (base32
-              "1vqhb0py28hnwcynbaad304ziciz1kn5bv1qg2q4f7g13js3b1hf"))))
+              "1ll3j2kpsfp1f9dxy67fay1cidsng02l8a3a23wdjqkxgrg1cf4g"))))
 
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch"))))
@@ -492,9 +603,7 @@ from forcing GEXP-PROMISE."
               (let ((firefox-dir
                      (string-append "firefox-" #$base-version))
                     (icecat-dir
-                     (string-append "icecat-" #$%icecat-version))
-                    (old-icecat-dir
-                     (string-append "icecat-" #$upstream-icecat-base-version)))
+                     (string-append "icecat-" #$%icecat-version)))
 
                 (mkdir "/tmp/bin")
                 (set-path-environment-variable
@@ -540,9 +649,6 @@ from forcing GEXP-PROMISE."
                      (string-append "FFMINOR=" #$minor-version "\n"))
                     (("^FFSUB=.*")
                      (string-append "FFSUB=" #$sub-version "\n"))
-                    (("^GNUVERSION=.*")
-                     (string-append "GNUVERSION="
-                                    #$upstream-icecat-gnu-version "\n"))
                     (("^DATA=.*")
                      "DATA=/tmp/gnuzilla/data\n")
                     (("^find extensions/gnu/ ")
@@ -556,19 +662,39 @@ from forcing GEXP-PROMISE."
                 (rename-file firefox-dir icecat-dir)
 
                 (with-directory-excursion icecat-dir
+                  (format #t "Populating l10n directory...~%")
+                  (force-output)
                   (mkdir "l10n")
+                  (with-directory-excursion "l10n"
+                    (for-each
+                     (lambda (locale-dir)
+                       (let ((locale
+                              (string-drop (basename locale-dir)
+                                           (+ 32  ; length of hash
+                                              (string-length "-mozilla-locale-")))))
+                         (format #t "  ~a~%" locale)
+                         (force-output)
+                         (copy-recursively locale-dir locale
+                                           #:log (%make-void-port "w"))
+                         (for-each make-file-writable (find-files locale))
+                         (with-directory-excursion locale
+                           (when (file-exists? ".hgtags")
+                             (delete-file ".hgtags"))
+                           (mkdir-p "browser/chrome/browser/preferences")
+                           (call-with-output-file
+                               "browser/chrome/browser/preferences/advanced-scripts.dtd"
+                             (lambda (port) #f)))))
+                     '#+all-mozilla-locales)
+                    (copy-recursively #+mozilla-compare-locales
+                                      "compare-locales"
+                                      #:log (%make-void-port "w"))
+                    (delete-file "compare-locales/.gitignore")
+                    (delete-file "compare-locales/.hgignore")
+                    (delete-file "compare-locales/.hgtags"))
+
                   (format #t "Running makeicecat script...~%")
                   (force-output)
-                  (invoke "bash" "/tmp/gnuzilla/makeicecat")
-                  (delete-file-recursively "l10n"))
-
-                (format #t (string-append "Unpacking l10n/* from"
-                                          " upstream IceCat tarball...~%"))
-                (force-output)
-                (unless (string=? icecat-dir old-icecat-dir)
-                  (symlink icecat-dir old-icecat-dir))
-                (invoke "tar" "xf" #+upstream-icecat-source
-                        (string-append old-icecat-dir "/l10n"))
+                  (invoke "bash" "/tmp/gnuzilla/makeicecat"))
 
                 (format #t "Packing new IceCat tarball...~%")
                 (force-output)
@@ -605,7 +731,6 @@ from forcing GEXP-PROMISE."
        ("pango" ,pango)
        ("freetype" ,freetype)
        ("harfbuzz" ,harfbuzz)
-       ("hunspell" ,hunspell)
        ("libcanberra" ,libcanberra)
        ("libgnome" ,libgnome)
        ("libjpeg-turbo" ,libjpeg-turbo)
@@ -640,24 +765,32 @@ from forcing GEXP-PROMISE."
      ;; and therefore we prefer to leave them out of 'source', which should be
      ;; a tarball suitable for compilation on any system that IceCat supports.
      ;; (Bug fixes and security fixes, however, should go in 'source').
-     `(("icecat-avoid-bundled-libraries.patch"
-        ,(search-patch "icecat-avoid-bundled-libraries.patch"))
-       ("icecat-use-system-graphite2+harfbuzz.patch"
-        ,(search-patch "icecat-use-system-graphite2+harfbuzz.patch"))
-       ("icecat-use-system-media-libs.patch"
-        ,(search-patch "icecat-use-system-media-libs.patch"))
+     `(;; XXX TODO: Adapt these patches to IceCat 68.
+       ;; ("icecat-avoid-bundled-libraries.patch"
+       ;;  ,(search-patch "icecat-avoid-bundled-libraries.patch"))
+       ;; ("icecat-use-system-graphite2+harfbuzz.patch"
+       ;;  ,(search-patch "icecat-use-system-graphite2+harfbuzz.patch"))
+       ;; ("icecat-use-system-media-libs.patch"
+       ;;  ,(search-patch "icecat-use-system-media-libs.patch"))
+       ("icecat-default-search-ddg.patch"
+        ,(search-patch "icecat-default-search-ddg.patch"))
+       ("icecat-disable-sync.patch"
+        ,(search-patch "icecat-disable-sync.patch"))
 
        ("patch" ,(canonical-package patch))
 
-       ;; Icecat 60 checks for rust>=1.24
-       ("rust" ,rust-1.24)
-       ("cargo" ,rust-1.24 "cargo")
-       ("llvm" ,llvm-3.9.1)
-       ("clang" ,clang-3.9.1)
+       ("rust" ,rust)
+       ("cargo" ,rust "cargo")
+       ("rust-cbindgen" ,rust-cbindgen)
+       ("llvm" ,llvm)
+       ("clang" ,clang)
        ("perl" ,perl)
-       ("python" ,python-2) ; Python 3 not supported
+       ("node" ,node)
+       ("python" ,python)
+       ("python-2" ,python-2)
        ("python2-pysqlite" ,python2-pysqlite)
        ("yasm" ,yasm)
+       ("nasm" ,nasm)  ; XXX FIXME: only needed on x86_64 and i686
        ("pkg-config" ,pkg-config)
        ("autoconf" ,autoconf-2.13)
        ("which" ,which)))
@@ -681,7 +814,6 @@ from forcing GEXP-PROMISE."
                            "--disable-tests"
                            "--disable-updater"
                            "--disable-crashreporter"
-                           "--disable-maintenance-service"
                            "--disable-eme"
                            "--disable-gconf"
 
@@ -712,11 +844,11 @@ from forcing GEXP-PROMISE."
                            "--with-system-zlib"
                            "--with-system-bz2"
                            "--with-system-jpeg"        ; must be libjpeg-turbo
-                           "--with-system-libevent"
-                           "--with-system-ogg"
-                           "--with-system-vorbis"
-                           ;; "--with-system-theora" ; wants theora-1.2, not yet released
-                           "--with-system-libvpx"
+                           ;; UNBUNDLE-ME! "--with-system-libevent"
+                           ;; UNBUNDLE-ME! "--with-system-ogg"
+                           ;; UNBUNDLE-ME! "--with-system-vorbis"
+                           ;; UNBUNDLE-ME! "--with-system-theora" ; wants theora-1.2, not yet released
+                           ;; UNBUNDLE-ME! "--with-system-libvpx"
                            "--with-system-icu"
                            
                            ;; See <https://bugs.gnu.org/32833>
@@ -725,12 +857,11 @@ from forcing GEXP-PROMISE."
                            ;; UNBUNDLE-ME! "--with-system-nspr"
                            ;; UNBUNDLE-ME! "--with-system-nss"
                            
-                           "--with-system-harfbuzz"
-                           "--with-system-graphite2"
+                           ;; UNBUNDLE-ME! "--with-system-harfbuzz"
+                           ;; UNBUNDLE-ME! "--with-system-graphite2"
                            "--enable-system-pixman"
                            "--enable-system-ffi"
-                           "--enable-system-hunspell"
-                           "--enable-system-sqlite"
+                           ;; UNBUNDLE-ME! "--enable-system-sqlite"
 
                            ;; Fails with "--with-system-png won't work because
                            ;; the system's libpng doesn't have APNG support".
@@ -748,6 +879,8 @@ from forcing GEXP-PROMISE."
        #:modules ((ice-9 ftw)
                   (ice-9 rdelim)
                   (ice-9 match)
+                  (srfi srfi-34)
+                  (srfi srfi-35)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -802,18 +935,18 @@ from forcing GEXP-PROMISE."
                          ;;
                          "modules/freetype2"
                          "modules/zlib"
-                         "modules/libbz2"
-                         "ipc/chromium/src/third_party/libevent"
-                         "media/libjpeg"
-                         "media/libvpx"
-                         "media/libogg"
-                         "media/libvorbis"
-                         ;; "media/libtheora" ; wants theora-1.2, not yet released
-                         "media/libtremor"
-                         "gfx/harfbuzz"
-                         "gfx/graphite2"
+                         ;; "media/libjpeg"  ; needed for now, because media/libjpeg/moz.build is referenced from config/external/moz.build
+                         ;; UNBUNDLE-ME! "ipc/chromium/src/third_party/libevent"
+                         ;; UNBUNDLE-ME! "media/libvpx"
+                         ;; UNBUNDLE-ME! "media/libogg"
+                         ;; UNBUNDLE-ME! "media/libvorbis"
+                         ;; UNBUNDLE-ME! "media/libtheora" ; wants theora-1.2, not yet released
+                         ;; UNBUNDLE-ME! "media/libtremor"
+                         ;; UNBUNDLE-ME! "gfx/harfbuzz"
+                         ;; UNBUNDLE-ME! "gfx/graphite2"
                          "js/src/ctypes/libffi"
-                         "db/sqlite3"))
+                         ;; UNBUNDLE-ME! "db/sqlite3"
+                         ))
              #t))
          (add-after 'remove-bundled-libraries 'link-libxul-with-libraries
            (lambda _
@@ -840,7 +973,7 @@ from forcing GEXP-PROMISE."
            (lambda _
              (use-modules (guix build cargo-utils))
              (let ((null-hash "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"))
-               (substitute* '("Cargo.lock" "servo/Cargo.lock")
+               (substitute* '("Cargo.lock" "gfx/wr/Cargo.lock")
                  (("(\"checksum .* = )\".*\"" all name)
                   (string-append name "\"" null-hash "\"")))
                (for-each
@@ -890,6 +1023,22 @@ from forcing GEXP-PROMISE."
                (apply invoke bash
                       (string-append srcdir "/configure")
                       flags))))
+         (replace 'build
+           ;; The build system often spuriously fails.  See
+           ;; <https://bugs.gentoo.org/show_bug.cgi?id=680934>.  To
+           ;; work around this, we try the standard 'build' phase up
+           ;; to 5 times.
+           (lambda args
+             (let ((build (assoc-ref %standard-phases 'build)))
+               (let retry ((remaining-attempts 5))
+                 (if (= remaining-attempts 1)
+                     (apply build args)
+                     (guard (c ((invoke-error? c)
+                                (format #t "~%Retrying build! (~a attempts remaining)~%~%"
+                                        (- remaining-attempts 1))
+                                (force-output)
+                                (retry (- remaining-attempts 1))))
+                       (apply build args)))))))
          (add-before 'configure 'install-desktop-entry
            (lambda* (#:key outputs #:allow-other-keys)
              ;; Install the '.desktop' file.
@@ -925,16 +1074,24 @@ from forcing GEXP-PROMISE."
              (let* ((out (assoc-ref outputs "out"))
                     (lib (string-append out "/lib"))
                     (gtk (assoc-ref inputs "gtk+"))
-                    (gtk-share (string-append gtk "/share")))
+                    (gtk-share (string-append gtk "/share"))
+                    (pulseaudio (assoc-ref inputs "pulseaudio"))
+                    (pulseaudio-lib (string-append pulseaudio "/lib")))
                (wrap-program (car (find-files lib "^icecat$"))
-                 `("XDG_DATA_DIRS" ":" prefix (,gtk-share)))
+                 `("XDG_DATA_DIRS" prefix (,gtk-share))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib))
+                 `("MOZ_LEGACY_PROFILES" = ("1")))
                #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
      "IceCat is the GNU version of the Firefox browser.  It is entirely free
 software, which does not recommend non-free plugins and addons.  It also
-features built-in privacy-protecting features.")
+features built-in privacy-protecting features.
+
+WARNING: IceCat 68 has not yet been released by the upstream IceCat project.
+This is a preview release, and does not currently meet the privacy-respecting
+standards of the IceCat project.")
     (license license:mpl2.0)     ;and others, see toolkit/content/license.html
     (properties
      `((ftp-directory . "/gnu/gnuzilla")
