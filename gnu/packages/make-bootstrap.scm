@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Mark H Weaver <mhw@netris.org>
@@ -24,6 +24,7 @@
 (define-module (gnu packages make-bootstrap)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix memoization)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
@@ -63,27 +64,29 @@
 ;;;
 ;;; Code:
 
-(define* (glibc-for-bootstrap #:optional (base glibc))
-  "Return a libc deriving from BASE whose `system' and `popen' functions looks
+(define glibc-for-bootstrap
+  (mlambdaq (base)
+    "Return a libc deriving from BASE whose `system' and `popen' functions looks
 for `sh' in $PATH, and without nscd, and with static NSS modules."
-  (package (inherit base)
-    (source (origin (inherit (package-source base))
-              (patches (cons (search-patch "glibc-bootstrap-system.patch")
-                             (origin-patches (package-source base))))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments base)
-       ((#:configure-flags flags)
-        ;; Arrange so that getaddrinfo & co. do not contact the nscd,
-        ;; and can use statically-linked NSS modules.
-        `(cons* "--disable-nscd" "--disable-build-nscd"
-                "--enable-static-nss"
-                ,flags))))
+    (package
+      (inherit base)
+      (source (origin (inherit (package-source base))
+                      (patches (cons (search-patch "glibc-bootstrap-system.patch")
+                                     (origin-patches (package-source base))))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments base)
+         ((#:configure-flags flags)
+          ;; Arrange so that getaddrinfo & co. do not contact the nscd,
+          ;; and can use statically-linked NSS modules.
+          `(cons* "--disable-nscd" "--disable-build-nscd"
+                  "--enable-static-nss"
+                  ,flags))))
 
-    ;; Remove the 'debug' output to allow bit-reproducible builds (when the
-    ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
-    ;; includes a CRC of the corresponding debugging symbols; those symbols
-    ;; contain store file names, so the CRC changes at every rebuild.)
-    (outputs (delete "debug" (package-outputs base)))))
+      ;; Remove the 'debug' output to allow bit-reproducible builds (when the
+      ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
+      ;; includes a CRC of the corresponding debugging symbols; those symbols
+      ;; contain store file names, so the CRC changes at every rebuild.)
+      (outputs (delete "debug" (package-outputs base))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -122,8 +125,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                    (package-search-paths gcc)))))
             ("cross-binutils" ,(cross-binutils target))
             ,@(%final-inputs)))
-        `(("libc" ,(glibc-for-bootstrap))
-          ("libc:static" ,(glibc-for-bootstrap) "static")
+        `(("libc" ,(glibc-for-bootstrap glibc))
+          ("libc:static" ,(glibc-for-bootstrap glibc) "static")
           ("gcc" ,(package (inherit gcc)
                     (outputs '("out"))  ;all in one so libgcc_s is easily found
                     (native-search-paths
@@ -135,8 +138,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                            (package-native-search-paths gcc)))
                     (inputs
                      `(;; Distinguish the name so we can refer to it below.
-                       ("bootstrap-libc" ,(glibc-for-bootstrap))
-                       ("libc:static" ,(glibc-for-bootstrap) "static")
+                       ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
+                       ("libc:static" ,(glibc-for-bootstrap glibc) "static")
                        ,@(package-inputs gcc)))
                     (arguments
                      (substitute-keyword-arguments (package-arguments gcc)
@@ -438,7 +441,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
-  (let ((glibc (glibc-for-bootstrap)))
+  (let ((glibc (glibc-for-bootstrap glibc)))
     (package (inherit glibc)
       (name "glibc-stripped")
       (build-system trivial-build-system)
