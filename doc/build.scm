@@ -51,6 +51,12 @@
 (define info-manual
   (@@ (guix self) info-manual))
 
+(define %manual
+  ;; The manual to build--i.e., the base name of a .texi file, such as "guix"
+  ;; or "guix-cookbook".
+  (or (getenv "GUIX_MANUAL")
+      "guix"))
+
 (define %languages
   '("de" "en" "es" "fr" "ru" "zh_CN"))
 
@@ -359,7 +365,7 @@ its <pre class=\"lisp\"> blocks (as produced by 'makeinfo --html')."
 
 (define* (html-manual source #:key (languages %languages)
                       (version "0.0")
-                      (manual "guix")
+                      (manual %manual)
                       (date 1)
                       (options %makeinfo-html-options))
   "Return the HTML manuals built from SOURCE for all LANGUAGES, with the given
@@ -386,6 +392,13 @@ makeinfo OPTIONS."
                           (chr chr))
                         (string-downcase language)))
 
+          (define (language->texi-file-name language)
+            (if (string=? language "en")
+                (string-append #$manual-source "/"
+                               #$manual ".texi")
+                (string-append #$manual-source "/"
+                               #$manual "." language ".texi")))
+
           ;; Install a UTF-8 locale so that 'makeinfo' is at ease.
           (setenv "GUIX_LOCPATH"
                   #+(file-append glibc-utf8-locales "/lib/locale"))
@@ -395,15 +408,12 @@ makeinfo OPTIONS."
           (setvbuf (current-error-port) 'line)
 
           (for-each (lambda (language)
-                      (let ((opts `("--html"
-                                    "-c" ,(string-append "TOP_NODE_UP_URL=/manual/"
+                      (let* ((texi (language->texi-file-name language))
+                             (opts `("--html"
+                                     "-c" ,(string-append "TOP_NODE_UP_URL=/manual/"
                                                          language)
-                                    #$@options
-                                    ,(if (string=? language "en")
-                                         (string-append #$manual-source "/"
-                                                        #$manual ".texi")
-                                         (string-append #$manual-source "/"
-                                                        #$manual "." language ".texi")))))
+                                     #$@options
+                                     ,texi)))
                         (format #t "building HTML manual for language '~a'...~%"
                                 language)
                         (mkdir-p (string-append #$output "/"
@@ -433,7 +443,8 @@ makeinfo OPTIONS."
                         (symlink #$images
                                  (string-append #$output "/" (normalize language)
                                                 "/html_node/images"))))
-                    '#$languages))))
+                    (filter (compose file-exists? language->texi-file-name)
+                            '#$languages)))))
 
   (let* ((name   (string-append manual "-html-manual"))
          (manual (computed-file name build)))
@@ -442,7 +453,7 @@ makeinfo OPTIONS."
 
 (define* (pdf-manual source #:key (languages %languages)
                      (version "0.0")
-                     (manual "guix")
+                     (manual %manual)
                      (date 1)
                      (options '()))
   "Return the HTML manuals built from SOURCE for all LANGUAGES, with the given
@@ -570,7 +581,7 @@ from SOURCE."
 (define* (html-manual-indexes source
                               #:key (languages %languages)
                               (version "0.0")
-                              (manual "guix")
+                              (manual %manual)
                               (date 1))
   (define build
     (with-extensions (list guile-json-3)
@@ -782,7 +793,7 @@ languages:\n"
                           #:key (languages %languages)
                           (version "0.0")
                           (date (time-second (current-time time-utc)))
-                          (manual "guix"))
+                          (manual %manual))
   "Return the union of the HTML and PDF manuals, as well as the indexes."
   (directory-union (string-append manual "-manual")
                    (map (lambda (proc)
