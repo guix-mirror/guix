@@ -7896,3 +7896,37 @@ binary heap and a Fibonacci heap) as well as an efficient priority queue.")
 
 (define-public ecl-cl-heap
   (sbcl-package->ecl-package sbcl-cl-heap))
+
+(define-public sbcl-curry-compose-reader-macros
+  (let ((commit "beaa92dedf392726c042184bfd6149fa8d9e6ac2")
+        (revision "0"))
+    (package
+      (name "sbcl-curry-compose-reader-macros")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/eschulte/curry-compose-reader-macros.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rv9bl8xrad5wfcg5zs1dazvnpmvqz6297lbn8bywsrcfnlf7h98"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (synopsis "Reader macros for partial application and composition")
+      (description
+       "This Common Lisp library provides reader macros for concise expression
+of function partial application and composition.")
+      (home-page "https://eschulte.github.io/curry-compose-reader-macros/")
+      (license license:public-domain))))
+
+(define-public cl-curry-compose-reader-macros
+  (sbcl-package->cl-source-package sbcl-curry-compose-reader-macros))
+
+(define-public ecl-curry-compose-reader-macros
+  (sbcl-package->ecl-package sbcl-curry-compose-reader-macros))
