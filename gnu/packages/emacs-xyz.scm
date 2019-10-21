@@ -12194,50 +12194,48 @@ according to a parsing expression grammar.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ql
-  (let ((commit "949a06c3ab50482b749fd2d4350837a197660d96")
-        (revision "3"))
-    (package
-      (name "emacs-org-ql")
-      (version (git-version "0.3.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/alphapapa/org-ql")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0apcg63xm0242mjgsgw0jrcda4p4iqj7fy3sgh0p7khi4hrs5ch0"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-s" ,emacs-s)
-         ("emacs-f" ,emacs-f)
-         ("emacs-ov" ,emacs-ov)
-         ("emacs-peg" ,emacs-peg)
-         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
-         ("emacs-ts" ,emacs-ts)
-         ("emacs-org" ,emacs-org)
-         ("emacs-helm" ,emacs-helm)
-         ("emacs-helm-org" ,emacs-helm-org)
-         ("emacs-dash" ,emacs-dash)))
-      (native-inputs
-       `(("emacs-buttercup" ,emacs-buttercup)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'require-helm
-             (lambda _
-               (substitute* "helm-org-ql.el"
-                 (("^;;;; Requirements")
-                  ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
-               #t)))
-         #:tests? #t
-         #:test-command '("buttercup" "-L" ".")))
-      (home-page "https://github.com/alphapapa/org-ql/")
-      (synopsis "Query language for Org buffers")
-      (description "This package provides a Lispy query language for Org
+  (package
+    (name "emacs-org-ql")
+    (version "0.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-ql")
+                    (commit version)))
+              (sha256
+               (base32
+                "11bhpi2l28vp8mm9nx18jljbqdnh9vxpv9kp1dn9lpsgivcdbc34"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ov" ,emacs-ov)
+       ("emacs-peg" ,emacs-peg)
+       ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+       ("emacs-ts" ,emacs-ts)
+       ("emacs-org" ,emacs-org)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-helm-org" ,emacs-helm-org)
+       ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'require-helm
+           (lambda _
+             (substitute* "helm-org-ql.el"
+               (("^;;;; Requirements")
+                ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
+             #t)))
+       #:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
+    (home-page "https://github.com/alphapapa/org-ql/")
+    (synopsis "Query language for Org buffers")
+    (description "This package provides a Lispy query language for Org
 files, allowing for actions to be performed based on search criteria.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-org-auto-expand
   (let ((commit "4938d5f6460e2f8f051ba9ac000b291bfa43ef62")
