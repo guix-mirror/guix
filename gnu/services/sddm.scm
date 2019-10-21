@@ -30,6 +30,7 @@
   #:use-module (gnu system shadow)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (guix deprecation)
   #:export (sddm-configuration
             sddm-configuration?
             sddm-service-type
@@ -319,7 +320,8 @@ Relogin="              (if (sddm-configuration-relogin? config)
                                            sddm-profile-service)))
                 (default-value (sddm-configuration))))
 
-(define* (sddm-service #:optional (config (sddm-configuration)))
+(define-deprecated (sddm-service #:optional (config (sddm-configuration)))
+  sddm-service-type
   "Run the @uref{https://github.com/sddm/sddm,SSDM display manager}
 with the given @var{config}, a @code{<sddm-configuration>} object."
   (service sddm-service-type config))
