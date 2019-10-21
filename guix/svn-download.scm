@@ -31,6 +31,7 @@
             svn-reference?
             svn-reference-url
             svn-reference-revision
+            svn-reference-recursive?
             svn-fetch
             download-svn-to-store
 
@@ -39,6 +40,7 @@
             svn-multi-reference-url
             svn-multi-reference-revision
             svn-multi-reference-locations
+            svn-multi-reference-recursive?
             svn-multi-fetch))
 
 ;;; Commentary:
@@ -52,10 +54,11 @@
 (define-record-type* <svn-reference>
   svn-reference make-svn-reference
   svn-reference?
-  (url       svn-reference-url)                    ; string
-  (revision  svn-reference-revision)               ; number
-  (user-name svn-reference-user-name (default #f))
-  (password  svn-reference-password (default #f)))
+  (url        svn-reference-url)                    ; string
+  (revision   svn-reference-revision)               ; number
+  (recursive? svn-reference-recursive? (default #t))
+  (user-name  svn-reference-user-name (default #f))
+  (password   svn-reference-password (default #f)))
 
 (define (subversion-package)
   "Return the default Subversion package."
@@ -78,6 +81,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                      '#$(svn-reference-revision ref)
                      #$output
                      #:svn-command (string-append #+svn "/bin/svn")
+                     #:recursive? #$(svn-reference-recursive? ref)
                      #:user-name #$(svn-reference-user-name ref)
                      #:password #$(svn-reference-password ref)))))
 
@@ -96,6 +100,7 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
   (url        svn-multi-reference-url)                 ; string
   (revision   svn-multi-reference-revision)            ; number
   (locations  svn-multi-reference-locations)           ; list of strings
+  (recursive? svn-multi-reference-recursive? (default #t))
   (user-name  svn-multi-reference-user-name (default #f))
   (password   svn-multi-reference-password (default #f)))
 
@@ -125,6 +130,8 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
                                   (string-append #$output "/" location)
                                   (string-append #$output "/" (dirname location)))
                               #:svn-command (string-append #+svn "/bin/svn")
+                              #:recursive?
+                              #$(svn-reference-recursive? ref)
                               #:user-name #$(svn-multi-reference-user-name ref)
                               #:password #$(svn-multi-reference-password ref)))
                  '#$(svn-multi-reference-locations ref)))))
