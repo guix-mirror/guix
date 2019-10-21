@@ -1508,6 +1508,8 @@ else @code{parse-number} signals an error of type @code{invalid-number}.")
         (base32
          "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("rt" ,sbcl-rt)))
     (home-page "https://common-lisp.net/project/iterate/")
     (synopsis "Iteration construct for Common Lisp")
     (description "@code{iterate} is an iteration construct for Common Lisp.
