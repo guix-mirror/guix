@@ -11602,6 +11602,34 @@ close, copy, cut, paste, undo, redo.")
 standard Unix password manager\").")
     (license license:gpl2+)))
 
+(define-public emacs-auth-source-pass
+  (let ((commit "847a1f54ed48856b4dfaaa184583ef2c84173edf")
+        (revision "1"))
+    (package
+      (name "emacs-auth-source-pass")
+      (version (git-version "5.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/NicolasPetton/auth-password-store.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g48z5w6n3c54zqfpx65dfyl9jqbl15idvbb1hhw2pd9f9r8fykk"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-L" "."
+                          "-l" "test/auth-source-pass-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/NicolasPetton/auth-password-store")
+      (synopsis "Integrate @code{auth-source} with @code{password-store}")
+      (description "This package helps Emacs integrate with the Unix
+@code{password-store} application.")
+      (license license:gpl3+))))
+
 (define-public emacs-pass
   (package
     (name "emacs-pass")
