@@ -12534,6 +12534,11 @@ orient yourself in the code, and tell which statements are at a given level.")
        (sha256
         (base32 "1kykbb1sil5cycfa5aj8dhsxc5yrx1641i2np5kwdjid6ahdlz5r"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/DamienCassou/hierarchy")
     (synopsis "Library to create and display hierarchy structures")
     (description "This package provides an Emacs library to create, query,
