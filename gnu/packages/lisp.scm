@@ -7966,3 +7966,46 @@ JSON interchange format.")
 
 (define-public ecl-yason
   (sbcl-package->ecl-package sbcl-yason))
+
+(define-public sbcl-stefil
+  (let ((commit "0398548ec95dceb50fc2c2c03e5fb0ce49b86c7a")
+        (revision "0"))
+    (package
+      (name "sbcl-stefil")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/stefil/stefil.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bqz64q2szzhf91zyqyssmvrz7da6442rs01808pf3wrdq28bclh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("metabang-bind" ,sbcl-metabang-bind)))
+      (propagated-inputs
+       ;; Swank doesn't have a pre-compiled package, therefore we must
+       ;; propagate its sources.
+       `(("swank" ,cl-slime-swank)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'drop-unnecessary-dependency
+             (lambda _
+               (substitute* "package.lisp"
+                 ((":stefil-system") ""))
+               #t)))))
+      (home-page "https://common-lisp.net/project/stefil/index-old.shtml")
+      (synopsis "Simple test framework")
+      (description
+       "Stefil is a simple test framework for Common Lisp, with a focus on
+interactive development.")
+      (license license:public-domain))))
+
+(define-public cl-stefil
+  (sbcl-package->cl-source-package sbcl-stefil))
