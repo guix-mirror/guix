@@ -18484,8 +18484,8 @@ Dash docsets.")
       (license license:gpl3+))))
 
 (define-public emacs-counsel-dash
-  (let ((commit "24d370be9e94e90d045c49967e19484b9903fce9")
-        (revision "2"))
+  (let ((commit "7027868d483b51d949b9f20fb8f34b122ca61520")
+        (revision "3"))
     (package
       (name "emacs-counsel-dash")
       (version (git-version "0.1.3" revision commit))
@@ -18498,7 +18498,7 @@ Dash docsets.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "18gp7hhgng271c7bh06k9p24zqic0f64j5cicivljmyk9c3nh7an"))))
+           "0h3f5pxnmb21pq4hh7k4w8jzflz1k2ap7nwpjc222w0q6x6jrbjp"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash-docs" ,emacs-dash-docs)
