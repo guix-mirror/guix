@@ -1526,6 +1526,9 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
 (define-public cl-iterate
   (sbcl-package->cl-source-package sbcl-iterate))
 
+(define-public ecl-iterate
+  (sbcl-package->ecl-package sbcl-iterate))
+
 (define-public sbcl-cl-uglify-js
   ;; There have been many bug fixes since the 2010 release.
   (let ((commit "429c5e1d844e2f96b44db8fccc92d6e8e28afdd5")
