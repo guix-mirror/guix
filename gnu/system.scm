@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo.peng@gmail.com>
+;;; Copyright © 2019 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;; Copyright © 2020 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2020 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2020 Florian Pelz <pelzflorian@pelzflorian.de>
@@ -148,6 +149,7 @@
             boot-parameters-bootloader-menu-entries
             boot-parameters-store-device
             boot-parameters-store-mount-point
+            boot-parameters-locale
             boot-parameters-kernel
             boot-parameters-kernel-arguments
             boot-parameters-initrd
@@ -297,6 +299,7 @@ directly by the user."
    boot-parameters-bootloader-menu-entries)
   (store-device     boot-parameters-store-device)
   (store-mount-point boot-parameters-store-mount-point)
+  (locale           boot-parameters-locale)
   (kernel           boot-parameters-kernel)
   (kernel-arguments boot-parameters-kernel-arguments)
   (initrd           boot-parameters-initrd)
@@ -373,6 +376,11 @@ file system labels."
        (match (assq 'multiboot-modules rest)
          ((_ args) args)
          (#f       '())))
+
+      (locale
+       (match (assq 'locale rest)
+         ((_ locale) locale)
+         (#f         #f)))
 
       (store-device
        ;; Linux device names like "/dev/sda1" are not suitable GRUB device
@@ -1284,6 +1292,7 @@ such as '--root' and '--load' to <boot-parameters>."
   (let* ((initrd          (and (not (operating-system-hurd os))
                                (operating-system-initrd-file os)))
          (store           (operating-system-store-file-system os))
+         (locale          (operating-system-locale os))
          (bootloader      (bootloader-configuration-bootloader
                            (operating-system-bootloader os)))
          (bootloader-name (bootloader-name bootloader))
@@ -1302,6 +1311,7 @@ such as '--root' and '--load' to <boot-parameters>."
      (bootloader-name bootloader-name)
      (bootloader-menu-entries
       (bootloader-configuration-menu-entries (operating-system-bootloader os)))
+     (locale locale)
      (store-device (ensure-not-/dev (file-system-device store)))
      (store-mount-point (file-system-mount-point store)))))
 
@@ -1354,6 +1364,7 @@ being stored into the \"parameters\" file)."
                              (or (and=> (operating-system-bootloader os)
                                         bootloader-configuration-menu-entries)
                                  '())))
+                     (locale #$(boot-parameters-locale params))
                      (store
                       (device
                        #$(device->sexp (boot-parameters-store-device params)))
