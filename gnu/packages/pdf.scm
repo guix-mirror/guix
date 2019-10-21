@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -991,7 +991,16 @@ python-pypdf2 instead.")
         (base32 "1f8m8r81322i97wkqpmf7a4kiwnq244n6cnbldh03jc49vwq2kxx"))))
     (build-system python-build-system)
     (arguments
-     '(#:tests? #f))  ; no tests
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-for-typelib
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out     (assoc-ref outputs "out"))
+                             (program (string-append out "/bin/pdfarranger")))
+                        (wrap-program program
+                          `("GI_TYPELIB_PATH" ":" prefix
+                            (,(getenv "GI_TYPELIB_PATH"))))
+                        #t))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("python-distutils-extra" ,python-distutils-extra)))
