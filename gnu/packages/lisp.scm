@@ -8066,3 +8066,20 @@ path, maximum flow, minimum spanning tree, etc.).")
        ((#:asd-file _ "") "graph.dot.asd")
        ((#:asd-system-name _ #f) "graph-dot")))
     (synopsis "Serialize graphs to and from DOT format")))
+
+(define-public sbcl-graph-json
+  (package
+    (inherit sbcl-graph)
+    (name "sbcl-graph-json")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+       ("graph" ,sbcl-graph)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("named-readtables" ,sbcl-named-readtables)
+       ("yason" ,sbcl-yason)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-graph)
+       ((#:asd-file _ "") "graph.json.asd")
+       ((#:asd-system-name _ #f) "graph-json")))
+    (synopsis "Serialize graphs to and from JSON format")))
