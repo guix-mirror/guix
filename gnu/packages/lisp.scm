@@ -7866,3 +7866,33 @@ forms in parallel.")
 
 (define-public ecl-simple-parallel-tasks
   (sbcl-package->ecl-package sbcl-simple-parallel-tasks))
+
+(define-public sbcl-cl-heap
+  (package
+    (name "sbcl-cl-heap")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://common-lisp.net/project/cl-heap/releases/"
+                           "cl-heap_" version ".tar.gz"))
+       (sha256
+        (base32
+         "163hb07p2nxz126rpq3cj5dyala24n0by5i5786n2qcr1w0bak4i"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("xlunit" ,sbcl-xlunit)))
+    (arguments
+     `(#:test-asd-file "cl-heap-tests.asd"))
+    (synopsis "Heap and priority queue data structures for Common Lisp")
+    (description
+     "CL-HEAP provides various implementations of heap data structures (a
+binary heap and a Fibonacci heap) as well as an efficient priority queue.")
+    (home-page "https://common-lisp.net/project/cl-heap/")
+    (license license:gpl3+)))
+
+(define-public cl-heap
+  (sbcl-package->cl-source-package sbcl-cl-heap))
+
+(define-public ecl-cl-heap
+  (sbcl-package->ecl-package sbcl-cl-heap))
