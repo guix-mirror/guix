@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Fis Trivial <ybbs.daans@hotmail.com>
 ;;; Copyright © 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web))
@@ -313,3 +315,38 @@ code analysis and supports cross references, hierarchies, completion and
 syntax highlighting.  @code{ccls} is derived from @code{cquery} which is not
 maintained anymore.")
     (license license:asl2.0)))
+
+(define-public gperftools
+  (package
+    (name "gperftools")
+    (version "2.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/gperftools/gperftools")
+             (commit (string-append "gperftools-" version))))
+       (sha256
+        (base32 "0amvwrzn5qc0b0jpxpy5g6zkmj97zjh4hhjrd130hsg2lwwcwhy1"))
+       (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ;; For tests:
+       ("perl" ,perl)))
+    (home-page "https://github.com/gperftools/gperftools")
+    (synopsis "Multi-threaded malloc() and performance analysis tools for C++")
+    (description
+     "@code{gperftools} is a collection of a high-performance multi-threaded
+malloc() implementation plus some thread-friendly performance analysis
+tools:
+
+@itemize
+@item tcmalloc,
+@item heap profiler,
+@item heap checker,
+@item CPU checker.
+@end itemize\n")
+    (license license:bsd-3)))
