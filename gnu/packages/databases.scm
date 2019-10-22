@@ -498,7 +498,7 @@ replacement for the code@{python-memcached} library.")
                 (search-patch "mongodb-support-unknown-linux-distributions.patch")))))
     (build-system scons-build-system)
     (inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("pcre" ,pcre)
         ,@(match (%current-system)
             ((or "x86_64-linux" "aarch64-linux" "mips64el-linux")
@@ -538,6 +538,15 @@ replacement for the code@{python-memcached} library.")
                 ,(format #f "--jobs=~a" (parallel-job-count))
                 "--ssl")))
          (modify-phases %standard-phases
+           (add-after 'unpack 'patch
+             (lambda _
+               ;; Remove use of GNU extensions in parse_number_test.cpp, to
+               ;; allow compiling with GCC 7 or later
+               ;; https://jira.mongodb.org/browse/SERVER-28063
+               (substitute* "src/mongo/base/parse_number_test.cpp"
+                 (("0xabcab\\.defdefP-10")
+                  "687.16784283419838"))
+               #t))
            (add-after 'unpack 'scons-propagate-environment
              (lambda _
                ;; Modify the SConstruct file to arrange for
