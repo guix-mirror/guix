@@ -14990,7 +14990,7 @@ Org-mode.  It features:
        (method git-fetch)
        (uri (git-reference (url home-page)
                            (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1wi70r56pd5z0x4dp4m58p9asq03j74kdm4fi9vai83vsl2z9amq"))))
