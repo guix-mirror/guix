@@ -8726,21 +8726,20 @@ and related methods.")
 (define-public r-rcppgsl
   (package
     (name "r-rcppgsl")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppGSL" version))
        (sha256
-        (base32
-         "16pdapq31729db53agnb48jkvdm97167n3bigy5zazc3q3isis1m"))))
+        (base32 "0cnw2k7cfqrm79r6j283aybflxig80x4n4rjkfp2317wf10mrsa5"))))
     (properties `((upstream-name . "RcppGSL")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("gsl" ,gsl)))
     (native-inputs
-     `(("r-knitr" ,r-knitr))) ; for vignettes
+     `(("r-knitr" ,r-knitr)))           ; for vignettes
     (home-page "https://cran.r-project.org/web/packages/RcppGSL/")
     (synopsis "Rcpp integration for GSL vectors and matrices")
     (description
