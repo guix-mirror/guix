@@ -59,6 +59,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system guile)
+  #:use-module (guix deprecation)
   #:use-module (guix utils)
   #:use-module (ice-9 match)
   #:use-module ((srfi srfi-1) #:prefix srfi-1:))
@@ -413,7 +414,7 @@ GNU@tie{}Guile.  Use the @code{(ice-9 readline)} module and call its
 ;;; Extensions.
 ;;;
 
-(define-public guile-json
+(define-public guile-json-1
   (package
     (name "guile-json")
     (version "1.2.0")
@@ -444,17 +445,20 @@ specification.  These are the main features:
     ;; Version 1.2.0 switched to GPLv3+ (from LGPLv3+).
     (license license:gpl3+)))
 
-(define-public guile-json-1
-  ;; This is the 1.x branch of Guile-JSON.
-  guile-json)
+;; Deprecate the 'guile-json' alias to force the use 'guile-json-1' or
+;; 'guile-json-3'.  In the future, we may reuse 'guile-json' as an alias for
+;; 'guile-json-3'.
+(define-deprecated guile-json
+  guile-json-1
+  guile-json-1)
 
 (define-public guile2.0-json
-  (package-for-guile-2.0 guile-json))
+  (package-for-guile-2.0 guile-json-1))
 
 (define-public guile-json-3
   ;; This version is incompatible with 1.x; see the 'NEWS' file.
   (package
-    (inherit guile-json)
+    (inherit guile-json-1)
     (name "guile-json")
     (version "3.2.0")
     (source (origin
