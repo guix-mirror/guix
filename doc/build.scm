@@ -584,6 +584,9 @@ from SOURCE."
                               #:key (languages %languages)
                               (version "0.0")
                               (manual %manual)
+                              (title (if (string=? "guix" manual)
+                                         "GNU Guix Reference Manual"
+                                         "GNU Guix Cookbook"))
                               (date 1))
   (define build
     (with-extensions (list guile-json-3)
@@ -687,7 +690,7 @@ from SOURCE."
 
             (define (language-index language)
               (define title
-                (translate "GNU Guix Reference Manual" language))
+                (translate #$title language))
 
               (sxml-index
                language title
@@ -745,8 +748,7 @@ from SOURCE."
                     %iso639-languages)))
 
             (define (top-level-index languages)
-              (define title
-                "GNU Guix Reference Manual")
+              (define title #$title)
               (sxml-index
                "en" title
                `(main
@@ -754,7 +756,7 @@ from SOURCE."
                   (@ (class "page centered-block limit-width"))
                   (h2 ,title)
                   (div
-                   "The GNU Guix Reference Manual is available in the following
+                   "This document is available in the following
 languages:\n"
                    (ul
                     ,@(map (lambda (language)
