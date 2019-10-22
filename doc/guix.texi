@@ -26050,7 +26050,7 @@ such that no two machines in the deployment have the same set of tags.
 A Digital Ocean region slug, such as @code{"nyc3"}.
 @item @code{size}
 A Digital Ocean size slug, such as @code{"s-1vcpu-1gb"}
-@item @code{enable-ipv6}
+@item @code{enable-ipv6?}
 Whether or not the droplet should be created with IPv6 networking.
 @end table
 @end deftp

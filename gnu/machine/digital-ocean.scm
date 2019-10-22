@@ -52,7 +52,7 @@
             digital-ocean-configuration-tags
             digital-ocean-configuration-region
             digital-ocean-configuration-size
-            digital-ocean-configuration-enable-ipv6
+            digital-ocean-configuration-enable-ipv6?
 
             digital-ocean-environment-type))
 
@@ -128,7 +128,7 @@ takes care to set headers such as 'Accept' and 'Authorization' appropriately."
   (tags        digital-ocean-configuration-tags)         ; list of strings
   (region      digital-ocean-configuration-region)       ; string
   (size        digital-ocean-configuration-size)         ; string
-  (enable-ipv6 digital-ocean-configuration-enable-ipv6)) ; boolean
+  (enable-ipv6? digital-ocean-configuration-enable-ipv6?)) ; boolean
 
 (define (read-key-fingerprint file-name)
   "Read the private key at FILE-NAME and return the key's fingerprint as a hex
@@ -324,7 +324,7 @@ environment type of 'digital-ocean-environment-type'."
          (size (digital-ocean-configuration-size config))
          (ssh-key (digital-ocean-configuration-ssh-key config))
          (fingerprint (read-key-fingerprint ssh-key))
-         (enable-ipv6 (digital-ocean-configuration-enable-ipv6 config))
+         (enable-ipv6? (digital-ocean-configuration-enable-ipv6? config))
          (tags (digital-ocean-configuration-tags config))
          (request-body `(("name" . ,name)
                          ("region" . ,region)
@@ -332,7 +332,7 @@ environment type of 'digital-ocean-environment-type'."
                          ("image" . "debian-9-x64")
                          ("ssh_keys" . ,(vector fingerprint))
                          ("backups" . #f)
-                         ("ipv6" . ,enable-ipv6)
+                         ("ipv6" . ,enable-ipv6?)
                          ("user_data" . #nil)
                          ("private_networking" . #nil)
                          ("volumes" . #nil)
