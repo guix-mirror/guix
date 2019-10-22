@@ -18531,6 +18531,15 @@ Dash docsets.")
       (propagated-inputs
        `(("emacs-dash-docs" ,emacs-dash-docs)
          ("emacs-ivy" ,emacs-ivy)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'require-ivy
+             (lambda _
+               (substitute* "counsel-dash.el"
+                 (("^\\(require 'cl-lib\\)")
+                  "(require 'cl-lib)\n(require 'ivy)\n(require 'subr-x)"))
+               #t)))))
       (home-page "https://github.com/dash-docs-el/counsel-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
       (description "This package uses @code{ivy-mode} to install and navigate
