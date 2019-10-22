@@ -714,6 +714,9 @@ transformations specified in OPTS (resulting from '--url', '--commit', or
   (define default-file
     (string-append (config-directory) "/channels.scm"))
 
+  (define global-file
+    (string-append %sysconfdir "/guix/channels.scm"))
+
   (define (load-channels file)
     (let ((result (load* file (make-user-module '((guix channels))))))
       (if (and (list? result) (every channel? result))
@@ -725,6 +728,8 @@ transformations specified in OPTS (resulting from '--url', '--commit', or
            (load-channels file))
           ((file-exists? default-file)
            (load-channels default-file))
+          ((file-exists? global-file)
+           (load-channels global-file))
           (else
            %default-channels)))
 

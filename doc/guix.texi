@@ -3666,6 +3666,21 @@ descriptions, and deploys it.  Source code is downloaded from a
 @uref{https://git-scm.com, Git} repository, by default the official
 GNU@tie{}Guix repository, though this can be customized.
 
+Specifically, @command{guix pull} downloads code from the @dfn{channels}
+(@pxref{Channels}) specified by one of the followings, in this order:
+
+@enumerate
+@item
+the @option{--channels} option;
+@item
+the user's @file{~/.config/guix/channels.scm} file;
+@item
+the system-wide @file{/etc/guix/channels.scm} file;
+@item
+the built-in default channels specified in the @code{%default-channels}
+variable.
+@end enumerate
+
 On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
 the Guix commands and Scheme modules will also be taken from that latest
@@ -3763,7 +3778,8 @@ configuration in the @file{~/.config/guix/channels.scm} file or using the
 @item --channels=@var{file}
 @itemx -C @var{file}
 Read the list of channels from @var{file} instead of
-@file{~/.config/guix/channels.scm}.  @var{file} must contain Scheme code that
+@file{~/.config/guix/channels.scm} or @file{/etc/guix/channels.scm}.
+@var{file} must contain Scheme code that
 evaluates to a list of channel objects.  @xref{Channels}, for more
 information.
 
