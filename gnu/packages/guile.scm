@@ -451,6 +451,7 @@ specification.  These are the main features:
 (define-deprecated guile-json
   guile-json-1
   guile-json-1)
+(export guile-json)
 
 (define-public guile2.0-json
   (package-for-guile-2.0 guile-json-1))
