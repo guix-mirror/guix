@@ -7541,6 +7541,31 @@ end of a line and increment or decrement it.")
 a popup window for previewing candidates.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-args
+  (let ((commit "758ad5ae54ad34202064fec192c88151c08cb387")
+        (revision "1"))
+    (package
+      (name "emacs-evil-args")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wcsmith/evil-args.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k35glgsirc3cph8v5hhjrqfh4ndwh8a28qbr03y3jl8s453xcj7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/wcsmith/evil-args")
+      (synopsis "Motions and text objects for delimited arguments in Evil")
+      (description
+       "This package provides motions and text objects for delimited
+arguments, such as arguments separated by commas and semicolons.")
+      (license license:expat))))
+
 (define-public emacs-evil-exchange
   (let ((commit "47691537815150715e64e6f6ec79be7746c96120")
         (version "0.41")
