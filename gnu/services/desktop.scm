@@ -580,7 +580,7 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 
 (define-record-type* <elogind-configuration> elogind-configuration
   make-elogind-configuration
-  elogind-configuration
+  elogind-configuration?
   (elogind                         elogind-package
                                    (default elogind))
   (kill-user-processes?            elogind-kill-user-processes?
@@ -834,7 +834,7 @@ accountsservice web site} for more information."
 
 (define-record-type* <gnome-desktop-configuration> gnome-desktop-configuration
   make-gnome-desktop-configuration
-  gnome-desktop-configuration
+  gnome-desktop-configuration?
   (gnome-package gnome-package (default gnome)))
 
 (define (gnome-polkit-settings config)
@@ -872,7 +872,7 @@ and extends polkit with the actions from @code{gnome-settings-daemon}."
 
 (define-record-type* <mate-desktop-configuration> mate-desktop-configuration
   make-mate-desktop-configuration
-  mate-desktop-configuration
+  mate-desktop-configuration?
   (mate-package mate-package (default mate)))
 
 (define mate-desktop-service-type
@@ -905,7 +905,7 @@ and extends polkit with the actions from @code{mate-settings-daemon}."
 
 (define-record-type* <xfce-desktop-configuration> xfce-desktop-configuration
   make-xfce-desktop-configuration
-  xfce-desktop-configuration
+  xfce-desktop-configuration?
   (xfce xfce-package (default xfce)))
 
 (define (xfce-polkit-settings config)
