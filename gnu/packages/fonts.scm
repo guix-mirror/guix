@@ -1000,14 +1000,31 @@ correct spacing.")
    ;; <https://bugs.gnu.org/32916>
    (version "4.7.0")
    (source (origin
-            (method url-fetch)
-            (uri (string-append "http://fontawesome.io/assets/"
-                                name "-" version ".zip"))
+            (method git-fetch)
+            (uri (git-reference
+                   (url "https://github.com/FortAwesome/Font-Awesome.git")
+                   (commit (string-append "v" version))))
+            (file-name (git-file-name name version))
             (sha256
              (base32
-              "1m1rfwm4sjkv10j3xd2dhwk286a5912b2zgvc692cmxi5gxs68jf"))))
+              "0w30y26jp8nvxa3iiw7ayl6rkza1rz62msl9xw3srvxya1c77grc"))))
    (build-system font-build-system)
-   (home-page "http://fontawesome.io")
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (source (string-append (getcwd) "/fonts"))
+                   (fonts (string-append out "/share/fonts")))
+              (for-each (lambda (file)
+                          (install-file file (string-append fonts "/truetype")))
+                        (find-files source "\\.(ttf|ttc)$"))
+              (for-each (lambda (file)
+                          (install-file file (string-append fonts "/opentype")))
+                        (find-files source "\\.(otf|otc)$"))
+              #t))))))
+   (home-page "https://fontawesome.com/")
    (synopsis "Font that contains a rich iconset")
    (description
     "Font Awesome is a full suite of pictographic icons for easy scalable
