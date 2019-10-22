@@ -2363,14 +2363,14 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
-        (base32 "1wzc2igs4khmj7zfahvs87c24p9ks8hnqhhsyviyiix53xx2y6sg"))))
+        (base32 "13c7iwnnavky10ab87pi8jc1kqph03s0rhvj7myn7szhbfisc4gn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
