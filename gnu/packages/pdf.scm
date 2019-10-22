@@ -16,7 +16,6 @@
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
-;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,7 +66,6 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
-  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
@@ -75,8 +73,6 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages python-check)
-  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
@@ -1203,81 +1199,4 @@ manipulating PDF documents from the command line.  It supports
 @item displaying metadata in a PDF document
 @item displaying the mapping between logical and physical page numbers
 @end itemize")
-    (license license:bsd-3)))
-
-(define-public weasyprint
-  (package
-    (name "weasyprint")
-    (version "50")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "WeasyPrint" version))
-       (sha256
-        (base32 "0invs96zvmcr6wh5klj52jrcnr9qg150v9wpmbhcsf3vv1d1hbcw"))
-       (patches (search-patches "weasyprint-library-paths.patch"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-library-paths
-           (lambda* (#:key inputs #:allow-other-keys)
-             (let ((fontconfig (assoc-ref inputs "fontconfig"))
-                   (glib (assoc-ref inputs "glib"))
-                   (pango (assoc-ref inputs "pango"))
-                   (pangoft2 (assoc-ref inputs "pangoft2")))
-               (substitute* "weasyprint/fonts.py"
-                 (("@fontconfig@")
-                  (string-append fontconfig "/lib/libfontconfig.so"))
-                 (("@pangoft2@")
-                  (string-append pango "/lib/libpangoft2-1.0.so")))
-               (substitute* "weasyprint/text.py"
-                 (("@gobject@")
-                  (string-append glib "/lib/libgobject-2.0.so"))
-                 (("@pango@")
-                  (string-append pango "/lib/libpango-1.0.so"))
-                 (("@pangocairo@")
-                  (string-append pango "/lib/libpangocairo-1.0.so"))))))
-         (add-after 'unpack 'remove-pytest-options
-           (lambda _
-             (substitute* "setup.cfg"
-               ;; flake8 and isort syntax checks fail, which is not our
-               ;; business
-               (("addopts = --flake8 --isort") ""))))
-         (replace 'check
-           (lambda _
-             ;; run pytest, excluding one failing test
-             (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
-    (inputs
-     `(("fontconfig" ,fontconfig)
-       ("glib" ,glib)
-       ("pango" ,pango)))
-    (propagated-inputs
-     `(("gdk-pixbuf" ,gdk-pixbuf)
-       ("python-cairocffi" ,python-cairocffi)
-       ("python-cairosvg" ,python-cairosvg)
-       ("python-cffi" ,python-cffi)
-       ("python-cssselect2" ,python-cssselect2)
-       ("python-html5lib" ,python-html5lib)
-       ("python-pyphen" ,python-pyphen)
-       ("python-tinycss2" ,python-tinycss2)))
-    (native-inputs
-     `(("python-pytest-cov" ,python-pytest-cov)
-       ("python-pytest-runner" ,python-pytest-runner)))
-    (home-page "https://weasyprint.org/")
-    (synopsis "Document factory for creating PDF files from HTML")
-    (description "WeasyPrint helps web developers to create PDF documents.  It
-turns simple HTML pages into gorgeous statistical reports, invoices, tickets,
-etc.
-
-From a technical point of view, WeasyPrint is a visual rendering engine for
-HTML and CSS that can export to PDF and PNG.  It aims to support web standards
-for printing.
-
-It is based on various libraries but not on a full rendering engine like
-WebKit or Gecko.  The CSS layout engine is written in Python, designed for
-pagination, and meant to be easy to hack on.  Weasyprint can also be used as a
-python library.
-
-Keywords: html2pdf, htmltopdf")
     (license license:bsd-3)))
