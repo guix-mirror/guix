@@ -690,3 +690,24 @@ for Windows.")
      "This package provides a JSON serialization file format.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-strsim-0.8
+  (package
+    (name "rust-strsim")
+    (version "0.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "strsim" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dguo/strsim-rs")
+    (synopsis "Rust implementations of string similarity metrics")
+    (description "This crate includes implementations of string similarity
+metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
+and Jaro-Winkler.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
