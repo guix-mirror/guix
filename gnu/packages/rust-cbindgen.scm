@@ -361,3 +361,25 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-core-0.4
+  (package
+    (name "rust-rand-core")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_core" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1p09ynysrq1vcdlmcqnapq4qakl2yd1ng3kxh3qscpx09k2a6cww"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_core")
+    (synopsis
+      "Core random number generator traits and tools for implementation.")
+    (description
+      "Core random number generator traits and tools for implementation.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
