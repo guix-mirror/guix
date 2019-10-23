@@ -3023,15 +3023,14 @@ keyboard shortcuts.")
 (define-public colord
   (package
     (name "colord")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            "colord-" version ".tar.xz"))
        (sha256
-        (base32
-         "1xwxahg9mgmapc16xkb4kgmc40zpadrwav33xqmn6cgaw6g6d3ls"))))
+        (base32 "19f0938fr7nvvm3jr263dlknaq7md40zrac2npfyz25zc00yh3ws"))))
     (build-system meson-build-system)
     (arguments
      '(;; FIXME: One test fails:
