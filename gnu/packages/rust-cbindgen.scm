@@ -400,3 +400,23 @@ functionality.")
     ;; This version is a 0.3 API wrapper around the 0.4 version.
     (arguments
      `(#:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
+
+(define rust-rand-hc-0.1
+  (package
+    (name "rust-rand-hc")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_hc" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1i0vl8q5ddvvy0x8hf1zxny393miyzxkwqnw31ifg6p0gdy6fh3v"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_hc")
+    (synopsis "HC128 random number generator")
+    (description "HC128 random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
