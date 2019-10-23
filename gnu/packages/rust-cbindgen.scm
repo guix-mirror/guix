@@ -670,3 +670,23 @@ for Windows.")
       "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-serde-json-1.0
+  (package
+    (name "rust-serde-json")
+    (version "1.0.41")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-json" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1hipk84x40454mf599752mi7l08wb8qakz8vd6d3zp57d0mfnwig"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/serde-rs/json")
+    (synopsis "A JSON serialization file format")
+    (description
+     "This package provides a JSON serialization file format.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
