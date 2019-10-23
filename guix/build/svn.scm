@@ -31,7 +31,6 @@
 
 (define* (svn-fetch url revision directory
                     #:key (svn-command "svn")
-                    (recursive? #t)
                     (user-name #f)
                     (password #f))
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
@@ -46,9 +45,6 @@ valid Subversion revision.  Return #t on success, #f otherwise."
                  (list (string-append "--username=" user-name)
                        (string-append "--password=" password))
                  '())
-           ,@(if recursive?
-                 '()
-                 (list "--ignore-externals"))
            ,url ,directory))
   #t)
 
