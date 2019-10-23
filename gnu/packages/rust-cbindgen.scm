@@ -62,3 +62,26 @@ text or blue underlined text, on ANSI terminals.")
      "This package provides a simple interface for querying atty.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-autocfg-0.1
+  (package
+    (name "rust-autocfg")
+    (version "0.1.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "autocfg" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/cuviper/autocfg")
+    (synopsis "Automatic cfg for Rust compiler features")
+    (description "Rust library for build scripts to automatically configure
+code based on compiler support.  Code snippets are dynamically tested to see
+if the @code{rustc} will accept them, rather than hard-coding specific version
+support.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
