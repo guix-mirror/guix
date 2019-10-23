@@ -169,3 +169,23 @@ Command Line Argument Parser.")
      "Low level interface to CloudABI.  Contains all syscalls and related types.")
     (properties '((hidden? . #t)))
     (license license:bsd-2)))
+
+(define rust-fuchsia-cprng-0.1
+  (package
+    (name "rust-fuchsia-cprng")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "fuchsia-cprng" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1fnkqrbz7ixxzsb04bsz9p0zzazanma8znfdqjvh39n14vapfvx0"))))
+    (build-system cargo-build-system)
+    (home-page "https://fuchsia.googlesource.com/fuchsia/+/master/garnet/public/rust/fuchsia-cprng")
+    (synopsis "Fuchsia cryptographically secure pseudorandom number generator")
+    (description "Thix package provides a rust crate for the Fuchsia
+cryptographically secure pseudorandom number generator.")
+    (properties '((hidden? . #t)))
+    (license license:bsd-3)))
