@@ -76,7 +76,8 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
     (license lgpl2.1+)))
 
 (define avahi/fixed
-  (package/inherit avahi
+  (package
+    (inherit avahi)
     (source (origin
               (inherit (package-source avahi))
               (patches
