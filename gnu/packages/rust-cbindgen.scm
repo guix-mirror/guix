@@ -383,3 +383,20 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-core-0.3
+  (package
+    (inherit rust-rand-core-0.4)
+    (name "rust-rand-core")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_core" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0jzdgszfa4bliigiy4hi66k7fs3gfwi2qxn8vik84ph77fwdwvvs"))))
+    ;; This version is a 0.3 API wrapper around the 0.4 version.
+    (arguments
+     `(#:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
