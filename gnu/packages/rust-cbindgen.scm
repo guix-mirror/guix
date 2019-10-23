@@ -420,3 +420,23 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-isaac-0.1
+  (package
+    (name "rust-rand-isaac")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_isaac" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "027flpjr4znx2csxk7gxb7vrf9c7y5mydmvg5az2afgisp4rgnfy"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_isaac")
+    (synopsis "ISAAC random number generator")
+    (description "ISAAC random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
