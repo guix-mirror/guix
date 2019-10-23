@@ -546,3 +546,23 @@ functionality.")
 @code{rdrand} and @cpde{rdseed} instructions")
     (properties '((hidden? . #t)))
     (license license:isc)))
+
+(define rust-redox-syscall-0.1
+  (package
+    (name "rust-redox-syscall")
+    (version "0.1.56")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "redox_syscall" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "110y7dyfm2vci4x5vk7gr0q551dvp31npl99fnsx2fb17wzwcf94"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.redox-os.org/redox-os/syscall")
+    (synopsis "Rust library to access raw Redox system calls")
+    (description "This package provides a Rust library to access raw Redox
+system calls.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
