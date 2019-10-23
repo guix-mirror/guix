@@ -839,3 +839,23 @@ serializing Rust structures.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-unicode-xid-0.2
+  (package
+    (name "rust-unicode-xid")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicode-xid" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0z09fn515xm7zyr0mmdyxa9mx2f7azcpv74pqmg611iralwpcvl2"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/unicode-rs/unicode-xid")
+    (synopsis "Determine Unicode XID related properties")
+    (description "Determine whether characters have the XID_Start
+or XID_Continue properties according to Unicode Standard Annex #31.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0 license:expat))))
