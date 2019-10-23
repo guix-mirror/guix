@@ -300,3 +300,22 @@ the platform that libc is compiled for.")
 in terms of the upstream unstable API.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-quote-1.0
+  (package
+    (name "rust-quote")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quote" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1zkc46ryacf2jdkc6krsy2z615xbk1x8kp1830rcxz3irj5qqfh5"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/quote")
+    (synopsis "Quasi-quoting macro quote!(...)")
+    (description "Quasi-quoting macro quote!(...)")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
