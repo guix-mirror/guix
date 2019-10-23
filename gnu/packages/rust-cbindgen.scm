@@ -210,3 +210,32 @@ primitives to an @code{io::Write}.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-libc-0.2
+  (package
+    (name "rust-libc")
+    (version "0.2.65")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (crate-uri "libc" version))
+       (file-name (string-append name "-" version ".crate"))
+       (sha256
+        (base32
+         "1s14bjxnz6haw0gr1h3j4sr7s2s407hpgm8dxhwnl7yzgxia0c8s"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang/libc")
+    (synopsis "Raw FFI bindings to platform libraries like libc")
+    (description
+     "libc provides all of the definitions necessary to easily
+interoperate with C code (or \"C-like\" code) on each of the platforms
+that Rust supports. This includes type definitions (e.g., c_int),
+constants (e.g., EINVAL) as well as function headers (e.g., malloc).
+
+This crate exports all underlying platform types, functions, and
+constants under the crate root, so all items are accessible as
+@samp{libc::foo}.  The types and values of all the exported APIs match
+the platform that libc is compiled for.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat
+                   license:asl2.0))))
