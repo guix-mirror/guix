@@ -794,3 +794,27 @@ for display in commandline applications.  It is designed to be efficient and
 handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-toml-0.5
+  (package
+    (name "rust-toml")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "toml" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "093p48vpqm4bb8q3514xsij0dkljxlr3jp9ypxr4p48xjisvxan7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/toml-rs")
+    (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
+    (description
+     "This package provides a native Rust encoder and decoder of TOML-formatted
+files and streams.  Provides implementations of the standard
+Serialize/Deserialize traits for TOML data to facilitate deserializing and
+serializing Rust structures.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
