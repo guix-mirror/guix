@@ -711,8 +711,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/appstream-glib-2020.patch		\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/arm-trusted-firmware-disable-hdcp.patch	\
-  %D%/packages/patches/arm-trusted-firmware-optional-bin-generation.patch	\
-  %D%/packages/patches/arm-trusted-firmware-rockchip-disable-binary.patch	\
   %D%/packages/patches/aspell-default-dict-dir.patch		\
   %D%/packages/patches/aspell-gcc-compat.patch			\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\

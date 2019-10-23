@@ -380,22 +380,20 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
 (define* (make-arm-trusted-firmware platform #:optional (arch "aarch64"))
   (package
     (name (string-append "arm-trusted-firmware-" platform))
-    (version "2.1")
+    (version "2.2")
     (source
       (origin
         (method git-fetch)
         (uri (git-reference
                ;; There are only GitHub generated release snapshots.
-               (url "https://github.com/ARM-software/arm-trusted-firmware.git")
+               (url "https://git.trustedfirmware.org/TF-A/trusted-firmware-a.git/")
                (commit (string-append "v" version))))
         (file-name (git-file-name "arm-trusted-firmware" version))
         (patches (search-patches
-                  "arm-trusted-firmware-optional-bin-generation.patch"
-                  "arm-trusted-firmware-rockchip-disable-binary.patch"
                   "arm-trusted-firmware-disable-hdcp.patch"))
        (sha256
         (base32
-         "1gy5qskrjy8n3kxdcm1dx8b45l5b75n0pm8pq80wl6xic1ycy24r"))))
+         "03fjl5hy1bqlya6fg553bqz7jrvilzrzpbs87cv6jd04v8qrvry8"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -443,7 +441,7 @@ Virtual Machines.  OVMF contains a sample UEFI firmware for QEMU and KVM.")
              ("cross-binutils" ,(cross-binutils "arm-linux-gnueabihf")))
            '())
         ))
-    (home-page "https://github.com/ARM-software/arm-trusted-firmware")
+    (home-page "https://www.trustedfirmware.org/")
     (synopsis "Implementation of \"secure world software\"")
     (description
      "ARM Trusted Firmware provides a reference implementation of secure world
