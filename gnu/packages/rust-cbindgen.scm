@@ -42,3 +42,23 @@
 text or blue underlined text, on ANSI terminals.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-atty-0.2
+  (package
+    (name "rust-atty")
+    (version "0.2.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "atty" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "140sswp1bwqwc4zk80bxkbnfb3g936hgrb77g9g0k1zcld3wc0qq"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/softprops/atty")
+    (synopsis "A simple interface for querying atty")
+    (description
+     "This package provides a simple interface for querying atty.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
