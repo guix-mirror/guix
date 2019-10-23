@@ -751,3 +751,23 @@ and Jaro-Winkler.")
 directories.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-termion-1.5
+  (package
+    (name "rust-termion")
+    (version "1.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "termion" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0c634rg520zjjfhwnxrc2jbfjz7db0rcpsjs1qici0nyghpv53va"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.redox-os.org/redox-os/termion")
+    (synopsis "Library for manipulating terminals")
+    (description
+     "This package provides a bindless library for manipulating terminals.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
