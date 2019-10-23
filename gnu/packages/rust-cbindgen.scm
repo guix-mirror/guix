@@ -259,3 +259,23 @@ the platform that libc is compiled for.")
      "This package provides a lightweight logging facade for Rust.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-numtoa-0.1
+  (package
+    (name "rust-numtoa")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "numtoa" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vs9rhggqbql1p26x8nkha1j06wawwgb2jp5fs88b5gi7prvvy5q"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.com/mmstick/numtoa")
+    (synopsis "Convert numbers into stack-allocated byte arrays")
+    (description
+     "This package can convert numbers into stack-allocated byte arrays.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
