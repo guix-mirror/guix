@@ -341,3 +341,23 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-chacha-0.1
+  (package
+    (name "rust-rand-chacha")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_chacha" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vxwyzs4fy1ffjc8l00fsyygpiss135irjf7nyxgq2v0lqf3lvam"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_chacha")
+    (synopsis "ChaCha random number generator")
+    (description "ChaCha random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
