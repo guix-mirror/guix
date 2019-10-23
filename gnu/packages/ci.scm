@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "d27ff21e430cd38b02bd70a0dc8d60c9c2736f83")
-        (revision "24"))
+  (let ((commit "80b6e89a7b2e9a6f9dee26dcf22277970930039f")
+        (revision "25"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -60,7 +60,7 @@
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "166xl9zfy7dm645fk2ln45bvw0y0gy0xw8fb7mprbjz8v95dh27p"))))
+                  "0m7g7wqa1l8gab8pcyi43a6w6rxhaqbpsrwlnadwsds1b95x9bka"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)
