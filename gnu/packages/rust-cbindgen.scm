@@ -608,3 +608,24 @@ for Windows.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-ryu-1.0
+  (package
+    (name "rust-ryu")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ryu" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1j0h74f1xqf9hjkhanp8i20mqc1aw35kr1iq9i79q7713mn51a5z"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/ryu")
+    (synopsis
+      "Fast floating point to string conversion")
+    (description
+      "Fast floating point to string conversion")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0 license:boost1.0))))
