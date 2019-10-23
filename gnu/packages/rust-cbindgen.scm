@@ -818,3 +818,24 @@ serializing Rust structures.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-unicode-width-0.1
+  (package
+    (name "rust-unicode-width")
+    (version "0.1.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "unicode-width" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "082f9hv1r3gcd1xl33whjhrm18p0w9i77zhhhkiccb5r47adn1vh"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/unicode-rs/unicode-width")
+    (synopsis "Determine displayed width according to Unicode rules")
+    (description "This crate allows you to determine displayed width of
+@code{char} and @code{str} types according to Unicode Standard Annex #11 rules.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
