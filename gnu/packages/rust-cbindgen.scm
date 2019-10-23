@@ -586,3 +586,25 @@ system calls.")
      "This package provides a Rust library to access Redox termios functions.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-remove-dir-all-0.5
+  (package
+    (name "rust-remove-dir-all")
+    (version "0.5.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "remove-dir-all" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0bkrlyg26mgizpiy1yb2hhpgscxcag8r5fnckqsvk25608vzm0sa"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/XAMPPRocky/remove_dir_all.git")
+    (synopsis "Implementation of remove_dir_all for Windows")
+    (description
+     "This package provides a safe, reliable implementation of remove_dir_all
+for Windows.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
