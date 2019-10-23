@@ -706,6 +706,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
+  %D%/packages/patches/avahi-CVE-2018-1000845.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avogadro-boost148.patch			\
   %D%/packages/patches/avogadro-eigen3-update.patch		\
