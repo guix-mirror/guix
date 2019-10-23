@@ -462,3 +462,23 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-os-0.1
+  (package
+    (name "rust-rand-os")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_os" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_os")
+    (synopsis "OS backed Random Number Generator")
+    (description "OS backed Random Number Generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
