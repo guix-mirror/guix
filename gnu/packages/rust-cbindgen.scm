@@ -525,3 +525,24 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rdrand-0.4
+  (package
+    (name "rust-rdrand")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rdrand" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1cjq0kwx1bk7jx3kzyciiish5gqsj7620dm43dc52sr8fzmm9037"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/nagisa/rust_rdrand/")
+    (synopsis "Random number generator")
+    (description
+     "This package is an implementation of random number generator based on
+@code{rdrand} and @cpde{rdseed} instructions")
+    (properties '((hidden? . #t)))
+    (license license:isc)))
