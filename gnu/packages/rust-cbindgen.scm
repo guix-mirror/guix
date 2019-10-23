@@ -319,3 +319,25 @@ in terms of the upstream unstable API.")
     (description "Quasi-quoting macro quote!(...)")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-rand-0.6
+  (package
+    (name "rust-rand")
+    (version "0.6.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1jl4449jcl4wgmzld6ffwqj5gwxrp8zvx8w573g1z368qg6xlwbd"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand")
+    (synopsis "Random number generators and other randomness functionality")
+    (description
+     "This package contains random number generators and other randomness
+functionality.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
