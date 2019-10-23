@@ -771,3 +771,26 @@ directories.")
      "This package provides a bindless library for manipulating terminals.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-textwrap-0.11
+  (package
+    (name "rust-textwrap")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "textwrap" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0q5hky03ik3y50s9sz25r438bc4nwhqc6dqwynv4wylc807n29nk"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mgeisler/textwrap")
+    (synopsis "Library for word wrapping, indenting, and dedenting strings")
+    (description
+     "Textwrap is a small library for word wrapping, indenting, and dedenting
+strings.  You can use it to format strings (such as help and error messages)
+for display in commandline applications.  It is designed to be efficient and
+handle Unicode characters correctly.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
