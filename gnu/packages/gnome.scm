@@ -4366,7 +4366,7 @@ USB transfers with your high-level application or system daemon.")
                       ;; one breaks the build by referring to a
                       ;; non-existent header (packagekit.h)
                       (delete-file "src/ui.c"))))))
-    (home-page "https://launchpad.net/simple-scan")
+    (home-page "https://gitlab.gnome.org/GNOME/simple-scan")
     (synopsis "Document and image scanner")
     (description "Simple Scan is an easy-to-use application, designed to let
 users connect their scanner and quickly have the image/document in an
