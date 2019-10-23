@@ -149,3 +149,23 @@ depending on a large number of #[cfg] parameters.  Structured like an
 Command Line Argument Parser.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-cloudabi-0.0
+  (package
+    (name "rust-cloudabi")
+    (version "0.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "cloudabi" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0kxcg83jlihy0phnd2g8c2c303px3l2p3pkjz357ll6llnd5pz6x"))))
+    (build-system cargo-build-system)
+    (home-page "https://nuxi.nl/cloudabi/")
+    (synopsis "Low level interface to CloudABI")
+    (description
+     "Low level interface to CloudABI.  Contains all syscalls and related types.")
+    (properties '((hidden? . #t)))
+    (license license:bsd-2)))
