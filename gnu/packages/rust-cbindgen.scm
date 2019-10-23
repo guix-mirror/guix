@@ -881,6 +881,32 @@ or XID_Continue properties according to Unicode Standard Annex #31.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define rust-winapi-0.3
+  (package
+    (name "rust-winapi")
+    (version "0.3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "winapi" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0"))))
+    (build-system cargo-build-system)
+    ;; This package depends unconditionally on these two crates.
+    (arguments
+     `(#:cargo-inputs
+       (("winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
+        ("winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4))))
+    (home-page "https://github.com/retep998/winapi-rs")
+    (synopsis "Raw FFI bindings for all of Windows API")
+    (description
+     "This package contains raw FFI bindings for all of Windows API.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
 (define-public rust-winapi-i686-pc-windows-gnu-0.4
   (package
     (name "rust-winapi-i686-pc-windows-gnu")
