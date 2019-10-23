@@ -730,3 +730,24 @@ and Jaro-Winkler.")
     (description "Parser for Rust source code")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-tempfile-3.0
+  (package
+    (name "rust-tempfile")
+    (version "3.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "tempfile" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
+    (build-system cargo-build-system)
+    (home-page "http://stebalien.com/projects/tempfile-rs")
+    (synopsis "Library for managing temporary files and directories")
+    (description
+     "This package provides a library for managing temporary files and
+directories.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
