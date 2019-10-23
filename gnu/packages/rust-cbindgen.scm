@@ -711,3 +711,22 @@ metrics.  It includes Hamming, Levenshtein, OSA, Damerau-Levenshtein, Jaro,
 and Jaro-Winkler.")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define rust-syn-1.0
+  (package
+    (name "rust-syn")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "syn" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1gw03w7lzrlqmp2vislcybikgl5wkhrqi6sy70w93xss2abhx1b6"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/syn")
+    (synopsis "Parser for Rust source code")
+    (description "Parser for Rust source code")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
