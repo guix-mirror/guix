@@ -629,3 +629,23 @@ for Windows.")
       "Fast floating point to string conversion")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0 license:boost1.0))))
+
+(define rust-serde-1.0
+  (package
+    (name "rust-serde")
+    (version "1.0.101")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1p8r24hagcsrl92w5z32nfrg9040qkgqf8iwwnf7mzigpavwk5lp"))))
+    (build-system cargo-build-system)
+    (home-page "https://serde.rs")
+    (synopsis "Generic serialization/deserialization framework")
+    (description
+     "This package provides a generic serialization/deserialization framework.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
