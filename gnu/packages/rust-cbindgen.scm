@@ -239,3 +239,23 @@ the platform that libc is compiled for.")
     (properties '((hidden? . #t)))
     (license (list license:expat
                    license:asl2.0))))
+
+(define rust-log-0.4
+  (package
+    (name "rust-log")
+    (version "0.4.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "log" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1xz18ixccl5c6np4linv3ypc7hpmmgpc5zzd2ymp2ssfx0mhbdhl"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-lang/log")
+    (synopsis "Lightweight logging facade for Rust")
+    (description
+     "This package provides a lightweight logging facade for Rust.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
