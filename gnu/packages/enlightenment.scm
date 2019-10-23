@@ -30,6 +30,7 @@
   #:use-module (guix build-system meson)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages check)
@@ -311,6 +312,7 @@ Libraries with some extra bells and whistles.")
                    (utils     (assoc-ref inputs "util-linux"))
                    (libc      (assoc-ref inputs "libc"))
                    (bluez     (assoc-ref inputs "bluez"))
+                   (bc        (assoc-ref inputs "bc"))
                    (efl       (assoc-ref inputs "efl")))
                ;; We need to patch the path to 'base.lst' to be able
                ;; to switch the keyboard layout in E.
@@ -331,6 +333,8 @@ Libraries with some extra bells and whistles.")
                   (string-append efl "/bin/edje_cc -v %s %s %s\"")))
                (substitute* "src/modules/everything/evry_plug_apps.c"
                  (("/usr/bin/") ""))
+               (substitute* "src/modules/everything/evry_plug_calc.c"
+                 (("bc -l") (string-append bc "/bin/bc -l")))
                (substitute* "data/etc/meson.build"
                  (("/bin/mount") (string-append utils "/bin/mount"))
                  (("/bin/umount") (string-append utils "/bin/umount"))
@@ -348,6 +352,7 @@ Libraries with some extra bells and whistles.")
        ("util-linux" ,util-linux)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("bc" ,bc)
        ("bluez" ,bluez)
        ("dbus" ,dbus)
        ("efl" ,efl)
