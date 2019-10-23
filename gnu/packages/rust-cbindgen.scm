@@ -649,3 +649,24 @@ for Windows.")
      "This package provides a generic serialization/deserialization framework.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-serde-derive-1.0
+  (package
+    (name "rust-serde-derive")
+    (version "1.0.101")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-derive" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0bn0wz3j48248187mfmypyqnh73mq734snxxhr05vmgcl51kl4sb"))))
+    (build-system cargo-build-system)
+    (home-page "https://serde.rs")
+    (synopsis
+      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+    (description
+      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
