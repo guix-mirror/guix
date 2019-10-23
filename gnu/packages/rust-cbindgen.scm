@@ -128,3 +128,24 @@ depending on a large number of #[cfg] parameters.  Structured like an
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-clap-2
+  (package
+    (name "rust-clap")
+    (version "2.33.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clap" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1nf6ld3bims1n5vfzhkvcb55pdzh04bbhzf8nil5vvw05nxzarsh"))))
+    (build-system cargo-build-system)
+    (home-page "https://clap.rs/")
+    (synopsis "Command Line Argument Parser")
+    (description
+     "This package provides a simple to use, efficient, and full-featured
+Command Line Argument Parser.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
