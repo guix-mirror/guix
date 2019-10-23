@@ -482,3 +482,25 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-pcg-0.1
+  (package
+    (name "rust-rand-pcg")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_pcg" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_pcg")
+    (synopsis
+      "Selected PCG random number generators")
+    (description
+      "Selected PCG random number generators")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
