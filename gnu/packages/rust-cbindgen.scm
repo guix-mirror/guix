@@ -279,3 +279,24 @@ the platform that libc is compiled for.")
      "This package can convert numbers into stack-allocated byte arrays.")
     (properties '((hidden? . #t)))
     (license (list license:expat license:asl2.0))))
+
+(define rust-proc-macro2-1.0
+  (package
+    (name "rust-proc-macro2")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "proc-macro2" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "09rgb5ab0jgw39kyad0lgqs4nb9yaf7mwcrgxqnsxbn4il54g7lw"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/proc-macro2")
+    (synopsis "Stable implementation of the upcoming new `proc_macro` API")
+    (description "This package provides a stable implementation of the upcoming new
+`proc_macro` API.  Comes with an option, off by default, to also reimplement itself
+in terms of the upstream unstable API.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
