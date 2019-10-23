@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,21 +19,43 @@
 (define-module (guix cve)
   #:use-module (guix utils)
   #:use-module (guix http-client)
-  #:use-module (sxml ssax)
+  #:use-module (guix json)
+  #:use-module (guix i18n)
+  #:use-module (json)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
-  #:export (vulnerability?
+  #:export (json->cve-items
+
+            cve-item?
+            cve-item-cve
+            cve-item-configurations
+            cve-item-published-date
+            cve-item-last-modified-date
+
+            cve?
+            cve-id
+            cve-data-type
+            cve-data-format
+            cvs-references
+
+            cve-reference?
+            cve-reference-url
+            cve-reference-tags
+
+            vulnerability?
             vulnerability-id
             vulnerability-packages
 
-            xml->vulnerabilities
+            json->vulnerabilities
             current-vulnerabilities
             vulnerabilities->lookup-proc))
 
@@ -41,15 +63,174 @@
 ;;;
 ;;; This modules provides the tools to fetch, parse, and digest part of the
 ;;; Common Vulnerabilities and Exposures (CVE) feeds provided by the US NIST
-;;; at <https://nvd.nist.gov/download.cfm#CVE_FEED>.
+;;; at <https://nvd.nist.gov/vuln/data-feeds>.
 ;;;
 ;;; Code:
 
-(define-record-type <vulnerability>
-  (vulnerability id packages)
-  vulnerability?
-  (id         vulnerability-id)                   ;string
-  (packages   vulnerability-packages))            ;((p1 v1 v2 v3) (p2 v1) ...)
+(define (string->date* str)
+  (string->date str "~Y-~m-~dT~H:~M~z"))
+
+(define-json-mapping <cve-item> cve-item cve-item?
+  json->cve-item
+  (cve            cve-item-cve "cve" json->cve)   ;<cve>
+  (configurations cve-item-configurations         ;list of sexps
+                  "configurations" configuration-data->cve-configurations)
+  (published-date cve-item-published-date
+                  "publishedDate" string->date*)
+  (last-modified-date cve-item-last-modified-date
+                      "lastModifiedDate" string->date*))
+
+(define-json-mapping <cve> cve cve?
+  json->cve
+  (id             cve-id "CVE_data_meta"          ;string
+                  (cut assoc-ref <> "ID"))
+  (data-type      cve-data-type                   ;'CVE
+                  "data_type" string->symbol)
+  (data-format    cve-data-format                 ;'MITRE
+                  "data_format" string->symbol)
+  (references     cve-item-references             ;list of <cve-reference>
+                  "references" reference-data->cve-references))
+
+(define-json-mapping <cve-reference> cve-reference cve-reference?
+  json->cve-reference
+  (url            cve-reference-url)              ;string
+  (tags           cve-reference-tags              ;list of strings
+                  "tags" vector->list))
+
+(define (reference-data->cve-references alist)
+  (map json->cve-reference
+       (vector->list (assoc-ref alist "reference_data"))))
+
+(define %cpe-package-rx
+  ;; For applications: "cpe:2.3:a:VENDOR:PACKAGE:VERSION", or sometimes
+  ;; "cpe:2.3:a:VENDOR:PACKAGE:VERSION:PATCH-LEVEL".
+  (make-regexp "^cpe:2\\.3:a:([^:]+):([^:]+):([^:]+):([^:]+):"))
+
+(define (cpe->package-name cpe)
+  "Converts the Common Platform Enumeration (CPE) string CPE to a package
+name, in a very naive way.  Return two values: the package name, and its
+version string.  Return #f and #f if CPE does not look like an application CPE
+string."
+  (cond ((regexp-exec %cpe-package-rx cpe)
+         =>
+         (lambda (matches)
+           (values (match:substring matches 2)
+                   (match (match:substring matches 3)
+                     ("*" '_)
+                     (version
+                      (string-append version
+                                     (match (match:substring matches 4)
+                                       ("" "")
+                                       (patch-level
+                                        ;; Drop the colon from things like
+                                        ;; "cpe:2.3:a:openbsd:openssh:6.8:p1".
+                                        (string-drop patch-level 1)))))))))
+        (else
+         (values #f #f))))
+
+(define (cpe-match->cve-configuration alist)
+  "Convert ALIST, a \"cpe_match\" alist, into an sexp representing the package
+and versions matched.  Return #f if ALIST doesn't correspond to an application
+package."
+  (let ((cpe    (assoc-ref alist "cpe23Uri"))
+        (starti (assoc-ref alist "versionStartIncluding"))
+        (starte (assoc-ref alist "versionStartExcluding"))
+        (endi   (assoc-ref alist "versionEndIncluding"))
+        (ende   (assoc-ref alist "versionEndExcluding")))
+    (let-values (((package version) (cpe->package-name cpe)))
+      (and package
+           `(,package
+              ,(cond ((and (or starti starte) (or endi ende))
+                      `(and ,(if starti `(>= ,starti) `(> ,starte))
+                            ,(if endi `(<= ,endi) `(< ,ende))))
+                     (starti `(>= ,starti))
+                     (starte `(> ,starte))
+                     (endi   `(<= ,endi))
+                     (ende   `(< ,ende))
+                     (else   version)))))))
+
+(define (configuration-data->cve-configurations alist)
+  "Given ALIST, a JSON dictionary for the baroque \"configurations\"
+element found in CVEs, return an sexp such as (\"binutils\" (<
+\"2.31\")) that represents matching configurations."
+  (define string->operator
+    (match-lambda
+      ("OR" 'or)
+      ("AND" 'and)))
+
+  (define (node->configuration node)
+    (let ((operator (string->operator (assoc-ref node "operator"))))
+      (cond
+       ((assoc-ref node "cpe_match")
+        =>
+        (lambda (matches)
+          (let ((matches (vector->list matches)))
+            (match (filter-map cpe-match->cve-configuration
+                               matches)
+              (()    #f)
+              ((one) one)
+              (lst   (cons operator lst))))))
+       ((assoc-ref node "children")               ;typically for 'and'
+        =>
+        (lambda (children)
+          (match (filter-map node->configuration (vector->list children))
+            (()    #f)
+            ((one) one)
+            (lst   (cons operator lst)))))
+       (else
+        #f))))
+
+  (let ((nodes (vector->list (assoc-ref alist "nodes"))))
+    (filter-map node->configuration nodes)))
+
+(define (json->cve-items json)
+  "Parse JSON, an input port or a string, and return a list of <cve-item>
+records."
+  (let* ((alist   (json->scm json))
+         (type    (assoc-ref alist "CVE_data_type"))
+         (format  (assoc-ref alist "CVE_data_format"))
+         (version (assoc-ref alist "CVE_data_version")))
+    (unless (equal? type "CVE")
+      (raise (condition (&message
+                         (message "invalid CVE feed")))))
+    (unless (equal? format "MITRE")
+      (raise (condition
+              (&message
+               (message (format #f (G_ "unsupported CVE format: '~a'")
+                                format))))))
+    (unless (equal? version "4.0")
+      (raise (condition
+              (&message
+               (message (format #f (G_ "unsupported CVE data version: '~a'")
+                                version))))))
+
+    (map json->cve-item
+         (vector->list (assoc-ref alist "CVE_Items")))))
+
+(define (version-matches? version sexp)
+  "Return true if VERSION, a string, matches SEXP."
+  (match sexp
+    ('_
+     #t)
+    ((? string? expected)
+     (version-prefix? expected version))
+    (('or sexps ...)
+     (any (cut version-matches? version <>) sexps))
+    (('and sexps ...)
+     (every (cut version-matches? version <>) sexps))
+    (('< max)
+     (version>? max version))
+    (('<= max)
+     (version>=? max version))
+    (('> min)
+     (version>? version min))
+    (('>= min)
+     (version>=? version min))))
+
+
+;;;
+;;; High-level interface.
+;;;
 
 (define %now
   (current-date))
@@ -61,8 +242,8 @@
 (define (yearly-feed-uri year)
   "Return the URI for the CVE feed for YEAR."
   (string->uri
-   (string-append "https://nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-"
-                  (number->string year) ".xml.gz")))
+   (string-append "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-"
+                  (number->string year) ".json.gz")))
 
 (define %current-year-ttl
   ;; According to <https://nvd.nist.gov/download.cfm#CVE_FEED>, feeds are
@@ -73,102 +254,11 @@
   ;; Update the previous year's database more and more infrequently.
   (* 3600 24 (date-month %now)))
 
-(define %cpe-package-rx
-  ;; For applications: "cpe:/a:VENDOR:PACKAGE:VERSION", or sometimes
-  ;; "cpe/a:VENDOR:PACKAGE:VERSION:PATCH-LEVEL".
-  (make-regexp "^cpe:/a:([^:]+):([^:]+):([^:]+)((:.+)?)"))
-
-(define (cpe->package-name cpe)
-  "Converts the Common Platform Enumeration (CPE) string CPE to a package
-name, in a very naive way.  Return two values: the package name, and its
-version string.  Return #f and #f if CPE does not look like an application CPE
-string."
-  (cond ((regexp-exec %cpe-package-rx (string-trim-both cpe))
-         =>
-         (lambda (matches)
-           (values (match:substring matches 2)
-                   (string-append (match:substring matches 3)
-                                  (match (match:substring matches 4)
-                                    ("" "")
-                                    (patch-level
-                                     ;; Drop the colon from things like
-                                     ;; "cpe:/a:openbsd:openssh:6.8:p1".
-                                     (string-drop patch-level 1)))))))
-        (else
-         (values #f #f))))
-
-(define (cpe->product-alist products)
-  "Given PRODUCTS, a list of CPE names, return the subset limited to the
-applications listed in PRODUCTS, with names converted to package names:
-
-  (cpe->product-alist
-    '(\"cpe:/a:gnu:libtasn1:4.7\" \"cpe:/a:gnu:libtasn1:4.6\" \"cpe:/a:gnu:cpio:2.11\"))
-  => ((\"libtasn1\" \"4.7\" \"4.6\") (\"cpio\" \"2.11\"))
-"
-  (fold (lambda (product result)
-          (let-values (((name version) (cpe->package-name product)))
-            (if name
-                (match result
-                  (((previous . versions) . tail)
-                   ;; Attempt to coalesce NAME and PREVIOUS.
-                   (if (string=? name previous)
-                       (alist-cons name (cons version versions) tail)
-                       (alist-cons name (list version) result)))
-                  (()
-                   (alist-cons name (list version) result)))
-                result)))
-        '()
-        (sort products string<?)))
-
-(define %parse-vulnerability-feed
-  ;; Parse the XML vulnerability feed from
-  ;; <https://nvd.nist.gov/download.cfm#CVE_FEED> and return a list of
-  ;; vulnerability objects.
-  (ssax:make-parser NEW-LEVEL-SEED
-                    (lambda (elem-gi attributes namespaces expected-content
-                                     seed)
-                      (match elem-gi
-                        ((name-space . 'entry)
-                         (cons (assoc-ref attributes 'id) seed))
-                        ((name-space . 'vulnerable-software-list)
-                         (cons '() seed))
-                        ((name-space . 'product)
-                         (cons 'product seed))
-                        (x seed)))
-
-                    FINISH-ELEMENT
-                    (lambda (elem-gi attributes namespaces parent-seed
-                                     seed)
-                      (match elem-gi
-                        ((name-space . 'entry)
-                         (match seed
-                           (((? string? id) . rest)
-                            ;; Some entries have no vulnerable-software-list.
-                            rest)
-                           ((products id . rest)
-                            (match (cpe->product-alist products)
-                              (()
-                               ;; No application among PRODUCTS.
-                               rest)
-                              (packages
-                               (cons (vulnerability id packages)
-                                     rest))))))
-                        (x
-                         seed)))
-
-                    CHAR-DATA-HANDLER
-                    (lambda (str _ seed)
-                      (match seed
-                        (('product software-list . rest)
-                         ;; Add STR to the vulnerable software list this
-                         ;; <product> tag is part of.
-                         (cons (cons str software-list) rest))
-                        (x x)))))
-
-(define (xml->vulnerabilities port)
-  "Read from PORT an XML feed of vulnerabilities and return a list of
-vulnerability objects."
-  (reverse (%parse-vulnerability-feed port '())))
+(define-record-type <vulnerability>
+  (vulnerability id packages)
+  vulnerability?
+  (id         vulnerability-id)             ;string
+  (packages   vulnerability-packages))      ;((p1 sexp1) (p2 sexp2) ...)
 
 (define vulnerability->sexp
   (match-lambda
@@ -180,16 +270,70 @@ vulnerability objects."
     (('v id (packages ...))
      (vulnerability id packages))))
 
+(define (cve-configuration->package-list config)
+  "Parse CONFIG, a config sexp, and return a list of the form (P SEXP)
+where P is a package name and SEXP expresses constraints on the matching
+versions."
+  (let loop ((config config)
+             (packages '()))
+    (match config
+      (('or configs ...)
+       (fold loop packages configs))
+      (('and config _ ...)                        ;XXX
+       (loop config packages))
+      (((? string? package) '_)                   ;any version
+       (cons `(,package _)
+             (alist-delete package packages)))
+      (((? string? package) sexp)
+       (let ((previous (assoc-ref packages package)))
+         (if previous
+             (cons `(,package (or ,sexp ,@previous))
+                   (alist-delete package packages))
+             (cons `(,package ,sexp) packages)))))))
+
+(define (merge-package-lists lst)
+  "Merge the list in LST, each of which has the form (p sexp), where P
+is the name of a package and SEXP is an sexp that constrains matching
+versions."
+  (fold (lambda (plist result)                    ;XXX: quadratic
+          (fold (match-lambda*
+                  (((package version) result)
+                   (match (assoc-ref result package)
+                     (#f
+                      (cons `(,package ,version) result))
+                     ((previous)
+                      (cons `(,package (or ,version ,previous))
+                            (alist-delete package result))))))
+                result
+                plist))
+        '()
+        lst))
+
+(define (cve-item->vulnerability item)
+  "Return a <vulnerability> corresponding to ITEM, a <cve-item> record;
+return #f if ITEM does not list any configuration or if it does not list
+any \"a\" (application) configuration."
+  (let ((id (cve-id (cve-item-cve item))))
+    (match (cve-item-configurations item)
+      (()                                         ;no configurations
+       #f)
+      ((configs ...)
+       (vulnerability id
+                      (merge-package-lists
+                       (map cve-configuration->package-list configs)))))))
+
+(define (json->vulnerabilities json)
+  "Parse JSON, an input port or a string, and return the list of
+vulnerabilities found therein."
+  (filter-map cve-item->vulnerability (json->cve-items json)))
+
 (define (write-cache input cache)
-  "Read vulnerabilities as gzipped XML from INPUT, and write it as a compact
+  "Read vulnerabilities as gzipped JSON from INPUT, and write it as a compact
 sexp to CACHE."
   (call-with-decompressed-port 'gzip input
     (lambda (input)
-      ;; XXX: The SSAX "error port" is used to send pointless warnings such as
-      ;; "warning: Skipping PI".  Turn that off.
       (define vulns
-        (parameterize ((current-ssax-error-port (%make-void-port "w")))
-          (xml->vulnerabilities input)))
+        (json->vulnerabilities input))
 
       (write `(vulnerabilities
                1                                  ;format version
@@ -215,7 +359,7 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
         (lambda ()
           (read-options options)))))
 
-  ;; Note: We used to keep the original XML files in cache but parsing it
+  ;; Note: We used to keep the original JSON files in cache but parsing it
   ;; would take typically ~15s for a year of data.  Thus, we instead store a
   ;; summarized version thereof as an sexp, which can be parsed in 1s or so.
   (let* ((port (http-fetch/cached (yearly-feed-uri year)
@@ -269,8 +413,8 @@ vulnerabilities affecting the given package version."
     (vhash-fold* (if version
                      (lambda (pair result)
                        (match pair
-                         ((vuln . versions)
-                          (if (member version versions)
+                         ((vuln sexp)
+                          (if (version-matches? version sexp)
                               (cons vuln result)
                               result))))
                      (lambda (pair result)

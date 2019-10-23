@@ -172,7 +172,8 @@ session record port using PORT as its underlying communication port."
 (define %x509-certificate-directory
   ;; The directory where X.509 authority PEM certificates are stored.
   (make-parameter (or (getenv "GUIX_TLS_CERTIFICATE_DIRECTORY")
-                      (getenv "SSL_CERT_DIR"))))  ;like OpenSSL
+                      (getenv "SSL_CERT_DIR")     ;like OpenSSL
+                      "/etc/ssl/certs")))
 
 (define (set-certificate-credentials-x509-trust-file!* cred file format)
   "Like 'set-certificate-credentials-x509-trust-file!', but without the file

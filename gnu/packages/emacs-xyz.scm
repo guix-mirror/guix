@@ -7541,6 +7541,31 @@ end of a line and increment or decrement it.")
 a popup window for previewing candidates.")
       (license license:gpl3+))))
 
+(define-public emacs-evil-args
+  (let ((commit "758ad5ae54ad34202064fec192c88151c08cb387")
+        (revision "1"))
+    (package
+      (name "emacs-evil-args")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/wcsmith/evil-args.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0k35glgsirc3cph8v5hhjrqfh4ndwh8a28qbr03y3jl8s453xcj7"))))
+      (build-system emacs-build-system)
+      (propagated-inputs `(("emacs-evil" ,emacs-evil)))
+      (home-page "https://github.com/wcsmith/evil-args")
+      (synopsis "Motions and text objects for delimited arguments in Evil")
+      (description
+       "This package provides motions and text objects for delimited
+arguments, such as arguments separated by commas and semicolons.")
+      (license license:expat))))
+
 (define-public emacs-evil-exchange
   (let ((commit "47691537815150715e64e6f6ec79be7746c96120")
         (version "0.41")
@@ -11602,6 +11627,34 @@ close, copy, cut, paste, undo, redo.")
 standard Unix password manager\").")
     (license license:gpl2+)))
 
+(define-public emacs-auth-source-pass
+  (let ((commit "847a1f54ed48856b4dfaaa184583ef2c84173edf")
+        (revision "1"))
+    (package
+      (name "emacs-auth-source-pass")
+      (version (git-version "5.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/NicolasPetton/auth-password-store.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0g48z5w6n3c54zqfpx65dfyl9jqbl15idvbb1hhw2pd9f9r8fykk"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:tests? #t
+         #:test-command '("emacs" "--batch"
+                          "-L" "."
+                          "-l" "test/auth-source-pass-tests.el"
+                          "-f" "ert-run-tests-batch-and-exit")))
+      (home-page "https://github.com/NicolasPetton/auth-password-store")
+      (synopsis "Integrate @code{auth-source} with @code{password-store}")
+      (description "This package helps Emacs integrate with the Unix
+@code{password-store} application.")
+      (license license:gpl3+))))
+
 (define-public emacs-pass
   (package
     (name "emacs-pass")
@@ -12195,50 +12248,48 @@ according to a parsing expression grammar.")
     (license license:gpl3+)))
 
 (define-public emacs-org-ql
-  (let ((commit "949a06c3ab50482b749fd2d4350837a197660d96")
-        (revision "3"))
-    (package
-      (name "emacs-org-ql")
-      (version (git-version "0.3.1" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/alphapapa/org-ql")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0apcg63xm0242mjgsgw0jrcda4p4iqj7fy3sgh0p7khi4hrs5ch0"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-s" ,emacs-s)
-         ("emacs-f" ,emacs-f)
-         ("emacs-ov" ,emacs-ov)
-         ("emacs-peg" ,emacs-peg)
-         ("emacs-org-super-agenda" ,emacs-org-super-agenda)
-         ("emacs-ts" ,emacs-ts)
-         ("emacs-org" ,emacs-org)
-         ("emacs-helm" ,emacs-helm)
-         ("emacs-helm-org" ,emacs-helm-org)
-         ("emacs-dash" ,emacs-dash)))
-      (native-inputs
-       `(("emacs-buttercup" ,emacs-buttercup)))
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'require-helm
-             (lambda _
-               (substitute* "helm-org-ql.el"
-                 (("^;;;; Requirements")
-                  ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
-               #t)))
-         #:tests? #t
-         #:test-command '("buttercup" "-L" ".")))
-      (home-page "https://github.com/alphapapa/org-ql/")
-      (synopsis "Query language for Org buffers")
-      (description "This package provides a Lispy query language for Org
+  (package
+    (name "emacs-org-ql")
+    (version "0.3.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/alphapapa/org-ql")
+                    (commit version)))
+              (sha256
+               (base32
+                "11bhpi2l28vp8mm9nx18jljbqdnh9vxpv9kp1dn9lpsgivcdbc34"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-f" ,emacs-f)
+       ("emacs-ov" ,emacs-ov)
+       ("emacs-peg" ,emacs-peg)
+       ("emacs-org-super-agenda" ,emacs-org-super-agenda)
+       ("emacs-ts" ,emacs-ts)
+       ("emacs-org" ,emacs-org)
+       ("emacs-helm" ,emacs-helm)
+       ("emacs-helm-org" ,emacs-helm-org)
+       ("emacs-dash" ,emacs-dash)))
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'require-helm
+           (lambda _
+             (substitute* "helm-org-ql.el"
+               (("^;;;; Requirements")
+                ";;;; Requirements\n(require 'helm)\n(require 'helm-org)"))
+             #t)))
+       #:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
+    (home-page "https://github.com/alphapapa/org-ql/")
+    (synopsis "Query language for Org buffers")
+    (description "This package provides a Lispy query language for Org
 files, allowing for actions to be performed based on search criteria.")
-      (license license:gpl3+))))
+    (license license:gpl3+)))
 
 (define-public emacs-org-auto-expand
   (let ((commit "4938d5f6460e2f8f051ba9ac000b291bfa43ef62")
@@ -12537,6 +12588,11 @@ orient yourself in the code, and tell which statements are at a given level.")
        (sha256
         (base32 "1kykbb1sil5cycfa5aj8dhsxc5yrx1641i2np5kwdjid6ahdlz5r"))))
     (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs-buttercup" ,emacs-buttercup)))
+    (arguments
+     `(#:tests? #t
+       #:test-command '("buttercup" "-L" ".")))
     (home-page "https://github.com/DamienCassou/hierarchy")
     (synopsis "Library to create and display hierarchy structures")
     (description "This package provides an Emacs library to create, query,
@@ -14960,7 +15016,7 @@ Org-mode.  It features:
        (method git-fetch)
        (uri (git-reference (url home-page)
                            (commit (string-append "v" version))))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1wi70r56pd5z0x4dp4m58p9asq03j74kdm4fi9vai83vsl2z9amq"))))
@@ -16219,7 +16275,7 @@ backends, including the @command{wordnet} offline backend.")
 (define-public emacs-editorconfig
   (package
     (name "emacs-editorconfig")
-    (version "0.8.0")
+    (version "0.8.1")
     (source
      (origin
        (method git-fetch)
@@ -16229,7 +16285,7 @@ backends, including the @command{wordnet} offline backend.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1b2cpqz75pivl323bs60j5rszwi787x6vy68csycikqz9mhpmjn9"))))
+         "1djlhkap7zddknzvjsjz0agpfsms1ih05zcpg1bikid2vs4gddyr"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/editorconfig/editorconfig-emacs")
     (synopsis "Define and maintain consistent coding styles between different
@@ -18482,8 +18538,8 @@ Dash docsets.")
       (license license:gpl3+))))
 
 (define-public emacs-counsel-dash
-  (let ((commit "24d370be9e94e90d045c49967e19484b9903fce9")
-        (revision "2"))
+  (let ((commit "7027868d483b51d949b9f20fb8f34b122ca61520")
+        (revision "3"))
     (package
       (name "emacs-counsel-dash")
       (version (git-version "0.1.3" revision commit))
@@ -18496,11 +18552,20 @@ Dash docsets.")
          (file-name (git-file-name name version))
          (sha256
           (base32
-           "18gp7hhgng271c7bh06k9p24zqic0f64j5cicivljmyk9c3nh7an"))))
+           "0h3f5pxnmb21pq4hh7k4w8jzflz1k2ap7nwpjc222w0q6x6jrbjp"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-dash-docs" ,emacs-dash-docs)
          ("emacs-ivy" ,emacs-ivy)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'require-ivy
+             (lambda _
+               (substitute* "counsel-dash.el"
+                 (("^\\(require 'cl-lib\\)")
+                  "(require 'cl-lib)\n(require 'ivy)\n(require 'subr-x)"))
+               #t)))))
       (home-page "https://github.com/dash-docs-el/counsel-dash")
       (synopsis "Offline documentation browser for APIs using Dash docsets")
       (description "This package uses @code{ivy-mode} to install and navigate

@@ -522,13 +522,13 @@ netcat implementation that supports TLS.")
   (package
     (name "python-acme")
     ;; Remember to update the hash of certbot when updating python-acme.
-    (version "0.37.2")
+    (version "0.39.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "acme" version))
               (sha256
                (base32
-                "0p3zqhna9p8iy5i9mfhzdf5bmjigs05r6rlwnxykk4n67fp8yyc8"))))
+                "021nyzld949ahrhamlcgmzmk8r1gxrbs8wypnks08s6y2rfvgz52"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -579,7 +579,7 @@ netcat implementation that supports TLS.")
               (uri (pypi-uri "certbot" version))
               (sha256
                (base32
-                "1xbfv4fwkgfp9qqzlk8wxbhchc61349m26q9fg35j9fnm253cm74"))))
+                "1q6zmnfyyk4rhsjg9s2gxx1ciink57ybnv32dgw8m2059lffwp48"))))
     (build-system python-build-system)
     (arguments
      `(,@(substitute-keyword-arguments (package-arguments python-acme)
@@ -613,6 +613,7 @@ netcat implementation that supports TLS.")
        ("python-pyopenssl" ,python-pyopenssl)
        ("python-configobj" ,python-configobj)
        ("python-configargparse" ,python-configargparse)
+       ("python-distro" ,python-distro)
        ("python-zope-component" ,python-zope-component)
        ("python-parsedatetime" ,python-parsedatetime)
        ("python-six" ,python-six)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,10 +19,11 @@
 (define-module (test-cve)
   #:use-module (guix cve)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-64))
 
 (define %sample
-  (search-path %load-path "tests/cve-sample.xml"))
+  (search-path %load-path "tests/cve-sample.json"))
 
 (define (vulnerability id packages)
   (make-struct/no-tail (@@ (guix cve) <vulnerability>) id packages))
@@ -30,34 +31,76 @@
 (define %expected-vulnerabilities
   ;; What we should get when reading %SAMPLE.
   (list
-   ;; CVE-2003-0001 has no "/a" in its product list so it is omitted.
-   ;; CVE-2004-0230 lists "tcp" as an application, but lacks a version number.
-   (vulnerability "CVE-2008-2335" '(("phpvid" "1.2" "1.1")))
-   (vulnerability "CVE-2008-3522" '(("enterprise_virtualization" "3.5")
-                                    ("jasper" "1.900.1")))
-   (vulnerability "CVE-2009-3301" '(("openoffice.org" "2.3.0" "2.2.1" "2.1.0")))
-   ;; CVE-2015-8330 has no software list.
+   (vulnerability "CVE-2019-0001"
+                  ;; Only the "a" CPE configurations are kept; the "o"
+                  ;; configurations are discarded.
+                  '(("junos" (or "18.21-s4" (or "18.21-s3" "18.2")))))
+   (vulnerability "CVE-2019-0005"
+                  '(("junos" (or "18.11" "18.1"))))
+   ;; CVE-2019-0005 has no "a" configurations.
+   (vulnerability "CVE-2019-14811"
+                  '(("ghostscript" (< "9.28"))))
+   (vulnerability "CVE-2019-17365"
+                  '(("nix" (<= "2.3"))))
+   (vulnerability "CVE-2019-1010180"
+                  '(("gdb" _)))                   ;any version
+   (vulnerability "CVE-2019-1010204"
+                  '(("binutils" (and (>= "2.21") (<= "2.31.1")))
+                    ("binutils_gold" (and (>= "1.11") (<= "1.16")))))
+   ;; CVE-2019-18192 has no associated configurations.
    ))
 
 
 (test-begin "cve")
 
-(test-equal "xml->vulnerabilities"
+(test-equal "json->cve-items"
+  '("CVE-2019-0001"
+    "CVE-2019-0005"
+    "CVE-2019-14811"
+    "CVE-2019-17365"
+    "CVE-2019-1010180"
+    "CVE-2019-1010204"
+    "CVE-2019-18192")
+  (map (compose cve-id cve-item-cve)
+       (call-with-input-file %sample json->cve-items)))
+
+(test-equal "cve-item-published-date"
+  '(2019)
+  (delete-duplicates
+   (map (compose date-year cve-item-published-date)
+        (call-with-input-file %sample json->cve-items))))
+
+(test-equal "json->vulnerabilities"
   %expected-vulnerabilities
-  (call-with-input-file %sample xml->vulnerabilities))
+  (call-with-input-file %sample json->vulnerabilities))
 
 (test-equal "vulnerabilities->lookup-proc"
-  (list (list (first %expected-vulnerabilities))
+  (list (list (third %expected-vulnerabilities))  ;ghostscript
+        (list (third %expected-vulnerabilities))
         '()
+
+        (list (fifth %expected-vulnerabilities))  ;gdb
+        (list (fifth %expected-vulnerabilities))
+
+        (list (fourth %expected-vulnerabilities)) ;nix
         '()
-        (list (second %expected-vulnerabilities))
-        (list (third %expected-vulnerabilities)))
-  (let* ((vulns  (call-with-input-file %sample xml->vulnerabilities))
+
+        (list (sixth %expected-vulnerabilities))  ;binutils
+        '()
+        (list (sixth %expected-vulnerabilities))
+        '())
+  (let* ((vulns  (call-with-input-file %sample json->vulnerabilities))
          (lookup (vulnerabilities->lookup-proc vulns)))
-    (list (lookup "phpvid")
-          (lookup "jasper" "2.0")
-          (lookup "foobar")
-          (lookup "jasper" "1.900.1")
-          (lookup "openoffice.org" "2.3.0"))))
+    (list (lookup "ghostscript")
+          (lookup "ghostscript" "9.27")
+          (lookup "ghostscript" "9.28")
+          (lookup "gdb")
+          (lookup "gdb" "42.0")
+          (lookup "nix")
+          (lookup "nix" "2.4")
+          (lookup "binutils" "2.31.1")
+          (lookup "binutils" "2.10")
+          (lookup "binutils_gold" "1.11")
+          (lookup "binutils" "2.32"))))
 
 (test-end "cve")

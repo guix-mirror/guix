@@ -166,14 +166,13 @@
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.6.2")
+    (version "5.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32
-         "1v95vb5385qscfdvphv8l2w22bmir3d7yhpi02n58v3mlqy1r3l2"))))
+        (base32 "1wv31zly44qj0rp2acg58xbnc7bf6ffyadasq093l455q30qafl6"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -1924,13 +1923,13 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "1.0.3")
+    (version "1.0.5")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "12i2g6xdj30k7xxcibg3sc5y76snwq8l6n8fy9lyi577kgy0h2pm"))))
+                "1ywbdbsrkg533qh8xn9ifjh2mvam6v5msrjyqq73jfpvcp89qvff"))))
     (build-system python-build-system)
     (home-page "https://github.com/digitalbazaar/pyld")
     (synopsis "Python implementation of the JSON-LD specification")
@@ -3000,14 +2999,13 @@ receive files via the SCP1 protocol, as implemented by the OpenSSH
 (define-public python-rst.linker
   (package
     (name "python-rst.linker")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "rst.linker" version))
        (sha256
-        (base32
-         "0iqaacp7pj1s8avs4kc0qg0r7dscywaq37y6l9j14glqdikk0wdj"))))
+        (base32 "0pqsfqqx8h0pq21k8l3k62kznrgaj2ala93c64s4d9rpbr4mgkd2"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-dateutil" ,python-dateutil)
@@ -6146,13 +6144,13 @@ Python.")
 (define-public snakemake
   (package
     (name "snakemake")
-    (version "5.2.4")
+    (version "5.7.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "snakemake" version))
        (sha256
-        (base32 "0gj0xxgiq3mp9qyyrbfzldiaq1giliqw0in64nqiz7vx49myqj7z"))))
+        (base32 "1pnpvvn8n2a78cg360wz3ldmpqrsm2wzi0c0dmvki9fnsw6fxdas"))))
     (build-system python-build-system)
     (arguments
      ;; TODO: Package missing test dependencies.
@@ -6170,18 +6168,19 @@ Python.")
                                "/bin/snakemake")))
              #t)))))
     (propagated-inputs
-     `(("python-gitpython" ,python-gitpython)
-       ("python-wrapt" ,python-wrapt)
-       ("python-requests" ,python-requests)
-       ("python-appdirs" ,python-appdirs)
+     `(("python-appdirs" ,python-appdirs)
        ("python-configargparse" ,python-configargparse)
        ("python-datrie" ,python-datrie)
        ("python-docutils" ,python-docutils)
+       ("python-gitpython" ,python-gitpython)
        ("python-jinja2" ,python-jinja2)
        ("python-jsonschema" ,python-jsonschema)
        ("python-networkx" ,python-networkx)
+       ("python-psutil" ,python-psutil)
        ("python-pyyaml" ,python-pyyaml)
-       ("python-ratelimiter" ,python-ratelimiter)))
+       ("python-ratelimiter" ,python-ratelimiter)
+       ("python-requests" ,python-requests)
+       ("python-wrapt" ,python-wrapt)))
     (home-page "https://snakemake.readthedocs.io")
     (synopsis "Python-based execution environment for make-like workflows")
     (description
@@ -6189,24 +6188,6 @@ Python.")
 providing a clean and modern domain specific specification language (DSL) in
 Python style, together with a fast and comfortable execution environment.")
     (license license:expat)))
-
-;; This is currently needed for the pigx-* packages.
-(define-public snakemake-4
-  (package (inherit snakemake)
-    (version "4.4.0")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "snakemake" version))
-       (sha256
-        (base32 "0g0paia4z7w3srnqdmavq3hrb2x7qnpf81jx50njl0p7y4y0j8jv"))))
-    (propagated-inputs
-     `(("python-wrapt" ,python-wrapt)
-       ("python-requests" ,python-requests)
-       ("python-appdirs" ,python-appdirs)
-       ("python-configargparse" ,python-configargparse)
-       ("python-pyyaml" ,python-pyyaml)
-       ("python-ratelimiter" ,python-ratelimiter)))))
 
 (define-public python-pyqrcode
   (package
@@ -14854,14 +14835,13 @@ Included are implementations of:
 (define-public bpython
   (package
     (name "bpython")
-    (version "0.17.1")
+    (version "0.18")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "bpython" version))
        (sha256
-        (base32
-         "0bxhxi5zxdkrf8b4gwn0d363kdz3qnypjwhm1aydki53ph8ca1w9"))))
+        (base32 "1hl6frgvr2lqaxqczl8amg9xih32b3gzv429vs0qrjb8wpdj1k2n"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -14884,10 +14864,10 @@ Included are implementations of:
     (propagated-inputs
      `(("python-pygments" ,python-pygments)
        ("python-requests" ,python-requests)
-       ("python-babel" ,python-babel) ; optional, for internationalization
+       ("python-babel" ,python-babel)   ; optional, for internationalization
        ("python-curtsies" ,python-curtsies) ; >= 0.1.18
        ("python-greenlet" ,python-greenlet)
-       ("python-urwid" ,python-urwid) ; for bpython-urwid only
+       ("python-urwid" ,python-urwid)   ; for bpython-urwid only
        ("python-six" ,python-six)))
     (native-inputs
      `(("python-sphinx" ,python-sphinx)
@@ -16610,3 +16590,57 @@ It is the recommended replacement for Python's original
 @code{distro} also provides a command-line interface to output the platform
 information in various formats.")
     (license license:asl2.0)))
+
+(define-public python-cairosvg
+  (package
+    (name "python-cairosvg")
+    (version "2.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "CairoSVG" version))
+       (sha256
+        (base32 "1bb7irxbaxxb9ahm3z5wsx1q96mm5gzskc7b6q07h9ikcnb8yrjf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-cairocffi" ,python-cairocffi)
+       ("python-cssselect2" ,python-cssselect2)
+       ("python-defusedxml" ,python-defusedxml)
+       ("python-pillow" ,python-pillow)
+       ("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://cairosvg.org/")
+    (synopsis "SVG to PDF/PS/PNG converter based on Cairo")
+    (description "CairoSVG is a SVG converter based on Cairo.  It can export
+SVG files to PDF, PostScript and PNG files.  The main part of CairoSVG is a
+SVG parser, trying to follow the SVG 1.1 recommendation from the W3C.  Once
+parsed, the result is drawn to a Cairo surface that can be exported to
+qvarious formats: PDF, PostScript, PNG and even SVG.")
+    (license license:lgpl3+)))
+
+(define-public python-pyphen
+  (package
+    (name "python-pyphen")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Pyphen" version))
+       (sha256
+        (base32 "08c9y69ry9d6m4zalhnalg86lsp9v2j5n1ziw5vxfmiihx83lqrv"))))
+    (build-system python-build-system)
+    ;; TODO: Use the Guix system hyphenation packages hyphen-* rather than the
+    ;; embedded set provided by upstream - like Debian does.
+    (home-page "https://github.com/Kozea/Pyphen")
+    (synopsis "Pure Python module to hyphenate text")
+    (description "Pyphen is a pure Python module to hyphenate text using
+existing Hunspell hyphenation dictionaries.")
+    (license (list license:gpl2 license:lgpl2.1 license:mpl1.1))))

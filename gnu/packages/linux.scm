@@ -2919,7 +2919,7 @@ country-specific regulations for the wireless spectrum.")
 (define-public lm-sensors
   (package
     (name "lm-sensors")
-    (version "3.5.0")
+    (version "3.6.0")
     (source
      (origin
        (method git-fetch)
@@ -2929,7 +2929,7 @@ country-specific regulations for the wireless spectrum.")
                                          (string-split version #\.) "-")))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mdrnb9r01z1xfdm6dpkywvf9yy9a4yzb59paih9sijwmigv19fj"))
+        (base32 "1ipf6wjx037sqyhy0r5jh4983h216anq9l68ckn2x5c3qc4wfmzn"))
        (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
@@ -2940,10 +2940,10 @@ country-specific regulations for the wireless spectrum.")
                      ("flex" ,flex)
                      ("bison" ,bison)
                      ("which" ,which)))
-    (outputs '("lib"              ;avoid perl in closure
+    (outputs '("lib"                    ; avoid perl in closure
                "out"))
     (arguments
-     `(#:tests? #f  ; no 'check' target
+     `(#:tests? #f                      ; no 'check' target
        #:make-flags (list (string-append "PREFIX=" %output)
                           (string-append "ETCDIR=" (assoc-ref %outputs "lib") "/etc")
                           (string-append "INCLUDEDIR="

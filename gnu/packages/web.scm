@@ -2363,14 +2363,14 @@ HTTP requests.")
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
-    (version "1.21")
+    (version "1.22")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MANWAR/"
                            "CGI-Simple-" version ".tar.gz"))
        (sha256
-        (base32 "1wzc2igs4khmj7zfahvs87c24p9ks8hnqhhsyviyiix53xx2y6sg"))))
+        (base32 "13c7iwnnavky10ab87pi8jc1kqph03s0rhvj7myn7szhbfisc4gn"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-io-stringy" ,perl-io-stringy) ; for IO::Scalar
@@ -4044,11 +4044,11 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
                   "0awfvps7k9bpg3gpgc93y401g7pjabx7mr9960vigad8vddhixqi"))))
       (build-system gnu-build-system)
       (arguments
-       '(#:tests? #f                    ; TODO Tests require PostgreSQL
-         #:modules ((guix build utils)
+       '(#:modules ((guix build utils)
                     (guix build gnu-build-system)
                     (ice-9 rdelim)
                     (ice-9 popen))
+         #:test-target "check-with-tmp-database"
          #:phases
          (modify-phases %standard-phases
            (add-after 'set-paths 'set-GUIX_ENVIRONMENT
@@ -4106,6 +4106,7 @@ CDF, Atom 0.3, and Atom 1.0 feeds.")
        `(("guile" ,guile-2.2)
          ("autoconf" ,autoconf)
          ("automake" ,automake)
+         ("ephemeralpg" ,ephemeralpg)
          ("emacs-with-modules" ,(directory-union
                                  "emacs-union"
                                  (list emacs-no-x

@@ -9,6 +9,8 @@
 ;;; Copyright © 2017, 2018, 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +28,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages emulators)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -39,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages backup)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
@@ -82,6 +86,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages web)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu))
 
 (define-public desmume
@@ -1366,3 +1371,94 @@ functions.  The source code to MAME serves as this documentation.")
     ;; However, over 90% of the files are under Expat license.  Also, artwork,
     ;; keymaps, languages and samples are under CC0.
     (license (list license:gpl2+ license:expat license:cc0))))
+
+(define-public pcsxr
+  ;; No release since 2017.
+  (let ((commit "6484236cb0281e8040ff6c8078c87899a3407534"))
+    (package
+      (name "pcsxr")
+      ;; Version is tagged here: https://github.com/frealgagu/PCSX-Reloaded
+      (version "1.9.95")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/pcsxr/PCSX-Reloaded")
+               (commit commit)))
+         (sha256
+          (base32
+           "138mayp7zi9v4l3lm5f6xxkds619w1fgg769zm8s45c84jbz7dza"))
+         (file-name (git-file-name name commit))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:tests? #f                    ;no "test" target
+         #:configure-flags
+         (list "-DSND_BACKEND=pulse"
+               "-DENABLE_CCDDA='ON'"
+               "-DUSE_LIBARCHIVE='ON'"
+               "-DUSE_LIBCDIO='ON'")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'cd-subdir
+             (lambda _ (chdir "pcsxr")))
+           (add-before 'configure 'fix-cdio-lookup
+             (lambda* (#:key inputs #:allow-other-keys)
+               (substitute* "cmake/FindCdio.cmake"
+                 (("/usr/include/cdio")
+                  (string-append (assoc-ref inputs "libcdio") "/include/cdio"))))))))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("intltool" ,intltool)
+         ("glib" ,glib "bin")))
+      (inputs
+       `(("libcdio" ,libcdio)
+         ("sdl2" ,sdl2)
+         ("gtk+" ,gtk+)
+         ("ffmpeg" ,ffmpeg)
+         ("libxv" ,libxv)
+         ("libarchive" ,libarchive)
+         ("pulseaudio" ,pulseaudio)))
+      (home-page "https://archive.codeplex.com/?p=pcsxr")
+      (synopsis "PlayStation emulator")
+      (description
+       "A PlayStation emulator based on PCSX-df Project with bugfixes and
+improvements.")
+      (license license:gpl2+))))
+
+(define-public gens-gs
+  (package
+    (name "gens-gs")
+    (version "7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://retrocdn.net/images/6/6d/Gens-gs-r"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1ha5s6d3y7s9aq9f4zmn9p88109c3mrj36z2w68jhiw5xrxws833"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:system "i686-linux"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-CFLAGS
+           (lambda* _
+             ;; Remove GTK API deprecation flags that cause build errors.
+             (substitute* "configure"
+               (("GTK_CFLAGS=\"\\$GTK_CFLAGS .*\"") ""))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("nasm" ,nasm)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("gtk" ,gtk+-2)))
+    (home-page "https://segaretro.org/Gens/GS")
+    (synopsis "Emulator for Sega Genesis/Mega Drive systems")
+    (description
+     "Gens/GS is an emulator for the Mega Drive (also known as Sega Genesis),
+derived from Gens.  Project goals include clean source code, combined features
+from various forks of Gens, and improved platform portability.")
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (license license:gpl2+)))

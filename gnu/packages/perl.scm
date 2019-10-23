@@ -3166,14 +3166,14 @@ separator.")
 (define-public perl-error
   (package
     (name "perl-error")
-    (version "0.17027")
+    (version "0.17028")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SH/SHLOMIF/"
                                   "Error-" version ".tar.gz"))
               (sha256
                (base32
-                "1gnkxf12dq2w1jmjpllp5f30ya4nll01jv2sfi24386zfn1arch7"))))
+                "0q796nwwiarfc6pga97380c9z8xva5545632001qj75kb1g5rn1s"))))
     (build-system perl-build-system)
     (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "https://metacpan.org/release/Error")

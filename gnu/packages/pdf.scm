@@ -7,7 +7,7 @@
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016, 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2016, 2017 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2016, 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2017, 2018 Leo Famulari <leo@famulari.name>
@@ -15,6 +15,8 @@
 ;;; Copyright © 2017, 2018 Rene Saavedra <pacoon@protonmail.com>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Ben Sturmfels <ben@sturm.com.au>
+;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +67,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages javascript)
   #:use-module (gnu packages lesstif)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pcre)
@@ -72,6 +75,8 @@
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
+  #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages sdl)
@@ -975,6 +980,50 @@ Note: This module isn't maintained anymore.  For new projects please use
 python-pypdf2 instead.")
     (license license:bsd-3)))
 
+(define-public pdfarranger
+  (package
+    (name "pdfarranger")
+    (version "1.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jeromerobert/pdfarranger.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1f8m8r81322i97wkqpmf7a4kiwnq244n6cnbldh03jc49vwq2kxx"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-for-typelib
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out     (assoc-ref outputs "out"))
+                             (program (string-append out "/bin/pdfarranger")))
+                        (wrap-program program
+                          `("GI_TYPELIB_PATH" ":" prefix
+                            (,(getenv "GI_TYPELIB_PATH"))))
+                        #t))))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("python-distutils-extra" ,python-distutils-extra)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+)
+       ("poppler" ,poppler)
+       ("python-pycairo" ,python-pycairo)
+       ("python-pygobject" ,python-pygobject)
+       ("python-pypdf2" ,python-pypdf2)))
+    (home-page "https://github.com/jeromerobert/pdfarranger")
+    (synopsis "Merge, split and re-arrange pages from PDF documents")
+    (description
+     "PDF Arranger is a small application which allows one to merge or split
+PDF documents and rotate, crop and rearrange their pages using an interactive
+and intuitive graphical interface.
+
+PDF Arranger was formerly known as PDF-Shuffler.")
+    (license license:gpl3+)))
+
 (define-public pdfposter
   (package
     (name "pdfposter")
@@ -1154,4 +1203,81 @@ manipulating PDF documents from the command line.  It supports
 @item displaying metadata in a PDF document
 @item displaying the mapping between logical and physical page numbers
 @end itemize")
+    (license license:bsd-3)))
+
+(define-public weasyprint
+  (package
+    (name "weasyprint")
+    (version "50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WeasyPrint" version))
+       (sha256
+        (base32 "0invs96zvmcr6wh5klj52jrcnr9qg150v9wpmbhcsf3vv1d1hbcw"))
+       (patches (search-patches "weasyprint-library-paths.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-library-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((fontconfig (assoc-ref inputs "fontconfig"))
+                   (glib (assoc-ref inputs "glib"))
+                   (pango (assoc-ref inputs "pango"))
+                   (pangoft2 (assoc-ref inputs "pangoft2")))
+               (substitute* "weasyprint/fonts.py"
+                 (("@fontconfig@")
+                  (string-append fontconfig "/lib/libfontconfig.so"))
+                 (("@pangoft2@")
+                  (string-append pango "/lib/libpangoft2-1.0.so")))
+               (substitute* "weasyprint/text.py"
+                 (("@gobject@")
+                  (string-append glib "/lib/libgobject-2.0.so"))
+                 (("@pango@")
+                  (string-append pango "/lib/libpango-1.0.so"))
+                 (("@pangocairo@")
+                  (string-append pango "/lib/libpangocairo-1.0.so"))))))
+         (add-after 'unpack 'remove-pytest-options
+           (lambda _
+             (substitute* "setup.cfg"
+               ;; flake8 and isort syntax checks fail, which is not our
+               ;; business
+               (("addopts = --flake8 --isort") ""))))
+         (replace 'check
+           (lambda _
+             ;; run pytest, excluding one failing test
+             (invoke "pytest" "-k" "not test_flex_column_wrap_reverse"))))))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("glib" ,glib)
+       ("pango" ,pango)))
+    (propagated-inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("python-cairocffi" ,python-cairocffi)
+       ("python-cairosvg" ,python-cairosvg)
+       ("python-cffi" ,python-cffi)
+       ("python-cssselect2" ,python-cssselect2)
+       ("python-html5lib" ,python-html5lib)
+       ("python-pyphen" ,python-pyphen)
+       ("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://weasyprint.org/")
+    (synopsis "Document factory for creating PDF files from HTML")
+    (description "WeasyPrint helps web developers to create PDF documents.  It
+turns simple HTML pages into gorgeous statistical reports, invoices, tickets,
+etc.
+
+From a technical point of view, WeasyPrint is a visual rendering engine for
+HTML and CSS that can export to PDF and PNG.  It aims to support web standards
+for printing.
+
+It is based on various libraries but not on a full rendering engine like
+WebKit or Gecko.  The CSS layout engine is written in Python, designed for
+pagination, and meant to be easy to hack on.  Weasyprint can also be used as a
+python library.
+
+Keywords: html2pdf, htmltopdf")
     (license license:bsd-3)))

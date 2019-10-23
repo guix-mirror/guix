@@ -1848,16 +1848,18 @@ times.")
 (define-public r-data-table
   (package
     (name "r-data-table")
-    (version "1.12.4")
+    (version "1.12.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "data.table" version))
               (sha256
                (base32
-                "0zdcbr4nixvl8ga4mp9pw1dfww35dzhzpb6ixajqasiri824m7i9"))))
+                "1kgbnm5gv7ax7qn8irpz7qsry2ci21axga8y7qpkidcqkxkkndn2"))))
     (build-system r-build-system)
     (inputs
      `(("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
@@ -5733,16 +5735,16 @@ shaped points?  Now you can!")
 (define-public r-colorout
   (package
     (name "r-colorout")
-    (version "1.2-0")
+    (version "1.2-2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/jalvesaq/colorout/archive/"
-                           "v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jalvesaq/colorout.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "07vqx5ihgnq4dzn5jnfjfhdm3957v4prvf8vhnb3cwvlly4l7p9v"))))
+        (base32 "1rsx69wjpa73c6x2hacvvvbzdzxn7wg06gizf97kasjdlb7azmp3"))))
     (build-system r-build-system)
     (home-page "https://github.com/jalvesaq/colorout")
     (synopsis "Colorize output in the R REPL")

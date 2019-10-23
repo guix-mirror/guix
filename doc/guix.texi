@@ -9484,7 +9484,7 @@ that limit has been reset.
 @cindex CVE, Common Vulnerabilities and Exposures
 Report known vulnerabilities found in the Common Vulnerabilities and
 Exposures (CVE) databases of the current and past year
-@uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
+@uref{https://nvd.nist.gov/vuln/data-feeds, published by the US
 NIST}.
 
 To view information about a particular vulnerability, visit pages such as:
@@ -9501,7 +9501,7 @@ where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 @code{CVE-2015-7554}.
 
 Package developers can specify in package recipes the
-@uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
+@uref{https://nvd.nist.gov/products/cpe,Common Platform Enumeration (CPE)}
 name and version of the package when they differ from the name or version
 that Guix uses, as in this example:
 
@@ -14193,16 +14193,43 @@ Relogin after logout.
 
 @cindex login manager
 @cindex X11 login
-@deffn {Scheme Procedure} sddm-service config
-Return a service that spawns the SDDM graphical login manager for config of
-type @code{<sddm-configuration>}.
+@defvr {Scheme Variable} sddm-service-type
+This is the type of the service to run the
+@uref{https://github.com/sddm/sddm,SSDM display manager}.  Its value
+must be a @code{sddm-configuration} record (see below).
 
-@example
-  (sddm-service (sddm-configuration
-                 (auto-login-user "Alice")
-                 (auto-login-session "xfce.desktop")))
-@end example
-@end deffn
+Here's an example use:
+
+@lisp
+(service sddm-service-type
+         (sddm-configuration
+           (auto-login-user "alice")
+           (auto-login-session "xfce.desktop")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} sddm-configuration
+This data type represents the configuration of the SDDM login manager.
+The available fields are:
+
+@table @asis
+@item @code{sddm} (default: @code{sddm})
+The SDDM package to use.
+
+@item @code{display-server} (default: @code{"x11"})
+This must be either @code{"x11"} or @code{"wayland"}.
+
+@c FIXME: Add more fields.
+
+@item @code{auto-login-user} (default: @code{""})
+If non-empty, this is the user account under which to log in
+automatically.
+
+@item @code{auto-login-session} (default: @code{""})
+If non-empty, this is the @file{.desktop} file name to use as the
+auto-login session.
+@end table
+@end deftp
 
 @cindex Xorg, configuration
 @deftp {Data Type} xorg-configuration
@@ -24546,6 +24573,10 @@ The type of device to connect to.  Run @command{inputattach --help}, from the
 @item @code{device} (default: @code{"/dev/ttyS0"})
 The device file to connect to the device.
 
+@item @code{baud-rate} (default: @code{#f})
+Baud rate to use for the serial connection.
+Should be a number or @code{#f}.
+
 @item @code{log-file} (default: @code{#f})
 If true, this must be the name of a file to log messages to.
 @end table
@@ -25973,12 +26004,10 @@ The object of the operating system configuration to deploy.
 
 @item @code{environment}
 An @code{environment-type} describing how the machine should be provisioned.
-At the moment, the only supported value is
-@code{managed-host-environment-type}.
 
 @item @code{configuration} (default: @code{#f})
 An object describing the configuration for the machine's @code{environment}.
-If the @code{environment} has a default configuration, @code{#f} maybe used.
+If the @code{environment} has a default configuration, @code{#f} may be used.
 If @code{#f} is used for an environment with no default configuration,
 however, an error will be thrown.
 @end table
@@ -26003,6 +26032,26 @@ keyring.
 @item @code{identity} (default: @code{#f})
 If specified, the path to the SSH private key to use to authenticate with the
 remote host.
+@end table
+@end deftp
+
+@deftp {Data Type} digital-ocean-configuration
+This is the data type describing the Droplet that should be created for a
+machine with an @code{environment} of @code{digital-ocean-environment-type}.
+
+@table @asis
+@item @code{ssh-key}
+The path to the SSH private key to use to authenticate with the remote
+host. In the future, this field may not exist.
+@item @code{tags}
+A list of string ``tags'' that uniquely identify the machine. Must be given
+such that no two machines in the deployment have the same set of tags.
+@item @code{region}
+A Digital Ocean region slug, such as @code{"nyc3"}.
+@item @code{size}
+A Digital Ocean size slug, such as @code{"s-1vcpu-1gb"}
+@item @code{enable-ipv6?}
+Whether or not the droplet should be created with IPv6 networking.
 @end table
 @end deftp
 

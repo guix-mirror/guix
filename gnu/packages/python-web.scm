@@ -13,7 +13,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015, 2016, 2017, 2019 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016, 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016, 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2015, 2017 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -63,6 +63,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-check)
   #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sphinx)
@@ -1636,14 +1637,13 @@ Amazon Web Services (AWS) API.")
 (define-public python-wsgiproxy2
   (package
     (name "python-wsgiproxy2")
-    (version "0.4.5")
+    (version "0.4.6")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "WSGIProxy2" version ".tar.gz"))
        (sha256
-        (base32
-         "19d9dva282vfjs784i0zkxp078lxfz4h3f621z30ij9wbf5rba6a"))))
+        (base32 "16jch5nic0hia28lps3c678s9s9mjdq8n87igxncjg0rpi5adqnf"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-webtest" ,python-webtest)))
@@ -3301,3 +3301,69 @@ library to create slugs from unicode strings while keeping it DRY.")
     (description "Generate complex HTML+JS pages with Python")
     (license license:expat)))
 
+(define-public python-tinycss2
+  (package
+    (name "python-tinycss2")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tinycss2" version))
+       (sha256
+        (base32 "1kw84y09lggji4krkc58jyhsfj31w8npwhznr7lf19d0zbix09v4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-webencodings" ,python-webencodings)))
+    (native-inputs
+     `(("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://tinycss2.readthedocs.io/")
+    (synopsis "Low-level CSS parser for Python")
+    (description "@code{tinycss2} can parse strings, return Python objects
+representing tokens and blocks, and generate CSS strings corresponding to
+these objects.
+
+Based on the CSS Syntax Level 3 specification, @code{tinycss2} knows the
+grammar of CSS but doesn’t know specific rules, properties or values supported
+in various CSS modules.")
+    (license license:bsd-3)))
+
+(define-public python-cssselect2
+  (package
+    (name "python-cssselect2")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cssselect2" version))
+       (sha256
+        (base32 "0skymzb4ncrm2zdsy80f53vi0arf776lvbp51hzh4ayp1il5lj3h"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (invoke "pytest"))))))
+    (propagated-inputs
+     `(("python-tinycss2" ,python-tinycss2)))
+    (native-inputs
+     `(("python-pytest-cov" ,python-pytest-cov)
+       ("python-pytest-flake8" ,python-pytest-flake8)
+       ("python-pytest-isort" ,python-pytest-isort)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (home-page "https://cssselect2.readthedocs.io/")
+    (synopsis "CSS selectors for Python ElementTree")
+    (description "@code{cssselect2} is a straightforward implementation of
+CSS3 Selectors for markup documents (HTML, XML, etc.) that can be read by
+ElementTree-like parsers (including cElementTree, lxml, html5lib, etc.).
+
+Unlike the Python package @code{cssselect}, it does not translate selectors to
+XPath and therefore does not have all the correctness corner cases that are
+hard or impossible to fix in cssselect.")
+    (license license:bsd-3)))

@@ -3089,14 +3089,13 @@ color labels, layout, etc.")
 (define-public r-stringdist
   (package
     (name "r-stringdist")
-    (version "0.9.5.3")
+    (version "0.9.5.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringdist" version))
        (sha256
-        (base32
-         "1vbhn6qwj3bzplhq06bw1yqqq1qpf1zinnj27cr7pf1nqsbyx2nq"))))
+        (base32 "1dqfakclzaf878x7mhwmqrcpcql2h9cv19fz5f3ygpajf3si5kqi"))))
     (build-system r-build-system)
     (home-page "https://github.com/markvanderloo/stringdist")
     (synopsis "Approximate string matching and string distance functions")
@@ -8728,21 +8727,20 @@ and related methods.")
 (define-public r-rcppgsl
   (package
     (name "r-rcppgsl")
-    (version "0.3.6")
+    (version "0.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "RcppGSL" version))
        (sha256
-        (base32
-         "16pdapq31729db53agnb48jkvdm97167n3bigy5zazc3q3isis1m"))))
+        (base32 "0cnw2k7cfqrm79r6j283aybflxig80x4n4rjkfp2317wf10mrsa5"))))
     (properties `((upstream-name . "RcppGSL")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-rcpp" ,r-rcpp)
        ("gsl" ,gsl)))
     (native-inputs
-     `(("r-knitr" ,r-knitr))) ; for vignettes
+     `(("r-knitr" ,r-knitr)))           ; for vignettes
     (home-page "https://cran.r-project.org/web/packages/RcppGSL/")
     (synopsis "Rcpp integration for GSL vectors and matrices")
     (description

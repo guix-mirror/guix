@@ -1508,6 +1508,8 @@ else @code{parse-number} signals an error of type @code{invalid-number}.")
         (base32
          "0kvz16gnxnkdz0fy1x8y5yr28nfm7i2qpvix7mgwccdpjmsb4pgm"))))
     (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("rt" ,sbcl-rt)))
     (home-page "https://common-lisp.net/project/iterate/")
     (synopsis "Iteration construct for Common Lisp")
     (description "@code{iterate} is an iteration construct for Common Lisp.
@@ -1523,6 +1525,9 @@ It is similar to the @code{CL:LOOP} macro, with these distinguishing marks:
 
 (define-public cl-iterate
   (sbcl-package->cl-source-package sbcl-iterate))
+
+(define-public ecl-iterate
+  (sbcl-package->ecl-package sbcl-iterate))
 
 (define-public sbcl-cl-uglify-js
   ;; There have been many bug fixes since the 2010 release.
@@ -7833,3 +7838,248 @@ Clojure, as well as several expansions on the idea.")
 
 (define-public ecl-arrows
   (sbcl-package->ecl-package sbcl-arrows))
+
+(define-public sbcl-simple-parallel-tasks
+  (let ((commit "db460f7a3f7bbfe2d3a2223ed21e162068d04dda")
+        (revision "0"))
+    (package
+      (name "sbcl-simple-parallel-tasks")
+      (version (git-version "1.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/glv2/simple-parallel-tasks.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0amw3qk23wnlyrsgzszs6rs7y4zvxv8dr03rnqhc60mnm8ds4dd5"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("fiveam" ,sbcl-fiveam)))
+      (inputs
+       `(("chanl" ,sbcl-chanl)))
+      (synopsis "Common Lisp library to evaluate some forms in parallel")
+      (description "This is a simple Common Lisp library to evaluate some
+forms in parallel.")
+      (home-page "https://github.com/glv2/simple-parallel-tasks")
+      (license license:gpl3))))
+
+(define-public cl-simple-parallel-tasks
+  (sbcl-package->cl-source-package sbcl-simple-parallel-tasks))
+
+(define-public ecl-simple-parallel-tasks
+  (sbcl-package->ecl-package sbcl-simple-parallel-tasks))
+
+(define-public sbcl-cl-heap
+  (package
+    (name "sbcl-cl-heap")
+    (version "0.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://common-lisp.net/project/cl-heap/releases/"
+                           "cl-heap_" version ".tar.gz"))
+       (sha256
+        (base32
+         "163hb07p2nxz126rpq3cj5dyala24n0by5i5786n2qcr1w0bak4i"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs
+     `(("xlunit" ,sbcl-xlunit)))
+    (arguments
+     `(#:test-asd-file "cl-heap-tests.asd"))
+    (synopsis "Heap and priority queue data structures for Common Lisp")
+    (description
+     "CL-HEAP provides various implementations of heap data structures (a
+binary heap and a Fibonacci heap) as well as an efficient priority queue.")
+    (home-page "https://common-lisp.net/project/cl-heap/")
+    (license license:gpl3+)))
+
+(define-public cl-heap
+  (sbcl-package->cl-source-package sbcl-cl-heap))
+
+(define-public ecl-cl-heap
+  (sbcl-package->ecl-package sbcl-cl-heap))
+
+(define-public sbcl-curry-compose-reader-macros
+  (let ((commit "beaa92dedf392726c042184bfd6149fa8d9e6ac2")
+        (revision "0"))
+    (package
+      (name "sbcl-curry-compose-reader-macros")
+      (version (git-version "1.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/eschulte/curry-compose-reader-macros.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0rv9bl8xrad5wfcg5zs1dazvnpmvqz6297lbn8bywsrcfnlf7h98"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (synopsis "Reader macros for partial application and composition")
+      (description
+       "This Common Lisp library provides reader macros for concise expression
+of function partial application and composition.")
+      (home-page "https://eschulte.github.io/curry-compose-reader-macros/")
+      (license license:public-domain))))
+
+(define-public cl-curry-compose-reader-macros
+  (sbcl-package->cl-source-package sbcl-curry-compose-reader-macros))
+
+(define-public ecl-curry-compose-reader-macros
+  (sbcl-package->ecl-package sbcl-curry-compose-reader-macros))
+
+(define-public sbcl-yason
+  (package
+    (name "sbcl-yason")
+    (version "0.7.7")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/phmarek/yason.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0479rbjgbj80jpk5bby18inlv1kfp771a82rlcq5psrz65qqa9bj"))))
+    (build-system asdf-build-system/sbcl)
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("trivial-gray-streams" ,sbcl-trivial-gray-streams)))
+    (synopsis "Common Lisp JSON parser/encoder")
+    (description
+     "YASON is a Common Lisp library for encoding and decoding data in the
+JSON interchange format.")
+    (home-page "https://github.com/phmarek/yason")
+    (license license:bsd-3)))
+
+(define-public cl-yason
+  (sbcl-package->cl-source-package sbcl-yason))
+
+(define-public ecl-yason
+  (sbcl-package->ecl-package sbcl-yason))
+
+(define-public sbcl-stefil
+  (let ((commit "0398548ec95dceb50fc2c2c03e5fb0ce49b86c7a")
+        (revision "0"))
+    (package
+      (name "sbcl-stefil")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://gitlab.common-lisp.net/stefil/stefil.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0bqz64q2szzhf91zyqyssmvrz7da6442rs01808pf3wrdq28bclh"))))
+      (build-system asdf-build-system/sbcl)
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("iterate" ,sbcl-iterate)
+         ("metabang-bind" ,sbcl-metabang-bind)))
+      (propagated-inputs
+       ;; Swank doesn't have a pre-compiled package, therefore we must
+       ;; propagate its sources.
+       `(("swank" ,cl-slime-swank)))
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'drop-unnecessary-dependency
+             (lambda _
+               (substitute* "package.lisp"
+                 ((":stefil-system") ""))
+               #t)))))
+      (home-page "https://common-lisp.net/project/stefil/index-old.shtml")
+      (synopsis "Simple test framework")
+      (description
+       "Stefil is a simple test framework for Common Lisp, with a focus on
+interactive development.")
+      (license license:public-domain))))
+
+(define-public cl-stefil
+  (sbcl-package->cl-source-package sbcl-stefil))
+
+(define-public sbcl-graph
+  (let ((commit "78bf9ec930d8eae4f0861b5be76765fb1e45e24f")
+        (revision "0"))
+    (package
+      (name "sbcl-graph")
+      (version (git-version "0.0.0" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri
+          (git-reference
+           (url "https://github.com/eschulte/graph.git")
+           (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "1qpij4xh8bqwc2myahpilcbh916v7vg0acz2fij14d3y0jm02h0g"))
+         (patches (search-patches "sbcl-graph-asdf-definitions.patch"))))
+      (build-system asdf-build-system/sbcl)
+      (native-inputs
+       `(("stefil" ,sbcl-stefil)))
+      (inputs
+       `(("alexandria" ,sbcl-alexandria)
+         ("cl-heap" ,sbcl-cl-heap)
+         ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+         ("metabang-bind" ,sbcl-metabang-bind)
+         ("named-readtables" ,sbcl-named-readtables)))
+      (arguments
+       '(#:test-asd-file "graph.test.asd"))
+      (synopsis "Graph data structure and algorithms for Common Lisp")
+      (description
+       "The GRAPH Common Lisp library provides a data structures to represent
+graphs, as well as some graph manipulation and analysis algorithms (shortest
+path, maximum flow, minimum spanning tree, etc.).")
+      (home-page "https://eschulte.github.io/graph/")
+      (license license:gpl3+))))
+
+(define-public cl-graph
+  (sbcl-package->cl-source-package sbcl-graph))
+
+(define-public sbcl-graph-dot
+  (package
+    (inherit sbcl-graph)
+    (name "sbcl-graph-dot")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("cl-ppcre" ,sbcl-cl-ppcre)
+       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+       ("graph" ,sbcl-graph)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("named-readtables" ,sbcl-named-readtables)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-graph)
+       ((#:asd-file _ "") "graph.dot.asd")
+       ((#:asd-system-name _ #f) "graph-dot")))
+    (synopsis "Serialize graphs to and from DOT format")))
+
+(define-public sbcl-graph-json
+  (package
+    (inherit sbcl-graph)
+    (name "sbcl-graph-json")
+    (inputs
+     `(("alexandria" ,sbcl-alexandria)
+       ("curry-compose-reader-macros" ,sbcl-curry-compose-reader-macros)
+       ("graph" ,sbcl-graph)
+       ("metabang-bind" ,sbcl-metabang-bind)
+       ("named-readtables" ,sbcl-named-readtables)
+       ("yason" ,sbcl-yason)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments sbcl-graph)
+       ((#:asd-file _ "") "graph.json.asd")
+       ((#:asd-system-name _ #f) "graph-json")))
+    (synopsis "Serialize graphs to and from JSON format")))

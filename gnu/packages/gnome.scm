@@ -2223,7 +2223,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.30")
+    (version "3.30.1.1")
     (source
      (origin
        (method url-fetch)
@@ -2232,8 +2232,19 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1sbj1czlx1fakm72dwgbn0bwm12j838yaky4mkf6hf8j8afnxmzp"))))
-    (build-system glib-or-gtk-build-system)
+         "12x7xmwh62yl0ax90v8nkx3jqzviaz9hz2g56yml78wzww20gawy"))
+       (patches (search-patches
+                 "seahorse-gkr-use-0-on-empty-flags.patch"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "build-aux/meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gcr" ,gcr)
@@ -2241,13 +2252,15 @@ engineering.")
        ("gpgme" ,gpgme)
        ("openldap" ,openldap)
        ("openssh" ,openssh)
+       ("avahi" ,avahi)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("gettext" ,gettext-minimal)
        ("glib:bin" ,glib "bin")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("xmllint" ,libxml2)))
     (home-page "https://launchpad.net/gnome-themes-standard")
     (synopsis "Manage encryption keys and passwords in the GNOME keyring")
@@ -4353,7 +4366,7 @@ USB transfers with your high-level application or system daemon.")
                       ;; one breaks the build by referring to a
                       ;; non-existent header (packagekit.h)
                       (delete-file "src/ui.c"))))))
-    (home-page "https://launchpad.net/simple-scan")
+    (home-page "https://gitlab.gnome.org/GNOME/simple-scan")
     (synopsis "Document and image scanner")
     (description "Simple Scan is an easy-to-use application, designed to let
 users connect their scanner and quickly have the image/document in an
@@ -7100,7 +7113,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
 (define-public arc-theme
   (package
     (name "arc-theme")
-    (version "20181022")
+    (version "20190917")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -7109,7 +7122,7 @@ dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "08951dk1irfadwpr3p323a4fprmxg53rk2r2niwq3v62ryhi3663"))))
+                "1qgpk4p2hi5hd4yy0hj93kq1vs0b32wb8qkaj1wi90c8gwddq5wa"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

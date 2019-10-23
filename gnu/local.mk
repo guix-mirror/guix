@@ -425,6 +425,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ruby.scm				\
   %D%/packages/rush.scm				\
   %D%/packages/rust.scm				\
+  %D%/packages/rust-cbindgen.scm		\
   %D%/packages/samba.scm			\
   %D%/packages/sagemath.scm			\
   %D%/packages/sawfish.scm			\
@@ -580,6 +581,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/system/vm.scm				\
 						\
   %D%/machine.scm				\
+  %D%/machine/digital-ocean.scm			\
   %D%/machine/ssh.scm				\
 						\
   %D%/build/accounts.scm			\
@@ -704,6 +706,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   %D%/packages/patches/audacity-build-with-system-portaudio.patch \
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
+  %D%/packages/patches/avahi-CVE-2018-1000845.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avogadro-boost148.patch			\
   %D%/packages/patches/avogadro-eigen3-update.patch		\
@@ -1321,12 +1324,14 @@ dist_patch_DATA =						\
   %D%/packages/patches/rust-coresimd-doctest.patch		\
   %D%/packages/patches/rust-reproducible-builds.patch		 \
   %D%/packages/patches/rxvt-unicode-escape-sequences.patch	\
+  %D%/packages/patches/sbcl-graph-asdf-definitions.patch	\
   %D%/packages/patches/scalapack-blacs-mpi-deprecations.patch	\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-build-parallelism.patch		\
   %D%/packages/patches/scotch-integer-declarations.patch	\
   %D%/packages/patches/sdl-libx11-1.6.patch			\
   %D%/packages/patches/sdl2-mesa-compat.patch			\
+  %D%/packages/patches/seahorse-gkr-use-0-on-empty-flags.patch	\
   %D%/packages/patches/seq24-rename-mutex.patch			\
   %D%/packages/patches/sharutils-CVE-2018-1000097.patch		\
   %D%/packages/patches/shishi-fix-libgcrypt-detection.patch	\
@@ -1419,6 +1424,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/wavpack-CVE-2018-6767.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7253.patch		\
   %D%/packages/patches/wavpack-CVE-2018-7254.patch		\
+  %D%/packages/patches/weasyprint-library-paths.patch		\
   %D%/packages/patches/wicd-bitrate-none-fix.patch		\
   %D%/packages/patches/wicd-get-selected-profile-fix.patch	\
   %D%/packages/patches/wicd-urwid-1.3.patch			\
