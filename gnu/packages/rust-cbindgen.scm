@@ -859,3 +859,24 @@ serializing Rust structures.")
 or XID_Continue properties according to Unicode Standard Annex #31.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0 license:expat))))
+
+(define rust-vec-map-0.8
+  (package
+    (name "rust-vec-map")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "vec_map" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "06n8hw4hlbcz328a3gbpvmy0ma46vg1lc0r5wf55900szf3qdiq5"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/contain-rs/vec-map")
+    (synopsis "Simple map based on a vector for small integer keys")
+    (description
+     "This package provides a simple map based on a vector for small integer keys.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
