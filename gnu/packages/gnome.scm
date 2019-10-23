@@ -3028,7 +3028,7 @@ keyboard shortcuts.")
      (origin
        (method url-fetch)
        (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
-                           name "-" version ".tar.xz"))
+                           "colord-" version ".tar.xz"))
        (sha256
         (base32
          "1xwxahg9mgmapc16xkb4kgmc40zpadrwav33xqmn6cgaw6g6d3ls"))))
