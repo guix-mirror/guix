@@ -504,3 +504,24 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-xorshift-0.1
+  (package
+    (name "rust-rand-xorshift")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_xorshift" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_xorshift")
+    (synopsis "Xorshift random number generator")
+    (description
+      "Xorshift random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
