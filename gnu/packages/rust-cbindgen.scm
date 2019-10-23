@@ -440,3 +440,25 @@ functionality.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define rust-rand-jitter-0.1
+  (package
+    (name "rust-rand-jitter")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_jitter" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "16z387y46bfz3csc42zxbjq89vcr1axqacncvv8qhyy93p4xarhi"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-random/rand")
+    (synopsis
+      "Random number generator based on timing jitter")
+    (description
+      "Random number generator based on timing jitter")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
