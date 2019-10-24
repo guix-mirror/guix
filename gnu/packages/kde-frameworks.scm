@@ -1629,6 +1629,50 @@ applications.  It provides a set of completion-ready widgets, or can be
 integrated it into your application's other widgets.")
     (license license:lgpl2.1+)))
 
+(define-public kcontacts
+  (package
+    (name "kcontacts")
+    (version "5.63.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0xs5c5l4vck5i6879jax1nf93if02f9hyfkn60l36cxbphnbpw0h"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server))) ; for the tests
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             ;; Xvfb doesn't have proper glx support and needs a pixeldepth
+             ;; of 24 bit to avoid "libGL error: failed to load driver: swrast"
+             ;;                    "Could not initialize GLX"
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "API for contacts/address book data following the vCard standard")
+    (description "This library provides a vCard data model, vCard
+input/output, contact group management, locale-aware address formatting, and
+localized country name to ISO 3166-1 alpha 2 code mapping and vice verca.
+")
+    (license license:lgpl2.1+)))
+
 (define-public kcrash
   (package
     (name "kcrash")
