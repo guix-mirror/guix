@@ -4324,17 +4324,19 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.24.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://launchpad.net/simple-scan/"
-                                  (version-major+minor version) "/"
-                                  version "/+download/simple-scan-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "1czg21cdbd2fgqylxfnzfhhzy69gycf816d5bbaq6hb62hmq7bjy"))))
-    (build-system glib-or-gtk-build-system)
+    (version "3.34.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/simple-scan/"
+                           (version-major+minor version) "/"
+                           "simple-scan-" version ".tar.xz"))
+       (sha256
+        (base32 "0glzskxdc7p9z7nwcakqc7qzij4l79adlvvb2cj5fmis731zw9yq"))))
+    (build-system meson-build-system)
+    ;; TODO: Fix icons in home screen, About dialogue, and scan menu.
+    (arguments
+     '(#:glib-or-gtk? #t))
     (inputs
      `(("gtk" ,gtk+)
        ("zlib" ,zlib)
@@ -4350,28 +4352,13 @@ USB transfers with your high-level application or system daemon.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
-    (arguments
-     '(#:configure-flags '("--disable-packagekit")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'clean
-                    (lambda _
-                      ;; Remove a left-over reference to PackageKit.
-
-                      ;; https://bugs.launchpad.net/simple-scan/+bug/1462769
-
-                      ;; There are some generated C files erroneously
-                      ;; included in the source distribution, and this
-                      ;; one breaks the build by referring to a
-                      ;; non-existent header (packagekit.h)
-                      (delete-file "src/ui.c"))))))
     (home-page "https://gitlab.gnome.org/GNOME/simple-scan")
     (synopsis "Document and image scanner")
-    (description "Simple Scan is an easy-to-use application, designed to let
-users connect their scanner and quickly have the image/document in an
-appropriate format.  Simple Scan is basically a frontend for SANE - which is
-the same backend as XSANE uses. This means that all existing scanners will
-work and the interface is well tested.")
+    (description
+     "Document Scanner is an easy-to-use application that lets you connect your
+scanner and quickly capture images and documents in an appropriate format.  It
+supports any scanner for which a suitable SANE driver is available, which is
+almost all of them.")
     (license license:gpl3+)))
 
 (define-public eolie
