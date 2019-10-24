@@ -3045,13 +3045,11 @@ keyboard shortcuts.")
                                ;; Wants to install to global completion dir;
                                ;; punt.
                                "-Dbash_completion=false"
-                               ;; colord-gtk not packaged yet.
-                               "-Dsession_example=false"
                                "-Ddaemon_user=colord"
                                "-Dsane=true"
-                               ;; Requires spotread
+                               ;; Requires spotread.
                                "-Dargyllcms_sensor=false"
-                               ;; TODO: Requires docbook2x
+                               ;; TODO: Requires docbook2x.
                                "-Dman=false")
        #:phases
        (modify-phases %standard-phases
@@ -3062,25 +3060,25 @@ keyboard shortcuts.")
                 (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("glib:bin" ,glib "bin") ; for glib-compile-resources, etc.
+     `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
        ("gtk-doc" ,gtk-doc)
+       ("intltool" ,intltool)
        ("libtool" ,libtool)
-       ("intltool" ,intltool)))
+       ("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; colord.pc refers to all these.
      `(("glib" ,glib)
-       ("udev" ,eudev)
-       ("lcms" ,lcms)))
+       ("lcms" ,lcms)
+       ("udev" ,eudev)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("gusb" ,gusb)
        ("libgudev" ,libgudev)
        ("libusb" ,libusb)
-       ("sqlite" ,sqlite)
        ("polkit" ,polkit)
        ("python" ,python-wrapper)
+       ("sqlite" ,sqlite)
        ("sane-backends" ,sane-backends)))
     (home-page "https://www.freedesktop.org/software/colord/")
     (synopsis "Color management service")
