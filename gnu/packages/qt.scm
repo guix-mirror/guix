@@ -1434,34 +1434,6 @@ components.  The API consists of over 20 effects provided as separate QML
 types.  The effects cover functional areas such as blending, masking, blurring,
 coloring, and many more.")))
 
-(define-public qtdeclarative-render2d
-  ;; As of Qt-5.8.0 this module has been merged into qtdeclarative
-  (package (inherit qtsvg)
-    (name "qtdeclarative-render2d")
-    (version "5.7.1")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.qt.io/official_releases/qt/"
-                                 (version-major+minor version) "/" version
-                                 "/submodules/" name "-everywhere-src-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0zwch9vn17f3bpy300jcfxx6cx9qymk5j7khx0x9k1xqid4166c3"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (delete-file-recursively "tools/opengldummy/3rdparty")
-                 #t))))
-    (native-inputs `())
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
-    (synopsis "Qt Declarative Render module")
-    (description "The Qt Declarative Render 2D module provides a Raster
-backend for QtQuick scene graph.")
-    (properties `((superseded . ,qtdeclarative)))))
-
 (define-public qtgamepad
   (package (inherit qtsvg)
     (name "qtgamepad")
