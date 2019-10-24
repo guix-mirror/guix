@@ -3855,7 +3855,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.2.2")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3863,7 +3863,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1imivxjppi8zl27gn472pwpk8bg5dijkbyi340by31vhy7dj24w2"))))
+                "13ivb1b627qkiiqxh2y7zawynarkmgxrnwwpqhx6cci621yyqqqp"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
