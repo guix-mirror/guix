@@ -835,6 +835,7 @@ the GNOME desktop environment.")
   (allow-empty-passwords? gdm-configuration-allow-empty-passwords? (default #t))
   (auto-login? gdm-configuration-auto-login? (default #f))
   (dbus-daemon gdm-configuration-dbus-daemon (default dbus-daemon-wrapper))
+  (debug? gdm-configuration-debug? (default #f))
   (default-user gdm-configuration-default-user (default #f))
   (gnome-shell-assets gdm-configuration-gnome-shell-assets
                       (default (list adwaita-icon-theme font-cantarell)))
@@ -866,7 +867,9 @@ the GNOME desktop environment.")
                    "WaylandEnable=false\n"
                    "\n"
                    "[debug]\n"
-                   "#Enable=true\n"
+                   "Enable=" (if (gdm-configuration-debug? config)
+                                 "true"
+                                 "false") "\n"
                    "\n"
                    "[security]\n"
                    "#DisallowTCP=true\n"
