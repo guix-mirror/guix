@@ -3047,6 +3047,7 @@ keyboard shortcuts.")
                                "-Dbash_completion=false"
                                "-Ddaemon_user=colord"
                                "-Dsane=true"
+                               "-Dvapi=true"
                                ;; Requires spotread.
                                "-Dargyllcms_sensor=false"
                                ;; TODO: Requires docbook2x.
@@ -3065,7 +3066,8 @@ keyboard shortcuts.")
        ("gtk-doc" ,gtk-doc)
        ("intltool" ,intltool)
        ("libtool" ,libtool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      ;; colord.pc refers to all these.
      `(("glib" ,glib)
