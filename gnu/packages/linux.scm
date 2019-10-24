@@ -1022,13 +1022,11 @@ at login.  Local and dynamic reconfiguration are its key features.")
       (uri (string-append "mirror://sourceforge/psmisc/psmisc devel/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32
-        "0s1kjhrik0wzqbm7hv4gkhywhjrwhp9ajw0ad05fwharikk6ah49"))))
+       (base32 "103qp3f8jvz07x8r8zgsqwyw84g5g92w6pdq97d78d1pr7yvyz2b"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
-    (synopsis
-     "Small utilities that use the proc file system")
+    (synopsis "Small utilities that use the proc file system")
     (description
      "This PSmisc package is a set of some small useful utilities that
 use the proc file system.  We're not about changing the world, but
