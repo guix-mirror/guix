@@ -522,7 +522,6 @@ options handled by 'set-build-options-from-command-line', and listed in
 (define (set-build-options-from-command-line store opts)
   "Given OPTS, an alist as returned by 'args-fold' given
 '%standard-build-options', set the corresponding build options on STORE."
-  ;; TODO: Add more options.
 
   ;; '--keep-failed' has no effect when talking to a remote daemon.  Catch the
   ;; case where GUIX_DAEMON_SOCKET=guix://….
