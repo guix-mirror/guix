@@ -1040,8 +1040,8 @@ providing the system administrator with some help in common tasks.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
-                                  name "/v" (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "util-linux/v" (version-major+minor version) "/"
+                                  "util-linux-" version ".tar.xz"))
               (sha256
                (base32
                 "1db2kydkwjmvgd1glkcba3adhidxw0f1x735dcjdpdjjf869sgvl"))
