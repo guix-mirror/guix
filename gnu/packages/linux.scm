@@ -1019,7 +1019,7 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/psmisc/psmisc devel/psmisc-"
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
        (base32 "103qp3f8jvz07x8r8zgsqwyw84g5g92w6pdq97d78d1pr7yvyz2b"))))
