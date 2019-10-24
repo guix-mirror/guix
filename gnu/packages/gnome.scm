@@ -4339,14 +4339,14 @@ USB transfers with your high-level application or system daemon.")
      `(("gtk" ,gtk+)
        ("zlib" ,zlib)
        ("cairo" ,cairo)
+       ("colord" ,colord)
        ("gdk-pixbuf" ,gdk-pixbuf)
        ("gusb" ,gusb)
        ("libsane" ,sane-backends)))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("itstool" ,itstool)
-       ("colord" ,colord)
-       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
+       ("glib" ,glib "bin")             ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
