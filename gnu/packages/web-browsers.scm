@@ -265,6 +265,8 @@ nntp, finger, or cso/ph/qi servers.  Lynx can be used to access information on
 the WWW, or to build information systems intended primarily for local
 access.")
     (home-page "https://lynx.invisible-island.net/")
+    ;; This was fixed in 2.8.9dev.10.
+    (properties `((lint-hidden-cve . ("CVE-2016-9179"))))
     (license license:gpl2)))
 
 (define-public qutebrowser
