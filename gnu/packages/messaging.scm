@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2018, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Pierre-Antoine Rouby <contact@parouby.fr>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1617,14 +1618,14 @@ are both supported).")
 (define-public profanity
     (package
         (name "profanity")
-        (version "0.5.1")
+        (version "0.7.1")
         (source (origin
                   (method url-fetch)
-                  (uri (string-append "http://www.profanity.im/profanity-"
+                  (uri (string-append "https://profanity-im.github.io/profanity-"
                                       version ".tar.gz"))
                   (sha256
                    (base32
-                     "1f7ylw3mhhnii52mmk40hyc4kqhpvjdr3hmsplzkdhsfww9kflg3"))))
+                     "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
         (build-system gnu-build-system)
         (inputs
          `(("curl" ,curl)
