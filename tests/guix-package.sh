@@ -33,7 +33,7 @@ profile="t-profile-$$"
 tmpfile="t-guix-package-file-$$"
 rm -f "$profile" "$tmpfile"
 
-trap 'rm -f "$profile" "$profile-"[0-9]* "$tmpfile"; rm -rf "$module_dir" t-home-'"$$" EXIT
+trap 'rm -f "$profile" "$profile.lock" "$profile-"[0-9]* "$tmpfile"; rm -rf "$module_dir" t-home-'"$$" EXIT
 
 # Use `-e' with a non-package expression.
 if guix package --bootstrap -e +;
@@ -452,3 +452,11 @@ rm -rf "$module_dir"
 # Make sure we can see user profiles.
 guix package --list-profiles | grep "$profile"
 guix package --list-profiles | grep '\.guix-profile'
+
+# Make sure we can properly lock a profile.
+mkdir "$module_dir"
+echo '(sleep 60)' > "$module_dir/manifest.scm"
+guix package -m "$module_dir/manifest.scm" -p "$module_dir/profile" &
+pid=$!
+if guix install emacs -p "$module_dir/profile"; then kill $pid; false; else true; fi
+kill $pid
