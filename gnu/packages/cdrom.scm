@@ -671,7 +671,7 @@ information is written to standard error.")
 (define-public asunder
   (package
     (name "asunder")
-    (version "2.9.3")
+    (version "2.9.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -680,7 +680,7 @@ information is written to standard error.")
                               ".tar.bz2"))
               (sha256
                (base32
-                "1630i1df06y840v3fgdf75jxw1s8kwbfn5bhi0686viah0scccw5"))))
+                "069x6az2r3wlb2hd07iz0hxpxwknw7s9h7pyhnkmzv1pw9ci3kk4"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:out-of-source? #f
