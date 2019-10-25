@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -120,6 +121,7 @@
 (define* (linux-module-build store name inputs
                              #:key
                              (search-paths '())
+                             (make-flags '())
                              (tests? #t)
                              (phases '(@ (guix build linux-module-build-system)
                                          %standard-phases))
@@ -146,6 +148,7 @@
                                            search-paths)
                      #:phases ,phases
                      #:system ,system
+                     #:make-flags ,make-flags
                      #:tests? ,tests?
                      #:outputs %outputs
                      #:inputs %build-inputs)))
