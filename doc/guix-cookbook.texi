@@ -125,14 +125,14 @@ and @code{#f} stand for the booleans "true" and "false", respectively.
 
 Examples of valid expressions:
 
-@example scheme
+@lisp
 > "Hello World!"
 "Hello World!"
 > 17
 17
 > (display (string-append "Hello " "Guix" "\n"))
 "Hello Guix!"
-@end example
+@end lisp
 
 @item
 This last example is a function call nested in another function call.  When a
@@ -143,66 +143,66 @@ last evaluated expression as its return value.
 @item
 Anonymous functions are declared with the @code{lambda} term:
 
-@example scheme
+@lisp
 > (lambda (x) (* x x))
 #<procedure 120e348 at <unknown port>:24:0 (x)>
-@end example
+@end lisp
 
 The above procedure returns the square of its argument.  Since everything is
 an expression, the @code{lambda} expression returns an anonymous procedure,
 which can in turn be applied to an argument:
 
-@example scheme
+@lisp
 > ((lambda (x) (* x x)) 3)
 9
-@end example
+@end lisp
 
 @item
 Anything can be assigned a global name with @code{define}:
 
-@example scheme
+@lisp
 > (define a 3)
 > (define square (lambda (x) (* x x)))
 > (square a)
 9
-@end example
+@end lisp
 
 @item
 Procedures can be defined more concisely with the following syntax:
 
-@example scheme
+@lisp
 (define (square x) (* x x))
-@end example
+@end lisp
 
 @item
 A list structure can be created with the @code{list} procedure:
 
-@example scheme
+@lisp
 > (list 2 a 5 7)
 (2 3 5 7)
-@end example
+@end lisp
 
 @item
 The @emph{quote} disables evaluation of a parenthesized expression: the first
 term is not called over the other terms.  Thus it effectively returns a list
 of terms.
 
-@example scheme
+@lisp
 > '(display (string-append "Hello " "Guix" "\n"))
 (display (string-append "Hello " "Guix" "\n"))
 > '(2 a 5 7)
 (2 a 5 7)
-@end example
+@end lisp
 
 @item
 The @emph{quasiquote} disables evaluation of a parenthesized expression until
 a comma re-enables it.  Thus it provides us with fine-grained control over
 what is evaluated and what is not.
 
-@example scheme
+@lisp
 > `(2 a 5 7 (2 ,a 5 ,(+ a 4)))
 (2 a 5 7 (2 3 5 7))
-@end example
+@end lisp
 
 Note that the above result is a list of mixed elements: numbers, symbols (here
 @code{a}) and the last element is a list itself.
@@ -210,7 +210,7 @@ Note that the above result is a list of mixed elements: numbers, symbols (here
 @item
 Multiple variables can be named locally with @code{let}:
 
-@example scheme
+@lisp
 > (define x 10)
 > (let ((x 2)
         (y 3))
@@ -220,17 +220,17 @@ Multiple variables can be named locally with @code{let}:
 10
 > y
 ERROR: In procedure module-lookup: Unbound variable: y
-@end example
+@end lisp
 
 Use @code{let*} to allow later variable declarations to refer to earlier
 definitions.
 
-@example scheme
+@lisp
 > (let* ((x 2)
          (y (* x 3)))
     (list x y))
 (2 6)
-@end example
+@end lisp
 
 @item
 The keyword syntax is @code{#:}; it is used to create unique identifiers.
@@ -244,12 +244,12 @@ Scheme treats @code{%} exactly the same as any other letter.
 @item
 Modules are created with @code{define-module}.  For instance
 
-@example scheme
+@lisp
 (define-module (guix build-system ruby)
   #:use-module (guix store)
   #:export (ruby-build
             ruby-build-system))
-@end example
+@end lisp
 
 defines the module @code{guix build-system ruby} which must be located in
 @file{guix/build-system/ruby.scm} somewhere in the Guile load path.  It
@@ -343,7 +343,7 @@ install}).  Guix already provides a package definition which is a perfect
 example to start with.  You can look up its declaration with @code{guix edit
 hello} from the command line.  Let's see how it looks:
 
-@example scheme
+@lisp
 (define-public hello
   (package
     (name "hello")
@@ -363,7 +363,7 @@ serves as an example of standard GNU coding practices.  As such, it supports
 command-line arguments, multiple languages, and so on.")
     (home-page "https://www.gnu.org/software/hello/")
     (license gpl3+)))
-@end example
+@end lisp
 
 As you can see, most of it is rather straightforward.  But let's review the
 fields together:
@@ -423,7 +423,7 @@ setup later; for now we will go the simplest route.
 
 Save the following to a file @file{my-hello.scm}.
 
-@example scheme
+@lisp
 (use-modules (guix packages)
              (guix download)
              (guix build-system gnu)
@@ -447,7 +447,7 @@ serves as an example of standard GNU coding practices.  As such, it supports
 command-line arguments, multiple languages, and so on.")
   (home-page "https://www.gnu.org/software/hello/")
   (license gpl3+))
-@end example
+@end lisp
 
 We will explain the extra code in a moment.
 
@@ -564,7 +564,7 @@ nature of how the package definition is written.
 The @code{linux-libre} kernel package definition is actually a procedure which
 creates a package.
 
-@example scheme
+@lisp
 (define* (make-linux-libre version hash supported-systems
                            #:key
                            ;; A function that takes an arch and a variant.
@@ -575,19 +575,19 @@ creates a package.
                            (extra-options %default-extra-linux-options)
                            (patches (list %boot-logo-patch)))
   ...)
-@end example
+@end lisp
 
 The current @code{linux-libre} package is for the 5.1.x series, and is
 declared like this:
 
-@example scheme
+@lisp
 (define-public linux-libre
   (make-linux-libre %linux-libre-version
                     %linux-libre-hash
                     '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux")
                     #:patches %linux-libre-5.1-patches
                     #:configuration-file kernel-config))
-@end example
+@end lisp
 
 Any keys which are not assigned values inherit their default value from the
 @code{make-linux-libre} definition.  When comparing the two snippets above,
@@ -603,7 +603,7 @@ including an actual @file{.config} file as a native input to our custom
 kernel.  The following is a snippet from the custom @code{'configure} phase of
 the @code{make-linux-libre} package definition:
 
-@example scheme
+@lisp
 (let ((build  (assoc-ref %standard-phases 'build))
       (config (assoc-ref (or native-inputs inputs) "kconfig")))
 
@@ -614,13 +614,13 @@ the @code{make-linux-libre} package definition:
         (copy-file config ".config")
         (chmod ".config" #o666))
       (invoke "make" ,defconfig))
-@end example
+@end lisp
 
 Below is a sample kernel package.  The @code{linux-libre} package is nothing
 special and can be inherited from and have its fields overridden like any
 other package:
 
-@example scheme
+@lisp
 (define-public linux-libre/E2140
   (package
     (inherit linux-libre)
@@ -628,7 +628,7 @@ other package:
      `(("kconfig" ,(local-file "E2140.config"))
       ,@@(alist-delete "kconfig"
                       (package-native-inputs linux-libre))))))
-@end example
+@end lisp
 
 In the same directory as the file defining @code{linux-libre-E2140} is a file
 named @file{E2140.config}, which is an actual kernel configuration file.  The
@@ -641,7 +641,7 @@ The second way to create a custom kernel is to pass a new value to the
 @code{extra-options} keyword works with another function defined right below
 it:
 
-@example scheme
+@lisp
 (define %default-extra-linux-options
   `(;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
    ("CONFIG_DEVPTS_MULTIPLE_INSTANCES" . #t)
@@ -667,11 +667,11 @@ it:
                        (string-append option "=n")))
                     options)
                "\n"))
-@end example
+@end lisp
 
 And in the custom configure script from the `make-linux-libre` package:
 
-@example scheme
+@lisp
 ;; Appending works even when the option wasn't in the
 ;; file.  The last one prevails if duplicated.
 (let ((port (open-file ".config" "a"))
@@ -680,13 +680,13 @@ And in the custom configure script from the `make-linux-libre` package:
   (close-port port))
 
 (invoke "make" "oldconfig"))))
-@end example
+@end lisp
 
 So by not providing a configuration-file the @file{.config} starts blank, and
 then we write into it the collection of flags that we want.  Here's another
 custom kernel:
 
-@example scheme
+@lisp
 (define %macbook41-full-config
   (append %macbook41-config-options
           %filesystems
@@ -703,7 +703,7 @@ custom kernel:
                       #:extra-version "macbook41"
                       #:patches (@@@@ (gnu packages linux) %linux-libre-5.1-patches)
                       #:extra-options %macbook41-config-options))
-@end example
+@end lisp
 
 In the above example @code{%filesystems} is a collection of flags enabling
 different filesystem support, @code{%efi-support} enables EFI support and
@@ -876,7 +876,7 @@ Let's dive in the set up!
 A Guix profile can be set up @emph{via} a so-called @emph{manifest specification} that looks like
 this:
 
-@example
+@lisp
 (specifications->manifest
   '("package-1"
     ;; Version 1.3 of package-2.
@@ -885,9 +885,9 @@ this:
     "package-3:lib"
     ; ...
     "package-N"))
-@end example
+@end lisp
 
-See @pxref{Invoking guix package,,, guix, GNU Guix Reference Manual} for
+@pxref{Invoking guix package,,, guix, GNU Guix Reference Manual}, for
 the syntax details.
 
 We can create a manifest specification per profile and install them this way:
