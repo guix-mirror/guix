@@ -938,6 +938,52 @@ and should be used with caution, especially on untested models.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
+(define-public ddcci-driver-linux
+  (package
+    (name "ddcci-driver-linux")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vkkja3ykjil783zjpwp0vz7jy2fp9ccazzi3afd4fjk8gldin7f"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                               ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'build) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t))
+         (replace 'install
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'install) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t)))))
+    (home-page "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux")
+    (synopsis "Pair of Linux kernel drivers for DDC/CI monitors")
+    (description "This package provides two Linux kernel drivers, ddcci and
+ddcci-backlight, that allows the control of DDC/CI monitors through the sysfs
+interface.  The ddcci module creates a character device for each DDC/CI
+monitors in @file{/dev/bus/ddcci/[I²C busnumber]}.  While the ddcci-backlight
+module allows the control of the backlight level or luminance property when
+supported under @file{/sys/class/backlight/}.")
+    (license license:gpl2+)))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
