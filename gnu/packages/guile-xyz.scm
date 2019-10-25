@@ -1994,11 +1994,11 @@ The picture values can directly be displayed in Geiser.")
       (license license:lgpl3+))))
 
 (define-public guile-studio
-  (let ((commit "4d63f3d684f61bf83566745e8572496cdf6daad0")
-        (revision "2"))
+  (let ((commit "98fbbbd08de396cd8a0e45f2a4badf1c733a5772")
+        (revision "3"))
     (package
       (name "guile-studio")
-      (version (git-version "0" revision commit))
+      (version (git-version "0.0.1" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -2006,28 +2006,25 @@ The picture values can directly be displayed in Geiser.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1d3hhw3c3mk5i87xvfqa643674f08j1jd1rc1pl534gydz529vd5"))))
+                  "0rxl5gv2mavycwkl33lcwyb3z71j2f4zyzk60k7vl3hzszpr08iq"))))
       (build-system gnu-build-system)
       (arguments
        `(#:tests? #f                      ; there are none
+         #:make-flags
+         (list (string-append "ICONS_DIR="
+                              (assoc-ref %build-inputs "adwaita-icon-theme")
+                              "/share/icons/Adwaita/")
+               (string-append "PICT_DIR="
+                              (assoc-ref %build-inputs "guile-picture-language"))
+               (string-append "EMACS_DIR="
+                              (assoc-ref %build-inputs "emacs"))
+               (string-append "GUILE_DIR="
+                              (assoc-ref %build-inputs "guile"))
+               (string-join (cons "INPUTS=" (map cdr %build-inputs)))
+               (string-append "PREFIX=" (assoc-ref %outputs "out")))
          #:phases
          (modify-phases %standard-phases
            (delete 'configure)
-           (replace 'build
-             (lambda* (#:key source inputs outputs #:allow-other-keys)
-               (let* ((out   (assoc-ref outputs "out"))
-                      (bin   (string-append out "/bin/"))
-                      (share (string-append out "/share/")))
-                 (mkdir-p share)
-                 (mkdir-p bin)
-                 (apply invoke "guile" "-s" "guile-studio-configure.scm"
-                        out
-                        (assoc-ref inputs "emacs")
-                        (assoc-ref inputs "guile-picture-language")
-                        (string-append (assoc-ref inputs "adwaita-icon-theme")
-                                       "/share/icons/Adwaita/")
-                        (map cdr inputs))
-                 #t)))
            (delete 'install))))
       (inputs
        `(("guile" ,guile-2.2)
@@ -2039,6 +2036,8 @@ The picture values can directly be displayed in Geiser.")
          ("emacs-smart-mode-line" ,emacs-smart-mode-line)
          ("emacs-paren-face" ,emacs-paren-face)
          ("adwaita-icon-theme" ,adwaita-icon-theme)))
+      (native-inputs
+       `(("texinfo" ,texinfo)))
       (home-page "https://gnu.org/software/guile")
       (synopsis "IDE for Guile")
       (description
