@@ -265,7 +265,7 @@ GiB).")
     (inputs
      `(("python-cairo" ,python-pycairo)
        ("python-gobject" ,python-pygobject)
-       ("gtksourceview" ,gtksourceview)))
+       ("gtksourceview" ,gtksourceview-3)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (arguments
@@ -292,7 +292,14 @@ GiB).")
              (setenv "HOME" "/tmp")
              (invoke "py.test" "-v" "-k"
                      ;; TODO: Those tests fail, why?
-                     "not test_classify_change_actions"))))))
+                     "not test_classify_change_actions")))
+         (add-after 'wrap 'wrap-typelib
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/meld")
+                 `("GI_TYPELIB_PATH" prefix
+                   ,(search-path-as-string->list (getenv "GI_TYPELIB_PATH"))))
+               #t))))))
     (home-page "https://meldmerge.org/")
     (synopsis "Compare files, directories and working copies")
     (description "Meld is a visual diff and merge tool targeted at
