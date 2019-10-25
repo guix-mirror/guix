@@ -5568,7 +5568,7 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2019-07-06")
+    (version "2019-09-12")
     (source
      (origin
        (method git-fetch)
@@ -5577,8 +5577,7 @@ snippets on @url{https://commandlinefu.com}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zd0c9xzvpx55mvj8xrafakfkvafnwkkvhw9b1j0bf897xdkfsyb"))))
+        (base32 "1mx7f3l45nqhcrng531l4cq8kpzm164hhbwn26g5akb2pamdlnra"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -5597,7 +5596,7 @@ snippets on @url{https://commandlinefu.com}.")
 websites lacking feeds.  Supported websites include Facebook, Twitter,
 Instagram and YouTube.")
     (license (list license:public-domain
-                   license:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
+                   license:expat))))    ; vendor/simplehtmldom/simple_html_dom.php
 
 (define-public linkchecker
   (package
