@@ -395,12 +395,13 @@ operating systems.")
     (version "20180716")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/" name "/" name
-                           "/archive/" name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neomutt/neomutt.git")
+             (commit (string-append "neomutt-" version))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0072in2d6znwqq461shsaxlf40r4zr7w3j9848qvm4xlh1lq52dx"))))
+        (base32 "0im2kkahkr04q04irvcimfawxi531ld6wrsa92r2m7l10gmijkl8"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
