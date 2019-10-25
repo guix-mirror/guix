@@ -89,6 +89,7 @@
             gexp->derivation-in-inferior
 
             %inferior-cache-directory
+            cached-channel-instance
             inferior-for-channels))
 
 ;;; Commentary:
@@ -635,16 +636,13 @@ failing when GUIX is too old and lacks the 'guix repl' command."
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/inferiors")))
 
-(define* (inferior-for-channels channels
-                                #:key
-                                (cache-directory (%inferior-cache-directory))
-                                (ttl (* 3600 24 30)))
-  "Return an inferior for CHANNELS, a list of channels.  Use the cache at
-CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.  This
-procedure opens a new connection to the build daemon.
-
-This is a convenience procedure that people may use in manifests passed to
-'guix package -m', for instance."
+(define* (cached-channel-instance channels
+                                  #:key
+                                  (cache-directory (%inferior-cache-directory))
+                                  (ttl (* 3600 24 30)))
+  "Return a directory containing a guix filetree defined by CHANNELS, a list of channels.
+The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
+This procedure opens a new connection to the build daemon."
   (with-store store
     (let ()
       (define instances
@@ -680,7 +678,7 @@ This is a convenience procedure that people may use in manifests passed to
                                           (file-expiration-time ttl))
 
       (if (file-exists? cached)
-          (open-inferior cached)
+          cached
           (run-with-store store
             (mlet %store-monad ((profile
                                  (channel-instances->derivation instances)))
@@ -689,4 +687,20 @@ This is a convenience procedure that people may use in manifests passed to
                 (built-derivations (list profile))
                 (symlink* (derivation->output-path profile) cached)
                 (add-indirect-root* cached)
-                (return (open-inferior cached)))))))))
+                (return cached))))))))
+
+(define* (inferior-for-channels channels
+                                #:key
+                                (cache-directory (%inferior-cache-directory))
+                                (ttl (* 3600 24 30)))
+  "Return an inferior for CHANNELS, a list of channels.  Use the cache at
+CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.  This
+procedure opens a new connection to the build daemon.
+
+This is a convenience procedure that people may use in manifests passed to
+'guix package -m', for instance."
+  (define cached
+    (cached-channel-instance channels
+                             #:cache-directory cache-directory
+                             #:ttl ttl))
+  (open-inferior cached))

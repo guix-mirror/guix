@@ -56,6 +56,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:export (display-profile-content
+            channel-list
             guix-pull))
 
 

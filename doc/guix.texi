@@ -198,6 +198,7 @@ Package Management
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix archive::       Exporting and importing store files.
@@ -2550,6 +2551,7 @@ guix install emacs-guix
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 * Channels::                    Customizing the package collection.
+* Invoking guix time-machine::  Running an older revision of Guix.
 * Inferiors::                   Interacting with another revision of Guix.
 * Invoking guix describe::      Display information about your Guix revision.
 * Invoking guix archive::       Exporting and importing store files.
@@ -4152,7 +4154,10 @@ say, on another machine, by providing a channel specification in
 @end lisp
 
 The @command{guix describe --format=channels} command can even generate this
-list of channels directly (@pxref{Invoking guix describe}).
+list of channels directly (@pxref{Invoking guix describe}).  The resulting
+file can be used with the -C options of @command{guix pull}
+(@pxref{Invoking guix pull}) or @command{guix time-machine}
+(@pxref{Invoking guix time-machine}).
 
 At this point the two machines run the @emph{exact same Guix}, with access to
 the @emph{exact same packages}.  The output of @command{guix build gimp} on
@@ -4165,6 +4170,57 @@ This gives you super powers, allowing you to track the provenance of binary
 artifacts with very fine grain, and to reproduce software environments at
 will---some sort of ``meta reproducibility'' capabilities, if you will.
 @xref{Inferiors}, for another way to take advantage of these super powers.
+
+@node Invoking guix time-machine
+@section Invoking @command{guix time-machine}
+
+@cindex @command{guix time-machine}
+@cindex pinning, channels
+@cindex replicating Guix
+@cindex reproducibility, of Guix
+
+The @command{guix time-machine} command provides access to other
+revisions of Guix, for example to install older versions of packages,
+or to reproduce a computation in an identical environment.  The revision
+of Guix to be used is defined by a commit or by a channel
+description file created by @command{guix describe}
+(@pxref{Invoking guix describe}).
+
+The general syntax is:
+
+@example
+guix time-machine @var{options}@dots{} -- @var{command} @var {arg}@dots{}
+@end example
+
+where @var{command} and @var{arg}@dots{} are passed unmodified to the
+@command{guix} command if the specified revision.  The @var{options} that define
+this revision are the same as for @command{guix pull} (@pxref{Invoking guix pull}):
+
+@table @code
+@item --url=@var{url}
+@itemx --commit=@var{commit}
+@itemx --branch=@var{branch}
+Use the @code{guix} channel from the specified @var{url}, at the
+given @var{commit} (a valid Git commit ID represented as a hexadecimal
+string), or @var{branch}.
+
+@item --channels=@var{file}
+@itemx -C @var{file}
+Read the list of channels from @var{file}.  @var{file} must contain
+Scheme code that evaluates to a list of channel objects.
+@xref{Channels} for more information.
+@end table
+
+As for @command{guix pull}, the absence of any options means that the
+the latest commit on the master branch will be used. The command
+
+@example
+guix time-machine -- build hello
+@end example
+
+will thus build the package @code{hello} as defined in the master branch,
+which is in general a newer revison of Guix than you have installed.
+Time travel works in both directions!
 
 @node Inferiors
 @section Inferiors
@@ -10588,7 +10644,6 @@ $ sudo guix processes | \
 ClientPID: 19419
 ClientCommand: cuirass --cache-directory /var/cache/cuirass @dots{}
 @end example
-
 
 @node System Configuration
 @chapter System Configuration
