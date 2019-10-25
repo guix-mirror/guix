@@ -1616,39 +1616,39 @@ are both supported).")
     (license (list license:gpl3+ license:x11))))
 
 (define-public profanity
-    (package
-        (name "profanity")
-        (version "0.7.1")
-        (source (origin
-                  (method url-fetch)
-                  (uri (string-append "https://profanity-im.github.io/profanity-"
-                                      version ".tar.gz"))
-                  (sha256
-                   (base32
-                     "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
-        (build-system gnu-build-system)
-        (inputs
-         `(("curl" ,curl)
-           ("expat" ,expat)
-           ("glib" ,glib)
-           ("gpgme" ,gpgme)
-           ("libmesode" ,libmesode)
-           ("libotr" ,libotr)
-           ("ncurses" ,ncurses)
-           ("openssl" ,openssl)
-           ("readline" ,readline)))
-        (native-inputs
-         `(("autoconf" ,autoconf)
-           ("autoconf-archive" ,autoconf-archive)
-           ("automake" ,automake)
-           ("cmocka" ,cmocka)
-           ("libtool" ,libtool)
-           ("pkg-config" ,pkg-config)))
-        (synopsis "Console-based XMPP client")
-        (description "Profanity is a console based XMPP client written in C
+  (package
+    (name "profanity")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://profanity-im.github.io/profanity-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("gpgme" ,gpgme)
+       ("libmesode" ,libmesode)
+       ("libotr" ,libotr)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("readline" ,readline)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
+       ("automake" ,automake)
+       ("cmocka" ,cmocka)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Console-based XMPP client")
+    (description "Profanity is a console based XMPP client written in C
 using ncurses and libmesode, inspired by Irssi.")
-        (home-page "http://www.profanity.im")
-        (license license:gpl3+)))
+    (home-page "http://www.profanity.im")
+    (license license:gpl3+)))
 
 (define-public libircclient
   (package
