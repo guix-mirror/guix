@@ -2574,7 +2574,7 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
 (define-public opendht
   (package
     (name "opendht")
-    (version "1.8.1")
+    (version "2.0.0beta2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2583,26 +2583,36 @@ and targeted primarily for asynchronous processing of HTTP-requests.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0vninb5mak27wigajslyvr05vq7wbrwqhbr4wzl2nmqcb20wmlq2"))))
-    (build-system gnu-build-system)
+                "02ix0rvvyhq22gd5djcq84qz08ji7ln93faf23b27zjzni2klzv5"))))
+    ;; Since 2.0, the gnu-build-system does not seem to work anymore, upstream bug?
+    (build-system cmake-build-system)
     (inputs
      `(("gnutls" ,gnutls)
        ("nettle" ,nettle)
        ("readline" ,readline)
        ("jsoncpp" ,jsoncpp)
-       ("restbed" ,restbed)))
+       ("openssl" ,openssl)
+       ("fmt" ,fmt-restinio)))
     (propagated-inputs
-     `(("argon2" ,argon2)               ; TODO: Needed for the pkg-config .pc file to work?
+     `(("argon2" ,argon2)  ; TODO: Needed for the pkg-config .pc file to work?
        ("msgpack" ,msgpack)))           ;included in several installed headers
     (native-inputs
      `(("autoconf" ,autoconf)
        ("pkg-config" ,pkg-config)
+       ("restinio" ,restinio)
        ("automake" ,automake)
-       ("libtool" ,libtool)))
+       ("libtool" ,libtool)
+       ("cppunit" ,cppunit)))
     (arguments
-     `(#:configure-flags '("--disable-tools"
-                           "--disable-python"
-                           "--with-argon2")))
+     `(#:tests? #f                      ; Tests require network connection.
+       #:configure-flags
+       '(;; "-DOPENDHT_TESTS=on"
+         "-DOPENDHT_TOOLS=off"
+         "-DOPENDHT_PYTHON=off"
+         "-DOPENDHT_PROXY_SERVER=on"
+         "-DOPENDHT_PUSH_NOTIFICATIONS=on"
+         "-DOPENDHT_PROXY_SERVER_IDENTITY=on"
+         "-DOPENDHT_PROXY_CLIENT=on")))
     (home-page "https://github.com/savoirfairelinux/opendht/")
     (synopsis "Distributed Hash Table (DHT) library")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
