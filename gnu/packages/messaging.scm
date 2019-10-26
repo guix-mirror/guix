@@ -1629,7 +1629,9 @@ are both supported).")
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
-       (list "--enable-omemo"
+       (list "--enable-c-plugins"
+             "--enable-otr"
+             "--enable-omemo"
              "--enable-icons"
              "--enable-notifications")))
     (inputs
