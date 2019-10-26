@@ -1627,6 +1627,11 @@ are both supported).")
                (base32
                 "0nxh81j8ky0fzv47pip1jb7rs5rrin3jx0f3h632bvpjiya45r1z"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list "--enable-omemo"
+             "--enable-icons"
+             "--enable-notifications")))
     (inputs
      `(("curl" ,curl)
        ("expat" ,expat)
@@ -1642,7 +1647,10 @@ are both supported).")
        ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)
        ("cmocka" ,cmocka)
+       ("gtk+" ,gtk+-2)
+       ("libnotify" ,libnotify)
        ("libtool" ,libtool)
+       ("libsignal-protocol-c" ,libsignal-protocol-c)
        ("pkg-config" ,pkg-config)))
     (synopsis "Console-based XMPP client")
     (description "Profanity is a console based XMPP client written in C
