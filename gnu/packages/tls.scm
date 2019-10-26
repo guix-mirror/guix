@@ -502,7 +502,7 @@ required structures.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://openbsd/LibreSSL/"
-                                  name "-" version ".tar.gz"))
+                                  "libressl-" version ".tar.gz"))
               (sha256
                (base32
                 "19kxa5i97q7p6rrps9qm0nd8zqhdjvzx02j72400c73cl2nryfhy"))))
