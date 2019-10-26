@@ -1632,6 +1632,7 @@ are both supported).")
        (list "--enable-c-plugins"
              "--enable-otr"
              "--enable-omemo"
+             "--enable-pgp"
              "--enable-icons"
              "--enable-notifications")))
     (inputs
