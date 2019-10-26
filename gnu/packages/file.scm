@@ -30,15 +30,15 @@
 (define-public file
   (package
     (name "file")
-    (version "5.33")
+    (version "5.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                                   version ".tar.gz"))
-              (patches (search-patches "file-CVE-2018-10360.patch"))
+              (patches (search-patches "file-CVE-2019-18218.patch"))
               (sha256
                (base32
-                "1iipnwjkag7q04zjkaqic41r9nlw0ml6mhqian6qkkbisb1whlhw"))))
+                "0zz0p9bqnswfx0c16j8k62ivjq1m16x10xqv4hy9lcyxyxkkkhg9"))))
    (build-system gnu-build-system)
 
    ;; When cross-compiling, this package depends upon a native install of
