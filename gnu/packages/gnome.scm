@@ -7809,8 +7809,10 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                (wrap-program (string-append out "/bin/lollypop")
                  `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
              #t))
-         (add-after 'install 'wrap
-           (@@ (guix build python-build-system) wrap)))))
+         (add-after 'install 'wrap-python
+           (@@ (guix build python-build-system) wrap))
+         (add-after 'install 'wrap-glib-or-gtk
+           (@@ (guix build glib-or-gtk-build-system) wrap-all-programs)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
@@ -7819,6 +7821,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gst-plugins-base" ,gst-plugins-base)
        ("libnotify" ,libnotify)
        ("libsecret" ,libsecret)
