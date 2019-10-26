@@ -1655,7 +1655,7 @@ are both supported).")
     (synopsis "Console-based XMPP client")
     (description "Profanity is a console based XMPP client written in C
 using ncurses and libmesode, inspired by Irssi.")
-    (home-page "http://www.profanity.im")
+    (home-page "https://profanity-im.github.io")
     (license license:gpl3+)))
 
 (define-public libircclient
