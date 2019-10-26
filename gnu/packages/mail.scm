@@ -2269,20 +2269,22 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.4.2p1")
+    (version "6.6.0p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "0pgv080ai7d98l9340jadp9wjiaqj2qvgpqhilcz0kps2mdiawbd"))))
+        (base32 "1sgwbvc28h9nyyj4lv8d9b4ilzz03p2j1j763yr759k336a2193m"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
        ("libasr" ,libasr)
        ("libevent" ,libevent)
-       ("libressl" ,libressl)
+       ;; XXX Upstream recommends LibreSSL, which doesn't support TLS 1.3 yet,
+       ;; and requires a development release (3.0.2).  Use OpenSSL instead.
+       ("openssl" ,openssl)
        ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)))
     (native-inputs
