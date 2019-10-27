@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2019 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -256,7 +257,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
-       '("--flags=-Android -Assistant -Pairing -S3 -Webapp -WebDAV")
+       '("--flags=-Android -Assistant -Pairing -Webapp -WebDAV")
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'patch-shell-for-tests
@@ -317,6 +318,7 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
      `(("curl" ,curl)
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-async" ,ghc-async)
+       ("ghc-aws" ,ghc-aws)
        ("ghc-bloomfilter" ,ghc-bloomfilter)
        ("ghc-byteable" ,ghc-byteable)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
