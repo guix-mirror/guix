@@ -12550,6 +12550,27 @@ The bedr package's API enhances access to these tools as well as offers
 additional utilities for genomic regions processing.")
     (license license:gpl2)))
 
+(define-public r-sets
+  (package
+    (name "r-sets")
+    (version "1.0-18")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "sets" version))
+       (sha256
+        (base32
+         "16v7650p47khqrbbw0z98llmwmmhswqmhri0n7nrfhdqwmby1lbl"))))
+    (properties `((upstream-name . "sets")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/sets")
+    (synopsis "Sets, generalized sets, customizable sets and intervals")
+    (description
+     "This package provides data structures and basic operations for ordinary
+sets, generalizations such as fuzzy sets, multisets, and fuzzy multisets,
+customizable sets, and intervals.")
+    (license license:gpl2)))
+
 (define-public r-partitions
   (package
     (name "r-partitions")
