@@ -6526,6 +6526,28 @@ comparisons to Cohen's d are offered based on Huberty & Lowman's Percentage of
 Group (Non-)Overlap considerations.")
     (license license:gpl2)))
 
+(define-public r-deriv
+  (package
+    (name "r-deriv")
+    (version "3.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Deriv" version))
+       (sha256
+        (base32
+         "0hlqm216bg3l79gq6m0am0xz6vd3l2hgjnjm6lym3mkmgkka4kxw"))))
+    (properties `((upstream-name . "Deriv")))
+    (build-system r-build-system)
+    (home-page "https://cran.r-project.org/web/packages/Deriv")
+    (synopsis "Symbolic differentiation")
+    (description
+     "This package provides an R-based solution for symbolic differentiation.
+It admits user-defined functions as well as function substitution in arguments
+of functions to be differentiated.  Some symbolic simplification is part of
+the work.")
+    (license license:gpl3+)))
+
 (define-public r-doby
   (package
     (name "r-doby")
