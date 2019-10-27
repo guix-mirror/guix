@@ -25,6 +25,7 @@
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;; Copyright © 2019 Christopher Lemmer Webber <cwebber@dustycloud.org>
+;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2300,6 +2301,29 @@ aimed at audio/musical applications.")
                  (base32
                   "04fajrass3ymr72flx5js5vxc601ccrmx8ny8scp0rw7j0igyjdr")))))))
 
+(define-public resample
+  (package
+    (name "resample")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ccrma.stanford.edu/~jos/gz/resample-"
+                                  version
+                                  ".tar.gz"))
+              (sha256 (base32
+                       "074zj8ydp05yy1hjcglfv3hkvj4cm50f9nralka1992pm6yf8yvy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)
+       ("libtool" ,libtool)))
+    (synopsis "Real-time library for sampling rate conversion")
+    (description "The @command{resample} software package contains free
+sampling-rate conversion and filter design utilities.")
+    (home-page "https://ccrma.stanford.edu/~jos/resample/Free_Resampling_Software.html")
+    (license license:lgpl2.1+)))
+
 (define-public rubberband
   (package
     (name "rubberband")
@@ -3906,8 +3930,8 @@ outputs and effect algorithms. Effects and audio objects can be combined in
 various ways, and their parameters can be controlled by operator objects like
 oscillators and MIDI-CCs. A versatile console mode user-interface is included
 in the package.")
-    ;; As an exception to the above, the C, C++ and python implementations 
-    ;; of the Ecasound Control Interface (ECI) are licensed under the LGPL 
-    ;; (see the file 'COPYING.LGPL'). This allows writing ECI applications 
+    ;; As an exception to the above, the C, C++ and python implementations
+    ;; of the Ecasound Control Interface (ECI) are licensed under the LGPL
+    ;; (see the file 'COPYING.LGPL'). This allows writing ECI applications
     ;; that are not licensed under GPL.
     (license (list license:gpl2 license:lgpl2.1))))
