@@ -622,7 +622,7 @@ that form."
      (display ")" port))))
 
 (define derivation->bytevector
-  (mlambda (drv)
+  (lambda (drv)
     "Return the external representation of DRV as a UTF-8-encoded string."
     (with-fluids ((%default-port-encoding "UTF-8"))
       (call-with-values open-bytevector-output-port
