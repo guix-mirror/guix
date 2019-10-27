@@ -6551,22 +6551,26 @@ the work.")
 (define-public r-doby
   (package
     (name "r-doby")
-    (version "4.6-2")
+    (version "4.6-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "doBy" version))
        (sha256
         (base32
-         "02vbv9nfgywg6lsiialkmfnax5z3rkyb9nr8j9l2cp8xi6ml95mb"))))
+         "1d0d6pwai1g4i5jls0jm9va29ci5hy92n5957608f3fzi1jwy635"))))
     (properties `((upstream-name . "doBy")))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-dplyr" ,r-dplyr)
+     `(("r-broom" ,r-broom)
+       ("r-deriv" ,r-deriv)
+       ("r-dplyr" ,r-dplyr)
        ("r-magrittr" ,r-magrittr)
        ("r-mass" ,r-mass)
        ("r-matrix" ,r-matrix)
-       ("r-plyr" ,r-plyr)))
+       ("r-plyr" ,r-plyr)
+       ("r-pbkrtest" ,r-pbkrtest)
+       ("r-tibble" ,r-tibble)))
     (home-page "http://people.math.aau.dk/~sorenh/software/doBy/")
     (synopsis "Groupwise statistics, LSmeans, linear contrasts, and utilities")
     (description
