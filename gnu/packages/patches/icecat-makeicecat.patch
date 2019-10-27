@@ -96,8 +96,8 @@ index b04c731..06d1f3f 100644
 -cd $SOURCEDIR
 +# cd $SOURCEDIR
  
- #for patch in $DATA/patches/*; do
- #    echo Patching with file: $patch
+ for patch in $DATA/patches/*.patch; do
+     echo Patching with file: $patch
 @@ -226,10 +226,10 @@ cp $DATA/bookmarks.html.in browser/locales/generic/profile/bookmarks.html.in
  
  find -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i

@@ -1,9 +1,0 @@
---- a/browser/app/profile/icecat.js.orig	1980-01-01 18:59:51.000000000 -0500
-+++ b/browser/app/profile/icecat.js	2019-10-25 06:24:03.065989309 -0400
-@@ -2275,3 +2275,6 @@
- pref("general.buildID.override", "Gecko/20100101");
- pref("general.oscpu.override", "Windows NT 6.1");
- pref("general.platform.override", "Win32");
-+
-+// Disable Firefox Accounts and Sign in to Sync.
-+pref("identity.fxaccounts.enabled", false);

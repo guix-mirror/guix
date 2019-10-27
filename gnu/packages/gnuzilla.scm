@@ -588,6 +588,8 @@ from forcing GEXP-PROMISE."
              (base32
               "1ll3j2kpsfp1f9dxy67fay1cidsng02l8a3a23wdjqkxgrg1cf4g"))))
 
+         (gnuzilla-fixes-patch
+          (local-file (search-patch "icecat-gnuzilla-fixes.patch")))
          (makeicecat-patch
           (local-file (search-patch "icecat-makeicecat.patch"))))
 
@@ -633,6 +635,8 @@ from forcing GEXP-PROMISE."
 
                 (with-directory-excursion "/tmp/gnuzilla"
                   (make-file-writable "makeicecat")
+                  (invoke "patch" "--force" "--no-backup-if-mismatch"
+                          "-p1" "--input" #+gnuzilla-fixes-patch)
                   (invoke "patch" "--force" "--no-backup-if-mismatch"
                           "-p1" "--input" #+makeicecat-patch)
                   (patch-shebang "makeicecat")
@@ -772,10 +776,6 @@ from forcing GEXP-PROMISE."
        ;;  ,(search-patch "icecat-use-system-graphite2+harfbuzz.patch"))
        ;; ("icecat-use-system-media-libs.patch"
        ;;  ,(search-patch "icecat-use-system-media-libs.patch"))
-       ("icecat-default-search-ddg.patch"
-        ,(search-patch "icecat-default-search-ddg.patch"))
-       ("icecat-disable-sync.patch"
-        ,(search-patch "icecat-disable-sync.patch"))
 
        ("patch" ,(canonical-package patch))
 
@@ -1079,8 +1079,7 @@ from forcing GEXP-PROMISE."
                     (pulseaudio-lib (string-append pulseaudio "/lib")))
                (wrap-program (car (find-files lib "^icecat$"))
                  `("XDG_DATA_DIRS" prefix (,gtk-share))
-                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib))
-                 `("MOZ_LEGACY_PROFILES" = ("1")))
+                 `("LD_LIBRARY_PATH" prefix (,pulseaudio-lib)))
                #t))))))
     (home-page "https://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
