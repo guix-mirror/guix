@@ -4287,7 +4287,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
-    (version "1.1104")
+    (version "1.1105")
     (source
      (origin
        (method url-fetch)
@@ -4296,8 +4296,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
+        (base32 "11zlfbahac09q3jvwmpijmkwgihwxps85jwy2q7q0wqjragh16df"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IO-CaptureOutput")
     (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
