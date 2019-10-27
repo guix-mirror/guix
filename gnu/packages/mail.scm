@@ -343,7 +343,7 @@ to run without any changes.")
              ;; Fix ‘Cannot find absolute path for user's home directory’.
              (setenv "HOME" "/tmp")
              #t)))))
-    (home-page "http://www.fetchmail.info/")
+    (home-page "https://www.fetchmail.info/")
     (synopsis "Remote-mail retrieval and forwarding utility")
     (description
      "Fetchmail is a full-featured, robust, well-documented remote-mail
