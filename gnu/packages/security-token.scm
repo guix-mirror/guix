@@ -499,6 +499,43 @@ Registration and U2F Authentication operations, and functionality for
 verifying the cryptographic operations.")
     (license license:bsd-2)))
 
+(define-public pam-u2f
+  (package
+    (name "pam-u2f")
+    (version "1.0.8")
+    (source (origin
+              (method git-fetch)
+              (uri
+               (git-reference
+                (url "https://github.com/Yubico/pam-u2f.git")
+                (commit (string-append "pam_u2f-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "04d9davyi33gqbvga1rvh9fijp6f16mx2xmnn4n61rnhcn2jac98"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-pam-dir="
+                            (assoc-ref %outputs "out") "/lib/security"))))
+    (inputs
+     `(("libu2f-host" ,libu2f-host)
+       ("libu2f-server" ,libu2f-server)
+       ("linux-pam" ,linux-pam)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("asciidoc" ,asciidoc)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developers.yubico.com/pam-u2f/")
+    (synopsis "PAM module for U2F authentication")
+    (description
+     "This package provides a module implementing PAM over U2F, providing an
+easy way to integrate the YubiKey (or other U2F compliant authenticators) into
+your existing infrastructure.")
+    (license license:bsd-2)))
+
 (define-public python-fido2
   (package
     (name "python-fido2")
