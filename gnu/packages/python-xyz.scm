@@ -5218,13 +5218,13 @@ releases.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.5.0")
+    (version "11.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "1jxkf91syzxlpiwgm83fjfz1m5xh3jrvv4iyl5wjsnkk599pls5n"))))
+        (base32 "0ir9j1haq2jbi7aip6k2fa9l7q1l03k4hp1awxhjhcwzsnwp3ll8"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
