@@ -660,21 +660,24 @@ names and file names suitable for the #:allowed-references argument to
                                     (module-path %load-path))
   "Return a pair where the first element is the imported MODULES and the
 second element is the derivation to compile them."
-  (mlet %store-monad ((modules  (if (pair? modules)
-                                    (imported-modules modules
-                                                      #:system system
-                                                      #:module-path module-path)
-                                    (return #f)))
-                      (compiled (if (pair? modules)
-                                    (compiled-modules modules
-                                                      #:system system
-                                                      #:module-path module-path
-                                                      #:extensions extensions
-                                                      #:guile guile
-                                                      #:deprecation-warnings
-                                                      deprecation-warnings)
-                                    (return #f))))
-    (return (cons modules compiled))))
+  (mcached equal?
+           (mlet %store-monad ((modules  (if (pair? modules)
+                                             (imported-modules modules
+                                                               #:system system
+                                                               #:module-path module-path)
+                                             (return #f)))
+                               (compiled (if (pair? modules)
+                                             (compiled-modules modules
+                                                               #:system system
+                                                               #:module-path module-path
+                                                               #:extensions extensions
+                                                               #:guile guile
+                                                               #:deprecation-warnings
+                                                               deprecation-warnings)
+                                             (return #f))))
+             (return (cons modules compiled)))
+           modules
+           system extensions guile deprecation-warnings module-path))
 
 (define* (lower-gexp exp
                      #:key
