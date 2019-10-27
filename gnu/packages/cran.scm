@@ -6742,13 +6742,13 @@ the analyzed items.")
 (define-public r-slam
   (package
     (name "r-slam")
-    (version "0.1-45")
+    (version "0.1-46")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "slam" version))
        (sha256
-        (base32 "0xvj8va6xd7zkn3l4a5ad7v62s7xmkz8frq7gpcl3b6vqwckkaw4"))))
+        (base32 "1ihhbx76miwys35gsbhijriadvrw4f51lc3v45pnn6cvcfd9hr0b"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/slam/")
     (synopsis "Sparse lightweight arrays and matrices")
