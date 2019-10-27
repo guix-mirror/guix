@@ -86,7 +86,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.18.0")
+    (version "0.18.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -94,15 +94,15 @@
                              version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "0ps0vw9iknz1b1sx74rabd1yhlxvwbd0aimjzn9hlqkvw286hkjy"))))
+               "15mz0gmm058gmq2gdpffbw25jpv7mksyhyfws6i7mqvrapqr6zaw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python) ; for the tests
-       ("util-linux" ,util-linux)   ; provides the hexdump command for tests
+       ("python" ,python)               ; for the tests
+       ("util-linux" ,util-linux)       ; provides the hexdump command for tests
        ("qttools" ,qttools)))
     (inputs
-     `(("bdb" ,bdb-4.8) ; Bitcoin Core requires bdb 4.8 for compatibility
+     `(("bdb" ,bdb-4.8)                 ; 4.8 required for compatibility
        ("boost" ,boost)
        ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
@@ -133,7 +133,7 @@
             #t))
           (add-before 'check 'set-home
            (lambda _
-            (setenv "HOME" (getenv "TMPDIR"))  ; Tests write to $HOME.
+            (setenv "HOME" (getenv "TMPDIR")) ; tests write to $HOME
             #t))
           (add-after 'check 'check-functional
            (lambda _
