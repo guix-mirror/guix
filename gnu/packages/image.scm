@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2014, 2016, 2017, 2018 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2016, 2017, 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014, 2017 John Darrington <jmd@gnu.org>
@@ -1672,14 +1672,14 @@ Features:
 (define-public r-jpeg
   (package
    (name "r-jpeg")
-   (version "0.1-8")
+   (version "0.1-8.1")
    (source
      (origin
        (method url-fetch)
        (uri (cran-uri "jpeg" version))
        (sha256
         (base32
-         "05hawv5qcb82ljc1l2nchx1wah8mq2k2kfkhpzyww554ngzbwcnh"))))
+         "1a8mi70x79a691r40yiw684jkg1mr9n8agkxlcksxcnrdybs9c0x"))))
    (build-system r-build-system)
    (inputs `(("libjpeg" ,libjpeg)))
    (home-page "http://www.rforge.net/jpeg/")
