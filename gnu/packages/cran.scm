@@ -11734,18 +11734,17 @@ users of rARPACK are advised to switch to the RSpectra package.")
 (define-public r-compositions
   (package
     (name "r-compositions")
-    (version "1.40-2")
+    (version "1.40-3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "compositions" version))
        (sha256
         (base32
-         "12mp05yi7jkdqg9iwh6bc9sx6sdxagcnrirznxy9hq8502p7238i"))))
+         "103hbmibrf1n333pn4xpll1gqqsv4szms0n5gdq7zak31aar0bg4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bayesm" ,r-bayesm)
-       ("r-energy" ,r-energy)
        ("r-robustbase" ,r-robustbase)
        ("r-tensora" ,r-tensora)))
     (home-page "http://www.stat.boogaart.de/compositions")
