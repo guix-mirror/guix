@@ -548,14 +548,13 @@ concepts.")
 (define-public python-cftime
   (package
     (name "python-cftime")
-    (version "1.0.3.4")
+    (version "1.0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cftime" version))
        (sha256
-        (base32
-         "0362dhxbzk593walyjz30dll6y2y79wialik647cbwdsf3ad0x6x"))))
+        (base32 "0w0gi6jnch38hiygl62j4xkcirv4y3dcwrvxl9p7bsk6j27lzihs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
