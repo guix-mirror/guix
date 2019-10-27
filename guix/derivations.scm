@@ -1207,6 +1207,14 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
+(define* (imported+compiled-modules store modules #:key
+                                    (system (%current-system))
+                                    (guile (%guile-for-build)))
+  "Return a pair containing the derivation to import MODULES and that where
+MODULES are compiled."
+  (cons (%imported-modules store modules #:system system #:guile guile)
+        (%compiled-modules store modules #:system system #:guile guile)))
+
 (define* (build-expression->derivation store name exp ;deprecated
                                        #:key
                                        (system (%current-system))
@@ -1330,16 +1338,15 @@ and PROPERTIES."
                                       ;; fixed-output.
                                       (filter-map source-path inputs)))
 
-         (mod-drv  (and (pair? modules)
-                        (%imported-modules store modules
-                                           #:guile guile-drv
-                                           #:system system)))
+         (mod+go-drv  (if (pair? modules)
+                          (imported+compiled-modules store modules
+                                                     #:guile guile-drv
+                                                     #:system system)
+                          '(#f . #f)))
+         (mod-drv  (car mod+go-drv))
+         (go-drv   (cdr mod+go-drv))
          (mod-dir  (and mod-drv
                         (derivation->output-path mod-drv)))
-         (go-drv   (and (pair? modules)
-                        (%compiled-modules store modules
-                                           #:guile guile-drv
-                                           #:system system)))
          (go-dir   (and go-drv
                         (derivation->output-path go-drv))))
     (derivation store name guile
