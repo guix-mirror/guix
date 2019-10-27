@@ -265,11 +265,17 @@ GiB).")
     (inputs
      `(("python-cairo" ,python-pycairo)
        ("python-gobject" ,python-pygobject)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtksourceview" ,gtksourceview-3)))
     (propagated-inputs
      `(("dconf" ,dconf)))
     (arguments
-     `(#:phases
+     `(#:imported-modules ((guix build glib-or-gtk-build-system)
+                           ,@%python-build-system-modules)
+       #:modules ((guix build python-build-system)
+                  ((guix build glib-or-gtk-build-system) #:prefix glib-or-gtk:)
+                  (guix build utils))
+       #:phases
        (modify-phases %standard-phases
          ;; This setup.py script does not support one of the Python build
          ;; system's default flags, "--single-version-externally-managed".
@@ -293,6 +299,8 @@ GiB).")
              (invoke "py.test" "-v" "-k"
                      ;; TODO: Those tests fail, why?
                      "not test_classify_change_actions")))
+         (add-after 'wrap 'glib-or-gtk-wrap
+           (assoc-ref glib-or-gtk:%standard-phases 'glib-or-gtk-wrap))
          (add-after 'wrap 'wrap-typelib
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
