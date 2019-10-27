@@ -2785,14 +2785,14 @@ Delaunay triangulation and convex hull computation.")
 (define-public r-ddalpha
   (package
     (name "r-ddalpha")
-    (version "1.3.9")
+    (version "1.3.10")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ddalpha" version))
        (sha256
         (base32
-         "1vzs0cvl6xw3h9i00rg3hs02xwgxcnh8326y10kxmhs3qq4m7nb2"))))
+         "1064g7y8d7kmvd5kjc2m48yvidmh2ci1y0xgil3pcx4ix6mf0ljz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-bh" ,r-bh)
