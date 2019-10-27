@@ -1207,13 +1207,25 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
+(define %module-cache
+  ;; Map a list of modules to its 'imported+compiled-modules' result.
+  (make-weak-value-hash-table))
+
 (define* (imported+compiled-modules store modules #:key
                                     (system (%current-system))
                                     (guile (%guile-for-build)))
   "Return a pair containing the derivation to import MODULES and that where
 MODULES are compiled."
-  (cons (%imported-modules store modules #:system system #:guile guile)
-        (%compiled-modules store modules #:system system #:guile guile)))
+  (define key
+    (list modules (derivation-file-name guile) system))
+
+  (or (hash-ref %module-cache key)
+      (let ((result (cons (%imported-modules store modules
+                                             #:system system #:guile guile)
+                          (%compiled-modules store modules
+                                             #:system system #:guile guile))))
+        (hash-set! %module-cache key result)
+        result)))
 
 (define* (build-expression->derivation store name exp ;deprecated
                                        #:key
