@@ -1342,7 +1342,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.29.1")
+    (version "0.30.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1351,7 +1351,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "138921kx8g6qprim558xin09xximjhsj9ss8b71ifg2m6kclym8m"))))
+                "17mxjgcfljlv6h0ik3332xsqbs0ybvk6dkwflyl0cjh15vl1iv6f"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -1417,9 +1417,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             #t)))
        #:configure-flags (list "--enable-libmpv-shared"
                                "--enable-cdda"
-                               "--enable-dvdread"
                                "--enable-dvdnav"
-                               "--enable-zsh-comp"
                                "--disable-build-date")
        ;; No check function defined.
        #:tests? #f))
