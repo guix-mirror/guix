@@ -5624,13 +5624,13 @@ computing.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "7.5.0")
+    (version "7.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "09mbxq37mfn88xjnib7qfzaq9krr7gf1jxwy1p6mcjr254082h78"))))
+        (base32 "103jkw18z7fnwdal1mdbijjxi1fndzn31g887lmj7ddpf2r07lyz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
