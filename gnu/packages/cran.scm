@@ -14112,14 +14112,14 @@ discriminant analysis for the purpose of classifying high dimensional data.")
 (define-public r-ggvis
   (package
     (name "r-ggvis")
-    (version "0.4.4")
+    (version "0.4.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggvis" version))
        (sha256
         (base32
-         "1bxggjr2313kfy895j0fvrv4bg7yh2z87907lk48i1kn5c9flchk"))))
+         "091i9f17912j8qcyxppjgwzjnyqj7769ixs9d2gjg6f2clskqdw2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-assertthat" ,r-assertthat)
