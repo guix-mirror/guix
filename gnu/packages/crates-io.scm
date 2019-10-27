@@ -119,7 +119,7 @@ text or blue underlined text, on ANSI terminals.")
 (define-public rust-autocfg-0.1
   (package
     (name "rust-autocfg")
-    (version "0.1.5")
+    (version "0.1.7")
     (source
       (origin
         (method url-fetch)
@@ -127,7 +127,7 @@ text or blue underlined text, on ANSI terminals.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0asl6fnc35yk5l2rxwhp25v128jgm45dp754h9z8x51b6n90w4r2"))))
+          "1chwgimpx5z7xbag7krr9d8asxfqbh683qhgl9kn3hxk2l0djj8x"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/cuviper/autocfg")
     (synopsis "Automatic cfg for Rust compiler features")
@@ -312,7 +312,7 @@ archive to be linked into Rustcode.")
 (define-public rust-cfg-if-0.1
   (package
     (name "rust-cfg-if")
-    (version "0.1.9")
+    (version "0.1.10")
     (source
       (origin
         (method url-fetch)
@@ -320,7 +320,7 @@ archive to be linked into Rustcode.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0csygklgz3ybpr0670rkip49zh76m43ar3k7xgypkzbzrwycx1ml"))))
+          "08h80ihs74jcyp24cd75wwabygbbdgl05k6p5dmq8akbr78vv1a7"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/alexcrichton/cfg-if")
     (synopsis "Define an item depending on parameters")
@@ -375,6 +375,27 @@ depending on a large number of #[cfg] parameters.  Structured like an
         (sha256
          (base32
           "1r50dwy5hj5gq07dn0qf8222d07qv0970ymx0j8n9779yayc3w3f"))))))
+
+(define-public rust-clap-2
+  (package
+    (name "rust-clap")
+    (version "2.33.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "clap" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1nf6ld3bims1n5vfzhkvcb55pdzh04bbhzf8nil5vvw05nxzarsh"))))
+    (build-system cargo-build-system)
+    (home-page "https://clap.rs/")
+    (synopsis "Command Line Argument Parser")
+    (description
+     "This package provides a simple to use, efficient, and full-featured
+Command Line Argument Parser.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
 
 (define-public rust-clicolors-control-1.0
   (package
@@ -1376,16 +1397,15 @@ requires non-const function calls to be computed.")
 (define-public rust-libc-0.2
   (package
     (name "rust-libc")
-    (version "0.2.62")
+    (version "0.2.65")
     (source
      (origin
        (method url-fetch)
        (uri (crate-uri "libc" version))
-       (file-name
-        (string-append name "-" version ".crate"))
+       (file-name (string-append name "-" version ".crate"))
        (sha256
         (base32
-         "1fh69kpjg8hqff36kdczx7sax98gk4qs4ws1dwvjz0rgip0d5z1l"))))
+         "1s14bjxnz6haw0gr1h3j4sr7s2s407hpgm8dxhwnl7yzgxia0c8s"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/rust-lang/libc")
     (synopsis "Raw FFI bindings to platform libraries like libc")
@@ -1540,10 +1560,10 @@ functions and static variables these libraries contain.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-log-0.3
+(define-public rust-log-0.4
   (package
     (name "rust-log")
-    (version "0.3.8")
+    (version "0.4.8")
     (source
       (origin
         (method url-fetch)
@@ -1551,15 +1571,28 @@ functions and static variables these libraries contain.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0nsn28syc49vvjhxcfc8261rd1frhjc0r4bn9v3mqvps3ra7f3w8"))))
+          "1xz18ixccl5c6np4linv3ypc7hpmmgpc5zzd2ymp2ssfx0mhbdhl"))))
     (build-system cargo-build-system)
-    (home-page "https://github.com/rust-lang-nursery/log")
-    (synopsis "Lightweight logging")
+    (home-page "https://github.com/rust-lang/log")
+    (synopsis "Lightweight logging facade for Rust")
     (description
-     "This package provides a lightweight logging facade for Rust")
+     "This package provides a lightweight logging facade for Rust.")
     (properties '((hidden? . #t)))
-    (license (list license:asl2.0
-                   license:expat))))
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-log-0.3
+  (package
+    (inherit rust-log-0.4)
+    (name "rust-log")
+    (version "0.3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "log" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nsn28syc49vvjhxcfc8261rd1frhjc0r4bn9v3mqvps3ra7f3w8"))))))
 
 (define-public rust-lzma-sys-0.1
   (package
@@ -2058,6 +2091,26 @@ implementation (which is unstable / requires nightly).")
           "0c9whknf2dm74a3cqirafy6gj83a76gl56g4v3g19k6lkwz13rcj"))))
     (build-system cargo-build-system)))
 
+(define-public rust-numtoa-0.1
+  (package
+    (name "rust-numtoa")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "numtoa" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vs9rhggqbql1p26x8nkha1j06wawwgb2jp5fs88b5gi7prvvy5q"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.com/mmstick/numtoa")
+    (synopsis "Convert numbers into stack-allocated byte arrays")
+    (description
+     "This package can convert numbers into stack-allocated byte arrays.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-openssl-probe-0.1
   (package
     (name "rust-openssl-probe")
@@ -2402,19 +2455,18 @@ for x86.")
     (license (list license:asl2.0
                    license:expat))))
 
-(define-public rust-proc-macro2-0.4
+(define-public rust-proc-macro2-1.0
   (package
     (name "rust-proc-macro2")
-    (version "0.4.30")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "proc-macro2" version))
-        (file-name
-          (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".crate"))
         (sha256
-          (base32
-            "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))
+         (base32
+          "09rgb5ab0jgw39kyad0lgqs4nb9yaf7mwcrgxqnsxbn4il54g7lw"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/alexcrichton/proc-macro2")
     (synopsis "Stable implementation of the upcoming new `proc_macro` API")
@@ -2422,8 +2474,21 @@ for x86.")
 `proc_macro` API.  Comes with an option, off by default, to also reimplement itself
 in terms of the upstream unstable API.")
     (properties '((hidden? . #t)))
-    ;; Dual licensed.
     (license (list license:asl2.0 license:expat))))
+
+(define-public rust-proc-macro2-0.4
+  (package
+    (inherit rust-proc-macro2-1.0)
+    (name "rust-proc-macro2")
+    (version "0.4.30")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "proc-macro2" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0nd71fl24sys066jrha6j7i34nfkjv44yzw8yww9742wmc8j0gfg"))))))
 
 (define-public rust-quick-error-1.2
   (package
@@ -2446,31 +2511,43 @@ to write.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-quote-1.0
+  (package
+    (name "rust-quote")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "quote" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1zkc46ryacf2jdkc6krsy2z615xbk1x8kp1830rcxz3irj5qqfh5"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/quote")
+    (synopsis "Quasi-quoting macro quote!(...)")
+    (description "Quasi-quoting macro quote!(...)")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0 license:expat))))
+
 (define-public rust-quote-0.6
   (package
+    (inherit rust-quote-1.0)
     (name "rust-quote")
     (version "0.6.12")
     (source
       (origin
         (method url-fetch)
         (uri (crate-uri "quote" version))
-        (file-name
-          (string-append name "-" version ".crate"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-          (base32
-            "1nw0klza45hf127kfyrpxsxd5jw2l6h21qxalil3hkr7bnf7kx7s"))))
-    (build-system cargo-build-system)
-    (home-page "https://github.com/dtolnay/quote")
-    (synopsis "Quasi-quoting macro quote!(...)")
-    (description "Quasi-quoting macro quote!(...)")
-    (properties '((hidden? . #t)))
-    ;; Dual licensed.
-    (license (list license:asl2.0 license:expat))))
+         (base32
+          "1nw0klza45hf127kfyrpxsxd5jw2l6h21qxalil3hkr7bnf7kx7s"))))))
 
-(define-public rust-rand-0.4
+(define-public rust-rand-0.6
   (package
     (name "rust-rand")
-    (version "0.4.3")
+    (version "0.6.5")
     (source
       (origin
         (method url-fetch)
@@ -2478,7 +2555,7 @@ to write.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))
+          "1jl4449jcl4wgmzld6ffwqj5gwxrp8zvx8w573g1z368qg6xlwbd"))))
     (build-system cargo-build-system)
     (home-page "https://crates.io/crates/rand")
     (synopsis "Random number generators and other randomness functionality")
@@ -2489,9 +2566,23 @@ useful types and distributions, and some randomness-related algorithms.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rand-0.4
+  (package
+    (inherit rust-rand-0.6)
+    (name "rust-rand")
+    (version "0.4.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand" version))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1gfgnqfj2pyh27dcb720jpawskllwnbvxh816ddyykv269xz8ml3"))))))
+
 (define-public rust-rand-0.3
   (package
-    (inherit rust-rand-0.4)
+    (inherit rust-rand-0.6)
     (name "rust-rand")
     (version "0.3.23")
     (source
@@ -2502,6 +2593,190 @@ useful types and distributions, and some randomness-related algorithms.")
         (sha256
          (base32
           "0v679h38pjjqj5h4md7v2slsvj6686qgcn7p9fbw3h43iwnk1b34"))))))
+
+(define-public rust-rand-chacha-0.1
+  (package
+    (name "rust-rand-chacha")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_chacha" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1vxwyzs4fy1ffjc8l00fsyygpiss135irjf7nyxgq2v0lqf3lvam"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_chacha")
+    (synopsis "ChaCha random number generator")
+    (description "ChaCha random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-core-0.4
+  (package
+    (name "rust-rand-core")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_core" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1p09ynysrq1vcdlmcqnapq4qakl2yd1ng3kxh3qscpx09k2a6cww"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_core")
+    (synopsis
+      "Core random number generator traits and tools for implementation.")
+    (description
+      "Core random number generator traits and tools for implementation.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-core-0.3
+  (package
+    (inherit rust-rand-core-0.4)
+    (name "rust-rand-core")
+    (version "0.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_core" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0jzdgszfa4bliigiy4hi66k7fs3gfwi2qxn8vik84ph77fwdwvvs"))))
+    ;; This version is a 0.3 API wrapper around the 0.4 version.
+    (arguments
+     `(#:cargo-inputs (("rand-core" ,rust-rand-core-0.4))))))
+
+(define-public rust-rand-hc-0.1
+  (package
+    (name "rust-rand-hc")
+    (version "0.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_hc" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1i0vl8q5ddvvy0x8hf1zxny393miyzxkwqnw31ifg6p0gdy6fh3v"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_hc")
+    (synopsis "HC128 random number generator")
+    (description "HC128 random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-isaac-0.1
+  (package
+    (name "rust-rand-isaac")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_isaac" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "027flpjr4znx2csxk7gxb7vrf9c7y5mydmvg5az2afgisp4rgnfy"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_isaac")
+    (synopsis "ISAAC random number generator")
+    (description "ISAAC random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-jitter-0.1
+  (package
+    (name "rust-rand-jitter")
+    (version "0.1.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_jitter" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "16z387y46bfz3csc42zxbjq89vcr1axqacncvv8qhyy93p4xarhi"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/rust-random/rand")
+    (synopsis
+      "Random number generator based on timing jitter")
+    (description
+      "Random number generator based on timing jitter")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-os-0.1
+  (package
+    (name "rust-rand-os")
+    (version "0.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_os" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0wahppm0s64gkr2vmhcgwc0lij37in1lgfxg5rbgqlz0l5vgcxbv"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_os")
+    (synopsis "OS backed Random Number Generator")
+    (description "OS backed Random Number Generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-pcg-0.1
+  (package
+    (name "rust-rand-pcg")
+    (version "0.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_pcg" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0i0bdla18a8x4jn1w0fxsbs3jg7ajllz6azmch1zw33r06dv1ydb"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_pcg")
+    (synopsis
+      "Selected PCG random number generators")
+    (description
+      "Selected PCG random number generators")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-rand-xorshift-0.1
+  (package
+    (name "rust-rand-xorshift")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rand_xorshift" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0p2x8nr00hricpi2m6ca5vysiha7ybnghz79yqhhx6sl4gkfkxyb"))))
+    (build-system cargo-build-system)
+    (home-page "https://crates.io/crates/rand_xorshift")
+    (synopsis "Xorshift random number generator")
+    (description
+      "Xorshift random number generator")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-rawpointer-0.1
   (package
@@ -2525,6 +2800,27 @@ and @code{ptrdistance}.")
     (license (list license:asl2.0
                    license:expat))))
 
+(define-public rust-rdrand-0.4
+  (package
+    (name "rust-rdrand")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "rdrand" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1cjq0kwx1bk7jx3kzyciiish5gqsj7620dm43dc52sr8fzmm9037"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/nagisa/rust_rdrand/")
+    (synopsis "Random number generator")
+    (description
+     "This package is an implementation of random number generator based on
+@code{rdrand} and @cpde{rdseed} instructions")
+    (properties '((hidden? . #t)))
+    (license license:isc)))
+
 ;; This package requires features which are unavailable
 ;; on the stable releases of Rust.
 (define-public rust-redox-syscall-0.1
@@ -2544,6 +2840,26 @@ and @code{ptrdistance}.")
     (synopsis "Rust library to access raw Redox system calls")
     (description "This package provides a Rust library to access raw Redox
 system calls.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
+
+(define-public rust-redox-termios-0.1
+  (package
+    (name "rust-redox-termios")
+    (version "0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "redox-termios" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0xhgvdh62mymgdl3jqrngl8hr4i8xwpnbsxnldq0l47993z1r2by"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/redox-os/termios")
+    (synopsis "Rust library to access Redox termios functions")
+    (description
+     "This package provides a Rust library to access Redox termios functions.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
@@ -2697,6 +3013,27 @@ rust-lang/rust integration.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
+
+(define-public rust-ryu-1.0
+  (package
+    (name "rust-ryu")
+    (version "1.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "ryu" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1j0h74f1xqf9hjkhanp8i20mqc1aw35kr1iq9i79q7713mn51a5z"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/ryu")
+    (synopsis
+      "Fast floating point to string conversion")
+    (description
+      "Fast floating point to string conversion")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0 license:boost1.0))))
 
 (define-public rust-safemem-0.3
   (package
@@ -2917,6 +3254,67 @@ with one of the implemented strategies.")
         (sha256
          (base32
           "18vhypw6zgccnrlm5ps1pwa0khz7ry927iznpr88b87cagr1v2iq"))))))
+
+(define-public rust-serde-1.0
+  (package
+    (name "rust-serde")
+    (version "1.0.101")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1p8r24hagcsrl92w5z32nfrg9040qkgqf8iwwnf7mzigpavwk5lp"))))
+    (build-system cargo-build-system)
+    (home-page "https://serde.rs")
+    (synopsis "Generic serialization/deserialization framework")
+    (description
+     "This package provides a generic serialization/deserialization framework.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-serde-derive-1.0
+  (package
+    (name "rust-serde-derive")
+    (version "1.0.101")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-derive" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0bn0wz3j48248187mfmypyqnh73mq734snxxhr05vmgcl51kl4sb"))))
+    (build-system cargo-build-system)
+    (home-page "https://serde.rs")
+    (synopsis
+      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+    (description
+      "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
+
+(define-public rust-serde-json-1.0
+  (package
+    (name "rust-serde-json")
+    (version "1.0.41")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "serde-json" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1hipk84x40454mf599752mi7l08wb8qakz8vd6d3zp57d0mfnwig"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/serde-rs/json")
+    (synopsis "A JSON serialization file format")
+    (description
+     "This package provides a JSON serialization file format.")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
 
 (define-public rust-shlex-0.1
   (package
@@ -3190,6 +3588,25 @@ and Jaro-Winkler.")
          (base32
           "0sjsm7hrvjdifz661pjxq5w4hf190hx53fra8dfvamacvff139cf"))))))
 
+(define-public rust-syn-1.0
+  (package
+    (name "rust-syn")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "syn" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "1gw03w7lzrlqmp2vislcybikgl5wkhrqi6sy70w93xss2abhx1b6"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/dtolnay/syn")
+    (synopsis "Parser for Rust source code")
+    (description "Parser for Rust source code")
+    (properties '((hidden? . #t)))
+    (license (list license:expat license:asl2.0))))
+
 (define-public rust-synstructure-test-traits-0.1
   (package
     (name "rust-synstructure-test-traits")
@@ -3260,7 +3677,7 @@ deleting all contents when it's dropped.")
 (define-public rust-tempfile-3.0
   (package
     (name "rust-tempfile")
-    (version "3.0.2")
+    (version "3.0.8")
     (source
       (origin
         (method url-fetch)
@@ -3268,7 +3685,7 @@ deleting all contents when it's dropped.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0ny1cdbcsrmwjpy4k9366xm6p0jqkrmrvr0cln2djxspp1inyxs7"))))
+          "1vqk7aq2l04my2r3jiyyxirnf8f90nzcvjasvrajivb85s7p7i3x"))))
     (build-system cargo-build-system)
     (home-page "http://stebalien.com/projects/tempfile-rs")
     (synopsis "Library for managing temporary files and directories")
@@ -3321,6 +3738,26 @@ writing colored text to a terminal.")
     (license (list license:unlicense
                    license:expat))))
 
+(define-public rust-termion-1.5
+  (package
+    (name "rust-termion")
+    (version "1.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "termion" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0c634rg520zjjfhwnxrc2jbfjz7db0rcpsjs1qici0nyghpv53va"))))
+    (build-system cargo-build-system)
+    (home-page "https://gitlab.redox-os.org/redox-os/termion")
+    (synopsis "Library for manipulating terminals")
+    (description
+     "This package provides a bindless library for manipulating terminals.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
+
 (define-public rust-termios-0.3
   (package
     (name "rust-termios")
@@ -3341,6 +3778,29 @@ writing colored text to a terminal.")
 to the terminal I/O interface implemented by Unix operating systems.  The safe
 bindings are a small wrapper around the raw C functions, which converts integer
 return values to @code{std::io::Result} to indicate success or failure.")
+    (properties '((hidden? . #t)))
+    (license license:expat)))
+
+(define-public rust-textwrap-0.11
+  (package
+    (name "rust-textwrap")
+    (version "0.11.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "textwrap" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "0q5hky03ik3y50s9sz25r438bc4nwhqc6dqwynv4wylc807n29nk"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/mgeisler/textwrap")
+    (synopsis "Library for word wrapping, indenting, and dedenting strings")
+    (description
+     "Textwrap is a small library for word wrapping, indenting, and dedenting
+strings.  You can use it to format strings (such as help and error messages)
+for display in commandline applications.  It is designed to be efficient and
+handle Unicode characters correctly.")
     (properties '((hidden? . #t)))
     (license license:expat)))
 
@@ -3448,6 +3908,30 @@ in Rust.")
     (description "Mock a Tokio task")
     (properties '((hidden? . #t)))
     (license license:expat)))
+
+(define-public rust-toml-0.5
+  (package
+    (name "rust-toml")
+    (version "0.5.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "toml" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "093p48vpqm4bb8q3514xsij0dkljxlr3jp9ypxr4p48xjisvxan7"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/alexcrichton/toml-rs")
+    (synopsis "Rust encoder and decoder of TOML-formatted files and streams")
+    (description
+     "This package provides a native Rust encoder and decoder of TOML-formatted
+files and streams.  Provides implementations of the standard
+Serialize/Deserialize traits for TOML data to facilitate deserializing and
+serializing Rust structures.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
 
 (define-public rust-tracing-core-0.1
   (package
@@ -3658,7 +4142,7 @@ with the Unicode character database.")
 (define-public rust-unicode-width-0.1
   (package
     (name "rust-unicode-width")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
       (origin
         (method url-fetch)
@@ -3666,7 +4150,7 @@ with the Unicode character database.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "09k5lipygardwy0660jhls08fsgknrazzivmn804gps53hiqc8w8"))))
+          "082f9hv1r3gcd1xl33whjhrm18p0w9i77zhhhkiccb5r47adn1vh"))))
     (build-system cargo-build-system)
     (home-page "https://github.com/unicode-rs/unicode-width")
     (synopsis "Determine displayed width according to Unicode rules")
@@ -3813,6 +4297,27 @@ untrusted inputs in Rust.")
     (description
      "This package provides a library to find native dependencies in a
 @code{vcpkg} tree at build time in order to be used in Cargo build scripts.")
+    (properties '((hidden? . #t)))
+    (license (list license:asl2.0
+                   license:expat))))
+
+(define-public rust-vec-map-0.8
+  (package
+    (name "rust-vec-map")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (crate-uri "vec_map" version))
+        (file-name (string-append name "-" version ".crate"))
+        (sha256
+         (base32
+          "06n8hw4hlbcz328a3gbpvmy0ma46vg1lc0r5wf55900szf3qdiq5"))))
+    (build-system cargo-build-system)
+    (home-page "https://github.com/contain-rs/vec-map")
+    (synopsis "Simple map based on a vector for small integer keys")
+    (description
+     "This package provides a simple map based on a vector for small integer keys.")
     (properties '((hidden? . #t)))
     (license (list license:asl2.0
                    license:expat))))
@@ -3995,6 +4500,11 @@ UTF-32 types are provided, including support for malformed encoding.")
          (base32
           "1ii9j9lzrhwri0902652awifzx9fpayimbp6hfhhc296xcg0k4w0"))))
     (build-system cargo-build-system)
+    ;; This package depends unconditionally on these two crates.
+    (arguments
+     `(#:cargo-inputs
+       (("winapi-i686-pc-windows-gnu" ,rust-winapi-i686-pc-windows-gnu-0.4)
+        ("winapi-x86-64-pc-windows-gnu" ,rust-winapi-x86-64-pc-windows-gnu-0.4))))
     (home-page "https://github.com/retep998/winapi-rs")
     (synopsis "Raw FFI bindings for all of Windows API.")
     (description
@@ -4015,7 +4525,8 @@ UTF-32 types are provided, including support for malformed encoding.")
         (file-name (string-append name "-" version ".crate"))
         (sha256
          (base32
-          "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))))
+          "0yh816lh6lf56dpsgxy189c2ai1z3j8mw9si6izqb6wsjkbcjz8n"))))
+    (arguments '())))
 
 (define-public rust-winapi-build-0.1
   (package
