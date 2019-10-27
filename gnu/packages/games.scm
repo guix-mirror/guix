@@ -5158,7 +5158,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
 (define-public tome4
   (package
     (name "tome4")
-    (version "1.5.10")
+    (version "1.6.0")
     (synopsis "Single-player, RPG roguelike game set in the world of Eyal")
     (source
      (origin
@@ -5167,7 +5167,7 @@ Crowther & Woods, its original authors, in 1995.  It has been known as
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0mc5dgh2x9nbili7gy6srjhb23ckalf08wqq2amyjr5rq392jvd7"))
+         "1z1w4ycgl5wbm0sv7577vcdfwwf4k7vaf2njzyb21rvqjizpbkwr"))
        (modules '((guix build utils)))
        (snippet
         '(begin

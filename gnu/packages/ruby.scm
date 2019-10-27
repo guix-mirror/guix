@@ -18,6 +18,7 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Brian Leung <bkleung89@gmail.com>
 ;;; Copyright © 2019 Collin J. Doering <collin@rekahsoft.ca>
+;;; Copyright © 2019 Diego N. Barbato <dnbarbato@posteo.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8965,4 +8966,30 @@ application.")
 programming: intellisense, diagnostics, inline documentation, and type
 checking.")
     (home-page "https://solargraph.org/")
+    (license license:expat)))
+
+(define-public ruby-wayback-machine-downloader
+  (package
+    (name "ruby-wayback-machine-downloader")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri
+             "wayback_machine_downloader"
+             version))
+       (sha256
+        (base32
+         "12kb1qmvmmsaihqab1prn6cmynkn6cgb4vf41mgv22wkcgv5wgk2"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (synopsis "Download archived websites from the Wayback Machine")
+    (description
+     "Wayback Machine Downloader is a command line tool for downloading
+websites from the Internet Archive's Wayback Machine (archive.org).
+It allows fine grained control over what to download by specifying
+which snapshots to consider and what files to include.")
+    (home-page
+     "https://github.com/hartator/wayback-machine-downloader")
     (license license:expat)))

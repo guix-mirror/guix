@@ -5438,13 +5438,13 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
 (define-public python-ipykernel
   (package
     (name "python-ipykernel")
-    (version "5.1.1")
+    (version "5.1.3")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "ipykernel" version))
       (sha256
-       (base32 "173nm29g85w8cac3fg40b27qaq26g41wgg6qn79ql1hq4w2n5sgh"))))
+       (base32 "1a08y677lpn80qzvv7z0smgggmr5m5ayf0bs6vds47xpxl9sss5k"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -5469,8 +5469,9 @@ installing @code{kernelspec}s for use with Jupyter frontends.")
        ;; imported at runtime during connect
        ("python-jupyter-client" ,python-jupyter-client)))
     (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-nose" ,python-nose)))
+     `(("python-flaky" ,python-flaky)
+       ("python-nose" ,python-nose)
+       ("python-pytest" ,python-pytest)))
     (home-page "https://ipython.org")
     (synopsis "IPython Kernel for Jupyter")
     (description

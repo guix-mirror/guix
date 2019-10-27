@@ -7,7 +7,7 @@
 ;;; Copyright © 2017, 2019 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Miguel <rosen644835@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -179,14 +179,14 @@ color, font attributes (weight, posture), or underlining.")
 (define-public po4a
   (package
     (name "po4a")
-    (version "0.56")
+    (version "0.57")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/mquinson/po4a/releases/download/v"
                                   version "/po4a-" version ".tar.gz"))
               (sha256
                (base32
-                "0kyhww0yw4q0m4vj8vil2wsf6sn4hidh8mqz2gjrq7gpdf83cmnr"))))
+                "15yd27krlpdvjhcnwys6i5k1ww62ifq2yx8k1zxyxiwy84myqmdv"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases

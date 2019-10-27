@@ -522,7 +522,20 @@ options handled by 'set-build-options-from-command-line', and listed in
 (define (set-build-options-from-command-line store opts)
   "Given OPTS, an alist as returned by 'args-fold' given
 '%standard-build-options', set the corresponding build options on STORE."
-  ;; TODO: Add more options.
+
+  ;; '--keep-failed' has no effect when talking to a remote daemon.  Catch the
+  ;; case where GUIX_DAEMON_SOCKET=guix://….
+  (when (and (assoc-ref opts 'keep-failed?)
+             (let* ((socket (store-connection-socket store))
+                    (peer   (catch 'system-error
+                              (lambda ()
+                                (and (file-port? socket)
+                                     (getpeername socket)))
+                              (const #f))))
+               (and peer (not (= AF_UNIX (sockaddr:fam peer))))))
+    (warning (G_ "'--keep-failed' ignored since you are \
+talking to a remote daemon\n")))
+
   (set-build-options store
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
                      #:keep-going? (assoc-ref opts 'keep-going?)

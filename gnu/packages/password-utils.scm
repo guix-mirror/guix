@@ -75,6 +75,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages security-token)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages tls)
@@ -109,7 +111,7 @@ human.")
 (define-public keepassxc
   (package
     (name "keepassxc")
-    (version "2.4.3")
+    (version "2.5.0")
     (source
      (origin
        (method url-fetch)
@@ -118,24 +120,25 @@ human.")
                            version "-src.tar.xz"))
        (sha256
         (base32
-         "0d17izx6qvcsxsxlsmaa17rgn38fvxsp5yzqqf4pc11i44cm5jfp"))))
+         "10bq2934xqpjpr99wbjg2vwmi73fcq0419cb3v78n2kj5fbwwnb3"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DWITH_XC_NETWORKING=YES"
-                           "-DWITH_XC_BROWSER=YES"
-                           "-DWITH_XC_SSHAGENT=YES"
+     '(#:configure-flags '("-DWITH_XC_ALL=YES"
                            "-DWITH_XC_UPDATECHECK=NO")))
     (inputs
      `(("argon2" ,argon2)
-       ("curl" ,curl)                   ; XC_NETWORKING
        ("libgcrypt" ,libgcrypt)
        ("libsodium" ,libsodium)         ; XC_BROWSER
+       ("libyubikey" ,libyubikey)       ; XC_YUBIKEY
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
        ("qrencode" ,qrencode)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("qtx11extras" ,qtx11extras)
+       ("quazip" ,quazip)               ; XC_KEESHARE
+       ("readline" ,readline)
+       ("yubikey-personalization" ,yubikey-personalization) ; XC_YUBIKEY
        ("zlib" ,zlib)))
     (native-inputs
      `(("qttools" ,qttools)))
@@ -146,7 +149,8 @@ manage your passwords in a secure way.  You can put all your passwords in one
 database, which is locked with one master key or a key-file which can be stored
 on an external storage device.  The databases are encrypted using the
 algorithms AES or Twofish.")
-    ;; Non-functional parts use various licences.
+    ;; While various parts of the software are licensed under different licenses,
+    ;; the combined work falls under the GPLv3.
     (license license:gpl3)))
 
 (define-public keepassx

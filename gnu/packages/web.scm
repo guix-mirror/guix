@@ -212,14 +212,14 @@ Interface} specification.")
     ;; ’stable’ and recommends that “in general you deploy the NGINX mainline
     ;; branch at all times” (https://www.nginx.com/blog/nginx-1-6-1-7-released/)
     ;; Consider updating the nginx-documentation package together with this one.
-    (version "1.17.4")
+    (version "1.17.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0mg521bxh8pysmy20x599m252ici9w97kk7qy7s0wrv6bqv4p1b2"))))
+                "1hqhziic4csci8xs4q8vbzpmj2qjkhmmx68zza7h5bvmbbhkbvk3"))))
     (build-system gnu-build-system)
     (inputs `(("openssl" ,openssl)
               ("pcre" ,pcre)
@@ -5076,13 +5076,13 @@ deployments.")
   (package
     (name "varnish")
     (home-page "https://varnish-cache.org/")
-    (version "6.3.0")
+    (version "6.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "_downloads/varnish-" version ".tgz"))
               (sha256
                (base32
-                "0zwlffdd1m0ih33nq40xf2wwdyvr4czmns2fs90qpfnwy72xxk4m"))))
+                "0xa14pd68zpi5hxcax3arl14rcmh5d1cdwa8gv4l5f23mmynr8ni"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib")
@@ -5568,7 +5568,7 @@ snippets on @url{https://commandlinefu.com}.")
 (define-public rss-bridge
   (package
     (name "rss-bridge")
-    (version "2019-07-06")
+    (version "2019-09-12")
     (source
      (origin
        (method git-fetch)
@@ -5577,8 +5577,7 @@ snippets on @url{https://commandlinefu.com}.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0zd0c9xzvpx55mvj8xrafakfkvafnwkkvhw9b1j0bf897xdkfsyb"))))
+        (base32 "1mx7f3l45nqhcrng531l4cq8kpzm164hhbwn26g5akb2pamdlnra"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -5597,7 +5596,7 @@ snippets on @url{https://commandlinefu.com}.")
 websites lacking feeds.  Supported websites include Facebook, Twitter,
 Instagram and YouTube.")
     (license (list license:public-domain
-                   license:expat)))) ;; vendor/simplehtmldom/simple_html_dom.php
+                   license:expat))))    ; vendor/simplehtmldom/simple_html_dom.php
 
 (define-public linkchecker
   (package

@@ -1494,7 +1494,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.09.28")
+    (version "2019.10.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1502,7 +1502,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0nrk0bk6lksnmng8lwhcpkc57iibzjjamlqz8rxjpsw6dnzxz82h"))))
+                "06wg6wpyq0fawjxjrhd7zasfjr9b6w9wsk2amiqdl712zqlq2rwb"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -3545,16 +3545,15 @@ transitions, and effects and then export your film to many common formats.")
 (define-public dav1d
   (package
     (name "dav1d")
-    (version "0.5.0")
+    (version "0.5.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "https://downloads.videolan.org/pub/videolan"
                             "/dav1d/" version "/dav1d-" version ".tar.xz"))
-        (patches (search-patches "dav1d-aarch64-symbol-alignment.patch"))
         (sha256
          (base32
-          "1586k439fm8db9lsxxywm34iqibj5mw4xrppr4g2wqr0hjlhcbxn"))))
+          "03cf6f9if45prq97qp7llzi1p71dyw9ymc87hc225iy89kmzjsdd"))))
     (build-system meson-build-system)
     (native-inputs `(("nasm" ,nasm)))
     (home-page "https://code.videolan.org/videolan/dav1d")

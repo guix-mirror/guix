@@ -328,14 +328,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.5.7")
+    (version "1.5.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "11cl839512898shxcgjmnn1178pwc8vcfaypmzxm1wzkwasjyx2l"))
+        (base32 "0k7zjrky8r2krkd8780cph214hiihg9nh5rxn4nrhg6i6f8jymw4"))
        (modules '((guix build utils)))
        (snippet
         ;; Add sbcl-bundle-systems to 'default-system-source-registry'.

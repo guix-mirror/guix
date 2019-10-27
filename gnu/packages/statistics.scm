@@ -612,14 +612,14 @@ nonlinear mixed-effects models.")
 (define-public r-mgcv
   (package
    (name "r-mgcv")
-   (version "1.8-29")
+   (version "1.8-30")
    (source
     (origin
      (method url-fetch)
      (uri (cran-uri "mgcv" version))
      (sha256
       (base32
-       "1236gz25nap1aprbvcrqvmmnl6f8cvbjy8dcl4j968cpalqax5ww"))))
+       "0x9jr0a4r8v6jb0r4m3m1sk606s2x3lmg5ndz5bz0xxvqpzf593q"))))
    (build-system r-build-system)
    (propagated-inputs
     `(("r-matrix" ,r-matrix)
@@ -805,13 +805,13 @@ effects of different types of color-blindness.")
 (define-public r-digest
   (package
     (name "r-digest")
-    (version "0.6.21")
+    (version "0.6.22")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "digest" version))
        (sha256
-        (base32 "0qycqchmv59fb6jp369d82mcx9xgbv70m18qzam0vrs8zkmajb17"))))
+        (base32 "1qav52y1qmkg9j2g48mrl6bbjwhs0fs9dl55xb62lfkrihkappqh"))))
     (build-system r-build-system)
     ;; Vignettes require r-knitr, which requires r-digest, so we have to
     ;; disable them and the tests.
@@ -1656,13 +1656,13 @@ defined in different packages.")
 (define-public r-rlang
   (package
     (name "r-rlang")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "rlang" version))
               (sha256
                (base32
-                "038mmbmklw17ncgz53vrdx2506c1jj6di3y165bbx2sl2yia8j4p"))))
+                "122hhc7pdri8wkjmk37y71m4h1gmdzaqcfdizfdjg1bhy935i10k"))))
     (build-system r-build-system)
     (home-page "http://rlang.tidyverse.org")
     (synopsis "Functions for base types, core R and Tidyverse features")
@@ -5288,14 +5288,14 @@ Companion to Applied Regression, Third Edition, Sage.")
 (define-public r-car
   (package
     (name "r-car")
-    (version "3.0-3")
+    (version "3.0-4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "car" version))
        (sha256
         (base32
-         "0vy3g3bjljd2al8xb9qr45f98is7yppc9jilqn7b6zvf5yqpr07s"))))
+         "1mhfxrb62yanaz36f4n38p9hhnqbs5b19k0864w4ja1ccgh3nl3f"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-abind" ,r-abind)

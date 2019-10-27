@@ -938,6 +938,52 @@ and should be used with caution, especially on untested models.")
 between the CDemu userspace daemon and linux kernel.")
     (license license:gpl2+)))
 
+(define-public ddcci-driver-linux
+  (package
+    (name "ddcci-driver-linux")
+    (version "0.3.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0vkkja3ykjil783zjpwp0vz7jy2fp9ccazzi3afd4fjk8gldin7f"))))
+    (build-system linux-module-build-system)
+    (arguments
+     `(#:tests? #f                               ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'build) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t))
+         (replace 'install
+           (lambda args
+             (for-each
+              (lambda (module)
+                (with-directory-excursion module
+                  (apply (assoc-ref %standard-phases 'install) args)))
+              '("ddcci" "ddcci-backlight"))
+             #t)))))
+    (home-page "https://gitlab.com/ddcci-driver-linux/ddcci-driver-linux")
+    (synopsis "Pair of Linux kernel drivers for DDC/CI monitors")
+    (description "This package provides two Linux kernel drivers, ddcci and
+ddcci-backlight, that allows the control of DDC/CI monitors through the sysfs
+interface.  The ddcci module creates a character device for each DDC/CI
+monitors in @file{/dev/bus/ddcci/[I²C busnumber]}.  While the ddcci-backlight
+module allows the control of the backlight level or luminance property when
+supported under @file{/sys/class/backlight/}.")
+    (license license:gpl2+)))
+
 
 ;;;
 ;;; Pluggable authentication modules (PAM).
@@ -1019,16 +1065,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/psmisc/psmisc devel/psmisc-"
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32
-        "0s1kjhrik0wzqbm7hv4gkhywhjrwhp9ajw0ad05fwharikk6ah49"))))
+       (base32 "103qp3f8jvz07x8r8zgsqwyw84g5g92w6pdq97d78d1pr7yvyz2b"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
-    (synopsis
-     "Small utilities that use the proc file system")
+    (synopsis "Small utilities that use the proc file system")
     (description
      "This PSmisc package is a set of some small useful utilities that
 use the proc file system.  We're not about changing the world, but
@@ -1042,8 +1086,8 @@ providing the system administrator with some help in common tasks.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/"
-                                  name "/v" (version-major+minor version) "/"
-                                  name "-" version ".tar.xz"))
+                                  "util-linux/v" (version-major+minor version) "/"
+                                  "util-linux-" version ".tar.xz"))
               (sha256
                (base32
                 "1db2kydkwjmvgd1glkcba3adhidxw0f1x735dcjdpdjjf869sgvl"))
@@ -3857,7 +3901,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.2.2")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3865,7 +3909,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1imivxjppi8zl27gn472pwpk8bg5dijkbyi340by31vhy7dj24w2"))))
+                "13ivb1b627qkiiqxh2y7zawynarkmgxrnwwpqhx6cci621yyqqqp"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"

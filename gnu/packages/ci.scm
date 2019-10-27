@@ -68,6 +68,8 @@
                     (ice-9 rdelim)
                     (ice-9 popen))
 
+         #:configure-flags '("--localstatedir=/var") ;for /var/log/cuirass
+
          #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'disable-repo-tests

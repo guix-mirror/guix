@@ -3,16 +3,16 @@ in a snippet without network access.  After this patch is applied, some
 additional changes will be made using 'substitute*'.
 
 diff --git a/makeicecat b/makeicecat
-index 5a4390b..fcfa143 100644
+index b04c731..06d1f3f 100644
 --- a/makeicecat
 +++ b/makeicecat
-@@ -29,55 +29,55 @@ SOURCEDIR=icecat-$FFVERSION
+@@ -30,55 +30,55 @@ SOURCEDIR=icecat-$FFVERSION
  
  DATA="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/data
  
--mkdir output
+-mkdir -p output
 -cd output
-+# mkdir output
++# mkdir -p output
 +# cd output
  
  ###############################################################################
@@ -23,9 +23,9 @@ index 5a4390b..fcfa143 100644
 -
 -wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz
 -wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
--gpg --recv-keys --keyserver keyserver.ubuntu.com 24C6F355
+-gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 -gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
--echo -n 0a5f0c1d8d1e9443d85083d37fec32e5cc15c1001ea992d49745490065b4a023 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
+-echo -n f56f5fa5a4744be0b9acf259cb991254d708a50b9a0a12d1d846ffa5a6c409ac firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 -
 -echo Extracting Firefox tarball
 -tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -35,9 +35,9 @@ index 5a4390b..fcfa143 100644
 +# 
 +# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz
 +# wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
-+# gpg --recv-keys --keyserver keyserver.ubuntu.com 24C6F355
++# gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
 +# gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
-+# echo -n 0a5f0c1d8d1e9443d85083d37fec32e5cc15c1001ea992d49745490065b4a023 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
++# echo -n f56f5fa5a4744be0b9acf259cb991254d708a50b9a0a12d1d846ffa5a6c409ac firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
 +# 
 +# echo Extracting Firefox tarball
 +# tar -xf firefox-${FFVERSION}esr.source.tar.xz
@@ -98,7 +98,22 @@ index 5a4390b..fcfa143 100644
  
  #for patch in $DATA/patches/*; do
  #    echo Patching with file: $patch
-@@ -590,6 +590,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
+@@ -226,10 +226,10 @@ cp $DATA/bookmarks.html.in browser/locales/generic/profile/bookmarks.html.in
+ 
+ find -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
+ 
+-for STRING in rights.intro-point3-unbranded rights.intro-point4a-unbranded rights.intro-point4b-unbranded rights.intro-point4c-unbranded
+-do
+- find -name aboutRights.dtd | xargs sed -i "s/ENTITY $STRING.*/ENTITY $STRING \"\">/"
+-done
++# for STRING in rights.intro-point3-unbranded rights.intro-point4a-unbranded rights.intro-point4b-unbranded rights.intro-point4c-unbranded
++# do
++#  find -name aboutRights.dtd | xargs sed -i "s/ENTITY $STRING.*/ENTITY $STRING \"\">/"
++# done
+ 
+ for STRING in rights-intro-point-2 rights-intro-point-3 rights-intro-point-4 rights-intro-point-5 rights-intro-point-6 rights-webservices rights-safebrowsing
+ do
+@@ -595,6 +595,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
  # Fix CVE-2012-3386
  /bin/sed 's/chmod a+w/chmod u+w/' -i ./js/src/ctypes/libffi/Makefile.in ./toolkit/crashreporter/google-breakpad/Makefile.in ./toolkit/crashreporter/google-breakpad/src/third_party/glog/Makefile.in || true
  
