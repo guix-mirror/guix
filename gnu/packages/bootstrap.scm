@@ -33,6 +33,7 @@
   #:use-module ((guix derivations)
                 #:select (derivation derivation-input derivation->output-path))
   #:use-module ((guix utils) #:select (gnu-triplet->nix-system))
+  #:use-module ((guix gexp) #:select (lower-object))
   #:use-module (guix memoization)
   #:use-module (guix i18n)
   #:use-module (srfi srfi-1)
@@ -348,8 +349,8 @@ or false to signal an error."
                     #:allow-other-keys)
   (define (->store file)
     (run-with-store store
-      (origin->derivation (bootstrap-executable file system)
-                          system)))
+      (lower-object (bootstrap-executable file system)
+                    system)))
 
   (let* ((tar   (->store "tar"))
          (xz    (->store "xz"))
