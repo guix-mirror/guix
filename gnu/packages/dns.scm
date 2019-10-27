@@ -278,7 +278,7 @@ the two.")
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
-                           name "-" version ".tar.gz"))
+                           "libasr-" version ".tar.gz"))
        (sha256
         (base32
          "18kdmbjsxrfai16d66qslp48b1zf7gr8him2jj5dcqgbsl44ls75"))))
