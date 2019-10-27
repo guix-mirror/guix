@@ -505,7 +505,7 @@ modules in the old ~/.config/guix/latest style."
                    ;; In the "old style", %SELF-BUILD-FILE would simply return a
                    ;; derivation that builds modules.  We have to infer what the
                    ;; dependencies of these modules were.
-                   (list guile-json guile-git guile-bytestructures
+                   (list guile-json-3 guile-git guile-bytestructures
                          (ssh -> guile-ssh) (tls -> gnutls)))))
 
 (define (old-style-guix? drv)
