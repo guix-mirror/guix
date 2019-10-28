@@ -976,7 +976,7 @@ server tools for Prometheus metrics.")
     (build-system go-build-system)
     (arguments
      '(#:import-path "gopkg.in/asn1-ber.v1"
-       ;; Tests don't pass "vet" on go-1.11.  See
+       ;; Tests don't pass "vet" on Go since 1.11.  See
        ;; https://github.com/go-asn1-ber/asn1-ber/issues/20.
        #:phases
        (modify-phases %standard-phases
