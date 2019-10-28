@@ -612,7 +612,7 @@ passphrases.")
 (define-public ndctl
   (package
     (name "ndctl")
-    (version "65")
+    (version "67")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -621,7 +621,7 @@ passphrases.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0d8hzfvyxs2q8kgkwgdizlml41kin4mhx3vpdsjk34pfi7mqy69y"))))
+                "076jgw1g2aafqgnq705in0wnabysqk46dq5yxdv1qzgjmyhka39n"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("asciidoc" ,asciidoc)
