@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
+;;; Copyright © 2018, 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,40 +74,14 @@ archive, a directory, or an Emacs Lisp file."
         #t)
       (gnu:unpack #:source source)))
 
-(define* (set-emacs-load-path #:key source inputs #:allow-other-keys)
-  (define (inputs->directories inputs)
-    "Extract the directory part from INPUTS."
-    (match inputs
-      (((names . directories) ...) directories)))
-
-  (define (input-directory->el-directory input-directory)
-    "Return the correct Emacs Lisp directory in INPUT-DIRECTORY or #f, if there
-is no Emacs Lisp directory."
-    (let ((legacy-elisp-directory (string-append input-directory %legacy-install-suffix))
-          (guix-elisp-directory
-           (string-append
-            input-directory %install-suffix "/"
-            (store-directory->elpa-name-version input-directory))))
-      (cond
-       ((file-exists? guix-elisp-directory) guix-elisp-directory)
-       ((file-exists? legacy-elisp-directory) legacy-elisp-directory)
-       (else #f))))
-
-  (define (input-directories->el-directories input-directories)
-    "Return the list of Emacs Lisp directories in INPUT-DIRECTORIES."
-    (filter-map input-directory->el-directory input-directories))
-
-  "Set the EMACSLOADPATH environment variable so that dependencies are found."
+(define* (add-source-to-load-path #:key dummy #:allow-other-keys)
+  "Augment the EMACSLOADPATH environment variable with the source directory."
   (let* ((source-directory (getcwd))
-         (input-elisp-directories (input-directories->el-directories
-                                   (inputs->directories inputs)))
-         (emacs-load-path-value
-          (string-join
-           (append input-elisp-directories (list source-directory))
-           ":" 'suffix)))
+         (emacs-load-path-value (string-append (getenv "EMACSLOADPATH") ":"
+                                               source-directory)))
     (setenv "EMACSLOADPATH" emacs-load-path-value)
-    (format #t "environment variable `EMACSLOADPATH' set to ~a\n"
-            emacs-load-path-value)))
+    (format #t "source directory ~s appended to the `EMACSLOADPATH' \
+environment variable\n" source-directory)))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
   "Compile .el files."
@@ -269,7 +243,7 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (replace 'unpack unpack)
-    (add-after 'unpack 'set-emacs-load-path set-emacs-load-path)
+    (add-after 'unpack 'add-source-to-load-path add-source-to-load-path)
     (delete 'bootstrap)
     (delete 'configure)
     ;; Move the build phase after install: the .el files are byte compiled
