@@ -550,7 +550,8 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %icecat-version "68.2.0-guix0-preview1")
+(define %icecat-version "68.2.0-guix0-preview2")
+(define %icecat-build-id "20191028000000") ;must be of the form YYYYMMDDhhmmss
 
 ;; 'icecat-source' is a "computed" origin that generates an IceCat tarball
 ;; from the corresponding upstream Firefox ESR tarball, using the 'makeicecat'
@@ -576,7 +577,7 @@ from forcing GEXP-PROMISE."
 
          (upstream-icecat-base-version "68.1.0") ; maybe older than base-version
          ;;(gnuzilla-commit (string-append "v" upstream-icecat-base-version))
-         (gnuzilla-commit "395cc0798600cde44a30abaa3f5d08ce8b68f782")
+         (gnuzilla-commit "aa7ab9483a64c43e77736917dd83841ccc437300")
          (gnuzilla-source
           (origin
             (method git-fetch)
@@ -586,7 +587,7 @@ from forcing GEXP-PROMISE."
             (file-name (git-file-name "gnuzilla" upstream-icecat-base-version))
             (sha256
              (base32
-              "1ll3j2kpsfp1f9dxy67fay1cidsng02l8a3a23wdjqkxgrg1cf4g"))))
+              "03jygq1zna621y0ba6370cff4v2g9l57g3015y3vxbahnmzn9msa"))))
 
          (gnuzilla-fixes-patch
           (local-file (search-patch "icecat-gnuzilla-fixes.patch")))
@@ -1016,6 +1017,7 @@ from forcing GEXP-PROMISE."
                (setenv "CONFIG_SHELL" bash)
                (setenv "AUTOCONF" (which "autoconf")) ; must be autoconf-2.13
                (setenv "CC" "gcc")  ; apparently needed when Stylo is enabled
+               (setenv "MOZ_BUILD_DATE" ,%icecat-build-id) ; avoid timestamp
                (mkdir "../build")
                (chdir "../build")
                (format #t "build directory: ~s~%" (getcwd))
