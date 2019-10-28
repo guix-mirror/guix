@@ -933,14 +933,14 @@ add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
 (define-public python-coloredlogs
   (package
     (name "python-coloredlogs")
-    (version "7.3")
+    (version "10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coloredlogs" version))
        (sha256
         (base32
-         "1blcann6dyg5dhps9pg12rn0q0rjrlajpmmil0gy0j4cbvnl2il9"))))
+         "0dkw6xp0r1dwgz4s2f58npx5nxfq51wf4l6qkm5ib27slgfs4sdq"))))
     (build-system python-build-system)
     (arguments
      `(;Tests require some updated modules
