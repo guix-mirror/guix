@@ -919,7 +919,6 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
 long-running processes that know what they're doing.  Use with care!"
   ;; Typically this is meant to be used by Cuirass and Hydra, which can clear
   ;; caches when they start evaluating packages for another architecture.
-  (invalidate-memoization! derivation->bytevector)
   (invalidate-memoization! derivation-base16-hash)
 
   ;; FIXME: Comment out to work around <https://bugs.gnu.org/36487>.
