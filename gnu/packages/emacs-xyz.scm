@@ -7422,9 +7422,6 @@ news items, openrc and runscripts.")
         (base32
          "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
     (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-undo-tree" ,emacs-undo-tree)
-       ("emacs-goto-chg" ,emacs-goto-chg)))
     (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
     (description
