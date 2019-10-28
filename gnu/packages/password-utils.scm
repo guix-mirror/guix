@@ -775,7 +775,6 @@ between hosts and entries in the password store.")
                          (string-prefix? "i686" system)) "sse2")
                     ((string-prefix? "aarch" system) "neon")
                     (else "no")))))
-         #:tests? #f ;tests try to create '.john' in the build user's $HOME
          #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'chdir-src
@@ -821,7 +820,13 @@ between hosts and entries in the password store.")
                                      (find-files "." ".*\\.conf")))
                    (copy-recursively "rules" (string-append datadir "/rules")))
                  (copy-recursively "../doc" docdir)
-                 #t))))))
+                 #t)))
+           (delete 'check) ; Tests need installed .conf files; move after install
+           (add-after 'install 'check
+             (lambda args
+               (setenv "HOME" "/tmp")   ; Some tests need to write to ~/.john
+               (setenv "OMP_NUM_THREADS" (number->string (parallel-job-count)))
+               (apply (assoc-ref %standard-phases 'check) args))))))
       (home-page "http://www.openwall.com/john/")
       (synopsis "Password cracker")
       (description "John the Ripper is a fast password cracker.  Its primary
