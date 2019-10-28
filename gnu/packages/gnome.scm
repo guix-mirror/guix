@@ -2456,7 +2456,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.30.1.1")
+    (version "3.32.2")
     (source
      (origin
        (method url-fetch)
@@ -2465,12 +2465,13 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "12x7xmwh62yl0ax90v8nkx3jqzviaz9hz2g56yml78wzww20gawy"))
+         "0d8zdzmlz7fjv9xl20zl4ckidf465mvdjnbpxy3k08y9iw423q4x"))
        (patches (search-patches
                  "seahorse-gkr-use-0-on-empty-flags.patch"))))
     (build-system meson-build-system)
     (arguments
-     '(#:phases
+     '(#:glib-or-gtk? #t
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'skip-gtk-update-icon-cache
            ;; Don't create 'icon-theme.cache'.
@@ -2486,6 +2487,7 @@ engineering.")
        ("openldap" ,openldap)
        ("openssh" ,openssh)
        ("avahi" ,avahi)
+       ("libpwquality" ,libpwquality)
        ("libsecret" ,libsecret)
        ("libsoup" ,libsoup)))
     (native-inputs
@@ -2495,7 +2497,7 @@ engineering.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
-    (home-page "https://launchpad.net/gnome-themes-standard")
+    (home-page "https://wiki.gnome.org/Apps/Seahorse")
     (synopsis "Manage encryption keys and passwords in the GNOME keyring")
     (description
      "Seahorse is a GNOME application for managing encryption keys and
