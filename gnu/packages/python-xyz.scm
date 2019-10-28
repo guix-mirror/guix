@@ -7247,21 +7247,23 @@ Supported netlink families and protocols include:
 (define-public python-xlrd
   (package
     (name "python-xlrd")
-    (version "1.0.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "xlrd" version))
               (sha256
                (base32
-                "0s8hjiz01vbhy85xalrz0qlsmd9ypf36zjqrf97hh984spapvy0g"))))
+                "1ci93fda4n67qhdvfl16zasyxrpygzk53hs6m8z0rd4dxrnb6vjl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Current test in setup.py does not work as of 1.0.0, so use nose to
-         ;; run tests instead for now.
-         (replace 'check (lambda _ (invoke "nosetests"))))))
-    (native-inputs `(("python-nose"       ,python-nose)))
+         ;; Some tests depend on writing a temp file
+         ;; to the user's home directory
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (delete-file "tests/test_open_workbook.py")
+             #t)))))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
     (description "This package provides a library to extract data from
