@@ -10757,6 +10757,53 @@ powerful API: thread-safety; decorator syntax; support for memcached, redis,
 database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
     (license license:expat)))
 
+(define-public poetry
+  (package
+    (name "poetry")
+    (version "0.12.17")
+    ;; Poetry can only be built from source with poetry.
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poetry" version))
+       (sha256
+        (base32
+         "0gxwcd65qjmzqzppf53x51sic1rbcd9py6cdzx3aprppipimslvf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;; Pypi does not have tests.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             ;; Bug in poetry https://github.com/sdispater/poetry/issues/866.
+             (invoke "sed" "-i" "-e" "s/from distutils.core/from setuptools/"
+                     "setup.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-cachecontrol" ,python-cachecontrol)
+       ("python-cachy" ,python-cachy)
+       ("python-cleo" ,python-cleo)
+       ("python-glob2" ,python-glob2)
+       ("python-html5lib" ,python-html5lib)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-msgpack" ,python-msgpack)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-pkginfo" ,python-pkginfo)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)
+       ("python-shellingham" ,python-shellingham)
+       ("python-tomlkit" ,python-tomlkit)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://poetry.eustace.io/")
+    (synopsis "Python dependency management and packaging made easy")
+    (description "Poetry is a tool for dependency management and packaging
+in Python.  It allows you to declare the libraries your project depends on and
+it will manage (install/update) them for you.")
+    (license license:expat)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
