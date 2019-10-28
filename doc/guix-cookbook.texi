@@ -331,6 +331,7 @@ It does not assume much knowledge of the Guix system nor of the Lisp language.
 The reader is only expected to be familiar with the command line and to have some
 basic programming knowledge.
 
+@node A "Hello World" package
 @subsection A "Hello World" package
 
 The “Defining Packages” section of the manual introduces the basics of Guix
@@ -521,8 +522,785 @@ We've gone as far as we could without any knowledge of Scheme.  Before moving
 on to more complex packages, now is the right time to brush up on your Scheme
 knowledge.  @pxref{A Scheme Crash Course} to get up to speed.
 
-@c TODO: Continue the tutorial
+@node Setup
+@subsection Setup
 
+In the rest of this chapter we will rely on some basic Scheme
+programming knowledge.  Now let's detail the different possible setups
+for working on Guix packages.
+
+There are several ways to set up a Guix packaging environment.
+
+We recommend you work directly on the Guix source checkout since it makes it
+easier for everyone to contribute to the project.
+
+But first, let's look at other possibilities.
+
+@node Local file
+@subsubsection Local file
+
+This is what we previously did with @samp{my-hello}.  With the Scheme basics we've
+covered, we are now able to explain the leading chunks.  As stated in @code{guix
+package --help}:
+
+@example
+  -f, --install-from-file=FILE
+                         install the package that the code within FILE
+                         evaluates to
+@end example
+
+Thus the last expression @emph{must} return a package, which is the case in our
+earlier example.
+
+The @code{use-modules} expression tells which of the modules we need in the file.
+Modules are a collection of values and procedures.  They are commonly called
+"libraries" or "packages" in other programming languages.
+
+@node @samp{GUIX_PACKAGE_PATH}
+@subsubsection @samp{GUIX_PACKAGE_PATH}
+
+@emph{Note: Starting from Guix 0.16, the more flexible Guix "channels" are the
+preferred way and supersede @samp{GUIX_PACKAGE_PATH}.  See next section.}
+
+It can be tedious to specify the file from the command line instead of simply
+calling @code{guix package --install my-hello} as you would do with the official
+packages.
+
+Guix makes it possible to streamline the process by adding as many "package
+declaration paths" as you want.
+
+Create a directory, say @samp{~./guix-packages} and add it to the @samp{GUIX_PACKAGE_PATH}
+environment variable:
+
+@example
+$ mkdir ~/guix-packages
+$ export GUIX_PACKAGE_PATH=~/guix-packages
+@end example
+
+To add several directories, separate them with a colon (@code{:}).
+
+Our previous @samp{my-hello} needs some adjustments though:
+
+@example
+(define-module (my-hello)
+  #:use-module (guix licenses)
+  #:use-module (guix packages)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix download))
+
+(define-public my-hello
+  (package
+    (name "my-hello")
+    (version "2.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hello/hello-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
+    (build-system gnu-build-system)
+    (synopsis "Hello, Guix world: An example custom Guix package")
+    (description
+     "GNU Hello prints the message \"Hello, world!\" and then exits.  It
+serves as an example of standard GNU coding practices.  As such, it supports
+command-line arguments, multiple languages, and so on.")
+    (home-page "https://www.gnu.org/software/hello/")
+    (license gpl3+)))
+@end example
+
+Note that we have assigned the package value to an exported variable name with
+@code{define-public}.  This is effectively assigning the package to the @code{my-hello}
+variable so that it can be referenced, among other as dependency of other
+packages.
+
+If you use @code{guix package --install-from-file=my-hello.scm} on the above file, it
+will fail because the last expression, @code{define-public}, does not return a
+package.  If you want to use @code{define-public} in this use-case nonetheless, make
+sure the file ends with an evaluation of @code{my-hello}:
+
+@example
+; ...
+(define-public my-hello
+  ; ...
+  )
+
+my-hello
+@end example
+
+This last example is not very typical.
+
+Now @samp{my-hello} should be part of the package collection like all other official
+packages.  You can verify this with:
+
+@example
+$ guix package --show=my-hello
+@end example
+
+@node Guix channels
+@subsubsection Guix channels
+
+Guix 0.16 features channels, which is very similar to @samp{GUIX_PACKAGE_PATH} but
+provides better integration and provenance tracking.  Channels are not
+necessarily local, they can be maintained as a public Git repository for
+instance.  Of course, several channels can be used at the same time.
+
+@xref{Channels,,, guix, GNU Guix Reference Manual} for setup details.
+
+@node Direct checkout hacking
+@subsubsection Direct checkout hacking
+
+Working directly on the Guix project is recommended: it reduces the friction
+when the time comes to submit your changes upstream to let the community benefit
+from your hard work!
+
+Unlike most software distributions, the Guix repository holds in one place both
+the tooling (including the package manager) and the package definitions.  This
+choice was made so that it would give developers the flexibility to modify the
+API without breakage by updating all packages at the same time.  This reduces
+development inertia.
+
+Check out the official @uref{https://git-scm.com/, Git} repository:
+
+@example
+$ git clone https://git.savannah.gnu.org/git/guix.git
+@end example
+
+In the rest of this article, we use @samp{$GUIX_CHECKOUT} to refer to the location of
+the checkout.
+
+
+Follow the instruction in the manual (@pxref{Contributing,,, guix, GNU Guix
+Reference Manual}) to set up the repository environment.
+
+Once ready, you should be able to use the package definitions from the
+repository environment.
+
+Feel free to edit package definitions found in @samp{$GUIX_CHECKOUT/gnu/packages}.
+
+The @samp{$GUIX_CHECKOUT/pre-inst-env} script lets you use @samp{guix} over the package
+collection of the repository.
+
+@itemize
+@item
+Search packages, such as Ruby:
+
+@example
+  $ cd $GUIX_CHECKOUT
+  $ ./pre-inst-env guix package --list-available=ruby
+      ruby    1.8.7-p374      out     gnu/packages/ruby.scm:119:2
+      ruby    2.1.6   out     gnu/packages/ruby.scm:91:2
+      ruby    2.2.2   out     gnu/packages/ruby.scm:39:2
+@end example
+
+@item
+Build a package, here Ruby version 2.1:
+
+@example
+  $ ./pre-inst-env guix build --keep-failed ruby@@2.1
+  /gnu/store/c13v73jxmj2nir2xjqaz5259zywsa9zi-ruby-2.1.6
+@end example
+
+@item
+Install it to your user profile:
+
+@example
+  $ ./pre-inst-env guix package --install ruby@@2.1
+@end example
+
+@item
+Check for common mistakes:
+
+@example
+  $ ./pre-inst-env guix lint ruby@@2.1
+@end example
+@end itemize
+
+Guix strives at maintaining a high packaging standard; when contributing to the
+Guix project, remember to
+
+@itemize
+@item
+follow the coding style (@pxref{Coding Style,,, guix, GNU Guix Reference Manual}),
+@item
+and review the check list from the manual (@pxref{Submitting Patches,,, guix, GNU Guix Reference Manual}).
+@end itemize
+
+Once you are happy with the result, you are welcome to send your contribution to
+make it part of Guix.  This process is also detailed in the manual.  (@pxref{Contributing,,, guix, GNU Guix Reference Manual})
+
+
+It's a community effort so the more join in, the better Guix becomes!
+
+@node Extended example
+@subsection Extended example
+
+The above "Hello World" example is as simple as it goes.  Packages can be more
+complex than that and Guix can handle more advanced scenarios.  Let's look at
+another, more sophisticated package (slightly modified from the source):
+
+@example
+(define-module (gnu packages version-control)
+  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages tls))
+
+(define-public my-libgit2
+  (let ((commit "e98d0a37c93574d2c6107bf7f31140b548c6a7bf")
+        (revision "1"))
+    (package
+      (name "my-libgit2")
+      (version (git-version "0.26.6" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/libgit2/libgit2/")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "17pjvprmdrx4h6bb1hhc98w9qi6ki7yl57f090n9kbhswxqfs7s3"))
+                (patches (search-patches "libgit2-mtime-0.patch"))
+                (modules '((guix build utils)))
+                (snippet '(begin
+                            ;; Remove bundled software.
+                            (delete-file-recursively "deps")
+                            #t))))
+      (build-system cmake-build-system)
+      (outputs '("out" "debug"))
+      (arguments
+       `(#:tests? #t                            ; Run the test suite (this is the default)
+         #:configure-flags '("-DUSE_SHA1DC=ON") ; SHA-1 collision detection
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'fix-hardcoded-paths
+             (lambda _
+               (substitute* "tests/repo/init.c"
+                 (("#!/bin/sh") (string-append "#!" (which "sh"))))
+               (substitute* "tests/clar/fs.h"
+                 (("/bin/cp") (which "cp"))
+                 (("/bin/rm") (which "rm")))
+               #t))
+           ;; Run checks more verbosely.
+           (replace 'check
+             (lambda _ (invoke "./libgit2_clar" "-v" "-Q")))
+           (add-after 'unpack 'make-files-writable-for-tests
+               (lambda _ (for-each make-file-writable (find-files "." ".*")))))))
+      (inputs
+       `(("libssh2" ,libssh2)
+         ("http-parser" ,http-parser)
+         ("python" ,python-wrapper)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (propagated-inputs
+       ;; These two libraries are in 'Requires.private' in libgit2.pc.
+       `(("openssl" ,openssl)
+         ("zlib" ,zlib)))
+      (home-page "https://libgit2.github.com/")
+      (synopsis "Library providing Git core methods")
+      (description
+       "Libgit2 is a portable, pure C implementation of the Git core methods
+provided as a re-entrant linkable library with a solid API, allowing you to
+write native speed custom Git applications in any language with bindings.")
+      ;; GPLv2 with linking exception
+      (license license:gpl2))))
+@end example
+
+(In those cases were you only want to tweak a few fields from a package
+definition, you should rely on inheritance instead of copy-pasting everything.
+See below.)
+
+Let's discuss those fields in depth.
+
+@subsubsection @code{git-fetch} method
+
+Unlike the @code{url-fetch} method, @code{git-fetch} expects a @code{git-reference} which takes
+a Git repository and a commit.  The commit can be any Git reference such as
+tags, so if the @code{version} is tagged, then it can be used directly.  Sometimes
+the tag is prefixed with a @code{v}, in which case you'd use @code{(commit (string-append
+"v" version))}.
+
+To ensure that the source code from the Git repository is stored in a unique
+directory with a readable name we use @code{(file-name (git-file-name name
+version))}.
+
+Note that there is also a @code{git-version} procedure that can be used to derive the
+version when packaging programs for a specific commit.
+
+@subsubsection Snippets
+
+Snippets are quoted (i.e. non-evaluated) Scheme code that are a means of patching
+the source.  They are a Guix-y alternative to the traditional @samp{.patch} files.
+Because of the quote, the code in only evaluated when passed to the Guix daemon
+for building.
+
+There can be as many snippet as needed.
+
+Snippets might need additional Guile modules which can be imported from the
+@code{modules} field.
+
+@subsubsection Inputs
+
+First, a syntactic comment: See the quasi-quote / comma syntax?
+
+@example
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+@end example
+
+is equivalent to
+
+@example
+    (native-inputs
+     (list (list "pkg-config" pkg-config)))
+@end example
+
+You'll mostly see the former because it's shorter.
+
+There are 3 different input types.  In short:
+
+@table @asis
+@item native-inputs
+Required for building but not runtime -- installing a package
+through a substitute won't install these inputs.
+@item inputs
+Installed in the store but not in the profile, as well as being
+present at build time.
+@item propagated-inputs
+Installed in the store and in the profile, as well as
+being present at build time.
+@end table
+
+@xref{Package Reference,,, guix, GNU Guix Reference Manual} for more details.
+
+The distinction between the various inputs is important: if a dependency can be
+handled as an @emph{input} instead of a @emph{propagated input}, it should be done so, or
+else it "pollutes" the user profile for no good reason.
+
+For instance, a user installing a graphical program that depends on a
+command line tool might only be interested in the graphical part, so there is no
+need to force the command line tool into the user profile.  The dependency is a
+concern to the package, not to the user.  @emph{Inputs} make it possible to handle
+dependencies without bugging the user by adding undesired executable files (or
+libraries) to their profile.
+
+Same goes for @emph{native-inputs}: once the program is installed, build-time
+dependencies can be safely garbage-collected.
+It also matters when a substitute is available, in which case only the @emph{inputs}
+and @emph{propagated inputs} will be fetched: the @emph{native inputs} are not required to
+install a package from a substitute.
+
+@subsubsection Outputs
+
+Just like how a package can have multiple inputs, it can also produce multiple
+outputs.
+
+Each output corresponds to a separate directory in the store.
+
+The user can choose which output to install; this is useful to save space or
+to avoid polluting the user profile with unwanted executables or libraries.
+
+Output separation is optional.  When the @code{outputs} field is left out, the
+default and only output (the complete package) is referred to as @code{"out"}.
+
+Typical separate output names include @code{debug} and @code{doc}.
+
+It's advised to separate outputs only when you've shown it's worth it: if the
+output size is significant (compare with @code{guix size}) or in case the package is
+modular.
+
+@subsubsection Build system arguments
+
+The @code{arguments} is a keyword-value list used to configure the build process.
+
+The simplest argument @code{#:tests?} can be used to disable the test suite when
+building the package.  This is mostly useful when the package does not feature
+any test suite.  It's strongly recommended to keep the test suite on if there is
+one.
+
+Another  common argument is @code{:make-flags}, which specifies a list of flags to
+append when running make, as you would from the command line.  For instance, the
+following flags
+
+@example
+#:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out"))
+                   "CC=gcc")
+@end example
+
+translate into
+
+@example
+$ make CC=gcc prefix=/gnu/store/...-<out>
+@end example
+
+This sets the C compiler to @code{gcc} and the @code{prefix} variable (the installation
+directory in Make parlance) to @code{(assoc-ref %outputs "out")}, which is a build-stage
+global variable pointing to the destination directory in the store (something like
+@samp{/gnu/store/...-my-libgit2-20180408}).
+
+Similarly, it's possible to set the "configure" flags.
+
+@example
+#:configure-flags '("-DUSE_SHA1DC=ON")
+@end example
+
+The @code{%build-inputs} variable is also generated in scope.  It's an association
+table that maps the input names to their store directories.
+
+The @code{phases} keyword lists the sequential steps of the build system.  Typically
+phases include @code{unpack}, @code{configure}, @code{build}, @code{install} and @code{check}.  To know
+more about those phases, you need to work out the appropriate build system
+definition in @samp{$GUIX_CHECKOUT/guix/build/gnu-build-system.scm}:
+
+@example
+(define %standard-phases
+  ;; Standard build phases, as a list of symbol/procedure pairs.
+  (let-syntax ((phases (syntax-rules ()
+                         ((_ p ...) `((p . ,p) ...)))))
+    (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack
+            bootstrap
+            patch-usr-bin-file
+            patch-source-shebangs configure patch-generated-file-shebangs
+            build check install
+            patch-shebangs strip
+            validate-runpath
+            validate-documentation-location
+            delete-info-dir-file
+            patch-dot-desktop-files
+            install-license-files
+            reset-gzip-timestamps
+            compress-documentation)))
+@end example
+
+Or from the REPL:
+
+@example
+> (add-to-load-path "/path/to/guix/checkout")
+> ,module (guix build gnu-build-system)
+> (map first %standard-phases)
+(set-SOURCE-DATE-EPOCH set-paths install-locale unpack bootstrap patch-usr-bin-file patch-source-shebangs configure patch-generated-file-shebangs build check install patch-shebangs strip validate-runpath validate-documentation-location delete-info-dir-file patch-dot-desktop-files install-license-files reset-gzip-timestamps compress-documentation)
+@end example
+
+If you want to know more about what happens during those phases, consult the
+associated procedures.
+
+For instance, as of this writing the definition of @code{unpack} for the GNU build
+system is
+
+@example
+(define* (unpack #:key source #:allow-other-keys)
+  "Unpack SOURCE in the working directory, and change directory within the
+source.  When SOURCE is a directory, copy it in a sub-directory of the current
+working directory."
+  (if (file-is-directory? source)
+      (begin
+        (mkdir "source")
+        (chdir "source")
+
+        ;; Preserve timestamps (set to the Epoch) on the copied tree so that
+        ;; things work deterministically.
+        (copy-recursively source "."
+                          #:keep-mtime? #t))
+      (begin
+        (if (string-suffix? ".zip" source)
+            (invoke "unzip" source)
+            (invoke "tar" "xvf" source))
+        (chdir (first-subdirectory "."))))
+  #t)
+@end example
+
+Note the @code{chdir} call: it changes the working directory to where the source was
+unpacked.
+Thus every phase following the @code{unpack} will use the source as a working
+directory, which is why we can directly work on the source files.
+That is to say, unless a later phase changes the working directory to something
+else.
+
+We modify the list of @code{%standard-phases} of the build system with the
+@code{modify-phases} macro as per the list of specified modifications, which may have
+the following forms:
+
+@itemize
+@item
+@code{(add-before PHASE NEW-PHASE PROCEDURE)}: Run @code{PROCEDURE} named @code{NEW-PHASE} before @code{PHASE}.
+@item
+@code{(add-after PHASE NEW-PHASE PROCEDURE)}: Same, but afterwards.
+@item
+@code{(replace PHASE PROCEDURE)}.
+@item
+@code{(delete PHASE)}.
+@end itemize
+
+The @code{PROCEDURE} supports the keyword arguments @code{inputs} and @code{outputs}.  Each
+input (whether @emph{native}, @emph{propagated} or not) and output directory is referenced
+by their name in those variables.  Thus @code{(assoc-ref outputs "out")} is the store
+directory of the main output of the package.  A phase procedure may look like
+this:
+
+@example
+(lambda* (#:key inputs outputs #:allow-other-keys)
+  (let (((bash-directory (assoc-ref inputs "bash"))
+         (output-directory (assoc-ref outputs "out"))
+         (doc-directory (assoc-ref outputs "doc"))
+  ; ...
+  #t)
+@end example
+
+The procedure must return @code{#t} on success.  It's brittle to rely on the return
+value of the last expression used to tweak the phase because there is no
+guarantee it would be a @code{#t}.  Hence the trailing @code{#t} to ensure the right value
+is returned on success.
+
+@subsubsection Code staging
+
+The astute reader may have noticed the quasi-quote and comma syntax in the
+argument field.  Indeed, the build code in the package declaration should not be
+evaluated on the client side, but only when passed to the Guix daemon.  This
+mechanism of passing code around two running processes is called @uref{https://arxiv.org/abs/1709.00833, code staging}.
+
+@subsubsection "Utils" functions
+
+When customizing @code{phases}, we often need to write code that mimics the
+equivalent system invocations (@code{make}, @code{mkdir}, @code{cp}, etc.) commonly used during
+regular "Unix-style" installations.
+
+Some like @code{chmod} are native to Guile.
+@xref{,,, guile, Guile reference manual} for a complete list.
+
+Guix provides additional helper functions which prove especially handy in the
+context of package management.
+
+Some of those functions can be found in
+@samp{$GUIX_CHECKOUT/guix/guix/build/utils.scm}.  Most of them mirror the behaviour
+of the traditional Unix system commands:
+
+@table @asis
+@item which
+Like the @samp{which} system command.
+@item find-files
+Akin to the @samp{find} system command.
+@item mkdir-p
+Like @samp{mkdir -p}, which creates all parents as needed.
+@item install-file
+Similar to @samp{install} when installing a file to a (possibly
+non-existing) directory.  Guile has @code{copy-file} which works
+like @samp{cp}.
+@item copy-recursively
+Like @samp{cp -r}.
+@item delete-file-recursively
+Like @samp{rm -rf}.
+@item invoke
+Run an executable.  This should be used instead of @code{system*}.
+@item with-directory-excursion
+Run the body in a different working directory,
+then restore the previous working directory.
+@item substitute*
+A "sed-like" function.
+@end table
+
+@subsubsection Module prefix
+
+The license in our last example needs a prefix: this is because of how the
+@code{license} module was imported in the package, as @code{#:use-module ((guix licenses)
+#:prefix license:)}.  The Guile module import mechanism
+(@pxref{Using Guile Modules,,, guile, Guile reference manual})
+gives the user full control over namespacing: this is needed to avoid
+clashes between, say, the
+@samp{zlib} variable from @samp{licenses.scm} (a @emph{license} value) and the @samp{zlib} variable
+from @samp{compression.scm} (a @emph{package} value).
+
+@node Other build systems
+@subsection Other build systems
+
+What we've seen so far covers the majority of packages using a build system
+other than the @code{trivial-build-system}.  The latter does not automate anything
+and leaves you to build everything manually.  This can be more demanding and we
+won't cover it here for now, but thankfully it is rarely necessary to fall back
+on this system.
+
+For the other build systems, such as ASDF, Emacs, Perl, Ruby and many more, the
+process is very similar to the GNU build system except for a few specialized
+arguments.
+
+Learn more about build systems in
+@itemize
+@item
+@uref{https://www.gnu.org/software/guix/manual/en/html_node/Build-Systems.html#Build-Systems, the manual, section 4.2 Build systems},
+@item
+the source code in the @samp{$GUIX_CHECKOUT/guix/build} and
+@samp{$GUIX_CHECKOUT/guix/build-system} directories.
+@end itemize
+
+@node Programmable and automated package definition
+@subsection Programmable and automated package definition
+
+We can't repeat it enough: having a full-fledged programming language at hand
+empowers us in ways that reach far beyond traditional package management.
+
+Let's illustrate this with some awesome features of Guix!
+
+@node Recursive importers
+@subsubsection Recursive importers
+
+You might find some build systems good enough that there is little to do at all
+to write a package, to the point that it becomes repetitive and tedious after a
+while.  A @emph{raison d'être} of computers is to replace human beings at those
+boring tasks.  So let's tell Guix to do this for us and create the package
+definition of an R package from CRAN (the output is trimmed for conciseness):
+
+@example
+$ guix import cran --recursive walrus
+
+(define-public r-mc2d
+    ; ...
+    (license gpl2+)))
+
+(define-public r-jmvcore
+    ; ...
+    (license gpl2+)))
+
+(define-public r-wrs2
+    ; ...
+    (license gpl3)))
+
+(define-public r-walrus
+  (package
+    (name "r-walrus")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "walrus" version))
+        (sha256
+          (base32
+            "1nk2glcvy4hyksl5ipq2mz8jy4fss90hx6cq98m3w96kzjni6jjj"))))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-ggplot2" ,r-ggplot2)
+        ("r-jmvcore" ,r-jmvcore)
+        ("r-r6" ,r-r6)
+        ("r-wrs2" ,r-wrs2)))
+    (home-page "https://github.com/jamovi/walrus")
+    (synopsis "Robust Statistical Methods")
+    (description
+      "This package provides a toolbox of common robust statistical
+tests, including robust descriptives, robust t-tests, and robust ANOVA.
+It is also available as a module for 'jamovi' (see
+<https://www.jamovi.org> for more information).  Walrus is based on the
+WRS2 package by Patrick Mair, which is in turn based on the scripts and
+work of Rand Wilcox.  These analyses are described in depth in the book
+'Introduction to Robust Estimation & Hypothesis Testing'.")
+    (license gpl3)))
+@end example
+
+The recursive importer won't import packages for which Guix already has package
+definitions, except for the very first.
+
+Not all applications can be packaged this way, only those relying on a select
+number of supported systems.  Read about the full list of importers in
+the guix import section of the manual
+(@pxref{Invoking guix import,,, guix, GNU Guix Reference Manual}).
+
+@node Automatic update
+@subsubsection Automatic update
+
+Guix can be smart enough to check for updates on systems it knows.  It can
+report outdated package definitions with
+
+@example
+$ guix refresh hello
+@end example
+
+In most cases, updating a package to a newer version requires little more than
+changing the version number and the checksum.  Guix can do that automatically as
+well:
+
+@example
+$ guix refresh hello --update
+@end example
+
+@node Inheritance
+@subsubsection Inheritance
+
+If you've started browsing the existing package definitions, you might have
+noticed that a significant number of them have a @code{inherit} field:
+
+@example
+(define-public adwaita-icon-theme
+  (package (inherit gnome-icon-theme)
+    (name "adwaita-icon-theme")
+    (version "3.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "17fpahgh5dyckgz7rwqvzgnhx53cx9kr2xw0szprc6bnqy977fi8"))))
+    (native-inputs
+     `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
+@end example
+
+All unspecified fields are inherited from the parent package.  This is very
+convenient to create alternative packages, for instance with different source,
+version or compilation options.
+
+@node Getting help
+@subsection Getting help
+
+Sadly, some applications can be tough to package.  Sometimes they need a patch to
+work with the non-standard filesystem hierarchy enforced by the store.
+Sometimes the tests won't run properly.  (They can be skipped but this is not
+recommended.)  Other times the resulting package won't be reproducible.
+
+Should you be stuck, unable to figure out how to fix any sort of packaging
+issue, don't hesitate to ask the community for help.
+
+See the @uref{https://www.gnu.org/software/guix/contact/, Guix homepage} for information on the mailing lists, IRC, etc.
+
+@node Conclusion
+@subsection Conclusion
+
+This tutorial was a showcase of the sophisticated package management that Guix
+boasts.  At this point we have mostly restricted this introduction to the
+@code{gnu-build-system} which is a core abstraction layer on which more advanced
+abstractions are based.
+
+Where do we go from here?  Next we ought to dissect the innards of the build
+system by removing all abstractions, using the @code{trivial-build-system}: this
+should give us a thorough understanding of the process before investigating some
+more advanced packaging techniques and edge cases.
+
+Other features worth exploring are the interactive editing and debugging
+capabilities of Guix provided by the Guile REPL@.
+
+Those fancy features are completely optional and can wait; now is a good time
+to take a well-deserved break.  With what we've introduced here you should be
+well armed to package lots of programs.  You can get started right away and
+hopefully we will see your contributions soon!
+
+@node References
+@subsection References
+
+@itemize
+@item
+The @uref{https://www.gnu.org/software/guix/manual/en/html_node/Defining-Packages.html, package reference in the manual}
+
+@item
+@uref{https://gitlab.com/pjotrp/guix-notes/blob/master/HACKING.org, Pjotr’s hacking guide to GNU Guix}
+
+@item
+@uref{https://www.gnu.org/software/guix/guix-ghm-andreas-20130823.pdf, "GNU Guix: Package without a scheme!"}, by Andreas Enge
+@end itemize
 
 @c *********************************************************************
 @node System Configuration
