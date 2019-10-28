@@ -10644,6 +10644,26 @@ create new TOML documents from scratch using the provided helpers.  Part of the
 implementation as been adapted, improved and fixed from Molten.")
     (license license:expat)))
 
+(define-public python-shellingham
+  (package
+    (name "python-shellingham")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shellingham" version))
+       (sha256
+        (base32
+         "1q7kws7w4x2hji3g7y0ni9ddk4sd676ylrb3db54gbpys6xj6nwq"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sarugaku/shellingham")
+    (synopsis "Tool to detect surrounding shell")
+    (description
+     "Shellingham detects what shell the current Python executable is
+running in.")
+    (license license:isc)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
