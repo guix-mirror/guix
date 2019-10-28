@@ -508,7 +508,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.1.2")
+    (version "3.2")
     (outputs '("out" "static"))
     (source
       (origin
@@ -518,8 +518,7 @@ H.264 (MPEG-4 AVC) video streams.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32
-          "1ajr59gjj47gnczfb2qhmzclj746pdiq9a1d81b0mq22k8f5yy3g"))
+         (base32 "0fqkhfhr22gzavxn60cpnj3agwdf5afivszxf3haj5k1sny7jk9n"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
