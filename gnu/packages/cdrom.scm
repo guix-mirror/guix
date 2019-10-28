@@ -812,14 +812,14 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
 (define-public libisofs
   (package
     (name "libisofs")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libisofs-" version ".tar.gz"))
              (sha256
               (base32
-               "001l3akf3wb6msl9man776w560iqyvsbwwzs7d7y7msx13irspys"))))
+               "002mcyqwg625a8hqvsrmgm26mhhfwj0j7rahfhsqirmk02b16npg"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
