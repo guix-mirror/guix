@@ -11,7 +11,7 @@
 
  (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
         (title (en "@command{guix pull} now honors
-@file{/etc/guix/channels.scm")
+@file{/etc/guix/channels.scm}")
                (fr "@command{guix pull} lit maintenant
 @file{/etc/guix/channels.scm}"))
         (body
