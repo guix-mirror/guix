@@ -801,7 +801,7 @@ reference.
 
 Guix provides a very useful feature that may be quite foreign to newcomers:
 @emph{profiles}.  They are a way to group package installations together and all users
-on a same system are free to use as many profiles as they want.
+on the same system are free to use as many profiles as they want.
 
 Whether you're a developer or not, you may find that multiple profiles bring you
 great power and flexibility.  While they shift the paradigm somewhat compared to
@@ -830,7 +830,7 @@ shells, each of them running different profiles.
 
 @item
 Isolation: Programs from one profile will not use programs from the other, and
-they user can even install different versions of the same programs to the two
+the user can even install different versions of the same programs to the two
 profiles without conflict.
 
 @item
@@ -840,8 +840,10 @@ This makes multiple profiles storage-efficient.
 @item
 Reproducible: when used with declarative manifests, a profile can be fully
 specified by the Guix commit that was active when it was set up.  This means
-that the exact same profile can be @uref{https://guix.gnu.org/blog/2018/multi-dimensional-transactions-and-rollbacks-oh-my/, set up anywhere, anytime}, with just the
-commit information.  See the section on @ref{Reproducible profiles}.
+that the exact same profile can be
+@uref{https://guix.gnu.org/blog/2018/multi-dimensional-transactions-and-rollbacks-oh-my/,
+set up anywhere and anytime}, with just the commit information.  See the
+section on @ref{Reproducible profiles}.
 
 @item
 Easier upgrades and maintenance: Multiple profiles make it easy to keep
@@ -1012,7 +1014,7 @@ the profile is loaded, you've got two options:
 @item
 Either export the variable manually, e.g.
 @example
-export MANPATH=/path/to/profile$@{MANPATH:+:@}$MANPATH"
+export MANPATH=/path/to/profile$@{MANPATH:+:@}$MANPATH
 @end example
 
 @item
