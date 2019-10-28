@@ -5972,6 +5972,11 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
          (base32
           "14jnpfcpgqr9sx8ppd286jzcbk0b36hbqsvd8jkvffipzw5v8768"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "test"))))))
     (inputs
       `(("libxml2" ,libxml2)
         ("libxslt" ,libxslt)))
