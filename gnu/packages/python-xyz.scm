@@ -10664,6 +10664,28 @@ implementation as been adapted, improved and fixed from Molten.")
 running in.")
     (license license:isc)))
 
+(define-public python-memcached
+  (package
+    (name "python-memcached")
+    (version "1.59")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-memcached" version))
+       (sha256
+        (base32
+         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page
+     "https://github.com/linsomniac/python-memcached")
+    (synopsis "Pure python memcached client")
+    (description
+     "This software is a pure Python interface to the memcached memory cache
+daemon.  It is the client side software which allows storing values in one or
+more, possibly remote, memcached servers.")
+    (license license:psfl)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
