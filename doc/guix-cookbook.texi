@@ -269,7 +269,7 @@ online}, together with
 @uref{https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/video-lectures/,
 videos of the lectures by the authors}.  The book is available in Texinfo
 format as the @code{sicp} Guix package.  Go ahead, run @code{guix install
-sicp} and start reading with @code{info sicp} (or with the Emacs Info reader).
+sicp} and start reading with @code{info sicp} (@pxref{,,, sicp, Structure and Interpretation of Computer Programs}).
 An @uref{https://sarabander.github.io/sicp/, unofficial ebook is also
 available}.
 
