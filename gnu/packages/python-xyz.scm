@@ -10686,6 +10686,28 @@ daemon.  It is the client side software which allows storing values in one or
 more, possibly remote, memcached servers.")
     (license license:psfl)))
 
+(define-public python-clikit
+  (package
+    (name "python-clikit")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "clikit" version))
+       (sha256
+        (base32
+         "0dc8czib5f4j9px1ivcpqnmivnx2zjpc0xb00ldrhsqylks7r06n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pastel" ,python-pastel)
+       ("python-pylev" ,python-pylev)))
+    (home-page "https://github.com/sdispater/clikit")
+    (synopsis "Group of utilities to build command line interfaces")
+    (description
+     "CliKit is a group of utilities to build testable command line
+interfaces.")
+    (license license:expat)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
