@@ -10619,6 +10619,31 @@ docstring and colored output.")
 (define-public python2-cleo
   (package-with-python2 python-cleo))
 
+(define-public python-tomlkit
+  (package
+    (name "python-tomlkit")
+    (version "0.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tomlkit" version))
+       (sha256
+        (base32
+         "18820ga5z3if1w8dvykxrfm000akracq01ic402xrbljgbn5grn4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/sdispater/tomlkit")
+    (synopsis "Style preserving TOML library")
+    (description
+     "TOML Kit is a 0.5.0-compliant TOML library.  It includes a parser that
+preserves all comments, indentations, whitespace and internal element ordering,
+and makes them accessible and editable via an intuitive API.  It can also
+create new TOML documents from scratch using the provided helpers.  Part of the
+implementation as been adapted, improved and fixed from Molten.")
+    (license license:expat)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
