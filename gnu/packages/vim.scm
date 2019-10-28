@@ -4,7 +4,7 @@
 ;;; Copyright © 2016, 2017 ng0 <ng0@n0.is>
 ;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 HiPhish <hiphish@posteo.de>
 ;;; Copyright © 2019 Julien Lepiller <julien@lepiller.eu>
 ;;;
@@ -609,7 +609,7 @@ and powerline symbols, etc.")
 (define-public vim-syntastic
   (package
     (name "vim-syntastic")
-    (version "3.9.0")
+    (version "3.10.0")
     (source
      (origin
        (method git-fetch)
@@ -618,8 +618,7 @@ and powerline symbols, etc.")
              (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "121a1mxgfng2y5zmivyyk02mca8pyw72crivf4f1q9nhn0barf57"))))
+        (base32 "0j91f72jaz1s6aw1hpjiz30vk2ds2aqd9gisk91grsldy6nz6hhz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
