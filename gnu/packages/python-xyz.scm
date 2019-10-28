@@ -10592,16 +10592,16 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.6.1")
+    (version "0.6.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "0q1cf0szr0d54am4pypzwdnm74zpladdsinad94c2fz5i06fdpf7"))))
+                "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5"))))
     (build-system python-build-system)
     (native-inputs
-     `(;; For testing
+     `( ;; For testing
        ("python-mock" ,python-mock)
        ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest" ,python-pytest)))
