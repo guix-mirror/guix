@@ -251,15 +251,11 @@ automatically.")
        "00zc3rzj97gscby31djlqyczvqpyhrl66i44czwzmmn7rc5j03m1"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:make-flags '("CC=gcc")
+    `(#:make-flags
+      (list "CC=gcc" (string-append "PREFIX=" (assoc-ref %outputs "out")))
       #:phases
       (modify-phases %standard-phases
-        (delete 'configure)
-        (add-before 'install 'hardcode-paths
-          (lambda* (#:key outputs #:allow-other-keys)
-            (substitute* "Makefile"
-                         (("/usr/local") (assoc-ref outputs "out")))
-            #t)))))
+        (delete 'configure))))
    (home-page "https://git.sr.ht/~sircmpwn/scdoc")
    (synopsis "Simple man page generator")
    (description "scdoc is a simple man page generator written for POSIX systems
