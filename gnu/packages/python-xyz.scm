@@ -14329,14 +14329,20 @@ such as figshare or Zenodo.")
 (define-public python-pyro4
   (package
     (name "python-pyro4")
-    (version "4.75")
+    (version "4.77")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pyro4" version))
        (sha256
-        (base32 "1dfpp36imddx19yv0kd28gk1l71ckhpqy6jd590wpm2680jw15rq"))))
+        (base32 "0gsjg869y4gpy265s1gj1f2qy6jn5iz8r2bwwnq78r1r5yi15zib"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ;FIXME: Some tests require network access.
+    (native-inputs
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-dill" ,python-dill)
+       ("python-msgpack" ,python-msgpack)))
     (propagated-inputs
      `(("python-serpent" ,python-serpent)))
     (home-page "https://pyro4.readthedocs.io")
