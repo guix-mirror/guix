@@ -1157,13 +1157,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.24.2")
+    (version "0.25.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))))
+        (base32 "1gp2pvzdiakvgjmykdzdlzrsfbg4vjm49jjdl9s0ha0a3yfs34fa"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
