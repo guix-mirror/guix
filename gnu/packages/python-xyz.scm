@@ -10729,6 +10729,34 @@ smaller.  Small integers are encoded into a single byte, and typical short
 strings require only one extra byte in addition to the strings themselves.")
     (license license:asl2.0)))
 
+(define-public python-cachy
+  (package
+    (name "python-cachy")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cachy" version))
+       (sha256
+        (base32
+         "0v6mjyhgx6j7ya20bk69cr3gdzdkdf6psay0h090rscclgji65dp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-fakeredis" ,python-fakeredis)
+       ("python-flexmock" ,python-flexmock)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-memcached" ,python-memcached)
+       ("python-msgpack-python" ,python-msgpack-python)
+       ("python-redis" ,python-redis)))
+    (home-page "https://github.com/sdispater/cachy")
+    (synopsis "Simple yet effective caching library")
+    (description
+     "Cachy provides a simple yet effective caching library.  A simple but
+powerful API: thread-safety; decorator syntax; support for memcached, redis,
+database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
+    (license license:expat)))
+
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
