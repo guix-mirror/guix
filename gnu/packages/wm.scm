@@ -25,6 +25,8 @@
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
+;;; Copyright © 2018, 2019 Pierre Langlois <pierre.langlois@gmx.com>
+;;; Copyright © 2016, 2017 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,12 +48,14 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system asdf)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system meson)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
@@ -73,6 +77,7 @@
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lisp-xyz)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
@@ -87,6 +92,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages suckless)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages video)
@@ -1485,3 +1491,118 @@ Wlroots based compositors.")
     (description "Mako is a lightweight notification daemon for Wayland
 compositors that support the layer-shell protocol.")
     (license license:expat))) ; MIT license
+
+(define-public stumpwm
+  (package
+    (name "stumpwm")
+    (version "18.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/stumpwm/stumpwm.git")
+             (commit version)))
+       (file-name (git-file-name "stumpwm" version))
+       (sha256
+        (base32 "003g1fmh7446ws49866kzny4lrk1wf034dq5fa4m9mq1nzc7cwv7"))
+       (patches
+        ;; This patch is included in the post-18.11 git master tree
+        ;; and can be removed when we move to the next release.
+        (search-patches "stumpwm-fix-broken-read-one-line.patch"))))
+    (build-system asdf-build-system/sbcl)
+    (native-inputs `(("fiasco" ,sbcl-fiasco)
+                     ("texinfo" ,texinfo)))
+    (inputs `(("cl-ppcre" ,sbcl-cl-ppcre)
+              ("clx" ,sbcl-clx)
+              ("alexandria" ,sbcl-alexandria)))
+    (outputs '("out" "lib"))
+    (arguments
+     '(#:asd-system-name "stumpwm"
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'create-symlinks 'build-program
+           (lambda* (#:key outputs #:allow-other-keys)
+             (build-program
+              (string-append (assoc-ref outputs "out") "/bin/stumpwm")
+              outputs
+              #:entry-program '((stumpwm:stumpwm) 0))))
+         (add-after 'build-program 'create-desktop-file
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (xsessions (string-append out "/share/xsessions")))
+               (mkdir-p xsessions)
+               (call-with-output-file
+                   (string-append xsessions "/stumpwm.desktop")
+                 (lambda (file)
+                   (format file
+                    "[Desktop Entry]~@
+                     Name=stumpwm~@
+                     Comment=The Stump Window Manager~@
+                     Exec=~a/bin/stumpwm~@
+                     TryExec=~@*~a/bin/stumpwm~@
+                     Icon=~@
+                     Type=Application~%"
+                    out)))
+               #t)))
+         (add-after 'install 'install-manual
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The proper way to the manual is bootstrapping a full autotools
+             ;; build system and running ‘./configure && make stumpwm.info’ to
+             ;; do some macro substitution.  We can get away with much less.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (info (string-append out "/share/info")))
+               (invoke "makeinfo" "stumpwm.texi.in")
+               (install-file "stumpwm.info" info)
+               #t))))))
+    (synopsis "Window manager written in Common Lisp")
+    (description "Stumpwm is a window manager written entirely in Common Lisp.
+It attempts to be highly customizable while relying entirely on the keyboard
+for input.  These design decisions reflect the growing popularity of
+productive, customizable lisp based systems.")
+    (home-page "https://github.com/stumpwm/stumpwm")
+    (license license:gpl2+)
+    (properties `((cl-source-variant . ,(delay cl-stumpwm))))))
+
+(define-public sbcl-stumpwm
+  (deprecated-package "sbcl-stumpwm" stumpwm))
+
+(define-public cl-stumpwm
+  (package
+    (inherit (sbcl-package->cl-source-package stumpwm))
+    (name "cl-stumpwm")))
+
+(define-public stumpwm+slynk
+  (package
+    (inherit stumpwm)
+    (name "stumpwm-with-slynk")
+    (outputs '("out"))
+    (inputs
+     `(("stumpwm" ,stumpwm "lib")
+       ("slynk" ,sbcl-slynk)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments stumpwm)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'build-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (program (string-append out "/bin/stumpwm")))
+                 (build-program program outputs
+                                #:entry-program '((stumpwm:stumpwm) 0)
+                                #:dependencies '("stumpwm"
+                                                 ,@(@@ (gnu packages lisp-xyz) slynk-systems))
+                                #:dependency-prefixes
+                                (map (lambda (input) (assoc-ref inputs input))
+                                     '("stumpwm" "slynk")))
+                 ;; Remove unneeded file.
+                 (delete-file (string-append out "/bin/stumpwm-exec.fasl"))
+                 #t)))
+           (delete 'copy-source)
+           (delete 'build)
+           (delete 'check)
+           (delete 'create-asd-file)
+           (delete 'cleanup)
+           (delete 'create-symlinks)))))))
+
+(define-public sbcl-stumpwm+slynk
+  (deprecated-package "sbcl-stumpwm-with-slynk" stumpwm+slynk))
