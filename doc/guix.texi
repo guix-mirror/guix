@@ -15530,8 +15530,9 @@ notifications and ways to mount/unmount disks.  Programs that talk to UDisks
 include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
 @end deffn
 
-@deffn {Scheme Procedure} colord-service [#:colord @var{colord}]
-Return a service that runs @command{colord}, a system service with a D-Bus
+@deffn {Scheme Variable} colord-service-type
+This is the type of the service that runs @command{colord}, a system
+service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{https://www.freedesktop.org/software/colord/, the colord web
