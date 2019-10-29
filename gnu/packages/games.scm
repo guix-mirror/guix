@@ -2595,24 +2595,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.8.0")
+    (version "1.9.3")
     (source
      (origin (method url-fetch)
-             (uri (string-append "http://binaries.openttd.org/releases/"
+             (uri (string-append "https://proxy.binaries.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
-             (patches
-              (list
-               (origin (method url-fetch)
-                       (uri (string-append
-                             "https://github.com/OpenTTD/OpenTTD/commit/"
-                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
-                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
-                       (sha256
-                        (base32
-                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
-               "0zq8xdg0k92p3s4j9x76591zaqz7k9ra69q008m209vdfffjvly2"))
+               "0ijq72kgx997ggw40i5f4a3nf7y2g72z37l47i18yjvgbdzy320r"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2657,7 +2647,7 @@ Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
 autoreplace and autoupdate vehicles.  This package only includes the game
 engine.  When you start it you will be prompted to download a graphics set.")
-    (home-page "http://openttd.org/")
+    (home-page "https://www.openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
     ;; licenses.  In addition, this software contains an in-game downloader
