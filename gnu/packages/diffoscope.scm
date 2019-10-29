@@ -153,6 +153,8 @@
       (native-inputs `(("python-pytest" ,python-pytest)
                        ("python-chardet" ,python-chardet)
                        ("python-binwalk" ,python-binwalk)
+                       ("python-pypdf2" ,python-pypdf2)
+                       ("python-progressbar33" ,python-progressbar33)
                        ;; test suite skips tests when tool is missing
                        ,@(match (%current-system)
                                 ;; ghc is only available on x86 currently.
