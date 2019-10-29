@@ -8400,6 +8400,73 @@ higher level porcelain stuff.")
     (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
     (license license:gpl2+)))
 
+(define-public gitg
+  (package
+    (name "gitg")
+    (version "3.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0npg4kqpwl992fgjd2cn3fh84aiwpdp9kd8z7rw2xaj2iazsm914"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-post-install-partially
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("'python'") ; there are no python sources to compile
+                (string-append "'" (which "true") "'"))
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'fix-test-sources
+           (lambda _
+             (substitute* "tests/libgitg/test-commit.vala"
+               (("/bin/bash") (which "bash")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/gitg")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("gtksourceview" ,gtksourceview-3)
+       ("json-glib" ,json-glib)
+       ("libdazzle" ,libdazzle)
+       ("libgee" ,libgee)
+       ("libgit2" ,libgit2) ; propagated by libgit2-glib
+       ("libgit2-glib" ,libgit2-glib)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (synopsis "Graphical user interface for git")
+    (description
+     "gitg is a graphical user interface for git.  It aims at being a small,
+fast and convenient tool to visualize the history of git repositories.
+Besides visualization, gitg also provides several utilities to manage your
+repository and commit your work.")
+    (home-page "https://wiki.gnome.org/Apps/Gitg")
+    (license license:gpl2+)))
+
 (define-public gnome-mahjongg
   (package
     (name "gnome-mahjongg")
