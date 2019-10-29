@@ -929,7 +929,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "6.1.5.2")
+    (version "6.2.8.2")
     (source
      (origin
        (method url-fetch)
@@ -939,36 +939,9 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
          (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
        (sha256
         (base32
-         "1wh8qhqkmb89nmfcb0w6iwpdzxwqr7c5kzxgpk4gy60xin6gwjgb"))
-       (patches
-        (append (list (origin
-                        ;; Support newer versions of Orcus and MDDS.  These patches
-                        ;; are taken from upstream, but we use the patches from Arch
-                        ;; because they are adapted for the release tarball.
-                        ;; Note: remove the related substitutions below when these
-                        ;; are no longer needed.
-                        (method url-fetch)
-                        (uri (string-append "https://git.archlinux.org/svntogit"
-                                            "/packages.git/plain/trunk/"
-                                            "0001-Update-orcus-to-0.14.0.patch?&id="
-                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
-                        (file-name "libreoffice-orcus.patch")
-                        (sha256
-                         (base32
-                          "0v1knblrmfzkb4g9pm5mdnrmjib59bznvca1ygbwlap2ln1h4mk0")))
-                      (origin
-                        (method url-fetch)
-                        (uri (string-append "https://git.archlinux.org/svntogit"
-                                            "/packages.git/plain/trunk/"
-                                            "0001-Update-mdds-to-1.4.1.patch?&id="
-                                            "4002fa927f2a143bd2ec008a0c400b2ce9f2c8a7"))
-                        (file-name "libreoffice-mdds.patch")
-                        (sha256
-                         (base32
-                          "0apbmammmp4pk473xiv5vk50r4c5gjvqzf9jkficksvz58q6114f"))))
-                (search-patches "libreoffice-boost.patch"
-                                "libreoffice-icu.patch"
-                                "libreoffice-glm.patch")))
+         "1npxyj0hklls3jnaxx9kj3r6bgydgrbz6nacy05n0zhq8i6zb5ir"))
+       (patches (search-patches "libreoffice-icu.patch"
+                                "libreoffice-glm.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -992,6 +965,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("cups" ,cups)
        ("dbus-glib" ,dbus-glib)
        ("fontconfig" ,fontconfig)
+       ("fontforge" ,fontforge)
        ("gconf" ,gconf)
        ("glew" ,glew)
        ("glm" ,glm)
@@ -1031,6 +1005,7 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
        ("libxt" ,libxt)
        ("libzmf" ,libzmf)
        ("lpsolve" ,lpsolve)
+       ("mariadb" ,mariadb)
        ("mdds" ,mdds)
        ("mythes" ,mythes)
        ("neon" ,neon)
@@ -1065,13 +1040,6 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
                          "solenv/gbuild/gbuild.mk"
                          "solenv/gbuild/platform/unxgcc.mk")
                  (("/bin/sh") (which "sh")))
-
-               ;; XXX: Adjust the checks for MDDS and liborcus to avoid having
-               ;; to re-bootstrap the whole thing.  Remove this with the related
-               ;; patches above.
-               (substitute* "configure"
-                 (("mdds-1.2 >= 1.2.3") "mdds-1.4 >= 1.4.1")
-                 (("liborcus-0.13 >= 0.13.3") "liborcus-0.14 >= 0.14.0"))
 
                ;; GPGME++ headers are installed in a gpgme++ subdirectory, but
                ;; files in "xmlsecurity/source/gpg/" and elsewhere expect to
@@ -1161,16 +1129,15 @@ converting QuarkXPress file format.  It supports versions 3.1 to 4.1.")
           ;; With java, the build fails since sac.jar is missing.
           "--without-java"
           ;; FIXME: Enable once the corresponding inputs are packaged.
-          "--without-system-npapi-headers"
           "--disable-coinmp"
           "--disable-firebird-sdbc" ; embedded firebird
-          "--disable-gltf"
           ;; XXX: PDFium support requires fetching an external tarball and
           ;; patching the build scripts to work with GCC5.  Try enabling this
           ;; when our default compiler is >=GCC 6.
           "--disable-pdfium"
           "--disable-gtk" ; disable use of GTK+ 2
-          "--without-doxygen")))
+          "--without-doxygen"
+          "--enable-build-opensymbol")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
     (description "LibreOffice is a comprehensive office suite.  It contains
