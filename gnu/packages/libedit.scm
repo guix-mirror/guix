@@ -29,14 +29,14 @@
 (define-public libedit
   (package
     (name "libedit")
-    (version "20190324-3.1")
+    (version "20191025-3.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://thrysoee.dk/editline"
                           "/libedit-" version ".tar.gz"))
       (sha256
-       (base32 "1bhvp8xkkgrg89k4ci1k8vjl3nhb6szd4ghy9lp4jrfgq58hz3xc"))))
+       (base32 "0fdznw6fklis39xqk30ihw8dl8kdw9fzq1z42jmbyy6lc1k07zvd"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
