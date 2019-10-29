@@ -7789,8 +7789,8 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "5a7cd7c72b6d83ae08d0c54c4691f9df/"
-                           name "-" version ".tar.xz"))
+                           "aa4fbd92bf338296c28e54710271ccab/"
+                           "lollypop-" version ".tar.xz"))
        (sha256
         (base32
          "1r5wn0bja9psz6nr1rcaysdkkwz84rbyzpdfw66cxa6wiy52pkjm"))))
