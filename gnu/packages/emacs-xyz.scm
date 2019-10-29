@@ -6955,29 +6955,33 @@ for search-based navigation of buffers.")
 as well as features for editing search results.")
       (license license:gpl3+))))
 
+;; There hasn't been a tag or release since 2016, so we take the latest
+;; commit.
 (define-public emacs-helm-projectile
-  (package
-    (name "emacs-helm-projectile")
-    (version "0.14.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/bbatsov/helm-projectile.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0lph38p112fridighqcizpsyzjbv7qr3d8prbfj6w6q6gfl6cna4"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-helm" ,emacs-helm)
-       ("emacs-projectile" ,emacs-projectile)))
-    (home-page "https://github.com/bbatsov/helm-projectile")
-    (synopsis "Helm integration for Projectile")
-    (description
-     "This Emacs library provides a Helm interface for Projectile.")
-    (license license:gpl3+)))
+  (let ((commit "5328b74dddcee8d1913803ca8167868831a07463")
+        (version "0.14.0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-projectile")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bbatsov/helm-projectile.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a811cblrvc8llpv771b8dppgxs6bwjyvjy3qn2xns4nigvn93s0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/bbatsov/helm-projectile")
+      (synopsis "Helm integration for Projectile")
+      (description
+       "This Emacs library provides a Helm interface for Projectile.")
+      (license license:gpl3+))))
 
 (define-public emacs-taskrunner
   (let ((commit "3afd4a546d42339543d3d4e51b175fc3e82b3358")
