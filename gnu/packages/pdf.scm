@@ -1120,48 +1120,29 @@ presentation.  The input files processed by pdfpc are PDF documents.")
     (license license:gpl2+)))
 
 (define-public paps
-  (let ((commit "37e6ca1cd96d751bbbff5539d795c90d657289a5")
-        (revision "1"))
-    (package
-      (name "paps")
-      ;; The last release was in 2015, but since then there have been security
-      ;; bug fixes.
-      (version (git-version "0.7.0" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/dov/paps.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1ilcyjqdynxsd2p8dnn8h4592dwf531x9pbkxa1w09hkcdn7hgwc"))))
-      (build-system gnu-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'do-not-run-configure-script-during-bootstrap
-             (lambda _
-               (substitute* "autogen.sh"
-                 (("^./configure") "#"))
-               #t)))))
-      (inputs
-       `(("pango" ,pango)))
-      (native-inputs
-       `(("autoconf" ,autoconf)
-         ("automake" ,automake)
-         ("gettext" ,gettext-minimal)
-         ("glib" ,glib "bin")
-         ("intltool" ,intltool)
-         ("pkg-config" ,pkg-config)))
-      (home-page "https://github.com/dov/paps")
-      (synopsis "Pango to PostScript converter")
-      (description
-       "Paps reads a UTF-8 encoded file and generates a PostScript language
+  (package
+    (name "paps")
+    (version "0.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dov/paps/releases/download/v"
+                           version "/paps-" version ".tar.gz"))
+       (sha256
+        (base32 "1z1w1fg2bvb8p92n1jlpqp3n9mq42szb2mqhh4xqmmnmfcdkpi9s"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("pango" ,pango)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/dov/paps")
+    (synopsis "Pango to PostScript converter")
+    (description
+     "Paps reads a UTF-8 encoded file and generates a PostScript language
 rendering of the file.  The rendering is done by creating outline curves
 through the Pango @code{ft2} backend.")
-      (license license:lgpl2.0+))))
+    (license license:lgpl2.0+)))
 
 (define-public stapler
   (package
