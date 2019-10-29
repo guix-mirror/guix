@@ -15,6 +15,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2018 Stefan Stefanović <stefanx2ovic@gmail.com>
 ;;; Copyright © 2019 Reza Alizadeh Majd <r.majd@pantherx.org>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-crypto)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages valgrind)
@@ -1439,3 +1441,64 @@ encoding names are iconv-compatible.")
     ;; This combines code under MPL 1.1, LGPL 2.1+, and GPL 2.0+, so the
     ;; combination is GPL 2.0+.
     (license license:gpl2+)))
+
+(define-public udiskie
+  (package
+    (name "udiskie")
+    (version "1.7.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "udiskie" version))
+       (sha256
+        (base32
+         "121g9dkr7drv9igpdbcbkj59x15mm72rzp3198bp50zj0lr4wbvi"))
+       ;; Remove support for the libappindicator library of the
+       ;; Unity desktop environment which is not in Guix.
+       (patches (search-patches "udiskie-no-appindicator.patch"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("gettext" ,gettext-minimal)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("libnotify" ,libnotify)
+       ("udisks" ,udisks)))
+    (propagated-inputs
+     `(("python-docopt" ,python-docopt)
+       ("python-pygobject" ,python-pygobject)
+       ("python-keyutils" ,python-keyutils)
+       ("python-pyxdg" ,python-pyxdg)
+       ("python-pyyaml" ,python-pyyaml)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-gi-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+               (wrap-program (string-append out "/bin/udiskie")
+                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+             #t)))))
+    (home-page "https://github.com/coldfix/udiskie")
+    (synopsis "Automounter for removable media")
+    (description
+     "The @command{udiskie} program is a udisks2 front-end that allows to
+manage removable media such as CDs or flash drives from userspace.
+
+Its features include:
+
+@itemize
+@item automount removable media,
+@item notifications,
+@item tray icon,
+@item command line tools for manual (un)mounting,
+@item LUKS encrypted devices,
+@item unlocking with keyfiles,
+@item loop devices (mounting ISO archives),
+@item password caching.
+@end itemize
+")
+    (license license:expat)))
