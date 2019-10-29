@@ -7421,6 +7421,14 @@ news items, openrc and runscripts.")
        (sha256
         (base32
          "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-helpers
+           (lambda _
+             (substitute* "evil-test-helpers.el"
+               (("\\(undo-tree-mode 1\\)") ""))
+             #t)))))
     (build-system emacs-build-system)
     (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
