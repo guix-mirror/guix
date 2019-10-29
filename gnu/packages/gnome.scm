@@ -7784,7 +7784,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.1.3.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -7792,8 +7792,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
                            "aa4fbd92bf338296c28e54710271ccab/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32
-         "1r5wn0bja9psz6nr1rcaysdkkwz84rbyzpdfw66cxa6wiy52pkjm"))))
+        (base32 "1wz5fna24qr3v7h29ijwhdxza85r9srz9xsqz4f4df3p5f8rfyql"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7831,7 +7830,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("python-gst" ,python-gst)
        ("python-pil" ,python-pillow)
        ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
+       ("python-pygobject" ,python-pygobject-3.34)
        ("python-pylast" ,python-pylast)
        ("totem-pl-parser" ,totem-pl-parser)
        ("webkitgtk" ,webkitgtk)))
