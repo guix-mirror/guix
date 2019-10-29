@@ -22394,8 +22394,68 @@ The port to run mpd on.
 The address that mpd will bind to.  To use a Unix domain socket,
 an absolute path can be specified here.
 
+@item @code{outputs} (default: @code{"(list (mpd-output))"})
+The audio outputs that MPD can use.  By default this is a single output using pulseaudio.
+
 @end table
 @end deftp
+
+@deftp {Data Type} mpd-output
+Data type representing an @command{mpd} audio output.
+
+@table @asis
+@item @code{name} (default: @code{"MPD"})
+The name of the audio output.
+
+@item @code{type} (default: @code{"pulse"})
+The type of audio output.
+
+@item @code{enabled?} (default: @code{#t})
+Specifies whether this audio output is enabled when MPD is started.  By
+default, all audio outputs are enabled.  This is just the default
+setting when there is no state file; with a state file, the previous
+state is restored.
+
+@item @code{tags?} (default: @code{#t})
+If set to @code{#f}, then MPD will not send tags to this output.  This
+is only useful for output plugins that can receive tags, for example the
+@code{httpd} output plugin.
+
+@item @code{always-on?} (default: @code{#f})
+If set to @code{#t}, then MPD attempts to keep this audio output always
+open. This may be useful for streaming servers, when you don’t want to
+disconnect all listeners even when playback is accidentally stopped.
+
+@item @code{mixer-type}
+This field accepts a symbol that specifies which mixer should be used
+for this audio output: the @code{hardware} mixer, the @code{software}
+mixer, the @code{null} mixer (allows setting the volume, but with no
+effect; this can be used as a trick to implement an external mixer
+External Mixer) or no mixer (@code{none}).
+
+@item @code{extra-options} (default: @code{'()"})
+An association list of option symbols to string values to be appended to
+the audio output configuration.
+
+@end table
+@end deftp
+
+The following example shows a configuration of @code{mpd} that provides
+an HTTP audio streaming output.
+
+@lisp
+(service mpd-service-type
+         (mpd-configuration
+           (outputs
+             (list (mpd-output
+                     (name "streaming")
+                     (type "httpd")
+                     (mixer-type 'null)
+                     (extra-options
+                      `((encoder . "vorbis")
+                        (port    . "8080"))))))))
+@end lisp
+
 
 @node Virtualization Services
 @subsection Virtualization services
