@@ -19,6 +19,7 @@
 ;;; Copyright © 2018 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2018 Vagrant Cascadian <vagrant@debian.org>
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1062,3 +1063,30 @@ Password-Authenticated Key Exchange algorithm.")
     (description "This package provides a Twisted-based Tor controller client,
 with state-tracking and configuration abstractions.")
     (license license:expat)))
+
+(define-public python-keyutils
+  (package
+    (name "python-keyutils")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "keyutils" version))
+       (sha256
+        (base32
+         "0lipygpzhwzzsq2k5imb1jgkmj8y4khxdwhzadjs3bd56g6bmkx9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-runner" ,python-pytest-runner)))
+    (inputs
+     `(("keyutils" ,keyutils)))
+    (arguments
+     '(#:tests? #f))
+    (home-page "https://github.com/sassoftware/python-keyutils")
+    (synopsis "Python bindings for keyutils")
+    (description
+     "This is a set of python bindings for keyutils, a key management suite
+that leverages the infrastructure provided by the Linux kernel for safely
+storing and retrieving sensitive infromation in your programs.")
+    (license license:asl2.0)))
