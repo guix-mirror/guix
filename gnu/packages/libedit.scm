@@ -33,7 +33,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://thrysoee.dk/editline"
+      (uri (string-append "https://thrysoee.dk/editline"
                           "/libedit-" version ".tar.gz"))
       (sha256
        (base32 "0fdznw6fklis39xqk30ihw8dl8kdw9fzq1z42jmbyy6lc1k07zvd"))))
