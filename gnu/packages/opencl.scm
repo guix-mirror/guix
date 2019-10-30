@@ -296,7 +296,7 @@ back-end for the LLVM compiler framework.")
 (define-public pocl
   (package
     (name "pocl")
-    (version "1.2")
+    (version "1.4")
     (source
      (origin
        (method git-fetch)
@@ -304,7 +304,7 @@ back-end for the LLVM compiler framework.")
              (url "https://github.com/pocl/pocl.git")
              (commit (string-append "v" version))))
        (sha256
-        (base32 "0fyiwd9nrqhl0jsac0bx17p9acpfzhyxp50mmp28mzn7psb9qidg"))
+        (base32 "1c4y69zks6hkq5fqh9waxgb8g4ka7y6h3vacmsm720kba0h57g8a"))
        (file-name (git-file-name name version))))
     (build-system cmake-build-system)
     (native-inputs
@@ -313,7 +313,7 @@ back-end for the LLVM compiler framework.")
     (inputs
      `(("clang" ,clang)
        ("hwloc" ,hwloc-2.0 "lib")
-       ("llvm" ,llvm)
+       ("llvm" ,llvm-8)
        ("ocl-icd" ,ocl-icd)))
     (arguments
      `(#:configure-flags
