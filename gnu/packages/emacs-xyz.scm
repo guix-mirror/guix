@@ -19622,3 +19622,28 @@ minibuffer or an each area message).
 The contents and aspect is controlled by the @code{minibuffer-line-format}
 variable and the @code{minibuffer-line} face.")
     (license license:gpl3+)))
+
+(define-public emacs-eshell-prompt-extras
+  (let ((commit "5a328e1b9112c7f31ce2da7cde340f96626546b6")
+        (revision "1"))
+    (package
+      (name "emacs-eshell-prompt-extras")
+      (version (git-version "0.96" revision commit))
+      (home-page "https://github.com/zwild/eshell-prompt-extras")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "0fwlvrzjygs12dcp89wy3rb3wa03mrvbzpmpvmz4x6dfpr7csznk"))))
+      (build-system emacs-build-system)
+      (synopsis "Display extra information and color for your Eshell prompt")
+      (description "This library displays various customizable elements for
+@code{eshell} prompts: remote user, remote host, python virtual environment
+info, git branch, git dirty info and git unpushed number.  Multiple themes are
+available.")
+      (license license:gpl3+))))
