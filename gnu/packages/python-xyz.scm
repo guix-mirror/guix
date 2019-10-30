@@ -9564,6 +9564,7 @@ useful for solving the Assignment Problem.")
         (base32
          "10qsqdjpbc85fykc1vgcs8xwbgn4l2l52c8d83xf1q59pwyn79bw"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Test invocation is no longer supported by Python.
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/mchaput/whoosh")
