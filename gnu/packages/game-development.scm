@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Comrade Yuri <yuri@nijino>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
