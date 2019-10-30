@@ -7258,8 +7258,8 @@ Supported netlink families and protocols include:
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Some tests depend on writing a temp file
-         ;; to the user's home directory
+         ;; Some tests depend on writing a temporary file to the user's home
+         ;; directory.
          (add-after 'unpack 'fix-tests
            (lambda _
              (delete-file "tests/test_open_workbook.py")
