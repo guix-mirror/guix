@@ -19647,3 +19647,25 @@ variable and the @code{minibuffer-line} face.")
 info, git branch, git dirty info and git unpushed number.  Multiple themes are
 available.")
       (license license:gpl3+))))
+
+(define-public emacs-eshell-did-you-mean
+  (package
+    (name "emacs-eshell-did-you-mean")
+    (version "0.1")
+    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0v0wshck5n4hspcv1zk1g2nm6xiigcjp16lx0dc8wzkl6ymljvbg"))))
+    (build-system emacs-build-system)
+    (synopsis "Display suggestions on 'command not found' in Eshell")
+    (description "This library adds a list of 'Did you mean...' suggestions
+when the command was not found in Eshell.  The suggestions are found after the
+commands that bear resemblance to the input command.")
+    (license license:gpl3+)))
