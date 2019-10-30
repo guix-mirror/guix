@@ -1226,10 +1226,22 @@ structures designed to make working with structured (tabular,
 multidimensional, potentially heterogeneous) and time series data both easy
 and intuitive.  It aims to be the fundamental high-level building block for
 doing practical, real world data analysis in Python.")
+    (properties `((python2-variant . ,(delay python2-pandas))))
     (license license:bsd-3)))
 
+;; Pandas 0.24.x are the last versions that support Python 2.
 (define-public python2-pandas
-  (package-with-python2 python-pandas))
+  (let ((pandas (package-with-python2
+                 (strip-python2-variant python-pandas))))
+    (package/inherit
+     pandas
+     (version "0.24.2")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "pandas" version))
+               (sha256
+                (base32
+                 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag")))))))
 
 (define-public python2-mechanize
   (package
