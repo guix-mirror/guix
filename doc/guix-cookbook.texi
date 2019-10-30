@@ -1774,6 +1774,14 @@ You can roll-back to any generation of a given profile:
 guix package -p "$GUIX_EXTRA_PROFILES"/my-project/my-project --switch-generations=17
 @end example
 
+Finally, if you want to switch to a profile without inheriting from the
+current environment, you can activate it from an empty shell:
+
+@example
+env -i $(which bash) --login --noprofile --norc
+. my-project/etc/profile
+@end example
+
 @node Required packages
 @subsection Required packages
 
