@@ -524,6 +524,3 @@ game development and other performance-critical applications.")
     (description "This package provides a Python wrapper library to the
 Apache Arrow-based Feather binary columnar serialization data frame format.")
     (license license:asl2.0)))
-
-(define-public python2-feather-format
-  (package-with-python2 python-feather-format))
