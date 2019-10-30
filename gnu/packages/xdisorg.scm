@@ -1108,6 +1108,49 @@ night to daytime temperature to allow your eyes to slowly adapt.  At night the
 color temperature should be set to match the lamps in your room.")
     (license license:gpl3+)))
 
+(define-public redshift-wayland
+  (let ((commit "7da875d34854a6a34612d5ce4bd8718c32bec804")
+        (revision "1"))
+    (package
+      (name "redshift-wayland")
+      (version (string-append "1.12-"
+                              revision "." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/minus7/redshift.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0nbkcw3avmzjg1jr1g9yfpm80kzisy55idl09b6wvzv2sz27n957"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("intltool" ,intltool)))
+      (inputs
+       `(("libdrm" ,libdrm)
+         ("libx11" ,libx11)
+         ("libxcb" ,libxcb)
+         ("libxxf86vm" ,libxxf86vm)
+         ("glib" ,glib)                 ; for Geoclue2 support
+         ("wayland" ,wayland)))
+      (home-page "https://github.com/minus7/redshift")
+      (synopsis "Adjust the color temperature of your screen (with Wayland support)")
+      (description
+       "Redshift adjusts the color temperature according to the position of the
+sun.  A different color temperature is set during night and daytime.  During
+twilight and early morning, the color temperature transitions smoothly from
+night to daytime temperature to allow your eyes to slowly adapt.  At night the
+color temperature should be set to match the lamps in your room.
+
+This is a fork with added support for Wayland using the wlr-gamma-control
+protocol.")
+      (license license:gpl3+))))
+
 (define-public xscreensaver
   (package
     (name "xscreensaver")
