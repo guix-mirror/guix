@@ -345,7 +345,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                 (res '()))
        (if (list? x)
            (fold loop res x)
-           (cons (format #f "~s" x) res)))))
+           (cons (format #f "~a" x) res)))))
 
   (match ntp-server
     (($ <ntp-server> type address options)
