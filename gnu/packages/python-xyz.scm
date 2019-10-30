@@ -3524,10 +3524,24 @@ with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
+    (properties `((python2-variant . ,(delay python2-numpy))))
     (license license:bsd-3)))
 
+;; Numpy 1.16.x are the last versions that support Python 2.
 (define-public python2-numpy
-  (package-with-python2 python-numpy))
+  (let ((numpy (package-with-python2
+                (strip-python2-variant python-numpy))))
+    (package/inherit
+     numpy
+      (version "1.16.5")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://github.com/numpy/numpy/releases/download/v"
+                      version "/numpy-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0lg1cycxzi4rvvrd5zxinpdz0ni792fpx6xjd75z1923zcac8qrb")))))))
 
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
 ;; interest only for legacy code going back to NumPy's predecessor
