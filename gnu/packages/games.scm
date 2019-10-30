@@ -1438,7 +1438,7 @@ fight Morgoth, the Lord of Darkness.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/Pingus/pingus.git")
+              (url "https://gitlab.com/pingus/pingus.git")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
