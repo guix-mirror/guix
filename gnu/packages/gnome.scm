@@ -2065,9 +2065,9 @@ Hints specification (EWMH).")
     (version "0.10.44")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/goffice/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "goffice-" version ".tar.xz"))
               (sha256
                (base32 "1fd7cm6j0g0mqgpqs4y22b4gd2ll4mcyvg4d0q22d5ndjapl4q3d"))))
     (build-system gnu-build-system)
