@@ -98,7 +98,7 @@ index b04c731..06d1f3f 100644
  
  shopt -s nullglob
  for patch in $DATA/patches/*.patch; do
-@@ -598,6 +598,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
+@@ -611,6 +611,6 @@ sed 's/777/755/;' -i toolkit/crashreporter/google-breakpad/Makefile.in
  # Fix CVE-2012-3386
  /bin/sed 's/chmod a+w/chmod u+w/' -i ./js/src/ctypes/libffi/Makefile.in ./toolkit/crashreporter/google-breakpad/Makefile.in ./toolkit/crashreporter/google-breakpad/src/third_party/glog/Makefile.in || true
  

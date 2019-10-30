@@ -1,241 +1,546 @@
-From 2676d4e1eb64e18d2e4722c0ea0babdc1f716fa4 Mon Sep 17 00:00:00 2001
+From 2abca7767c461a022317bf18fbec51e8b3ce6a92 Mon Sep 17 00:00:00 2001
 From: Mark H Weaver <mhw@netris.org>
-Date: Mon, 28 Oct 2019 01:54:19 -0400
-Subject: [PATCH 1/4] Update to 68.2.0-gnu1.
+Date: Thu, 31 Oct 2019 03:59:46 -0400
+Subject: [PATCH 1/2] Branding: fix patching of trademarkInfo within l10n
+ directory.
 
-* makeicecat: Update to FFMINOR to 2, and update the expected
-sha256sum of the firefox source tarball.
+This is a followup to commit 930298e1efff3e40721659d8fd7118cdd2477bd4.
+
+* makeicecat: Patch in the IceCat logo copyright notice in all
+brand.dtd files within l10n directory.
 ---
- makeicecat | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ makeicecat | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/makeicecat b/makeicecat
-index 97ee473..1bcf465 100644
+index 3ff2ead..4ff3e64 100755
 --- a/makeicecat
 +++ b/makeicecat
-@@ -21,7 +21,7 @@
- set -euxo pipefail
- 
- FFMAJOR=68
--FFMINOR=1
-+FFMINOR=2
- FFSUB=0
- GNUVERSION=1
- FFVERSION=$FFMAJOR.$FFMINOR.$FFSUB
-@@ -43,7 +43,7 @@ wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr
- wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
- gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
- gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
--echo -n f56f5fa5a4744be0b9acf259cb991254d708a50b9a0a12d1d846ffa5a6c409ac firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
-+echo -n 85f1c2eaf68ebedcbc0b78a342f6d16ef0865dedd426a1bba94b75c85f716f38 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
- 
- echo Extracting Firefox tarball
- tar -xf firefox-${FFVERSION}esr.source.tar.xz
--- 
-2.23.0
-
-From c3a7b761f11c75d3764779e731a7c7e86b072d2f Mon Sep 17 00:00:00 2001
-From: Mark H Weaver <mhw@netris.org>
-Date: Mon, 28 Oct 2019 04:18:26 -0400
-Subject: [PATCH 2/4] Disable MOZ_SERVICES_HEALTHREPORT and MOZ_DATA_REPORTING.
-
-* data/patches/fix-data-reporting-check.patch: New file.
-* data/patches/legacy-profiles.patch: Rename to ...
-* data/patches/moz-configure-changes.patch: ... this,
-and set MOZ_SERVICES_HEALTHREPORT to False.
----
- data/patches/fix-data-reporting-check.patch | 22 +++++++++++++++++++++
- data/patches/legacy-profiles.patch          | 11 -----------
- data/patches/moz-configure-changes.patch    | 14 +++++++++++++
- 3 files changed, 36 insertions(+), 11 deletions(-)
- create mode 100644 data/patches/fix-data-reporting-check.patch
- delete mode 100644 data/patches/legacy-profiles.patch
- create mode 100644 data/patches/moz-configure-changes.patch
-
-diff --git a/data/patches/fix-data-reporting-check.patch b/data/patches/fix-data-reporting-check.patch
-new file mode 100644
-index 0000000..d586dc5
---- /dev/null
-+++ b/data/patches/fix-data-reporting-check.patch
-@@ -0,0 +1,22 @@
-+--- a/old-configure.in.orig	1980-01-01 18:59:51.000000000 -0500
-++++ b/old-configure.in	2019-10-28 04:13:17.343606008 -0400
-+@@ -3116,7 +3116,7 @@
-+ dnl If we have any service that uploads data (and requires data submission
-+ dnl policy alert), set MOZ_DATA_REPORTING.
-+ dnl We need SUBST for build system and DEFINE for xul preprocessor.
-+-if test -n "$MOZ_TELEMETRY_REPORTING" || test -n "$MOZ_SERVICES_HEALTHREPORT" || test -n "$MOZ_CRASHREPORTER"; then
-++if test "$MOZ_TELEMETRY_REPORTING" = 1 || test "$MOZ_SERVICES_HEALTHREPORT" = 1 || test "$MOZ_CRASHREPORTER" = 1; then
-+   MOZ_DATA_REPORTING=1
-+   AC_DEFINE(MOZ_DATA_REPORTING)
-+   AC_SUBST(MOZ_DATA_REPORTING)
-+--- a/old-configure.orig	1980-01-01 18:59:51.000000000 -0500
-++++ b/old-configure	2019-10-28 04:15:41.772322191 -0400
-+@@ -12150,7 +12150,7 @@
-+ 
-+ 
-+ 
-+-if test -n "$MOZ_TELEMETRY_REPORTING" || test -n "$MOZ_SERVICES_HEALTHREPORT" || test -n "$MOZ_CRASHREPORTER"; then
-++if test "$MOZ_TELEMETRY_REPORTING" = 1 || test "$MOZ_SERVICES_HEALTHREPORT" = 1 || test "$MOZ_CRASHREPORTER" = 1; then
-+   MOZ_DATA_REPORTING=1
-+   cat >> confdefs.pytmp <<\EOF
-+     (''' MOZ_DATA_REPORTING ''', ' 1 ')
-diff --git a/data/patches/legacy-profiles.patch b/data/patches/legacy-profiles.patch
-deleted file mode 100644
-index 33e9e99..0000000
---- a/data/patches/legacy-profiles.patch
-+++ /dev/null
-@@ -1,11 +0,0 @@
----- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
--+++ b/browser/moz.configure	2019-10-26 21:58:37.719617701 -0400
--@@ -7,7 +7,7 @@
-- imply_option('MOZ_PLACES', True)
-- imply_option('MOZ_SERVICES_HEALTHREPORT', True)
-- imply_option('MOZ_SERVICES_SYNC', True)
---imply_option('MOZ_DEDICATED_PROFILES', True)
--+imply_option('MOZ_DEDICATED_PROFILES', False)
-- imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
-- 
-- with only_when(target_is_linux & compile_environment):
-diff --git a/data/patches/moz-configure-changes.patch b/data/patches/moz-configure-changes.patch
-new file mode 100644
-index 0000000..aa6f1a5
---- /dev/null
-+++ b/data/patches/moz-configure-changes.patch
-@@ -0,0 +1,14 @@
-+--- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
-++++ b/browser/moz.configure	2019-10-28 01:36:13.132873871 -0400
-+@@ -5,9 +5,9 @@
-+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-+ 
-+ imply_option('MOZ_PLACES', True)
-+-imply_option('MOZ_SERVICES_HEALTHREPORT', True)
-++imply_option('MOZ_SERVICES_HEALTHREPORT', False)
-+ imply_option('MOZ_SERVICES_SYNC', True)
-+-imply_option('MOZ_DEDICATED_PROFILES', True)
-++imply_option('MOZ_DEDICATED_PROFILES', False)
-+ imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
-+ 
-+ with only_when(target_is_linux & compile_environment):
--- 
-2.23.0
-
-From 62f50f15abc91483c6aa7a2ac7ebb972e6f9affd Mon Sep 17 00:00:00 2001
-From: Mark H Weaver <mhw@netris.org>
-Date: Mon, 28 Oct 2019 13:05:28 -0400
-Subject: [PATCH 3/4] Disable MOZ_BLOCK_PROFILE_DOWNGRADE.
-
-It would be desirable to prevent downgrades from one major version of
-IceCat to another.  However, as MOZ_BLOCK_PROFILE_DOWNGRADE is
-currently implemented, it prevents downgrades from one build of
-IceCat-68.2 to an earlier build of IceCat-68.2.  Until we can find a
-satisfactory solution, we disable this functionality entirely.
-
-* data/patches/moz-configure-changes.patch: Set
-MOZ_BLOCK_PROFILE_DOWNGRADE to 'False'.
----
- data/patches/moz-configure-changes.patch | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
-
-diff --git a/data/patches/moz-configure-changes.patch b/data/patches/moz-configure-changes.patch
-index aa6f1a5..53091a4 100644
---- a/data/patches/moz-configure-changes.patch
-+++ b/data/patches/moz-configure-changes.patch
-@@ -1,6 +1,6 @@
- --- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
--+++ b/browser/moz.configure	2019-10-28 01:36:13.132873871 -0400
--@@ -5,9 +5,9 @@
-++++ b/browser/moz.configure	2019-10-28 13:04:11.469562089 -0400
-+@@ -5,10 +5,10 @@
-  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-  
-  imply_option('MOZ_PLACES', True)
-@@ -8,7 +8,9 @@
- +imply_option('MOZ_SERVICES_HEALTHREPORT', False)
-  imply_option('MOZ_SERVICES_SYNC', True)
- -imply_option('MOZ_DEDICATED_PROFILES', True)
-+-imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
- +imply_option('MOZ_DEDICATED_PROFILES', False)
-- imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
-++imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', False)
-  
-  with only_when(target_is_linux & compile_environment):
-+     option(env='MOZ_NO_PIE_COMPAT',
--- 
-2.23.0
-
-From 036f74092d223976054f9eafd8caa056f5975c54 Mon Sep 17 00:00:00 2001
-From: Mark H Weaver <mhw@netris.org>
-Date: Mon, 28 Oct 2019 19:57:37 -0400
-Subject: [PATCH 4/4] Improve branding for version 68 ESR.
-
-* data/branding/icecat/locales/en-US/brand.dtd: Add brandProductName.
-* data/branding/icecat/locales/en-US/brand.ftl: Add
-brand-shorter-name, brand-full-name, brand-product-name,
-vendor-short-name, and trademarkInfo.
-* data/branding/icecat/locales/en-US/brand.properties: Add
-brandProductName.
-* makeicecat: Limit replacement of trademarkInfo.part1 of brand.dtd
-files to only be done within l10n directory.  Replace trademarkInfo of
-brand.ftl files within l10n directory.
----
- data/branding/icecat/locales/en-US/brand.dtd        | 1 +
- data/branding/icecat/locales/en-US/brand.ftl        | 5 +++++
- data/branding/icecat/locales/en-US/brand.properties | 1 +
- makeicecat                                          | 3 ++-
- 4 files changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/data/branding/icecat/locales/en-US/brand.dtd b/data/branding/icecat/locales/en-US/brand.dtd
-index 3788266..475ce7d 100644
---- a/data/branding/icecat/locales/en-US/brand.dtd
-+++ b/data/branding/icecat/locales/en-US/brand.dtd
-@@ -5,5 +5,6 @@
- <!ENTITY  brandShorterName      "IceCat">
- <!ENTITY  brandShortName        "IceCat">
- <!ENTITY  brandFullName         "GNU IceCat">
-+<!ENTITY  brandProductName      "IceCat">
- <!ENTITY  vendorShortName       "GNU">
- <!ENTITY  trademarkInfo.part1   "The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version.">
-diff --git a/data/branding/icecat/locales/en-US/brand.ftl b/data/branding/icecat/locales/en-US/brand.ftl
-index bd7fbe0..7c9fcc8 100644
---- a/data/branding/icecat/locales/en-US/brand.ftl
-+++ b/data/branding/icecat/locales/en-US/brand.ftl
-@@ -2,4 +2,9 @@
- # License, v. 2.0. If a copy of the MPL was not distributed with this
- # file, You can obtain one at http://mozilla.org/MPL/2.0/.
- 
-+-brand-shorter-name = IceCat
- -brand-short-name = IceCat
-+-brand-full-name = GNU IceCat
-+-brand-product-name = IceCat
-+-vendor-short-name = GNU
-+trademarkInfo = The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version.
-diff --git a/data/branding/icecat/locales/en-US/brand.properties b/data/branding/icecat/locales/en-US/brand.properties
-index 85e2894..9b9cf97 100644
---- a/data/branding/icecat/locales/en-US/brand.properties
-+++ b/data/branding/icecat/locales/en-US/brand.properties
-@@ -5,6 +5,7 @@
- brandShorterName=IceCat
- brandShortName=IceCat
- brandFullName=IceCat
-+brandProductName=IceCat
- vendorShortName=GNU
- 
- syncBrandShortName=Sync
-diff --git a/makeicecat b/makeicecat
-index 1bcf465..3ff2ead 100644
---- a/makeicecat
-+++ b/makeicecat
-@@ -226,7 +226,8 @@ cp $DATA/bookmarks.html.in browser/locales/generic/profile/bookmarks.html.in
+@@ -226,7 +226,7 @@ cp $DATA/bookmarks.html.in browser/locales/generic/profile/bookmarks.html.in
  
  # Custom legal about pages
  
--find -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
-+find l10n -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
-+find l10n -wholename '*/brand.ftl' |xargs /bin/sed 's/^trademarkInfo = .*/trademarkInfo = The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version./' -i
+-find l10n -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
++find l10n -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version.">/' -i
+ find l10n -wholename '*/brand.ftl' |xargs /bin/sed 's/^trademarkInfo = .*/trademarkInfo = The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version./' -i
  
  for STRING in rights.intro-point3-unbranded rights.intro-point4a-unbranded rights.intro-point4b-unbranded rights.intro-point4c-unbranded
- do
+-- 
+2.23.0
+
+From 150af5dd8b502b66f325b9fe8bd0b2ae553326a4 Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Wed, 30 Oct 2019 18:34:44 -0400
+Subject: [PATCH 2/2] Add first batch of IceCat-specific preferences.
+
+* makeicecat: Add code to add IceCat-specific messages to l10n directory.
+* data/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/es-AR/browser/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/es-CL/browser/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/es-ES/browser/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/es-MX/browser/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/fr/browser/browser/preferences/preferences.ftl,
+data/files-to-append/l10n/it/browser/browser/preferences/preferences.ftl,
+data/patches/icecat-preferences.patch: New files.
+---
+ .../en-US/browser/preferences/preferences.ftl |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ .../browser/preferences/preferences.ftl       |  36 ++++
+ data/patches/icecat-preferences.patch         | 155 ++++++++++++++++++
+ makeicecat                                    |  13 ++
+ 9 files changed, 420 insertions(+)
+ create mode 100644 data/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/es-AR/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/es-CL/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/es-ES/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/es-MX/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/fr/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/files-to-append/l10n/it/browser/browser/preferences/preferences.ftl
+ create mode 100644 data/patches/icecat-preferences.patch
+
+diff --git a/data/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl b/data/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..2f90bcd
+--- /dev/null
++++ b/data/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = IceCat-specific privacy settings
++
++disable-javascript-option =
++    .label = Disable JavaScript
++disable-javascript-description = Disabling Javascript greatly improves privacy, security and <a href=\"https://www.gnu.org/philosophy/javascript-trap.html\">freedom</a>, but it will break many sites.
++
++disable-custom-fonts-option =
++    .label = Do not load custom fonts
++disable-custom-fonts-description = Custom fonts can be used for <a href=\"https://en.wikipedia.org/wiki/Device_fingerprint\">fingerprinting</a>. Disabling them improves privacy but may make some sites look wrong.
++
++isolate-request-first-party-option =
++    .label = Isolate requests to First Party domains
++isolate-request-first-party-description = This <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">improves privacy</a>, but it may interfere with login into some sites.
++
++auto-update-extensions-option =
++    .label = Automatically update extensions
++auto-update-extensions-description = Enabling automated updates is good for security, but would start Internet connections in the background.
++
++spoof-referers-option =
++    .label = Spoof Referers
++spoof-referers-description = <a href=\"https://en.wikipedia.org/wiki/HTTP_referer\">Referers</a> tell sites what link brought you there. This feature greatly improves your privacy, but it may break functionality on some sites.
++
++detect-captive-portal-option =
++    .label = Detect captive portal
++detect-captive-portal-description = <a href=\"https://en.wikipedia.org/wiki/Captive_portal\">Captive portals</a> are the sites that control access to public wireless networks in hotels, airports, cafes, etc. The detection service is useful if you connect to such netwoks, but it will start connections automatically.
++
++geolocation-option =
++    .label = Enable Geolocation
++geolocation-description = This is commonly used for maps, weather sites, and some stores. It is better to keep it off unless you really need it.
++
++webgl-option =
++    .label = Enable WebGL
++webgl-description = Needed to visualize 3D graphics, but it may expose you to security threats. Enable it only if you really use it.
+diff --git a/data/files-to-append/l10n/es-AR/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/es-AR/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..ad052b3
+--- /dev/null
++++ b/data/files-to-append/l10n/es-AR/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Ajustes de privacidad de IceCat
++
++disable-javascript-option =
++    .label = Desactivar JavaScript
++disable-javascript-description = Desactivar JavaScript mejora enormemente la privacidad, la seguridad en Internet y la <a href=\"https://www.gnu.org/philosophy/javascript-trap.es.html\">libertad</a> en su equipo, pero afectará a la funcionalidad de muchas páginas.
++
++disable-custom-fonts-option =
++    .label = No cargar fuentes personalizadas
++disable-custom-fonts-description = Las fuentes personalizadas pueden usarse para <a href=\"https://en.wikipedia.org/wiki/Device_fingerprint\">rastrear</a> al usuario. Desactivarlas mejora la privacidad pero puede afectar al aspecto visual de algunas páginas.
++
++isolate-request-first-party-option =
++    .label = Aislar las solicitudes a los Dominios Primarios
++isolate-request-first-party-description = Este ajuste <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">mejora la privacidad</a>, pero puede interferir con el inicio de sesión en algunas webs.
++
++auto-update-extensions-option =
++    .label = Actualizar las extensiones automáticamente
++auto-update-extensions-description = Activar las actualizaciones automáticas es bueno para la seguridad, pero precisa del establecimiento de conexiones a otros servidores en segundo plano.
++
++spoof-referers-option =
++    .label = Modificar los referers HTTP
++spoof-referers-description = Los <a href=\"https://es.wikipedia.org/wiki/Referer_(Cabecera_HTTP)\">referers</a> son cabeceras HTTP que informan a una página acerca de nuestro enlace de origen. Activar esta característica mejora enormemente su privacidad, pero puede afectar a la funcionalidad de algunas páginas.
++
++detect-captive-portal-option =
++    .label = Detectar los portales cautivos
++detect-captive-portal-description = Los <a href=\"https://es.wikipedia.org/wiki/Portal_cautivo\">portales cautivos</a> son las webs que registran y controlan el acceso a redes inalámbricas públicas en hoteles, aeropuertos, cafés y similares. El servicio que los detecta es práctico si se ve a menudo en la necesidad de usarlos, pero implica el establecimiento de conexiones en segundo plano.
++
++geolocation-option =
++    .label = Activar Geolocalización
++geolocation-description = Esta característica se usa habitualmente en mapas, páginas del tiempo y algunas tiendas. Es mejor desactivarla si realmente no necesita que identifiquen su ubicación.
++
++webgl-option =
++    .label = Activar WebGL
++webgl-description = Esta función necesaria para mostrar ciertos gráficos 3D en el navegador puede exponerle a ciertos riesgos de seguridad. Actívela solamente si va a usarla.
+diff --git a/data/files-to-append/l10n/es-CL/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/es-CL/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..ad052b3
+--- /dev/null
++++ b/data/files-to-append/l10n/es-CL/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Ajustes de privacidad de IceCat
++
++disable-javascript-option =
++    .label = Desactivar JavaScript
++disable-javascript-description = Desactivar JavaScript mejora enormemente la privacidad, la seguridad en Internet y la <a href=\"https://www.gnu.org/philosophy/javascript-trap.es.html\">libertad</a> en su equipo, pero afectará a la funcionalidad de muchas páginas.
++
++disable-custom-fonts-option =
++    .label = No cargar fuentes personalizadas
++disable-custom-fonts-description = Las fuentes personalizadas pueden usarse para <a href=\"https://en.wikipedia.org/wiki/Device_fingerprint\">rastrear</a> al usuario. Desactivarlas mejora la privacidad pero puede afectar al aspecto visual de algunas páginas.
++
++isolate-request-first-party-option =
++    .label = Aislar las solicitudes a los Dominios Primarios
++isolate-request-first-party-description = Este ajuste <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">mejora la privacidad</a>, pero puede interferir con el inicio de sesión en algunas webs.
++
++auto-update-extensions-option =
++    .label = Actualizar las extensiones automáticamente
++auto-update-extensions-description = Activar las actualizaciones automáticas es bueno para la seguridad, pero precisa del establecimiento de conexiones a otros servidores en segundo plano.
++
++spoof-referers-option =
++    .label = Modificar los referers HTTP
++spoof-referers-description = Los <a href=\"https://es.wikipedia.org/wiki/Referer_(Cabecera_HTTP)\">referers</a> son cabeceras HTTP que informan a una página acerca de nuestro enlace de origen. Activar esta característica mejora enormemente su privacidad, pero puede afectar a la funcionalidad de algunas páginas.
++
++detect-captive-portal-option =
++    .label = Detectar los portales cautivos
++detect-captive-portal-description = Los <a href=\"https://es.wikipedia.org/wiki/Portal_cautivo\">portales cautivos</a> son las webs que registran y controlan el acceso a redes inalámbricas públicas en hoteles, aeropuertos, cafés y similares. El servicio que los detecta es práctico si se ve a menudo en la necesidad de usarlos, pero implica el establecimiento de conexiones en segundo plano.
++
++geolocation-option =
++    .label = Activar Geolocalización
++geolocation-description = Esta característica se usa habitualmente en mapas, páginas del tiempo y algunas tiendas. Es mejor desactivarla si realmente no necesita que identifiquen su ubicación.
++
++webgl-option =
++    .label = Activar WebGL
++webgl-description = Esta función necesaria para mostrar ciertos gráficos 3D en el navegador puede exponerle a ciertos riesgos de seguridad. Actívela solamente si va a usarla.
+diff --git a/data/files-to-append/l10n/es-ES/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/es-ES/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..ad052b3
+--- /dev/null
++++ b/data/files-to-append/l10n/es-ES/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Ajustes de privacidad de IceCat
++
++disable-javascript-option =
++    .label = Desactivar JavaScript
++disable-javascript-description = Desactivar JavaScript mejora enormemente la privacidad, la seguridad en Internet y la <a href=\"https://www.gnu.org/philosophy/javascript-trap.es.html\">libertad</a> en su equipo, pero afectará a la funcionalidad de muchas páginas.
++
++disable-custom-fonts-option =
++    .label = No cargar fuentes personalizadas
++disable-custom-fonts-description = Las fuentes personalizadas pueden usarse para <a href=\"https://en.wikipedia.org/wiki/Device_fingerprint\">rastrear</a> al usuario. Desactivarlas mejora la privacidad pero puede afectar al aspecto visual de algunas páginas.
++
++isolate-request-first-party-option =
++    .label = Aislar las solicitudes a los Dominios Primarios
++isolate-request-first-party-description = Este ajuste <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">mejora la privacidad</a>, pero puede interferir con el inicio de sesión en algunas webs.
++
++auto-update-extensions-option =
++    .label = Actualizar las extensiones automáticamente
++auto-update-extensions-description = Activar las actualizaciones automáticas es bueno para la seguridad, pero precisa del establecimiento de conexiones a otros servidores en segundo plano.
++
++spoof-referers-option =
++    .label = Modificar los referers HTTP
++spoof-referers-description = Los <a href=\"https://es.wikipedia.org/wiki/Referer_(Cabecera_HTTP)\">referers</a> son cabeceras HTTP que informan a una página acerca de nuestro enlace de origen. Activar esta característica mejora enormemente su privacidad, pero puede afectar a la funcionalidad de algunas páginas.
++
++detect-captive-portal-option =
++    .label = Detectar los portales cautivos
++detect-captive-portal-description = Los <a href=\"https://es.wikipedia.org/wiki/Portal_cautivo\">portales cautivos</a> son las webs que registran y controlan el acceso a redes inalámbricas públicas en hoteles, aeropuertos, cafés y similares. El servicio que los detecta es práctico si se ve a menudo en la necesidad de usarlos, pero implica el establecimiento de conexiones en segundo plano.
++
++geolocation-option =
++    .label = Activar Geolocalización
++geolocation-description = Esta característica se usa habitualmente en mapas, páginas del tiempo y algunas tiendas. Es mejor desactivarla si realmente no necesita que identifiquen su ubicación.
++
++webgl-option =
++    .label = Activar WebGL
++webgl-description = Esta función necesaria para mostrar ciertos gráficos 3D en el navegador puede exponerle a ciertos riesgos de seguridad. Actívela solamente si va a usarla.
+diff --git a/data/files-to-append/l10n/es-MX/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/es-MX/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..ad052b3
+--- /dev/null
++++ b/data/files-to-append/l10n/es-MX/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Ajustes de privacidad de IceCat
++
++disable-javascript-option =
++    .label = Desactivar JavaScript
++disable-javascript-description = Desactivar JavaScript mejora enormemente la privacidad, la seguridad en Internet y la <a href=\"https://www.gnu.org/philosophy/javascript-trap.es.html\">libertad</a> en su equipo, pero afectará a la funcionalidad de muchas páginas.
++
++disable-custom-fonts-option =
++    .label = No cargar fuentes personalizadas
++disable-custom-fonts-description = Las fuentes personalizadas pueden usarse para <a href=\"https://en.wikipedia.org/wiki/Device_fingerprint\">rastrear</a> al usuario. Desactivarlas mejora la privacidad pero puede afectar al aspecto visual de algunas páginas.
++
++isolate-request-first-party-option =
++    .label = Aislar las solicitudes a los Dominios Primarios
++isolate-request-first-party-description = Este ajuste <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">mejora la privacidad</a>, pero puede interferir con el inicio de sesión en algunas webs.
++
++auto-update-extensions-option =
++    .label = Actualizar las extensiones automáticamente
++auto-update-extensions-description = Activar las actualizaciones automáticas es bueno para la seguridad, pero precisa del establecimiento de conexiones a otros servidores en segundo plano.
++
++spoof-referers-option =
++    .label = Modificar los referers HTTP
++spoof-referers-description = Los <a href=\"https://es.wikipedia.org/wiki/Referer_(Cabecera_HTTP)\">referers</a> son cabeceras HTTP que informan a una página acerca de nuestro enlace de origen. Activar esta característica mejora enormemente su privacidad, pero puede afectar a la funcionalidad de algunas páginas.
++
++detect-captive-portal-option =
++    .label = Detectar los portales cautivos
++detect-captive-portal-description = Los <a href=\"https://es.wikipedia.org/wiki/Portal_cautivo\">portales cautivos</a> son las webs que registran y controlan el acceso a redes inalámbricas públicas en hoteles, aeropuertos, cafés y similares. El servicio que los detecta es práctico si se ve a menudo en la necesidad de usarlos, pero implica el establecimiento de conexiones en segundo plano.
++
++geolocation-option =
++    .label = Activar Geolocalización
++geolocation-description = Esta característica se usa habitualmente en mapas, páginas del tiempo y algunas tiendas. Es mejor desactivarla si realmente no necesita que identifiquen su ubicación.
++
++webgl-option =
++    .label = Activar WebGL
++webgl-description = Esta función necesaria para mostrar ciertos gráficos 3D en el navegador puede exponerle a ciertos riesgos de seguridad. Actívela solamente si va a usarla.
+diff --git a/data/files-to-append/l10n/fr/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/fr/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..4008883
+--- /dev/null
++++ b/data/files-to-append/l10n/fr/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Vie privée de IceCat
++
++disable-javascript-option =
++    .label = Disable JavaScript
++disable-javascript-description = Désactiver JavaScript améliore grandement le respect de la vie privée, la sécurité et <a href=\"https://www.gnu.org/philosophy/javascript-trap.fr.html\">la liberté</a>, mais cela risque de rendre beaucoup de sites web inutilisables.
++
++disable-custom-fonts-option =
++    .label = Ne pas charger de polices personnalisées
++disable-custom-fonts-description = Les polices personnalisées peuvent être utilisées pour vous <a href=\"https://fr.wikipedia.org/wiki/Empreinte_digitale_d%27appareil\">identifier</a>. Les désactiver améliore le respect de la vie privée mais peut détérorier le rendu de certains sites.
++
++isolate-request-first-party-option =
++    .label = Isoler les requêtes vers les domaines de premier niveau
++isolate-request-first-party-description = Améliore <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">le respect de la vie privée</a>, mais peut interférer avec la page de login de certains sites web.
++
++auto-update-extensions-option =
++    .label = Mettre à jour les extensions automatiquement
++auto-update-extensions-description = Activer les mises à jour automatiques améliore votre sécurité, mais cela va ouvrir des connexions internet en arrière-plan.
++
++spoof-referers-option =
++    .label = Usurper l'identité des Referers
++spoof-referers-description = <a href=\"https://fr.wikipedia.org/wiki/R%C3%A9f%C3%A9rent_(informatique)\">Les Referers</a> indiquent aux sites web quel lien vous y a amené. Cette fonctionnalité améliore grandement le respect de la vie privée, mais peut entraîner la perte de fonctionnalités sur certains sites.
++
++detect-captive-portal-option =
++    .label = Détecter les portails captifs
++detect-captive-portal-description = <a href=\"https://fr.wikipedia.org/wiki/Portail_captif\">Les portails captifs</a> sont les sites qui contrôlent l'accès aux réseaux sans fils publics dans les hôtels, les aéroports, les bars, etc. Ce service de détection est utile si vous vous connectez à ce type de réseaux, mais cela entraîne l'ouverture automatique de connexions.
++
++geolocation-option =
++    .label = Activer la géolocalisation
++geolocation-description = Elle est utilisée couramment pour les cartes, les sites de prévisions météo, et certaines boutiques en ligne. Il vaut mieux la désactivez à moins d'en avoir réellement besoin.
++
++webgl-option =
++    .label = Activer WebGL
++webgl-description = Nécessaire afin de visualiser les graphisme en 3D, mais peut vous exposer à des menaces de sécurité. Activer WebGL seulement si vous l'utilisez réellement.
+diff --git a/data/files-to-append/l10n/it/browser/browser/preferences/preferences.ftl b/data/files-to-append/l10n/it/browser/browser/preferences/preferences.ftl
+new file mode 100644
+index 0000000..a1fe1b7
+--- /dev/null
++++ b/data/files-to-append/l10n/it/browser/browser/preferences/preferences.ftl
+@@ -0,0 +1,36 @@
++
++## IceCat-specific privacy settings
++
++icecat-privacy-group-header = Impostazioni sulla privacy di IceCat
++
++disable-javascript-option =
++    .label = Disabilita JavaScript
++disable-javascript-description = Disabilitare Javascript migliora notevolmente la privacy, la sicurezza e la <a href=\"https://www.gnu.org/philosophy/javascript-trap.it.html\">libertà</a>, ma compromette la funzionalità molti siti.
++
++disable-custom-fonts-option =
++    .label = Non caricare caratteri personalizzati
++disable-custom-fonts-description = I caratteri personalizzati possono essere utilizzati per il <a href=\"https://it.wikipedia.org/wiki/Device_fingerprint\">fingerprinting</a>. Disabilitarli migliora la privacy ma potrebbe far compromettere la visibilità di alcuni siti.
++
++isolate-request-first-party-option =
++    .label = Isolare le richieste ai domini proprietari
++isolate-request-first-party-description = Questo <a href=\"https://www.torproject.org/projects/torbrowser/design/#identifier-linkability\">migliora la privacy</a>, ma potrebbe interferire con il login in alcuni siti.
++
++auto-update-extensions-option =
++    .label = Aggiorna automaticamente le estensioni
++auto-update-extensions-description = Abilitare gli aggiornamenti automatici è positivo per la sicurezza, ma avvierebbe connessioni Internet in background.
++
++spoof-referers-option =
++    .label = Spoof Referers
++spoof-referers-description = <a href=\"https://it.wikipedia.org/wiki/Referer\">I referer</a> dicono ai siti quale link ti ha portato lì. Questa funzione migliora notevolmente la privacy, ma potrebbe compromettere la funzionalità  di alcuni siti.
++
++detect-captive-portal-option =
++    .label = Rileva il captive portal
++detect-captive-portal-description = <a href=\"https://it.wikipedia.org/wiki/Captive_portal\">I captive portal</a> sono i siti che controllano l'accesso alle reti wireless pubbliche negli hotel, negli aeroporti, nei bar, ecc. Il servizio di rilevamento è utile se ci si connette a tali reti, ma avvierà automaticamente le connessioni.
++
++geolocation-option =
++    .label = Abilita geolocalizzazione
++geolocation-description = Questo è comunemente usato per mappe, siti meteo e alcuni negozi online. È meglio tenerlo spento a meno che non se ne abbia veramente bisogno.
++
++webgl-option =
++    .label = Abilita WebGL
++webgl-description = Necessario per visualizzare la grafica 3D, ma potrebbe esporre a minacce alla sicurezza. Abilitare solo in caso di necessità.
+diff --git a/data/patches/icecat-preferences.patch b/data/patches/icecat-preferences.patch
+new file mode 100644
+index 0000000..86fdd06
+--- /dev/null
++++ b/data/patches/icecat-preferences.patch
+@@ -0,0 +1,155 @@
++--- a/browser/components/preferences/in-content/privacy.xul.orig	2019-10-16 15:29:49.000000000 -0400
+++++ b/browser/components/preferences/in-content/privacy.xul	2019-10-30 23:54:53.591633131 -0400
++@@ -594,6 +594,79 @@
++          data-l10n-id="addressbar-suggestions-settings"/>
++ </groupbox>
++ 
+++<!-- IceCat-specific privacy group -->
+++<groupbox id="iceCatPrivacyGroup"
+++          data-category="panePrivacy"
+++          hidden="true">
+++  <label><html:h2 data-l10n-id="icecat-privacy-group-header"/></label>
+++  <vbox>
+++    <checkbox id="disableJavaScript" data-l10n-id="disable-javascript-option"
+++              preference="javascript.enabled"
+++              onsyncfrompreference="return gPrivacyPane.readDisableJavaScriptOption();"
+++              onsynctopreference="return gPrivacyPane.writeDisableJavaScriptOption();"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="disable-javascript-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="disableCustomFonts" data-l10n-id="disable-custom-fonts-option"
+++              preference="browser.display.use_document_fonts"
+++              onsyncfrompreference="return gPrivacyPane.readDisableCustomFontsOption();"
+++              onsynctopreference="return gPrivacyPane.writeDisableCustomFontsOption();"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="disable-custom-fonts-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="isolateRequestFirstParty" data-l10n-id="isolate-request-first-party-option"
+++              preference="privacy.firstparty.isolate"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="isolate-request-first-party-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="autoUpdateExtensions" data-l10n-id="auto-update-extensions-option"
+++              preference="extensions.update.enabled"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="auto-update-extensions-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="spoofReferrers" data-l10n-id="spoof-referers-option"
+++              preference="network.http.referer.spoofSource"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="spoof-referers-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="detectCaptivePortal" data-l10n-id="detect-captive-portal-option"
+++              preference="captivedetect.canonicalURL"
+++              onsyncfrompreference="return gPrivacyPane.readDetectCaptiveOption();"
+++              onsynctopreference="return gPrivacyPane.writeDetectCaptiveOption();"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="detect-captive-portal-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="geolocation" data-l10n-id="geolocation-option"
+++              preference="browser.search.geoip.url"
+++              onsyncfrompreference="return gPrivacyPane.readGeolocationOption();"
+++              onsynctopreference="return gPrivacyPane.writeGeolocationOption();"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="geolocation-description"/>
+++    </vbox>
+++  </vbox>
+++  <vbox>
+++    <checkbox id="webgl" data-l10n-id="webgl-option"
+++              preference="webgl.disabled"
+++              onsyncfrompreference="return gPrivacyPane.readWebGLOption();"
+++              onsynctopreference="return gPrivacyPane.writeWebGLOption();"/>
+++    <vbox class="indent">
+++      <label data-l10n-id="webgl-description"/>
+++    </vbox>
+++  </vbox>
+++</groupbox>
+++
++ <hbox id="permissionsCategory"
++       class="subcategory"
++       hidden="true"
++--- a/browser/components/preferences/in-content/privacy.js.orig	2019-10-16 15:29:49.000000000 -0400
+++++ b/browser/components/preferences/in-content/privacy.js	2019-10-31 00:08:05.819561577 -0400
++@@ -93,6 +93,16 @@
++   { id: "browser.urlbar.suggest.history", type: "bool" },
++   { id: "browser.urlbar.suggest.openpage", type: "bool" },
++ 
+++  // IceCat-specific
+++  { id: "javascript.enabled", type: "bool" },
+++  { id: "browser.display.use_document_fonts", type: "int" },
+++  { id: "privacy.firstparty.isolate", type: "bool" },
+++  { id: "extensions.update.enabled", type: "bool" },
+++  { id: "network.http.referer.spoofSource", type: "bool" },
+++  { id: "webgl.disabled", type: "bool" },
+++  { id: "captivedetect.canonicalURL", type: "string" },
+++  { id: "browser.search.geoip.url", type: "string" },
+++
++   // History
++   { id: "places.history.enabled", type: "bool" },
++   { id: "browser.formfill.enable", type: "bool" },
++@@ -587,6 +597,53 @@
++     SiteDataManager.updateSites();
++   },
++ 
+++  // ICECAT PREFERENCES
+++
+++  readDisableJavaScriptOption() {
+++    let pref = Preferences.get("javascript.enabled");
+++    return !pref.value;
+++  },
+++  writeDisableJavaScriptOption() {
+++    let checkbox = document.getElementById("disableJavaScript");
+++    return !checkbox.checked;
+++  },
+++
+++  readDisableCustomFontsOption() {
+++    let pref = Preferences.get("browser.display.use_document_fonts");
+++    return pref.value == 0;
+++  },
+++  writeDisableCustomFontsOption() {
+++    let checkbox = document.getElementById("disableCustomFonts");
+++    return checkbox.checked ? 0 : 1;
+++  },
+++
+++  readDetectCaptiveOption() {
+++    let pref = Preferences.get("captivedetect.canonicalURL");
+++    return pref.value !== "";
+++  },
+++  writeDetectCaptiveOption() {
+++    let checkbox = document.getElementById("detectCaptivePortal");
+++    return checkbox.checked ? "http://detectportal.firefox.com/success.txt" : "";
+++  },
+++
+++  readGeolocationOption() {
+++    let pref = Preferences.get("browser.search.geoip.url");
+++    return pref.value !== "";
+++  },
+++  writeGeolocationOption() {
+++    let checkbox = document.getElementById("geolocation");
+++    return checkbox.checked ? "https://location.services.mozilla.com/v1/country?key=%MOZILLA_API_KEY%" : "";
+++  },
+++
+++  readWebGLOption() {
+++    let pref = Preferences.get("webgl.disabled");
+++    return !pref.value;
+++  },
+++  writeWebGLOption() {
+++    let checkbox = document.getElementById("webgl");
+++    return !checkbox.checked;
+++  },
+++
++   // CONTENT BLOCKING
++ 
++   /**
+diff --git a/makeicecat b/makeicecat
+index 4ff3e64..493d946 100755
+--- a/makeicecat
++++ b/makeicecat
+@@ -87,6 +87,19 @@ for patch in $DATA/patches/*.patch; do
+ done
+ shopt -u nullglob
+ 
++for file_to_append in $(cd $DATA/files-to-append; find . -type f -print); do
++    echo Appending new data to the end of file: $file_to_append
++    cat $DATA/files-to-append/$file_to_append >> $file_to_append
++done
++
++for dir in l10n/*; do
++    if [[ $dir != l10n/compare-locales ]]; then
++        if [[ ! -e $DATA/files-to-append/$dir/browser/browser/preferences/preferences.ftl ]]; then
++            cat $DATA/files-to-append/browser/locales/en-US/browser/preferences/preferences.ftl >> $dir/browser/browser/preferences/preferences.ftl
++        fi
++    fi
++done
++
+ cp $DATA/Changelog.IceCat $DATA/README.IceCat .
+ 
+ ###############################################################################
 -- 
 2.23.0
 
