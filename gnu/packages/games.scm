@@ -44,6 +44,7 @@
 ;;; Copyright © 2019 Dan Frumin <dfrumin@cs.ru.nl>
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
+;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2594,24 +2595,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.8.0")
+    (version "1.9.3")
     (source
      (origin (method url-fetch)
-             (uri (string-append "http://binaries.openttd.org/releases/"
+             (uri (string-append "https://proxy.binaries.openttd.org/openttd-releases/"
                                  version "/openttd-" version "-source.tar.xz"))
-             (patches
-              (list
-               (origin (method url-fetch)
-                       (uri (string-append
-                             "https://github.com/OpenTTD/OpenTTD/commit/"
-                             "19076c24c1f3baf2a22d1fa832d5688216cf54a3.patch"))
-                       (file-name "openttd-fix-compilation-with-ICU-61.patch")
-                       (sha256
-                        (base32
-                         "02d1xmb75yv4x6rfnvxk3vvq4l3lvvwr2pfsdzn7lzalic51ziqh")))))
              (sha256
               (base32
-               "0zq8xdg0k92p3s4j9x76591zaqz7k9ra69q008m209vdfffjvly2"))
+               "0ijq72kgx997ggw40i5f4a3nf7y2g72z37l47i18yjvgbdzy320r"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -2656,7 +2647,7 @@ Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
 autoreplace and autoupdate vehicles.  This package only includes the game
 engine.  When you start it you will be prompted to download a graphics set.")
-    (home-page "http://openttd.org/")
+    (home-page "https://www.openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
     ;; licenses.  In addition, this software contains an in-game downloader
@@ -2667,7 +2658,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
 (define openttd-opengfx
   (package
     (name "openttd-opengfx")
-    (version "0.5.2")
+    (version "0.5.5")
     (source
      (origin
        (method url-fetch)
@@ -2675,7 +2666,7 @@ engine.  When you start it you will be prompted to download a graphics set.")
                            version "/opengfx-" version "-source.tar.xz"))
        (sha256
         (base32
-         "0iz66q7p1mf00njfjbc4vibh3jaybki7armkl18iz7p6x4chp9zv"))))
+         "009fa1bdin1bk0ynzhzc30hzkmmwzmwkk6j591ax3f6w75l28n49"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (list "CC=gcc"
@@ -2910,7 +2901,7 @@ Transport Tycoon Deluxe.")
 (define-public openrct2
   (package
     (name "openrct2")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method git-fetch)
@@ -2919,7 +2910,7 @@ Transport Tycoon Deluxe.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "01mj6jlbl2cn3wpk6sy34ldzdl0qykpn7fncznjykklj2nqzr4ig"))))
+        (base32 "1rlw3w20llg36sj3bk50g661qw766ng8ma3p42sdkj8br9dw800h"))))
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags (list "-DDOWNLOAD_OBJECTS=OFF"

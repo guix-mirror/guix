@@ -772,7 +772,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.30.2")
+    (version "3.34.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -780,7 +780,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0k7jln6dpg4bpv61niicjzkzyq6fhb3yfld7pc8ck71c8pmvsnx9"))))
+               "1pr6fvbaam1mzxjwyqd53hcxzdjzf73idn10j4j7n54nwg6hgr45"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -2062,17 +2062,17 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.44")
+    (version "0.10.45")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/" name "/"
+              (uri (string-append "mirror://gnome/sources/goffice/"
                                   (version-major+minor version)  "/"
-                                  name "-" version ".tar.xz"))
+                                  "goffice-" version ".tar.xz"))
               (sha256
-               (base32 "1fd7cm6j0g0mqgpqs4y22b4gd2ll4mcyvg4d0q22d5ndjapl4q3d"))))
+               (base32 "0iqrygv2bh8kiw98kjx6ay6qdd288v91q5m8n7cvs2zcx5ksaavh"))))
     (build-system gnu-build-system)
     (outputs '("out"
-               "doc"))                            ;4.0 MiB of gtk-doc
+               "doc"))                  ; 4.0 MiB of gtk-doc
     (arguments
      '(#:configure-flags (list (string-append "--with-html-dir="
                                               (assoc-ref %outputs "doc")
@@ -7784,16 +7784,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.1.3.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "5a7cd7c72b6d83ae08d0c54c4691f9df/"
-                           name "-" version ".tar.xz"))
+                           "aa4fbd92bf338296c28e54710271ccab/"
+                           "lollypop-" version ".tar.xz"))
        (sha256
-        (base32
-         "1r5wn0bja9psz6nr1rcaysdkkwz84rbyzpdfw66cxa6wiy52pkjm"))))
+        (base32 "1wz5fna24qr3v7h29ijwhdxza85r9srz9xsqz4f4df3p5f8rfyql"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -7831,7 +7830,7 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
        ("python-gst" ,python-gst)
        ("python-pil" ,python-pillow)
        ("python-pycairo" ,python-pycairo)
-       ("python-pygobject" ,python-pygobject)
+       ("python-pygobject" ,python-pygobject-3.34)
        ("python-pylast" ,python-pylast)
        ("totem-pl-parser" ,totem-pl-parser)
        ("webkitgtk" ,webkitgtk)))

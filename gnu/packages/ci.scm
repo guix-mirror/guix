@@ -3,7 +3,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016, 2017 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2017 Mathieu Othacehe <m.othacehe@gmail.com>
-;;; Copyright © 2017 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -47,8 +47,8 @@
   #:use-module (guix build-system gnu))
 
 (define-public cuirass
-  (let ((commit "80b6e89a7b2e9a6f9dee26dcf22277970930039f")
-        (revision "25"))
+  (let ((commit "e20ff86d97f7dd92dad140b5919e3cbdf2fb1ce6")
+        (revision "26"))
     (package
       (name "cuirass")
       (version (string-append "0.0.1-" revision "." (string-take commit 7)))
@@ -60,7 +60,7 @@
                 (file-name (string-append name "-" version))
                 (sha256
                  (base32
-                  "0m7g7wqa1l8gab8pcyi43a6w6rxhaqbpsrwlnadwsds1b95x9bka"))))
+                  "1c3rcfmx7vm13x3nid9xbl18rrqljh5vb71qxps4yqid75br4hrb"))))
       (build-system gnu-build-system)
       (arguments
        '(#:modules ((guix build utils)

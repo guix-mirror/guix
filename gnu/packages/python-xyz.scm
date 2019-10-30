@@ -548,14 +548,13 @@ concepts.")
 (define-public python-cftime
   (package
     (name "python-cftime")
-    (version "1.0.3.4")
+    (version "1.0.4.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cftime" version))
        (sha256
-        (base32
-         "0362dhxbzk593walyjz30dll6y2y79wialik647cbwdsf3ad0x6x"))))
+        (base32 "0w0gi6jnch38hiygl62j4xkcirv4y3dcwrvxl9p7bsk6j27lzihs"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -934,14 +933,14 @@ add the log levels NOTICE, SPAM, SUCCESS and VERBOSE.")
 (define-public python-coloredlogs
   (package
     (name "python-coloredlogs")
-    (version "7.3")
+    (version "10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coloredlogs" version))
        (sha256
         (base32
-         "1blcann6dyg5dhps9pg12rn0q0rjrlajpmmil0gy0j4cbvnl2il9"))))
+         "0dkw6xp0r1dwgz4s2f58npx5nxfq51wf4l6qkm5ib27slgfs4sdq"))))
     (build-system python-build-system)
     (arguments
      `(;Tests require some updated modules
@@ -1158,13 +1157,13 @@ human-friendly syntax.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.24.2")
+    (version "0.25.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag"))))
+        (base32 "1gp2pvzdiakvgjmykdzdlzrsfbg4vjm49jjdl9s0ha0a3yfs34fa"))))
     (build-system python-build-system)
     (arguments
      `(#:modules ((guix build utils)
@@ -1227,10 +1226,22 @@ structures designed to make working with structured (tabular,
 multidimensional, potentially heterogeneous) and time series data both easy
 and intuitive.  It aims to be the fundamental high-level building block for
 doing practical, real world data analysis in Python.")
+    (properties `((python2-variant . ,(delay python2-pandas))))
     (license license:bsd-3)))
 
+;; Pandas 0.24.x are the last versions that support Python 2.
 (define-public python2-pandas
-  (package-with-python2 python-pandas))
+  (let ((pandas (package-with-python2
+                 (strip-python2-variant python-pandas))))
+    (package/inherit
+     pandas
+     (version "0.24.2")
+     (source (origin
+               (method url-fetch)
+               (uri (pypi-uri "pandas" version))
+               (sha256
+                (base32
+                 "18imlm8xbhcbwy4wa957a1fkamrcb0z988z006jpfda3ki09z4ag")))))))
 
 (define-public python2-mechanize
   (package
@@ -3451,7 +3462,7 @@ between language specification and implementation aspects.")
 (define-public python-numpy
   (package
     (name "python-numpy")
-    (version "1.15.4")
+    (version "1.17.3")
     (source
      (origin
        (method url-fetch)
@@ -3460,7 +3471,7 @@ between language specification and implementation aspects.")
              version "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "102vcl2qq4pjbm7a3d67vkkvn4466ngia1d8wi5avqwqh8j0jvkn"))))
+         "1ak9dmjja0q90a7fsxli51ypcwssh8c4pb6f8wkrsnf2xgdk6dy9"))))
     (build-system python-build-system)
     (inputs
      `(("openblas" ,openblas)
@@ -3525,10 +3536,24 @@ with Python.  It contains among other things: a powerful N-dimensional array
 object, sophisticated (broadcasting) functions, tools for integrating C/C++
 and Fortran code, useful linear algebra, Fourier transform, and random number
 capabilities.")
+    (properties `((python2-variant . ,(delay python2-numpy))))
     (license license:bsd-3)))
 
+;; Numpy 1.16.x are the last versions that support Python 2.
 (define-public python2-numpy
-  (package-with-python2 python-numpy))
+  (let ((numpy (package-with-python2
+                (strip-python2-variant python-numpy))))
+    (package/inherit
+     numpy
+      (version "1.16.5")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "https://github.com/numpy/numpy/releases/download/v"
+                      version "/numpy-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "0lg1cycxzi4rvvrd5zxinpdz0ni792fpx6xjd75z1923zcac8qrb")))))))
 
 ;; NOTE: NumPy 1.8 is packaged only for Python 2 because it is of
 ;; interest only for legacy code going back to NumPy's predecessor
@@ -5218,13 +5243,13 @@ releases.")
 (define-public python-pathpy
   (package
     (name "python-pathpy")
-    (version "11.5.0")
+    (version "11.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "path.py" version))
        (sha256
-        (base32 "1jxkf91syzxlpiwgm83fjfz1m5xh3jrvv4iyl5wjsnkk599pls5n"))))
+        (base32 "0ir9j1haq2jbi7aip6k2fa9l7q1l03k4hp1awxhjhcwzsnwp3ll8"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (propagated-inputs
@@ -5625,13 +5650,13 @@ computing.")
 (define-public python-ipython
   (package
     (name "python-ipython")
-    (version "7.5.0")
+    (version "7.9.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "ipython" version ".tar.gz"))
        (sha256
-        (base32 "09mbxq37mfn88xjnib7qfzaq9krr7gf1jxwy1p6mcjr254082h78"))))
+        (base32 "103jkw18z7fnwdal1mdbijjxi1fndzn31g887lmj7ddpf2r07lyz"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-backcall" ,python-backcall)
@@ -5964,15 +5989,20 @@ the GObject Introspection bindings to libnotify for non-GTK applications.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "4.2.5")
+    (version "4.4.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "lxml" version))
         (sha256
          (base32
-          "0zw0y9hs0nflxhl9cs6ipwwh53szi3w2x06wl0k9cylyqac0cwin"))))
+          "14jnpfcpgqr9sx8ppd286jzcbk0b36hbqsvd8jkvffipzw5v8768"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (invoke "make" "test"))))))
     (inputs
       `(("libxml2" ,libxml2)
         ("libxslt" ,libxslt)))
@@ -7243,21 +7273,23 @@ Supported netlink families and protocols include:
 (define-public python-xlrd
   (package
     (name "python-xlrd")
-    (version "1.0.0")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "xlrd" version))
               (sha256
                (base32
-                "0s8hjiz01vbhy85xalrz0qlsmd9ypf36zjqrf97hh984spapvy0g"))))
+                "1ci93fda4n67qhdvfl16zasyxrpygzk53hs6m8z0rd4dxrnb6vjl"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; Current test in setup.py does not work as of 1.0.0, so use nose to
-         ;; run tests instead for now.
-         (replace 'check (lambda _ (invoke "nosetests"))))))
-    (native-inputs `(("python-nose"       ,python-nose)))
+         ;; Some tests depend on writing a temporary file to the user's home
+         ;; directory.
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (delete-file "tests/test_open_workbook.py")
+             #t)))))
     (home-page "http://www.python-excel.org/")
     (synopsis "Library for extracting data from Excel files")
     (description "This package provides a library to extract data from
@@ -9558,6 +9590,7 @@ useful for solving the Assignment Problem.")
         (base32
          "10qsqdjpbc85fykc1vgcs8xwbgn4l2l52c8d83xf1q59pwyn79bw"))))
     (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; Test invocation is no longer supported by Python.
     (native-inputs
      `(("python-pytest" ,python-pytest)))
     (home-page "https://bitbucket.org/mchaput/whoosh")
@@ -10588,16 +10621,16 @@ Wikipedia code samples at
 (define-public python-cleo
   (package
     (name "python-cleo")
-    (version "0.6.1")
+    (version "0.6.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "cleo" version))
               (sha256
                (base32
-                "0q1cf0szr0d54am4pypzwdnm74zpladdsinad94c2fz5i06fdpf7"))))
+                "06zp695hq835rkaq6irr1ds1dp2qfzyf32v60vxpd8rcnxv319l5"))))
     (build-system python-build-system)
     (native-inputs
-     `(;; For testing
+     `( ;; For testing
        ("python-mock" ,python-mock)
        ("python-pytest-mock" ,python-pytest-mock)
        ("python-pytest" ,python-pytest)))
@@ -10614,6 +10647,191 @@ docstring and colored output.")
 
 (define-public python2-cleo
   (package-with-python2 python-cleo))
+
+(define-public python-tomlkit
+  (package
+    (name "python-tomlkit")
+    (version "0.5.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tomlkit" version))
+       (sha256
+        (base32
+         "18820ga5z3if1w8dvykxrfm000akracq01ic402xrbljgbn5grn4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page
+     "https://github.com/sdispater/tomlkit")
+    (synopsis "Style preserving TOML library")
+    (description
+     "TOML Kit is a 0.5.0-compliant TOML library.  It includes a parser that
+preserves all comments, indentations, whitespace and internal element ordering,
+and makes them accessible and editable via an intuitive API.  It can also
+create new TOML documents from scratch using the provided helpers.  Part of the
+implementation as been adapted, improved and fixed from Molten.")
+    (license license:expat)))
+
+(define-public python-shellingham
+  (package
+    (name "python-shellingham")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "shellingham" version))
+       (sha256
+        (base32
+         "1q7kws7w4x2hji3g7y0ni9ddk4sd676ylrb3db54gbpys6xj6nwq"))))
+    (build-system python-build-system)
+    (home-page
+     "https://github.com/sarugaku/shellingham")
+    (synopsis "Tool to detect surrounding shell")
+    (description
+     "Shellingham detects what shell the current Python executable is
+running in.")
+    (license license:isc)))
+
+(define-public python-memcached
+  (package
+    (name "python-memcached")
+    (version "1.59")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "python-memcached" version))
+       (sha256
+        (base32
+         "0kvyapavbirk2x3n1jx4yb9nyigrj1s3x15nm3qhpvhkpqvqdqm2"))))
+    (build-system python-build-system)
+    (propagated-inputs `(("python-six" ,python-six)))
+    (home-page
+     "https://github.com/linsomniac/python-memcached")
+    (synopsis "Pure python memcached client")
+    (description
+     "This software is a pure Python interface to the memcached memory cache
+daemon.  It is the client side software which allows storing values in one or
+more, possibly remote, memcached servers.")
+    (license license:psfl)))
+
+(define-public python-clikit
+  (package
+    (name "python-clikit")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "clikit" version))
+       (sha256
+        (base32
+         "0dc8czib5f4j9px1ivcpqnmivnx2zjpc0xb00ldrhsqylks7r06n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pastel" ,python-pastel)
+       ("python-pylev" ,python-pylev)))
+    (home-page "https://github.com/sdispater/clikit")
+    (synopsis "Group of utilities to build command line interfaces")
+    (description
+     "CliKit is a group of utilities to build testable command line
+interfaces.")
+    (license license:expat)))
+
+(define-public python-msgpack-python
+  (package
+    (name "python-msgpack-python")
+    (version "0.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "msgpack-python" version))
+       (sha256
+        (base32
+         "16wh8qgybmfh4pjp8vfv78mdlkxfmcasg78lzlnm6nslsfkci31p"))))
+    (build-system python-build-system)
+    (home-page "http://msgpack.org/")
+    (synopsis "Package to deserialize messages in MessagePack binary format")
+    (description
+     "MessagePack is an efficient binary serialization format.  It lets you
+exchange data among multiple languages like JSON.  But it's faster and
+smaller.  Small integers are encoded into a single byte, and typical short
+strings require only one extra byte in addition to the strings themselves.")
+    (license license:asl2.0)))
+
+(define-public python-cachy
+  (package
+    (name "python-cachy")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "cachy" version))
+       (sha256
+        (base32
+         "0v6mjyhgx6j7ya20bk69cr3gdzdkdf6psay0h090rscclgji65dp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-fakeredis" ,python-fakeredis)
+       ("python-flexmock" ,python-flexmock)
+       ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-memcached" ,python-memcached)
+       ("python-msgpack-python" ,python-msgpack-python)
+       ("python-redis" ,python-redis)))
+    (home-page "https://github.com/sdispater/cachy")
+    (synopsis "Simple yet effective caching library")
+    (description
+     "Cachy provides a simple yet effective caching library.  A simple but
+powerful API: thread-safety; decorator syntax; support for memcached, redis,
+database, file, dict stores.  Cachy supports python versions 2.7+ and 3.2+.")
+    (license license:expat)))
+
+(define-public poetry
+  (package
+    (name "poetry")
+    (version "0.12.17")
+    ;; Poetry can only be built from source with poetry.
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "poetry" version))
+       (sha256
+        (base32
+         "0gxwcd65qjmzqzppf53x51sic1rbcd9py6cdzx3aprppipimslvf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ;; Pypi does not have tests.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             ;; Bug in poetry https://github.com/sdispater/poetry/issues/866.
+             (invoke "sed" "-i" "-e" "s/from distutils.core/from setuptools/"
+                     "setup.py")
+             #t)))))
+    (propagated-inputs
+     `(("python-cachecontrol" ,python-cachecontrol)
+       ("python-cachy" ,python-cachy)
+       ("python-cleo" ,python-cleo)
+       ("python-glob2" ,python-glob2)
+       ("python-html5lib" ,python-html5lib)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-msgpack" ,python-msgpack)
+       ("python-pathlib2" ,python-pathlib2)
+       ("python-pkginfo" ,python-pkginfo)
+       ("python-pyparsing" ,python-pyparsing)
+       ("python-pyrsistent" ,python-pyrsistent)
+       ("python-requests" ,python-requests)
+       ("python-requests-toolbelt" ,python-requests-toolbelt)
+       ("python-shellingham" ,python-shellingham)
+       ("python-tomlkit" ,python-tomlkit)
+       ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://poetry.eustace.io/")
+    (synopsis "Python dependency management and packaging made easy")
+    (description "Poetry is a tool for dependency management and packaging
+in Python.  It allows you to declare the libraries your project depends on and
+it will manage (install/update) them for you.")
+    (license license:expat)))
 
 (define-public python-lazy-object-proxy
   (package
@@ -14325,14 +14543,20 @@ such as figshare or Zenodo.")
 (define-public python-pyro4
   (package
     (name "python-pyro4")
-    (version "4.75")
+    (version "4.77")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pyro4" version))
        (sha256
-        (base32 "1dfpp36imddx19yv0kd28gk1l71ckhpqy6jd590wpm2680jw15rq"))))
+        (base32 "0gsjg869y4gpy265s1gj1f2qy6jn5iz8r2bwwnq78r1r5yi15zib"))))
     (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ;FIXME: Some tests require network access.
+    (native-inputs
+     `(("python-cloudpickle" ,python-cloudpickle)
+       ("python-dill" ,python-dill)
+       ("python-msgpack" ,python-msgpack)))
     (propagated-inputs
      `(("python-serpent" ,python-serpent)))
     (home-page "https://pyro4.readthedocs.io")

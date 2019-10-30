@@ -53,14 +53,15 @@
   (package
     (name "cereal")
     (version "1.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/USCiLab/cereal/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0kj32h3j2128anig0g9gzw82kfyd5xqfkwq6vdyv900jx8i1qckx"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/USCiLab/cereal.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1vxkrsnxkiblzi1z61vfix167c184fy868sgwj2dxxgbgjcq2nrh"))))
     (build-system cmake-build-system)
     (arguments
      `(;; The only included tests are portability tests requiring

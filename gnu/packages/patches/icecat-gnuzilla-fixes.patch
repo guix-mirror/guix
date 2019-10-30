@@ -1,0 +1,241 @@
+From 2676d4e1eb64e18d2e4722c0ea0babdc1f716fa4 Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Mon, 28 Oct 2019 01:54:19 -0400
+Subject: [PATCH 1/4] Update to 68.2.0-gnu1.
+
+* makeicecat: Update to FFMINOR to 2, and update the expected
+sha256sum of the firefox source tarball.
+---
+ makeicecat | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/makeicecat b/makeicecat
+index 97ee473..1bcf465 100644
+--- a/makeicecat
++++ b/makeicecat
+@@ -21,7 +21,7 @@
+ set -euxo pipefail
+ 
+ FFMAJOR=68
+-FFMINOR=1
++FFMINOR=2
+ FFSUB=0
+ GNUVERSION=1
+ FFVERSION=$FFMAJOR.$FFMINOR.$FFSUB
+@@ -43,7 +43,7 @@ wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr
+ wget -N https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${FFVERSION}esr/source/firefox-${FFVERSION}esr.source.tar.xz.asc
+ gpg --recv-keys --keyserver keyserver.ubuntu.com 14F26682D0916CDD81E37B6D61B7B526D98F0353
+ gpg --verify firefox-${FFVERSION}esr.source.tar.xz.asc
+-echo -n f56f5fa5a4744be0b9acf259cb991254d708a50b9a0a12d1d846ffa5a6c409ac firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
++echo -n 85f1c2eaf68ebedcbc0b78a342f6d16ef0865dedd426a1bba94b75c85f716f38 firefox-${FFVERSION}esr.source.tar.xz |sha256sum -c -
+ 
+ echo Extracting Firefox tarball
+ tar -xf firefox-${FFVERSION}esr.source.tar.xz
+-- 
+2.23.0
+
+From c3a7b761f11c75d3764779e731a7c7e86b072d2f Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Mon, 28 Oct 2019 04:18:26 -0400
+Subject: [PATCH 2/4] Disable MOZ_SERVICES_HEALTHREPORT and MOZ_DATA_REPORTING.
+
+* data/patches/fix-data-reporting-check.patch: New file.
+* data/patches/legacy-profiles.patch: Rename to ...
+* data/patches/moz-configure-changes.patch: ... this,
+and set MOZ_SERVICES_HEALTHREPORT to False.
+---
+ data/patches/fix-data-reporting-check.patch | 22 +++++++++++++++++++++
+ data/patches/legacy-profiles.patch          | 11 -----------
+ data/patches/moz-configure-changes.patch    | 14 +++++++++++++
+ 3 files changed, 36 insertions(+), 11 deletions(-)
+ create mode 100644 data/patches/fix-data-reporting-check.patch
+ delete mode 100644 data/patches/legacy-profiles.patch
+ create mode 100644 data/patches/moz-configure-changes.patch
+
+diff --git a/data/patches/fix-data-reporting-check.patch b/data/patches/fix-data-reporting-check.patch
+new file mode 100644
+index 0000000..d586dc5
+--- /dev/null
++++ b/data/patches/fix-data-reporting-check.patch
+@@ -0,0 +1,22 @@
++--- a/old-configure.in.orig	1980-01-01 18:59:51.000000000 -0500
+++++ b/old-configure.in	2019-10-28 04:13:17.343606008 -0400
++@@ -3116,7 +3116,7 @@
++ dnl If we have any service that uploads data (and requires data submission
++ dnl policy alert), set MOZ_DATA_REPORTING.
++ dnl We need SUBST for build system and DEFINE for xul preprocessor.
++-if test -n "$MOZ_TELEMETRY_REPORTING" || test -n "$MOZ_SERVICES_HEALTHREPORT" || test -n "$MOZ_CRASHREPORTER"; then
+++if test "$MOZ_TELEMETRY_REPORTING" = 1 || test "$MOZ_SERVICES_HEALTHREPORT" = 1 || test "$MOZ_CRASHREPORTER" = 1; then
++   MOZ_DATA_REPORTING=1
++   AC_DEFINE(MOZ_DATA_REPORTING)
++   AC_SUBST(MOZ_DATA_REPORTING)
++--- a/old-configure.orig	1980-01-01 18:59:51.000000000 -0500
+++++ b/old-configure	2019-10-28 04:15:41.772322191 -0400
++@@ -12150,7 +12150,7 @@
++ 
++ 
++ 
++-if test -n "$MOZ_TELEMETRY_REPORTING" || test -n "$MOZ_SERVICES_HEALTHREPORT" || test -n "$MOZ_CRASHREPORTER"; then
+++if test "$MOZ_TELEMETRY_REPORTING" = 1 || test "$MOZ_SERVICES_HEALTHREPORT" = 1 || test "$MOZ_CRASHREPORTER" = 1; then
++   MOZ_DATA_REPORTING=1
++   cat >> confdefs.pytmp <<\EOF
++     (''' MOZ_DATA_REPORTING ''', ' 1 ')
+diff --git a/data/patches/legacy-profiles.patch b/data/patches/legacy-profiles.patch
+deleted file mode 100644
+index 33e9e99..0000000
+--- a/data/patches/legacy-profiles.patch
++++ /dev/null
+@@ -1,11 +0,0 @@
+---- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
+-+++ b/browser/moz.configure	2019-10-26 21:58:37.719617701 -0400
+-@@ -7,7 +7,7 @@
+- imply_option('MOZ_PLACES', True)
+- imply_option('MOZ_SERVICES_HEALTHREPORT', True)
+- imply_option('MOZ_SERVICES_SYNC', True)
+--imply_option('MOZ_DEDICATED_PROFILES', True)
+-+imply_option('MOZ_DEDICATED_PROFILES', False)
+- imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
+- 
+- with only_when(target_is_linux & compile_environment):
+diff --git a/data/patches/moz-configure-changes.patch b/data/patches/moz-configure-changes.patch
+new file mode 100644
+index 0000000..aa6f1a5
+--- /dev/null
++++ b/data/patches/moz-configure-changes.patch
+@@ -0,0 +1,14 @@
++--- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
+++++ b/browser/moz.configure	2019-10-28 01:36:13.132873871 -0400
++@@ -5,9 +5,9 @@
++ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
++ 
++ imply_option('MOZ_PLACES', True)
++-imply_option('MOZ_SERVICES_HEALTHREPORT', True)
+++imply_option('MOZ_SERVICES_HEALTHREPORT', False)
++ imply_option('MOZ_SERVICES_SYNC', True)
++-imply_option('MOZ_DEDICATED_PROFILES', True)
+++imply_option('MOZ_DEDICATED_PROFILES', False)
++ imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
++ 
++ with only_when(target_is_linux & compile_environment):
+-- 
+2.23.0
+
+From 62f50f15abc91483c6aa7a2ac7ebb972e6f9affd Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Mon, 28 Oct 2019 13:05:28 -0400
+Subject: [PATCH 3/4] Disable MOZ_BLOCK_PROFILE_DOWNGRADE.
+
+It would be desirable to prevent downgrades from one major version of
+IceCat to another.  However, as MOZ_BLOCK_PROFILE_DOWNGRADE is
+currently implemented, it prevents downgrades from one build of
+IceCat-68.2 to an earlier build of IceCat-68.2.  Until we can find a
+satisfactory solution, we disable this functionality entirely.
+
+* data/patches/moz-configure-changes.patch: Set
+MOZ_BLOCK_PROFILE_DOWNGRADE to 'False'.
+---
+ data/patches/moz-configure-changes.patch | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/data/patches/moz-configure-changes.patch b/data/patches/moz-configure-changes.patch
+index aa6f1a5..53091a4 100644
+--- a/data/patches/moz-configure-changes.patch
++++ b/data/patches/moz-configure-changes.patch
+@@ -1,6 +1,6 @@
+ --- a/browser/moz.configure.orig	1980-01-01 18:59:51.000000000 -0500
+-+++ b/browser/moz.configure	2019-10-28 01:36:13.132873871 -0400
+-@@ -5,9 +5,9 @@
+++++ b/browser/moz.configure	2019-10-28 13:04:11.469562089 -0400
++@@ -5,10 +5,10 @@
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  
+  imply_option('MOZ_PLACES', True)
+@@ -8,7 +8,9 @@
+ +imply_option('MOZ_SERVICES_HEALTHREPORT', False)
+  imply_option('MOZ_SERVICES_SYNC', True)
+ -imply_option('MOZ_DEDICATED_PROFILES', True)
++-imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
+ +imply_option('MOZ_DEDICATED_PROFILES', False)
+- imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', True)
+++imply_option('MOZ_BLOCK_PROFILE_DOWNGRADE', False)
+  
+  with only_when(target_is_linux & compile_environment):
++     option(env='MOZ_NO_PIE_COMPAT',
+-- 
+2.23.0
+
+From 036f74092d223976054f9eafd8caa056f5975c54 Mon Sep 17 00:00:00 2001
+From: Mark H Weaver <mhw@netris.org>
+Date: Mon, 28 Oct 2019 19:57:37 -0400
+Subject: [PATCH 4/4] Improve branding for version 68 ESR.
+
+* data/branding/icecat/locales/en-US/brand.dtd: Add brandProductName.
+* data/branding/icecat/locales/en-US/brand.ftl: Add
+brand-shorter-name, brand-full-name, brand-product-name,
+vendor-short-name, and trademarkInfo.
+* data/branding/icecat/locales/en-US/brand.properties: Add
+brandProductName.
+* makeicecat: Limit replacement of trademarkInfo.part1 of brand.dtd
+files to only be done within l10n directory.  Replace trademarkInfo of
+brand.ftl files within l10n directory.
+---
+ data/branding/icecat/locales/en-US/brand.dtd        | 1 +
+ data/branding/icecat/locales/en-US/brand.ftl        | 5 +++++
+ data/branding/icecat/locales/en-US/brand.properties | 1 +
+ makeicecat                                          | 3 ++-
+ 4 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/data/branding/icecat/locales/en-US/brand.dtd b/data/branding/icecat/locales/en-US/brand.dtd
+index 3788266..475ce7d 100644
+--- a/data/branding/icecat/locales/en-US/brand.dtd
++++ b/data/branding/icecat/locales/en-US/brand.dtd
+@@ -5,5 +5,6 @@
+ <!ENTITY  brandShorterName      "IceCat">
+ <!ENTITY  brandShortName        "IceCat">
+ <!ENTITY  brandFullName         "GNU IceCat">
++<!ENTITY  brandProductName      "IceCat">
+ <!ENTITY  vendorShortName       "GNU">
+ <!ENTITY  trademarkInfo.part1   "The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version.">
+diff --git a/data/branding/icecat/locales/en-US/brand.ftl b/data/branding/icecat/locales/en-US/brand.ftl
+index bd7fbe0..7c9fcc8 100644
+--- a/data/branding/icecat/locales/en-US/brand.ftl
++++ b/data/branding/icecat/locales/en-US/brand.ftl
+@@ -2,4 +2,9 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
++-brand-shorter-name = IceCat
+ -brand-short-name = IceCat
++-brand-full-name = GNU IceCat
++-brand-product-name = IceCat
++-vendor-short-name = GNU
++trademarkInfo = The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version.
+diff --git a/data/branding/icecat/locales/en-US/brand.properties b/data/branding/icecat/locales/en-US/brand.properties
+index 85e2894..9b9cf97 100644
+--- a/data/branding/icecat/locales/en-US/brand.properties
++++ b/data/branding/icecat/locales/en-US/brand.properties
+@@ -5,6 +5,7 @@
+ brandShorterName=IceCat
+ brandShortName=IceCat
+ brandFullName=IceCat
++brandProductName=IceCat
+ vendorShortName=GNU
+ 
+ syncBrandShortName=Sync
+diff --git a/makeicecat b/makeicecat
+index 1bcf465..3ff2ead 100644
+--- a/makeicecat
++++ b/makeicecat
+@@ -226,7 +226,8 @@ cp $DATA/bookmarks.html.in browser/locales/generic/profile/bookmarks.html.in
+ 
+ # Custom legal about pages
+ 
+-find -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
++find l10n -wholename '*/brand.dtd' |xargs /bin/sed 's/trademarkInfo.part1.*/trademarkInfo.part1 "">/' -i
++find l10n -wholename '*/brand.ftl' |xargs /bin/sed 's/^trademarkInfo = .*/trademarkInfo = The IceCat logo is Copyright 2008-2015 Free Software Foundation, released under the terms of the GNU Lesser General Public License, version 3 or any later version./' -i
+ 
+ for STRING in rights.intro-point3-unbranded rights.intro-point4a-unbranded rights.intro-point4b-unbranded rights.intro-point4c-unbranded
+ do
+-- 
+2.23.0
+

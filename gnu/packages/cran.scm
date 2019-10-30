@@ -9556,14 +9556,13 @@ maps.")
 (define-public r-tidytree
   (package
     (name "r-tidytree")
-    (version "0.2.8")
+    (version "0.2.9")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "tidytree" version))
        (sha256
-        (base32
-         "1hkddl8kj1g01dy7xiracx81f6b405b3ga2qp4wlrl552b9xxpby"))))
+        (base32 "1l9rk71dzlwg8736l0g4rdlq3pghxkfzmlxyln8y4bxx7ym51i6g"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ape" ,r-ape)
@@ -10879,14 +10878,13 @@ This makes it a convenient and fast interface to C/C++ and Fortran code.")
 (define-public r-spam
   (package
     (name "r-spam")
-    (version "2.3-0.1")
+    (version "2.3-0.2")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "spam" version))
        (sha256
-        (base32
-         "0mas2ra7d5f9ccwxwsvxls3dz53prpf59hi2a0rvc347wbm6540b"))))
+        (base32 "0czmzwhvcs0shm1asvphhz366df3n7vrlls4cfpq5b3i19fak3w4"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-dotcall64" ,r-dotcall64)))
@@ -11262,14 +11260,13 @@ regression coefficients can be conducted via jackknifing.")
 (define-public r-huge
   (package
     (name "r-huge")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "huge" version))
        (sha256
-        (base32
-         "18f8w4hdp9fdi2k5ip6fnrn5z47w4ybgxs2m6a7jdvd2v4wfdr69"))))
+        (base32 "07n3j1va2z4v30rj22cww72khgzbz2xsp0yc0qswlrwyxi4my5i3"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-igraph" ,r-igraph)
@@ -15547,13 +15544,13 @@ effect size.")
 (define-public r-rgdal
   (package
     (name "r-rgdal")
-    (version "1.4-6")
+    (version "1.4-7")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rgdal" version))
        (sha256
-        (base32 "0lj1dax56dxxsj1hindxcvgz169p9dxd0y4wjypbyr01nja8rz4d"))))
+        (base32 "05rvqy8lr2c3phaylmc4g5761208b0xrmgwn9c4a60x7p251dzjs"))))
     (properties `((upstream-name . "rgdal")))
     (build-system r-build-system)
     (inputs

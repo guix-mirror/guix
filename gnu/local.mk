@@ -974,9 +974,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/hurd-fix-eth-multiplexer-dependency.patch        \
   %D%/packages/patches/hplip-remove-imageprocessor.patch	\
   %D%/packages/patches/hydra-disable-darcs-test.patch		\
+  %D%/packages/patches/icecat-gnuzilla-fixes.patch			\
   %D%/packages/patches/icecat-makeicecat.patch			\
-  %D%/packages/patches/icecat-default-search-ddg.patch		\
-  %D%/packages/patches/icecat-disable-sync.patch		\
   %D%/packages/patches/icecat-avoid-bundled-libraries.patch	\
   %D%/packages/patches/icecat-use-system-graphite2+harfbuzz.patch	\
   %D%/packages/patches/icecat-use-system-media-libs.patch	\
@@ -1066,7 +1065,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmpeg2-global-symbol-test.patch	\
   %D%/packages/patches/libmygpo-qt-fix-qt-5.11.patch		\
   %D%/packages/patches/libmygpo-qt-missing-qt5-modules.patch	\
-  %D%/packages/patches/libreoffice-boost.patch			\
   %D%/packages/patches/libreoffice-icu.patch			\
   %D%/packages/patches/libreoffice-glm.patch			\
   %D%/packages/patches/libsndfile-armhf-type-checks.patch	\
@@ -1448,9 +1446,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-panel-plugins.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xinetd-fix-fd-leak.patch			\
-  %D%/packages/patches/xinetd-CVE-2013-4342.patch		\
-  %D%/packages/patches/xorriso-no-partition-table-in-inner-efi.patch \
-  %D%/packages/patches/xorriso-no-mbr-in-inner-efi.patch
+  %D%/packages/patches/xinetd-CVE-2013-4342.patch
 
 MISC_DISTRO_FILES =				\
   %D%/packages/ld-wrapper.in

@@ -115,7 +115,7 @@ human.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/keepassxreboot/" name
+       (uri (string-append "https://github.com/keepassxreboot/keepassxc"
                            "/releases/download/" version "/keepassxc-"
                            version "-src.tar.xz"))
        (sha256

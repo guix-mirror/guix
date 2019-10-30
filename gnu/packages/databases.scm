@@ -3028,7 +3028,7 @@ transforms idiomatic python function calls to well-formed SQL queries.")
     (native-inputs
      `(("go-github.com-howeyc-gopass" ,go-github.com-howeyc-gopass)
        ("go-github.com-jessevdk-go-flags" ,go-github.com-jessevdk-go-flags)
-       ("go-golang.org-x-crypto-ssh-terminal" ,go-golang.org-x-crypto-ssh-terminal)
+       ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
        ("go-gopkg.in-mgo.v2" ,go-gopkg.in-mgo.v2)
        ("go-gopkg.in-tomb.v2" ,go-gopkg.in-tomb.v2)
        ("go-github.com-nsf-termbox-go" ,go-github.com-nsf-termbox-go)

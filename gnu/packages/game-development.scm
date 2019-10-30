@@ -15,6 +15,7 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Comrade Yuri <yuri@nijino>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -622,14 +623,14 @@ archive on a per-file basis.")
 (define-public love
   (package
     (name "love")
-    (version "11.1")
+    (version "11.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/rude/love/downloads/"
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "1pkwiszmjs0xrwk0wqbc5cp9108b1y8gwsid0gqk1s0x09q9lpmw"))))
+               "0m8lvlabmcchskx4qpzkdlsm44360f3j0q3vvvj2388cfnvhv7v4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -970,6 +971,329 @@ to create fully featured games and multimedia programs in the python language.")
 
 (define-public python2-pygame
   (package-with-python2 python-pygame))
+
+(define-public python2-pygame-sdl2
+  (let ((real-version "2.1.0")
+        (renpy-version "7.3.5"))
+    (package
+      (inherit python2-pygame)
+      (name "python2-pygame-sdl2")
+      (version (string-append real-version "-for-renpy-" renpy-version))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://www.renpy.org/dl/" renpy-version
+                             "/pygame_sdl2-" version ".tar.gz"))
+         (sha256 (base32 "1bmr7j9mlsc4czpgw70ld15ymyp4wxrk9hdsqad40wjwdxvvg2dr"))))
+      (build-system python-build-system)
+      (arguments
+       `(#:tests? #f                ; tests require pygame to be installed first
+         #:python ,python-2
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'set-paths 'set-sdl-vars
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "PYGAME_SDL2_CFLAGS"
+                       (string-append "-I"
+                                      (assoc-ref inputs "sdl-union")
+                                      "/include/SDL2 -D_REENTRANT"))
+               (setenv "PYGAME_SDL2_LDFLAGS"
+                       (string-append "-L"
+                                      (assoc-ref inputs "sdl-union")
+                                      "/lib -Wl,-rpath,"
+                                      (assoc-ref inputs "sdl-union")
+                                      "/lib -Wl,--enable-new-dtags -lSDL2"))
+               #t))
+           (add-before 'build 'drop-generated-files
+             (lambda args
+               (delete-file-recursively "gen")
+               (delete-file-recursively "gen3")
+               #t)))))
+      (inputs
+       `(("sdl-union"
+          ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+      (native-inputs
+       `(("python2-cython" ,python2-cython)))
+      (home-page "http://www.renpy.org/")
+      (synopsis "Reimplementation of the Pygame API using SDL2")
+      (description "Pygame_SDL2 reimplements the Pygame API using SDL2,
+staying close to the original, but also adding some SDL2-specific features.
+While it aims to be used as a drop-in replacement, it appears to be
+developed mainly for Ren'py.")
+      (license (list license:lgpl2.1 license:zlib)))))
+
+(define-public python2-renpy
+  (package
+    (name "python2-renpy")
+    (version "7.3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.renpy.org/dl/" version
+                           "/renpy-" version "-source.tar.bz2"))
+       (sha256 (base32 "1anr5cfbvbsbik4v4rvrkdkciwhg700k4lydfbs4n85raimz9mw4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; Ren'py doesn't seem to package tests
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-commands
+           (lambda _
+             (substitute* "renpy/editor.py"
+               (("xdg-open")
+                (which "xdg-open")))
+             #t))
+         (add-after 'set-paths 'set-build-vars
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "RENPY_CYTHON"
+                     (string-append (assoc-ref inputs "python2-cython")
+                                    "/bin/cython"))
+             (setenv "RENPY_DEPS_INSTALL" (string-join (map cdr inputs) ":"))
+             #t))
+         (replace 'build
+           (lambda args
+             (apply
+              (lambda* (build-root #:key inputs outputs #:allow-other-keys)
+                ;; The "module" subdirectory contains a python (really cython)
+                ;; project, which is built using a script, that is thankfully
+                ;; named "setup.py".
+                (chdir "module")
+                (apply (assoc-ref %standard-phases 'build) args)
+                ;; the above causes renpy.__init__ to be compiled but does not
+                ;; compile anything else, hence we do that here
+                (chdir build-root)
+                (delete-file "renpy/__init__.pyc")
+                (invoke "python" "-m" "compileall" "renpy"))
+              (getcwd) args)
+             #t))
+         (replace 'install
+           (lambda args
+             (apply
+              (lambda* (build-root #:key inputs outputs #:allow-other-keys)
+                ;; Again, we have to wrap the module installation.
+                ;; Additionally, we want to install the python code
+                ;; (both source and compiled) in the same directory.
+                (let* ((out (assoc-ref outputs "out"))
+                       (site (string-append "/lib/python"
+                                            ,(version-major+minor
+                                              (package-version python-2))
+                                            "/site-packages")))
+                  (chdir "module")
+                  (apply (assoc-ref %standard-phases 'install) args)
+                  (chdir build-root)
+                  (copy-recursively "renpy"
+                                    (string-append out site "/renpy"))))
+              (getcwd) args)
+             #t)))))
+    (inputs
+     `(("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("glew" ,glew)
+       ("libpng" ,libpng)
+       ("python2-pygame" ,python2-pygame-sdl2)
+       ("sdl-union"
+        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (native-inputs
+     `(("python2-cython" ,python2-cython)
+       ("xdg-utils" ,xdg-utils)))
+    (home-page "http://www.renpy.org/")
+    (synopsis "Ren'py python module")
+    (description "This package contains the shared libraries and Python
+modules of Ren'py.")
+    (license license:expat)))
+
+(define-public renpy
+  (package
+    (inherit python2-renpy)
+    (name "renpy")
+    (version "7.3.5")
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; see python2-renpy
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-commands
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "launcher/game/choose_directory.rpy"
+               (("/usr/bin/python") (which "python2")))
+             (substitute* "launcher/game/front_page.rpy"
+               (("xdg-open")
+                (which "xdg-open")))
+             (substitute* "launcher/game/project.rpy"
+               (("cmd = \\[ executable, \"-EO\", sys.argv\\[0\\] \\]")
+                (string-append "cmd = [ \"" (assoc-ref outputs "out")
+                               "/bin/renpy\" ]"))
+               ;; Projects are still created in the usual style, so we need
+               ;; to adjust the path.
+               (("cmd.append\\(self.path\\)")
+                "cmd.append(self.path + \"/game\")"))
+             #t))
+         (add-after 'unpack 'drop-game-from-paths
+           (lambda _
+             (substitute* (list "launcher/game/gui7.rpy"
+                                "launcher/game/gui7/images.py")
+               ((", \"game\",") ","))
+             #t))
+         (add-before 'build 'start-xserver
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((xorg-server (assoc-ref inputs "xorg-server")))
+               (setenv "HOME" (getcwd))
+               (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+               (setenv "DISPLAY" ":1")
+               #t)))
+         (replace 'build
+           (lambda _
+             (invoke "python" "renpy.py" "launcher" "quit")
+             (invoke "python" "renpy.py" "the_question" "quit")
+             (invoke "python" "renpy.py" "tutorial" "quit")
+             #t))
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Here we install our custom renpy program.
+             ;; After finishing this step, "out" will have the following:
+             ;; |-- bin/renpy
+             ;; `-- share/renpy ; i.e. path_to_renpy_base()
+             ;;     `-- common
+             ;;
+             ;; Note that common is also a de facto unused directory in
+             ;; python2-renpy. On other systems, renpy_base would point to
+             ;; site-packages or even somewhere in /opt.
+             ;; The former approach is not as straightforward as it seems
+             ;; -- it causes renpy to load files twice for some weird reason --
+             ;; and the latter is impossible on Guix. Hence the detour through
+             ;; share/renpy and the custom renpy program.
+             ;;
+             ;; As a convention, other games should be installed as
+             ;; subdirectories of share/renpy in their respective outputs as
+             ;; well. This differs from the traditional layout, which is
+             ;; roughly the following:
+             ;; `-- Super Awesome Game
+             ;;     |-- game      ; <- the folder we actually want
+             ;;     |-- lib       ; compiled renpy module and dependencies
+             ;;     |-- renpy     ; Ren'py python code (source + compiled)
+             ;;     |-- Super Awesome Game.py
+             ;;     `-- Super Awesome Game.sh
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin/renpy (string-append out "/bin/renpy")))
+               (mkdir-p (string-append out "/bin"))
+               (copy-recursively "renpy/common"
+                                 (string-append out "/share/renpy/common"))
+               (copy-recursively "gui"
+                                 (string-append out "/share/renpy/gui"))
+
+               (call-with-output-file bin/renpy
+                 (lambda (port)
+                   (format port "#!~a~%" (which "python2"))
+                   (format port "
+from __future__ import print_function
+
+import os
+import sys
+import warnings
+
+def path_to_common(renpy_base):
+    return renpy_base + \"/common\"
+
+def path_to_saves(gamedir, save_directory=None):
+    import renpy  # @UnresolvedImport
+
+    if save_directory is None:
+        save_directory = renpy.config.save_directory
+        save_directory = renpy.exports.fsencode(save_directory)
+
+    if not save_directory:
+        return gamedir + \"/saves\"
+
+    return os.path.expanduser(\"~~/.renpy/\" + save_directory)
+
+def path_to_renpy_base():
+    return \"~a\"
+
+def main():
+    renpy_base = path_to_renpy_base()
+    try:
+        import renpy.bootstrap
+        import renpy.arguments
+    except ImportError:
+        print(\"\"\"Could not import renpy.bootstrap.
+Please ensure you decompressed Ren'Py correctly, preserving the directory
+structure.\"\"\", file=sys.stderr)
+        raise
+
+    args = renpy.arguments.bootstrap()
+    if not args.basedir:
+        print(\"\"\"This Ren'py requires a basedir to launch.
+The basedir is the directory, in which .rpy files live -- usually the 'game'
+subdirectory of a game packaged by Ren'py.
+
+If you want the Ren'py launcher, use renpy-launcher instead.\"\"\",
+              file=sys.stderr)
+        sys.exit()
+
+    renpy.bootstrap.bootstrap(renpy_base)
+
+if __name__ == \"__main__\":
+    main()
+"
+                           (string-append out "/share/renpy"))))
+               (chmod bin/renpy #o755)
+               #t)))
+
+         (add-after 'install 'install-games
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define renpy (assoc-ref outputs "out"))
+             ;; TODO: We should offer a renpy-build-system to make the
+             ;; installation of Ren'py games easier.
+             (define* (install-renpy-game #:key output game name (renpy renpy)
+                                          #:allow-other-keys)
+               (let* ((name (or name (basename game)))
+                      (launcher (string-append output "/bin/renpy-" name))
+                      (share (string-append output "/share/renpy/" name)))
+                 (copy-recursively (string-append game "/game") share)
+                 (mkdir-p (string-append output "/bin"))
+                 (with-output-to-file launcher
+                   (lambda ()
+                     (format #t
+                             "#!~a~%~a ~a \"$@\""
+                             (which "bash")
+                             (string-append renpy "/bin/renpy")
+                             share)))
+                 (chmod launcher #o755)))
+
+             (install-renpy-game #:output (assoc-ref outputs "out")
+                                 #:game "launcher")
+
+             (install-renpy-game #:output (assoc-ref outputs "the-question")
+                                 #:game "the_question"
+                                 #:name "the-question")
+
+             (install-renpy-game #:output (assoc-ref outputs "tutorial")
+                                 #:game "tutorial")
+             #t))
+         (replace 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/renpy")
+               `("PYTHONPATH" = (,(getenv "PYTHONPATH"))))
+             #t)))))
+    (inputs
+     `(("python2-tkinter" ,python-2 "tk")
+       ("python2-pygame" ,python2-pygame-sdl2)
+       ("python2-renpy" ,python2-renpy)
+       ("xorg-server" ,xorg-server)))
+    (outputs
+     (list "out" "tutorial" "the-question"))
+    (home-page "http://www.renpy.org/")
+    (synopsis "Visual Novel Engine")
+    (description "Ren'Py is a visual novel engine that helps you use words,
+images, and sounds to tell interactive stories that run on computers and
+mobile devices.  These can be both visual novels and life simulation games.
+The easy to learn script language allows anyone to efficiently write large
+visual novels, while its Python scripting is enough for complex simulation
+games.")
+    (license license:expat)))
 
 (define-public grafx2
   (package

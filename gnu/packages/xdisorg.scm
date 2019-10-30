@@ -27,6 +27,7 @@
 ;;; Copyright © 2018 Nam Nguyen <namn@berkeley.edu>
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
+;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -189,6 +190,43 @@ for various multi-screen setups.  Autorandr automatically detects the profiles
 that can be activated based on the connected hardware.  Hook scripts can be
 used to further tweak the behaviour of the different profiles.")
       (license license:gpl3+))))
+
+(define-public bemenu
+  (package
+    (name "bemenu")
+    (version "0.2.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/Cloudef/bemenu.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0piax49az5kp96r1g6dcgj87fi6p4jl286wlkxsdvljzpkn8q6gv"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBEMENU_WAYLAND_RENDERER=ON")))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libx11" ,libx11)
+       ("libxkbcomon" ,libxkbcommon)
+       ("libxinerama" ,libxinerama)
+       ("ncurses" ,ncurses)
+       ("pango" ,pango)
+       ("wayland" ,wayland)
+       ("wayland-protocols" ,wayland-protocols)))
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/Cloudef/bemenu")
+    (synopsis "Dynamic menu library and client program inspired by dmenu")
+    (description
+     "bemenu is a dynamic menu which allows the user to flexibly select from a
+list of options (usually programs to launch).  It renders the menu graphically
+with X11 or Wayland, or in a text terminal with ncurses.")
+    (license (list license:gpl3+        ; client program[s] and other sources
+                   license:lgpl3+))))   ; library and bindings
 
 (define-public xclip
   (package
@@ -997,7 +1035,7 @@ Wacom tablet applet.")
 (define-public xf86-input-wacom
   (package
     (name "xf86-input-wacom")
-    (version "0.36.1")
+    (version "0.38.0")
     (source
      (origin
        (method url-fetch)
@@ -1006,8 +1044,7 @@ Wacom tablet applet.")
              "xf86-input-wacom-" version "/"
              "xf86-input-wacom-" version ".tar.bz2"))
        (sha256
-        (base32
-         "029y8varbricba2dzhzhy0ndd7lbfif411ca8c3wxzni9qmbj1ij"))))
+        (base32 "0w53hv3g7d5vv328x04wb57sa1lyv2h631c37csp1drfp7ghikd1"))))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-sdkdir="

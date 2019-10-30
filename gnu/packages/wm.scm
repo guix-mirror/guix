@@ -691,14 +691,14 @@ Haskell, no knowledge of the language is required to install and use it.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.15")
+    (version "0.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://hackage/package/xmonad-contrib/"
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
-        (base32 "0r9yzgy67j4mi3dyxx714f0ssk5qzca5kh4zw0fhiz1pf008cxms"))))
+        (base32 "1pddgkvnbww28wykncc7j0yb0lv15bk7xnnhdcbrwkxzw66w6wmd"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)

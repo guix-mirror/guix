@@ -508,7 +508,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.1.2")
+    (version "3.2")
     (outputs '("out" "static"))
     (source
       (origin
@@ -518,8 +518,7 @@ H.264 (MPEG-4 AVC) video streams.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32
-          "1ajr59gjj47gnczfb2qhmzclj746pdiq9a1d81b0mq22k8f5yy3g"))
+         (base32 "0fqkhfhr22gzavxn60cpnj3agwdf5afivszxf3haj5k1sny7jk9n"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -1342,7 +1341,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.29.1")
+    (version "0.30.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1351,7 +1350,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "138921kx8g6qprim558xin09xximjhsj9ss8b71ifg2m6kclym8m"))))
+                "17mxjgcfljlv6h0ik3332xsqbs0ybvk6dkwflyl0cjh15vl1iv6f"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl) ; for zsh completion file
@@ -1417,9 +1416,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             #t)))
        #:configure-flags (list "--enable-libmpv-shared"
                                "--enable-cdda"
-                               "--enable-dvdread"
                                "--enable-dvdnav"
-                               "--enable-zsh-comp"
                                "--disable-build-date")
        ;; No check function defined.
        #:tests? #f))
@@ -1494,7 +1491,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.10.22")
+    (version "2019.10.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1502,7 +1499,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "06wg6wpyq0fawjxjrhd7zasfjr9b6w9wsk2amiqdl712zqlq2rwb"))))
+                "1lq6ycjbx07831s24yx42q6m6svas4mf02vbszw0965dbbzs7vp4"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1928,7 +1925,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.7.3")
+    (version "2.7.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1936,7 +1933,7 @@ for use with HTML5 video.")
                    "avidemux_" version ".tar.gz"))
              (sha256
               (base32
-               "17x2mnnr5h8pp764p55l1xcn2ljnzhbj8cykajlllvk4rc4qwxld"))
+               "1acdb3m37vdzzbm8mwyibcn8msi7birb5v30qfi7jli5r00src3x"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1969,7 +1966,7 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (let ((ffmpeg "ffmpeg-4.1.1"))
+       (let ((ffmpeg "ffmpeg-4.1.4"))
          (modify-phases %standard-phases
            (add-before 'patch-source-shebangs 'unpack-ffmpeg
              (lambda _

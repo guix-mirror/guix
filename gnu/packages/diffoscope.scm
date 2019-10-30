@@ -67,7 +67,7 @@
   #:use-module (ice-9 match))
 
 (define-public diffoscope
-  (let ((version "126"))
+  (let ((version "129"))
     (package
       (name "diffoscope")
       (version version)
@@ -79,7 +79,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0lmn2116g5l05nns8qd2kwsnnd144zrqhs53fsr88inzf0mkqwhj"))))
+                  "1r8hq93gga9n4jv4fyf1divc9cwvvjadkzl47lazzrfy3nn1qjwr"))))
       (build-system python-build-system)
       (arguments
        `(#:phases (modify-phases %standard-phases
@@ -153,6 +153,8 @@
       (native-inputs `(("python-pytest" ,python-pytest)
                        ("python-chardet" ,python-chardet)
                        ("python-binwalk" ,python-binwalk)
+                       ("python-pypdf2" ,python-pypdf2)
+                       ("python-progressbar33" ,python-progressbar33)
                        ;; test suite skips tests when tool is missing
                        ,@(match (%current-system)
                                 ;; ghc is only available on x86 currently.

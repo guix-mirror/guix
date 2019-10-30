@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Peter Mikkelsen <petermikkelsen10@gmail.com>
+;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +24,9 @@
   #:use-module (gnu packages mpd)
   #:use-module (guix records)
   #:use-module (ice-9 match)
-  #:export (mpd-configuration
+  #:export (mpd-output
+            mpd-output?
+            mpd-configuration
             mpd-configuration?
             mpd-service-type))
 
@@ -32,6 +35,25 @@
 ;;; Audio related services
 ;;;
 ;;; Code:
+
+(define-record-type* <mpd-output>
+  mpd-output make-mpd-output
+  mpd-output?
+  (type          mpd-output-type
+                 (default "pulse"))
+  (name          mpd-output-name
+                 (default "MPD"))
+  (enabled?      mpd-output-enabled?
+                 (default #t))
+  (tags?         mpd-output-tags?
+                 (default #t))
+  (always-on?    mpd-output-always-on?
+                 (default #f))
+  (mixer-type    mpd-output-mixer-type
+                 ;; valid: hardware, software, null, none
+                 (default #f))
+  (extra-options mpd-output-extra-options
+                 (default '())))
 
 (define-record-type* <mpd-configuration>
   mpd-configuration make-mpd-configuration
@@ -51,27 +73,56 @@
   (port         mpd-configuration-port
                 (default "6600"))
   (address      mpd-configuration-address
-                (default "any")))
+                (default "any"))
+  (outputs      mpd-configuration-outputs
+                (default (list (mpd-output)))))
+
+(define (mpd-output->string output)
+  "Convert the OUTPUT of type <mpd-output> to a configuration file snippet."
+  (let ((extra (string-join
+                (map (match-lambda
+                       ((key . value)
+                        (format #f "  ~a \"~a\""
+                                (string-map
+                                 (lambda (c) (if (char=? c #\-) #\_ c))
+                                 (symbol->string key))
+                                value)))
+                     (mpd-output-extra-options output))
+                "\n")))
+    (format #f "\
+audio_output {
+  type \"~a\"
+  name \"~a\"
+~:[  enabled \"no\"~%~;~]\
+~:[  tags \"no\"~%~;~]\
+~:[~;  always_on \"yes\"~%~]\
+~@[  mixer_type \"~a\"~%~]\
+~a~%}~%"
+            (mpd-output-type output)
+            (mpd-output-name output)
+            (mpd-output-enabled? output)
+            (mpd-output-tags? output)
+            (mpd-output-always-on? output)
+            (mpd-output-mixer-type output)
+            extra)))
 
 (define (mpd-config->file config)
   (apply
    mixed-text-file "mpd.conf"
-   "audio_output {\n"
-   "  type \"pulse\"\n"
-   "  name \"MPD\"\n"
-   "}\n"
    "pid_file \"" (mpd-file-name config "pid") "\"\n"
-   (map (match-lambda
-          ((config-name config-val)
-           (string-append config-name " \"" (config-val config) "\"\n")))
-        `(("user" ,mpd-configuration-user)
-          ("music_directory" ,mpd-configuration-music-dir)
-          ("playlist_directory" ,mpd-configuration-playlist-dir)
-          ("db_file" ,mpd-configuration-db-file)
-          ("state_file" ,mpd-configuration-state-file)
-          ("sticker_file" ,mpd-configuration-sticker-file)
-          ("port" ,mpd-configuration-port)
-          ("bind_to_address" ,mpd-configuration-address)))))
+   (append (map mpd-output->string
+                (mpd-configuration-outputs config))
+           (map (match-lambda
+                  ((config-name config-val)
+                   (string-append config-name " \"" (config-val config) "\"\n")))
+                `(("user" ,mpd-configuration-user)
+                  ("music_directory" ,mpd-configuration-music-dir)
+                  ("playlist_directory" ,mpd-configuration-playlist-dir)
+                  ("db_file" ,mpd-configuration-db-file)
+                  ("state_file" ,mpd-configuration-state-file)
+                  ("sticker_file" ,mpd-configuration-sticker-file)
+                  ("port" ,mpd-configuration-port)
+                  ("bind_to_address" ,mpd-configuration-address))))))
 
 (define (mpd-file-name config file)
   "Return a path in /var/run/mpd/ that is writable

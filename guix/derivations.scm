@@ -622,7 +622,7 @@ that form."
      (display ")" port))))
 
 (define derivation->bytevector
-  (mlambda (drv)
+  (lambda (drv)
     "Return the external representation of DRV as a UTF-8-encoded string."
     (with-fluids ((%default-port-encoding "UTF-8"))
       (call-with-values open-bytevector-output-port
@@ -919,7 +919,6 @@ derivation.  It is kept as-is, uninterpreted, in the derivation."
 long-running processes that know what they're doing.  Use with care!"
   ;; Typically this is meant to be used by Cuirass and Hydra, which can clear
   ;; caches when they start evaluating packages for another architecture.
-  (invalidate-memoization! derivation->bytevector)
   (invalidate-memoization! derivation-base16-hash)
 
   ;; FIXME: Comment out to work around <https://bugs.gnu.org/36487>.
@@ -1207,6 +1206,26 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
+(define %module-cache
+  ;; Map a list of modules to its 'imported+compiled-modules' result.
+  (make-weak-value-hash-table))
+
+(define* (imported+compiled-modules store modules #:key
+                                    (system (%current-system))
+                                    (guile (%guile-for-build)))
+  "Return a pair containing the derivation to import MODULES and that where
+MODULES are compiled."
+  (define key
+    (list modules (derivation-file-name guile) system))
+
+  (or (hash-ref %module-cache key)
+      (let ((result (cons (%imported-modules store modules
+                                             #:system system #:guile guile)
+                          (%compiled-modules store modules
+                                             #:system system #:guile guile))))
+        (hash-set! %module-cache key result)
+        result)))
+
 (define* (build-expression->derivation store name exp ;deprecated
                                        #:key
                                        (system (%current-system))
@@ -1330,16 +1349,15 @@ and PROPERTIES."
                                       ;; fixed-output.
                                       (filter-map source-path inputs)))
 
-         (mod-drv  (and (pair? modules)
-                        (%imported-modules store modules
-                                           #:guile guile-drv
-                                           #:system system)))
+         (mod+go-drv  (if (pair? modules)
+                          (imported+compiled-modules store modules
+                                                     #:guile guile-drv
+                                                     #:system system)
+                          '(#f . #f)))
+         (mod-drv  (car mod+go-drv))
+         (go-drv   (cdr mod+go-drv))
          (mod-dir  (and mod-drv
                         (derivation->output-path mod-drv)))
-         (go-drv   (and (pair? modules)
-                        (%compiled-modules store modules
-                                           #:guile guile-drv
-                                           #:system system)))
          (go-dir   (and go-drv
                         (derivation->output-path go-drv))))
     (derivation store name guile

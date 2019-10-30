@@ -2013,7 +2013,7 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
 (define-public python-cachecontrol
   (package
     (name "python-cachecontrol")
-    (version "0.11.6")
+    (version "0.12.5")
     (source
      (origin
        (method git-fetch)
@@ -2024,25 +2024,12 @@ provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients."
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0pb16bzbkk99nh317xyfk8fxc2ngimsbz7lz9pxsw8c82n83d4dh"))))
+         "03lgc65sl04n0cgzmmgg99bk83f9i6k8yrmcd4hpl46q1pymn0kz"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             ;; Drop test that requires internet access.
-             (delete-file "tests/test_regressions.py")
-             (setenv "PYTHONPATH"
-                     (string-append (getcwd) "/build/lib:"
-                                    (getenv "PYTHONPATH")))
-             (invoke "py.test" "-vv")
-             #t)))))
-    (native-inputs
-     `(("python-pytest" ,python-pytest)
-       ("python-redis" ,python-redis)
-       ("python-webtest" ,python-webtest)
-       ("python-mock" ,python-mock)))
+     ;; Versions > 0.11.6 depend on CherryPy for testing.
+     ;; It's too much work to package CherryPy for now.
+     `(#:tests? #f))
     (propagated-inputs
      `(("python-requests" ,python-requests)
        ("python-lockfile" ,python-lockfile)))

@@ -1612,10 +1612,11 @@ This makes sense only when the daemon was started with '--cache-failures'."
 ;; from %STATE-MONAD.
 (template-directory instantiations %store-monad)
 
-(define* (cache-object-mapping object keys result)
+(define* (cache-object-mapping object keys result
+                               #:key (vhash-cons vhash-consq))
   "Augment the store's object cache with a mapping from OBJECT/KEYS to RESULT.
 KEYS is a list of additional keys to match against, for instance a (SYSTEM
-TARGET) tuple.
+TARGET) tuple.  Use VHASH-CONS to insert OBJECT into the cache.
 
 OBJECT is typically a high-level object such as a <package> or an <origin>,
 and RESULT is typically its derivation."
@@ -1623,8 +1624,8 @@ and RESULT is typically its derivation."
     (values result
             (store-connection
              (inherit store)
-             (object-cache (vhash-consq object (cons result keys)
-                                        (store-connection-object-cache store)))))))
+             (object-cache (vhash-cons object (cons result keys)
+                                       (store-connection-object-cache store)))))))
 
 (define record-cache-lookup!
   (if (profiled? "object-cache")
@@ -1653,11 +1654,12 @@ and RESULT is typically its derivation."
       (lambda (x y)
         #t)))
 
-(define* (lookup-cached-object object #:optional (keys '()))
+(define* (lookup-cached-object object #:optional (keys '())
+                               #:key (vhash-fold* vhash-foldq*))
   "Return the cached object in the store connection corresponding to OBJECT
-and KEYS.  KEYS is a list of additional keys to match against, and which are
-compared with 'equal?'.  Return #f on failure and the cached result
-otherwise."
+and KEYS; use VHASH-FOLD* to look for OBJECT in the cache.  KEYS is a list of
+additional keys to match against, and which are compared with 'equal?'.
+Return #f on failure and the cached result otherwise."
   (lambda (store)
     (let* ((cache (store-connection-object-cache store))
 
@@ -1665,33 +1667,50 @@ otherwise."
            ;; the whole vlist chain and significantly reduces the number of
            ;; 'hashq' calls.
            (value (let/ec return
-                    (vhash-foldq* (lambda (item result)
-                                    (match item
-                                      ((value . keys*)
-                                       (if (equal? keys keys*)
-                                           (return value)
-                                           result))))
-                                  #f object
-                                  cache))))
+                    (vhash-fold* (lambda (item result)
+                                   (match item
+                                     ((value . keys*)
+                                      (if (equal? keys keys*)
+                                          (return value)
+                                          result))))
+                                 #f object
+                                 cache))))
       (record-cache-lookup! value cache)
       (values value store))))
 
-(define* (%mcached mthunk object #:optional (keys '()))
+(define* (%mcached mthunk object #:optional (keys '())
+                   #:key
+                   (vhash-cons vhash-consq)
+                   (vhash-fold* vhash-foldq*))
   "Bind the monadic value returned by MTHUNK, which supposedly corresponds to
-OBJECT/KEYS, or return its cached value."
-  (mlet %store-monad ((cached (lookup-cached-object object keys)))
+OBJECT/KEYS, or return its cached value.  Use VHASH-CONS to insert OBJECT into
+the cache, and VHASH-FOLD* to look it up."
+  (mlet %store-monad ((cached (lookup-cached-object object keys
+                                                    #:vhash-fold* vhash-fold*)))
     (if cached
         (return cached)
         (>>= (mthunk)
              (lambda (result)
-               (cache-object-mapping object keys result))))))
+               (cache-object-mapping object keys result
+                                     #:vhash-cons vhash-cons))))))
 
-(define-syntax-rule (mcached mvalue object keys ...)
-  "Run MVALUE, which corresponds to OBJECT/KEYS, and cache it; or return the
+(define-syntax mcached
+  (syntax-rules (eq? equal?)
+    "Run MVALUE, which corresponds to OBJECT/KEYS, and cache it; or return the
 value associated with OBJECT/KEYS in the store's object cache if there is
 one."
-  (%mcached (lambda () mvalue)
-            object (list keys ...)))
+    ((_ eq? mvalue object keys ...)
+     (%mcached (lambda () mvalue)
+               object (list keys ...)
+               #:vhash-cons vhash-consq
+               #:vhash-fold* vhash-foldq*))
+    ((_ equal? mvalue object keys ...)
+     (%mcached (lambda () mvalue)
+               object (list keys ...)
+               #:vhash-cons vhash-cons
+               #:vhash-fold* vhash-fold*))
+    ((_ mvalue object keys ...)
+     (mcached eq? mvalue object keys ...))))
 
 (define (preserve-documentation original proc)
   "Return PROC with documentation taken from ORIGINAL."

@@ -9,6 +9,22 @@
 (channel-news
  (version 0)
 
+ (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
+        (title (en "@command{guix pull} now honors
+@file{/etc/guix/channels.scm}")
+               (fr "@command{guix pull} lit maintenant
+@file{/etc/guix/channels.scm}"))
+        (body
+         (en "The @command{guix pull} command will now read the
+@file{/etc/guix/channels.scm} file if it exists and if the per-user
+@file{~/.config/guix/channels.scm} is not present.  This allows administrators
+of multi-user systems to define site-wide defaults.")
+         (fr "La commande @command{guix pull} lira maintenant le fichier
+@file{/etc/guix/channels.scm} s'il existe et si le fichier
+@file{~/.config/guix/channels.scm} par utilisateur·rice n'est pas présent.
+Cela permet aux personnes administrant des systèmes multi-utilisateurs de
+définir les canaux par défaut.")))
+
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
         (title (en "Insecure @file{/var/guix/profiles/per-user} permissions (CVE-2019-18192)")
                (de "Sicherheitslücke in @file{/var/guix/profiles/per-user}-Berechtigungen (CVE-2019-18192)")

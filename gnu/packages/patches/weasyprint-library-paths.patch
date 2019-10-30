@@ -1,3 +1,8 @@
+Make weasyprint load dynamic libraries from hard-coded path.
+
+From NixOS
+pkgs/development/python-modules/weasyprint/library-paths.patch
+
 diff --git a/weasyprint/fonts.py b/weasyprint/fonts.py
 index 377716c1..2016e01c 100644
 --- a/weasyprint/fonts.py

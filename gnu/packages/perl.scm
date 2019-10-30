@@ -1611,14 +1611,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.12")
+    (version "4.15")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "0n66da8s88srr591i7gm1d611z9jbcz488fhqxy604diiw8pnha9"))))
+        (base32 "1695408fj6jjx6dv5082hhxg5am480x1nz7s0f355npv0wm776wx"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
@@ -4287,7 +4287,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
 (define-public perl-io-captureoutput
   (package
     (name "perl-io-captureoutput")
-    (version "1.1104")
+    (version "1.1105")
     (source
      (origin
        (method url-fetch)
@@ -4296,8 +4296,7 @@ Perl IO idioms.  It exports a single function called io, which returns a new
              version
              ".tar.gz"))
        (sha256
-        (base32
-         "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
+        (base32 "11zlfbahac09q3jvwmpijmkwgihwxps85jwy2q7q0wqjragh16df"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/IO-CaptureOutput")
     (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
@@ -5552,15 +5551,14 @@ Moose and is optimised for rapid startup.")
   (package
     (inherit perl-moo)
     (name "perl-moo-2")
-    (version "2.003004")
+    (version "2.003006")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/H/HA/HAARG/"
                            "Moo-" version ".tar.gz"))
        (sha256
-        (base32
-         "1qciprcgb4661g2g4ks0fxkx5gbjvn7h9yfg0nzflqz9z0jvdfzq"))))
+        (base32 "0wi4gyp5kn4lbags0hrax3c9jj9spxg4d11fbrdh0ican4m0kcmw"))))
     (propagated-inputs
      `(("perl-role-tiny" ,perl-role-tiny-2)
        ("perl-sub-name" ,perl-sub-name)
@@ -6549,7 +6547,7 @@ name, but they won't show up as methods on your class or instances.")
 (define-public perl-net-dns-native
   (package
     (name "perl-net-dns-native")
-    (version "0.21")
+    (version "0.22")
     (source
      (origin
        (method url-fetch)
@@ -6557,7 +6555,7 @@ name, but they won't show up as methods on your class or instances.")
              "mirror://cpan/authors/id/O/OL/OLEG/Net-DNS-Native-"
              version ".tar.gz"))
        (sha256
-        (base32 "0jjcgzmgas7k5rwalirrmbnlj4ihdxyydajc18qviwg863qjannl"))))
+        (base32 "1m9hbj83ikg52wvq7z8bjm78i50qvqk5alh11mmazzxrpbnrv38h"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Net-DNS-Native")
     (synopsis "Non-blocking system DNS resolver")
@@ -9632,15 +9630,14 @@ files, using JSON::PP and/or CPAN::Meta::YAML.")
 (define-public perl-scalar-list-utils
   (package
     (name "perl-scalar-list-utils")
-    (version "1.50")
+    (version "1.53")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PE/PEVANS/"
                            "Scalar-List-Utils-" version ".tar.gz"))
        (sha256
-        (base32
-         "0x9n0617gjjcqa4nk5biiwkxdi90xpdfg6z07gjr009qjg3bkah6"))))
+        (base32 "16dfpnrcf5846j998rdd6gra16m9030rnz9fpsh1hfzvcsq8ch5x"))))
     (build-system perl-build-system)
     (home-page "https://metacpan.org/release/Scalar-List-Utils")
     (synopsis "Common Scalar and List utility subroutines")

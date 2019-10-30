@@ -38,7 +38,7 @@
 (define-public gramps
   (package
     (name "gramps")
-    (version "5.0.2")
+    (version "5.1.1")
     (source
      (origin
        (method git-fetch)
@@ -48,13 +48,14 @@
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wg743q8ixy5dmwricgkl4zck4109vq5ppmkyi18qjmna9m0aq7r"))))
+         "1zrvr543zzsiapda75vdd2669fgijmx4cv7nfj5d1jsyz4qnif7b"))))
     (build-system python-build-system)
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("intltool" ,intltool)))
     (inputs
-     `(("font-gnu-freefont-ttf" ,font-gnu-freefont-ttf)
+     `(("cairo" ,cairo)
+       ("font-gnu-freefont-ttf" ,font-gnu-freefont-ttf)
        ("geocode-glib" ,geocode-glib)
        ("gexiv2" ,gexiv2)
        ("ghostscript" ,ghostscript)

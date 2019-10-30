@@ -351,42 +351,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.7")
+(define-public linux-libre-5.3-version "5.3.8")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "00j8sdrmmppqf38vl50a4zas5gy7yv37n43b61f8472k45773jf6")))
+        (hash (base32 "0jb6yya9yx4z52p5m32dqj0kgc6aaz9df8mvq0hzy40bqb3czwvq")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.80")
+(define-public linux-libre-4.19-version "4.19.81")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "1v776s6q5wxn8ci86dwa8s8y41b94g09fnpgvzysg2h89rvbmac0")))
+        (hash (base32 "17g2wiaa7l7mxi72k79drxij2zqk3nsj8wi17bl4nfvb1ypc2gi9")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.150")
+(define-public linux-libre-4.14-version "4.14.151")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1c2pxfvv31af0mzcqnbfjk8pc0wrhg4yhspl8a3ab2w5dfwa9ib5")))
+        (hash (base32 "1bizb1wwni5r4m5i0mrsqbc5qw73lwrfrdadm09vbfz9ir19qlgz")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.197")
+(define-public linux-libre-4.9-version "4.9.198")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "032as6g4xvqjarqhvx7mr14yhn6idak4g0ps1skmsl4dfav6hdam")))
+        (hash (base32 "1b05jra6q695s1d4rzdr39i6m8xsi5xjrdn73sgwzvx0dgxfnwlm")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.197")
+(define-public linux-libre-4.4-version "4.4.198")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "0ypfl1q1bdbk81hk0bm8a0grqzz4z5rp7z7asa3191ji3r8q9x4w")))
+        (hash (base32 "04pkryy1lc75c88vq5wcjjcxs43i7bb8hhplbfi6s204ipc0iy7c")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -2076,14 +2076,14 @@ devices.  It replaces @code{iwconfig}, which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.10")
+    (version "2.11")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://01.org/sites/default/files/downloads/"
-                           "powertop-v" version ".tar.gz"))
+                           "powertop-v" version "-1-g7ef7f79.tar_0.gz"))
        (sha256
-        (base32 "0xaazqccyd42v2q532dxx40nqhb9sfsa6cyx8641rl57mfg4bdyk"))))
+        (base32 "0kynypj5cydfbma0ssblq1k4m1arixc1s2vf0ybv8y2gg09wjs5f"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -3901,7 +3901,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "5.3")
+    (version "5.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -3909,7 +3909,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "13ivb1b627qkiiqxh2y7zawynarkmgxrnwwpqhx6cci621yyqqqp"))))
+                "0f6s1iwiqbncrvxp74k50s88x6zqf85sjxg04kyni82l1vk1m8xz"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of the binaries in "out"
@@ -5855,7 +5855,7 @@ management tools in userspace.")
     (arguments
      `(#:import-path "github.com/vishvananda/netlink"))
     (native-inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
        ("go-netns" ,go-netns)))
     (home-page "https://github.com/vishvananda/netlink")
     (synopsis "Simple netlink library for Go")

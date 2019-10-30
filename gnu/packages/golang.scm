@@ -216,192 +216,11 @@ in the style of communicating sequential processes (@dfn{CSP}).")
     (supported-systems '("x86_64-linux" "i686-linux" "armhf-linux" "aarch64-linux"))
     (license license:bsd-3)))
 
-(define-public go-1.11
-  (package
-    (inherit go-1.4)
-    (name "go")
-    (version "1.11.12")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://storage.googleapis.com/golang/"
-                           name version ".src.tar.gz"))
-       (sha256
-        (base32
-         "09k9zmq7hhgg0bf1y7rwa0kn7q1vkkr94cmg2iv9lq3najh5nykd"))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-1.4)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'prebuild
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               (let* ((gcclib (string-append (assoc-ref inputs "gcc:lib") "/lib"))
-                      (ld (string-append (assoc-ref inputs "libc") "/lib"))
-                      (loader (car (find-files ld "^ld-linux.+")))
-                      (net-base (assoc-ref inputs "net-base"))
-                      (tzdata-path
-                       (string-append (assoc-ref inputs "tzdata") "/share/zoneinfo"))
-                      (output (assoc-ref outputs "out")))
-
-                 (for-each delete-file
-                           ;; Removing net/ tests, which fail when attempting to access
-                           ;; network resources not present in the build container.
-                           '("net/listen_test.go"
-                             "net/parse_test.go"
-                             "net/cgo_unix_test.go"
-                             ;; A side effect of these test scripts is testing
-                             ;; cgo. Attempts at using cgo flags and
-                             ;; directives with these scripts as specified
-                             ;; here (https://golang.org/cmd/cgo/) have not
-                             ;; worked. The tests continue to state that they
-                             ;; can not find crt1.o despite being present.
-                             "cmd/go/testdata/script/list_compiled_imports.txt"
-                             "cmd/go/testdata/script/mod_case_cgo.txt"
-                             ;; https://github.com/golang/go/issues/24884
-                             "os/user/user_test.go"))
-
-                 (substitute* "os/os_test.go"
-                   (("/usr/bin") (getcwd))
-                   (("/bin/pwd") (which "pwd"))
-                   (("/bin/sh") (which "sh")))
-
-                 (substitute* "cmd/vendor/golang.org/x/sys/unix/syscall_unix_test.go"
-                   (("/usr/bin") "/tmp"))
-
-                 ;; Add libgcc to runpath
-                 (substitute* "cmd/link/internal/ld/lib.go"
-                   (("!rpath.set") "true"))
-                 (substitute* "cmd/go/internal/work/gccgo.go"
-                   (("cgoldflags := \\[\\]string\\{\\}")
-                    (string-append "cgoldflags := []string{"
-                                   "\"-rpath=" gcclib "\""
-                                   "}"))
-                   (("\"-lgcc_s\", ")
-                    (string-append
-                     "\"-Wl,-rpath=" gcclib "\", \"-lgcc_s\", ")))
-                 (substitute* "cmd/go/internal/work/gc.go"
-                   (("ldflags = setextld\\(ldflags, compiler\\)")
-                    (string-append
-                     "ldflags = setextld(ldflags, compiler)\n"
-                     "ldflags = append(ldflags, \"-r\")\n"
-                     "ldflags = append(ldflags, \"" gcclib "\")\n")))
-
-                 ;; Disable failing tests: these tests attempt to access
-                 ;; commands or network resources which are neither available
-                 ;; nor necessary for the build to succeed.
-                 (for-each
-                  (match-lambda
-                    ((file regex)
-                     (substitute* file
-                       ((regex all before test_name)
-                        (string-append before "Disabled" test_name)))))
-                  '(("net/net_test.go" "(.+)(TestShutdownUnix.+)")
-                    ("net/dial_test.go" "(.+)(TestDialTimeout.+)")
-                    ("os/os_test.go" "(.+)(TestHostname.+)")
-                    ("time/format_test.go" "(.+)(TestParseInSydney.+)")
-                    ("time/format_test.go" "(.+)(TestParseInLocation.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestEcho.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCommandRelativeName.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatStdin.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestCatGoodAndBadFile.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExitStatus.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestPipes.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestStdinClose.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestIgnorePipeErrorOnSuccess.+)")
-                    ("syscall/syscall_unix_test.go" "(.+)(TestPassFD\\(.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles/areturn.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestCoverageWithCgo.+)")
-                    ("cmd/go/go_test.go" "(.+)(TestTwoPkgConfigs.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestOutputStderrCapture.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFiles.+)")
-                    ("os/exec/exec_test.go" "(.+)(TestExtraFilesRace.+)")
-                    ("net/lookup_test.go" "(.+)(TestLookupPort.+)")
-                    ("syscall/exec_linux_test.go"
-                     "(.+)(TestCloneNEWUSERAndRemapNoRootDisableSetgroups.+)")))
-
-                 ;; fix shebang for testar script
-                 ;; note the target script is generated at build time.
-                 (substitute* "../misc/cgo/testcarchive/carchive_test.go"
-                   (("#!/usr/bin/env") (string-append "#!" (which "env"))))
-
-                 (substitute* "net/lookup_unix.go"
-                   (("/etc/protocols") (string-append net-base "/etc/protocols")))
-                 (substitute* "net/port_unix.go"
-                   (("/etc/services") (string-append net-base "/etc/services")))
-                 (substitute* "time/zoneinfo_unix.go"
-                   (("/usr/share/zoneinfo/") tzdata-path))
-                 (substitute* (find-files "cmd" "\\.go")
-                   (("/lib(64)?/ld-linux.*\\.so\\.[0-9]") loader))
-                 #t)))
-           (add-before 'build 'set-bootstrap-variables
-             (lambda* (#:key outputs inputs #:allow-other-keys)
-               ;; Tell the build system where to find the bootstrap Go.
-               (let ((go  (assoc-ref inputs "go")))
-                 (setenv "GOROOT_BOOTSTRAP" go)
-                 (setenv "GOGC" "400")
-                 #t)))
-           (replace 'build
-             (lambda* (#:key inputs outputs #:allow-other-keys)
-               ;; FIXME: Some of the .a files are not bit-reproducible.
-               (let* ((output (assoc-ref outputs "out")))
-                 (setenv "CC" (which "gcc"))
-                 (setenv "GOOS" "linux")
-                 (setenv "GOROOT" (dirname (getcwd)))
-                 (setenv "GOROOT_FINAL" output)
-                 (setenv "CGO_ENABLED" "1")
-                 (invoke "sh" "all.bash"))))
-
-           (replace 'install
-             ;; TODO: Most of this could be factorized with Go 1.4.
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((output (assoc-ref outputs "out"))
-                      (doc_out (assoc-ref outputs "doc"))
-                      (docs (string-append doc_out "/share/doc/" ,name "-" ,version))
-                      (src (string-append
-                            (assoc-ref outputs "tests") "/share/" ,name "-" ,version)))
-                 (delete-file-recursively "../pkg/bootstrap")
-                 ;; Prevent installation of the build cache, which contains
-                 ;; store references to most of the tools used to build Go and
-                 ;; would unnecessarily increase the size of Go's closure if it
-                 ;; was installed.
-                 (delete-file-recursively "../pkg/obj")
-
-                 (mkdir-p src)
-                 (copy-recursively "../test" (string-append src "/test"))
-                 (delete-file-recursively "../test")
-                 (mkdir-p docs)
-                 (copy-recursively "../api" (string-append docs "/api"))
-                 (delete-file-recursively "../api")
-                 (copy-recursively "../doc" (string-append docs "/doc"))
-                 (delete-file-recursively "../doc")
-
-                 (for-each
-                  (lambda (file)
-                    (let* ((filein (string-append "../" file))
-                           (fileout (string-append docs "/" file)))
-                      (copy-file filein fileout)
-                      (delete-file filein)))
-                  ;; Note the slightly different file names compared to 1.4.
-                  '("README.md" "CONTRIBUTORS" "AUTHORS" "PATENTS"
-                    "LICENSE" "VERSION" "CONTRIBUTING.md" "robots.txt"))
-
-                 (copy-recursively "../" output)
-                 #t)))))))
-    (native-inputs
-     `(("go" ,go-1.4)
-       ,@(match (%current-system)
-           ((or "armhf-linux" "aarch64-linux")
-            `(("gold" ,binutils-gold)))
-           (_ `()))
-       ,@(package-native-inputs go-1.4)))
-    (supported-systems %supported-systems)))
-
-
 (define-public go-1.12
   (package
     (inherit go-1.4)
     (name "go")
-    (version "1.12.7")
+    (version "1.12.10")
     (source
      (origin
        (method url-fetch)
@@ -409,7 +228,7 @@ in the style of communicating sequential processes (@dfn{CSP}).")
                            name version ".src.tar.gz"))
        (sha256
         (base32
-         "04rvwj69gmw3bz8pw5pf10r21ar0pgpnswp15nkddf04dxyl9s4m"))))
+         "0m1rvawvpdl7kd0asw10m50xbxlhykix6dng9p4x6ih6x3y4hvpm"))))
     (arguments
      (substitute-keyword-arguments (package-arguments go-1.4)
        ((#:phases phases)
@@ -841,182 +660,18 @@ Go programming language.")
                       ".*\\.gz$"))
                #t)))))
       (propagated-inputs
-       `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
       (synopsis "Supplementary cryptographic libraries in Go")
       (description "This package provides supplementary cryptographic libraries
 for the Go language.")
       (home-page "https://go.googlesource.com/crypto/")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-crypto-bcrypt
-  (let ((commit "b7391e95e576cacdcdd422573063bc057239113d")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-crypto-bcrypt")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/crypto")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-crypto-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "1jqfh81mhgwcc6b9l0bs6rb0707s01qpvn7896i5bsmig46lc7zm"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/crypto/bcrypt"
-         #:unpack-path "golang.org/x/crypto"))
-      (synopsis "Bcrypt in Go")
-      (description "This package provides a Go implementation of the bcrypt
-password hashing function.")
-      (home-page "https://go.googlesource.com/crypto/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-crypto-blowfish
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-blowfish")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/blowfish"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Blowfish in Go")
-    (description "This package provides a Go implementation of the Blowfish
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-pbkdf2
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-pbkdf2")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/pbkdf2"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "PBKDF2 in Go")
-    (description "This package provides a Go implementation of the PBKDF2 key
-derivation function.")))
-
-(define-public go-golang-org-x-crypto-tea
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-tea")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/tea"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Tiny Encryption Algorithm (TEA) in Go")
-    (description "This package provides a Go implementation of the Tiny Encryption
-Algorithm (TEA) block cipher.")))
-
-(define-public go-golang-org-x-crypto-salsa20
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-salsa20")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/salsa20"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Salsa20 in Go")
-    (description "This package provides a Go implementation of the Salsa20
-stream cipher.")))
-
-(define-public go-golang-org-x-crypto-cast5
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-cast5")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/cast5"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Cast5 in Go")
-    (description "This package provides a Go implementation of the Cast5
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-twofish
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-twofish")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/twofish"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Twofish in Go")
-    (description "This package provides a Go implementation of the Twofish
-symmetric-key block cipher.")))
-
-(define-public go-golang-org-x-crypto-xtea
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-xtea")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/xtea"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "eXtended Tiny Encryption Algorithm (XTEA) in Go")
-    (description "This package provides a Go implementation of the eXtended
-Tiny Encryption Algorithm (XTEA) block cipher.")))
-
-(define-public go-golang-org-x-crypto-ed25519
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ed25519")
-    (arguments
-     `(#:import-path "golang.org/x/crypto/ed25519"
-       #:unpack-path "golang.org/x/crypto"
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'reset-gzip-timestamps 'make-gzip-archive-writable
-           (lambda* (#:key outputs #:allow-other-keys)
-             (map (lambda (file)
-                    (make-file-writable file))
-                  (find-files
-                    (string-append (assoc-ref outputs "out")
-                                   "/src/golang.org/x/crypto/ed25519/testdata")
-                    ".*\\.gz$"))
-             #t)))))
-    (synopsis "ED25519 in Go")
-    (description "This package provides a Go implementation of the ED25519
-signature algorithm.")))
-
-(define-public go-golang-org-x-crypto-ripemd160
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ripemd160")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/ripemd160")))
-    (synopsis "RIPEMD-160 in Go")
-    (description "This package provides a Go implementation of the RIPEMD-160
-hash algorithm.")))
-
-(define-public go-golang-org-x-crypto-blake2s
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-blake2s")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/blake2s")))
-    (propagated-inputs
-     `(("go-golang-org-x-sys-cpu" ,go-golang-org-x-sys-cpu)))
-    (synopsis "BLAKE2s in Go")
-    (description "This package provides a Go implementation of the BLAKE2s
-hash algorithm.")))
-
-(define-public go-golang-org-x-crypto-sha3
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-sha3")
-    (arguments
-     (substitute-keyword-arguments (package-arguments go-golang-org-x-crypto-bcrypt)
-       ((#:import-path _)
-        "golang.org/x/crypto/sha3")))
-    (synopsis "SHA-3 in Go")
-    (description "This package provides a Go implementation of the SHA-3
-fixed-output-length hash functions and the SHAKE variable-output-length hash
-functions defined by FIPS-202.")))
-
-(define-public go-golang-org-x-net-ipv4
+(define-public go-golang-org-x-net
   (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
         (revision "3"))
     (package
-      (name "go-golang-org-x-net-ipv4")
+      (name "go-golang-org-x-net")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -1029,208 +684,22 @@ functions defined by FIPS-202.")))
                   "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/net/ipv4"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Go IPv4 support")
-      (description "This package provides @code{ipv4}, which implements IP-level
-socket options for the Internet Protocol version 4.")
+       `(#:import-path "golang.org/x/net"
+         ; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+      (synopsis "Go supplemental networking libraries")
+      (description "This package provides supplemental Go networking libraries.")
       (home-page "https://go.googlesource.com/net")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-net-bpf
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-bpf")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/bpf"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Berkeley Packet Filters (BPF) in Go")
-      (description "This package provides a Go implementation of the Berkeley
-Packet Filter (BPF) virtual machine.")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-context
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-context")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/context"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "Golang Context type")
-      (description "This package provides @code{context}, which defines the
-Context type, which carries deadlines, cancellation signals, and other
-request-scoped values across API boundaries and between processes.")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-socks
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-socks")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/socks"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "")
-      (description "")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-socket
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-socket")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/socket"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "")
-      (description "")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-internal-iana
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-internal-iana")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/internal/iana"
-         #:unpack-path "golang.org/x/net"))
-      (synopsis "Go support for assigned numbers (IANA)")
-      (description "This package provides @code{iana}, which provides protocol
-number resources managed by the Internet Assigned Numbers Authority (IANA).")
-      (home-page "https://go.googlesource.com/net/")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-ipv6
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-ipv6")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/ipv6"
-         #:unpack-path "golang.org/x/net"))
-      (propagated-inputs
-       `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-      (synopsis "Go IPv6 support")
-      (description "This package provides @code{ipv6}, which implements
-IP-level socket options for the Internet Protocol version 6.")
-      (home-page "https://go.googlesource.com/net")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-net-proxy
-  (let ((commit "d28f0bde5980168871434b95cfc858db9f2a7a99")
-        (revision "3"))
-    (package
-      (name "go-golang-org-x-net-proxy")
-      (version (git-version "0.0.0" revision commit))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://go.googlesource.com/net")
-                      (commit commit)))
-                (file-name (string-append "go.googlesource.com-net-"
-                                          version "-checkout"))
-                (sha256
-                 (base32
-                  "18xj31h70m7xxb7gc86n9i21w6d7djbjz67zfaljm4jqskz6hxkf"))))
-      (build-system go-build-system)
-      (arguments
-       `(#:import-path "golang.org/x/net/proxy"
-         #:unpack-path "golang.org/x/net/"))
-      (synopsis "Go support for network proxies")
-      (description "This package provides @code{proxy}, which provides support
-for a variety of protocols to proxy network data.")
-      (home-page "https://go.googlesource.com/net")
-      (license license:bsd-3))))
-
-(define-public go-golang-org-x-sys-unix
+(define-public go-golang-org-x-sys
   (let ((commit "04f50cda93cbb67f2afa353c52f342100e80e625")
         (revision "4"))
     (package
-      (name "go-golang-org-x-sys-unix")
+      (name "go-golang-org-x-sys")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -1243,28 +712,21 @@ for a variety of protocols to proxy network data.")
                   "0hmfsz9y1ingwsn482hlzzmzs7kr3cklm0ana0mbdk70isw2bxnw"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/sys/unix"
-         #:unpack-path "golang.org/x/sys"))
+       `(#:import-path "golang.org/x/sys"
+         ;; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
       (synopsis "Go support for low-level system interaction")
-      (description "This package provides @code{unix}, which offers Go support
-for low-level interaction with the operating system.")
+      (description "This package provides supplemental libraries offering Go
+support for low-level interaction with the operating system.")
       (home-page "https://go.googlesource.com/sys")
       (license license:bsd-3))))
 
-(define-public go-golang-org-x-sys-cpu
+(define-public go-golang-org-x-text
   (package
-    (inherit go-golang-org-x-sys-unix)
-    (name "go-golang-org-x-sys-cpu")
-    (arguments
-     '(#:import-path "golang.org/x/sys/cpu"
-       #:unpack-path "golang.org/x/sys"))
-    (synopsis "CPU feature detection")
-    (description "Thi spackage provides @code{cpu}, which offers tools for CPU
-feature detection in Go.")))
-
-(define-public go-golang-org-x-text-encoding
-  (package
-    (name "go-golang-org-x-text-encoding")
+    (name "go-golang-org-x-text")
     (version "0.3.2")
     (source (origin
               (method git-fetch)
@@ -1278,45 +740,23 @@ feature detection in Go.")))
                 "0flv9idw0jm5nm8lx25xqanbkqgfiym6619w575p7nrdh0riqwqh"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "golang.org/x/text/encoding"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Interface for character encodings for conversion to and from
-UTF-8")
-    (description "This package defines an interface for character encodings.
-Specific implementations of encoding for CJK text as well as simple character
-encodings are provided in subpackages.")
+     `(#:import-path "golang.org/x/text"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
+    (synopsis "Supplemental Go text processing libraries")
+    (description "This package provides supplemental Go libraries for text
+    processing.")
     (home-page "https://go.googlesource.com/text")
     (license license:bsd-3)))
 
-(define-public go-golang-org-x-text-transform
-  (package
-    (inherit go-golang-org-x-text-encoding)
-    (name "go-golang-org-x-text-transform")
-    (arguments
-     `(#:import-path "golang.org/x/text/transform"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Go text transformation")
-    (description "This package provides @code{transform}, which provides
-reader and writer wrappers that transform the bytes passing through.  Example
-transformations provided by other packages include normalization and conversion
-between character sets.")))
-
-(define-public go-golang-org-x-text-unicode-norm
-  (package
-    (inherit go-golang-org-x-text-encoding)
-    (name "go-golang-org-x-text-unicode-norm")
-    (arguments
-     `(#:import-path "golang.org/x/text/unicode/norm"
-       #:unpack-path "golang.org/x/text"))
-    (synopsis "Unicode normalization in Go")
-    (description "This package provides @code{norm}, which contains types and
-functions for normalizing Unicode strings.")))
-
-(define-public go-golang-org-x-time-rate
+(define-public go-golang-org-x-time
   (let ((commit "6dc17368e09b0e8634d71cac8168d853e869a0c7")
         (revision "1"))
     (package
-      (name "go-golang-org-x-time-rate")
+      (name "go-golang-org-x-time")
       (version (git-version "0.0.0" revision commit))
       (source (origin
                 (method git-fetch)
@@ -1329,28 +769,19 @@ functions for normalizing Unicode strings.")))
                   "1fx4cf5fpdz00g3c7vxzy92hdcg0vh4yqw00qp5s52j72qixynbk"))))
       (build-system go-build-system)
       (arguments
-       `(#:import-path "golang.org/x/time/rate"
-         #:unpack-path "golang.org/x/time"))
-      (propagated-inputs
-       `(("go-golang-org-x-net-context" ,go-golang-org-x-net-context)))
-      (synopsis "Rate limiting in Go")
-      (description "This package provides @{rate}, which implements rate
-limiting in Go.")
+       `(#:import-path "golang.org/x/time"
+         ; Source-only package
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'build))))
+;      (propagated-inputs
+;       `(("go-golang-org-x-net" ,go-golang-org-x-net)))
+      (synopsis "Supplemental Go time libraries")
+      (description "This package provides supplemental Go libraries related to
+time.")
       (home-page "https://godoc.org/golang.org/x/time/rate")
       (license license:bsd-3))))
-
-(define-public go-golang-org-x-crypto-ssh-terminal
-  (package
-    (inherit go-golang-org-x-crypto-bcrypt)
-    (name "go-golang-org-x-crypto-ssh-terminal")
-    (inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
-    (arguments
-     `(#:import-path "golang.org/x/crypto/ssh/terminal"
-       #:unpack-path "golang.org/x/crypto"))
-    (synopsis "Terminal functions for Go")
-    (description "This package provides @{terminal}, which implements support
-functions for dealing with terminals, as commonly found on UNIX systems.")))
 
 (define-public go-github-com-burntsushi-toml
   (package
@@ -1740,12 +1171,11 @@ GNU extensions} to the POSIX recommendations for command-line options.")
          "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
     (build-system go-build-system)
     (native-inputs
-     `(("go-golang-org-x-crypto-ssh-terminal"
-        ,go-golang-org-x-crypto-ssh-terminal)
+     `(("go-golang-org-x-crypto"
+        ,go-golang-org-x-crypto)
        ("go-github-com-stretchr-testify"
         ,go-github-com-stretchr-testify)
-       ("go-golang-org-x-sys-unix"
-        ,go-golang-org-x-sys-unix)))
+       ("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
      '(#:tests? #f                    ;FIXME missing dependencies
        #:import-path "github.com/sirupsen/logrus"))
@@ -1834,12 +1264,11 @@ SysVinit, and more.")
            "1yg2zrikn3vkvkx5mn51p6bfjk840qdkn7ahhhvvcsc8mpigrjc6"))))
       (build-system go-build-system)
       (native-inputs
-       `(("go-golang-org-x-sys-unix"
-          ,go-golang-org-x-sys-unix)
+       `(("go-golang-org-x-sys" ,go-golang-org-x-sys)
          ("go-github-com-sirupsen-logrus"
           ,go-github-com-sirupsen-logrus)
-         ("go-golang-org-x-crypto-ssh-terminal"
-          ,go-golang-org-x-crypto-ssh-terminal)))
+         ("go-golang-org-x-crypto"
+          ,go-golang-org-x-crypto)))
       (arguments
        '(#:import-path "github.com/docker/distribution"
          #:phases
@@ -2011,7 +1440,7 @@ values.")
          "1i77aq4gf9as03m8fpfh8fq49n4z9j7548blrcsidm1xhslzk5xd"))))
     (build-system go-build-system)
     (propagated-inputs
-     `(("go-golang-org-x-sys-unix" ,go-golang-org-x-sys-unix)))
+     `(("go-golang-org-x-sys" ,go-golang-org-x-sys)))
     (arguments
      '(#:import-path "github.com/mattn/go-isatty"))
     (home-page "https://github.com/mattn/go-isatty")
@@ -2350,7 +1779,7 @@ and lookup requests.  Browse requests are not supported yet.")
          ("taglib" ,taglib)))
       (arguments
        `(#:import-path "github.com/wtolson/go-taglib"
-         ;; Tests don't pass "vet" on go-1.11.  See
+         ;; Tests don't pass "vet" on Go since 1.11.  See
          ;; https://github.com/wtolson/go-taglib/issues/12.
          #:phases
          (modify-phases %standard-phases
@@ -2379,8 +1808,12 @@ and lookup requests.  Browse requests are not supported yet.")
                 "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
     (build-system go-build-system)
     (arguments
-     `(#:import-path "github.com/gogo/protobuf/proto"
-       #:unpack-path "github.com/gogo/protobuf"))
+     `(#:import-path "github.com/gogo/protobuf"
+       ; Source-only package
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'build))))
     (synopsis "Protocol Buffers for Go with Gadgets")
     (description "Gogoprotobuf is a fork of golang/protobuf with extra code
 generation features.  This code generation is used to achieve:
@@ -2393,86 +1826,6 @@ generation features.  This code generation is used to achieve:
 @item other serialization formats
 @end itemize")
     (home-page "https://github.com/gogo/protobuf")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-protoc-gen-gogo
-  (package
-    (name "go-github-com-gogo-protobuf-protoc-gen-gogo")
-    (version "1.2.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/gogo/protobuf")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     `(#:import-path "github.com/gogo/protobuf/protoc-gen-gogo"
-       #:unpack-path "github.com/gogo/protobuf"
-       #:tests? #f)) ; Requires the unpackaged 'protoc-min-version'
-    (synopsis "Protocol Buffers for Go with Gadgets")
-    (description "Gogoprotobuf is a fork of golang/protobuf with extra code
-generation features.  This code generation is used to achieve:
-@itemize
-@item fast marshalling and unmarshalling
-@item more canonical Go structures
-@item goprotobuf compatibility
-@item less typing by optionally generating extra helper code
-@item peace of mind by optionally generating test and benchmark code
-@item other serialization formats
-@end itemize")
-    (home-page "https://github.com/gogo/protobuf")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-gogoproto
-  (package
-    (name "go-github-com-gogo-protobuf-gogoproto")
-    (version "1.2.1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/gogo/protobuf.git")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:unpack-path "github.com/gogo/protobuf"
-       #:import-path "github.com/gogo/protobuf/gogoproto"))
-    (home-page "https://github.com/gogo/protobuf")
-    (synopsis "Extensions to protocol buffers")
-    (description "This package provides extensions to the Gogo protocol buffers
-implementation.")
-    (license license:bsd-3)))
-
-(define-public go-github-com-gogo-protobuf-proto
-  (package
-    (name "go-github-com-gogo-protobuf-proto")
-    (version "1.2.1")
-    (source
-      (origin
-        (method git-fetch)
-        (uri (git-reference
-               (url "https://github.com/gogo/protobuf.git")
-               (commit (string-append "v" version))))
-        (file-name (git-file-name name version))
-        (sha256
-         (base32
-          "06yqa6h0kw3gr5pc3qmas7f7435a96zf7iw7p0l00r2hqf6fqq6m"))))
-    (build-system go-build-system)
-    (arguments
-     '(#:unpack-path "github.com/gogo/protobuf"
-       #:import-path "github.com/gogo/protobuf/proto"))
-    (home-page "https://github.com/gogo/protobuf")
-    (synopsis "Protocol buffers component")
-    (description "This is a component of the Gogo protocol buffers
-implementation.")
     (license license:bsd-3)))
 
 (define-public go-github-com-libp2p-go-flow-metrics
@@ -2663,9 +2016,9 @@ Architecture Processors\" by J. Guilford et al.")
       (arguments
        '(#:import-path "github.com/libp2p/go-libp2p-crypto"))
       (native-inputs
-       `(("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
+       `(("go-golang-org-x-crypto" ,go-golang-org-x-crypto)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)))
       (home-page
        "https://github.com/libp2p/go-libp2p-crypto")
@@ -2811,8 +2164,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multihash")
       (synopsis "Multihash implementation in Go")
       (description "Multihash implementation in Go.")
@@ -2839,7 +2191,7 @@ required by Go's standard Hash interface.")
        '(#:import-path "github.com/libp2p/go-libp2p-peer"))
       (native-inputs
        `(("go-github-com-libp2p-go-libp2p-crypto" ,go-github-com-libp2p-go-libp2p-crypto)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
@@ -2847,9 +2199,7 @@ required by Go's standard Hash interface.")
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)
-         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/libp2p/go-libp2p-peer")
       (synopsis "PKI based identities for use in go-libp2p")
       (description "PKI based identities for use in @command{go-libp2p}.")
@@ -2907,14 +2257,12 @@ required by Go's standard Hash interface.")
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-multiformats-go-multihash" ,go-github-com-multiformats-go-multihash)
          ("go-github-com-btcsuite-btcd-btcec" ,go-github-com-btcsuite-btcd-btcec)
-         ("go-github-com-gogo-protobuf-proto" ,go-github-com-gogo-protobuf-proto)
+         ("go-github-com-gogo-protobuf" ,go-github-com-gogo-protobuf)
          ("go-github-com-gxed-hashland-keccakpg" ,go-github-com-gxed-hashland-keccakpg)
          ("go-github-com-minio-blake2b-simd" ,go-github-com-minio-blake2b-simd)
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-ed25519" ,go-golang-org-x-crypto-ed25519)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/libp2p/go-libp2p-metrics")
       (synopsis "Connection wrapper for go-libp2p that provides bandwidth metrics")
       (description "A connection wrapper for @command{go-libp2p} that provides bandwidth
@@ -2987,8 +2335,7 @@ cross-compilation.")
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multiaddr")
       (synopsis "Composable and future-proof network addresses")
       (description "Multiaddr is a standard way to represent addresses that
@@ -3032,8 +2379,7 @@ does the following:
          ("go-github-com-minio-sha256-simd" ,go-github-com-minio-sha256-simd)
          ("go-github-com-mr-tron-base58" ,go-github-com-mr-tron-base58)
          ("go-github-com-spaolacci-murmur3" ,go-github-com-spaolacci-murmur3)
-         ("go-golang-org-x-crypto-sha3" ,go-golang-org-x-crypto-sha3)
-         ("go-golang-org-x-crypto-blake2s" ,go-golang-org-x-crypto-blake2s)))
+         ("go-golang-org-x-crypto" ,go-golang-org-x-crypto)))
       (home-page "https://github.com/multiformats/go-multiaddr-net")
       (synopsis "Multiaddress net tools")
       (description "This package provides Multiaddr specific versions of
@@ -3388,8 +2734,7 @@ colorspaces.")
     (arguments
      '(#:import-path "github.com/gdamore/encoding"))
     (inputs
-     `(("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
-       ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)))
+     `(("go-golang-org-x-text" ,go-golang-org-x-text)))
     (home-page "https://github.com/gdamore/encoding")
     (synopsis "Provide encodings missing from Go")
     (description "This package provides useful encodings not included in the
@@ -3430,8 +2775,7 @@ non-UTF-friendly sources.")
       (inputs
        `(("go-github.com-mattn-go-runewidth" ,go-github.com-mattn-go-runewidth)
          ("go-golang-org-colorful" ,go-golang-org-colorful)
-         ("go-golang-org-x-text-encoding" ,go-golang-org-x-text-encoding)
-         ("go-golang-org-x-text-transform" ,go-golang-org-x-text-transform)
+         ("go-golang-org-x-text" ,go-golang-org-x-text)
          ("go-github-com-gdamore-encoding" ,go-github-com-gdamore-encoding)))
       (home-page "https://github.com/gdamore/tcell")
       (synopsis "Provide a cell-based view for text terminals")

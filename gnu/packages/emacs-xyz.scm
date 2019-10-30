@@ -6955,29 +6955,33 @@ for search-based navigation of buffers.")
 as well as features for editing search results.")
       (license license:gpl3+))))
 
+;; There hasn't been a tag or release since 2016, so we take the latest
+;; commit.
 (define-public emacs-helm-projectile
-  (package
-    (name "emacs-helm-projectile")
-    (version "0.14.0")
-    (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/bbatsov/helm-projectile.git")
-             (commit (string-append "v" version))))
-       (file-name (git-file-name name version))
-       (sha256
-        (base32 "0lph38p112fridighqcizpsyzjbv7qr3d8prbfj6w6q6gfl6cna4"))))
-    (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-helm" ,emacs-helm)
-       ("emacs-projectile" ,emacs-projectile)))
-    (home-page "https://github.com/bbatsov/helm-projectile")
-    (synopsis "Helm integration for Projectile")
-    (description
-     "This Emacs library provides a Helm interface for Projectile.")
-    (license license:gpl3+)))
+  (let ((commit "5328b74dddcee8d1913803ca8167868831a07463")
+        (version "0.14.0")
+        (revision "1"))
+    (package
+      (name "emacs-helm-projectile")
+      (version (git-version version revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/bbatsov/helm-projectile.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0a811cblrvc8llpv771b8dppgxs6bwjyvjy3qn2xns4nigvn93s0"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("emacs-helm" ,emacs-helm)
+         ("emacs-projectile" ,emacs-projectile)))
+      (home-page "https://github.com/bbatsov/helm-projectile")
+      (synopsis "Helm integration for Projectile")
+      (description
+       "This Emacs library provides a Helm interface for Projectile.")
+      (license license:gpl3+))))
 
 (define-public emacs-taskrunner
   (let ((commit "3afd4a546d42339543d3d4e51b175fc3e82b3358")
@@ -7417,10 +7421,15 @@ news items, openrc and runscripts.")
        (sha256
         (base32
          "1833w397xhac5g3pp25szr2gyvclxy91aw27azvbmsx94pyk2a3q"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-test-helpers
+           (lambda _
+             (substitute* "evil-test-helpers.el"
+               (("\\(undo-tree-mode 1\\)") ""))
+             #t)))))
     (build-system emacs-build-system)
-    (propagated-inputs
-     `(("emacs-undo-tree" ,emacs-undo-tree)
-       ("emacs-goto-chg" ,emacs-goto-chg)))
     (home-page "https://github.com/emacs-evil/evil")
     (synopsis "Extensible Vi layer for Emacs")
     (description
@@ -10823,14 +10832,14 @@ let users kill or mark things easily.")
 (define-public emacs-csv-mode
   (package
     (name "emacs-csv-mode")
-    (version "1.9")
+    (version "1.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://elpa.gnu.org/packages/csv-mode-"
                            version ".el"))
        (sha256
-        (base32 "0sdnyi9in904k49yy5imapypnmk75lv14k9c1yyjhjpalvvh6br1"))))
+        (base32 "0q7j2cmj7vs6hz8cnf7j7lmlcjmig3jn2p6az345z96agl8a5xsq"))))
     (build-system emacs-build-system)
     (home-page "https://elpa.gnu.org/packages/csv-mode.html")
     (synopsis "Major mode for editing comma/char separated values")

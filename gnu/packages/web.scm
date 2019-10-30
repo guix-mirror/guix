@@ -2860,7 +2860,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
 (define-public perl-http-cookies
   (package
     (name "perl-http-cookies")
-    (version "6.04")
+    (version "6.05")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -2868,7 +2868,7 @@ jar in conformance with RFC 6265 <http://tools.ietf.org/html/rfc6265>.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1m0kxcirbvbkrm2c59p1bkbvzlcdymg8fdpa7wlxijlx0xwz1iqc"))))
+               "0pbgns2gwgvgg9rglah7ryw0jj13aykyf38lnhm3rwzw3c2cvqaq"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-http-message" ,perl-http-message)))
@@ -3204,7 +3204,7 @@ select or poll.")
 (define-public perl-libwww
   (package
     (name "perl-libwww")
-    (version "6.39")
+    (version "6.41")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -3212,7 +3212,7 @@ select or poll.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1mblfwz3g7vmyykmb0mcbmmad77rwx55fwaca9ymv9wajd3pg3cs"))))
+               "0jh67946fwd33ap3xy8df0421d2mr6lmhalhkf1p7dx2b7fil9wf"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
@@ -6806,7 +6806,7 @@ Anonip can also be uses as a Python module in your own Python application.")
     (build-system go-build-system)
     (propagated-inputs
      `(("go-github-com-robfig-cron" ,go-github-com-robfig-cron)
-       ("go-golang-org-x-time-rate" ,go-golang-org-x-time-rate)))
+       ("go-golang-org-x-time" ,go-golang-org-x-time)))
     (arguments
      `(#:import-path "github.com/tsileo/poussetaches"))
     (home-page "https://github.com/tsileo/poussetaches")

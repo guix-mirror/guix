@@ -708,6 +708,33 @@ useful for C++.")
        ("pkg-config" ,pkg-config)
        ("python-pytest" ,python2-pytest)))))
 
+;; Newer version of this core-updates package, for Lollypop.
+(define-public python-pygobject-3.34
+  (package/inherit
+   python-pygobject
+   (version "3.34.0")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/pygobject/"
+                          (version-major+minor version)
+                          "/pygobject-" version ".tar.xz"))
+      (sha256
+       (base32 "06i7ynnbvgpz0gw09zsjbvhgcp5qz4yzdifw27qjwdazg2mckql7"))))
+   (build-system meson-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'delete-broken-tests
+          (lambda _
+            (with-directory-excursion "tests"
+              (for-each
+               delete-file
+               ;; FIXME: these tests require Gdk and/or Gtk 4.
+               '("test_atoms.py"
+                 "test_overrides_gtk.py")))
+            #t)))))))
+
 (define-public perl-glib
   (package
     (name "perl-glib")

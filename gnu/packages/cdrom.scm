@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 John Darrington <jmd@gnu.org>
@@ -155,17 +155,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0aq6lvlwlkxz56l5sbvgycr6j5c82ch2bv6zrnc2345ibfpafgx9"))
-             (patches
-              (search-patches "xorriso-no-partition-table-in-inner-efi.patch"
-                              "xorriso-no-mbr-in-inner-efi.patch"))))
+               "1rqpzj95f70jfwpn4lamasfgqpizjsipz12aprdhri777b4zas9v"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -815,14 +812,14 @@ DVD-RW, DVD-R, DVD-R/DL, BD-R, and BD-RE.")
 (define-public libisofs
   (package
     (name "libisofs")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://files.libburnia-project.org/releases/"
                                  "libisofs-" version ".tar.gz"))
              (sha256
               (base32
-               "001l3akf3wb6msl9man776w560iqyvsbwwzs7d7y7msx13irspys"))))
+               "002mcyqwg625a8hqvsrmgm26mhhfwj0j7rahfhsqirmk02b16npg"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)

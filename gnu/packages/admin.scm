@@ -1128,7 +1128,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.28p1")
+    (version "1.8.29")
     (source (origin
               (method url-fetch)
               (uri
@@ -1138,7 +1138,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "09xhx2k7j6wlqs9bl7snamd4k6lkyv9ycjwdspgbbqrimy25mfi3"))
+                "0z4wyadh9cks17gdpfgx4kvbrlnyb6nai2sd6chk7qh4jsngylyf"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1184,6 +1184,12 @@ system administrator.")
                (("\\$\\(DESTDIR\\)\\$\\(vardir\\)")
                 ;; Don't try to create /var/db/sudo.
                 "$(TMPDIR)/dummy"))
+
+             ;; ‘Checking existing [/etc/]sudoers file for syntax errors’ is
+             ;; not the task of the build system, and fails.
+             (substitute* "plugins/sudoers/Makefile.in"
+               (("^pre-install:" match)
+                (string-append match "\ndisabled-" match)))
              #t)))
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
