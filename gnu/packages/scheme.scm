@@ -590,14 +590,14 @@ mixed.")
 (define-public chibi-scheme
   (package
     (name "chibi-scheme")
-    (version "0.7.3")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/ashinn/chibi-scheme/archive/"
                            version ".tar.gz"))
        (sha256
-        (base32 "16wppf4qzr0748iyp0m89gidsfgq9s6x3gw4xggym91waw4fh742"))
+        (base32 "0mi73543m1gap3bwvivq77vhqk7yn28v6g947h96q893n5cph1wa"))
        (file-name (string-append "chibi-scheme-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
