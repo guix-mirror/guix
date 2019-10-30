@@ -183,14 +183,17 @@ as well as the classic centralized workflow.")
       ;; a problem in 'patch-shebangs'; see <https://bugs.gnu.org/31952>.
       ("bash-for-tests" ,bash)
 
-      ;; For 'gitweb.cgi'
+      ;; For PCRE support in git grep (USE_LIBPCRE2).
+      ("pcre" ,pcre2)
+
+      ;; For 'gitweb.cgi'.
       ("perl-cgi" ,perl-cgi)
 
       ;; For 'git-svn'.
       ("subversion" ,subversion)
       ("perl-term-readkey" ,perl-term-readkey)
 
-      ;; For 'git-send-email'
+      ;; For 'git-send-email'.
       ("perl-authen-sasl" ,perl-authen-sasl)
       ("perl-net-smtp-ssl" ,perl-net-smtp-ssl)
       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -215,6 +218,8 @@ as well as the classic centralized workflow.")
                      ,(string-append "TEST_SHELL_PATH="
                                      (assoc-ref %build-inputs "bash-for-tests")
                                      "/bin/bash")
+
+                     "USE_LIBPCRE2=yes"
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
@@ -505,6 +510,8 @@ everything from small to very large projects with speed and efficiency.")
                  (delete-file-recursively
                   (string-append out "/share/gitweb"))
                  #t)))))
+       ((#:make-flags flags)
+        `(delete "USE_LIBPCRE2=yes" ,flags))
        ((#:configure-flags flags)
         ''())
        ((#:disallowed-references lst '())
