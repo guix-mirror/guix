@@ -554,9 +554,9 @@ board-independent tools.")))
                                                      "_" "-")))
       (native-inputs
        `(,@(if (not (same-arch?))
-             `(("cross-gcc" ,(cross-gcc triplet #:xgcc gcc-7))
+             `(("cross-gcc" ,(cross-gcc triplet))
                ("cross-binutils" ,(cross-binutils triplet)))
-             `(("gcc-7" ,gcc-7)))
+             `())
          ,@(package-native-inputs u-boot)))
       (arguments
        `(#:modules ((ice-9 ftw)
