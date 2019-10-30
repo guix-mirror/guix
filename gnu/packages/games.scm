@@ -1445,7 +1445,16 @@ fight Morgoth, the Lord of Darkness.")
         (base32
          "0wp06kcmknsnxz7bjnsndb8x062z7r23fb3yrnbfnj68qhz18y74"))
        (patches (search-patches "pingus-boost-headers.patch"
-                                "pingus-sdl-libs-config.patch"))))
+                                "pingus-sdl-libs-config.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "src/pingus/screens/demo_session.cpp"
+             (("#include <iostream>")
+              ;; std::function moved to <functional> with C++ 11.
+              ;; Remove this for versions newer than 0.7.6.
+              "#include <iostream>\n#include <functional>"))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scons-python2" ,scons-python2)))
