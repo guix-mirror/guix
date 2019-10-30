@@ -2383,52 +2383,46 @@ follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
 
 (define-public ams-lv2
-  ;; Version 1.2.1 built with Python 3.7 raises an error in the waf-script.
-  ;; Therefore, we take two more commmits than 1.2.1 that introduce an updated
-  ;; waf-script and fix one error.
-  (let ((commit "377d166db54a787b48979171c5652d2eb4f1bbb5")
-        (revision "1"))
-    (package
-      (name "ams-lv2")
-      (version (git-version "1.2.1" revision commit))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/blablack/ams-lv2.git")
-               (commit commit)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32
-           "1ndgxcxjxwidg7436k0nb5clxkyi878k1j999sbbd1gk2fm0kcqm"))))
-      (build-system waf-build-system)
-      (arguments
-       `(#:phases
-         (modify-phases %standard-phases
-           (add-after 'unpack 'remove-sse-flags
-             (lambda* (#:key system #:allow-other-keys)
-               (unless (or (string-prefix? "x86_64" system)
-                              (string-prefix? "i686" system))
-                     (substitute* "wscript"
-                       (("'-msse', '-mfpmath=sse', ") "")))
-               #t)))
-         #:tests? #f)) ; no tests
-      (inputs
-       `(("lv2" ,lv2)
-         ("lvtk" ,lvtk)
-         ("gtkmm" ,gtkmm-2)
-         ("gtk" ,gtk+-2)
-         ("cairo" ,cairo)
-         ("fftw" ,fftw)))
-      (native-inputs
-       `(("pkg-config" ,pkg-config)))
-      (home-page "https://objectivewave.wordpress.com/ams-lv2/")
-      (synopsis "Port of Alsa Modular Synth internal modules into LV2")
-      (description "This set of LV2 plugins is a port of the internal modules
+  (package
+    (name "ams-lv2")
+    (version "1.2.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/blablack/ams-lv2.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1lz2mvk4gqsyf92yxd3aaldx0d0qi28h4rnnvsaz4ls0ccqm80nk"))))
+    (build-system waf-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (unless (or (string-prefix? "x86_64" system)
+                         (string-prefix? "i686" system))
+               (substitute* "wscript"
+                 (("'-msse', '-mfpmath=sse', ") "")))
+             #t)))
+       #:tests? #f))                    ; no tests
+    (inputs
+     `(("cairo" ,cairo)
+       ("fftw" ,fftw)
+       ("gtk" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)
+       ("lv2" ,lv2)
+       ("lvtk" ,lvtk)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/blablack/ams-lv2")
+    (synopsis "Port of Alsa Modular Synth internal modules into LV2")
+    (description "This set of LV2 plugins is a port of the internal modules
 found in Alsa Modular Synth.  These plugins are used to create modular
 synthesizers and contain: VCO, VCF, VCA, LFO, slew limiter, envelopes, sample
 and hold, etc.")
-      (license license:gpl2))))
+    (license license:gpl2)))
 
 (define-public gxtuner
   (package
