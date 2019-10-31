@@ -4559,7 +4559,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
 (define-public ghc-haskell-src-exts-util
   (package
     (name "ghc-haskell-src-exts-util")
-    (version "0.2.3")
+    (version "0.2.5")
     (source
      (origin
        (method url-fetch)
@@ -4568,7 +4568,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1803718paq89f8pdck4mb88hv2k1ah9lxzq0lgjgwi9n88ryycz8"))))
+         "0fvqi72m74p7q5sbpy8m2chm8a1lgy10mfrcxcz8wrh59vngj0n8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-data-default" ,ghc-data-default)
