@@ -3743,7 +3743,7 @@ specific Windows, Mac, and Linux file system event notification.")
 (define-public ghc-generic-deriving
   (package
     (name "ghc-generic-deriving")
-    (version "1.12.2")
+    (version "1.12.4")
     (source
      (origin
        (method url-fetch)
@@ -3753,7 +3753,7 @@ specific Windows, Mac, and Linux file system event notification.")
              ".tar.gz"))
        (sha256
         (base32
-         "1i7d6cpj9yhaqb79zays3nqchhaacacjz9bkc0zlwj73y5gvi22n"))))
+         "0vdg9qdq35jl3m11a87wk8cq1y71qm4i1g1b2pxki0wk70yw20a4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-abstraction" ,ghc-th-abstraction)))
