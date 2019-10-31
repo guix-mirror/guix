@@ -314,7 +314,7 @@ development.")
 (define-public ghc-quickcheck-instances
   (package
     (name "ghc-quickcheck-instances")
-    (version "0.3.18")
+    (version "0.3.22")
     (source
      (origin
        (method url-fetch)
@@ -324,11 +324,11 @@ development.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1bh1pzz5fdcqvzdcirqxna6fnjms02min5md716299g5niz46w55"))))
+         "14asr9r7da3w7p4hjj51w2yb002nz8x0np8hdz9z4yjvi60vyrax"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "1sngfq3v71bvgjsl8cj5kh65m3fziwy8dkvwjzs0kxfrzr87faly")))
+       ("2" "1ia5fjhpg7rz793552v88gv2iqx7hl9mi2g09m0llasy1cpzc9jr")))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-base-compat" ,ghc-base-compat)
@@ -337,6 +337,7 @@ development.")
        ("ghc-old-time" ,ghc-old-time)
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-tagged" ,ghc-tagged)
+       ("ghc-time-compat" ,ghc-time-compat)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-uuid-types" ,ghc-uuid-types)
