@@ -5441,7 +5441,7 @@ supported systems.")
 (define-public ghc-json
   (package
     (name "ghc-json")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -5449,7 +5449,7 @@ supported systems.")
                            "json-" version ".tar.gz"))
        (sha256
         (base32
-         "13kkfgx58z18jphbg56jn08jn72wi3kvfndlwwx87hqwg7x1dfz6"))))
+         "1z8s3mfg76p2flqqd2wqsi96l5bg8k8w8m58zlv81pw3k7h1vbwb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)))
