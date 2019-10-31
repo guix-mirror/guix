@@ -639,7 +639,7 @@ Haskell @code{ByteString}s.")
 (define-public ghc-base-compat
   (package
     (name "ghc-base-compat")
-    (version "0.10.4")
+    (version "0.10.5")
     (source
      (origin
        (method url-fetch)
@@ -649,7 +649,7 @@ Haskell @code{ByteString}s.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ksp990gxs731mq19rzbxrbs43nazfljjc8krlx5bjqblw3kfs8d"))))
+         "0hgvlqcr852hfp52jp99snhbj550mvxxpi8qn15d8ml9aqhyl2lr"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
