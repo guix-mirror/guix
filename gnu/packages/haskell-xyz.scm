@@ -7527,7 +7527,7 @@ files/directories, and more.")
 (define-public ghc-paths
   (package
     (name "ghc-paths")
-    (version "0.1.0.9")
+    (version "0.1.0.12")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -7538,7 +7538,7 @@ files/directories, and more.")
              ".tar.gz"))
        (sha256
         (base32
-         "0ibrr1dxa35xx20cpp8jzgfak1rdmy344dfwq4vlq013c6w8z9mg"))))
+         "1164w9pqnf7rjm05mmfjznz7rrn415blrkk1kjc0gjvks1vfdjvf"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/simonmar/ghc-paths")
     (synopsis
