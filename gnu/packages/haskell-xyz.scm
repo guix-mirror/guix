@@ -5066,7 +5066,7 @@ for Haskell.  The functions provided by this module are @code{upper},
 (define-public ghc-http-api-data
   (package
     (name "ghc-http-api-data")
-    (version "0.3.8.1")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
@@ -5075,17 +5075,25 @@ for Haskell.  The functions provided by this module are @code{upper},
                            "http-api-data-" version ".tar.gz"))
        (sha256
         (base32
-         "1cq6459b8wz6nvkvpi89dg189n5q2xdq4rdq435hf150555vmskf"))))
+         "1ps4bvln43gz72dr9mc3c9n1rn38c4rz6m49vxzz9nz6jz1978rv"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f))  ;  FIXME: Tests require QuickCheck >= 2.9
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
               ("ghc-attoparsec-iso8601" ,ghc-attoparsec-iso8601)
+              ("ghc-cookie" ,ghc-cookie)
               ("ghc-hashable" ,ghc-hashable)
               ("ghc-http-types" ,ghc-http-types)
-              ("ghc-time-locale-compat" ,ghc-time-locale-compat)
+              ("ghc-time-compat" ,ghc-time-compat)
               ("ghc-unordered-containers" ,ghc-unordered-containers)
-              ("ghc-uri-bytestring" ,ghc-uri-bytestring)
               ("ghc-uuid-types" ,ghc-uuid-types)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-nats" ,ghc-nats)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-doctest" ,ghc-doctest)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/fizruk/http-api-data")
     (synopsis "Convert to/from HTTP API data like URL pieces, headers and
 query parameters")
