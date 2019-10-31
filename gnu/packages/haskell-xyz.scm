@@ -9299,7 +9299,7 @@ are the bottleneck of web servers.")
 (define-public ghc-skylighting-core
   (package
     (name "ghc-skylighting-core")
-    (version "0.7.2")
+    (version "0.8.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -9307,7 +9307,7 @@ are the bottleneck of web servers.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "066fwmwsd7xcvwlinfk2izlzq0xp8697i6lnbgsbl71jdybyackq"))))
+                "0hdchivb4af9w7v5v7lrwfwawd3kcwmpzk69m1vkkm3pis8lcr1s"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
