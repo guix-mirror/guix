@@ -1129,7 +1129,7 @@ from strict or lazy bytestrings.")
 (define-public ghc-bzlib-conduit
   (package
     (name "ghc-bzlib-conduit")
-    (version "0.3.0.1")
+    (version "0.3.0.2")
     (source
      (origin
        (method url-fetch)
@@ -1137,7 +1137,7 @@ from strict or lazy bytestrings.")
                            "bzlib-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "0fd2hnr782s7qgipazg2yxwia9qqhkvm9bcm90773c3zkxa13n23"))))
+         "0a21zin5plsl37hkxh2jv8cxwyjrbs2fy7n5cyrzgdaa7lmp6b7b"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-bindings-dsl" ,ghc-bindings-dsl)
