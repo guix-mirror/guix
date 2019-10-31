@@ -8540,7 +8540,7 @@ connections.")
 (define-public ghc-resourcet
   (package
     (name "ghc-resourcet")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -8548,7 +8548,7 @@ connections.")
                            "resourcet-" version ".tar.gz"))
        (sha256
         (base32
-         "0rzjzh34s36ssign7akqjnwnjxf11c3511wk7ky0xxy0dqmc2rg7"))))
+         "1rfbfcv3r1h29y0yqr3x6a1s04lbc3vzm3jqnfg4f9rqp9d448qk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-transformers-base" ,ghc-transformers-base)
