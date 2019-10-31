@@ -10352,7 +10352,7 @@ datatypes.")
 (define-public ghc-th-lift-instances
   (package
     (name "ghc-th-lift-instances")
-    (version "0.1.11")
+    (version "0.1.14")
     (source
      (origin
        (method url-fetch)
@@ -10361,7 +10361,7 @@ datatypes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1f56cp6ckcalld5jchv0kxpjkwcsixd7smd0g7r8cg67ppx6m90x"))))
+         "0r1b4jnvcj64wp4hfccwkl4a70n1p1q7qzyx6ax7cmd8k961jz78"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-lift" ,ghc-th-lift)
