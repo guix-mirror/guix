@@ -10442,7 +10442,7 @@ package is similar to the @code{threadmanager}, @code{async} and
 (define-public ghc-th-reify-many
   (package
     (name "ghc-th-reify-many")
-    (version "0.1.8")
+    (version "0.1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -10450,7 +10450,7 @@ package is similar to the @code{threadmanager}, @code{async} and
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0hzy6hvhvcd6i60vx5cp2b7ggmnnjh9rx4h8bm8xw4grglcaxjnf"))))
+                "0hxf56filzqnyrc8q7766vai80y6cgrrbrczx6n93caskl1dv2gq"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-safe" ,ghc-safe)
