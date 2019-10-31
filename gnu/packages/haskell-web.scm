@@ -769,7 +769,7 @@ documents.")
 (define-public ghc-aeson
   (package
     (name "ghc-aeson")
-    (version "1.3.1.1")
+    (version "1.4.5.0")
     (source
      (origin
        (method url-fetch)
@@ -779,7 +779,7 @@ documents.")
              ".tar.gz"))
        (sha256
         (base32
-         "1i1ig840fvsb1lnklcv32zsc0zscirc301lw1mpfxhc6h4pk0gw4"))))
+         "1jhabz1lbbv6yqxqiybifi86cb5xlsadrn368n5dd0wzzc7ja4iz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
