@@ -6039,7 +6039,7 @@ same time is a literate Haskell program.")
 (define-public ghc-math-functions
   (package
     (name "ghc-math-functions")
-    (version "0.2.1.0")
+    (version "0.3.3.0")
     (source
      (origin
        (method url-fetch)
@@ -6048,11 +6048,12 @@ same time is a literate Haskell program.")
                            "math-functions-" version ".tar.gz"))
        (sha256
         (base32
-         "1sv5vabsx332v1lpb6v3jv4zrzvpx1n7yprzd8wlcda5vsc5a6zp"))))
+         "1s5nbs40sc3r4z08n0j8bw40cy0zkp03fjjn3p27zkd4fvm9kib3"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))  ; FIXME: 1 test fails.
     (inputs
-     `(("ghc-vector" ,ghc-vector)
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-vector" ,ghc-vector)
        ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
