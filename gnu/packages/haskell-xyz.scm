@@ -7063,7 +7063,7 @@ version 1.3).")
 (define-public ghc-openglraw
   (package
     (name "ghc-openglraw")
-    (version "3.3.1.0")
+    (version "3.3.3.0")
     (source
      (origin
        (method url-fetch)
@@ -7073,7 +7073,7 @@ version 1.3).")
              ".tar.gz"))
        (sha256
         (base32
-         "1x8w3x308jldj2c1xqcq3a3sc2jc06pdpgqkgjsmixi1skv4a1vb"))))
+         "0zgllb4bcash2i2cispa3j565aw3dpxs41ghmhpvyvi4a6xmyldx"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-half" ,ghc-half)
