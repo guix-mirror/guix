@@ -10029,7 +10029,7 @@ increasing type safety.")
 (define-public ghc-tagged
   (package
     (name "ghc-tagged")
-    (version "0.8.5")
+    (version "0.8.6")
     (source
      (origin
        (method url-fetch)
@@ -10039,11 +10039,11 @@ increasing type safety.")
              ".tar.gz"))
        (sha256
         (base32
-         "16cdzh0bw16nvjnyyy5j9s60malhz4nnazw96vxb0xzdap4m2z74"))))
+         "1pciqzxf9ncv954v4r527xkxkn7r5hcr13mfw5dg1xjci3qdw5md"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("2" "0r2knfcq0b4s652vlvlnfwxlc2mkc2ra9kl8bp4zdn1awmfy0ia5")))
+       ("1" "070xwfw7y81hd63il76dmwbdl9ca1rd07c54zynfx6vpr4wyx4vh")))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://hackage.haskell.org/package/tagged")
