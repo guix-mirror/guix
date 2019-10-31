@@ -1464,7 +1464,7 @@ Haskell, based on complemented PATRICIA tries.")
 (define-public ghc-chart
   (package
     (name "ghc-chart")
-    (version "1.9")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
@@ -1472,7 +1472,7 @@ Haskell, based on complemented PATRICIA tries.")
                            "Chart-" version ".tar.gz"))
        (sha256
         (base32
-         "1f5azj17y8xsb3gjhf7gg1gnnlq12rxkmfjmgcly314d7vghs05z"))))
+         "1pn735k9ifxlb9mdh8xy7wi22cxni8xyr28n8zx9w0j6vprcg89l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)
