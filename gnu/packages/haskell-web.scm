@@ -286,7 +286,7 @@ Date in Haskell.")
 (define-public ghc-http2
   (package
     (name "ghc-http2")
-    (version "1.6.3")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
@@ -295,14 +295,14 @@ Date in Haskell.")
                            "http2-" version ".tar.gz"))
        (sha256
         (base32
-         "0hww0rfsv6lqx62qzycbcqy5q6rh9k09qkyjkdm5m1sp1z50wqk1"))))
+         "1vlmy8vnp6ml2n2pr11aa5fzigldsscgzmibrni64ykgfvpd3sqn"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
-       ("ghc-case-insensitive" ,ghc-case-insensitive)
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-network-byte-order" ,ghc-network-byte-order)
        ("ghc-aeson" ,ghc-aeson)
        ("ghc-aeson-pretty" ,ghc-aeson-pretty)
-       ("ghc-hex" ,ghc-hex)
+       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-vector" ,ghc-vector)
        ("ghc-word8" ,ghc-word8)
