@@ -187,7 +187,7 @@ and any other types of tests into a single test suite.")
 (define-public ghc-tasty-hunit
   (package
     (name "ghc-tasty-hunit")
-    (version "0.10.0.1")
+    (version "0.10.0.2")
     (source
      (origin
        (method url-fetch)
@@ -197,7 +197,7 @@ and any other types of tests into a single test suite.")
              ".tar.gz"))
        (sha256
         (base32
-         "0j3hgga6c3s8h5snzivb8a75h96207ia2rlbxzj07xbf4zpkp44g"))))
+         "1xvf5xs0r8xqkcg354klz4wyzwyzvinalyl6f4fnxwqmzrgch8s8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-call-stack" ,ghc-call-stack-boot)
