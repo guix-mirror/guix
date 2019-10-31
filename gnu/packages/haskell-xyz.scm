@@ -6342,7 +6342,7 @@ used both from lens and microlens).")
 (define-public ghc-missingh
   (package
     (name "ghc-missingh")
-    (version "1.4.0.1")
+    (version "1.4.1.0")
     (source
      (origin
        (method url-fetch)
@@ -6350,7 +6350,7 @@ used both from lens and microlens).")
                            "MissingH-" version ".tar.gz"))
        (sha256
         (base32
-         "0wcvgrmav480w7nf4bl14yi0jq2yzanysxwzwas9hpb28vyjlgr8"))))
+         "1jp0vk6w9a7fzrbxfhx773105jp2s1n50klq9ak6spfl7bgx5v29"))))
     (build-system haskell-build-system)
     ;; Tests require the unmaintained testpack package, which depends on the
     ;; outdated QuickCheck version 2.7, which can no longer be built with
