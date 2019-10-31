@@ -6291,7 +6291,7 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
 (define-public ghc-microlens-th
   (package
     (name "ghc-microlens-th")
-    (version "0.4.2.2")
+    (version "0.4.2.3")
     (source
      (origin
        (method url-fetch)
@@ -6300,8 +6300,11 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
                            "microlens-th-" version ".tar.gz"))
        (sha256
         (base32
-         "02nj7lnl61yffi3c6wn341arxhld5r0vj6nzcb5zmqjhnqsv8c05"))))
+         "13qw0pwcgd6f6i39rwgqwcwk1d4da5x7wv3gna7gdlxaq331h41j"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "167in7b1qhgrspx81bdm2jyg9qji66sk7id282c0s99kmp0d01n6")))
     (inputs `(("ghc-microlens" ,ghc-microlens)
               ("ghc-th-abstraction" ,ghc-th-abstraction)))
     (home-page
