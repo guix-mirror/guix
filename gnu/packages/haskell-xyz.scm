@@ -7638,30 +7638,18 @@ command line options in Haskell.")
 (define-public ghc-pandoc
   (package
     (name "ghc-pandoc")
-    (version "2.2.1")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/pandoc/pandoc-"
                            version ".tar.gz"))
+       (patches (search-patches "ghc-pandoc-fix-html-tests.patch"
+                                "ghc-pandoc-fix-latex-test.patch"))
        (sha256
         (base32
-         "1dqin92w513l7whg5wdgrngnxsj5mb8gppfvn7kjgyv2pdgpy0zy"))))
+         "0dpjrr40h54cljzhvixyym07z792a9izg6b9dmqpjlgcg4rj0xx8"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "pandoc.cabal"
-               (("tasty >= 0\\.11 && < 1\\.1")
-                "tasty >= 0.11 && < 1.1.1"))))
-         (add-before 'configure 'patch-tests
-           (lambda _
-             ;; These tests fail benignly and have been adjusted upstream:
-             ;; <https://github.com/commercialhaskell/stackage/issues/3719>.
-             (substitute* "test/Tests/Old.hs"
-               (("lhsWriterTests \"html\"") "[]")))))))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-aeson-pretty" ,ghc-aeson-pretty)
@@ -7670,22 +7658,23 @@ command line options in Haskell.")
        ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cmark-gfm" ,ghc-cmark-gfm)
        ("ghc-data-default" ,ghc-data-default)
-       ("ghc-deepseq-generics" ,ghc-deepseq-generics)
        ("ghc-diff" ,ghc-diff)
        ("ghc-doctemplates" ,ghc-doctemplates)
        ("ghc-executable-path" ,ghc-executable-path)
        ("ghc-glob" ,ghc-glob)
        ("ghc-haddock-library" ,ghc-haddock-library)
        ("ghc-hslua" ,ghc-hslua)
+       ("ghc-hslua-module-system" ,ghc-hslua-module-system)
        ("ghc-hslua-module-text" ,ghc-hslua-module-text)
+       ("ghc-hsyaml" ,ghc-hsyaml)
        ("ghc-http" ,ghc-http)
        ("ghc-http-client" ,ghc-http-client)
        ("ghc-http-client-tls" ,ghc-http-client-tls)
        ("ghc-http-types" ,ghc-http-types)
+       ("ghc-ipynb" ,ghc-ipynb)
        ("ghc-juicypixels" ,ghc-juicypixels)
        ("ghc-network" ,ghc-network)
        ("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-pandoc-types" ,ghc-pandoc-types)
        ("ghc-random" ,ghc-random)
        ("ghc-scientific" ,ghc-scientific)
@@ -7696,16 +7685,17 @@ command line options in Haskell.")
        ("ghc-tagsoup" ,ghc-tagsoup)
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-texmath" ,ghc-texmath)
+       ("ghc-unicode-transforms" ,ghc-unicode-transforms)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-vector" ,ghc-vector)
        ("ghc-xml" ,ghc-xml)
-       ("ghc-yaml" ,ghc-yaml)
        ("ghc-zip-archive" ,ghc-zip-archive)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
      `(("ghc-tasty" ,ghc-tasty)
        ("ghc-tasty-golden" ,ghc-tasty-golden)
        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-lua" ,ghc-tasty-lua)
        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)))
