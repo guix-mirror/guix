@@ -289,7 +289,7 @@ a variety of ways.")
 (define-public ghc-ansi-terminal
   (package
     (name "ghc-ansi-terminal")
-    (version "0.8.0.4")
+    (version "0.9.1")
     (source
      (origin
        (method url-fetch)
@@ -299,7 +299,7 @@ a variety of ways.")
              ".tar.gz"))
        (sha256
         (base32
-         "0428gq8m3fdnb7ldcsyk97qcch76hcxbgh2666p6f76fs2qbhg7b"))))
+         "1yr0ld0kqns3w3j9gl62bdwshvyazidx4dv1qkvq19ivnf08w23l"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-colour" ,ghc-colour)))
