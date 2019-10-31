@@ -7944,7 +7944,7 @@ API.")
 (define-public ghc-profunctors
   (package
     (name "ghc-profunctors")
-    (version "5.2.2")
+    (version "5.3")
     (source
      (origin
        (method url-fetch)
@@ -7954,11 +7954,8 @@ API.")
              ".tar.gz"))
        (sha256
         (base32
-         "0s1pwjidbn761xk43pmzyvn99hm3psdifjd78ylki7f97aiyd0g9"))))
+         "1dx3nkc27yxsrbrhh3iwhq7dl1xn6bj7n62yx6nh8vmpbg62lqvl"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("2" "1ywlg9z8nlhd2avgb8c6gbkv8zyk7hvc25926bafyg0m0k8y1amq")))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
