@@ -4585,7 +4585,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
 (define-public ghc-haskell-src-meta
   (package
     (name "ghc-haskell-src-meta")
-    (version "0.8.0.3")
+    (version "0.8.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -4593,7 +4593,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08jq156zv4m0fjq6712n99c1jwxnpa6kj6sq8ch0r1l0a1ay6ww4"))))
+                "17znnaqj2hnnfyc9p9xjzbs97h2jh1h4f4qbw648y3xa14wx5ra9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
@@ -4601,8 +4601,8 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
        ("ghc-th-orphans" ,ghc-th-orphans)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://hackage.haskell.org/package/haskell-src-meta")
     (synopsis "Parse source to template-haskell abstract syntax")
     (description
