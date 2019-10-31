@@ -3898,7 +3898,7 @@ info for more informative bug reports.")
 (define-public ghc-glob
   (package
     (name "ghc-glob")
-    (version "0.9.2")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
@@ -3907,7 +3907,7 @@ info for more informative bug reports.")
                            "Glob-" version ".tar.gz"))
        (sha256
         (base32
-         "1rbwcq9w9951qsnp13vqcm9r01yax2yh1wk8s4zxa3ckk9717iwg"))))
+         "0953f91f62ncna402vsrfzdcyxhdpjna3bgdw017kad0dfymacs7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-dlist" ,ghc-dlist)
