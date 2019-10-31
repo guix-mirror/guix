@@ -637,7 +637,7 @@ be used to extend Hspec's functionality.")
 (define-public ghc-hspec-meta
   (package
     (name "ghc-hspec-meta")
-    (version "2.4.6")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -645,13 +645,13 @@ be used to extend Hspec's functionality.")
                            "hspec-meta-" version ".tar.gz"))
        (sha256
         (base32
-         "0qmvk01n79j6skn79r6zalg2pd0x0nqqn9qn8mhg0pgyzcdnfc9b"))))
+         "1n1a4633wfivylglji8920f67mx7qz8j4q58n8p7dxk6yg4h3mz6"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-async" ,ghc-async)
+       ("ghc-clock" ,ghc-clock)
        ("ghc-hspec-expectations" ,ghc-hspec-expectations)
        ("ghc-setenv" ,ghc-setenv)
        ("ghc-random" ,ghc-random)
