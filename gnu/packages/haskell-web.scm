@@ -699,7 +699,7 @@ Haskell.")
 (define-public ghc-mime-types
   (package
     (name "ghc-mime-types")
-    (version "0.1.0.8")
+    (version "0.1.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -707,7 +707,7 @@ Haskell.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14ccl2842ya17zyj0bpc7vzklbyqvvydpbypn69h2fmhgji192x8"))))
+                "1lkipa4v73z3l5lqs6sdhl898iq41kyxv2jb9agsajzgd58l6cha"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Basic MIME type handling types and functions")
