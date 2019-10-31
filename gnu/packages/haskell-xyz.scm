@@ -5904,7 +5904,7 @@ back-ends.")
 (define-public ghc-logict
   (package
     (name "ghc-logict")
-    (version "0.6.0.2")
+    (version "0.7.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5914,8 +5914,11 @@ back-ends.")
              ".tar.gz"))
        (sha256
         (base32
-         "07hnirv6snnym2r7iijlfz00b60jpy2856zvqxh989q0in7bd0hi"))))
+         "1xfgdsxg0lp8m0a2cb83rcxrnnc37asfikay2kydi933anh9ihfc"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "http://code.haskell.org/~dolio/")
     (synopsis "Backtracking logic-programming monad")
     (description "This library provides a continuation-based, backtracking,
