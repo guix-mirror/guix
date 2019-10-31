@@ -6909,7 +6909,7 @@ IPv4, IPv6 and MAC addresses.")
 (define-public ghc-newtype-generics
   (package
     (name "ghc-newtype-generics")
-    (version "0.5.3")
+    (version "0.5.4")
     (source
      (origin
        (method url-fetch)
@@ -6918,7 +6918,7 @@ IPv4, IPv6 and MAC addresses.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0igyisw2djg19v9vkna1rwf47k97mvkvk4bbkmswznvbm00z15gj"))))
+         "0cprfg4n0z62cnix1qrbc79bfdd4s50b05fj9m9hk6vm1pc3szq0"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
