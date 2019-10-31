@@ -358,7 +358,7 @@ style.")
 (define-public ghc-async
   (package
     (name "ghc-async")
-    (version "2.2.1")
+    (version "2.2.2")
     (source
      (origin
        (method url-fetch)
@@ -368,7 +368,7 @@ style.")
              ".tar.gz"))
        (sha256
         (base32
-         "09whscli1q5z7lzyq9rfk0bq1ydplh6pjmc6qv0x668k5818c2wg"))))
+         "1zxvfcyy4sg8lmzphi5dgnavksj5pav6rbvd5kc48lf4hanb2jjb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
