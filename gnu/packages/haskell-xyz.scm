@@ -6168,7 +6168,7 @@ efficient memo functions using tries.")
 (define-public ghc-microlens
   (package
     (name "ghc-microlens")
-    (version "0.4.9.1")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
@@ -6177,7 +6177,7 @@ efficient memo functions using tries.")
                            "microlens-" version ".tar.gz"))
        (sha256
         (base32
-         "0j2nzf0vpx2anvsrg2w0vy2z4jn3kkcs2n6glkzblhn1j9piqh51"))))
+         "1v277yyy4p9q57xr2lfp6qs24agglfczmcabrapxrzci3jfshmcw"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/aelve/microlens")
