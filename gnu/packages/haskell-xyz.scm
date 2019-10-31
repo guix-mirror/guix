@@ -3281,7 +3281,7 @@ versions of GHC (i.e., < 6.10).")
 (define-public ghc-extra
   (package
     (name "ghc-extra")
-    (version "1.6.9")
+    (version "1.6.18")
     (source
      (origin
        (method url-fetch)
@@ -3291,10 +3291,11 @@ versions of GHC (i.e., < 6.10).")
              ".tar.gz"))
        (sha256
         (base32
-         "0xxcpb00pgwi9cmy6a7ghh6rblxry42p8pz5ssfgj20fs1xwzj1b"))))
+         "0jvd4l0hi8pf5899pxc32yc638y0mrc357w0rph99k3hm277i0cy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-clock" ,ghc-clock)
+       ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/ndmitchell/extra")
     (synopsis "Extra Haskell functions")
