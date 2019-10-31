@@ -11298,7 +11298,7 @@ representing a store for a single element.")
 (define-public ghc-vector
   (package
     (name "ghc-vector")
-    (version "0.12.0.1")
+    (version "0.12.0.3")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -11309,14 +11309,12 @@ representing a store for a single element.")
              ".tar.gz"))
        (sha256
         (base32
-         "0yrx2ypiaxahvaz84af5bi855hd3107kxkbqc8km29nsp5wyw05i"))))
+         "1a756s4w759ji3als5alfxwlckh5zcmykfg9rll4mlr2knzvz8mq"))))
     (build-system haskell-build-system)
     ;; FIXME: To simplify upgrading all Haskell packages, we leave the tests
     ;; disabled for now.
     (arguments
-     `(#:cabal-revision
-       ("3" "0y5rh8k710i2a3p1h2rghvr5cfg78p5h0kbfi7ifxqqf6pzlyr1x")
-       #:tests? #f))
+     `(#:tests? #f))
     (inputs
      `(("ghc-primitive" ,ghc-primitive)
        ("ghc-random" ,ghc-random)
