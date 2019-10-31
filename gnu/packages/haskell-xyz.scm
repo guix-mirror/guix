@@ -5006,14 +5006,14 @@ handler built in.")
 (define-public ghc-hslua
   (package
     (name "ghc-hslua")
-    (version "0.9.5.2")
+    (version "1.0.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "hslua/hslua-" version ".tar.gz"))
               (sha256
                (base32
-                "1rdvv01p214zfjh6fcqjjgqwi8y42wad6cqzhlcv5gvclzw2ck8f"))))
+                "183bgl5jcx5y2r94lviqfw0a5w9089nxjd1z40k8vx9y2h60pm6j"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags '("-fsystem-lua")))
