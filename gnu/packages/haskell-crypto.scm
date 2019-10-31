@@ -780,7 +780,7 @@ extensions.")
 (define-public ghc-hsopenssl
   (package
     (name "ghc-hsopenssl")
-    (version "0.11.4.15")
+    (version "0.11.4.17")
     (source
      (origin
        (method url-fetch)
@@ -788,14 +788,11 @@ extensions.")
                            "HsOpenSSL/HsOpenSSL-" version ".tar.gz"))
        (sha256
         (base32
-         "0idmak6d8mpbxphyq9hkxkmby2wnzhc1phywlgm0zw6q47pwxgff"))))
+         "0qivl9clmybfglwxqp2sq308rv4ia4rhwshcsc8b029bvpp0mpsi"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-network" ,ghc-network)
        ("openssl" ,openssl)))
-    (arguments
-     `(#:cabal-revision
-       ("1" "0bkcw2pjfgv1bhgkrpncvwq9czfr7cr4ak14n0v8c2y33i33wk5z")))
     (home-page "https://github.com/vshabanov/HsOpenSSL")
     (synopsis "Partial OpenSSL binding for Haskell")
     (description "HsOpenSSL is an OpenSSL binding for Haskell.  It can
