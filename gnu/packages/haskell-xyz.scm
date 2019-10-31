@@ -11334,7 +11334,7 @@ optimisation framework.")
 (define-public ghc-vector-algorithms
   (package
     (name "ghc-vector-algorithms")
-    (version "0.7.0.4")
+    (version "0.8.0.1")
     (source
      (origin
        (method url-fetch)
@@ -11343,7 +11343,7 @@ optimisation framework.")
                            "vector-algorithms-" version ".tar.gz"))
        (sha256
         (base32
-         "0mfa8ig9v69l41p2vb5jl4qmaln5y1rlzarr2mlgm8g1nvq8qqdg"))))
+         "1zip8r7hh5g12xrjvhbg38z6hfxy7l6h6pl88qcqc0ygdmwdxg0m"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-vector" ,ghc-vector)))
