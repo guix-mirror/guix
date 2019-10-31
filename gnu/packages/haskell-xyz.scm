@@ -10002,7 +10002,7 @@ variety of traversals.")
 (define-public ghc-system-fileio
   (package
     (name "ghc-system-fileio")
-    (version "0.3.16.3")
+    (version "0.3.16.4")
     (source
      (origin
        (method url-fetch)
@@ -10011,8 +10011,16 @@ variety of traversals.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1484hcl27s2qcby8ws5djj11q9bz68bspcifz9h5gii2ndy70x9i"))))
+         "1iy6g1f35gzyj12g9mdiw4zf75mmxpv1l8cyaldgyscsl648pr9l"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "system-fileio.cabal"
+               (("chell >= 0\\.4 && < 0\\.5") "chell >= 0.4"))
+             #t)))))
     (inputs
      `(("ghc-system-filepath" ,ghc-system-filepath)
        ("ghc-chell" ,ghc-chell)
