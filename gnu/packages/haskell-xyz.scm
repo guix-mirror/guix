@@ -6698,7 +6698,7 @@ binding.")
 (define-public ghc-mwc-random
   (package
     (name "ghc-mwc-random")
-    (version "0.13.6.0")
+    (version "0.14.0.0")
     (source
      (origin
        (method url-fetch)
@@ -6707,7 +6707,7 @@ binding.")
                            "mwc-random-" version ".tar.gz"))
        (sha256
         (base32
-         "05j7yh0hh9nxic3dijmzv44kc6gzclvamdph7sq7w19wq57k6pq6"))))
+         "18pg24sw3b79b32cwx8q01q4k0lm34mwr3l6cdkchl8alvd0wdq0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-primitive" ,ghc-primitive)
