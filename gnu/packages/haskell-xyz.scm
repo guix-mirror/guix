@@ -1398,7 +1398,7 @@ parser isolation, and labeled blocks for better error messages.")
 (define-public ghc-cgi
   (package
     (name "ghc-cgi")
-    (version "3001.3.0.2")
+    (version "3001.4.0.0")
     (source
      (origin
        (method url-fetch)
@@ -1408,22 +1408,8 @@ parser isolation, and labeled blocks for better error messages.")
              ".tar.gz"))
        (sha256
         (base32
-         "1hbpplss1m4rdpm4ibip6fpimlhssqa14fl338kl2jbc463i64cj"))))
+         "1d0nh5ymkqskkp4yn0gfz4mff8i0cxyw1wws8xxp6k1mg1ywa25k"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "cgi.cabal"
-               (("exceptions < 0\\.9")
-                "exceptions < 0.11")
-               (("time >= 1\\.5 && < 1\\.7")
-                "time >= 1.5 && < 1.9")
-               (("doctest >= 0\\.8 && < 0\\.12")
-                "doctest >= 0.8 && < 0.17")
-               (("QuickCheck >= 2\\.8\\.1 && < 2\\.10")
-                "QuickCheck >= 2.8.1 && < 2.12")))))))
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
        ("ghc-multipart" ,ghc-multipart)
