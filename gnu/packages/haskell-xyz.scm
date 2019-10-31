@@ -1662,7 +1662,7 @@ classy-prelude.")
 (define-public ghc-clock
   (package
     (name "ghc-clock")
-    (version "0.7.2")
+    (version "0.8")
     (source
      (origin
        (method url-fetch)
@@ -1671,7 +1671,7 @@ classy-prelude.")
              "clock/"
              "clock-" version ".tar.gz"))
        (sha256
-        (base32 "07v91s20halsqjmziqb1sqjp2sjpckl9by7y28aaklwqi2bh2rl8"))))
+        (base32 "0539w9bjw6xbfv9v6aq9hijszxqdnqhilwpbwpql1400ji95r8q8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tasty" ,ghc-tasty)
