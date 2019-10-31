@@ -59,7 +59,7 @@ format.")
 (define-public ghc-asn1-encoding
   (package
     (name "ghc-asn1-encoding")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -67,7 +67,7 @@ format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0adgbamyq0mj1l1hdq4zyyllay714bac1wl0rih3fv1z6vykp1hy"))))
+                "02nsr30h5yic1mk7znf0q4z3n560ip017n60hg7ya25rsfmxxy6r"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hourglass" ,ghc-hourglass)
