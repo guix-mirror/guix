@@ -584,7 +584,7 @@ JUnit tool for Java.")
 (define-public hspec-discover
   (package
     (name "hspec-discover")
-    (version "2.5.5")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -593,7 +593,7 @@ JUnit tool for Java.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "04aidzi91ccr9bygmfkjzshz34z9vh8wvqj4zinx2clxq6r7gqfz"))))
+         "0r47fm94wa6qrhp8cc1zzkjrxc32rnagfn9m9ga4dm6p6ydw4c8b"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
