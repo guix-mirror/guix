@@ -11615,7 +11615,7 @@ widths to the Char type.")
 (define-public ghc-weigh
   (package
     (name "ghc-weigh")
-    (version "0.0.12")
+    (version "0.0.14")
     (source
      (origin
        (method url-fetch)
@@ -11623,7 +11623,7 @@ widths to the Char type.")
                            "weigh-" version ".tar.gz"))
        (sha256
         (base32
-         "0zw2a997gxgdzqmd7j730kxgynzmjvvlkw84dajmfzf1v9pbij7x"))))
+         "0l85marb5rl9nr1c0id42dnr5i9fk1jciy5h6lywhb34w3hbj61g"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-split" ,ghc-split)
