@@ -11457,7 +11457,7 @@ and from some existing type with an Unbox instance.")
 (define-public ghc-void
   (package
     (name "ghc-void")
-    (version "0.7.2")
+    (version "0.7.3")
     (source
      (origin
        (method url-fetch)
@@ -11467,7 +11467,7 @@ and from some existing type with an Unbox instance.")
              ".tar.gz"))
        (sha256
         (base32
-         "0aygw0yb1h3yhmfl3bkwh5d3h0l4mmsxz7j53vdm6jryl1kgxzyk"))))
+         "05vk3x1r9a2pqnzfji475m5gdih2im1h7rbi2sc67p1pvj6pbbsk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-semigroups" ,ghc-semigroups)
