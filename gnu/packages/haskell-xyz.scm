@@ -5206,7 +5206,7 @@ minimal overhead.  No FFI required.")
 (define-public ghc-inline-c-cpp
   (package
     (name "ghc-inline-c-cpp")
-    (version "0.2.2.1")
+    (version "0.3.0.3")
     (source
      (origin
        (method url-fetch)
@@ -5214,7 +5214,7 @@ minimal overhead.  No FFI required.")
                            "inline-c-cpp-" version ".tar.gz"))
        (sha256
         (base32
-         "1rk7fmpkmxw9hhwr8df29kadnf0ybnwj64ggdbnsdrpfyhnkisci"))))
+         "1sxwx9dh60qfpa72dymj015zwd6prhb70x5mkabqzi7nhg3aakln"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-inline-c" ,ghc-inline-c)
