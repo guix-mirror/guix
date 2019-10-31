@@ -167,7 +167,7 @@ for Haskell.")
 (define-public ghc-aeson-compat
   (package
     (name "ghc-aeson-compat")
-    (version "0.3.8")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
@@ -176,7 +176,7 @@ for Haskell.")
                            "aeson-compat-" version ".tar.gz"))
        (sha256
         (base32
-         "0j4v13pgk21zy8hqkbx8hw0n05jdl17qphxz9rj4h333pr547r3i"))))
+         "1j13gykv4ryvmr14w5blz0nnpdb4p0hpa27wahw3mhb1lwdr8hz0"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))  ;  FIXME: Tests require QuickCheck >= 2.10
     (inputs `(("ghc-base-compat" ,ghc-base-compat)
