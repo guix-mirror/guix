@@ -880,7 +880,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-8.0-fall-back-to-madv_dontneed.patch \
   %D%/packages/patches/ghc-diff-swap-cover-args.patch           \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
-  %D%/packages/patches/ghc-haddock-library-unbundle.patch	\
   %D%/packages/patches/ghc-hpack-fix-tests.patch		\
   %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\

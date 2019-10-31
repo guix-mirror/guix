@@ -4328,7 +4328,7 @@ documentation-generation tool for Haskell libraries.")
 (define-public ghc-haddock-library
   (package
     (name "ghc-haddock-library")
-    (version "1.5.0.1")
+    (version "1.7.0")
     (source
      (origin
        (method url-fetch)
@@ -4338,29 +4338,18 @@ documentation-generation tool for Haskell libraries.")
              ".tar.gz"))
        (sha256
         (base32
-         "1cmbg8l5xrwpliclwy3l057raypjqy0hsg1h1743ahaj8gq10b7z"))
-       (patches (search-patches
-                 "ghc-haddock-library-unbundle.patch"))
-       (modules '((guix build utils)))
-       (snippet '(begin
-                   (delete-file-recursively "vendor")
-                   #t))))
+         "04fhcjk0pvsaqvsgp2w06cv2qvshq1xs1bwc157q4lmkgr57khp7"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         ;; Since there is no revised Cabal file upstream, we have to
+         ;; patch it manually.
          (add-before 'configure 'relax-test-suite-dependencies
            (lambda _
              (substitute* "haddock-library.cabal"
-               (("base-compat\\s*\\^>= 0\\.9\\.3") "base-compat")
-               (("hspec\\s*\\^>= 2\\.4\\.4") "hspec"))))
-         ;; The release tarball does not contain the "fixtures/examples"
-         ;; directory, which is required for testing.  In the upstream
-         ;; repository, the directory exists and is populated.  Here, we
-         ;; create an empty directory to placate the tests.
-         (add-before 'check 'add-examples-directory
-           (lambda _
-             (mkdir "fixtures/examples")
+               (("hspec\\s*>= 2.4.4   && < 2.6") "hspec")
+               (("QuickCheck\\s*\\^>= 2.11") "QuickCheck"))
              #t)))))
     (native-inputs
      `(("ghc-base-compat" ,ghc-base-compat)
