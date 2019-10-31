@@ -3535,7 +3535,7 @@ an executable.")
 (define-public ghc-fingertree
   (package
     (name "ghc-fingertree")
-    (version "0.1.4.1")
+    (version "0.1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -3544,7 +3544,7 @@ an executable.")
              version ".tar.gz"))
        (sha256
         (base32
-         "192fyzv0pn1437wdpqg1l80rswkk4rw3w61r4bq7dhv354bdqy4p"))))
+         "0zvandj8fysck7ygpn0dw5bhrhmj1s63i326nalxbfkh2ls4iacm"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
