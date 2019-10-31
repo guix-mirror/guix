@@ -313,7 +313,7 @@ cursor, and changing the title.")
 (define-public ghc-ansi-wl-pprint
   (package
     (name "ghc-ansi-wl-pprint")
-    (version "0.6.8.2")
+    (version "0.6.9")
     (source
      (origin
        (method url-fetch)
@@ -322,7 +322,7 @@ cursor, and changing the title.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0gnb4mkqryv08vncxnj0bzwcnd749613yw3cxfzw6y3nsldp4c56"))))
+         "1b2fg8px98dzbaqyns10kvs8kn6cl1hdq5wb9saz40izrpkyicm7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
