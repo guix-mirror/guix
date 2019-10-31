@@ -9070,7 +9070,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
 (define-public ghc-sdl2
   (package
     (name "ghc-sdl2")
-    (version "2.4.1.0")
+    (version "2.5.0.0")
     (source
      (origin
        (method url-fetch)
@@ -9078,7 +9078,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
                            "sdl2/sdl2-" version ".tar.gz"))
        (sha256
         (base32
-         "0p4b12fmxps0sbnkqdfy0qw19s355yrkw7fgw6xz53wzq706k991"))))
+         "1x368yhdd55b3cvx8dvj1sj6nzygzigbhrwhssjs4k0rcxlwqfw8"))))
     (build-system haskell-build-system)
     (arguments '(#:tests? #f)) ; tests require graphical environment
     (inputs
