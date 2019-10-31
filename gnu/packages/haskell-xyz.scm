@@ -5519,7 +5519,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
 (define-public ghc-language-c
   (package
     (name "ghc-language-c")
-    (version "0.8.1")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -5527,7 +5527,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
                            "language-c/language-c-" version ".tar.gz"))
        (sha256
         (base32
-         "0sdkjj0hq8p69fcdm6ljbjkjvrsrb8a6rl5dq6dj6byj32ajrm3d"))))
+         "0bi02jdirkys8v7flf39vrpla2a74z1z0sdhy9lb9v7cmcc6rmpk"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-syb" ,ghc-syb)))
     (native-inputs
