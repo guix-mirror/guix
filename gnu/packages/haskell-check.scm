@@ -841,7 +841,7 @@ To get started quickly, see the examples:
 (define-public cabal-doctest
   (package
     (name "cabal-doctest")
-    (version "1.0.6")
+    (version "1.0.8")
     (source
      (origin
        (method url-fetch)
@@ -850,11 +850,8 @@ To get started quickly, see the examples:
                            version ".tar.gz"))
        (sha256
         (base32
-         "0bgd4jdmzxq5y465r4sf4jv2ix73yvblnr4c9wyazazafddamjny"))))
+         "03if74imlhhk7m56nci5f1wclniwqdmwl4hl177040j1gnlac9i0"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("1" "1bk85avgc93yvcggwbk01fy8nvg6753wgmaanhkry0hz55h7mpld")))
     (home-page "https://github.com/phadej/cabal-doctest")
     (synopsis "Setup.hs helper for running doctests")
     (description
