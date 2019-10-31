@@ -6127,14 +6127,14 @@ speed, flexibility, and quality of parse errors.")
 (define-public ghc-memory
   (package
     (name "ghc-memory")
-    (version "0.14.16")
+    (version "0.14.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "memory/memory-" version ".tar.gz"))
               (sha256
                (base32
-                "03rbszi5d4z9rlbfv8ydrl1xf84xsh8z57g07f7j9qccn9587c3v"))))
+                "01rmq3vagxzjmm96qnfxk4f0516cn12bp5m8inn8h5r918bqsigm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-basement" ,ghc-basement)
