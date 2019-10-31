@@ -10397,14 +10397,14 @@ instances.  This package provides orphan instances for @code{containers},
 (define-public ghc-th-orphans
   (package
     (name "ghc-th-orphans")
-    (version "0.13.6")
+    (version "0.13.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "th-orphans/th-orphans-" version ".tar.gz"))
               (sha256
                (base32
-                "0sfl3pn9kq9da3ji3lsgzgzy82vz6yvsg80dmakc1jvk7awycibp"))))
+                "1xj1gssv77hdx1r3ndg8k49v3ipj3a6r7crkyvx13jrps3m6ng1z"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-lift" ,ghc-th-lift)
