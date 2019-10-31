@@ -1695,16 +1695,16 @@ timer functions of different operating systems via a unified API.")
 (define-public ghc-cmark
   (package
     (name "ghc-cmark")
-    (version "0.5.6")
+    (version "0.6")
     (source (origin
               (method url-fetch)
-              ;; XXX As of version 0.5.6, this package bundles libcmark 0.28.0.
+              ;; XXX As of version 0.6, this package bundles libcmark 0.28.0.
               ;; See cbits/cmark_version.h.
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "cmark/cmark-" version ".tar.gz"))
               (sha256
                (base32
-                "1c1j3a8b9qx5zk9myqm3gap8ymz7fipwrdmyfsq9wkkdr9x4np45"))))
+                "1p41z6z8dqxk62287lvhhg4ayy9laai9ljh4azsnzb029v6mbv0d"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
