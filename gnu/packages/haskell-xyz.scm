@@ -2974,7 +2974,7 @@ Damerau-Levenshtein algorithms.")
 (define-public ghc-email-validate
   (package
     (name "ghc-email-validate")
-    (version "2.3.2.6")
+    (version "2.3.2.12")
     (source
      (origin
        (method url-fetch)
@@ -2985,7 +2985,7 @@ Damerau-Levenshtein algorithms.")
              ".tar.gz"))
        (sha256
         (base32
-         "0chgylvc8xmhp933rdbmpg5sv4y7yg2h6kbf0ip1dzmbd5p55pa5"))))
+         "0ar3cfjia3x11chb7w60mi7hp5djanms883ddk875l6lifr2lyqf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
