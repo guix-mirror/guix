@@ -7161,7 +7161,7 @@ easily work with command-line options.")
 (define-public ghc-optparse-applicative
   (package
     (name "ghc-optparse-applicative")
-    (version "0.14.2.0")
+    (version "0.14.3.0")
     (source
      (origin
        (method url-fetch)
@@ -7170,8 +7170,11 @@ easily work with command-line options.")
              "/optparse-applicative-" version ".tar.gz"))
        (sha256
         (base32
-         "0c3z1mvynlyv1garjbdmdd3npm40dabgm75js4r07cf766c1wd71"))))
+         "0qvn1s7jwrabbpmqmh6d6iafln3v3h9ddmxj2y4m0njmzq166ivj"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "1a08dqjly1xy730f6jf45frr8g8gap0n1vg9b0mpzpydv0kgzmrp")))
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)))
