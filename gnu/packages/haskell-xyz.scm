@@ -6547,7 +6547,7 @@ a subset of @code{MonadBase} into which generic control operations such as
 (define-public ghc-monad-logger
   (package
     (name "ghc-monad-logger")
-    (version "0.3.29")
+    (version "0.3.30")
     (source
      (origin
        (method url-fetch)
@@ -6556,7 +6556,7 @@ a subset of @code{MonadBase} into which generic control operations such as
                            "monad-logger-" version ".tar.gz"))
        (sha256
         (base32
-         "1z516s4pa9n94zf0l45mylssg07xr1d1m6zrz900p0iv3vfd07mv"))))
+         "102l0v75hbvkmrypiyg4ybb6rbc7nij5nxs1aihmqfdpg04rkkp7"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)
               ("ghc-stm-chans" ,ghc-stm-chans)
