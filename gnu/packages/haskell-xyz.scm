@@ -4046,15 +4046,25 @@ programs.")
 (define-public ghc-graphviz
   (package
     (name "ghc-graphviz")
-    (version "2999.20.0.2")
+    (version "2999.20.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "graphviz/graphviz-" version ".tar.gz"))
               (sha256
                (base32
-                "0kj7ap0gnliviq2p8lscw1m06capnsa90vpvcys24nqy5nw2wrp7"))))
+                "04k26zw61nfv1pkd00iaq89pgsaiym0sf4cbzkmm2k2fj5xa587g"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "graphviz.cabal"
+               (("QuickCheck >= 2\\.3 && < 2\\.13")
+                "QuickCheck >= 2.3 && < 2.14")
+               (("hspec >= 2\\.1 && < 2\\.7")
+                "hspec >= 2.1 && < 2.8")))))))
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-colour" ,ghc-colour)
