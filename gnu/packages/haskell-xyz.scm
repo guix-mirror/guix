@@ -2177,7 +2177,7 @@ and daemons.  The features include:
 (define-public ghc-connection
   (package
     (name "ghc-connection")
-    (version "0.2.8")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -2185,7 +2185,7 @@ and daemons.  The features include:
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1swkb9w5vx9ph7x55y51dc0srj2z27nd9ibgn8c0qcl6hx7g9cbh"))))
+                "1nbmafhlg0wy4aa3p7amjddbamdz6avzrxn4py3lvhrjqn4raxax"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-byteable" ,ghc-byteable)
