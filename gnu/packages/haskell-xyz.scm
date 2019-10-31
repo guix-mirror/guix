@@ -8197,7 +8197,7 @@ specify refactorings without depending on GHC.")
 (define-public ghc-reflection
   (package
     (name "ghc-reflection")
-    (version "2.1.4")
+    (version "2.1.5")
     (source
      (origin
        (method url-fetch)
@@ -8207,9 +8207,13 @@ specify refactorings without depending on GHC.")
              ".tar.gz"))
        (sha256
         (base32
-         "0kf4a5ijw6jfnfibjcrpdy9vzh1n6v2pxia8dhyyqdissiwc8bzj"))))
+         "0xr947nj1vww5b8fwqmypxm3y3j5sxl4z8wnf834f83jzfzyjbi7"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-tagged" ,ghc-tagged)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/ekmett/reflection")
     (synopsis "Reify arbitrary terms into types that can be reflected back
 into terms")
