@@ -1850,7 +1850,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
 (define-public ghc-comonad
   (package
     (name "ghc-comonad")
-    (version "5.0.4")
+    (version "5.0.5")
     (source
      (origin
        (method url-fetch)
@@ -1860,7 +1860,7 @@ supported.  A module of colour names (\"Data.Colour.Names\") is provided.")
              ".tar.gz"))
        (sha256
         (base32
-         "09g870c4flp4k3fgbibsd0mmfjani1qcpbcl685v8x89kxzrva3q"))))
+         "1l7snp2mszgnjgd0nc9kzfyd13vla0rlazqi03rwx2akcxk14n3c"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("cabal-doctest" ,cabal-doctest)
