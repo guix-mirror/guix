@@ -2654,7 +2654,7 @@ Dual to @code{Traversable}.")
 (define-public ghc-dlist
   (package
     (name "ghc-dlist")
-    (version "0.8.0.4")
+    (version "0.8.0.7")
     (source
      (origin
        (method url-fetch)
@@ -2663,7 +2663,7 @@ Dual to @code{Traversable}.")
              version
              ".tar.gz"))
        (sha256
-        (base32 "0yirrh0s6acjy9hhvf5fqg2d6q5y6gm9xs04v6w1imndh1xqdwdc"))))
+        (base32 "0b5spkzvj2kx8pk86xz0djkxs13j7dryf5fl16dk4mlp1wh6mh53"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
