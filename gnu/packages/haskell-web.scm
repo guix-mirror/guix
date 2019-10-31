@@ -147,7 +147,7 @@ both client and server code).")
 (define-public ghc-http
   (package
     (name "ghc-http")
-    (version "4000.3.12")
+    (version "4000.3.14")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -156,7 +156,7 @@ both client and server code).")
                            "HTTP-" version ".tar.gz"))
        (sha256
         (base32
-         "140r6qy1ay25piv0z3hih11zhigyi08nkwc32097j43pjff6mzx3"))))
+         "0yv8mbjicpl7l2017c4dhm49117lblgwpy1llv368wci1vrxf0m6"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-httpd-shed" ,ghc-httpd-shed)
