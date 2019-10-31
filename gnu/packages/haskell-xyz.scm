@@ -9024,7 +9024,7 @@ a memory chunk that will be auto-scrubbed after it run out of scope.")
 (define-public ghc-semigroupoids
   (package
     (name "ghc-semigroupoids")
-    (version "5.2.2")
+    (version "5.3.3")
     (source
      (origin
        (method url-fetch)
@@ -9034,11 +9034,8 @@ a memory chunk that will be auto-scrubbed after it run out of scope.")
              ".tar.gz"))
        (sha256
         (base32
-         "17i96y4iqj8clcs090lf6k0ij3j16nj14vsfwz0mm9nd6i4gbpp4"))))
+         "016hc4imr9l4szs3p7f1aahvxr5wv4clvr3qzrm3nibssg5vrs61"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("4" "0pqfrxzypjq6z8lgdkzq4vhcyqkpk5326hny0r6snpc3gm78r4ij")))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
