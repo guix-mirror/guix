@@ -11563,7 +11563,7 @@ boxed and storable vectors.")
 (define-public ghc-vector-builder
   (package
     (name "ghc-vector-builder")
-    (version "0.3.6")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
@@ -11572,7 +11572,7 @@ boxed and storable vectors.")
                            "vector-builder-" version ".tar.gz"))
        (sha256
         (base32
-         "06d2pa1fb3ydrl7l6rjazqyxv5i73v65x2f5fp0ypjxfbm6jsmn8"))))
+         "0ww0l52p8s6gmh985adnjbvm1vrqpqbm08qdcrvxwhhcqmxgv6m3"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-vector" ,ghc-vector)
               ("ghc-semigroups" ,ghc-semigroups)
