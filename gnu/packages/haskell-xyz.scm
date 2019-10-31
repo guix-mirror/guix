@@ -9153,7 +9153,7 @@ environment variables.")
 (define-public ghc-shakespeare
   (package
     (name "ghc-shakespeare")
-    (version "2.0.15")
+    (version "2.0.22")
     (source
      (origin
        (method url-fetch)
@@ -9162,7 +9162,7 @@ environment variables.")
                            "shakespeare-" version ".tar.gz"))
        (sha256
         (base32
-         "1vk4b19zvwy4mpwaq9z3l3kfmz75gfyf7alhh0y112gspgpccm23"))))
+         "1mc1a0vv070gcawwcx6vzpj6gpfh1qnlqrndiyfic3p500y656vh"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-aeson" ,ghc-aeson)
               ("ghc-blaze-markup" ,ghc-blaze-markup)
