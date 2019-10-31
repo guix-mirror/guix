@@ -1916,7 +1916,7 @@ Python.")
 (define-public ghc-concurrent-output
   (package
     (name "ghc-concurrent-output")
-    (version "1.10.9")
+    (version "1.10.11")
     (source
      (origin
        (method url-fetch)
@@ -1926,7 +1926,7 @@ Python.")
              ".tar.gz"))
        (sha256
         (base32
-         "0mwf155w89nbbkjln7hhbn8k3f8p0ylcvgrg31cm7ijpx4499i4c"))))
+         "1d1aaqg5814k59b0iws3fh06p3g2siaj922gkhs75qgncj0my2p3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
