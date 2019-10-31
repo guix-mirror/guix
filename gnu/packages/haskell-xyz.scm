@@ -494,7 +494,7 @@ complicated text/binary file formats.")
 (define-public ghc-attoparsec-iso8601
   (package
     (name "ghc-attoparsec-iso8601")
-    (version "1.0.0.0")
+    (version "1.0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -503,11 +503,11 @@ complicated text/binary file formats.")
                            "attoparsec-iso8601-" version ".tar.gz"))
        (sha256
         (base32
-         "12l55b76bhya9q89mfmqmy6sl5v39b6gzrw5rf3f70vkb23nsv5a"))))
+         "0hj10w15qp2z5bz2v4xahhmbgzclpyfi5l2sv97wqycysg9gp7s9"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "06f7pgmmc8456p3hc1y23kz1y127gfczy7s00wz1rls9g2sm2vi4")))
+       ("1" "1rjhscmczgs1bwyqx7lvkm8py3ylxjd2797mrzgnq60fvm292750")))
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
               ("ghc-base-compat" ,ghc-base-compat)))
     (home-page "https://github.com/bos/aeson")
