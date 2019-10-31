@@ -3879,7 +3879,7 @@ with the @code{Validity} typeclass.")
 (define-public ghc-genvalidity-property
   (package
     (name "ghc-genvalidity-property")
-    (version "0.2.1.1")
+    (version "0.4.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3890,7 +3890,7 @@ with the @code{Validity} typeclass.")
              ".tar.gz"))
        (sha256
         (base32
-         "0cjw5i2pydidda9bnp6x37ylhxdk9g874x5sadr6sscg5kq85a1b"))))
+         "0zayycx62226w54rvkxwhvqhznsr33dk3ds55yyqrfqbnhvph1s9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
