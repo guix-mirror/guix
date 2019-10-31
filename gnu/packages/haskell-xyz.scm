@@ -11429,7 +11429,7 @@ vector. ")
 (define-public ghc-vector-th-unbox
   (package
     (name "ghc-vector-th-unbox")
-    (version "0.2.1.6")
+    (version "0.2.1.7")
     (source
      (origin
        (method url-fetch)
@@ -11438,7 +11438,7 @@ vector. ")
                            "vector-th-unbox-" version ".tar.gz"))
        (sha256
         (base32
-         "0d82x55f5vvr1jvaia382m23rs690lg55pvavv8f4ph0y6kd91xy"))))
+         "0q8dqnbv1c2gi7jjdhqj14abj1vik23ki6lq4iz2sz18yc7q69fi"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-vector" ,ghc-vector)
