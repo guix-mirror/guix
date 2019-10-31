@@ -3395,7 +3395,7 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
 (define-public ghc-fgl
   (package
     (name "ghc-fgl")
-    (version "5.6.0.0")
+    (version "5.7.0.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -3406,7 +3406,7 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
              ".tar.gz"))
        (sha256
         (base32
-         "1i6cp4b3w7sjk7y1dq3fh6bci2sm5h3lnbbaw9ln19nwncg2wwll"))))
+         "04793yh778ck3kz1z2svnfdwwls2kisbnky4lzvf4zjfgpv7mkpz"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -3414,10 +3414,10 @@ consuming feeds in both RSS (Really Simple Syndication) and Atom format.")
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "fgl.cabal"
-               (("QuickCheck >= 2\\.8 && < 2\\.10")
-                "QuickCheck >= 2.8 && < 2.12")
-               (("hspec >= 2\\.1 && < 2\\.5")
-                "hspec >= 2.1 && < 2.6")))))))
+               (("QuickCheck >= 2\\.8 && < 2\\.13")
+                "QuickCheck >= 2.8 && < 2.14")
+               (("hspec >= 2\\.1 && < 2\\.7")
+                "hspec >= 2.1 && < 2.8")))))))
     (inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-quickcheck" ,ghc-quickcheck)))
