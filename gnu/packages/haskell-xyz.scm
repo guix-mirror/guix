@@ -11214,7 +11214,7 @@ a style ready for qualification, that is, you should import them by
 (define-public ghc-uri-bytestring
   (package
     (name "ghc-uri-bytestring")
-    (version "0.3.2.0")
+    (version "0.3.2.2")
     (source
      (origin
        (method url-fetch)
@@ -11223,22 +11223,19 @@ a style ready for qualification, that is, you should import them by
                            "uri-bytestring-" version ".tar.gz"))
        (sha256
         (base32
-         "1q04j5ybvk37zk2m0bkjwyhblz0ymdj0cn4rvsvdca1ikn5xdv5c"))))
+         "0spzv3mwlpxiamd7347sxwcy2xri16ak1y7p1v4fisnvq4jprm67"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-              ("ghc-fail" ,ghc-fail)
               ("ghc-blaze-builder" ,ghc-blaze-builder)
               ("ghc-th-lift-instances" ,ghc-th-lift-instances)))
-    (native-inputs `(("ghc-attoparsec" ,ghc-attoparsec)
-                     ("ghc-hunit" ,ghc-hunit)
-                     ("ghc-quickcheck" ,ghc-quickcheck)
+    (native-inputs `(("ghc-hunit" ,ghc-hunit)
                      ("ghc-tasty" ,ghc-tasty)
                      ("ghc-tasty-hunit" ,ghc-tasty-hunit)
-                     ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+                     ("ghc-hedgehog" ,ghc-hedgehog)
+                     ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
                      ("ghc-base-compat" ,ghc-base-compat)
-                     ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
                      ("ghc-semigroups" ,ghc-semigroups)
-                     ("ghc-generics-sop" ,ghc-generics-sop)))
+                     ("ghc-safe" ,ghc-safe)))
     (home-page "https://github.com/Soostone/uri-bytestring")
     (synopsis "Haskell URI parsing as ByteStrings")
     (description "This Haskell package aims to be an RFC3986 compliant URI
