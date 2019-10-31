@@ -6256,7 +6256,7 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
 (define-public ghc-microlens-platform
   (package
     (name "ghc-microlens-platform")
-    (version "0.3.10")
+    (version "0.3.11")
     (source
      (origin
        (method url-fetch)
@@ -6265,7 +6265,7 @@ readme @uref{https://github.com/aelve/microlens#readme, on Github}.")
              "microlens-platform/microlens-platform-" version ".tar.gz"))
        (sha256
         (base32
-         "1d4nhmgf9jq0ixc7qhwm7aaw3xdr0nalw58d0ydsydgf02cyazwv"))))
+         "18950lxgmsg5ksvyyi3zs1smjmb1qf1q73a3p3g44bh21miz0xwb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
