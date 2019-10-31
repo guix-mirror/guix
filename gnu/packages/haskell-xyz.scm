@@ -7829,7 +7829,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
 (define-public ghc-pretty-show
   (package
     (name "ghc-pretty-show")
-    (version "1.7")
+    (version "1.9.5")
     (source
      (origin
        (method url-fetch)
@@ -7837,7 +7837,7 @@ ByteStrings in the style of other common *nix hex dump tools.")
                            "pretty-show-" version ".tar.gz"))
        (sha256
         (base32
-         "0br7pkxqqqhby2j2v1g847lgqsrasx56g1jw3dhmjh4flzs6warq"))))
+         "0gs2pabi4qa4b0r5vffpf9b1cf5n9y2939a3lljjw7cmg6xvx5dh"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-haskell-lexer" ,ghc-haskell-lexer)
