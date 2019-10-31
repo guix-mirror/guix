@@ -795,7 +795,7 @@ implementations of cryptographic ciphers.")
 (define-public ghc-hedgehog
   (package
     (name "ghc-hedgehog")
-    (version "0.6.1")
+    (version "1.0.1")
     (source
      (origin
        (method url-fetch)
@@ -805,13 +805,14 @@ implementations of cryptographic ciphers.")
              ".tar.gz"))
        (sha256
         (base32
-         "0xz10ycdm5vk9nrcym1fi83k19frfwqz18bz8bnpzwvaj0j41yfj"))))
+         "1qc7hkqbnsk3f5r26wc35r3qiy941nmcxhfqgcq9027kw4gs0bi0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-async" ,ghc-async)
        ("ghc-concurrent-output" ,ghc-concurrent-output)
        ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-fail" ,ghc-fail)
        ("ghc-lifted-async" ,ghc-lifted-async)
        ("ghc-mmorph" ,ghc-mmorph)
        ("ghc-monad-control" ,ghc-monad-control)
