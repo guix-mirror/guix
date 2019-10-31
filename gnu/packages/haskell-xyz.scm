@@ -10763,7 +10763,7 @@ statically known size.")
 (define-public ghc-typed-process
   (package
     (name "ghc-typed-process")
-    (version "0.2.3.0")
+    (version "0.2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -10772,10 +10772,11 @@ statically known size.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0j36vrc9w841m5qbwqra1lwiznx31xfnhin1sm8x2c2739csbpn0"))))
+         "1cf2pfym8zdxvvy7xv72ixj7wy3rjrdss6f57k1ysgs66cgsi8ii"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-async" ,ghc-async)))
+     `(("ghc-async" ,ghc-async)
+       ("ghc-unliftio-core" ,ghc-unliftio-core)))
     (native-inputs
      `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-hspec" ,ghc-hspec)
