@@ -1311,7 +1311,7 @@ the resulting type will be insensitive to cases.")
 (define-public ghc-cereal
   (package
     (name "ghc-cereal")
-    (version "0.5.7.0")
+    (version "0.5.8.1")
     (source
      (origin
        (method url-fetch)
@@ -1321,7 +1321,7 @@ the resulting type will be insensitive to cases.")
              ".tar.gz"))
        (sha256
         (base32
-         "1j7imh2mzqcljld7sx0av69699955rpy3hzivi5723i6a9nszgbs"))))
+         "1mqvd1iwzr50az4y24332x3g3wsrzw8j1iwph02vr7jbjfn8i7id"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
