@@ -10264,14 +10264,14 @@ Template Haskell.")
 (define-public ghc-th-lift
   (package
     (name "ghc-th-lift")
-    (version "0.7.11")
+    (version "0.8.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "th-lift/th-lift-" version ".tar.gz"))
               (sha256
                (base32
-                "131360zxb0hazbqwbkk6ab2p77jkxr79bwwm618mrwrwkm3x2g6m"))))
+                "1a6qlbdg15cfr5rvl9g3blgwx4v1p0xic0pzv13zx165xbc36ld0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-th-abstraction" ,ghc-th-abstraction)))
