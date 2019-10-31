@@ -1767,7 +1767,7 @@ of the C library.")
 (define-public ghc-code-page
   (package
   (name "ghc-code-page")
-  (version "0.1.3")
+  (version "0.2")
   (source
    (origin
      (method url-fetch)
@@ -1776,7 +1776,7 @@ of the C library.")
            version ".tar.gz"))
       (sha256
        (base32
-        "1491frk4jx6dlhifky9dvcxbsbcfssrz979a5hp5zn061rh8cp76"))))
+        "0i0qbrbhvrwkbikqb7hh7yxaipaavwzvyrw211d0vkz99f62mqxz"))))
   (build-system haskell-build-system)
   (home-page "https://github.com/RyanGlScott/code-page")
   (synopsis "Windows code page library for Haskell")
