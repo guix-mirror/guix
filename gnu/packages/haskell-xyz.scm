@@ -7586,7 +7586,7 @@ invariants.")
 (define-public ghc-path-io
   (package
     (name "ghc-path-io")
-    (version "1.3.3")
+    (version "1.4.2")
     (source
      (origin
        (method url-fetch)
@@ -7596,7 +7596,7 @@ invariants.")
              ".tar.gz"))
        (sha256
         (base32
-         "1g9m3qliqjk1img894wsb89diym5zrq51qkkrwhz4sbm9a8hbv1a"))))
+         "0jqx3mi4an4kb3kg78n1p3xrz832yrfrnvj795b0xhkv6h1z5ir3"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-dlist" ,ghc-dlist)
@@ -7607,9 +7607,6 @@ invariants.")
        ("ghc-temporary" ,ghc-temporary)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)))
-    (arguments
-    `(#:cabal-revision
-      ("3" "1h9hsibbflkxpjl2fqamqiv3x3gasf51apnmklrs9l9x8r32hzcc")))
     (home-page
      "https://github.com/mrkkrp/path-io")
     (synopsis "Functions for manipulating well-typed paths")
