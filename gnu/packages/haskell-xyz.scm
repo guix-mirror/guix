@@ -5038,7 +5038,7 @@ described in @url{https://www.lua.org/}.")
 (define-public ghc-hslua-module-text
   (package
     (name "ghc-hslua-module-text")
-    (version "0.1.2.1")
+    (version "0.2.1")
     (source
      (origin
        (method url-fetch)
@@ -5047,11 +5047,8 @@ described in @url{https://www.lua.org/}.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0bcfpb1dhnxp0gr376ai4w7vczr9zrjl1r3r6w7kcxivfkwq9cxf"))))
+         "1ikdwvvxhbd5wmfr85dzs2ccamh9rbbpgy899z7s1vlv5q1dj0hk"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("1" "0vajlsd7y6pwa08635q0cx8z5c1c55bk7fvavw7g2vmyvxqjzx6n")))
     (inputs
      `(("ghc-hslua" ,ghc-hslua)))
     (native-inputs
