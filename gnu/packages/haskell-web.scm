@@ -1274,7 +1274,7 @@ derivations of regular expressions.")
 (define-public ghc-hxt
   (package
     (name "ghc-hxt")
-    (version "9.3.1.16")
+    (version "9.3.1.18")
     (source
      (origin
        (method url-fetch)
@@ -1284,7 +1284,7 @@ derivations of regular expressions.")
              ".tar.gz"))
        (sha256
         (base32
-         "1qq3ykgn355rx242xjcbqqksgvwr6k2fdj5phw4iv28qqxff6m8d"))))
+         "0836k65px3w9c5h1h2bmzq5a7mp6ajxwvfg3pfr2kbxwkgc0j63j"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hxt-charproperties" ,ghc-hxt-charproperties)
