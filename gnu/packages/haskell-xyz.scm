@@ -665,7 +665,7 @@ pragmas in your code.")
 (define-public ghc-basement
   (package
     (name "ghc-basement")
-    (version "0.0.8")
+    (version "0.0.11")
     (source
      (origin
        (method url-fetch)
@@ -673,7 +673,7 @@ pragmas in your code.")
                            "basement/basement-" version ".tar.gz"))
        (sha256
         (base32
-         "194jw567di4q2758943q9rrwkbf9gl261my7qc21i9xhyabipx67"))))
+         "0srlws74yiraqaapgcjd9p5d1fwb3zr9swcz74jpjm55fls2nn37"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/haskell-foundation/foundation")
     (synopsis "Basic primitives for Foundation starter pack")
