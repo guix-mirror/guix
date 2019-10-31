@@ -1365,7 +1365,7 @@ deal with the result.")
 (define-public ghc-snap-core
   (package
     (name "ghc-snap-core")
-    (version "1.0.3.2")
+    (version "1.0.4.0")
     (source
      (origin
        (method url-fetch)
@@ -1373,7 +1373,7 @@ deal with the result.")
                            "snap-core/snap-core-" version ".tar.gz"))
        (sha256
         (base32
-         "136q7l4hd5yn5hb507q1ziqx124ma1lkzh5dx0n150p8dx3rhhsc"))))
+         "0dklxgrbqhnb6bc4ic358g4fyj11ywmjrkxxhqcjmci2hhpn00mr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)
@@ -1401,9 +1401,6 @@ deal with the result.")
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-zlib" ,ghc-zlib)))
-    (arguments
-     `(#:cabal-revision
-       ("3" "0wlhn33r7c9g7j23y006ddq9d87lkmianvvfrbl8jd8mvjvj2gfa")))
     (home-page "http://snapframework.com/")
     (synopsis "Haskell Web Framework (core interfaces and types)")
     (description "Snap is a simple and fast web development framework
