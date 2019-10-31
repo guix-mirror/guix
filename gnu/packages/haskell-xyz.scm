@@ -10217,7 +10217,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
 (define-public ghc-th-abstraction
   (package
     (name "ghc-th-abstraction")
-    (version "0.2.8.0")
+    (version "0.3.1.0")
     (source
      (origin
        (method url-fetch)
@@ -10226,7 +10226,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0n17w4q2ykd0nica4sck2wng6md56rfad8x0icl0l8vnzb9nn4ya"))))
+         "1f81w0gshvc816cf9qz0f19jsrzh6wpzmmy317xrgn63dv61p7jb"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/glguy/th-abstraction")
     (synopsis "Nicer interface for reified information about data types")
