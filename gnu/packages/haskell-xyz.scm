@@ -9393,7 +9393,7 @@ mainstream languages.")
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
-    (version "1.1.1.1")
+    (version "1.2")
     (source
      (origin
        (method url-fetch)
@@ -9403,7 +9403,7 @@ mainstream languages.")
              ".tar.gz"))
        (sha256
         (base32
-         "08r2iw0gdmfs4f6wraaq19vfmkjdbics3dbhw39y7mdjd98kcr7b"))))
+         "12sz6zkc9j5z3lwrjvljrkfxa5vhwnir5wsarigz2f6d3w13dh5g"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/StateVar")
     (synopsis "State variables for Haskell")
