@@ -3735,7 +3735,7 @@ Foundation has the following goals:
 (define-public ghc-free
   (package
     (name "ghc-free")
-    (version "5.0.2")
+    (version "5.1.2")
     (source
      (origin
        (method url-fetch)
@@ -3745,7 +3745,7 @@ Foundation has the following goals:
              ".tar.gz"))
        (sha256
         (base32
-         "15m3n9vhz7z3kzv1w3wlfa3x8jp4cbrkwmrcjr7jlx39iqffn1gg"))))
+         "0vlf3f2ckl3cr7z2zl8c9c8qkdlfgvmh04gxkp2fg0z9dz80nlyb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-prelude-extras" ,ghc-prelude-extras)
