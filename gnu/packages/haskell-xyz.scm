@@ -4523,7 +4523,7 @@ package are to parse or generate Haskell 98 code.")
 (define-public ghc-haskell-src-exts
   (package
     (name "ghc-haskell-src-exts")
-    (version "1.20.2")
+    (version "1.21.1")
     (source
      (origin
        (method url-fetch)
@@ -4533,7 +4533,7 @@ package are to parse or generate Haskell 98 code.")
              ".tar.gz"))
        (sha256
         (base32
-         "1sm3z4v1p5yffg01ldgavz71s3bvfhjfa13k428rk14bpkl8crlz"))))
+         "0q1y8n3d82gid9bcx8wxsqqmj9mq11fg3gp5yzpfbw958dhi3j9f"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
