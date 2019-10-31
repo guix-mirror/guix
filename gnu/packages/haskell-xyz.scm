@@ -7449,7 +7449,7 @@ combinators.")
 (define-public ghc-parsers
   (package
     (name "ghc-parsers")
-    (version "0.12.9")
+    (version "0.12.10")
     (source
      (origin
        (method url-fetch)
@@ -7459,7 +7459,7 @@ combinators.")
              ".tar.gz"))
        (sha256
         (base32
-         "1r05sc1mcglk8w596kq9a1brfn9c2vll8lq16j07ln0vsz4jzrc1"))))
+         "0v0smxbzk1qpdfkfqqmrzd2dngv3vxba10mkjn9nfm6a309izf8p"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
                                ; -package attoparsec-0.13.0.1"
