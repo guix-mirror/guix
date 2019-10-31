@@ -7890,7 +7890,7 @@ system dependencies.")
 (define-public ghc-persistent-template
   (package
     (name "ghc-persistent-template")
-    (version "2.5.4")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
@@ -7899,11 +7899,8 @@ system dependencies.")
                            "persistent-template-" version ".tar.gz"))
        (sha256
         (base32
-         "008afcy7zbw7bzp9jww8gdldb51kfm0fg4p0x4xcp61gx4679bjc"))))
+         "0wr1z2nfrl6jv1lprxb0d2jw4izqfcbcwvkdrhryzg95gjz8ryjv"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("2" "03qgwk32krldph3blw5agiqcpccr3649hajyn8wm9k71zz82dpn6")))
     (inputs `(("ghc-persistent" ,ghc-persistent)
               ("ghc-monad-control" ,ghc-monad-control)
               ("ghc-aeson" ,ghc-aeson)
