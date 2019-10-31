@@ -7715,7 +7715,7 @@ provided for those who need a drop-in replacement for Markdown.pl.")
 (define-public ghc-pandoc-citeproc
   (package
     (name "ghc-pandoc-citeproc")
-    (version "0.14.3.1")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
@@ -7724,7 +7724,7 @@ provided for those who need a drop-in replacement for Markdown.pl.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0yj6rckwsc9vig40cm15ry0j3d01xpk04qma9n4byhal6v4b5h22"))))
+         "15mm17awgi1b5yazwhr5nh8b59qml1qk6pz6gpyijks70fq2arsv"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
