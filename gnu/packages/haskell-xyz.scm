@@ -1788,7 +1788,7 @@ nothing.")
 (define-public ghc-colour
 (package
   (name "ghc-colour")
-  (version "2.3.4")
+  (version "2.3.5")
   (source
    (origin
      (method url-fetch)
@@ -1797,7 +1797,7 @@ nothing.")
            version ".tar.gz"))
      (sha256
       (base32
-       "1sy51nz096sv91nxqk6yk7b92b5a40axv9183xakvki2nc09yhqg"))))
+       "1rq4l46jx4lpdppy71wf7m1n7pw2jwy788rm35ycwzb1g4clg39v"))))
   (arguments
    ;; The tests for this package have the following dependency cycle:
    ;; ghc-test-framework -> ghc-ansi-terminal -> ghc-colour.
