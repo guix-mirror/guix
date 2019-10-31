@@ -4299,7 +4299,7 @@ computation library for Haskell.")
 (define-public ghc-happy
   (package
     (name "ghc-happy")
-    (version "1.19.9")
+    (version "1.19.12")
     (source
      (origin
        (method url-fetch)
@@ -4309,7 +4309,7 @@ computation library for Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "138xpxdb7x62lpmgmb6b3v3vgdqqvqn4273jaap3mjmc2gla709y"))))
+         "03xlmq6qmdx4zvzw8bp33kd9g7yvcq5cz4wg50xilw812kj276pv"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
