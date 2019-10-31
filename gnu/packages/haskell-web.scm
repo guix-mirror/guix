@@ -623,7 +623,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
 (define-public ghc-warp-tls
   (package
     (name "ghc-warp-tls")
-    (version "3.2.4.3")
+    (version "3.2.8")
     (source
      (origin
        (method url-fetch)
@@ -632,7 +632,7 @@ limitation, automatic pruning, energy saving and replay resistance.")
                            "warp-tls-" version ".tar.gz"))
        (sha256
         (base32
-         "17gj295fr98l7mkz2gdz6kahdnmja0sql3kvy2zab6q168g53kc4"))))
+         "1z5jzl40x1gp249fk8h51gkw6m3hzxchm2bp3kbpqdgmw8r5im8y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cryptonite" ,ghc-cryptonite)
