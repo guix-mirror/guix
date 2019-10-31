@@ -10871,7 +10871,7 @@ working with it.")
 (define-public ghc-unliftio-core
   (package
     (name "ghc-unliftio-core")
-    (version "0.1.1.0")
+    (version "0.1.2.0")
     (source
      (origin
        (method url-fetch)
@@ -10880,11 +10880,11 @@ working with it.")
                            "unliftio-core-" version ".tar.gz"))
        (sha256
         (base32
-         "1193fplsjm1lcr05xwvkj1rsyzx74i755f6kw3ikmxbsv0bv0l3m"))))
+         "0y3siyx3drkw7igs380a87h8qfbbgcyxxlcnshp698hcc4yqphr4"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "16bjwcsaghqqmyi69rq65dn3ydifyfaabq3ns37apdm00mwqbcj2")))
+       ("2" "0jqrjjbgicx48wzcjxs1xmih48ay79rhmrz6081dldlfxynli6vz")))
     (home-page
      "https://github.com/fpco/unliftio/tree/master/unliftio-core#readme")
     (synopsis "The MonadUnliftIO typeclass for unlifting monads to IO")
