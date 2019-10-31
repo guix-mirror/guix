@@ -1720,7 +1720,7 @@ sources, and does not require prior installation of the C library.")
 (define-public ghc-cmark-gfm
   (package
     (name "ghc-cmark-gfm")
-    (version "0.1.5")
+    (version "0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1729,7 +1729,7 @@ sources, and does not require prior installation of the C library.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "13b0mqks5c1q989slgsa3ixr5vvkfyic4ynzgv00kgl5qrs7hqk7"))))
+         "03xflrkyw84qv3yjly5iks9311bqv5cmrmsylr763v4ph0fn7rjq"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)))
