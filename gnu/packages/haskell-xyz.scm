@@ -9638,7 +9638,7 @@ for strict state threads.")
 (define-public ghc-storable-complex
   (package
     (name "ghc-storable-complex")
-    (version "0.2.2")
+    (version "0.2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -9646,8 +9646,10 @@ for strict state threads.")
              "https://hackage.haskell.org/package/storable-complex/storable-complex-"
              version ".tar.gz"))
        (sha256
-        (base32 "01kwwkpbfjrv26vj83cd92px5qbq1bpgxj0r45534aksqhany1xb"))))
+        (base32 "0fnwbfmd5vsaaqvf9182qdcjrzcfjd1zhdyvjwzifbwvn6r9kx4s"))))
     (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-orphans" ,ghc-base-orphans)))
     (home-page "https://github.com/cartazio/storable-complex")
     (synopsis "Haskell Storable instance for Complex")
     (description "This package provides a Haskell library including a
