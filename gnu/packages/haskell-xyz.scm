@@ -5440,7 +5440,7 @@ through a forwarding proxy that is configured to speak this protocol.")
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
-    (version "1.7.5")
+    (version "1.7.7")
     (source
      (origin
        (method url-fetch)
@@ -5450,7 +5450,7 @@ through a forwarding proxy that is configured to speak this protocol.")
              ".tar.gz"))
        (sha256
         (base32
-         "1vw1nm3s8vz1hqnjnqd3wh5rr4q3m2r4izn5ynhf93h9185qwqzd"))))
+         "0gab5930nvzrpvisx3x43ydnp2rd4fbmy9cq1zpgqy1adx5gx8z6"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: Tests cannot find System.ByteOrder,
                                ; exported by ghc-byteorder.  Doctest issue.
