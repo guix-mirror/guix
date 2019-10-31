@@ -3767,7 +3767,7 @@ deriving mechanism in Haskell to arbitrary classes.")
 (define-public ghc-generics-sop
   (package
     (name "ghc-generics-sop")
-    (version "0.3.2.0")
+    (version "0.4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -3776,9 +3776,11 @@ deriving mechanism in Haskell to arbitrary classes.")
                            "generics-sop-" version ".tar.gz"))
        (sha256
         (base32
-         "168v62i845jh9jbfaz3ldz8svz4wmzq9mf2vhb7pxlnbkk8fqq1h"))))
+         "160knr2phnzh2gldfv954lz029jzc7y8kz5xpmbf4z3vb5ngm6fw"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-transformers-compat" ,ghc-transformers-compat)))
+    (inputs
+     `(("ghc-sop-core" ,ghc-sop-core)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)))
     (home-page "https://github.com/well-typed/generics-sop")
     (synopsis "Generic Programming using True Sums of Products for Haskell")
     (description "This Haskell package supports the definition of generic
