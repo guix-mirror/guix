@@ -447,7 +447,7 @@ communication between web applications and web servers.")
 (define-public ghc-wai-extra
   (package
     (name "ghc-wai-extra")
-    (version "3.0.24.2")
+    (version "3.0.28")
     (source
      (origin
        (method url-fetch)
@@ -457,13 +457,12 @@ communication between web applications and web servers.")
              ".tar.gz"))
        (sha256
         (base32
-         "07gcgq59dki5drkjci9ka34xjsy3bqilbsx0lsc4905w9jlyfbci"))))
+         "0iky7k4kirngvk1p2nz19zgzffb5hppfaxdjan80v06ikc8w1wm7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
        ("ghc-cookie" ,ghc-cookie)
-       ("ghc-blaze-builder" ,ghc-blaze-builder)
        ("ghc-network" ,ghc-network)
        ("ghc-lifted-base" ,ghc-lifted-base)
        ("ghc-streaming-commons" ,ghc-streaming-commons)
@@ -477,6 +476,7 @@ communication between web applications and web servers.")
        ("ghc-void" ,ghc-void)
        ("ghc-wai" ,ghc-wai)
        ("ghc-http-types" ,ghc-http-types)
+       ("ghc-http2" ,ghc-http2)
        ("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-unix-compat" ,ghc-unix-compat)
