@@ -1418,7 +1418,7 @@ contains the core definitions and types for the Snap framework.")
 (define-public ghc-snap-server
   (package
     (name "ghc-snap-server")
-    (version "1.1.0.0")
+    (version "1.1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1426,7 +1426,7 @@ contains the core definitions and types for the Snap framework.")
                            "snap-server/snap-server-" version ".tar.gz"))
        (sha256
         (base32
-         "0vvw9n8xs272qdlrf3dxhnva41zh3awi7pf022rrjj75lj8a77i4"))))
+         "0lw475wp0lnrbgc3jcfif3qjjc3pmrh2k74d8cgpnc1304g6a2s5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
@@ -1457,7 +1457,7 @@ contains the core definitions and types for the Snap framework.")
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     (arguments
      `(#:cabal-revision
-       ("3" "0a9d3nqb5rvgm25nak68lp6yj9m6cwhbgdbg5l7ib5i2czcg7yjh")))
+       ("1" "094b7ll47lxd4lvr6kd59jyw0vz686gw5cx16w758d6fli0cy3x3")))
     (home-page "http://snapframework.com/")
     (synopsis "Web server for the Snap Framework")
     (description "Snap is a simple and fast web development framework
