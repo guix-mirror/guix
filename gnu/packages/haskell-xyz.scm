@@ -5359,7 +5359,7 @@ example code on the home page for a quick introduction.")
 (define-public ghc-invariant
   (package
     (name "ghc-invariant")
-    (version "0.5.1")
+    (version "0.5.3")
     (source
      (origin
        (method url-fetch)
@@ -5368,7 +5368,7 @@ example code on the home page for a quick introduction.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0aqj7z55632qdg45074kgn9qfdxzb0a2f8lgjzr0l0i4mm2rr37b"))))
+         "03245nhcqxx6b0yw81fzqaqd7cgllmx8awzhvs2xv7ys73pmsgnp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-bifunctors" ,ghc-bifunctors)
