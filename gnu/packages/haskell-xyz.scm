@@ -4991,7 +4991,7 @@ MODS-format XML intermediate.")
 (define-public ghc-hslogger
   (package
     (name "ghc-hslogger")
-    (version "1.2.10")
+    (version "1.2.12")
     (source
      (origin
        (method url-fetch)
@@ -4999,7 +4999,7 @@ MODS-format XML intermediate.")
                            "hslogger-" version "/" "hslogger-"
                            version ".tar.gz"))
        (sha256 (base32
-                "0as5gvlh6pi2gflakp695qnlizyyp059dqrhvjl4gjxalja6xjnp"))))
+                "0ykcsk7wqygvrg60r5kpl6xfinr706al8pfyk5wj67wjs24lqypr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-network" ,ghc-network)
