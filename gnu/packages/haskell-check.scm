@@ -496,7 +496,7 @@ reporting and test statistics output.")
 (define-public ghc-test-framework-quickcheck2
   (package
     (name "ghc-test-framework-quickcheck2")
-    (version "0.3.0.4")
+    (version "0.3.0.5")
     (source
      (origin
        (method url-fetch)
@@ -505,11 +505,11 @@ reporting and test statistics output.")
                            "test-framework-quickcheck2-" version ".tar.gz"))
        (sha256
         (base32
-         "0vj834337r6jzr3258cv68ly2sv5999mklpsrfngyk51kywsyqyp"))))
+         "0ngf9vvby4nrdf1i7dxf5m9jn0g2pkq32w48xdr92n9hxka7ixn9"))))
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "147ngmfdkskyg7mwsp5w73a4dbx3rp5s38bci3z03kn1m093lxff")))
+       ("1" "1vmpk70h1594h9s216d3ngkb399fpny1d3sh4gg0vrc75p4as68d")))
     (inputs
      `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
        ("ghc-quickcheck" ,ghc-quickcheck)
