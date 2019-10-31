@@ -95,7 +95,7 @@ for screen-scraping.")
 (define-public ghc-httpd-shed
   (package
     (name "ghc-httpd-shed")
-    (version "0.4.0.3")
+    (version "0.4.1.1")
     (source
      (origin
        (method url-fetch)
@@ -103,10 +103,11 @@ for screen-scraping.")
                            "httpd-shed-" version ".tar.gz"))
        (sha256
         (base32
-         "064jy1mqhnf1hvq6s04wlhmp916rd522x58djb9qixv13vc8gzxh"))))
+         "19dgdimpzr7pxk7pqvyin6j87gmvnf0rm35gzhmna8qr835wy3sr"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network-uri" ,ghc-network-uri)
+     `(("ghc-network-bsd" ,ghc-network-bsd)
+       ("ghc-network-uri" ,ghc-network-uri)
        ("ghc-network" ,ghc-network)))
     (home-page "https://hackage.haskell.org/package/httpd-shed")
     (synopsis "Simple web-server with an interact style API")
