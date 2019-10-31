@@ -9380,17 +9380,18 @@ automatically by SmallCheck.")
 (define-public ghc-socks
   (package
     (name "ghc-socks")
-    (version "0.5.6")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "socks/socks-" version ".tar.gz"))
               (sha256
                (base32
-                "0f44qy74i0n6ll3jym0a2ipafkpw1h67amcpqmj8iq95h21wsqzs"))))
+                "0wvaxy3dkv97wrncjv1rxrmjr4014hgxz82kixvcwqdhidalfi3k"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-basement" ,ghc-basement)
        ("ghc-network" ,ghc-network)))
     (home-page "https://github.com/vincenthz/hs-socks")
     (synopsis "SOCKS proxy (version 5) implementation")
