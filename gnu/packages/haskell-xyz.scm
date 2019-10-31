@@ -9184,7 +9184,7 @@ spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.
 (define-public ghc-silently
   (package
     (name "ghc-silently")
-    (version "1.2.5")
+    (version "1.2.5.1")
     (source
      (origin
        (method url-fetch)
@@ -9194,7 +9194,7 @@ spirit to POSIX shells.  Shelly is originally forked  from the Shellish package.
              ".tar.gz"))
        (sha256
         (base32
-         "0f9qm3f7y0hpxn6mddhhg51mm1r134qkvd2kr8r6192ka1ijbxnf"))))
+         "1lgs1gsr5dp0x21diqn4l03fxgai2kgdmj85gqp0iz3zykvbmjbz"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ;; circular dependency with nanospec
     ;; (inputs
