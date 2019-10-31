@@ -11533,7 +11533,7 @@ given term should not exist.")
 (define-public ghc-wave
   (package
     (name "ghc-wave")
-    (version "0.1.5")
+    (version "0.2.0")
     (source (origin
       (method url-fetch)
       (uri (string-append
@@ -11542,7 +11542,7 @@ given term should not exist.")
              ".tar.gz"))
       (sha256
         (base32
-          "03zycmwrchhqvi37fdvlzz2d1vl4hy0i8xyys1zznw38qfq0h2i5"))))
+          "149kgwngq3qxc7gxpkqb16j669j0wpv2f3gnvfwp58yg6m4259ki"))))
     (build-system haskell-build-system)
     (arguments
      '(#:phases
