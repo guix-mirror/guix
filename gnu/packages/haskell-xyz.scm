@@ -1979,14 +1979,14 @@ concurrent threads.  Can be used for progress displays etc.")
 (define-public ghc-conduit
   (package
     (name "ghc-conduit")
-    (version "1.3.0.3")
+    (version "1.3.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "conduit/conduit-" version ".tar.gz"))
               (sha256
                (base32
-                "1sangm0qqi9dzlq95746a3kl14k8b09592a423shxjf2a0b1yx5v"))))
+                "18izjgff4pmrknc8py06yvg3g6x27nx0rzmlwjxcflwm5v4szpw4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
