@@ -5104,7 +5104,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
 (define-public ghc-indents
   (package
     (name "ghc-indents")
-    (version "0.5.0.0")
+    (version "0.5.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5112,7 +5112,7 @@ monads with anaphoric variants on @code{if} and @code{when} and a C-like
                     version ".tar.gz"))
               (sha256
                (base32
-                "1ly3v41jacc6lrsvg4j3m5a6zs90gr8dyif5m6bf34hj1k5cgg0n"))))
+                "0dpcwiz0dwn5aqdsc50plfaawh86adhf7jx5dsmhn5q5nz32qn51"))))
     (build-system haskell-build-system)
     ;; This package needs an older version of tasty.
     (arguments '(#:tests? #f))
