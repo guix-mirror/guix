@@ -443,7 +443,7 @@ unwanted suggestions, and to add your own custom suggestions.")
 (define-public hoogle
   (package
     (name "hoogle")
-    (version "5.0.17.3")
+    (version "5.0.17.11")
     (source
      (origin
        (method url-fetch)
@@ -453,18 +453,19 @@ unwanted suggestions, and to add your own custom suggestions.")
          version ".tar.gz"))
        (sha256
         (base32
-         "174gp41v0krzj37m75pnr3aawyhkbk2wq4q6zk2z3zh0avvvmgk6"))))
+         "1svp8z9pad8z2j386pr0dda0ds8ddxab0salnz4gm51q877w93p1"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-network-uri" ,ghc-network-uri)
-       ("ghc-network" ,ghc-network)
-       ("ghc-quickcheck" ,ghc-quickcheck)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-aeson" ,ghc-aeson)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
        ("ghc-cmdargs" ,ghc-cmdargs)
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
        ("ghc-connection" ,ghc-connection)
        ("ghc-extra" ,ghc-extra)
+       ("ghc-foundation" ,ghc-foundation)
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
        ("ghc-http-conduit" ,ghc-http-conduit)
