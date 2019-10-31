@@ -9779,7 +9779,7 @@ features.")
 (define-public ghc-stm-conduit
   (package
     (name "ghc-stm-conduit")
-    (version "4.0.0")
+    (version "4.0.1")
     (source
      (origin
        (method url-fetch)
@@ -9787,7 +9787,7 @@ features.")
                            "stm-conduit-" version ".tar.gz"))
        (sha256
         (base32
-         "0paapljn7nqfzrx889y0n8sszci38mdiaxkgr0bb00ph9246rr7z"))))
+         "0hhlxvpp7mah8dcvkknh6skx44jfk3092zz2w52zlr255bkmn3p8"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stm-chans" ,ghc-stm-chans)
