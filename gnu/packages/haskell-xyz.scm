@@ -3815,7 +3815,7 @@ geniplate} package, written by Lennart Augustsson.")
 (define-public ghc-genvalidity
   (package
     (name "ghc-genvalidity")
-    (version "0.5.1.0")
+    (version "0.8.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3825,7 +3825,7 @@ geniplate} package, written by Lennart Augustsson.")
              ".tar.gz"))
        (sha256
         (base32
-         "17ykq38j9a2lzir6dqz5jgy6ndaafrpkhqhcg96c5ppg7wcxaaj0"))))
+         "0w38aq9hfyymidncgkrs6yvja7j573d9sap5qfg5rz910fhsij9a"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
