@@ -1088,7 +1088,7 @@ functions, widgets, etc.")
 (define-public ghc-yesod-persistent
   (package
     (name "ghc-yesod-persistent")
-    (version "1.6.0")
+    (version "1.6.0.2")
     (source
      (origin
        (method url-fetch)
@@ -1097,7 +1097,7 @@ functions, widgets, etc.")
                            "yesod-persistent-" version ".tar.gz"))
        (sha256
         (base32
-         "1gd59xf7b6v3cald58mzwnfbdzjr49cz60rm4wc5w9pvfx12pgj2"))))
+         "17adw0aaj29ia7ii3jka301442860b5wvfrms079q973gzahz5fd"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not available in PATH.
     (inputs `(("ghc-yesod-core" ,ghc-yesod-core)
