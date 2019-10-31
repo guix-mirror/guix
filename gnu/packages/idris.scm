@@ -70,7 +70,7 @@
        ("ghc-fsnotify" ,ghc-fsnotify)
        ("ghc-ieee754" ,ghc-ieee754)
        ("ghc-libffi" ,ghc-libffi)
-       ("ghc-megaparsec" ,ghc-megaparsec-7)
+       ("ghc-megaparsec" ,ghc-megaparsec)
        ("ghc-network" ,ghc-network)
        ("ghc-optparse-applicative" ,ghc-optparse-applicative)
        ("ghc-regex-tdfa" ,ghc-regex-tdfa)

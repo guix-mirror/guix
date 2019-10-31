@@ -6120,7 +6120,7 @@ functions are often useful in statistical and numerical computing.")
 (define-public ghc-megaparsec
   (package
     (name "ghc-megaparsec")
-    (version "6.5.0")
+    (version "7.0.5")
     (source
      (origin
        (method url-fetch)
@@ -6129,11 +6129,8 @@ functions are often useful in statistical and numerical computing.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "12iggy7qpf8x93jm64zf0g215xwy779bqyfyjk2bhmxqqr1yzgdy"))))
+         "0bqx1icbmk8s7wmbcdzsgnlh607c7kzg8l80cp02dxr5valjxp7j"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("4" "0ij3asi5vwlhbgwsy6nhli9a0qb7926mg809fsgyl1rnhs9fvpx1")))
     (inputs
      `(("ghc-case-insensitive" ,ghc-case-insensitive)
        ("ghc-parser-combinators" ,ghc-parser-combinators)
@@ -6150,24 +6147,6 @@ functions are often useful in statistical and numerical computing.")
 Megaparsec is a feature-rich package that strikes a nice balance between
 speed, flexibility, and quality of parse errors.")
     (license license:bsd-2)))
-
-;;; Idris 1.3.2 requires 'megaparse>=7.0.4' but we'd like to keep the public
-;;; package at the current Stackage LTS version:
-(define-public ghc-megaparsec-7
-  (hidden-package
-   (package
-     (inherit ghc-megaparsec)
-     (version "7.0.5")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://hackage.haskell.org/package/megaparsec/"
-                            "megaparsec-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0bqx1icbmk8s7wmbcdzsgnlh607c7kzg8l80cp02dxr5valjxp7j"))))
-     (arguments (strip-keyword-arguments (list #:cabal-revision)
-                                         (package-arguments ghc-megaparsec))))))
 
 (define-public ghc-memory
   (package
