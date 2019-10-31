@@ -9913,7 +9913,7 @@ default)
 (define-public ghc-syb
   (package
     (name "ghc-syb")
-    (version "0.7")
+    (version "0.7.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -9924,7 +9924,7 @@ default)
              ".tar.gz"))
        (sha256
         (base32
-         "1da2zz7gqm4xbkx5vpd74dayx1svaxyl145fl14mq15lbb77sxdq"))))
+         "0077vxzyi9ppbphi2ialac3p376k49qly1kskdgf57wdwix9qjp0"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
