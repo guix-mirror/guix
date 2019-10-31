@@ -5773,7 +5773,7 @@ Music Player Daemon.")
 (define-public ghc-lifted-async
   (package
     (name "ghc-lifted-async")
-    (version "0.10.0.2")
+    (version "0.10.0.4")
     (source
      (origin
        (method url-fetch)
@@ -5782,7 +5782,7 @@ Music Player Daemon.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1073r512c1x2m1v0jar9bwqg656slg7jd1jhsyj6m8awgx1l1mwf"))))
+         "0cwl1d0wjpdk0v1l1qxiqiksmak950c8gx169c1q77cg0z18ijf9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
