@@ -4011,7 +4011,7 @@ programs.")
 (define-public ghc-gnuplot
   (package
     (name "ghc-gnuplot")
-    (version "0.5.5.2")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
@@ -4019,7 +4019,7 @@ programs.")
              "mirror://hackage/package/gnuplot/gnuplot-"
              version ".tar.gz"))
        (sha256
-        (base32 "1mlppnc13ygjzmf6ldydys4wvy35yb3xjwwfgf9rbi7nfcqjr6mn"))))
+        (base32 "1g6xgnlkh17avivn1rlq7l2nvs26dvrbx4rkfld0bf6kyqaqwrgp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
