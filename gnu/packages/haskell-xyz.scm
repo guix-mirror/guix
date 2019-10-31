@@ -5191,7 +5191,7 @@ minimal overhead.  No FFI required.")
 (define-public ghc-integer-logarithms
   (package
     (name "ghc-integer-logarithms")
-    (version "1.0.2.1")
+    (version "1.0.3")
     (source
      (origin
        (method url-fetch)
@@ -5200,7 +5200,7 @@ minimal overhead.  No FFI required.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1wj8kgjg5bn2yrs4zh9qfjv85cx6w998j9pi39yrbv305944mb9j"))))
+         "05pc5hws66csvcvfswlwcr2fplwn1lbssvwifjxkbbwqhq0n5qjs"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
