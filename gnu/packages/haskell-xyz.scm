@@ -804,7 +804,7 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
-    (version "5.5.3")
+    (version "5.5.5")
     (source
      (origin
        (method url-fetch)
@@ -814,7 +814,7 @@ stand for certain ASCII character sequences, i.e. → instead of @code{->},
              ".tar.gz"))
        (sha256
         (base32
-         "1jn9rxg643xnlhrknmjz88nblcpsr45xwjkwwnn5nxpasa7m4d6l"))))
+         "0rn47q8dzv0g1fyams99p4py6q0asxdc50q9k0nj497brk738xcb"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
