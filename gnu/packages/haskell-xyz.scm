@@ -10306,7 +10306,7 @@ Template Haskell.")
 (define-public ghc-th-expand-syns
   (package
     (name "ghc-th-expand-syns")
-    (version "0.4.4.0")
+    (version "0.4.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -10314,7 +10314,7 @@ Template Haskell.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "01prlvh3py5hq5ccjidfyp9ixq2zd88dkbsidyjrpkja6v8m43yc"))))
+                "1p4wfyycan8zsp9wi7npx36qwbfsbcgdyxi3ii51scf69dkrx42y"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)))
