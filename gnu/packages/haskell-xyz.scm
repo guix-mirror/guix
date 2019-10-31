@@ -3987,7 +3987,7 @@ basis for a nicer interface.")
 (define-public ghc-glut
   (package
     (name "ghc-glut")
-    (version "2.7.0.14")
+    (version "2.7.0.15")
     (source
      (origin
        (method url-fetch)
@@ -3997,7 +3997,7 @@ basis for a nicer interface.")
              ".tar.gz"))
        (sha256
         (base32
-         "01i162fly4q1751fp60lgkzlb8kr0qqbvmxj74zc6skb19qggy2w"))))
+         "0271vnf6wllhxjwy0m348x90kv27aybxcbqkkglmd5w4cpwjg5g9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-statevar" ,ghc-statevar)
