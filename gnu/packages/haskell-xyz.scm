@@ -7399,7 +7399,7 @@ building up, manipulating and serialising @code{Pandoc} structures.")
 (define-public ghc-parser-combinators
   (package
     (name "ghc-parser-combinators")
-    (version "1.0.0")
+    (version "1.1.0")
     (source
      (origin
        (method url-fetch)
@@ -7408,7 +7408,7 @@ building up, manipulating and serialising @code{Pandoc} structures.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1pwfdsklqwvaynwpdzmx1bs35mp6dpsyaqdnzxnqcrxwf5h8sk75"))))
+         "149yhbnrrl108h1jinrsxni3rwrldhphpk9bbmbpr90q5fbl4xmc"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/mrkkrp/parser-combinators")
     (synopsis "Commonly useful parser combinators")
