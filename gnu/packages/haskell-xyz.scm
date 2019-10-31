@@ -12013,18 +12013,15 @@ documents.")
 (define-public ghc-yaml
   (package
     (name "ghc-yaml")
-    (version "0.8.32")
+    (version "0.11.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "yaml/yaml-" version ".tar.gz"))
               (sha256
                (base32
-                "0cbsyh4ilvjzq1q7pxls43k6pdqxg1l85xzibcwpbvmlvrizh86w"))))
+                "028pz77n92l6kjgjv263h4b6yhw1iibdbf3a3dkn5qnz537xpzhc"))))
     (build-system haskell-build-system)
-    ;; The tests are broken on i686.  They are fixed in 0.10.3.0.
-    ;; See https://github.com/snoyberg/yaml/issues/158
-    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
        ("ghc-resourcet" ,ghc-resourcet)
@@ -12036,12 +12033,14 @@ documents.")
        ("ghc-semigroups" ,ghc-semigroups)
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
-       ("ghc-base-compat" ,ghc-base-compat)))
+       ("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-libyaml" ,ghc-libyaml)))
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("ghc-hunit" ,ghc-hunit)
        ("hspec-discover" ,hspec-discover)
-       ("ghc-mockery" ,ghc-mockery)))
+       ("ghc-mockery" ,ghc-mockery)
+       ("ghc-raw-strings-qq" ,ghc-raw-strings-qq)))
     (home-page "https://github.com/snoyberg/yaml/")
     (synopsis "Parsing and rendering YAML documents")
     (description
