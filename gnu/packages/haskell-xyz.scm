@@ -408,7 +408,7 @@ This library provides a safer method based on the concept of @code{Ticket}s.")
 (define-public ghc-atomic-write
   (package
     (name "ghc-atomic-write")
-    (version "0.2.0.5")
+    (version "0.2.0.6")
     (source
      (origin
        (method url-fetch)
@@ -418,7 +418,7 @@ This library provides a safer method based on the concept of @code{Ticket}s.")
              ".tar.gz"))
        (sha256
         (base32
-         "1iaq0hprxcv0sl1sgwcgmm87zraf738va1bciwnx2jkk3k1v9iyv"))))
+         "1xs3shwnlj8hmnm3q6jc8nv78z0481i5n4hrqqdmbpx8grvlnqyl"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-temporary" ,ghc-temporary)
