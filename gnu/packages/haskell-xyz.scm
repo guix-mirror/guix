@@ -5390,7 +5390,7 @@ primitives for I/O using streams.")
 (define-public ghc-io-streams-haproxy
   (package
     (name "ghc-io-streams-haproxy")
-    (version "1.0.0.2")
+    (version "1.0.1.0")
     (source
      (origin
        (method url-fetch)
@@ -5399,7 +5399,7 @@ primitives for I/O using streams.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "11nh9q158mgnvvb23s5ffg87lkhl5smk039yl43jghxmb214z0bp"))))
+         "1dcn5hd4fiwyq7m01r6fi93vfvygca5s6mz87c78m0zyj29clkmp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
@@ -5409,9 +5409,6 @@ primitives for I/O using streams.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (arguments
-     `(#:cabal-revision
-       ("4" "06c51a057n5bc9xfbp2m4jz5ds4z1xvmsx5mppch6qfwbz7x5i9l")))
     (home-page "http://snapframework.com/")
     (synopsis "HAProxy protocol 1.5 support for io-streams")
     (description "HAProxy protocol version 1.5 support
