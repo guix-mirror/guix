@@ -11669,14 +11669,14 @@ modernized interface.")
 (define-public ghc-x11
   (package
     (name "ghc-x11")
-    (version "1.9")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/X11/"
                            "X11-" version ".tar.gz"))
        (sha256
-        (base32 "1f8dy6ckkyvpcv7zlniyv01cqjb9lgqscm8pml58cvwc7n38w4qh"))))
+        (base32 "0gg6852mrlgl8zng1j84fismz7k81jr5fk92glgkscf8q6ryg0bm"))))
     (build-system haskell-build-system)
     (inputs
      `(("libx11" ,libx11)
