@@ -8227,7 +8227,7 @@ configurations to coexist without resorting to mutable global variables or
 (define-public ghc-regex
   (package
     (name "ghc-regex")
-    (version "1.0.1.3")
+    (version "1.0.2.0")
     (source
      (origin
        (method url-fetch)
@@ -8235,7 +8235,7 @@ configurations to coexist without resorting to mutable global variables or
                            "regex-" version ".tar.gz"))
        (sha256
         (base32
-         "1sjkpkgv4phy5b5v2lr89x4vx4dh44pj0sbvlsp6n86w9v6v4jwb"))))
+         "1f2z025hif1fr24b5khq3qxxyvpxrnhyx8xmbms332arw28rpkda"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
