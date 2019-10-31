@@ -380,7 +380,7 @@ which allow you to avoid direct usage of conduits.")
 (define-public ghc-wai
   (package
     (name "ghc-wai")
-    (version "3.2.1.2")
+    (version "3.2.2.1")
     (source
      (origin
        (method url-fetch)
@@ -390,7 +390,7 @@ which allow you to avoid direct usage of conduits.")
              ".tar.gz"))
        (sha256
         (base32
-         "0jr3b2789wa4m6mxkz12ynz4lfsqmgbrcy0am8karyqr3x3528r8"))))
+         "058871axlq6r0gcqxbjw37w57df9xbv81dmz99b1zq59wf329xzy"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
