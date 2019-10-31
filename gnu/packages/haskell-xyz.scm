@@ -2707,7 +2707,7 @@ Writer monad), where list append quickly becomes too expensive.")
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
-    (version "0.16.0")
+    (version "0.16.2")
     (source
      (origin
        (method url-fetch)
@@ -2717,7 +2717,7 @@ Writer monad), where list append quickly becomes too expensive.")
              ".tar.gz"))
        (sha256
         (base32
-         "0hkccch65s3kp0b36h7bqhilnpi4bx8kngncm7ma9vbd3dwacjdv"))))
+         "0lk4cjfzi5bx2snfzw1zi06li0gvgz3ckfh2kwa98l7nxfdl39ag"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f))          ; FIXME: missing test framework
     (inputs
