@@ -10262,14 +10262,14 @@ dependency.")
 (define-public ghc-texmath
   (package
     (name "ghc-texmath")
-    (version "0.11.0.1")
+    (version "0.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "texmath/texmath-" version ".tar.gz"))
               (sha256
                (base32
-                "11dc09hfnyfsz20ch2c867w0zdgjkzq41506lm61i3dk87ngdisf"))))
+                "03rpxbp43bjs62mmw4hv4785n6f6nbf8kj2y9mma5nzk6i2xs09f"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)
