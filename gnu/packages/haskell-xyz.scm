@@ -685,7 +685,7 @@ packages.")
 (define-public ghc-base-orphans
   (package
     (name "ghc-base-orphans")
-    (version "0.7")
+    (version "0.8.1")
     (source
      (origin
        (method url-fetch)
@@ -695,7 +695,7 @@ packages.")
              ".tar.gz"))
        (sha256
         (base32
-         "057f9npnqk71ccfh95djfkpd54dzazphj06grwxa3fyhwcwxrb8a"))))
+         "1nwr9av27i9p72k0sn96mw3ywdczw65dy5gd5wxpabhhxlxdcas4"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
