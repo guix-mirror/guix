@@ -3584,7 +3584,7 @@ arithmetic.")
 (define-public ghc-fmlist
   (package
     (name "ghc-fmlist")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -3594,7 +3594,7 @@ arithmetic.")
          version ".tar.gz"))
        (sha256
         (base32
-         "02868865hqm189h5wjd916abvqwkhbrx5b0119s1dwp70ifvbi4g"))))
+         "1w9nhm2zybdx4c1lalkajwqr8wcs731lfjld2r8gknd7y96x8pwf"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/sjoerdvisscher/fmlist")
     (synopsis "FoldMap lists")
