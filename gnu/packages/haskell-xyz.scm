@@ -3333,7 +3333,7 @@ when used with GHC versions which already provide the
 (define-public ghc-fast-logger
   (package
     (name "ghc-fast-logger")
-    (version "2.4.11")
+    (version "2.4.17")
     (source
      (origin
        (method url-fetch)
@@ -3343,12 +3343,13 @@ when used with GHC versions which already provide the
              ".tar.gz"))
        (sha256
         (base32
-         "1ad2vq4nifdxshqk9yrmghqizhkgybfz134kpr6padglb2mxxrdv"))))
+         "02mxb1ckvx1s2r2m11l5i2l5rdl7232p0f61af6773haykjp0qxk"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-auto-update" ,ghc-auto-update)
        ("ghc-easy-file" ,ghc-easy-file)
-       ("ghc-unix-time" ,ghc-unix-time)))
+       ("ghc-unix-time" ,ghc-unix-time)
+       ("ghc-unix-compat" ,ghc-unix-compat)))
     (native-inputs
      `(("hspec-discover" ,hspec-discover)
        ("ghc-hspec" ,ghc-hspec)))
