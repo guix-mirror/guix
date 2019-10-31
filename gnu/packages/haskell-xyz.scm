@@ -519,7 +519,7 @@ from aeson.")
 (define-public ghc-auto-update
   (package
     (name "ghc-auto-update")
-    (version "0.1.4")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -529,8 +529,13 @@ from aeson.")
              ".tar.gz"))
        (sha256
         (base32
-         "09dlh2alsx2mw5kvj931yhbj0aw7jmly2cm9xbscm2sf098w35jy"))))
+         "1i36xc2i34aync8271x3pv515l3zb53i518dybn8ghqkhzf27q7l"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-retry" ,ghc-retry)
+       ("hspec-discover" ,hspec-discover)))
     (home-page "https://github.com/yesodweb/wai")
     (synopsis "Efficiently run periodic, on-demand actions")
     (description "This library provides mechanisms to efficiently run
