@@ -8600,7 +8600,7 @@ better for some purposes.")
 (define-public ghc-rio
   (package
     (name "ghc-rio")
-    (version "0.1.5.0")
+    (version "0.1.12.0")
     (source
      (origin
        (method url-fetch)
@@ -8609,7 +8609,7 @@ better for some purposes.")
              version ".tar.gz"))
        (sha256
         (base32
-         "064h8a4hp53a479d3ak0vmqbx8hi0cpg7zn4wp23rjy26dka8p7g"))))
+         "0xzjkh6aavynpyskikhs8dmv0zhkiqiwz9zdn80zbd25b2182pif"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-exceptions" ,ghc-exceptions)
