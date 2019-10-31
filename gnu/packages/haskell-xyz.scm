@@ -6378,7 +6378,7 @@ do on-demand loading.")
 (define-public ghc-mmorph
   (package
     (name "ghc-mmorph")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
      (origin
        (method url-fetch)
@@ -6388,7 +6388,7 @@ do on-demand loading.")
              ".tar.gz"))
        (sha256
         (base32
-         "1gjz1ib968lqybma7my1n19qq6cdj6a7nskrlnwy4jy9jrwzs2n9"))))
+         "0rfsy9n9mlinpmqi2s17fhc67fzma2ig5fbmh6m5m830canzf8vr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-transformers-compat" ,ghc-transformers-compat)))
