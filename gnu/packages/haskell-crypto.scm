@@ -358,7 +358,7 @@ are implemented as FFI bindings to efficient code from zlib.")
 (define-public ghc-entropy
   (package
     (name "ghc-entropy")
-    (version "0.4.1.4")
+    (version "0.4.1.5")
     (source
      (origin
        (method url-fetch)
@@ -366,7 +366,7 @@ are implemented as FFI bindings to efficient code from zlib.")
                            "entropy-" version "/"
                            "entropy-" version ".tar.gz"))
        (sha256
-        (base32 "1fgf47l9klwn1xssbcbq6by651vikd8hlfxhiwd5bqzxr1jnlgrf"))))
+        (base32 "0szf8hi1pi8g0kxnkcymh65gk1b0niyl1nnkckzdqyar87qal0jm"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/TomMD/entropy")
     (synopsis "Provides platform independent entropy source for Haskell")
