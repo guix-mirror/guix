@@ -9446,7 +9446,7 @@ them.")
 (define-public ghc-simple-sendfile
   (package
     (name "ghc-simple-sendfile")
-    (version "0.2.27")
+    (version "0.2.30")
     (source
      (origin
        (method url-fetch)
@@ -9455,7 +9455,7 @@ them.")
                            "simple-sendfile-" version ".tar.gz"))
        (sha256
         (base32
-         "1bwwqzcm56m2w4ymsa054sxmpbj76h9pvb0jf8zxp8lr41cp51gn"))))
+         "112j0qfsjazf9wg1zywf7hjybgsiywk9wkm27yi8xzv27hmlv1mn"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-conduit" ,ghc-conduit)
