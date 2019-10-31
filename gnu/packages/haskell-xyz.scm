@@ -5164,7 +5164,7 @@ lines continued at an indented level below.")
 (define-public ghc-inline-c
   (package
     (name "ghc-inline-c")
-    (version "0.6.1.0")
+    (version "0.7.0.1")
     (source
      (origin
        (method url-fetch)
@@ -5172,7 +5172,7 @@ lines continued at an indented level below.")
                            "inline-c-" version ".tar.gz"))
        (sha256
         (base32
-         "0vbfrsqsi7mdziqsnj68bsqlwbqxxhvrmy9rv6w8z18d1m8w3n6h"))))
+         "19scbviwiv1fbsdcjji3dscjg7w0xa8r97xwkqqrwm7zhvrg5wns"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
