@@ -8167,7 +8167,7 @@ includes efficient implementations for common data types.")
 (define-public ghc-rebase
   (package
     (name "ghc-rebase")
-    (version "1.2.4")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -8176,7 +8176,7 @@ includes efficient implementations for common data types.")
                            "rebase-" version ".tar.gz"))
        (sha256
         (base32
-         "1gah2qwfpzwamnikbc5h4nv6dgvv9h16di9ka7946za3nibyasya"))))
+         "0q4m2fa7wkgxs0grir8rlqwibasmi3s1x7c107ynndwfm62nzv0a"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-hashable" ,ghc-hashable)
               ("ghc-vector" ,ghc-vector)
