@@ -10106,7 +10106,7 @@ having to unsafely pass dummy arguments.")
 (define-public ghc-tar
   (package
     (name "ghc-tar")
-    (version "0.5.1.0")
+    (version "0.5.1.1")
     (source
      (origin
        (method url-fetch)
@@ -10115,7 +10115,7 @@ having to unsafely pass dummy arguments.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0s2brvaxg5fki2jdkccmnpssiy6a3wjh24p6a3dkkdvjcixnk7f8"))))
+         "1ppim7cgmn7ng8zbdrwkxhhizc30h15h1c9cdlzamc5jcagl915k"))))
     (build-system haskell-build-system)
     ;; FIXME: 2/24 tests fail.
     (arguments `(#:tests? #f))
