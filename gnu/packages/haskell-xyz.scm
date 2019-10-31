@@ -4405,7 +4405,7 @@ combine hash values.")
 (define-public ghc-hashtables
   (package
     (name "ghc-hashtables")
-    (version "1.2.3.1")
+    (version "1.2.3.4")
     (source
      (origin
        (method url-fetch)
@@ -4413,7 +4413,7 @@ combine hash values.")
              "https://hackage.haskell.org/package/hashtables/hashtables-"
              version ".tar.gz"))
        (sha256
-        (base32 "1giw9caajr07slf09j7zry9b0kvm4yj9q78zy1mawzi6gk3wglcg"))))
+        (base32 "1rjmxnr30g4hygiywkpz5p9sanh0abs7ap4zc1kgd8zv04kycp0j"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hashable" ,ghc-hashable)
