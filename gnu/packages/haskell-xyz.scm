@@ -336,7 +336,7 @@ colored output using the ansi-terminal package.")
 (define-public ghc-appar
   (package
     (name "ghc-appar")
-    (version "0.1.4")
+    (version "0.1.8")
     (source
      (origin
        (method url-fetch)
@@ -346,7 +346,7 @@ colored output using the ansi-terminal package.")
              ".tar.gz"))
        (sha256
         (base32
-         "09jb9ij78fdkz2qk66rw99q19qnm504dpv0yq0pjsl6xwjmndsjq"))))
+         "07v3h766q9mnhphsm53718h1lds147ix7dj15kc5hnsj4vffvkn4"))))
     (build-system haskell-build-system)
     (home-page
      "https://hackage.haskell.org/package/appar")
