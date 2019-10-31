@@ -520,7 +520,7 @@ Haskell's Web Application Interface (WAI).")
 (define-public ghc-bsb-http-chunked
   (package
     (name "ghc-bsb-http-chunked")
-    (version "0.0.0.2")
+    (version "0.0.0.4")
     (source
      (origin
        (method url-fetch)
@@ -530,10 +530,16 @@ Haskell's Web Application Interface (WAI).")
              version ".tar.gz"))
        (sha256
         (base32
-         "1x6m6xkrcw6jiaig1bb2wb5pqyw31x8xr9k9pxgq2g3ng44pbjr8"))))
+         "0z0f18yc6zlwh29c6175ivfcin325lvi4irpvv0n3cmq7vi0k0ql"))))
     (build-system haskell-build-system)
-    (inputs
-     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)))
+    (native-inputs
+     `(("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-hedgehog" ,ghc-hedgehog)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-doctest" ,ghc-doctest)))
     (home-page "http://github.com/sjakobi/bsb-http-chunked")
     (synopsis "Chunked HTTP transfer encoding for bytestring builders")
     (description "This Haskell library contains functions for encoding
