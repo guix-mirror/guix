@@ -854,7 +854,7 @@ interoperate with code that uses the new implementation.")
 (define-public ghc-blaze-markup
   (package
     (name "ghc-blaze-markup")
-    (version "0.8.2.1")
+    (version "0.8.2.3")
     (source
      (origin
        (method url-fetch)
@@ -863,7 +863,7 @@ interoperate with code that uses the new implementation.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0ih1c3qahkdgzbqihdhny5s313l2m66fbb88w8jbx7yz56y7rawh"))))
+         "1g9m7ansj7fdyzhz1wqkbzn5amjm50vjgjdwkbjc5qqhagnv1y3j"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
