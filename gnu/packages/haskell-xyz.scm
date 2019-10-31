@@ -6195,7 +6195,7 @@ stripped.  As the result, this package has no dependencies.")
 (define-public ghc-microlens-ghc
   (package
     (name "ghc-microlens-ghc")
-    (version "0.4.9.1")
+    (version "0.4.10")
     (source
      (origin
        (method url-fetch)
@@ -6205,7 +6205,7 @@ stripped.  As the result, this package has no dependencies.")
              ".tar.gz"))
        (sha256
         (base32
-         "03iwgg8zww9irv59l70c8yy7vzxir1zf66y12210xk91k5hq6jrj"))))
+         "102dbrdsdadxbbhvx8avv1wbk84767a7lkb8ckp3zxk9g7qlly33"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-microlens" ,ghc-microlens)))
     (home-page "https://github.com/monadfix/microlens")
