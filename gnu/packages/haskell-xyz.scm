@@ -4918,7 +4918,7 @@ are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
 (define-public ghc-hs-bibutils
   (package
     (name "ghc-hs-bibutils")
-    (version "6.6.0.0")
+    (version "6.7.0.0")
     (source
      (origin
        (method url-fetch)
@@ -4927,7 +4927,7 @@ are described in a file named @code{package.yaml}.  Both @code{cabal2nix} and
              version ".tar.gz"))
        (sha256
         (base32
-         "0n2sz2zl4naspryd49ii858qkjp2lapns5a2gr8zm6vvn5sh1f0l"))))
+         "1qfyssl76lm4g09yxr3y10kmf8cnzls46g5h0ijk0wpk9wlhbln5"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-syb" ,ghc-syb)))
     (home-page "https://hackage.haskell.org/package/hs-bibutils")
