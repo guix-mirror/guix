@@ -7359,7 +7359,7 @@ suitable for inclusion in pandoc YAML metadata.")
 (define-public ghc-pandoc-types
   (package
     (name "ghc-pandoc-types")
-    (version "1.17.5.1")
+    (version "1.17.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -7367,7 +7367,7 @@ suitable for inclusion in pandoc YAML metadata.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q6v2bynij724fv347mhqxdscwifzrx5jb9mq80608qf638fn717"))))
+                "1d6ygq991ddria71l7hg9yd7lq94sjy4m71rdws1v8hq943c4d0q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-syb" ,ghc-syb)
