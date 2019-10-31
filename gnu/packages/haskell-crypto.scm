@@ -808,7 +808,7 @@ implementation of SSL.")
 (define-public ghc-openssl-streams
   (package
     (name "ghc-openssl-streams")
-    (version "1.2.1.3")
+    (version "1.2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -817,7 +817,7 @@ implementation of SSL.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0pwghr7ygv59k572xsj1j97rilkbjz66qaiyj0ra2wfg6pl70wfw"))))
+         "0rplym6ayydkpr7x9mw3l13p0vzzfzzxw244d7sd3jcvaxpv0rmr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hsopenssl" ,ghc-hsopenssl)
@@ -827,9 +827,6 @@ implementation of SSL.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
-    (arguments
-     `(#:cabal-revision
-       ("2" "1004kgdryflpkp19dv4ikilhcn0xbfc5dsp6v3ib34580pcfj7wy")))
     (home-page "http://hackage.haskell.org/package/openssl-streams")
     (synopsis "OpenSSL network support for io-streams")
     (description "This library contains io-streams routines for secure
