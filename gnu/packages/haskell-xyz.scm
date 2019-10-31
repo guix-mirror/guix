@@ -6698,7 +6698,7 @@ the @code{mtl-tf} package.")
 (define-public ghc-mono-traversable
   (package
     (name "ghc-mono-traversable")
-    (version "1.0.9.0")
+    (version "1.0.13.0")
     (source
      (origin
        (method url-fetch)
@@ -6707,7 +6707,7 @@ the @code{mtl-tf} package.")
                            "mono-traversable-" version ".tar.gz"))
        (sha256
         (base32
-         "0180ks0dyvpk1r20w5jw2w2n79mjnk69n9vhspaxzlyxqgim5psa"))))
+         "1bqy982lpdb83lacfy76n8kqw5bvd31avxj25kg8gkgycdh0g0ma"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-unordered-containers" ,ghc-unordered-containers)
               ("ghc-hashable" ,ghc-hashable)
