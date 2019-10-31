@@ -8544,7 +8544,7 @@ code where you can safely allocate resources.")
 (define-public ghc-rfc5051
   (package
     (name "ghc-rfc5051")
-    (version "0.1.0.3")
+    (version "0.1.0.4")
     (source
      (origin
        (method url-fetch)
@@ -8552,7 +8552,7 @@ code where you can safely allocate resources.")
                            "rfc5051-" version ".tar.gz"))
        (sha256
         (base32
-         "0av4c3qvwbkbzrjrrg601ay9pds7wscqqp2lc2z78mv2lllap3g3"))))
+         "1lxkq414ni986ciml4gbvf463fn55z299knky7pq3ixb1qislpb1"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/rfc5051")
     (synopsis "Simple unicode collation as per RFC5051")
