@@ -2977,7 +2977,7 @@ Damerau-Levenshtein algorithms.")
 (define-public ghc-either
   (package
     (name "ghc-either")
-    (version "5.0.1")
+    (version "5.0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -2986,7 +2986,7 @@ Damerau-Levenshtein algorithms.")
                            "either-" version ".tar.gz"))
        (sha256
         (base32
-         "064hjfld7dkzs78sy30k5qkiva3hx24rax6dvzz5ygr2c0zypdkc"))))
+         "09yzki8ss56xhy9vggdw1rls86b2kf55hjl5wi0vbv02d8fxahq2"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-bifunctors" ,ghc-bifunctors)
               ("ghc-exceptions" ,ghc-exceptions)
