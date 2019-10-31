@@ -816,7 +816,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
 (define-public ghc-aeson-pretty
   (package
     (name "ghc-aeson-pretty")
-    (version "0.8.7")
+    (version "0.8.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -824,7 +824,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1m977gs0s9gf3lwzlbs5y7bl6ansc5pywmn2qjk09l5bwg2yrhf1"))))
+                "09n7gs91y1fbw6gjszrd2na3isnvk3y5rsi90lzjrwywnqfadkl1"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
