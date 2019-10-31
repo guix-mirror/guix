@@ -7961,7 +7961,7 @@ API.")
 (define-public ghc-psqueues
   (package
     (name "ghc-psqueues")
-    (version "0.2.7.0")
+    (version "0.2.7.2")
     (source
      (origin
        (method url-fetch)
@@ -7970,7 +7970,7 @@ API.")
                            "psqueues-" version ".tar.gz"))
        (sha256
         (base32
-         "1sjgc9bxh63kkdp59nbirx3xazr02ia5yhp4f4a0jnq1hj465wsc"))))
+         "1yckx2csqswghiy9nfj03cybmza8104nmnpbpcc9ngwlbmakn9i6"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-hashable" ,ghc-hashable)))
@@ -7978,9 +7978,9 @@ API.")
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-tagged" ,ghc-tagged)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
     (home-page "https://github.com/jaspervdj/psqueues")
     (synopsis "Pure priority search queues")
     (description "The psqueues package provides
