@@ -7716,7 +7716,7 @@ functions for the ghc-persistent package.")
 (define-public ghc-polyparse
   (package
     (name "ghc-polyparse")
-    (version "1.12")
+    (version "1.12.1")
     (source
      (origin
        (method url-fetch)
@@ -7726,7 +7726,7 @@ functions for the ghc-persistent package.")
              ".tar.gz"))
        (sha256
         (base32
-         "05dya1vdvq29hkhkdlsglzhw7bdn51rvs1javs0q75nf99c66k7m"))))
+         "19fs18g7fvfdkm9zy28cgighjcxfa6mcpqgyp6whmsjkb3h393fx"))))
     (build-system haskell-build-system)
     (home-page
      "http://code.haskell.org/~malcolm/polyparse/")
