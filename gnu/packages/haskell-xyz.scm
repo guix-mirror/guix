@@ -8390,7 +8390,7 @@ Haskell library @code{regex-base}.")
 (define-public ghc-regex-tdfa
   (package
     (name "ghc-regex-tdfa")
-    (version "1.2.3.1")
+    (version "1.2.3.2")
     (source
      (origin
        (method url-fetch)
@@ -8399,7 +8399,7 @@ Haskell library @code{regex-base}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0l7ajnh4hpgggf2a1r9dg0hx2fy679vd2kada5y7r02hy3nfxala"))))
+         "03yhpqrqz977nwlnhnyz9dacnbzw8xb6j18h365rkgmbc05sb3hf"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-regex-base" ,ghc-regex-base)))
