@@ -9345,14 +9345,14 @@ provided.  Skylighting is intended to be the successor to highlighting-kate.")
   (package
     (inherit ghc-skylighting-core)
     (name "ghc-skylighting")
-    (version "0.7.2")
+    (version "0.8.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/skylighting-"
                                   version "/skylighting-" version ".tar.gz"))
               (sha256
                (base32
-                "1rh3z1a7a4clvksdw1qlpmhxqkfahwypi70k91whgfamzsqpxdch"))))
+                "1xls8ycad77m55ax4hp55k60h3pi5sm3m32hycbc8baixbgfx5xz"))))
     (inputs
      `(("ghc-skylighting-core" ,ghc-skylighting-core)
        ,@(package-inputs ghc-skylighting-core)))))
