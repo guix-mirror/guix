@@ -11387,7 +11387,7 @@ explicit by providing a function to check whether the invariants hold.")
 (define-public ghc-vault
   (package
     (name "ghc-vault")
-    (version "0.3.1.2")
+    (version "0.3.1.3")
     (source
      (origin
        (method url-fetch)
@@ -11397,12 +11397,12 @@ explicit by providing a function to check whether the invariants hold.")
              ".tar.gz"))
        (sha256
         (base32
-         "072mbrihsdsb8c6xvg6lvk0rqjgvxvi8qkg4n6wwym5hq0pfa04y"))))
+         "0vdm472vn734xa27jjm2mjacl37mxiqaaahvm4hzqjgyh4cqq377"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+       ("ghc-semigroups" ,ghc-semigroups)))
     (home-page
      "https://github.com/HeinrichApfelmus/vault")
     (synopsis "Persistent store for arbitrary values")
