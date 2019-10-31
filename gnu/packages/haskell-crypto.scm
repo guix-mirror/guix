@@ -85,7 +85,7 @@ supports for high level forms of ASN1 (BER, and DER).")
 (define-public ghc-asn1-parse
   (package
     (name "ghc-asn1-parse")
-    (version "0.9.4")
+    (version "0.9.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -93,7 +93,7 @@ supports for high level forms of ASN1 (BER, and DER).")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "025prsihk5g6rdv9xlfmj0zpa0wa3qjzj5i4ilzvg7f6f3sji8y6"))))
+                "17pk8y3nwv9b9i5j15qlmwi7fmq9ab2z4kfpjk2rvcrh9lsf27wg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-asn1-types" ,ghc-asn1-types)
