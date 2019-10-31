@@ -5989,7 +5989,7 @@ Kaseorg.")
 (define-public ghc-linear
   (package
     (name "ghc-linear")
-    (version "1.20.8")
+    (version "1.20.9")
     (source
      (origin
        (method url-fetch)
@@ -5997,7 +5997,7 @@ Kaseorg.")
                            "linear-" version ".tar.gz"))
        (sha256
         (base32
-         "046vkvxlb0s286qr55s0c6db0rlwbm1cmlmwhrrkqbkzhfcipgay"))))
+         "0h7yqigq593n7wsl7nz6a5f137wznm7y679wsii0ph0zsc4v5af5"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-adjunctions" ,ghc-adjunctions)
