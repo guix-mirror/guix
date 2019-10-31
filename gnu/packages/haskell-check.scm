@@ -607,7 +607,7 @@ runs Hspec tests.")
 (define-public ghc-hspec-core
   (package
     (name "ghc-hspec-core")
-    (version "2.5.5")
+    (version "2.7.1")
     (source
      (origin
        (method url-fetch)
@@ -615,19 +615,19 @@ runs Hspec tests.")
                            "hspec-core-" version ".tar.gz"))
        (sha256
         (base32
-         "1vfrqlpn32s9wiykmkxbnrnd5p56yznw20pf8fwzw78ar4wpz55x"))))
+         "08vk8588lap00hsln8zl64dazbb28lzk4b4h5vnm7xvhg7r21k1c"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
     (inputs
      `(("ghc-setenv" ,ghc-setenv)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
-       ("ghc-async" ,ghc-async)
        ("ghc-clock" ,ghc-clock)
        ("ghc-quickcheck-io" ,ghc-quickcheck-io)
        ("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-hspec-expectations" ,ghc-hspec-expectations)
-       ("ghc-silently" ,ghc-silently)))
+       ("ghc-silently" ,ghc-silently)
+       ("ghc-tf-random" ,ghc-tf-random)))
     (home-page "https://hspec.github.io/")
     (synopsis "Testing framework for Haskell")
     (description "This library exposes internal types and functions that can
