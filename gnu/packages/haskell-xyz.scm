@@ -2289,7 +2289,7 @@ function performs the conversion you desire.")
 (define-public ghc-data-accessor
   (package
     (name "ghc-data-accessor")
-    (version "0.2.2.7")
+    (version "0.2.2.8")
     (source
      (origin
        (method url-fetch)
@@ -2297,7 +2297,7 @@ function performs the conversion you desire.")
              "mirror://hackage/package/data-accessor/data-accessor-"
              version ".tar.gz"))
        (sha256
-        (base32 "1vf2g1gac3rm32g97rl0fll51m88q7ry4m6khnl5j47qsmx24r9l"))))
+        (base32 "1fq4gygxbz0bd0mzgvc1sl3m4gjnsv8nbgpnmdpa29zj5lb9agxc"))))
     (build-system haskell-build-system)
     (home-page "https://www.haskell.org/haskellwiki/Record_access")
     (synopsis
