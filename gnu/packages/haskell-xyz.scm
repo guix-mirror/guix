@@ -1539,7 +1539,7 @@ Partial and Infinite Values\"}.")
 (define-public ghc-cheapskate
   (package
     (name "ghc-cheapskate")
-    (version "0.1.1")
+    (version "0.1.1.1")
     (source
      (origin
        (method url-fetch)
@@ -1549,7 +1549,7 @@ Partial and Infinite Values\"}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1hiqi7h76shjzs2zj0j8g6wnq2hbiq1hmfafdazr97fba2zl2432"))))
+         "0qnyd8bni2rby6b02ff4bvfdhm1hwc8vzpmnms84jgrlg1lly3fm"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-blaze-html" ,ghc-blaze-html)
