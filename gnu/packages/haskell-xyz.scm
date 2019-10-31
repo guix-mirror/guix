@@ -8537,7 +8537,7 @@ inspired by libtre.")
 (define-public ghc-rerebase
   (package
     (name "ghc-rerebase")
-    (version "1.2.2")
+    (version "1.3.1.1")
     (source
      (origin
        (method url-fetch)
@@ -8546,7 +8546,7 @@ inspired by libtre.")
              version ".tar.gz"))
        (sha256
         (base32
-         "11v6rmz7ql2rdx6mhb3lsal952lwihclfhh0m7fcnii5br0906ks"))))
+         "1jbqif6k249rkknm2zwk8v8jil3kgi9ar53358v8l4ffx346rm82"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-rebase" ,ghc-rebase)))
