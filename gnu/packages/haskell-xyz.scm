@@ -3469,7 +3469,7 @@ for generating graph-like data structures.")
 (define-public ghc-file-embed
   (package
     (name "ghc-file-embed")
-    (version "0.0.10.1")
+    (version "0.0.11")
     (source
      (origin
        (method url-fetch)
@@ -3477,7 +3477,7 @@ for generating graph-like data structures.")
                            "file-embed-" version ".tar.gz"))
        (sha256
         (base32
-         "0lj164cnzqyd487mli91nnr7137a4h4qsasfwsnsh77sx12fpk9k"))))
+         "0l6dkwccbzzyx8rcav03lya2334dgi3vfwk96h7l93l0fc4x19gf"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/snoyberg/file-embed")
     (synopsis "Use Template Haskell to embed file contents directly")
