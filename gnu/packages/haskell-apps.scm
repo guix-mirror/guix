@@ -391,7 +391,7 @@ used to keep a folder in sync between computers.")
 (define-public hlint
   (package
     (name "hlint")
-    (version "2.1.10")
+    (version "2.1.26")
     (source
      (origin
        (method url-fetch)
@@ -400,7 +400,7 @@ used to keep a folder in sync between computers.")
              "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "19as2m9g75cr6n1agzvsij0cvqhb0wbjlk31w4y5d5mns87dki0w"))))
+         "16zkkpbfrd69853cdqf597fva969lirfc86b039i9zd7ghlrcayc"))))
     (build-system haskell-build-system)
     (inputs
      `(("cpphs" ,cpphs)
@@ -416,6 +416,7 @@ used to keep a folder in sync between computers.")
        ("ghc-extra" ,ghc-extra)
        ("ghc-refact" ,ghc-refact)
        ("ghc-aeson" ,ghc-aeson)
+       ("ghc-lib-parser" ,ghc-lib-parser)
        ("hscolour" ,hscolour)))
     (home-page "http://community.haskell.org/~ndm/hlint/")
     (synopsis "Suggest improvements for Haskell source code")
