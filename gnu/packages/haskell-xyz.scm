@@ -10929,7 +10929,7 @@ for Unix time in Haskell.")
 (define-public ghc-unliftio
   (package
     (name "ghc-unliftio")
-    (version "0.2.7.0")
+    (version "0.2.12")
     (source
      (origin
        (method url-fetch)
@@ -10939,7 +10939,7 @@ for Unix time in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "0qql93lq5w7qghl454cc3s1i8v1jb4h08n82fqkw0kli4g3g9njs"))))
+         "02gy1zrxgzg4xmzm8lafsf1nyr3as1q20r8ld73xg3q7rkag9acg"))))
     (build-system haskell-build-system)
     (arguments `(#:tests? #f)) ; FIXME: hspec-discover not in PATH
     (inputs
