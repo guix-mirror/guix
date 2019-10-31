@@ -4704,7 +4704,7 @@ library and an executable.")
 (define-public ghc-hinotify
   (package
     (name "ghc-hinotify")
-    (version "0.3.10")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4712,7 +4712,7 @@ library and an executable.")
                     "hinotify-" version ".tar.gz"))
               (sha256
                (base32
-                "17ax3n68a5c2ddazp86aciliskrh6znd3bnry0wcllmb6dbpsaxg"))))
+                "1x1lm685ws2q0z0ibwq6x3l72xh67mj06s36xiga3al48d92q63x"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)))
