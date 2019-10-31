@@ -156,7 +156,7 @@ contains the correct result for the test.")
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
-    (version "1.1.0.3")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
@@ -166,7 +166,7 @@ contains the correct result for the test.")
              ".tar.gz"))
        (sha256
         (base32
-         "14riid753hjqr6lca1kgxpnvq0wykf0k3qc5jpag42hh8bszav22"))))
+         "0qpn0avpw4w1qq5r2gwh2piipj0llqq6ylagr3xnqiraq6mhg8cc"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-tagged" ,ghc-tagged)
