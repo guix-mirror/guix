@@ -11904,7 +11904,7 @@ documents.")
 (define-public ghc-zip-archive
   (package
     (name "ghc-zip-archive")
-    (version "0.3.3")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
@@ -11914,15 +11914,26 @@ documents.")
              ".tar.gz"))
        (sha256
         (base32
-         "0kf8xyac168bng8a0za2jwrbss7a4ralvci9g54hnvl0gkkxx2lq"))))
+         "1cdix5mnxrbs7b2kivhdydhfzgxidd9dqlw71mdw5p21cabwkmf5"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-PATH-for-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((unzip (assoc-ref inputs "unzip"))
+                   (which (assoc-ref inputs "which"))
+                   (path (getenv "PATH")))
+               (setenv "PATH" (string-append unzip "/bin:" which "/bin:" path))
+               #t))))))
     (inputs
      `(("ghc-digest" ,ghc-digest)
        ("ghc-temporary" ,ghc-temporary)
        ("ghc-zlib" ,ghc-zlib)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
-       ("unzip" ,unzip)))
+       ("unzip" ,unzip)
+       ("which" ,which)))
     (home-page "https://hackage.haskell.org/package/zip-archive")
     (synopsis "Zip archive library for Haskell")
     (description "The zip-archive library provides functions for creating,
