@@ -5712,7 +5712,7 @@ to be called from Haskell.")
 (define-public ghc-libmpd
   (package
     (name "ghc-libmpd")
-    (version "0.9.0.9")
+    (version "0.9.0.10")
     (source
      (origin
        (method url-fetch)
@@ -5722,7 +5722,7 @@ to be called from Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1931m23iqb4wddpdidm4ph746zpaw41kkjzmb074j7yyfpk7x1jv"))))
+         "0vy287mn1vk8kvij5i3hc0p02l886cpsq5dds7kl6g520si3abkb"))))
     (build-system haskell-build-system)
     ;; Tests fail on i686.
     ;; See https://github.com/vimus/libmpd-haskell/issues/112
@@ -5732,6 +5732,7 @@ to be called from Haskell.")
        ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-data-default-class" ,ghc-data-default-class)
        ("ghc-network" ,ghc-network)
+       ("ghc-safe-exceptions" ,ghc-safe-exceptions)
        ("ghc-utf8-string" ,ghc-utf8-string)))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
