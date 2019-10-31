@@ -7775,7 +7775,7 @@ syntax and semantics as Perl 5.")
 (define-public ghc-persistent
   (package
     (name "ghc-persistent")
-    (version "2.8.2")
+    (version "2.9.2")
     (source
      (origin
        (method url-fetch)
@@ -7784,7 +7784,7 @@ syntax and semantics as Perl 5.")
                            "persistent-" version ".tar.gz"))
        (sha256
         (base32
-         "1h0yijbf1yiwl50klyafy4ln99j8bib4kgbzviw7fc4y4mwv4sv9"))))
+         "1wsa3kn427v88a6r0vwr6mz23snik2krbsgc8zqp18xajqn5szj9"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-old-locale" ,ghc-old-locale)
               ("ghc-conduit" ,ghc-conduit)
