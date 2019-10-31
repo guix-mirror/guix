@@ -11882,7 +11882,7 @@ modifying, and extracting files from zip archives in Haskell.")
 (define-public ghc-zlib
   (package
     (name "ghc-zlib")
-    (version "0.6.2")
+    (version "0.6.2.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -11893,7 +11893,7 @@ modifying, and extracting files from zip archives in Haskell.")
              ".tar.gz"))
        (sha256
         (base32
-         "1vbzf0awb6zb456xf48za1kl22018646cfzq4frvxgb9ay97vk0d"))))
+         "1l11jraslcrp9d4wnhwfyhwk4fsiq1aq8i6vj81vcq1m2zzi1y7h"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
