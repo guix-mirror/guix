@@ -4726,7 +4726,7 @@ accessed or modified.")
 (define-public ghc-hmatrix
   (package
     (name "ghc-hmatrix")
-    (version "0.19.0.0")
+    (version "0.20.0.0")
     (source
      (origin
        (method url-fetch)
@@ -4734,7 +4734,7 @@ accessed or modified.")
              "https://hackage.haskell.org/package/hmatrix/hmatrix-"
              version ".tar.gz"))
        (sha256
-        (base32 "10jd69nby29dggghcyjk6ykyr5wrn97nrv1dkpyrp0y5xm12xssj"))))
+        (base32 "1sqy1aci5zfagkb34mz3xdil7cl96z4b4cx28cha54vc5sx1lhpg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-random" ,ghc-random)
