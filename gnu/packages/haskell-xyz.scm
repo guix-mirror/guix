@@ -3211,7 +3211,7 @@ excluding @file{.lhs} files.")
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
-    (version "0.10.0")
+    (version "0.10.3")
     (source
      (origin
        (method url-fetch)
@@ -3221,7 +3221,7 @@ excluding @file{.lhs} files.")
              ".tar.gz"))
        (sha256
         (base32
-         "1ms9zansv0pwzwdjncvx4kf18lnkjy2p61hvjhvxmjx5bqp93p8y"))))
+         "1w25j4ys5s6v239vbqlbipm9fdwxl1j2ap2lzms7f7rgnik5ir24"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)
