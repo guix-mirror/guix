@@ -9555,7 +9555,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
 (define-public ghc-statistics
   (package
     (name "ghc-statistics")
-    (version "0.14.0.2")
+    (version "0.15.1.1")
     (source
      (origin
        (method url-fetch)
@@ -9564,17 +9564,16 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
                            "statistics-" version ".tar.gz"))
        (sha256
         (base32
-         "0y27gafkib0x0fn39qfn2rkgsfrm09ng35sbb5dwr7rclhnxz59l"))))
+         "015rn74f1glii26j4b2fh1fc63xvxzrh2xckiancz48kc8jdzabj"))))
     (build-system haskell-build-system)
     (arguments
-     '(#:cabal-revision
-       ("2" "1bx70yqkn62ii17fjv3pig4hklrzkqd09zj67zzjiyjzmn04fir3")
-       ;; Two tests fail: "Discrete CDF is OK" and "Quantile is CDF inverse".
+     '(;; Two tests fail: "Discrete CDF is OK" and "Quantile is CDF inverse".
        #:tests? #f))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-async" ,ghc-async)
        ("ghc-base-orphans" ,ghc-base-orphans)
-       ("ghc-erf" ,ghc-erf)
+       ("ghc-dense-linear-algebra" ,ghc-dense-linear-algebra)
        ("ghc-math-functions" ,ghc-math-functions)
        ("ghc-monad-par" ,ghc-monad-par)
        ("ghc-mwc-random" ,ghc-mwc-random)
