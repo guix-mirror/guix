@@ -3423,7 +3423,7 @@ when used with GHC versions which already provide the
 (define-public ghc-feed
   (package
     (name "ghc-feed")
-    (version "1.0.0.0")
+    (version "1.2.0.1")
     (source
      (origin
        (method url-fetch)
@@ -3431,11 +3431,8 @@ when used with GHC versions which already provide the
                            "feed/feed-" version ".tar.gz"))
        (sha256
         (base32
-         "05rgg7x1984mgfhkmz792xj8lhwjgznixhygzr8blf517lns2nck"))))
+         "004lwdng4slj6yl8mgscr3cgj0zzc8hzkf4450dby2l6cardg4w0"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("4" "0baavcavm3ywykcr9cm07aqr7sna98jba2n68lyn3kany8ri214d")))
     (inputs
      `(("ghc-base-compat" ,ghc-base-compat)
        ("ghc-old-locale" ,ghc-old-locale)
@@ -3447,6 +3444,7 @@ when used with GHC versions which already provide the
        ("ghc-xml-types" ,ghc-xml-types)))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-markdown-unlit" ,ghc-markdown-unlit)
        ("ghc-test-framework" ,ghc-test-framework)
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (home-page "https://github.com/bergmark/feed")
