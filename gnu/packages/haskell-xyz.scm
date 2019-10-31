@@ -5703,7 +5703,7 @@ with @code{wc} (for a web service).")
 (define-public ghc-lens
   (package
     (name "ghc-lens")
-    (version "4.16.1")
+    (version "4.17.1")
     (source
      (origin
        (method url-fetch)
@@ -5711,11 +5711,8 @@ with @code{wc} (for a web service).")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1im4drhbydbawd6i0jsrzpqihnmx4ywpkg7yg94ddwsw3mxwkgpm"))))
+         "1gpkc53l2cggnfrgg5k4ih82rycjbdvpj9pnbi5cq8ms0dbvs4a7"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("2" "11h83lj5mba4grhz1qx3irz10ysm9c3k7k6i6xv2cr60q8xin3ri")))
     (inputs
      `(("ghc-base-orphans" ,ghc-base-orphans)
        ("ghc-bifunctors" ,ghc-bifunctors)
