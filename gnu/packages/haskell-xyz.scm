@@ -4953,15 +4953,16 @@ representations of current time.")
 (define-public ghc-hpack
   (package
     (name "ghc-hpack")
-    (version "0.28.2")
+    (version "0.31.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/hpack/"
                            "hpack-" version ".tar.gz"))
+       (patches (search-patches "ghc-hpack-fix-tests.patch"))
        (sha256
         (base32
-         "18w0h76jdp3mk9vin8da9iz3cwhcxmw787xy8wlh8bxcpcr16q5r"))))
+         "1l2d6185lawwhsj70swxkvcacm0hvcn9qsrlx4ph4gs6k578603g"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
@@ -4971,6 +4972,7 @@ representations of current time.")
        ("ghc-http-client" ,ghc-http-client)
        ("ghc-http-client-tls" ,ghc-http-client-tls)
        ("ghc-http-types" ,ghc-http-types)
+       ("ghc-infer-license" ,ghc-infer-license)
        ("ghc-scientific" ,ghc-scientific)
        ("ghc-unordered-containers" ,ghc-unordered-containers)
        ("ghc-vector" ,ghc-vector)

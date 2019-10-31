@@ -881,6 +881,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ghc-diff-swap-cover-args.patch           \
   %D%/packages/patches/ghc-dont-pass-linker-flags-via-response-files.patch	\
   %D%/packages/patches/ghc-haddock-library-unbundle.patch	\
+  %D%/packages/patches/ghc-hpack-fix-tests.patch		\
   %D%/packages/patches/ghc-monad-par-fix-tests.patch		\
   %D%/packages/patches/ghostscript-no-header-id.patch		\
   %D%/packages/patches/ghostscript-no-header-uuid.patch		\
