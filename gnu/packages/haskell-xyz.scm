@@ -7061,7 +7061,7 @@ old @code{time} library.  For new projects, the newer
 (define-public ghc-opengl
   (package
     (name "ghc-opengl")
-    (version "3.0.2.2")
+    (version "3.0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -7071,8 +7071,11 @@ old @code{time} library.  For new projects, the newer
              ".tar.gz"))
        (sha256
         (base32
-         "19vxwvx2n8zq2klj176l25n2b64ybp0b8mhm4p46gvpcivz41fjc"))))
+         "069fg8jcxqq2z9iikynd8vi3jxm2b5y3qywdh4bdviyzab3zy1as"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "1748mrb6r9mpf5jbrx436lwbg8w6dadyy8dhxw2dwnrj5z7zf741")))
     (inputs
      `(("ghc-objectname" ,ghc-objectname)
        ("ghc-gluraw" ,ghc-gluraw)
