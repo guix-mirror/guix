@@ -2212,7 +2212,7 @@ a vocabulary for working with them.")
 (define-public ghc-contravariant
   (package
     (name "ghc-contravariant")
-    (version "1.4.1")
+    (version "1.5.2")
     (source
      (origin
        (method url-fetch)
@@ -2222,7 +2222,7 @@ a vocabulary for working with them.")
              ".tar.gz"))
        (sha256
         (base32
-         "1vfhk8c5cxmmakx7rflap1ipkx5q0j5vnlrcz7yz6y53kxhksgf9"))))
+         "0366gl62wwwdbl9i6kqy60asf60876k55v91la6bmhnwwcj2q9n4"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-void" ,ghc-void)
