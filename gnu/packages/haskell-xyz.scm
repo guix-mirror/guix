@@ -3641,7 +3641,7 @@ and are often as efficient as hand-written folds.")
 (define-public ghc-foundation
   (package
     (name "ghc-foundation")
-    (version "0.0.21")
+    (version "0.0.25")
     (source
      (origin
        (method url-fetch)
@@ -3649,7 +3649,7 @@ and are often as efficient as hand-written folds.")
                            "foundation/foundation-" version ".tar.gz"))
        (sha256
         (base32
-         "1q43y8wfj0wf9gdq2kzphwjwq6m5pvryy1lqgk954aq5z3ks1lsf"))))
+         "0q6kx57ygmznlpf8n499hid4x6mj3180paijx0a8dgi9hh7man61"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-basement" ,ghc-basement)))
     (home-page "https://github.com/haskell-foundation/foundation")
