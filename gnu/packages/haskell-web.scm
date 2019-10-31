@@ -741,7 +741,7 @@ documents.")
 (define-public ghc-blaze-html
   (package
     (name "ghc-blaze-html")
-    (version "0.9.1.1")
+    (version "0.9.1.2")
     (source
      (origin
        (method url-fetch)
@@ -750,7 +750,7 @@ documents.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "06xv8fqhclfjj61z74cgggn4lmx1s7diakxg84mnkgfvk11983pa"))))
+         "0k1r1hddjgqighazcazxrx6xfhvy2gm8il8l82ainv3cai13yl30"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-blaze-builder" ,ghc-blaze-builder)
