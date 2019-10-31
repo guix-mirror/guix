@@ -49,10 +49,14 @@
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages version-control))
 
+;; In Stackage LTS 14, this package is at 2.4.1.0.  However, that
+;; version requires version 2.4.1.0 of the 'Cabal' package, which is
+;; provided by GHC 8.6.5 at version 2.4.0.1.  Hence, we use an older
+;; version to match the compiler's library.
 (define-public cabal-install
  (package
   (name "cabal-install")
-   (version "2.2.0.0")
+   (version "2.4.0.0")
    (source
     (origin
      (method url-fetch)
@@ -61,9 +65,19 @@
             version
             ".tar.gz"))
       (sha256
-       (base32 "1nd3ch7qr4dpfxhgkcq2lnhvszx2kjgnn1kwb44vk9y5jgfs4mn8"))))
-   (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+       (base32 "1xmyl0x8wqfrnray6ky5wy0g0samv4264fbdlzxhqsvk9dbfja8k"))))
    (build-system haskell-build-system)
+   (arguments
+    `(#:cabal-revision
+      ("2" "1xil5pim6j1ckqj61zz6l7xpfxxr3rkw2hvpws2f7pr9shk645dl")
+      #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "cabal-install.cabal"
+               (("zip-archive >= 0\\.3\\.2\\.5 && < 0\\.4,")
+                "zip-archive >= 0.3.2.5 && <= 0.4.1,"))
+             #t)))))
    (inputs
     `(("ghc-async" ,ghc-async)
       ("ghc-base16-bytestring" ,ghc-base16-bytestring)
@@ -78,6 +92,7 @@
       ("ghc-random" ,ghc-random)
       ("ghc-resolv" ,ghc-resolv)
       ("ghc-tar" ,ghc-tar)
+      ("ghc-zip-archive" ,ghc-zip-archive)
       ("ghc-zlib" ,ghc-zlib)))
    (home-page "https://www.haskell.org/cabal/")
    (synopsis "Command-line interface for Cabal and Hackage")
