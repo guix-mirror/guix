@@ -2022,7 +2022,7 @@ space as enumerator/iteratee and pipes.")
 (define-public ghc-conduit-algorithms
   (package
     (name "ghc-conduit-algorithms")
-    (version "0.0.8.1")
+    (version "0.0.11.0")
     (source
      (origin
        (method url-fetch)
@@ -2031,7 +2031,7 @@ space as enumerator/iteratee and pipes.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "07gx2q3d1bbfw14q41rmqg0i4m018pci10lswc0k1ij6lw7sb9fd"))))
+         "0c1jwz30kkvimx7lb61782yk0kyfamrf5bqc3g1h7g51lk8bbv9i"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
@@ -2039,6 +2039,7 @@ space as enumerator/iteratee and pipes.")
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-combinators" ,ghc-conduit-combinators)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-conduit-zstd" ,ghc-conduit-zstd)
        ("ghc-exceptions" ,ghc-exceptions)
        ("ghc-lzma-conduit" ,ghc-lzma-conduit)
        ("ghc-monad-control" ,ghc-monad-control)
