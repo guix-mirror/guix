@@ -590,7 +590,7 @@ based WAI (Web Application Interface in Haskell).")
 (define-public ghc-tls-session-manager
   (package
   (name "ghc-tls-session-manager")
-  (version "0.0.0.2")
+  (version "0.0.3")
   (source
     (origin
       (method url-fetch)
@@ -600,7 +600,7 @@ based WAI (Web Application Interface in Haskell).")
              version ".tar.gz"))
       (sha256
         (base32
-          "0rvmln545vghsx8zhxp44f0f6pzma8cylarmfhhysy55ipywr1n5"))))
+          "0k57flqp2b4bipafiyfipnqmdqv04ky39yr4s4s9sx577zz2j2yi"))))
   (build-system haskell-build-system)
   (inputs
     `(("ghc-auto-update" ,ghc-auto-update)
