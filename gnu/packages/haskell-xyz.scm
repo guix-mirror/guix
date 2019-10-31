@@ -5261,7 +5261,7 @@ Haskell.")
 (define-public ghc-intervalmap
   (package
     (name "ghc-intervalmap")
-    (version "0.6.0.0")
+    (version "0.6.1.1")
     (source
      (origin
        (method url-fetch)
@@ -5269,7 +5269,7 @@ Haskell.")
                            "IntervalMap-" version ".tar.gz"))
        (sha256
         (base32
-         "06hin9wf1by8aqa7820fsi2339bh82184frkwz3jsb9sqa0hszcg"))))
+         "0vdlvxvhf7vjyv0mfn6jaj2i2gclqv8419ck32s2jxfcmki5m5g8"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
