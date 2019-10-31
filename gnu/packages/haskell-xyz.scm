@@ -10934,7 +10934,7 @@ but also need those types.")
 (define-public ghc-tree-diff
   (package
     (name "ghc-tree-diff")
-    (version "0.0.1")
+    (version "0.1")
     (source
      (origin
        (method url-fetch)
@@ -10944,26 +10944,15 @@ but also need those types.")
              ".tar.gz"))
        (sha256
         (base32
-         "049v44c520jy3icxlnrvbdblh3mjmvd7m6qmkzxbzkf02x63xqmz"))))
+         "1156nbqn0pn9lp4zjsy4vv5g5wmy4zxwmbqdgvq349rydynh3ng3"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("4" "1rqxxyj6hqllahs11693g855cxz8mgnb490s7j1ksd300i5xgjsp")
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "tree-diff.cabal"
-               (("trifecta             >=1\\.7\\.1\\.1  && <1\\.8")
-                "trifecta             >=1.7.1.1  && <=2")))))))
     (inputs
      `(("ghc-aeson" ,ghc-aeson)
        ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
        ("ghc-ansi-terminal" ,ghc-ansi-terminal)
        ("ghc-base-compat" ,ghc-base-compat)
-       ("ghc-generics-sop" ,ghc-generics-sop)
+       ("ghc-bytestring-builder" ,ghc-bytestring-builder)
        ("ghc-hashable" ,ghc-hashable)
-       ("ghc-memotrie" ,ghc-memotrie)
        ("ghc-parsers" ,ghc-parsers)
        ("ghc-quickcheck" ,ghc-quickcheck)
        ("ghc-scientific" ,ghc-scientific)
