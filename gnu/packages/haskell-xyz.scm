@@ -8266,7 +8266,7 @@ copious examples.")
 (define-public ghc-regex-applicative
   (package
     (name "ghc-regex-applicative")
-    (version "0.3.3")
+    (version "0.3.3.1")
     (source
      (origin
        (method url-fetch)
@@ -8275,7 +8275,7 @@ copious examples.")
              "regex-applicative-" version ".tar.gz"))
        (sha256
         (base32
-         "1riv7jqf26lbv4rm54sd6mrx8xdh4dvh4xbzymzdfdw13k6a4nb6"))))
+         "0p0anx5vamrhrdvviwkh2zn6pa3pv2bjb7nfyc7dvz2q7g14y1lg"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-smallcheck" ,ghc-smallcheck)
