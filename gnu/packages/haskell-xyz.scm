@@ -11369,7 +11369,7 @@ optimisation framework.")
 (define-public ghc-vector-binary-instances
   (package
     (name "ghc-vector-binary-instances")
-    (version "0.2.4")
+    (version "0.2.5.1")
     (source
      (origin
        (method url-fetch)
@@ -11379,11 +11379,8 @@ optimisation framework.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1y236jb72iab9ska1mc48z6yb0xgwmj45laaqdyjxksd84z7hbrb"))))
+         "04n5cqm1v95pw1bp68l9drjkxqiy2vswxdq0fy1rqcgxisgvji9r"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:cabal-revision
-       ("1" "196frl4akhfk7xf1nxzn8lmq99dxhzhsimanswn9yy7ym8zhki4i")))
     (inputs
      `(("ghc-vector" ,ghc-vector)))
     (native-inputs
