@@ -7855,7 +7855,7 @@ way.")
 (define-public ghc-persistent-sqlite
   (package
     (name "ghc-persistent-sqlite")
-    (version "2.8.2")
+    (version "2.9.3")
     (source
      (origin
        (method url-fetch)
@@ -7864,7 +7864,7 @@ way.")
                            "persistent-sqlite-" version ".tar.gz"))
        (sha256
         (base32
-         "1chbmvjz46smhgnzhha3bbkhys3fys6dip1jr4v7xp1jf78zbyp6"))))
+         "13wbn88ixv4d4dfjl1gabm1q60fbcnygbmixz57pi3z84drrynwq"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-persistent" ,ghc-persistent)
               ("ghc-unliftio-core" ,ghc-unliftio-core)
