@@ -39,7 +39,7 @@
 (define-public ghc-tagsoup
   (package
     (name "ghc-tagsoup")
-    (version "0.14.6")
+    (version "0.14.8")
     (source
      (origin
        (method url-fetch)
@@ -47,7 +47,7 @@
                            "tagsoup-" version ".tar.gz"))
        (sha256
         (base32
-         "1yv3dbyb0i1yqm796jgc4jj5kxkla1sxb3b2klw5ks182kdx8kjb"))))
+         "1m9sx6gr9y9yxvkmcap8xsks8cnhznvma1mrfl39zljkv005azms"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
