@@ -4783,7 +4783,7 @@ using GSL.")
 (define-public ghc-hmatrix-gsl-stats
   (package
     (name "ghc-hmatrix-gsl-stats")
-    (version "0.4.1.7")
+    (version "0.4.1.8")
     (source
      (origin
        (method url-fetch)
@@ -4792,7 +4792,7 @@ using GSL.")
          "https://hackage.haskell.org/package/hmatrix-gsl-stats/hmatrix-gsl-stats-"
          version ".tar.gz"))
        (sha256
-        (base32 "1gslgk58lzin43cvbpivhw7nrn9qyaa6qwhy1z9ypvyal5p8n3sa"))))
+        (base32 "1cq049sj3q5r06x7i35hqrkf2jc4p4kfi9zv0jmi2vp7w4644i5q"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-vector" ,ghc-vector)
