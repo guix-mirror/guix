@@ -1198,7 +1198,7 @@ whereas most of the core code lives in @code{ghc-yesod-core}.")
 (define-public ghc-hxt-charproperties
   (package
     (name "ghc-hxt-charproperties")
-    (version "9.2.0.1")
+    (version "9.4.0.0")
     (source
      (origin
        (method url-fetch)
@@ -1207,7 +1207,7 @@ whereas most of the core code lives in @code{ghc-yesod-core}.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1mml8wglvagqq891rchgli6r8rnkwrqhgsxfl6kb5403pzb18rp4"))))
+         "1bk88hj2pqlvcnyfncqyb9j7w9vvdxcq3cgr0w2l09c0abas23pm"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/UweSchmidt/hxt")
     (synopsis "Character properties and classes for XML and Unicode")
