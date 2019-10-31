@@ -6850,7 +6850,7 @@ ncurses.")
 (define-public ghc-network
   (package
     (name "ghc-network")
-    (version "2.6.3.6")
+    (version "2.8.0.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -6861,7 +6861,7 @@ ncurses.")
              ".tar.gz"))
        (sha256
         (base32
-         "198mam7ahny48p9fajznbqq16a8ya2gw0xm3gnm1si1rmc4hdplv"))))
+         "0im8k51rw3ahmr23ny10pshwbz09jfg0fdpam0hzf2hgxnzmvxb1"))))
     (build-system haskell-build-system)
     ;; The regression tests depend on an unpublished module.
     (arguments `(#:tests? #f))
@@ -6875,24 +6875,6 @@ ncurses.")
     (description
      "This package provides a low-level networking interface.")
     (license license:bsd-3)))
-
-;;; Until we update our default GHC to >=8.6 we cannot update our ghc-network
-;;; package, since the 'cabal-install' package that supports the current
-;;; 'Cabal' module requires 'network==2.6.*'.  Here we provide an updated
-;;; version to be used for our idris package.
-(define-public ghc-network-2.8
-  (hidden-package
-   (package
-     (inherit ghc-network)
-     (version "2.8.0.1")
-     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "https://hackage.haskell.org/package/network/"
-                            "network-" version ".tar.gz"))
-        (sha256
-         (base32
-          "0im8k51rw3ahmr23ny10pshwbz09jfg0fdpam0hzf2hgxnzmvxb1")))))))
 
 (define-public ghc-network-info
   (package
