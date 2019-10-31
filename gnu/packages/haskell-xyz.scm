@@ -5359,7 +5359,7 @@ functors).  For more information, see Edward Kmett's article
 (define-public ghc-io-streams
   (package
     (name "ghc-io-streams")
-    (version "1.5.0.1")
+    (version "1.5.1.0")
     (source
      (origin
        (method url-fetch)
@@ -5367,7 +5367,7 @@ functors).  For more information, see Edward Kmett's article
                            "io-streams/io-streams-" version ".tar.gz"))
        (sha256
         (base32
-         "12rcdg2d70644bvn838fxcjkssqj8pssnx5y657si5rijcbkgjsx"))))
+         "1c7byr943x41nxpc3bnz152fvfbmakafq2958wyf9qiyp2pz18la"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-attoparsec" ,ghc-attoparsec)
@@ -5383,9 +5383,6 @@ functors).  For more information, see Edward Kmett's article
        ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
        ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
        ("ghc-zlib" ,ghc-zlib)))
-    (arguments
-     `(#:cabal-revision
-       ("2" "1mcab95d6hm098myh9gp7sh10srigjphgvm8s9pfs7jg5hzghy14")))
     (home-page "http://hackage.haskell.org/package/io-streams")
     (synopsis "Simple and composable stream I/O")
     (description "This library contains simple and easy-to-use
