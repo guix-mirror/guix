@@ -3564,7 +3564,7 @@ simple general-purpose data structure\".")
 (define-public ghc-fixed
   (package
     (name "ghc-fixed")
-    (version "0.2.1.1")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
@@ -3572,7 +3572,7 @@ simple general-purpose data structure\".")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1qhmwx8iqshns0crmr9d2f8hm65jxbcp3dvv0c39v34ra7if3a94"))))
+         "10l2sh179xarb774q92cff2gkb20rsrlilfwp1fk61rzmz9yn64j"))))
     (build-system haskell-build-system)
     (home-page "https://github.com/ekmett/fixed")
     (synopsis "Signed 15.16 precision fixed point arithmetic")
