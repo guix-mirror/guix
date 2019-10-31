@@ -5468,7 +5468,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
 (define-public ghc-juicypixels
   (package
     (name "ghc-juicypixels")
-    (version "3.2.9.5")
+    (version "3.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
@@ -5476,7 +5476,7 @@ JSON (JavaScript Object Notation) is a lightweight data-interchange format.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0mf3ihr0xy2wc2wzb9a17g0n3p60x7pvm8akwpvhdy8klvs6r744"))))
+                "0qacrnz2qcykj3f6c4k2p8qd31pa2slpv3ykfblgizrfh3401q6x"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-zlib" ,ghc-zlib)
