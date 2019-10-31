@@ -7749,7 +7749,7 @@ Strings.")
 (define-public ghc-pqueue
   (package
     (name "ghc-pqueue")
-    (version "1.4.1.1")
+    (version "1.4.1.2")
     (source
      (origin
        (method url-fetch)
@@ -7757,7 +7757,7 @@ Strings.")
                            "pqueue/pqueue-" version ".tar.gz"))
        (sha256
         (base32
-         "1zvwm1zcqqq5n101s1brjhgbay8rf9fviq6gxbplf40i63m57p1x"))))
+         "1v4zhv2sc1zsw91hvnarkjhayx2dnf7ccxz6rrhsqpcs0szaranj"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
