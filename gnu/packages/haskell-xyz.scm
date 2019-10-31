@@ -3237,7 +3237,7 @@ generated SQL and optimize it for your backend.")
 (define-public ghc-exactprint
   (package
     (name "ghc-exactprint")
-    (version "0.5.6.1")
+    (version "0.6.1")
     (source
      (origin
        (method url-fetch)
@@ -3246,7 +3246,7 @@ generated SQL and optimize it for your backend.")
              "ghc-exactprint/ghc-exactprint-" version ".tar.gz"))
        (sha256
         (base32
-         "141k6qiys0m0r4br7ikp4i546vs3xcil9cwglzcdfcbnb5nj1z87"))))
+         "12nqpqmi9c57a3hgpfy8q073zryz66ylmcvf29hyffpj7vmmnvhl"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-paths" ,ghc-paths)
