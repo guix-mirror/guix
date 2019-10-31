@@ -11259,7 +11259,7 @@ example of, \"An applicative functor that is not a monad.\"")
 (define-public ghc-validity
   (package
     (name "ghc-validity")
-    (version "0.7.0.0")
+    (version "0.9.0.2")
     (source
      (origin
        (method url-fetch)
@@ -11269,7 +11269,7 @@ example of, \"An applicative functor that is not a monad.\"")
              ".tar.gz"))
        (sha256
         (base32
-         "0xribw98amafihw87ddajk6vlirp7w9b26lrnjgq7jfm4710j95f"))))
+         "1aa93lp1pqwv7vhx19nazlig8qhbp3psblbz360s5lii3s5rli2v"))))
     (build-system haskell-build-system)
     (native-inputs `(("ghc-hspec" ,ghc-hspec)
                      ("hspec-discover" ,hspec-discover)))
