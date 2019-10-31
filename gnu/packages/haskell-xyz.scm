@@ -10606,7 +10606,7 @@ used CPU time of monadic computation with an IO base.")
 (define-public ghc-tldr
   (package
     (name "ghc-tldr")
-    (version "0.4.0.1")
+    (version "0.4.0.2")
     (source
      (origin
        (method url-fetch)
@@ -10616,7 +10616,7 @@ used CPU time of monadic computation with an IO base.")
              ".tar.gz"))
        (sha256
         (base32
-         "0nc581y9jjzwd8l88g48c72mla7k6q1w102akl7gl5jsk9ljamd3"))))
+         "1zy9yyg7bxiyz1prkvrscggsb9p0f8y0nqxxxzlgzvnh2nmqf8f2"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-cmark" ,ghc-cmark)
