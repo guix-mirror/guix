@@ -1012,7 +1012,7 @@ serialization code.")
 (define-public ghc-bytestring-builder
   (package
     (name "ghc-bytestring-builder")
-    (version "0.10.8.1.0")
+    (version "0.10.8.2.0")
     (source
      (origin
        (method url-fetch)
@@ -1021,7 +1021,7 @@ serialization code.")
              "/bytestring-builder-" version ".tar.gz"))
        (sha256
         (base32
-         "1hnvjac28y44yn78c9vdp1zvrknvlw98ky3g4n5vivr16rvh8x3d"))))
+         "0grcrgwwwcvwrs9az7l4d3kf0lsqfa9qpmjzf6iyanvwn9nyzyi7"))))
     (build-system haskell-build-system)
     (arguments `(#:haddock? #f)) ; Package contains no documentation.
     (home-page "https://hackage.haskell.org/package/bytestring-builder")
