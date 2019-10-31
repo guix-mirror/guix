@@ -9746,7 +9746,7 @@ literals.")
 (define-public ghc-string-qq
   (package
     (name "ghc-string-qq")
-    (version "0.0.2")
+    (version "0.0.4")
     (source
      (origin
        (method url-fetch)
@@ -9756,8 +9756,10 @@ literals.")
              ".tar.gz"))
        (sha256
         (base32
-         "0662m3i5xrdrr95w829bszkhp88mj9iy1zya54vk2sl5hz9wlmwp"))))
+         "0wfxkw4x6j6jq9nd82k83g2k3hskpsvk1dp4cpkshvjr4wg9qny8"))))
     (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
     (home-page "http://hackage.haskell.org/package/string-qq")
     (synopsis
      "QuasiQuoter for non-interpolated strings, texts and bytestrings.")
