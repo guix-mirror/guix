@@ -10792,7 +10792,7 @@ work, but is substantially simpler and faster.")
 (define-public ghc-unix-compat
   (package
     (name "ghc-unix-compat")
-    (version "0.5.1")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -10802,7 +10802,7 @@ work, but is substantially simpler and faster.")
              ".tar.gz"))
        (sha256
         (base32
-         "0llwl7rp63fy2ychwdclz1afj45pbin5pfl01dvn6rwhvmwhr7d3"))))
+         "1a8brv9fax76b1fymslzyghwa6ma8yijiyyhn12msl3i5x24x6k5"))))
     (build-system haskell-build-system)
     (home-page
      "https://github.com/jystic/unix-compat")
