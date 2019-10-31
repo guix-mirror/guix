@@ -441,7 +441,7 @@ permissions while atomically writing to a file.")
 (define-public ghc-attoparsec
   (package
     (name "ghc-attoparsec")
-    (version "0.13.2.2")
+    (version "0.13.2.3")
     (source
      (origin
        (method url-fetch)
@@ -451,7 +451,7 @@ permissions while atomically writing to a file.")
              ".tar.gz"))
        (sha256
         (base32
-         "0j6qcwd146yzlkc9mcvzvnixsyl65n2a68l28322q5v9p4g4g4yx"))))
+         "1ngjn9h5n0vyki0m2jir4mg85875ysswy9hznpmj1r856mqwc6ix"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
