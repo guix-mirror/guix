@@ -550,7 +550,7 @@ transfers.")
 (define-public ghc-warp
   (package
     (name "ghc-warp")
-    (version "3.2.27")
+    (version "3.2.28")
     (source
      (origin
        (method url-fetch)
@@ -558,7 +558,7 @@ transfers.")
                            "warp-" version "/" "warp-" version
                            ".tar.gz"))
        (sha256
-        (base32 "0p2w88q0zd55ms20qylipbi0qzbf324i9r8b9qqxyds5yc1anq76"))))
+        (base32 "0w2w3aiccpb2f8zssqiszcxzqdysihqi5xply23lwif5arz4saw7"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-async" ,ghc-async)
@@ -570,6 +570,7 @@ transfers.")
        ("ghc-iproute" ,ghc-iproute)
        ("ghc-network" ,ghc-network)
        ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-time-manager" ,ghc-time-manager)
        ("ghc-unix-compat" ,ghc-unix-compat)
        ("ghc-vault" ,ghc-vault)
        ("ghc-wai" ,ghc-wai)
