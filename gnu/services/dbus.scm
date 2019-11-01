@@ -86,6 +86,19 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
         (use-modules (sxml simple)
                      (srfi srfi-1))
 
+        (define-syntax directives
+          (syntax-rules ()
+            ;; Expand the given directives (SXML expressions) only if their
+            ;; key names a file that exists.
+            ((_ (name directory) rest ...)
+             (let ((dir directory))
+               (if (file-exists? dir)
+                   `((name ,dir)
+                     ,@(directives rest ...))
+                   (directives rest ...))))
+            ((_)
+             '())))
+
         (define (services->sxml services)
           ;; Return the SXML 'includedir' clauses for DIRS.
           `(busconfig
@@ -98,12 +111,13 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
             (servicedir "/etc/dbus-1/system-services")
 
             ,@(append-map (lambda (dir)
-                            `((includedir
-                               ,(string-append dir "/etc/dbus-1/system.d"))
-                              (includedir
-                               ,(string-append dir "/share/dbus-1/system.d"))
-                              (servicedir       ;for '.service' files
-                               ,(string-append dir "/share/dbus-1/services"))))
+                            (directives
+                             (includedir
+                              (string-append dir "/etc/dbus-1/system.d"))
+                             (includedir
+                              (string-append dir "/share/dbus-1/system.d"))
+                             (servicedir          ;for '.service' files
+                              (string-append dir "/share/dbus-1/services"))))
                           services)))
 
         (mkdir #$output)
