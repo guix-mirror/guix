@@ -2597,7 +2597,7 @@ It includes hashing functions for all basic Haskell98 types.")
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("2" "1pnidf8w8x0w5fsqgv8hhrw07slmhxwy5x4fikgk0bd6k76aqicb")))
+       ("4" "0928s2qnbqsjzrm94x88rvmvbigfmhcyp4m73gw6asinp2qg1kii")))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-test-framework" ,ghc-test-framework)
