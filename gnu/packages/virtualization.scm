@@ -577,7 +577,7 @@ virtualization library.")
 (define-public virt-manager
   (package
     (name "virt-manager")
-    (version "2.1.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://virt-manager.org/download/sources"
@@ -585,7 +585,7 @@ virtualization library.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1m038kyngmxlgz91c7z8g73lb2wy0ajyah871a3g3wb5cnd0dsil"))))
+                "06ws0agxlip6p6n3n43knsnjyd91gqhh2dadgc33wl9lx1k8vn6g"))))
     (build-system python-build-system)
     (arguments
      `(#:use-setuptools? #f          ; uses custom distutils 'install' command
@@ -603,13 +603,19 @@ virtualization library.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-setup
            (lambda* (#:key outputs #:allow-other-keys)
-             (substitute* "virtcli/cliconfig.py"
+             (substitute* "virtinst/buildconfig.py"
                (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (add-after 'unpack 'fix-qemu-img-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "virtconv/formats.py"
+	       (("/usr(/bin/qemu-img)" _ suffix)
+		(string-append (assoc-ref inputs "qemu") suffix)))
              #t))
          (add-after 'unpack 'fix-default-uri
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Xen is not available for now - so only patch qemu.
-             (substitute* "virtManager/connect.py"
+             (substitute* "virtManager/createconn.py"
                (("/usr(/bin/qemu-system)" _ suffix)
                 (string-append (assoc-ref inputs "qemu") suffix)))
              #t))
@@ -640,6 +646,7 @@ virtualization library.")
      `(("dconf" ,dconf)
        ("gtk+" ,gtk+)
        ("gtk-vnc" ,gtk-vnc)
+       ("gtksourceview" ,gtksourceview)
        ("libvirt" ,libvirt)
        ("libvirt-glib" ,libvirt-glib)
        ("libosinfo" ,libosinfo)
