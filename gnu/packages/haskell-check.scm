@@ -441,13 +441,8 @@ expressed in Haskell, using combinators defined in the QuickCheck library.")
     (build-system haskell-build-system)
     (arguments
      `(#:tests? #f  ; FIXME: Tests do not build.
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'update-constraints
-           (lambda _
-             (substitute* "test-framework.cabal"
-               (("QuickCheck     >= 2\\.3 && < 2\\.10")
-                "QuickCheck     >= 2.3 && < 2.12")))))))
+       #:cabal-revision
+       ("5" "18g92ajx3ghznd6k3ihj22ln29n676ailzwx3k0f1kj3bmpilnh6")))
     (native-inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)))
