@@ -2352,7 +2352,7 @@ implementation for Python.")
        #:configure-flags '("--without-internal-zlib"
                            "--with-readline")))
     (inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("net-tools" ,net-tools)
        ("readline" ,readline)
        ("zlib" ,zlib)))
