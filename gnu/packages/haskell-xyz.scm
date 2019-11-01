@@ -662,6 +662,39 @@ of base to a wider range of compilers, without requiring the use of CPP
 pragmas in your code.")
     (license license:bsd-3)))
 
+(define-public ghc-base-compat-batteries
+  (package
+    (name "ghc-base-compat-batteries")
+    (version "0.10.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "base-compat-batteries/base-compat-batteries-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vkhc639vqiv5p39jn1v312z32i7yk5q2lf0ap4jxl1v8p8wyp8p"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("hspec-discover" ,hspec-discover)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "15sn2qc8k0hxbb2nai341kkrci98hlhzcj2ci087m0zxcg5jcdbp")))
+    (home-page "http://hackage.haskell.org/package/base-compat-batteries")
+    (synopsis "base-compat with extra batteries")
+    (description "This library provides functions available in later
+versions of @code{base} to a wider range of compilers, without requiring
+you to use CPP pragmas in your code.  This package provides the same API
+as the @code{base-compat} library, but depends on compatibility
+packages (such as @code{semigroups}) to offer a wider support window
+than @code{base-compat}, which has no dependencies.")
+    (license license:expat)))
+
 (define-public ghc-basement
   (package
     (name "ghc-basement")
