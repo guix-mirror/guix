@@ -308,11 +308,14 @@ random access nor for in-place modification.")
        ;; For tests.
        ("dejagnu" ,dejagnu)))
     (inputs
+     ;; XXX Compiling with nettle (encryption) support requires patching out
+     ;; -Werror from GNUmakefile.in.  Then, rdup-tr-{en,de}crypt tests fail:
+     ;; free(): invalid pointer
+     ;; ** rdup-tr: SIGPIPE received, exiting
      `(("glib" ,glib)
        ("pcre" ,pcre)
        ("libarchive" ,libarchive)
-       ("mcrypt" ,mcrypt)
-       ("nettle" ,nettle)))
+       ("mcrypt" ,mcrypt)))
     (arguments
      `(#:parallel-build? #f             ;race conditions
        #:phases
@@ -327,6 +330,13 @@ random access nor for in-place modification.")
                 (string-append delimiter (which "mcrypt") " "))
                ;; Avoid frivolous dependency on ‘which’ with a shell builtin.
                (("which") "command -v"))
+             #t))
+         (add-before 'check 'disable-encryption-tests
+           (lambda _
+             (for-each delete-file
+                       (list "testsuite/rdup/rdup.rdup-tr-crypt.exp"
+                             "testsuite/rdup/rdup.rdup-tr-decrypt.exp"
+                             "testsuite/rdup/rdup.rdup-tr-encrypt.exp"))
              #t))
          (add-before 'check 'pre-check
            (lambda _
