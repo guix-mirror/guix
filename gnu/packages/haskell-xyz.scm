@@ -144,6 +144,9 @@ module for more details.")
         (base32
          "1sbal7cbhm12crfnfhkk322jnzgx7lhw3jzq0p463bipagsjwz2h"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "1yfsjx7dqikg3hvld7i91xfsg5lawmr5980lvfd794sybmgxsf17")))
     (inputs
      `(("ghc-profunctors" ,ghc-profunctors)
        ("ghc-comonad" ,ghc-comonad)
