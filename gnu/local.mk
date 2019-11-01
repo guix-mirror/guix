@@ -1005,6 +1005,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
