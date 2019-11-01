@@ -235,12 +235,18 @@ purposes."
   (define title
     (channel-news-entry-title entry))
 
-  (format port "  ~a~%"
-          (highlight
-           (string-trim-right
-            (texi->plain-text (or (assoc-ref title language)
-                                  (assoc-ref title (%default-message-language))
-                                  ""))))))
+  (let ((title (or (assoc-ref title language)
+                   (assoc-ref title (%default-message-language))
+                   "")))
+    (format port "  ~a~%"
+            (highlight
+             (string-trim-right
+              (catch 'parser-error
+                (lambda ()
+                  (texi->plain-text title))
+
+                ;; When Texinfo markup is invalid, display it as-is.
+                (const title)))))))
 
 (define (display-news-entry entry language port)
   "Display ENTRY, a <channel-news-entry>, in LANGUAGE, a language code, to
@@ -252,14 +258,20 @@ PORT."
   (format port (dim (G_ "    commit ~a~%"))
           (channel-news-entry-commit entry))
   (newline port)
-  (format port "    ~a~%"
-          (indented-string
-           (parameterize ((%text-width (- (%text-width) 4)))
-             (string-trim-right
-              (texi->plain-text (or (assoc-ref body language)
-                                    (assoc-ref body (%default-message-language))
-                                    ""))))
-           4)))
+  (let ((body (or (assoc-ref body language)
+                  (assoc-ref body (%default-message-language))
+                  "")))
+    (format port "    ~a~%"
+            (indented-string
+             (parameterize ((%text-width (- (%text-width) 4)))
+               (string-trim-right
+                (catch 'parser-error
+                  (lambda ()
+                    (texi->plain-text body))
+                  (lambda _
+                    ;; When Texinfo markup is invalid, display it as-is.
+                    (fill-paragraph body (%text-width))))))
+             4))))
 
 (define* (display-channel-specific-news new old
                                         #:key (port (current-output-port))
