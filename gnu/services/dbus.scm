@@ -100,6 +100,8 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
             ,@(append-map (lambda (dir)
                             `((includedir
                                ,(string-append dir "/etc/dbus-1/system.d"))
+                              (includedir
+                               ,(string-append dir "/share/dbus-1/system.d"))
                               (servicedir       ;for '.service' files
                                ,(string-append dir "/share/dbus-1/services"))))
                           services)))
