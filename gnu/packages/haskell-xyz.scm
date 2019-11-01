@@ -2279,6 +2279,9 @@ a vocabulary for working with them.")
         (base32
          "0gg62ccl94kvh7mnvdq09pifqxjx2kgs189si90nmg44bafj7a9n"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "1h2955ahga6i4fn7k8v66l03v77p6fhsac6ck8gpabkc08ij60wp")))
     (inputs
      `(("ghc-tuple-th" ,ghc-tuple-th)
        ("ghc-contravariant" ,ghc-contravariant)
