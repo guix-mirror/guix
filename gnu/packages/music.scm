@@ -3774,7 +3774,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.2.3")
+    (version "3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3783,7 +3783,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17wx1wl8ns2k31qvrr888dxnrsa13vazg04zh2sn2q4vzd869a7v"))
+                "15ckjwvp3xigjkzmp1ddzvlm4d0vlk9i1axyfxg3hr2sia84yxvi"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3801,8 +3801,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       `("-DBUILD_CRASH_REPORTER=OFF"
-         "-DBUILD_WEBENGINE=OFF"
+       `("-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
