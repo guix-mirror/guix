@@ -9475,9 +9475,9 @@ splitting lists into parts, akin to the @code{split} function found in several
 mainstream languages.")
     (license license:bsd-3)))
 
-(define-public ghc-splitmix-bootstrap
+(define-public ghc-splitmix
   (package
-    (name "ghc-splitmix-bootstrap")
+    (name "ghc-splitmix")
     (version "0.0.3")
     (source
      (origin
@@ -9487,11 +9487,15 @@ mainstream languages.")
        (sha256
         (base32
          "1k0amgkz7rvyz3lnw7m786ilnr1cibwhx9sc4qynq329gxan5r7w"))))
-    (properties '((hidden? #t)))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f))
     (inputs
      `(("ghc-random" ,ghc-random)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-async" ,ghc-async)
+       ("ghc-base-compat-batteries" ,ghc-base-compat-batteries)
+       ("ghc-tf-random" ,ghc-tf-random)
+       ("ghc-vector" ,ghc-vector)))
     (home-page "http://hackage.haskell.org/package/splitmix")
     (synopsis "Fast and splittable pseudorandom number generator")
     (description "This package provides a Pure Haskell implementation of the
@@ -9507,6 +9511,14 @@ sequences of pseudorandom values are too predictable (the mixing functions
 are easily inverted, and two successive outputs suffice to reconstruct the
 internal state).")
     (license license:bsd-3)))
+
+(define-public ghc-splitmix-bootstrap
+  (package
+    (inherit ghc-splitmix)
+    (name "ghc-splitmix-bootstrap")
+    (arguments `(#:tests? #f))
+    (native-inputs '())
+    (properties '((hidden? #t)))))
 
 (define-public ghc-statevar
   (package
