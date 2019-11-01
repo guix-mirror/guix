@@ -7875,6 +7875,9 @@ examination.")
         (base32
          "0r0cda7acvplgwaxy69kviv4jp7kkfi038by68gj4yfx4iwszgjc"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "18a14k1yiam1m4l29rin9a0y53yp3nxvkz358nysld8aqwy2qsjv")))
     (home-page
      "https://github.com/haskell/primitive")
     (synopsis "Primitive memory-related operations")
