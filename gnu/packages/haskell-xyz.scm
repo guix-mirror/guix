@@ -4346,6 +4346,9 @@ Happy works in a similar way to the yacc tool for C.")
         (base32
          "1gra8gq3kb7b2sd845h55yxlrfqx3ii004c6vjhga8v0b30fzdgc"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "197063dpl0wn67dp7a06yc2hxp81n24ykk7klbjx0fndm5n87dh3")))
     (inputs
      `(("ghc-random" ,ghc-random)))
     (native-inputs
@@ -4367,7 +4370,9 @@ combine hash values.")
   (package
     (inherit ghc-hashable)
     (name "ghc-hashable-bootstrap")
-    (arguments `(#:tests? #f))
+    (arguments
+     `(#:tests? #f
+       ,@(package-arguments ghc-hashable)))
     (native-inputs '())
     (properties '((hidden? #t)))))
 
