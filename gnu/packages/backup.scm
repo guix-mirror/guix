@@ -292,13 +292,13 @@ random access nor for in-place modification.")
     (version "1.1.15")
     (source
      (origin
-       (method url-fetch)
-       (file-name (string-append name "-" version ".tar.gz"))
-       (uri (string-append "https://github.com/miekg/rdup/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/miekg/rdup.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "1jr91hgcf0rrpanqlwws72ql9db6d6grs2i122ki1s4bx0vqqyvq"))))
+        (base32 "0bzyv6qmnivxnv9nw7lnfn46k0m1dlxcjj53zcva6v8y8084l1iw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
