@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2017 Theodoros Foradis <theodoros@foradis.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,10 +26,13 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages libftdi)
@@ -111,8 +115,18 @@ to take care of the OS-specific details when writing software that uses serial p
               (sha256
                (base32
                 "18x5zj3xbcylvb651dia6n4zxbdnv0j62r5af60d0l2g68knkjg4"))))
+    (arguments
+     `(#:implicit-inputs? #f))
     (native-inputs
-     `(("sdcc" ,sdcc)))
+     `(("awk" ,gawk)
+       ("bash" ,bash)
+       ("coreutils" ,coreutils)
+       ("grep" ,grep)
+       ("gzip" ,gzip)
+       ("make" ,gnu-make)
+       ("sdcc" ,sdcc)
+       ("sed" ,sed)
+       ("tar" ,tar)))
     (build-system gnu-build-system)
     (home-page "https://www.sigrok.org/wiki/Fx2lafw")
     (synopsis "Firmware for Cypress FX2 chips")
