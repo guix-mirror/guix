@@ -444,7 +444,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.2.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (let ((v (apply string-append (string-split version #\.))))
@@ -452,7 +452,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                       "https://www.scintilla.org/scintilla" v ".tgz")))
               (sha256
                (base32
-                "02ymi86fpcypg6423vfr54lbkxbks046q02v3m3dypawcf3bqy42"))))
+                "0l52s39zg8l3fcj86nqm3hzh0sa4i981dasil54a40dvz3d3cvrx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -468,15 +468,6 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                 "$(CC) -shared $^ -o $@")
                (("\\$\\(RANLIB\\) \\$@") ""))
              #t))
-         (add-before 'build 'expand-C++-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Make <gcc>/include/c++/ext/string_conversions.h find
-             ;; <stdlib.h>.
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path))))
-             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -487,8 +478,8 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                          (find-files "include/" "."))
                #t))))))
     (native-inputs
-     `(("gcc" ,gcc-7)                   ;require GCC 7.1+
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (inputs
      `(("gtk+" ,gtk+)))
     (home-page "https://www.scintilla.org/")
