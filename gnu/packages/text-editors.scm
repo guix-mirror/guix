@@ -497,14 +497,14 @@ and multiple fonts.")
 (define-public geany
   (package
     (name "geany")
-    (version "1.35")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.geany.org/"
                                   "geany-" version ".tar.bz2"))
               (sha256
                (base32
-                "179xfnvhcxsv54v2mlrhykqv2j7klniln5sffvqqpjmdvwyivvim"))
+                "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (delete-file-recursively "scintilla")
@@ -537,6 +537,8 @@ and multiple fonts.")
                (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
              (substitute* "doc/Makefile.am"
                (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
+             (substitute* "tests/Makefile.am"
+               (("AM_LDFLAGS =" all) (string-append all " -lscintilla")))
              (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
              #t)))))
     (home-page "https://www.geany.org")
