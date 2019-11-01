@@ -1825,6 +1825,7 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
+       #:configure-flags (list "--bindings")
        #:phases
        (modify-phases %standard-phases
          (add-before
@@ -1833,7 +1834,14 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
-            #t)))))
+            #t))
+         (add-after 'unpack 'full-store-path-to-shared-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "bindings/python"
+               (substitute* "lilv.py"
+                 (("liblilv-0.so") (string-append (assoc-ref outputs "out")
+                                                  "/lib/liblilv-0.so"))))
+             #t)))))
     ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("lv2" ,lv2)
@@ -1841,8 +1849,9 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
        ("sord" ,sord)
        ("sratom" ,sratom)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://drobilla.net/software/lilv/")
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://drobilla.net/software/lilv")
     (synopsis "Library to simplify use of LV2 plugins in applications")
     (description
      "Lilv is a C library to make the use of LV2 plugins as simple as possible
