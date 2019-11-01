@@ -538,15 +538,14 @@ three libraries:
 (define-public python-libvirt
   (package
     (name "python-libvirt")
-    (version "5.6.0")
+    (version "5.8.0")
     (source
      (origin
        (method url-fetch)
-       ;; The latest version hosted on PyPI at 5.6.0 release time was 5.5.0.
        (uri (string-append "https://libvirt.org/sources/python/libvirt-python-"
                            version ".tar.gz"))
        (sha256
-        (base32 "11i440aibykxw22fzyavmrvn67s8rmnijw5bag0yx9r8jpnkzwad"))))
+        (base32 "0kyz3lx49d8p75mvbzinxc1zgs8g7adn77y9bm15b8b4ad9zl5s6"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
