@@ -3059,7 +3059,16 @@ keyboard shortcuts.")
              (substitute* "rules/meson.build"
                (("udev.get_pkgconfig_variable\\('udevdir'\\)")
                 (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
-             #t)))))
+             #t))
+         (add-before 'configure 'set-sqlite3-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; "colormgr dump" works by invoking the "sqlite3" command.
+             ;; Record its absolute file name.
+             (let ((sqlite (assoc-ref inputs "sqlite")))
+               (substitute* "client/cd-util.c"
+                 (("\"sqlite3\"")
+                  (string-append "\"" sqlite "/bin/sqlite3\"")))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
