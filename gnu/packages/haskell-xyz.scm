@@ -9418,6 +9418,39 @@ splitting lists into parts, akin to the @code{split} function found in several
 mainstream languages.")
     (license license:bsd-3)))
 
+(define-public ghc-splitmix-bootstrap
+  (package
+    (name "ghc-splitmix-bootstrap")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "splitmix/splitmix-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k0amgkz7rvyz3lnw7m786ilnr1cibwhx9sc4qynq329gxan5r7w"))))
+    (properties '((hidden? #t)))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("ghc-random" ,ghc-random)))
+    (home-page "http://hackage.haskell.org/package/splitmix")
+    (synopsis "Fast and splittable pseudorandom number generator")
+    (description "This package provides a Pure Haskell implementation of the
+SplitMix pseudorandom number generator.  SplitMix is a \"splittable\"
+pseudorandom number generator that is quite fast: 9 64-bit
+arithmetic/logical operations per 64 bits generated.  SplitMix is tested
+with two standard statistical test suites (DieHarder and TestU01, this
+implementation only using the former) and it appears to be adequate for
+\"everyday\" use, such as Monte Carlo algorithms and randomized data
+structures where speed is important.  In particular, it @strong{should not
+be used for cryptographic or security applications}, because generated
+sequences of pseudorandom values are too predictable (the mixing functions
+are easily inverted, and two successive outputs suffice to reconstruct the
+internal state).")
+    (license license:bsd-3)))
+
 (define-public ghc-statevar
   (package
     (name "ghc-statevar")
