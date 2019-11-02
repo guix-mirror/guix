@@ -32,6 +32,7 @@
 ;;; Copyright © 2019 Timotej Lazar <timotej.lazar@araneo.si>
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2677,3 +2678,42 @@ maximum extent possible.")
 B.A.T.M.A.N. mesh networking routing protocol provided by the Linux kernel
 module @code{batman-adv}, for Layer 2.")
    (license license:gpl2+)))
+
+(define-public pagekite
+  (package
+    (name "pagekite")
+    (version "1.0.0.190721")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pagekite.net/pk/src/pagekite-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "0y4vaqd3pjr6if8jcnhjwignkxgrajmnx1rd1p37anj8xjg7l8zh"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Python 3 support is a work-in-progress and should come soon:
+     ;; https://github.com/pagekite/PyPagekite/issues/40
+     ;; https://github.com/pagekite/PyPagekite/pull/71
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-man-page
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man")))
+               (invoke "make"
+                       (string-append "PYTHONPATH=" (getenv "PYTHONPATH"))
+                       "doc/pagekite.1")
+               (install-file "doc/pagekite.1" (string-append man "/man1"))
+               #t))))))
+    (inputs
+     `(("python2-socksipychain" ,python2-socksipychain)))
+    (home-page "https://pagekite.net/")
+    (synopsis "Make localhost servers publicly visible")
+    (description
+     "PageKite implements a tunneled reverse proxy which makes it easy to make
+a service (such as an HTTP or SSH server) on localhost visible to the wider
+Internet, even behind NAT or restrictive firewalls.  A managed front-end relay
+service is available at @url{https://pagekite.net/}, or you can run your own.")
+    (license license:agpl3+)))
