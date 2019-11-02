@@ -2606,6 +2606,7 @@ and parsers with useful semantics.")
               (method url-fetch)
               (uri (string-append "https://hackage.haskell.org/package/"
                                   "Diff/Diff-" version ".tar.gz"))
+              (patches (search-patches "ghc-diff-swap-cover-args.patch"))
               (sha256
                (base32
                 "0bqcdvhxx8dmqc3793m6axg813wv9ldz2j37f1wygbbrbbndmdvp"))))
