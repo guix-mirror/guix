@@ -309,7 +309,7 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://tinc-vpn.org/packages/"
-                                  name "-" version ".tar.gz"))
+                                  "tinc-" version ".tar.gz"))
               (sha256
                (base32
                 "0pl92sdwrkiwgll78x0ww06hfljd07mkwm62g8x17qn3gha3pj0q"))))
