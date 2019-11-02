@@ -18699,6 +18699,29 @@ well as an option for visually flashing evaluated s-expressions.")
 SSH servers.")
     (license license:gpl3+)))
 
+(define-public emacs-tramp-auto-auth
+  (let ((commit "f15a12dfab651aff60f4a9d70f868030a12344ac"))
+    (package
+      (name "emacs-tramp-auto-auth")
+      (version (git-version "20191027" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oitofelix/tramp-auto-auth.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "09nkjgwppjfgv04q0gv468qihgx4y3p39lpwbd6vbh3wgbccas9k"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/oitofelix/tramp-auto-auth")
+      (synopsis "TRAMP automatic authentication library")
+      (description "This package provides @code{tramp-auto-auth-mode} Emacs
+global minor mode whose purpose is to automatically feed TRAMP sub-processes
+with passwords for paths matching regexps.")
+      (license license:gpl3+))))
+
 (define-public emacs-eacl
   (package
     (name "emacs-eacl")
