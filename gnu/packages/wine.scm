@@ -585,9 +585,9 @@ Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
      `(#:configure-flags (list "--cross-file"
                                (string-append (assoc-ref %build-inputs "source")
                                               "/build-wine"
-                                              (match (%current-system)
-                                                ("x86_64-linux" "64")
-                                                (_ "32"))
+                                              ,(match (%current-system)
+                                                 ("x86_64-linux" "64")
+                                                 (_ "32"))
                                               ".txt"))
        #:phases
        (modify-phases %standard-phases
@@ -616,8 +616,9 @@ Use @command{setup_dxvk} to install the required libraries to a Wine prefix.")
                              (_ "../lib")))
                  (("x64") "../lib"))))))))
     (native-inputs
-     `(("glslang" ,glslang)
-       ("wine" ,(match (%current-system)
+     `(("glslang" ,glslang)))
+    (inputs
+     `(("wine" ,(match (%current-system)
                   ("x86_64-linux" wine64)
                   (_ wine)))
        ,@(match (%current-system)
