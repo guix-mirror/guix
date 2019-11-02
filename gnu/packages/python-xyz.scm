@@ -4453,6 +4453,35 @@ as the original project seems to have been abandoned circa 2007.")
 (define-public python2-socksipy-branch
   (package-with-python2 python-socksipy-branch))
 
+(define-public python-socksipychain
+  (package
+    (name "python-socksipychain")
+    (version "2.0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/PySocksipyChain.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1pkljnh9hfwla8sg7mil4f9zrnsqj0dbhr3crxjw3k8dnjz70dvk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests try to access the network.
+    (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
+    (synopsis "Python SOCKS module with chained proxies support")
+    (description
+     "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
+adds support for arbitrary chaining of proxy servers and various modes of
+TLS/SSL encryption.  It was developed for use in PageKite, and also includes
+a simple netcat replacement with chaining support.")
+    (license license:bsd-3)))
+
+(define-public python2-socksipychain
+  (package-with-python2 python-socksipychain))
+
 (define-public python-pycodestyle
   (package
     (name "python-pycodestyle")
