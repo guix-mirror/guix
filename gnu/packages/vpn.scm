@@ -305,14 +305,14 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.35")
+    (version "1.0.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://tinc-vpn.org/packages/"
                                   "tinc-" version ".tar.gz"))
               (sha256
                (base32
-                "0pl92sdwrkiwgll78x0ww06hfljd07mkwm62g8x17qn3gha3pj0q"))))
+                "021i2sl2mjscbm8g59d7vs74iw3gf0m48wg7w3zhwj6czarkpxs0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
