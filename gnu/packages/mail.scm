@@ -399,101 +399,98 @@ operating systems.")
     (license gpl2+)))
 
 (define-public neomutt
-  (let ((tag "2019-10-25"))
-    (package
-      (name "neomutt")
-      ;; Upstream now uses YYYY-MM-DD instead of YYYYMMDD, but we're forever
-      ;; wed to the latter through ‘guix upgrade’.
-      (version (apply string-append (string-split tag #\-)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/neomutt/neomutt.git")
-               (commit tag)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0hy6rxgm3acjqxpf4ss7391kps4g06fbjhbpgv1jdrj1y9kv0rm1"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("cyrus-sasl" ,cyrus-sasl)
-         ("gdbm" ,gdbm)
-         ("gpgme" ,gpgme)
-         ("ncurses" ,ncurses)
-         ("gnutls" ,gnutls)
-         ("openssl" ,openssl)           ; for S/MIME
-         ("perl" ,perl)
-         ("kyotocabinet" ,kyotocabinet)
-         ("libxslt" ,libxslt)
-         ("libidn2" ,libidn2)
-         ("libxml2" ,libxml2)
-         ("lmdb" ,lmdb)
-         ("notmuch" ,notmuch)))
-      (native-inputs
-       `(("automake" ,automake)
-         ("gettext-minimal" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)
-         ("docbook-xsl" ,docbook-xsl)
-         ("docbook-xml" ,docbook-xml-4.2)
-         ("w3m" ,w3m)
-         ("tcl" ,tcl)))
-      (arguments
-       `(#:test-target "test"
-         #:configure-flags
-         (list "--gpgme"
+  (package
+    (name "neomutt")
+    (version "20191102")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neomutt/neomutt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x5f9zbvxsxg5y2ir4xq4xw1q2snaxkidhdyhcxw5ljw3qqwhlyq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("gdbm" ,gdbm)
+       ("gpgme" ,gpgme)
+       ("ncurses" ,ncurses)
+       ("gnutls" ,gnutls)
+       ("openssl" ,openssl)             ; for S/MIME
+       ("perl" ,perl)
+       ("kyotocabinet" ,kyotocabinet)
+       ("libxslt" ,libxslt)
+       ("libidn2" ,libidn2)
+       ("libxml2" ,libxml2)
+       ("lmdb" ,lmdb)
+       ("notmuch" ,notmuch)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("w3m" ,w3m)
+       ("tcl" ,tcl)))
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       (list "--gpgme"
 
-               ;; Database, implies header caching.
-               "--disable-tokyocabinet"
-               "--disable-qdbm"
-               "--disable-bdb"
-               "--lmdb"
-               "--kyotocabinet"
+             ;; Database, implies header caching.
+             "--disable-tokyocabinet"
+             "--disable-qdbm"
+             "--disable-bdb"
+             "--lmdb"
+             "--kyotocabinet"
 
-               "--gdbm"
+             "--gdbm"
 
-               "--gnutls"
-               "--disable-ssl"
-               "--sasl"
-               (string-append "--with-sasl="
-                              (assoc-ref %build-inputs "cyrus-sasl"))
+             "--gnutls"
+             "--disable-ssl"
+             "--sasl"
+             (string-append "--with-sasl="
+                            (assoc-ref %build-inputs "cyrus-sasl"))
 
 
-               "--smime"
-               "--notmuch"
-               "--disable-idn"
-               "--idn2"
+             "--smime"
+             "--notmuch"
+             "--disable-idn"
+             "--idn2"
 
-               ;; If we do not set this, neomutt wants to check
-               ;; whether the path exists, which it does not
-               ;; in the chroot.
-               "--with-mailpath=/var/mail"
+             ;; If we do not set this, neomutt wants to check
+             ;; whether the path exists, which it does not
+             ;; in the chroot.
+             "--with-mailpath=/var/mail"
 
-               "--with-ui=ncurses"
-               (string-append "--with-ncurses="
-                              (assoc-ref %build-inputs "ncurses"))
-               (string-append "--prefix="
-                              (assoc-ref %outputs "out"))
-               "--debug")
-         #:phases
-         (modify-phases %standard-phases
-           ;; TODO: autosetup is meant to be included in the source,
-           ;; but we should package autosetup and use our own version of it.
-           (replace 'configure
-             (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (flags `(,@configure-flags))
-                      (bash (which "bash")))
-                 (setenv "SHELL" bash)
-                 (setenv "CONFIG_SHELL" bash)
-                 (apply invoke bash
-                        (string-append (getcwd) "/configure")
-                        flags)))))))
-      (home-page "https://www.neomutt.org/")
-      (synopsis "Command-line mail reader based on Mutt")
-      (description
-       "NeoMutt is a command-line mail reader which is based on mutt.
+             "--with-ui=ncurses"
+             (string-append "--with-ncurses="
+                            (assoc-ref %build-inputs "ncurses"))
+             (string-append "--prefix="
+                            (assoc-ref %outputs "out"))
+             "--debug")
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO: autosetup is meant to be included in the source,
+         ;; but we should package autosetup and use our own version of it.
+         (replace 'configure
+           (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (flags `(,@configure-flags))
+                    (bash (which "bash")))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (apply invoke bash
+                      (string-append (getcwd) "/configure")
+                      flags)))))))
+    (home-page "https://www.neomutt.org/")
+    (synopsis "Command-line mail reader based on Mutt")
+    (description
+     "NeoMutt is a command-line mail reader which is based on mutt.
 It adds a large amount of new and improved features to mutt.")
-      (license gpl2+))))
+    (license gpl2+)))
 
 (define-public gmime
   (package
