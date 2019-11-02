@@ -19697,3 +19697,24 @@ available.")
 when the command was not found in Eshell.  The suggestions are found after the
 commands that bear resemblance to the input command.")
     (license license:gpl3+)))
+
+(define-public emacs-unfill
+  (package
+    (name "emacs-unfill")
+    (version "0.2")
+    (home-page "https://github.com/purcell/unfill")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit "0.2")))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wyradin5igp25nsd3n22i2ppxhmy49ac1iq1w2715v8pfmiydnc"))))
+    (build-system emacs-build-system)
+    (synopsis "Inverse of Emacs' @code{fill-paragraph} and @code{fill-region}")
+    (description
+     "The functions in this package provide the inverse of Emacs'
+@code{fill-paragraph} and @code{fill-region}.")
+    (license license:gpl3+)))
