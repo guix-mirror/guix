@@ -9421,6 +9421,9 @@ generics-sop}.")
         (base32
          "04qlmkcyklznl03gsjg95b4nzb6i96gdapqg60rny9szgi7ngk8x"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("2" "1c8bcssxq5rkxkixgms6w6x6lzf4n7cxk6cx6av1dp3lixdy9j34")))
     (native-inputs
      `(("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://hackage.haskell.org/package/split")
