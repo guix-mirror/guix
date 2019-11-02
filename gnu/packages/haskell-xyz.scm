@@ -9368,6 +9368,29 @@ automatically by SmallCheck.")
      "This library provides a SOCKS proxy (version 5) implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-sop-core
+  (package
+    (name "ghc-sop-core")
+    (version "0.4.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "sop-core/sop-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07ci2mh8cbjvipb576rxsj3iyhkj5c5dnsns4xkdppp2p3pv10d3"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/sop-core")
+    (synopsis "True Sums of Products")
+    (description "This package provides an implementation of
+@math{n}-ary sums and @math{n}-ary products.  The module @code{Data.SOP}
+is the main module of this library and contains more detailed
+documentation.  The main use case of this package is to serve as the
+core of @url{https://hackage.haskell.org/package/generics-sop,
+generics-sop}.")
+    (license license:bsd-3)))
+
 (define-public ghc-split
   (package
     (name "ghc-split")
