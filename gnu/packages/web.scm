@@ -1341,6 +1341,20 @@ hash/signatures.")
      "LibYAML is a YAML 1.1 parser and emitter written in C.")
     (license license:expat)))
 
+(define-public libyaml-2.1
+  (package
+    (inherit libyaml)
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://pyyaml.org/download/libyaml/yaml-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1karpcfgacgppa82wm2drcfn2kb6q2wqfykf5nrhy20sci2i2a3q"))))))
+
 (define-public libquvi-scripts
   (package
     (name "libquvi-scripts")
