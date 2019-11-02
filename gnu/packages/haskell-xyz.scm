@@ -5812,6 +5812,29 @@ to be called from Haskell.")
 Music Player Daemon.")
     (license license:expat)))
 
+(define-public ghc-lib-parser
+  (package
+    (name "ghc-lib-parser")
+    (version "8.8.0.20190424")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "ghc-lib-parser/ghc-lib-parser-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12gsh994pr13bsybwlravmi21la66dyw74pk74yfw2pnz682wv10"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-alex" ,ghc-alex)
+       ("ghc-happy" ,ghc-happy)))
+    (home-page "https://github.com/digital-asset/ghc-lib")
+    (synopsis "The GHC API, decoupled from GHC versions")
+    (description "This library implements the GHC API.  It is like the
+compiler-provided @code{ghc} package, but it can be loaded on many
+compiler versions.")
+    (license license:bsd-3)))
+
 (define-public ghc-libxml
   (package
     (name "ghc-libxml")
