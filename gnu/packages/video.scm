@@ -1088,20 +1088,26 @@ videoformats depend on the configuration flags of ffmpeg.")
     (name "vlc")
     (version "3.0.8")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://download.videolan.org/pub/videolan/vlc/"
-                   (car (string-split version #\-))
-                   "/vlc-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.videolan.org/pub/videolan/vlc/"
+                    (car (string-split version #\-))
+                    "/vlc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))
+              (patches
+               (search-patches
+                ;; TODO: The test "libvlc_slaves" fails.  Applied upstream as
+                ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=4186c94104ee528abd6860611b49515f3e6ec644>.
+                ;; Try removing it in 3.0.9.
+                "vlc-fix-test_libvlc_slaves.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
        ("bison" ,bison)
        ("gettext" ,gettext-minimal)
-       ("git" ,git) ; needed for a test
+       ("git" ,git)                     ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
@@ -1182,7 +1188,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        `("BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
-                         "/lib"))                 ;needed for the tests
+                         "/lib"))       ;needed for the tests
 
        #:phases
        (modify-phases %standard-phases
@@ -1233,11 +1239,11 @@ videoformats depend on the configuration flags of ffmpeg.")
                (invoke cachegen plugindir))))
          (add-after 'install 'wrap-executable
            (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (plugin-path (getenv "QT_PLUGIN_PATH")))
-              (wrap-program (string-append out "/bin/vlc")
-                `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
-            #t)))))
+             (let ((out (assoc-ref outputs "out"))
+                   (plugin-path (getenv "QT_PLUGIN_PATH")))
+               (wrap-program (string-append out "/bin/vlc")
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+             #t)))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
