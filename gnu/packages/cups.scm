@@ -419,14 +419,14 @@ should only be used as part of the Guix cups-pk-helper service.")
 (define-public hplip
   (package
     (name "hplip")
-    (version "3.19.8")
+    (version "3.19.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/hplip/hplip/" version
                                   "/hplip-" version ".tar.gz"))
               (sha256
                (base32
-                "0cmshi5dkmc1n5yiahhp0cv5p94zg61018piiqa2sna10ahgx1d3"))
+                "13c54vrh7wv5cn35dq6ycj0w3asyisg53wmprz9pg4x8n498g6d0"))
               (modules '((guix build utils)))
               (patches (search-patches "hplip-remove-imageprocessor.patch"))
               (snippet
