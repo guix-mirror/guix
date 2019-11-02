@@ -4285,7 +4285,7 @@ and edge labels with positional information, etc.
 (define-public ghc-gtk2hs-buildtools
   (package
     (name "ghc-gtk2hs-buildtools")
-    (version "0.13.4.0")
+    (version "0.13.5.4")
     (source
      (origin
        (method url-fetch)
@@ -4294,7 +4294,7 @@ and edge labels with positional information, etc.
                            version ".tar.gz"))
        (sha256
         (base32
-         "0yg6xmylgpylmnh5g33qwwn5x9bqckdvvv4czqzd9vrr12lnnghg"))))
+         "1flxsacxwmabzzalhn8558kmj95z01c0lmikrn56nxh7p62nxm25"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-random" ,ghc-random)
