@@ -4,6 +4,7 @@
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2017, 2020 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;; Copyright © 2019, 2020 Jan (janneke) Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2019 Miguel Ángel Arruga Vivas <rosen644835@gmail.com>
 ;;; Copyright © 2020 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2020 Stefan <stefan-guix@vodafonemail.de>
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu system uuid)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system keyboard)
+  #:use-module (gnu system locale)
   #:use-module (gnu packages bootloaders)
   #:autoload   (gnu packages gtk) (guile-cairo guile-rsvg)
   #:autoload   (gnu packages xorg) (xkeyboard-config)
@@ -334,6 +336,7 @@ code."
 
 (define* (grub-configuration-file config entries
                                   #:key
+                                  (locale #f)
                                   (system (%current-system))
                                   (old-entries '())
                                   store-directory-prefix)
@@ -398,6 +401,20 @@ menuentry ~s {
                  #:store-directory-prefix store-directory-prefix
                  #:port #~port)))
 
+  (define locale-config
+    #~(let ((locale #$(and locale
+                           (locale-definition-source
+                            (locale-name->definition locale)))))
+        (when locale
+          (format port "\
+# Localization configuration.
+if search --file --set boot_partition /grub/grub.cfg; then
+    set locale_dir=(${boot_partition})/grub/locale
+else
+    set locale_dir=/boot/grub/locale
+fi
+set lang=~a~%" locale))))
+
   (define keyboard-layout-config
     (let* ((layout (bootloader-configuration-keyboard-layout config))
            (grub   (bootloader-package
@@ -422,6 +439,7 @@ keymap ~a~%" #$keymap))))
 # will be lost upon reconfiguration.
 ")
           #$(sugar)
+          #$locale-config
           #$keyboard-layout-config
           (format port "
 set default=~a
