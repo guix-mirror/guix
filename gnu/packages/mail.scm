@@ -1093,7 +1093,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.3")
+    (version "3.17.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1101,7 +1101,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "1wnj6c9cbmhphs2l6wfvndkk2g08rmxw0sl2c8k1k008dxd1ykjh"))))
+                "00mfhaac16sv67rwiq98hr4nl5zmd1h2afswwwksdcsi3q9x23jr"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
