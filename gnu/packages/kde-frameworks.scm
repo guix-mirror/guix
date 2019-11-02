@@ -2082,6 +2082,33 @@ mega, giga) as well as converting between different unit systems (e.g. liters,
 gallons).")
     (license license:lgpl2.1+)))
 
+(define-public syndication
+  (package
+    (name "syndication")
+    (version "5.63.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kde/stable/frameworks/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1d0k6x11giylfkr183sm307n4v6rjpwkqp7y9wfhimjrcprwf2g6"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "RSS/Atom parser library")
+    (description "@code{syndication} supports RSS (0.9/1.0, 0.91..2.0) and
+Atom (0.3 and 1.0) feeds.  The library offers a unified, format-agnostic view
+on the parsed feed, so that the using application does not need to distinguish
+between feed formats.")
+    (license license:lgpl2.1+)))
+
 
 ;; Tier 3
 ;;
