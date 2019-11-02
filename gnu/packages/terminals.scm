@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016, 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
-;;; Copyright © 2016, 2017 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016, 2017, 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016, 2017, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016, 2017 José Miguel Sánchez García <jmi2k@openmailbox.org>
@@ -171,14 +171,17 @@ insert mode and command mode where keybindings have different functions.")
 (define-public asciinema
   (package
     (name "asciinema")
-    (version "1.4.0")
+    (version "2.0.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (pypi-uri "asciinema" version))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/asciinema/asciinema")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1jrf8c8711gkdilmvyv3d37kp8xfvdc5cqighw5k92a6g9z4acgv"))))
+         "1a2pysxnp6icyd08mgf66xr6f6j0irnfxdpf3fmzcz31ix7l9kc4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -186,14 +189,16 @@ insert mode and command mode where keybindings have different functions.")
          (add-before 'build 'patch-exec-paths
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((ncurses (assoc-ref inputs "ncurses")))
-               (substitute* "asciinema/recorder.py"
+               (substitute* "asciinema/term.py"
                  (("'tput'")
                   (string-append "'" ncurses "/bin/tput'"))))
-             #t)))))
+             #t))
+         (replace 'check
+           (lambda _ (invoke "nosetests" "-v"))))))
     (inputs `(("ncurses" ,ncurses)))
     (native-inputs
      ;; For tests.
-     `(("python-requests" ,python-requests)))
+     `(("python-nose" ,python-nose)))
     (home-page "https://asciinema.org")
     (synopsis "Terminal session recorder")
     (description
