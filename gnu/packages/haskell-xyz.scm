@@ -6861,6 +6861,27 @@ ncurses.")
      "This package provides a low-level networking interface.")
     (license license:bsd-3)))
 
+(define-public ghc-network-bsd
+  (package
+    (name "ghc-network-bsd")
+    (version "2.8.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "network-bsd/network-bsd-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0dfbwgrr28y6ypw7p1ppqg7v746qf14569q4xazj4ahdjw2xkpi5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-network" ,ghc-network)))
+    (home-page "https://github.com/haskell/network-bsd")
+    (synopsis "POSIX network database (<netdb.h>) API")
+    (description "This package provides Haskell bindings to the the POSIX
+network database (<netdb.h>) API.")
+    (license license:bsd-3)))
+
 (define-public ghc-network-info
   (package
     (name "ghc-network-info")
