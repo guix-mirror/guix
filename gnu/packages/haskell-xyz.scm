@@ -59,6 +59,7 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system haskell)
@@ -5809,6 +5810,37 @@ Music Player Daemon.")
     (synopsis "Haskell bindings to libxml2")
     (description
      "This library provides minimal Haskell binding to libxml2.")
+    (license license:bsd-3)))
+
+(define-public ghc-libyaml
+  (package
+    (name "ghc-libyaml")
+    (version "0.1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "libyaml/libyaml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0psznm9c3yjsyj9aj8m2svvv9m2v0x90hnwarcx5sbswyi3l00va"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Delete bundled LibYAML.
+        '(begin
+           (delete-file-recursively "libyaml_src")
+           #t))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags `("--flags=system-libyaml")))
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("libyaml" ,libyaml-2.1)))
+    (home-page "https://github.com/snoyberg/yaml#readme")
+    (synopsis "Low-level, streaming YAML interface.")
+    (description "This package provides a Haskell wrapper over the
+LibYAML C library.")
     (license license:bsd-3)))
 
 (define-public ghc-lifted-async
