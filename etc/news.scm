@@ -12,6 +12,8 @@
  (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
         (title (en "@command{guix pull} now honors
 @file{/etc/guix/channels.scm}")
+               (de "@command{guix pull} berücksichtigt nun
+@file{/etc/guix/channels.scm}")
                (fr "@command{guix pull} lit maintenant
 @file{/etc/guix/channels.scm}"))
         (body
@@ -19,6 +21,11 @@
 @file{/etc/guix/channels.scm} file if it exists and if the per-user
 @file{~/.config/guix/channels.scm} is not present.  This allows administrators
 of multi-user systems to define site-wide defaults.")
+         (de "Der Befehl @command{guix pull} liest nun die Datei
+@file{/etc/guix/channels.scm}, wenn sie existiert und es für den jeweiligen
+Benutzer keine @file{~/.config/guix/channels.scm} gibt.  Dadurch können
+Administratoren von Mehrbenutzersystemen systemweite Voreinstellungen
+vornehmen.")
          (fr "La commande @command{guix pull} lira maintenant le fichier
 @file{/etc/guix/channels.scm} s'il existe et si le fichier
 @file{~/.config/guix/channels.scm} par utilisateur·rice n'est pas présent.
