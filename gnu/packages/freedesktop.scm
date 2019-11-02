@@ -991,7 +991,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
 (define-public modem-manager
   (package
     (name "modem-manager")
-    (version "1.4.14")
+    (version "1.10.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -999,7 +999,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
-                "18hvffwcncwz14kdzk42jbkh362n0kjv3kgx7axbqx572pawvrmb"))))
+                "16hnl0sdriqgv4v30mfs64mdl9rw7lsh802zlm3ggwxxil3p9qfb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
