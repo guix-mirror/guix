@@ -473,7 +473,8 @@ configuration file."))
                            (list "
 fastcgi_param PHP_VALUE \"post_max_size = 16M
                           max_execution_time = 300\";
-")))))))))
+")))))))
+   (listen '("80"))))
 
 (define-configuration zabbix-front-end-configuration
   ;; TODO: Specify zabbix front-end package.
