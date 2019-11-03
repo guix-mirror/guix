@@ -15087,7 +15087,7 @@ cohesion with the Emacs Way.")
 (define-public emacs-fish-completion
   (package
     (name "emacs-fish-completion")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -15097,7 +15097,7 @@ cohesion with the Emacs Way.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pjqnbyjmj64q5nwq1mrdxcls4fp5y0b6zqs785i0s6wdvrm4021"))))
+         "17lqip1i1rrsvxzz4bx9rqf1fvwd3hriwg3sj6qxmfc8pylnp37q"))))
     (build-system emacs-build-system)
     (inputs `(("fish" ,fish)))
     (arguments
