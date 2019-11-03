@@ -3707,7 +3707,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
 (define-public lmms
   (package
     (name "lmms")
-    (version "1.1.3")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -3717,12 +3717,23 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03hhymc6d73fa3wbcqb7rm1l03zkw605k5i9kvkvjmv488bqh3pd"))))
+         "1gx730z361xx30iqbsm99aam1k2c8yf561gcay6sryyjksb4w1wy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
+       ;; Qt 5 support must be explicitly enabled in the 1.2 stable versions of
+       ;; LMMS, so try removing "-DWANT_QT5=ON" in later versions.
+       ;; Also, explicitly disabling VST support gets rid of the in-tree
+       ;; dependency on qt5-x11embed.
+       #:configure-flags '("-DWANT_QT5=ON"
+                           "-DWANT_VST=OFF")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-rpmalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "rpmalloc")
+                               "src/3rdparty/rpmalloc/rpmalloc")
+             #t))
          (add-before 'configure 'set-ldflags
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -3733,12 +3744,6 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                       (assoc-ref outputs "out") "/lib/lmms/ladspa"
                       "\""))
              #t))
-         (add-before 'configure 'remove-Werror
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("SET\\(WERROR_FLAGS \"\\$\\{WERROR_FLAGS\\} -Werror")
-                "SET(WERROR_FLAGS \"${WERROR_FLAGS}"))
-             #t))
          (add-before 'reset-gzip-timestamps 'make-manpages-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (map (lambda (file)
@@ -3748,14 +3753,30 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                               ".*\\.gz$"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ;; rpmalloc is a public domain memory allocator. This version specified
+       ;; below is the version required by LMMS.
+       ;; To get the new commit of rpmalloc to use here, run
+       ;;   `git submodule--helper list | grep rpmalloc | cut -f2 -d' '`
+       ;; in the cloned LMMS repository.
+       ("rpmalloc"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/mjansson/rpmalloc.git")
+                 (commit "b5bdc18051bb74a22f0bde4bcc90b01cf590b496")))
+           (sha256
+            (base32
+             "0g9pls46iggg7rdm65vzfj8nyr3v2n5xkp54c4qbh9hhalpsw4ay"))))))
     (inputs
      `(("sdl" ,sdl)
-       ("qt" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("fltk" ,fltk)
        ("libogg" ,libogg)
        ("libsamplerate" ,libsamplerate)
-       ("fluidsynth" ,fluidsynth-1)         ;XXX: try using 2.x when updating
+       ("fluidsynth" ,fluidsynth)
        ("libvorbis" ,libvorbis)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)
