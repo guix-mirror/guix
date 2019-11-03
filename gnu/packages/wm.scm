@@ -1034,15 +1034,15 @@ Keybinder works with GTK-based applications using the X Window System.")
     (version "3.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (let ((version-with-underscores
-                   (string-join (string-split version #\.) "_")))
-              (string-append "https://github.com/conformal/spectrwm/archive/"
-                             "SPECTRWM_" version-with-underscores ".tar.gz")))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/conformal/spectrwm.git")
+             (commit
+              (string-append "SPECTRWM_"
+                             (string-join (string-split version #\.) "_")))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z7gjmp1x6y8q3dnw6swvbv8x2wd4ykzjvi3ibk2sxhgc910907v"))))
+        (base32 "1dfqy5f0s1nv6rqkz9lj006vypmp4rwxd5vczfk3ndzqgnh19kw6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)
