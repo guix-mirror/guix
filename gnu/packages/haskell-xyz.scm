@@ -11214,6 +11214,32 @@ unbounded @code{Integer} type.")
 handled safely, this is what you're left with.")
     (license license:isc)))
 
+(define-public ghc-unicode-transforms
+  (package
+    (name "ghc-unicode-transforms")
+    (version "0.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "unicode-transforms/unicode-transforms-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1akscvyssif4hki3g6hy0jmjyr8cqly1whzvzj0km2b3qh0x09l3"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-bitarray" ,ghc-bitarray)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-getopt-generics" ,ghc-getopt-generics)
+       ("ghc-split" ,ghc-split)))
+    (home-page "https://github.com/composewell/unicode-transforms")
+    (synopsis "Unicode normalization")
+    (description "This library provides tools for fast Unicode 12.1.0
+normalization in Haskell (normalization forms C, KC, D, and KD).")
+    (license license:bsd-3)))
+
 (define-public ghc-union-find
   (package
     (name "ghc-union-find")
