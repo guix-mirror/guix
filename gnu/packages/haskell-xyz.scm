@@ -3034,6 +3034,39 @@ distances for fuzzy matching, including Levenshtein and restricted
 Damerau-Levenshtein algorithms.")
     (license license:bsd-3)))
 
+(define-public ghc-edit-distance-vector
+  (package
+    (name "ghc-edit-distance-vector")
+    (version "1.0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "edit-distance-vector/edit-distance-vector-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "07qgc8dyi9kkzkd3xcd78wdlljy0xwhz65b4r2qg2piidpcdvpxp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+    (home-page "https://github.com/thsutton/edit-distance-vector")
+    (synopsis "Calculate edit distances and edit scripts between vectors")
+    (description "This package provides implementation of the
+Wagner-Fischer dynamic programming algorithm to find the optimal edit
+script and cost between two sequences.  The implementation in this
+package is specialised to sequences represented with @code{Data.Vector}
+but is otherwise agnostic to:
+@itemize
+@item The type of values in the vectors;
+@item The type representing edit operations; and
+@item The type representing the cost of operations.
+@end itemize")
+    (license license:bsd-3)) )
+
 (define-public ghc-either
   (package
     (name "ghc-either")
