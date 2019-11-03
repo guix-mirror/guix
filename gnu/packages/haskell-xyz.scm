@@ -5208,6 +5208,51 @@ for Haskell.  The functions provided by this module are @code{upper},
 @code{lower}, @code{len}, @code{reverse}, and @code{sub}.")
     (license license:expat)))
 
+(define-public ghc-hsyaml
+  (package
+    (name "ghc-hsyaml")
+    (version "0.1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "HsYAML/HsYAML-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pajfhj16559v64ixm8j7bvxdqmxg6c3c0z3wz7in8ckswgzfp54"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0j6qmmcz5yqh89hs2cq453maix50q61vl2h0ahj5lg02bygn42cf")))
+    (home-page "https://github.com/haskell-hvr/HsYAML")
+    (synopsis "Pure Haskell YAML 1.2 parser")
+    (description "This library provides a
+@url{http://yaml.org/spec/1.2/spec.html, YAML 1.2} parser implementation
+for Haskell.  Its features include:
+
+@itemize
+@item Pure Haskell implementation with small dependency footprint and
+emphasis on strict compliance with the YAML 1.2 specification.
+
+@item Direct decoding to native Haskell types via (aeson-inspired)
+typeclass-based API (see @code{Data.YAML}).
+
+@item Support for constructing custom YAML node graph
+representation (including support for cyclic YAML data structures).
+
+@item Support for the standard (untyped) @emph{Failsafe}, (strict)
+@emph{JSON}, and (flexible) @emph{Core} ``schemas'' providing implicit
+typing rules as defined in the YAML 1.2 specification (including support
+for user-defined custom schemas).
+
+@item Event-based API resembling LibYAML's Event-based API (see
+@code{Data.YAML.Event}).
+
+@item Low-level API access to lexical token-based scanner (see
+@code{Data.YAML.Token}).
+@end itemize")
+    (license license:gpl2+)))
+
 (define-public ghc-http-api-data
   (package
     (name "ghc-http-api-data")
