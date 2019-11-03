@@ -499,7 +499,7 @@ importantly we give you proper follow-symbol and find-references support.")
                             "clmake-short" "colormake.pl")
                           bin)
            #t))))
-    (home-page "http://bre.klaki.net/programs/colormake/")
+    (home-page "https://bre.klaki.net/programs/colormake/")
     (synopsis "Wrapper around @command{make} to produce colored output")
     (description "This package provides a wrapper around @command{make} to
 produce colored output.")
