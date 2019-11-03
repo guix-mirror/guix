@@ -316,7 +316,7 @@ test-framework.")
 (define-public ghc-tasty-rerun
   (package
     (name "ghc-tasty-rerun")
-    (version "1.1.12")
+    (version "1.1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -324,7 +324,7 @@ test-framework.")
                     "tasty-rerun-" version ".tar.gz"))
               (sha256
                (base32
-                "05lp4zy6lwd916snq6hs43848n62j9vdfl3s8sfivqydrax0vvd8"))))
+                "0s0zj8ds4g1w2cjzm2lh25ivg962jigqdrbj08v3dbz64lx4mlzr"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-optparse-applicative" ,ghc-optparse-applicative)
