@@ -5220,6 +5220,36 @@ handler built in.")
 described in @url{https://www.lua.org/}.")
     (license license:expat)))
 
+(define-public ghc-hslua-module-system
+  (package
+    (name "ghc-hslua-module-system")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "hslua-module-system/hslua-module-system-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1m7wz3g5c34pyizqw5mllzhsy2vziddhlbhjfwdvd7nhd3p4v3hh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-hslua" ,ghc-hslua)
+       ("ghc-temporary" ,ghc-temporary)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/hslua/hslua-module-system")
+    (synopsis "Lua module wrapper around Haskell's System module")
+    (description "This library provides access to system information and
+functionality to Lua scripts via Haskell's @code{System} module.  Intended
+usage for this package is to preload it by adding the loader function to
+@code{package.preload}.  Note that the Lua @code{package} library must have
+already been loaded before the loader can be added.")
+    (license license:expat)))
+
 (define-public ghc-hslua-module-text
   (package
     (name "ghc-hslua-module-text")
