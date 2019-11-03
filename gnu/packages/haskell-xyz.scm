@@ -1046,15 +1046,15 @@ Compatibility package for older packages.")
          "18f17aja1ivhr3zyg2cccn2m03hdn5jf5410dndkhf12gvgiqs7y"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:phases
+     `(#:cabal-revision
+       ("1" "0x11aj6w1lijh84jcdq1qgyvdnc7i9ivbyq4wf9rxicg57viisz9")
+       #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "bytestring-handle.cabal"
                (("QuickCheck >= 2\\.1\\.2 && < 2\\.11")
-                "QuickCheck >= 2.1.2 && < 2.12")
-               (("base >= 4\\.2 && < 4\\.11")
-                "base >= 4.2 && < 4.12")))))))
+                "QuickCheck >= 2.1.2 && < 2.14")))))))
     (inputs
      `(("ghc-hunit" ,ghc-hunit)
        ("ghc-quickcheck" ,ghc-quickcheck)
