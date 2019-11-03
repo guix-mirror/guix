@@ -261,6 +261,31 @@ test framework.")
 tasty.")
     (license license:expat)))
 
+(define-public ghc-tasty-lua
+  (package
+    (name "ghc-tasty-lua")
+    (version "0.2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "tasty-lua/tasty-lua-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xlj36rrhkx312h7smx6ay20rhlhxvw2ma2ckdnzv1pvmdn6p5qx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-file-embed" ,ghc-file-embed)
+       ("ghc-hslua" ,ghc-hslua)
+       ("ghc-tasty" ,ghc-tasty)))
+    (native-inputs
+     `(("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/hslua/tasty-lua")
+    (synopsis "Write tests in Lua, integrate into tasty")
+    (description "This package gives users the ability to define tasty tests
+from Lua.")
+    (license license:expat)))
+
 (define-public ghc-tasty-th
   (package
     (name "ghc-tasty-th")
