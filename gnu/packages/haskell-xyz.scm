@@ -866,6 +866,27 @@ can use with C code to help write bindings to inline functions or macro
 functions.")
     (license license:bsd-3)))
 
+(define-public ghc-bitarray
+  (package
+    (name "ghc-bitarray")
+    (version "0.0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "bitarray/bitarray-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00nqd62cbh42qqqvcl6iv1i9kbv0f0mkiygv4j70wfh5cl86yzxj"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "10fk92v9afjqk43zi621jxl0n8kci0xjj32lz3vqa9xbh67zjz45")))
+    (home-page "https://hackage.haskell.org/package/bitarray")
+    (synopsis "Mutable and immutable bit arrays")
+    (description "The package provides mutable and immutable bit arrays.")
+    (license license:bsd-3)))
+
 (define-public ghc-blaze-builder
   (package
     (name "ghc-blaze-builder")
