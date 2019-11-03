@@ -260,7 +260,7 @@ that implements both the msgpack and msgpack-rpc specifications.")
 (define-public yaml-cpp
   (package
     (name "yaml-cpp")
-    (version "0.6.2")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -268,26 +268,10 @@ that implements both the msgpack and msgpack-rpc specifications.")
                     "yaml-cpp-" version ".tar.gz"))
               (sha256
                (base32
-                "01gxn7kc8pzyh4aadjxxzq8cignmbwmm9rfrsmgqfg9w2q75dn74"))))
+                "1vgi193c761xaalq7r62ahiyvg7m32ab4z104k1s12kinf81pskp"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON")
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install 'dont-install-gtest-libraries
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (with-directory-excursion
-                 (string-append out "/include")
-                 (delete-file-recursively "gtest")
-                 (delete-file-recursively "gmock"))
-               (with-directory-excursion
-                 (string-append out "/lib")
-                 (for-each (lambda (file)
-                             (delete-file file))
-                           '("libgmock.so" "libgmock_main.so"
-                             "libgtest.so" "libgtest_main.so"))))
-             #t)))))
+     '(#:configure-flags '("-DYAML_BUILD_SHARED_LIBS=ON")))
     (native-inputs
      `(("python" ,python)))
     (home-page "https://github.com/jbeder/yaml-cpp")
