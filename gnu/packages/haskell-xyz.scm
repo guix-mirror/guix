@@ -6753,6 +6753,43 @@ between 2 and 3 times faster than the Mersenne Twister.")
      `(("ghc-hashable" ,ghc-hashable-bootstrap)))
     (properties '((hidden? #t)))))
 
+(define-public ghc-ncurses
+  (package
+    (name "ghc-ncurses")
+    (version "0.2.16")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/ncurses/ncurses-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "0gsyyaqyh5r9zc0rhwpj5spyd6i4w2vj61h4nihgmmh0yyqvf3z5"))))
+    (build-system haskell-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-includes
+           (lambda _
+             (substitute* '("cbits/hsncurses-shim.h"
+                            "lib/UI/NCurses.chs"
+                            "lib/UI/NCurses/Enums.chs"
+                            "lib/UI/NCurses/Panel.chs")
+               (("<ncursesw/") "<"))
+             #t)))
+       #:cabal-revision
+       ("1"
+        "1wfdy716s5p1sqp2gsg43x8wch2dxg0vmbbndlb2h3d8c9jzxnca")))
+    (inputs `(("ncurses" ,ncurses)))
+    (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+    (home-page "https://john-millikin.com/software/haskell-ncurses/")
+    (synopsis "Modernised bindings to GNU ncurses")
+    (description "GNU ncurses is a library for creating command-line application
+with pseudo-graphical interfaces.  This package is a nice, modern binding to GNU
+ncurses.")
+    (license license:gpl3)))
+
 (define-public ghc-network
   (package
     (name "ghc-network")
