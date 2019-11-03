@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016, 2017 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2019 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016, 2017, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016, 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -3318,6 +3318,33 @@ possible.")
     (description "ExtUtils::Config is an abstraction around the %Config hash.
 By itself it is not a particularly interesting module by any measure, however
 it ties together a family of modern toolchain modules.")
+    (license (package-license perl))))
+
+(define-public perl-extutils-cppguess
+  (package
+    (name "perl-extutils-cppguess")
+    (version "0.20")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/E/ET/ETJ/ExtUtils-CppGuess-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0q9ynigk600fv95xac6aslrg2k19m6qbzf5hqfsnall8113r3gqj"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-capture-tiny" ,perl-capture-tiny)
+        ("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+      `(("perl-capture-tiny" ,perl-capture-tiny)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-CppGuess")
+    (synopsis "Tool for guessing C++ compiler and flags")
+    (description "ExtUtils::CppGuess attempts to guess the C++ compiler that
+is compatible with the C compiler used to build perl.")
     (license (package-license perl))))
 
 (define-public perl-extutils-depends
