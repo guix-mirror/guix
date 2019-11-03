@@ -515,14 +515,15 @@ produce colored output.")
   (package
     (name "makefile2graph")
     (version "1.5.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/lindenb/" name
-                                  "/archive/v" version ".tar.gz"))
-              (sha256
-               (base32
-                "0h1vchkpmm9h6s87p5nf0ksjxcmsxpx8k62a508w428n570wcr4l"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/lindenb/makefile2graph.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1gjfk3d8qg3cla7qd2y7r9s03whlfwy83q8k76xfcnqrjjfavdgk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
