@@ -320,15 +320,15 @@ features that are not supported by the standard @code{stdio} implementation.")
   (package
     (name "withershins")
     (version "0.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cameronwhite/withershins/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "08z3lyvswx7sad10637vfpwglbcbgzzcpfihw0x8lzr74f3b70bh"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/cameronwhite/withershins.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1cviqvbbcwljm1zx12j6511hazr3kscwrvcyifrkfi4fpy5z985m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #f
