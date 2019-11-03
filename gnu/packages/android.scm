@@ -681,7 +681,7 @@ file system.")
        (uri (git-reference
              (url "https://github.com/M0Rf30/android-udev-rules")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0x2f2sv0x0ry7kccp47s0hlxps3hbpg37dj3xjjgpdm5hmn2cjq3"))))
     (build-system trivial-build-system)
