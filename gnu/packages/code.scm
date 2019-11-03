@@ -332,6 +332,9 @@ features that are not supported by the standard @code{stdio} implementation.")
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #f
+       #:configure-flags
+       ;; XXX A (justified!) misleading-indentation error breaks the build.
+       (list "-DENABLE_WERROR=OFF")
        #:phases
        (modify-phases %standard-phases
          (add-after
