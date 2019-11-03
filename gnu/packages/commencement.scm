@@ -2070,12 +2070,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ("bash" ,bash)))
     (inputs '())))
 
-(define (gcc-boot0-intermediate-wrapped)
-  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
-  ;; non-cross names.
-  (cross-gcc-wrapper gcc-boot0 binutils-boot0
-                     glibc-final-with-bootstrap-bash
-                     (car (assoc-ref (%boot1-inputs) "bash"))))
+(define gcc-boot0-intermediate-wrapped
+  (mlambda ()
+    ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+    ;; non-cross names.
+    (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                       glibc-final-with-bootstrap-bash
+                       (car (assoc-ref (%boot1-inputs) "bash")))))
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
@@ -2166,11 +2167,12 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
       ,@(package-arguments glibc-final-with-bootstrap-bash)))))
 
-(define (gcc-boot0-wrapped)
-  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
-  ;; non-cross names.
-  (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
-                     (car (assoc-ref (%boot1-inputs) "bash"))))
+(define gcc-boot0-wrapped
+  (mlambda ()
+    ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+    ;; non-cross names.
+    (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
+                       (car (assoc-ref (%boot1-inputs) "bash")))))
 
 (define (%boot2-inputs)
   ;; 3rd stage inputs.
