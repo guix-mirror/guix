@@ -421,8 +421,9 @@ configuration of both LXQt and the underlying operating system.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/lxqt/" name "/releases/download/"
-                           version "/" name "-" version ".tar.xz"))
+       (uri (string-append "https://github.com/lxqt/lxqt-globalkeys/"
+                           "releases/download/" version "/"
+                           "lxqt-globalkeys-" version ".tar.xz"))
        (sha256
         (base32 "0m6svwy20bfy9d21g5l0qzjndph3rd8zqagmqgdjzjhh3lxwrsrk"))))
     (build-system cmake-build-system)
