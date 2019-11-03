@@ -3458,6 +3458,30 @@ of perl extensions which bind libraries that @command{pkg-config} knows.
 It is really just boilerplate code that you would have written yourself.")
     (license lgpl2.1+)))
 
+(define-public perl-extutils-typemaps-default
+  (package
+    (name "perl-extutils-typemaps-default")
+    (version "1.05")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-Typemaps-Default-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1phmha0ks95kvzl00r1kgnd5hvg7qb1q9jmzjmw01p5zgs1zbyix"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-Typemaps-Default")
+    (synopsis "Set of useful typemaps")
+    (description "The package provides a number of useful typemaps as
+submodules of ExtUtils::Typemaps.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-xspp
   (package
     (name "perl-extutils-xspp")
