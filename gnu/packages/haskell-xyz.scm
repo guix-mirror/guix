@@ -6480,6 +6480,37 @@ combinators (like @code{failing} and @code{singular}), but everything else is
 stripped.  As the result, this package has no dependencies.")
     (license license:bsd-3)))
 
+(define-public ghc-microlens-aeson
+  (package
+    (name "ghc-microlens-aeson")
+    (version "2.3.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "microlens-aeson/microlens-aeson-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0w630kk5bnily1qh41081gqgbwmslrh5ad21899gwnb2r3jripyw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-microlens" ,ghc-microlens)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/fosskers/microlens-aeson")
+    (synopsis "Law-abiding lenses for Aeson, using microlens")
+    (description "This library provides law-abiding lenses for Aeson, using
+microlens.")
+    (license license:expat)))
+
 (define-public ghc-microlens-ghc
   (package
     (name "ghc-microlens-ghc")
