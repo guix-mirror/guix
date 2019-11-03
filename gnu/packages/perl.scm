@@ -3412,6 +3412,29 @@ C code in your Perl programs, there isn't a clear method to compile standard,
 self-contained C libraries.  This module main goal is to help in that task.")
     (license (package-license perl))))
 
+(define-public perl-extutils-parsexs
+  (package
+    (name "perl-extutils-parsexs")
+    (version "3.35")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-ParseXS-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "077fqiyabydm8j34wxzxwxskyidh8nmwq9gskaxai8kq298z1pj1"))))
+    (build-system perl-build-system)
+    (home-page
+      "https://metacpan.org/release/ExtUtils-ParseXS")
+    (synopsis "Module to convert Perl XS code into C code")
+    (description "The package contains the ExtUtils::ParseXS module to
+convert Perl XS code into C code, the ExtUtils::Typemaps module to
+handle Perl/XS typemap files, and their submodules.")
+    (license (package-license perl))))
+
 (define-public perl-extutils-pkgconfig
   (package
     (name "perl-extutils-pkgconfig")
