@@ -1052,7 +1052,7 @@ sending standard messages over D-Bus using the
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfburn-" version ".tar.bz2"))
               (sha256
                (base32
                 "1qdd8prnsfilsprg36p95cz3z50ffr9kgvka4d5pm260lsl3l5xa"))))
