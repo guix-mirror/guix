@@ -1047,7 +1047,7 @@ sending standard messages over D-Bus using the
 (define-public xfburn
   (package
     (name "xfburn")
-    (version "0.5.5")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
@@ -1055,7 +1055,7 @@ sending standard messages over D-Bus using the
                                   "xfburn-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qdd8prnsfilsprg36p95cz3z50ffr9kgvka4d5pm260lsl3l5xa"))))
+                "0ydka5lf9n614gb5xc9bn9297nilgmkfqlb7q1y2yrc97882nxxk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1067,7 +1067,7 @@ sending standard messages over D-Bus using the
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("glib" ,glib)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libburn" ,libburn)
        ("libisofs" ,libisofs)
        ("libxfce4ui" ,libxfce4ui)))
