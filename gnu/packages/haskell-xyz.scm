@@ -10951,7 +10951,10 @@ compute the difference between arbitrary abstract datatypes (ADTs) using
                (base32
                 "0hznd8i65s81xy13i2qc7cvipw3lfb2yhkv53apbdsh6sbljz5sk"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; doctest suite fails to build on i686
+    (arguments
+     `(#:tests? #f ; doctest suite fails to build on i686
+       #:cabal-revision
+       ("4" "0xbwyvwl6f2zylk60f2akwgq03qv49113xil7b1z1s3vlwbn5aj1")))
     (inputs
      `(("ghc-reducers" ,ghc-reducers)
        ("ghc-semigroups" ,ghc-semigroups)
