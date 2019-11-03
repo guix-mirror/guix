@@ -3482,9 +3482,9 @@ encourages inductive, recursive definitions of graph algorithms.")
            (lambda _
              (substitute* "fgl-arbitrary.cabal"
                (("QuickCheck >= 2\\.3 && < 2\\.10")
-                "QuickCheck >= 2.3 && < 2.12")
+                "QuickCheck >= 2.3 && < 2.14")
                (("hspec >= 2\\.1 && < 2\\.5")
-                "hspec >= 2.1 && < 2.6")))))))
+                "hspec >= 2.1 && < 2.8")))))))
     (inputs
      `(("ghc-fgl" ,ghc-fgl)
        ("ghc-quickcheck" ,ghc-quickcheck)
