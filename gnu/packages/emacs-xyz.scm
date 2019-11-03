@@ -1219,14 +1219,14 @@ or unexpected behavior inside an elisp configuration file (typically
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.2")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cvpfdkagkpi8g02w8f7wzrpdk2ihas0mn5m9fr882xjdfshl21z"))
+                "00hnv7jjgb2simgrf7gf2y1cyg2syk7kj1hkbac146hlgxk8ngj1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
