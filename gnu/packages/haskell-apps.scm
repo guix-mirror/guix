@@ -599,6 +599,37 @@ proved to be an excellent learning experience for the programmers.  Everything
 is programmed in Haskell.")
     (license license:bsd-3)))
 
+(define-public scroll
+  (package
+    (name "scroll")
+    (version "1.20180421")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/scroll/scroll-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "0apzrvf99rskj4dbmn57jjxrsf19j436s8a09m950df5aws3a0wj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-ncurses" ,ghc-ncurses)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-random" ,ghc-random)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://joeyh.name/code/scroll/")
+    (synopsis "scroll(6), a roguelike game")
+    (description
+     "You're a bookworm that's stuck on a scroll.  You have to dodge between
+words and use spells to make your way down the page as the scroll is read.  Go
+too slow and you'll get wound up in the scroll and crushed.")
+    (license license:gpl2)))
+
 (define-public shellcheck
   (package
     (name "shellcheck")
