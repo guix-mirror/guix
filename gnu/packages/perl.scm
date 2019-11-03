@@ -3435,6 +3435,32 @@ of perl extensions which bind libraries that @command{pkg-config} knows.
 It is really just boilerplate code that you would have written yourself.")
     (license lgpl2.1+)))
 
+(define-public perl-extutils-xspp
+  (package
+    (name "perl-extutils-xspp")
+    (version "0.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/ExtUtils-XSpp-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1zx84f93lkymqz7qa4d63gzlnhnkxm5i3gvsrwkvvqr9cxjasxli"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)
+        ("perl-test-base" ,perl-test-base)
+        ("perl-test-differences" ,perl-test-differences)))
+    (home-page
+      "https://metacpan.org/release/ExtUtils-XSpp")
+    (synopsis "XS for C++")
+    (description "This module implements the Perl foreign function
+interface XS for C++; it is a thin layer over plain XS.")
+    (license (package-license perl))))
+
 (define-public perl-file-changenotify
   (package
     (name "perl-file-changenotify")
