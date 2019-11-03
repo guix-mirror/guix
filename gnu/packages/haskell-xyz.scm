@@ -6541,6 +6541,7 @@ operators for looping.")
        (uri (string-append "https://hackage.haskell.org/package/"
                            "monad-par-" version "/"
                            "monad-par-" version ".tar.gz"))
+       (patches (search-patches "ghc-monad-par-fix-tests.patch"))
        (sha256
         (base32
          "0ldrzqy24fsszvn2a2nr77m2ih7xm0h9bgkjyv1l274aj18xyk7q"))))
