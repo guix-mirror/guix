@@ -5738,6 +5738,38 @@ them on the longest match base.  It is a kind of TRIE with one way branching
 removed.  Both IPv4 and IPv6 are supported.")
     (license license:bsd-3)))
 
+(define-public ghc-ipynb
+  (package
+    (name "ghc-ipynb")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "ipynb/ipynb-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0daadhzil4q573mqb0rpvjzm0vpkzgzqcimw480qpvlh6rhppwj5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-aeson-diff" ,ghc-aeson-diff)
+       ("ghc-microlens-aeson" ,ghc-microlens-aeson)
+       ("ghc-microlens" ,ghc-microlens)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://hackage.haskell.org/package/ipynb")
+    (synopsis "Data structure for working with Jupyter notebooks")
+    (description "This library defines a data structure for representing
+Jupyter notebooks, along with @code{ToJSON} and @code{FromJSON}
+instances for conversion to and from JSON .ipynb files.")
+    (license license:bsd-3)))
+
 (define-public ghc-iwlib
   (package
     (name "ghc-iwlib")
