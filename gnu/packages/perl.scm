@@ -5298,6 +5298,36 @@ replacement.  Whereas Module::Build has over 6,700 lines of code; this module
 has less than 120, yet supports the features needed by most distributions.")
     (license (package-license perl))))
 
+(define-public perl-module-build-withxspp
+  (package
+    (name "perl-module-build-withxspp")
+    (version "0.14")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/S/SM/SMUELLER/Module-Build-WithXSpp-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0d39fjg9c0n820bk3fb50vvlwhdny4hdl69xmlyzql5xzp4cicsk"))))
+    (build-system perl-build-system)
+    (native-inputs
+      `(("perl-module-build" ,perl-module-build)))
+    (propagated-inputs
+      `(("perl-extutils-cppguess" ,perl-extutils-cppguess)
+        ("perl-extutils-xspp" ,perl-extutils-xspp)
+        ("perl-module-build" ,perl-module-build)))
+    (home-page
+      "https://metacpan.org/release/Module-Build-WithXSpp")
+    (synopsis
+      "The module provides an XS++ enhanced flavour of Module::Build")
+    (description "This subclass of Module::Build adds some tools and
+processes to make it easier to use for wrapping C++ using XS++
+(ExtUtils::XSpp).")
+    (license (package-license perl))))
+
 (define-public perl-module-build-xsutil
   (package
     (name "perl-module-build-xsutil")
