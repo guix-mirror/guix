@@ -500,7 +500,7 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 (define-public freedoom
   (package
     (name "freedoom")
-    (version "0.11.3")
+    (version "0.12.1")
     (source
      (origin
        (method git-fetch)
@@ -509,38 +509,19 @@ tired of cows, a variety of other ASCII-art messengers are available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
+        (base32 "1mq60lfwaaxmch7hsz8403pwafnlsmsd5z2df2j77ppwndwcrypb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:parallel-build? #f
        #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((dejavu (assoc-ref inputs "font-dejavu"))
-                    (freedoom (assoc-ref outputs "out"))
+             (let* ((freedoom (assoc-ref outputs "out"))
                     (wad-dir (string-append freedoom "/share/games/doom")))
-               ;; Replace the font-searching function in a shell
-               ;; script with a direct path to the required font.
-               ;; This is necessary because ImageMagick can only find the
-               ;; most basic fonts while in the build environment.
-               (substitute* "graphics/titlepic/create_caption"
-                 (("font=\\$\\(find_font.*$")
-                  (string-append
-                   "font=" dejavu
-                   "/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf\n")))
-               ;; Make icon creation reproducible.
-               (substitute* "dist/Makefile"
-                 (("freedm.png")
-                  "-define png:exclude-chunks=date freedm.png")
-                 (("freedoom1.png")
-                  "-define png:exclude-chunks=date freedoom1.png")
-                 (("freedoom2.png")
-                  "-define png:exclude-chunks=date freedoom2.png"))
                ;; Make sure that the install scripts know where to find
                ;; the appropriate WAD files.
                (substitute* "dist/freedoom"
@@ -554,11 +535,8 @@ tired of cows, a variety of other ASCII-art messengers are available.")
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("deutex" ,deutex)
-       ("font-dejavu" ,font-dejavu)
-       ("imagemagick" ,imagemagick)
-       ("python" ,python-2)))
-    (inputs
-     `(("prboom-plus" ,prboom-plus)))
+       ("python" ,python)
+       ("python-pillow" ,python-pillow)))
     (home-page "https://freedoom.github.io/")
     (synopsis "Free content game based on the Doom engine")
     (native-search-paths
