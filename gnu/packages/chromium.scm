@@ -42,6 +42,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -806,7 +807,10 @@ from forcing GEXP-PROMISE."
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.
-    (properties '((timeout . 144000)))  ;40 hours
+    (properties '((timeout . 144000)    ;40 hours
+
+                  ;; Hide the package pending complete removal (see below).
+                  (hidden? . #t)))
 
     (home-page "https://github.com/Eloston/ungoogled-chromium")
     (description
@@ -852,3 +856,13 @@ disabled in order to protect the users privacy.")
                                       (assoc-ref %build-inputs "wayland")
                                       "/bin/wayland-scanner\""))
                  (delete "use_vaapi=true" ,flags)))))))
+
+;; Ungoogled-Chromium has been deprecated because Debians patches are no
+;; longer updated.  If you would like to work on porting the required patches,
+;; please reach out to guix-devel@gnu.org.
+
+(define-public ungoogled-chromium-is-deprecated
+  (deprecated-package "ungoogled-chromium" icecat))
+
+(define-public ungoogled-chromium-wayland-is-deprecated
+  (deprecated-package "ungoogled-chromium-wayland" icecat))
