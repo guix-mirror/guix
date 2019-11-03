@@ -202,6 +202,45 @@ for Haskell.")
 ghc-aeson.")
     (license license:bsd-3)))
 
+(define-public ghc-aeson-diff
+  (package
+    (name "ghc-aeson-diff")
+    (version "1.1.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "aeson-diff/aeson-diff-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01d48pd7d1mb9cd5yxfajln8rmjdjq8ch91s0lav4qw1azv6vp2r"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-edit-distance-vector" ,ghc-edit-distance-vector)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-glob" ,ghc-glob)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-doctest" ,ghc-doctest)
+       ("hlint" ,hlint)))
+    (home-page "https://github.com/thsutton/aeson-diff")
+    (synopsis "Extract and apply patches to JSON documents")
+    (description "This is a small library for working with changes to JSON
+documents.  It includes a library and two command-line executables in the
+style of the @command{diff} and @command{patch} commands available on many
+systems.")
+    (license license:bsd-3)))
+
 (define-public ghc-alex
   (package
     (name "ghc-alex")
