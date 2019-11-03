@@ -4019,6 +4019,37 @@ with the @code{Validity} typeclass.")
 properties for functions operating on them.")
     (license license:expat)))
 
+(define-public ghc-getopt-generics
+  (package
+    (name "ghc-getopt-generics")
+    (version "0.13.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "getopt-generics/getopt-generics-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1rszkcn1rg38wf35538ljk5bbqjc57y9sb3a0al7qxm82gy8yigr"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-generics-sop" ,ghc-generics-sop)
+       ("ghc-tagged" ,ghc-tagged)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-silently" ,ghc-silently)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "https://github.com/soenkehahn/getopt-generics")
+    (synopsis "Create command line interfaces with ease")
+    (description "This library provides tools to create command line
+interfaces with ease.")
+    (license license:bsd-3)))
+
 (define-public ghc-gitrev
   (package
     (name "ghc-gitrev")
