@@ -461,30 +461,24 @@ importantly we give you proper follow-symbol and find-references support.")
     (version "0.9.20140503")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/pagekite/Colormake/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/Colormake.git")
+             (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "08ldss9zd8ls6bjahvxhffpsjcysifr720yf3jz9db2mlklzmyd3"))))
+        (base32 "1f9v5s0viq4yc9iv6701h3pv7j21zz1ckl37lpp9hsnliiizv03p"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("bash" ,bash)
-       ("gzip" ,gzip)
-       ("perl" ,perl)
-       ("tar" ,tar)))
+       ("perl" ,perl)))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
        (begin
          (use-modules (guix build utils))
-         ;; bootstrap
-         (setenv "PATH" (string-append
-                         (assoc-ref %build-inputs "tar") "/bin" ":"
-                         (assoc-ref %build-inputs "gzip") "/bin"))
-         (invoke "tar" "xvf" (assoc-ref %build-inputs "source"))
-         (chdir (string-append (string-capitalize ,name) "-" ,version))
+         (copy-recursively (assoc-ref %build-inputs "source") "source")
+         (chdir "source")
          (patch-shebang  "colormake.pl"
                          (list (string-append (assoc-ref %build-inputs "perl")
                                               "/bin")))
