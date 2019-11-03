@@ -261,14 +261,15 @@ that implements both the msgpack and msgpack-rpc specifications.")
   (package
     (name "yaml-cpp")
     (version "0.6.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/jbeder/yaml-cpp/archive/"
-                    "yaml-cpp-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1vgi193c761xaalq7r62ahiyvg7m32ab4z104k1s12kinf81pskp"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/jbeder/yaml-cpp.git")
+             (commit (string-append "yaml-cpp-" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0ykkxzxcwwiv8l8r697gyqh1nl582krpvi7m7l6b40ijnk4pw30s"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DYAML_BUILD_SHARED_LIBS=ON")))
