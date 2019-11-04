@@ -10780,6 +10780,27 @@ features as possible.")
 @code{TimeLocale}.")
     (license license:bsd-3)))
 
+(define-public ghc-time-manager
+  (package
+    (name "ghc-time-manager")
+    (version "0.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "time-manager/time-manager-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nzwj0fxz370ks6vr1sylcidx33rnqq45y3q9yv9n4dj43nid9lh"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-auto-update" ,ghc-auto-update)))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis "Scalable timer")
+    (description "This library contains scalable timer functions provided by a
+timer manager.")
+    (license license:expat)))
+
 (define-public ghc-timeit
   (package
     (name "ghc-timeit")
