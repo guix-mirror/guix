@@ -184,6 +184,36 @@ you combine your unit tests, golden tests, QuickCheck/SmallCheck properties,
 and any other types of tests into a single test suite.")
     (license license:expat)))
 
+(define-public ghc-tasty-hedgehog
+  (package
+    (name "ghc-tasty-hedgehog")
+    (version "1.0.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "tasty-hedgehog/tasty-hedgehog-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1mbg5q0c0xfrk4npfj60pi693igb7r5l78x6xf9fk2jglw0nmxhz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-hedgehog" ,ghc-hedgehog)))
+    (native-inputs
+     `(("ghc-tasty-expected-failure" ,ghc-tasty-expected-failure)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1n6797fm8swyrk8cw7zxz593gq82wx8dayvm204rmgcz75bslcpn")))
+    (home-page "https://github.com/qfpl/tasty-hedgehog")
+    (synopsis "Integration for tasty and hedgehog")
+    (description "This package provides the means for integrating the
+@url{https://hackage.haskell.org/package/hedgehog, hedgehog testing library}
+with the @url{https://hackage.haskell.org/package/tasty, tasty testing
+framework}.")
+    (license license:bsd-3)))
+
 (define-public ghc-tasty-hunit
   (package
     (name "ghc-tasty-hunit")
