@@ -88,18 +88,19 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.088")
+    (version "2.089")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "IO-Compress-" version ".tar.gz"))
        (sha256
-        (base32 "1kd8jpm58gnm2wp9xjik0rz410xrcx9jaddjqwiqwypvhq23jjlx"))))
+        (base32 "01ahph8mx5032qsciybalf4l6hs1l7biwj1cm5h9cwng6ky78d1d"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
+     ;; These two packages should be updated to this one's version first.
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2)))
     (home-page "https://metacpan.org/release/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
