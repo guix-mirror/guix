@@ -9914,6 +9914,9 @@ and bytestrings.")
         (base32
          "0jpy9xjcjdbpi3wk6mg7xwd7wfi2mma70p97v1ij5i8bj9qijpr9"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "0z5pz5dccapz9k39r2zmf056m0x2m2lj3jahhnw3mfxlmps07378")))
     (home-page "https://bitbucket.org/dafis/stringsearch")
     (synopsis "Fast searching, splitting and replacing of ByteStrings")
     (description "This package provides several functions to quickly search
