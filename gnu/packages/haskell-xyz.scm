@@ -7591,7 +7591,7 @@ files/directories, and more.")
 (define-public ghc-patience
   (package
     (name "ghc-patience")
-    (version "0.1.1")
+    (version "0.3")
     (source
      (origin
        (method url-fetch)
@@ -7600,7 +7600,7 @@ files/directories, and more.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0qyv20gqy9pb1acy700ahv70lc6vprcwb26cc7fcpcs4scsc7irm"))))
+         "1i1b37lgi31c17yrjyf8pdm4nf5lq8vw90z3rri78hf0k66d0p3i"))))
     (build-system haskell-build-system)
     (home-page "https://hackage.haskell.org/package/patience")
     (synopsis "Patience diff and longest increasing subsequence")
