@@ -187,7 +187,9 @@ unlit literate code files; and an option to turn off macro-expansion.")
            #t))))
     (build-system haskell-build-system)
     (arguments
-     `(#:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
+     `(#:cabal-revision
+       ("1" "0xl7j5cm704pbl2ms0dkydh7jvrz0ym76d725ifpg4h902m1zkhg")
+       #:configure-flags '("-fpkgconfig" "-fcurl" "-flibiconv" "-fthreaded"
                            "-fnetwork-uri" "-fhttp" "--flag=executable"
                            "--flag=library")
        #:phases
@@ -196,6 +198,12 @@ unlit literate code files; and an option to turn off macro-expansion.")
            (lambda _
              (substitute* "tests/issue538.sh"
                (("/bin/sh") (which "sh")))
+             #t))
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "darcs.cabal"
+               (("QuickCheck   >= 2\\.8\\.2 && < 2\\.13,")
+                "QuickCheck   >= 2.8.2 && < 2.14,"))
              #t)))))
     (inputs
      `(("ghc-cmdargs" ,ghc-cmdargs)
