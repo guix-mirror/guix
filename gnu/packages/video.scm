@@ -2054,7 +2054,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "37")
+    (version "48")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2063,7 +2063,7 @@ capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ma2s7dxk6y6l04qj1jvgwia4xj7999ny3a1yx2vbk5l83giam2p"))))
+                "1i6163bidlp0p9zcnxpsphr44ayfzd51fig4ri7vbrbl9lw9jaih"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
