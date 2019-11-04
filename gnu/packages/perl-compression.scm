@@ -53,14 +53,14 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.088")
+    (version "2.089")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
-        (base32 "0g82al5zhjhvvm8mhlw60bnq0pcd4pi96my4pblwdz4gvnr3i80r"))))
+        (base32 "0xznh44b8qv6nwdj0hv4fnmfnp60mb6fly6csl608s2mxglb1y4z"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
