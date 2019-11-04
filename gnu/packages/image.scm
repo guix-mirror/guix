@@ -1287,7 +1287,7 @@ ISO/IEC 15444-1).")
 (define-public zimg
   (package
     (name "zimg")
-    (version "2.5")
+    (version "2.9.2")
     (source
       (origin
         (method git-fetch)
@@ -1296,8 +1296,7 @@ ISO/IEC 15444-1).")
               (commit (string-append "release-" version))))
         (file-name (git-file-name name version))
         (sha256
-         (base32
-          "05krggiifbl6hyg2j3z8qz2k7si84g1qg9snhsnf1ml7mrhqhhlr"))))
+         (base32 "0jlgrlfs9maixd8mx7gk2kfawz8ixnihkxi7vhyzfy1gq49vmxm2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
