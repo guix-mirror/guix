@@ -1611,7 +1611,7 @@ testing strategies.")
 (define-public ghc-chell-quickcheck
   (package
     (name "ghc-chell-quickcheck")
-    (version "0.2.5.1")
+    (version "0.2.5.2")
     (source
      (origin
        (method url-fetch)
@@ -1620,7 +1620,7 @@ testing strategies.")
              "chell-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "1iicsys9igx7m7n4l2b8djardmjy2ah5ibzp7kzs758h460fq53a"))))
+         "0n8c57n88r2bx0bh8nabsz07m42rh23ahs3hgyzf8gr76l08zq03"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -1628,8 +1628,8 @@ testing strategies.")
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "chell-quickcheck.cabal"
-               (("QuickCheck >= 2\\.3 && < 2\\.11")
-                "QuickCheck >= 2.3 && < 2.12")))))))
+               (("QuickCheck >= 2\\.3 && < 2\\.13")
+                "QuickCheck >= 2.3 && < 2.14")))))))
     (inputs
      `(("ghc-chell" ,ghc-chell)
        ("ghc-chell-quickcheck-bootstrap" ,ghc-chell-quickcheck-bootstrap)
@@ -1643,7 +1643,7 @@ testing strategies.")
 (define ghc-chell-quickcheck-bootstrap
   (package
     (name "ghc-chell-quickcheck-bootstrap")
-    (version "0.2.5.1")
+    (version "0.2.5.2")
     (source
      (origin
        (method url-fetch)
@@ -1652,7 +1652,7 @@ testing strategies.")
              "chell-quickcheck-" version ".tar.gz"))
        (sha256
         (base32
-         "1iicsys9igx7m7n4l2b8djardmjy2ah5ibzp7kzs758h460fq53a"))))
+         "0n8c57n88r2bx0bh8nabsz07m42rh23ahs3hgyzf8gr76l08zq03"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-chell" ,ghc-chell)
@@ -1665,8 +1665,8 @@ testing strategies.")
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "chell-quickcheck.cabal"
-               (("QuickCheck >= 2\\.3 && < 2\\.11")
-                "QuickCheck >= 2.3 && < 2.12")))))))
+               (("QuickCheck >= 2\\.3 && < 2\\.13")
+                "QuickCheck >= 2.3 && < 2.14")))))))
     (home-page "https://john-millikin.com/software/chell/")
     (synopsis "QuickCheck support for the Chell testing library")
     (description "More complex tests for @code{chell}.")
