@@ -19762,7 +19762,7 @@ commands that bear resemblance to the input command.")
        (method git-fetch)
        (uri (git-reference
              (url home-page)
-             (commit "0.2")))
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32 "0wyradin5igp25nsd3n22i2ppxhmy49ac1iq1w2715v8pfmiydnc"))))
