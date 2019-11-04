@@ -947,6 +947,11 @@ void DerivationGoal::killChild()
         assert(pid == -1);
     }
 
+    /* If there was a build hook involved, remove it from the worker's
+       children.  */
+    if (hook && hook->pid != -1) {
+	worker.childTerminated(hook->pid);
+    }
     hook.reset();
 }
 
