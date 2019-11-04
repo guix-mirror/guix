@@ -8635,6 +8635,40 @@ connections.")
 code where you can safely allocate resources.")
     (license license:bsd-3)))
 
+(define-public ghc-retry
+  (package
+    (name "ghc-retry")
+    (version "0.8.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "retry/retry-" version ".tar.gz"))
+       (sha256
+        (base32
+         "02k03r86amg1vbrsvb644342ym13d9jwkzki9sk93pdg5l8j35dj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-random" ,ghc-random)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-hedgehog" ,ghc-tasty-hedgehog)
+       ("ghc-hedgehog" ,ghc-hedgehog)))
+    (home-page "http://github.com/Soostone/retry")
+    (synopsis "Retry combinators for monadic actions that may fail")
+    (description "This package exposes combinators that can wrap
+arbitrary monadic actions.  They run the action and potentially retry
+running it with some configurable delay for a configurable number of
+times.  The purpose is to make it easier to work with IO and especially
+network IO actions that often experience temporary failure and warrant
+retrying of the original action.  For example, a database query may time
+out for a while, in which case we should hang back for a bit and retry
+the query instead of simply raising an exception.")
+    (license license:bsd-3)))
+
 (define-public ghc-rfc5051
   (package
     (name "ghc-rfc5051")
