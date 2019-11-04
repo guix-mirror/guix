@@ -9204,7 +9204,7 @@ are not exception safe and can be broken by @code{killThread}.")
 (define-public ghc-sandi
   (package
     (name "ghc-sandi")
-    (version "0.4.2")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -9213,7 +9213,7 @@ are not exception safe and can be broken by @code{killThread}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0dvkpk91n9kz2ha04rvp231ra9sgd1ilyc1qkzf9l03iir7zrh9b"))))
+         "1ndgai8idlxyccvkz5zsgq06v58blc30i6hkky5b1sf5x6gs2h29"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stringsearch" ,ghc-stringsearch)
