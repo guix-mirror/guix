@@ -6900,6 +6900,28 @@ ncurses.")
 network database (<netdb.h>) API.")
     (license license:bsd-3)))
 
+(define-public ghc-network-byte-order
+  (package
+    (name "ghc-network-byte-order")
+    (version "0.1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "network-byte-order/network-byte-order-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "19cs6157amcc925vwr92q1azwwzkbam5g0k70i6qi80fhpikh37c"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-doctest" ,ghc-doctest)))
+    (home-page "http://hackage.haskell.org/package/network-byte-order")
+    (synopsis "Network byte order utilities")
+    (description "This library provides peek and poke functions for network
+byte order.")
+    (license license:bsd-3)))
+
 (define-public ghc-network-info
   (package
     (name "ghc-network-info")
