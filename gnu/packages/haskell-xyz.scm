@@ -1580,7 +1580,7 @@ cross-site scripting (@dfn{XSS}) attacks.")
 (define-public ghc-chell
   (package
     (name "ghc-chell")
-    (version "0.4.0.2")
+    (version "0.5")
     (source
      (origin
        (method url-fetch)
@@ -1589,8 +1589,11 @@ cross-site scripting (@dfn{XSS}) attacks.")
              version ".tar.gz"))
        (sha256
         (base32
-         "10ingy9qnbmc8cqh4i9pskcw43l0mzk8f3d76b3qz3fig5ary3j9"))))
+         "1i845isfbk0yq852am9bqmxfpfkpnlha8nfidffsv4gw2p8gg6fg"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:cabal-revision
+       ("1" "1q93wrw03ix4cmnkz3lzkixcvvizw6i2ia2zifdfak1dvxnblxk0")))
     (inputs
      `(("ghc-options-bootstrap" ,ghc-options-bootstrap)
        ("ghc-patience" ,ghc-patience)
