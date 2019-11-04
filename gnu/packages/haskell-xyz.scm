@@ -2964,7 +2964,7 @@ with various performance characteristics.")
            (lambda _
              (substitute* "edit-distance.cabal"
                (("QuickCheck >= 2\\.4 && <2\\.9")
-                "QuickCheck >= 2.4 && < 2.12")))))))
+                "QuickCheck >= 2.4 && < 2.14")))))))
     (inputs
      `(("ghc-random" ,ghc-random)
        ("ghc-test-framework" ,ghc-test-framework)
