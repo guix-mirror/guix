@@ -19772,3 +19772,32 @@ commands that bear resemblance to the input command.")
      "The functions in this package provide the inverse of Emacs'
 @code{fill-paragraph} and @code{fill-region}.")
     (license license:gpl3+)))
+
+(define-public emacs-windower
+  (package
+    (name "emacs-windower")
+    (version "0.0.1")
+    (home-page "https://gitlab.com/ambrevar/emacs-windower")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h24gb1ip0czfasxm8wwcc3v19g7mznzw2sxkmmfb5iis59p7dfy"))))
+    (build-system emacs-build-system)
+    (synopsis "Helper functions for window manipulation in Emacs")
+    (description
+     "This package provides helper functions for window manipulation in Emacs,
+such as:
+
+@itemize
+- switch to last buffer,
+- toggle single window display,
+- toggle between horizontal and vertical splits,
+- move borders more naturally,
+- swap windows à-la @code{windmove}.
+@end itemize\n")
+    (license license:gpl3+)))
