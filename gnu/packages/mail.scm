@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1826,13 +1827,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.13.0")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1lyjiskc6ckjjylzr04dnm66p3cnn7vlysw9c27qls3y3ywx14zw"))))
+                "18ba2xgfq8sw0bg6xmlfjpizid1hkzgswcfcc54gl21y2dwfda2w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1843,6 +1844,8 @@ maintained.")
                     (doc (string-append out "/share/doc/khard")))
                (copy-recursively "misc/khard" doc)
                #t))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
