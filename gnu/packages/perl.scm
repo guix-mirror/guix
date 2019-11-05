@@ -1611,14 +1611,14 @@ CPAN::Meta object are present.")
 (define-public perl-cpanel-json-xs
   (package
     (name "perl-cpanel-json-xs")
-    (version "4.15")
+    (version "4.16")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/R/RU/RURBAN/"
                            "Cpanel-JSON-XS-" version ".tar.gz"))
        (sha256
-        (base32 "1695408fj6jjx6dv5082hhxg5am480x1nz7s0f355npv0wm776wx"))))
+        (base32 "1clqgz2y8182i7ry11x8in4yzm08xfqrv3n6wh9xm1xymh13vqrh"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-common-sense" ,perl-common-sense)))
