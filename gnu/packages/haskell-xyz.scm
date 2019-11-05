@@ -12263,3 +12263,28 @@ provides access to the full zlib feature set.")
     (description "This package provides low-level bindings to the
 @code{zlib} package.")
     (license license:bsd-3)))
+
+(define-public ghc-zstd
+  (package
+    (name "ghc-zstd")
+    (version "0.1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "zstd/zstd-" version ".tar.gz"))
+       (sha256
+        (base32
+         "147s496zvw13akxqzg65mgfvk3bvhrcilxgf8n786prxg5cm4jz2"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "https://github.com/luispedro/hs-zstd")
+    (synopsis "Haskell bindings to the Zstandard compression algorithm")
+    (description "This library provides Haskell bindings to the
+Zstandard compression algorithm, a fast lossless compression algorithm
+targeting real-time compression scenarios at zlib-level and better
+compression ratios.")
+    (license license:bsd-3)))
