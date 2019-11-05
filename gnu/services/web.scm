@@ -1425,7 +1425,7 @@ ADMINS = [
 
 DEBUG = " #$(if debug? "True" "False") "
 
-ENABLE_REST_API = " #$(if enable-xmlrpc? "True" "False") "
+ENABLE_REST_API = " #$(if enable-rest-api? "True" "False") "
 ENABLE_XMLRPC = " #$(if enable-xmlrpc? "True" "False") "
 
 FORCE_HTTPS_LINKS = " #$(if force-https-links? "True" "False") "
