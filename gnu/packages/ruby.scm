@@ -8783,18 +8783,17 @@ then check out http://127.0.0.1:1080 to see the mail.")
 (define-public ruby-backport
   (package
     (name "ruby-backport")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
      (origin
-       ;; The gem does not include test code, so fetch from the Git repository
+       ;; The gem does not include test code, so fetch from the Git repository.
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/castwide/backport.git")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0ii3y1wx1n48nd2mhlv0v61b2m21h7dg30if9vc2idza7k4afyw8"))))
+        (base32 "18fpg1n7n2z02ykz9v1x1q0cqa2lvivf8ygka768s01q1r9wfwv2"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "spec"))
