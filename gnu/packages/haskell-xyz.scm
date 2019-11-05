@@ -4174,7 +4174,9 @@ tools are not needed to actually run Gtk2Hs programs.")
          "08bwawc7ramgdh54vcly2m9pvfchp0ahhs8117jajni6x4bnx66v"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:tests? #f)) ; Tests fail because of framework updates.
+     `(#:cabal-revision
+       ("6" "1xs2nkzlvkdz8g27yzfxbjdbdadfmgiydnlpn5dm77cg18r495ay")
+       #:tests? #f)) ; Tests fail because of framework updates.
     (inputs
      `(("ghc-base16-bytestring" ,ghc-base16-bytestring)
        ("ghc-base64-bytestring" ,ghc-base64-bytestring)
