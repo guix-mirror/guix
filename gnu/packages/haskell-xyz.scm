@@ -8641,7 +8641,7 @@ the project's home page}.")
 (define-public ghc-resolv
   (package
     (name "ghc-resolv")
-    (version "0.1.1.1")
+    (version "0.1.1.2")
     (source
      (origin
        (method url-fetch)
@@ -8650,14 +8650,22 @@ the project's home page}.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0wh7wj56l3f2bylz563g5g04a4nydj8acv60hpwa7k3mn792xca9"))))
+         "0wczdy3vmpfcfwjn1m95bygc5d83m97xxmavhdvy5ayn8c402fp4"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:cabal-revision
-       ("1" "15ay4n3x8c09cb3h4z1nan84yd3n9zpgvi6h114hk98bq10k8mma")
-       #:tests? #f)) ; The required test frameworks are too old.
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "resolv.cabal"
+               (("tasty         >= 1\\.1     && < 1\\.2")
+                "tasty         >= 1.1     && < 1.3"))
+             #t)))))
     (inputs
      `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
     (home-page "https://github.com/haskell/hackage-security")
     (synopsis "Domain Name Service (DNS) lookup via @code{libresolv}")
     (description "This package implements an API for accessing the
