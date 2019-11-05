@@ -274,7 +274,7 @@ the C implementation.")
     (build-system haskell-build-system)
     (arguments
      `(#:cabal-revision
-       ("1" "19birnmwga1yh82l4jqc3fygqkqcf5y8dlldnxfswngkzc3rvwp3")
+       ("3" "1arhz4y792kx439s2zv9x291gvvl2zxcfx9sq0nxsjlz7c3hpyp1")
        #:tests? #f)) ; tests require old version of ghc-hunit (0.9)
     (inputs
      `(("ghc-base16-bytestring" ,ghc-base16-bytestring)))
