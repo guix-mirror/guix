@@ -67,6 +67,7 @@ Copyright @copyright{} 2019 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
 Copyright @copyright{} 2019 Kyle Andrews@*
+Copyright @copyright{} 2019 Alex Griffin@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -13974,6 +13975,52 @@ through programmatic extension.
 @table @asis
 @item @code{package} (default: @var{openvswitch})
 Package object of the Open vSwitch.
+
+@end table
+@end deftp
+
+@defvr {Scheme Variable} pagekite-service-type
+This is the service type for the @uref{https://pagekite.net, PageKite} service,
+a tunneling solution for making localhost servers publicly visible, even from
+behind NAT or restrictive firewalls.  The value for this service type is a
+@code{pagekite-configuration} record.
+
+Here's an example exposing the local HTTP and SSH daemons:
+
+@lisp
+(service pagekite-service-type
+         (pagekite-configuration
+           (kites '("http:@@kitename:localhost:80:@@kitesecret"
+                    "raw/22:@@kitename:localhost:22:@@kitesecret"))
+           (extra-file "/etc/pagekite.rc")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} pagekite-configuration
+Data type representing the configuration of PageKite.
+
+@table @asis
+@item @code{package} (default: @var{pagekite})
+Package object of PageKite.
+
+@item @code{kitename} (default: @code{#f})
+PageKite name for authenticating to the frontend server.
+
+@item @code{kitesecret} (default: @code{#f})
+Shared secret for authenticating to the frontend server.  You should probably
+put this inside @code{extra-file} instead.
+
+@item @code{frontend} (default: @code{#f})
+Connect to the named PageKite frontend server instead of the
+@uref{https://pagekite.net,,pagekite.net} service.
+
+@item @code{kites} (default: @code{'("http:@@kitename:localhost:80:@@kitesecret")})
+List of service kites to use.  Exposes HTTP on port 80 by default. The format
+is @code{proto:kitename:host:port:secret}.
+
+@item @code{extra-file} (default: @code{#f})
+Extra configuration file to read, which you are expected to create manually.
+Use this to add additional options and manage shared secrets out-of-band.
 
 @end table
 @end deftp

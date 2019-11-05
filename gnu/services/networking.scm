@@ -12,6 +12,7 @@
 ;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;; Copyright © 2019 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2019 Sou Bunnbu <iyzsong@member.fsf.org>
+;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,7 +155,17 @@
             nftables-configuration?
             nftables-configuration-package
             nftables-configuration-ruleset
-            %default-nftables-ruleset))
+            %default-nftables-ruleset
+
+            pagekite-service-type
+            pagekite-configuration
+            pagekite-configuration?
+            pagekite-configuration-package
+            pagekite-configuration-kitename
+            pagekite-configuration-kitesecret
+            pagekite-configuration-frontend
+            pagekite-configuration-kites
+            pagekite-configuration-extra-file))
 
 ;;; Commentary:
 ;;;
@@ -1526,5 +1537,101 @@ table inet filter {
           (service-extension profile-service-type
                              (compose list nftables-configuration-package))))
    (default-value (nftables-configuration))))
+
+
+;;;
+;;; PageKite
+;;;
+
+(define-record-type* <pagekite-configuration>
+  pagekite-configuration
+  make-pagekite-configuration
+  pagekite-configuration?
+  (package pagekite-configuration-package
+           (default pagekite))
+  (kitename pagekite-configuration-kitename
+            (default #f))
+  (kitesecret pagekite-configuration-kitesecret
+              (default #f))
+  (frontend pagekite-configuration-frontend
+            (default #f))
+  (kites pagekite-configuration-kites
+         (default '("http:@kitename:localhost:80:@kitesecret")))
+  (extra-file pagekite-configuration-extra-file
+              (default #f)))
+
+(define (pagekite-configuration-file config)
+  (match-record config <pagekite-configuration>
+    (package kitename kitesecret frontend kites extra-file)
+    (mixed-text-file "pagekite.rc"
+                     (if extra-file
+                         (string-append "optfile = " extra-file "\n")
+                         "")
+                     (if kitename
+                         (string-append "kitename = " kitename "\n")
+                         "")
+                     (if kitesecret
+                         (string-append "kitesecret = " kitesecret "\n")
+                         "")
+                     (if frontend
+                         (string-append "frontend = " frontend "\n")
+                         "defaults\n")
+                     (string-join (map (lambda (kite)
+                                         (string-append "service_on = " kite))
+                                       kites)
+                                  "\n"
+                                  'suffix))))
+
+(define (pagekite-shepherd-service config)
+  (match-record config <pagekite-configuration>
+    (package kitename kitesecret frontend kites extra-file)
+    (with-imported-modules (source-module-closure
+                            '((gnu build shepherd)
+                              (gnu system file-systems)))
+      (shepherd-service
+       (documentation "Run the PageKite service.")
+       (provision '(pagekite))
+       (requirement '(networking))
+       (modules '((gnu build shepherd)
+                  (gnu system file-systems)))
+       (start #~(make-forkexec-constructor/container
+                 (list #$(file-append package "/bin/pagekite")
+                       "--clean"
+                       "--nullui"
+                       "--nocrashreport"
+                       "--runas=pagekite:pagekite"
+                       (string-append "--optfile="
+                                      #$(pagekite-configuration-file config)))
+                 #:log-file "/var/log/pagekite.log"
+                 #:mappings #$(if extra-file
+                                  #~(list (file-system-mapping
+                                           (source #$extra-file)
+                                           (target source)))
+                                  #~'())))
+       ;; SIGTERM doesn't always work for some reason.
+       (stop #~(make-kill-destructor SIGINT))))))
+
+(define %pagekite-accounts
+  (list (user-group (name "pagekite") (system? #t))
+        (user-account
+         (name "pagekite")
+         (group "pagekite")
+         (system? #t)
+         (comment "PageKite user")
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define pagekite-service-type
+  (service-type
+   (name 'pagekite)
+   (default-value (pagekite-configuration))
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             (compose list pagekite-shepherd-service))
+          (service-extension account-service-type
+                             (const %pagekite-accounts))))
+   (description
+    "Run @url{https://pagekite.net/,PageKite}, a tunneling solution to make
+local servers publicly accessible on the web, even behind NATs and firewalls.")))
 
 ;;; networking.scm ends here
