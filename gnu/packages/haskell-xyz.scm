@@ -10435,6 +10435,33 @@ instances for strict and lazy text types for versions older than 1.2.1 of the
 text package.")
     (license license:bsd-2)))
 
+(define-public ghc-text-metrics
+  (package
+    (name "ghc-text-metrics")
+    (version "0.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "text-metrics/text-metrics-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18mzxwkdvjp31r720ai9bnxr638qq8x3a2v408bz0d8f0rsayx1q"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)))
+    (arguments
+     `(#:cabal-revision
+       ("4" "017drxq9x56b345d8w5m8xdsi1zzs0z16pbdx8j35cd1lsnh3kf1")))
+    (home-page "https://github.com/mrkkrp/text-metrics")
+    (synopsis "Calculate various string metrics efficiently")
+    (description "This library provides tools to calculate various
+string metrics efficiently.")
+    (license license:bsd-3)))
+
 (define-public ghc-tf-random
   (package
     (name "ghc-tf-random")
