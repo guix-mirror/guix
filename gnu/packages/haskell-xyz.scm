@@ -2566,6 +2566,36 @@ It includes hashing functions for all basic Haskell98 types.")
 providing an @code{rnf} implementation.")
     (license license:bsd-3)))
 
+(define-public ghc-dense-linear-algebra
+  (package
+    (name "ghc-dense-linear-algebra")
+    (version "0.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "dense-linear-algebra/dense-linear-algebra-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1m7jjxahqxj7ilic3r9806mwp5rnnsmn8vvipkmk40xl65wplxzp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-math-functions" ,ghc-math-functions)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-vector-algorithms" ,ghc-vector-algorithms)
+       ("ghc-vector-th-unbox" ,ghc-vector-th-unbox)
+       ("ghc-vector-binary-instances" ,ghc-vector-binary-instances)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://hackage.haskell.org/package/dense-linear-algebra")
+    (synopsis "Simple and incomplete implementation of linear algebra")
+    (description "This library is simply a collection of linear-algebra
+related modules split from the statistics library.")
+    (license license:bsd-2)))
+
 (define-public ghc-descriptive
   (package
     (name "ghc-descriptive")
