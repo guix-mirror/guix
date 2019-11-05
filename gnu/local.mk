@@ -22,6 +22,7 @@
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
+# Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 #
 # This file is part of GNU Guix.
 #
@@ -1270,6 +1271,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-keras-integration-test.patch	\
+  %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-utf8.patch		\
