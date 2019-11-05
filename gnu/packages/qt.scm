@@ -100,7 +100,8 @@
        ("qtscript" ,qtscript)))
     (build-system cmake-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("-DCMAKE_CXX_STANDARD=11")
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'delete-broken-tests
            (lambda _
