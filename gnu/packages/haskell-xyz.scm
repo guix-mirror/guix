@@ -5208,6 +5208,30 @@ contexts.  It parses blocks of lines all indented to the same level as well as
 lines continued at an indented level below.")
     (license license:bsd-3)))
 
+(define-public ghc-infer-license
+  (package
+    (name "ghc-infer-license")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "infer-license/infer-license-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wlfm6bf55kfvm74xar9lmjg5v1103rs9m3grw1rq5bmcmhzxrhj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-text-metrics" ,ghc-text-metrics)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("hspec-discover" ,hspec-discover)))
+    (home-page "http://hackage.haskell.org/package/infer-license")
+    (synopsis "Infer software license from a given license file")
+    (description "This library provides tools to infer a software
+license from a given license file.")
+    (license license:expat)))
+
 (define-public ghc-inline-c
   (package
     (name "ghc-inline-c")
