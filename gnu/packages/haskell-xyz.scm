@@ -2141,6 +2141,37 @@ dependencies.  The basic idea is that this package should only depend on
 @code{haskell-platform} packages and @code{conduit}.")
     (license license:expat)))
 
+(define-public ghc-conduit-zstd
+  (package
+    (name "ghc-conduit-zstd")
+    (version "0.0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "conduit-zstd/conduit-zstd-" version ".tar.gz"))
+       (sha256
+        (base32
+         "04h7w2903hgw4gjcx2pg29yinnmfapawvc19hd3r57rr12fzb0c6"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-zstd" ,ghc-zstd)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-th" ,ghc-test-framework-th)))
+    (home-page "https://github.com/luispedro/conduit-zstd#readme")
+    (synopsis "Conduit-based ZStd Compression")
+    (description "Zstandard compression packaged as a conduit.  This is
+a very thin wrapper around the
+@url{https://github.com/facebookexperimental/hs-zstd/, official hs-zstd
+interface}.")
+    (license license:expat)))
+
 (define-public ghc-configurator
   (package
     (name "ghc-configurator")
