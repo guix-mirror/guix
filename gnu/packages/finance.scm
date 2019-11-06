@@ -14,6 +14,7 @@
 ;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;; Copyright © 2019 Martin Becze <mjbecze@riseup.net>
+;;; Copyright © 2019 Sebastian Schott <sschott@mailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,6 +151,34 @@ collectively by the network.  Bitcoin Core is the reference implementation
 of the bitcoin protocol.  This package provides the Bitcoin Core command
 line client and a client based on Qt.")
     (license license:expat)))
+
+(define-public homebank
+  (package
+    (name "homebank")
+    (version "5.2.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://homebank.free.fr/public/homebank-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13ampiv68y30kc0p2560g3yz8whqpwnidfcnb9lndv93b9ca767y"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libsoup" ,libsoup)))
+    (arguments
+     `(#:configure-flags (list "-without-ofx"))) ; libofx is not available yet
+    (home-page "http://homebank.free.fr/")
+    (synopsis "Graphical personal accounting application")
+    (description "HomeBank allows you to manage your personal accounts at
+home.  The seeks to be lightweight, simple and easy to use.  It brings
+features that allow you to analyze your finances in a detailed way instantly
+and dynamically with report tools based on filtering and graphical charts.")
+    (license license:gpl2+)))
 
 (define-public ledger
   (package
