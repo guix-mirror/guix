@@ -27,6 +27,7 @@
 (define-module (gnu packages kde)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system qt)
+  #:use-module (guix deprecation)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
@@ -260,77 +261,8 @@ software (Git, Subversion, Mercurial, CVS and Bazaar).")
 for some KDevelop language plugins (Ruby, PHP, CSS...).")
     (license license:lgpl2.0+)))
 
-(define-public kdevplatform
-  (package
-    (name "kdevplatform")
-    (version "5.1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "mirror://kde/stable/kdevelop"
-                                  "/" version "/src/kdevplatform-"
-                                  version ".tar.xz"))
-              (sha256
-               (base32
-                "0jk6g1kiqpyjy8pca0236b9944gxqnymqv8ny6m8nrraannxs8p6"))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("apr" ,apr)
-       ("apr-util" ,apr-util)
-       ("boost" ,boost)
-       ("karchive" ,karchive)
-       ("kconfigwidgets" ,kconfigwidgets)
-       ("kcmutils" ,kcmutils)
-       ("kiconthemes" ,kiconthemes)
-       ("kdeclarative" ,kdeclarative)
-       ("kdoctools" ,kdoctools)
-       ("kguiaddons" ,kguiaddons)
-       ("kinit" ,kinit)
-       ("kitemmodels" ,kitemmodels)
-       ("knewstuff" ,knewstuff)
-       ("knotifications" ,knotifications)
-       ("knotifyconfig" ,knotifyconfig)
-       ("kwindowsystem" ,kwindowsystem)
-       ("kio" ,kio)
-       ("ki18n" ,ki18n)
-       ("kparts" ,kparts)
-       ("kservice" ,kservice)
-       ("grantlee" ,grantlee)
-       ("libkomparediff2" ,libkomparediff2)
-       ("sonnet" ,sonnet)
-       ("threadweaver" ,threadweaver)
-       ("ktexteditor" ,ktexteditor)
-       ("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)
-       ("qtscript" ,qtscript)
-       ("qtwebkit" ,qtwebkit)
-       ("qtx11extras" ,qtx11extras)
-       ("plasma" ,plasma-framework)
-       ("subversion" ,subversion)
-       ("zlib" ,zlib)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (delete 'check)
-         (add-after 'install 'check
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
-               (setenv "QT_PLUGIN_PATH"
-                       (string-append out "/lib/plugins:"
-                                      (getenv "QT_PLUGIN_PATH")))
-               (setenv "XDG_DATA_DIRS"
-                       (string-append out "/share:"
-                                      (getenv "XDG_DATA_DIRS")))
-               (invoke "ctest" "-R" ; almost all tests require a display
-                       "filteringstrategy|kdevvarlengtharray|kdevhash")))))))
-    (home-page "https://github.com/KDE/kdevplatform")
-    (synopsis "Framework to build integrated development environments (IDEs)")
-    (description "KDevPlatform is the basis of KDevelop and contains some
-plugins, as well as code to create plugins, or complete applications.")
-    (license license:gpl3+)))
+;; kdevplatform was merged into kdevelop as of 5.2.x
+(define-deprecated kdevplatform kdevelop kdevelop)
 
 (define-public krita
   (package
