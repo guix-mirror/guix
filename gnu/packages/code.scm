@@ -607,8 +607,9 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
            (lambda _ (chdir "build/gcc") #t))
          (add-after 'install 'install-libs
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Libraries are not installed by default
+             ;; Libraries and includes are not installed by default
              (let* ((output (assoc-ref outputs "out"))
+                    (incdir (string-append output "/include"))
                     (libdir (string-append output "/lib")))
                (define (make-so-link sofile strip-pattern)
                  (symlink
@@ -616,6 +617,9 @@ Objective@tie{}C, D, Java, Pawn, and Vala).  Features:
                   (regexp-substitute #f
                                      (string-match strip-pattern sofile)
                                      'pre)))
+               (mkdir-p incdir)
+               (copy-file "../../src/astyle.h"
+                          (string-append incdir "/astyle.h"))
                (mkdir-p libdir)
                (for-each (lambda (l)
                            (copy-file
