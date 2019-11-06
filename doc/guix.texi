@@ -792,8 +792,9 @@ When configuring Guix on a system that already has a Guix installation,
 be sure to specify the same state directory as the existing installation
 using the @code{--localstatedir} option of the @command{configure}
 script (@pxref{Directory Variables, @code{localstatedir},, standards,
-GNU Coding Standards}).  The @command{configure} script protects against
-unintended misconfiguration of @var{localstatedir} so you do not
+GNU Coding Standards}).  Usually, this @var{localstatedir} option is
+set to the value @file{/var}.  The @command{configure} script protects
+against unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
 @node Running the Test Suite
