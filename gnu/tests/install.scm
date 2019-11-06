@@ -138,7 +138,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vdb mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.2G \\
+  mkpart primary ext2 3M 1.4G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.ext4 -L my-root /dev/vdb2
@@ -163,7 +163,7 @@ guix --version
 export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vdb mklabel gpt \\
-  mkpart ext2 1M 1.2G \\
+  mkpart ext2 1M 1.4G \\
   set 1 legacy_boot on
 mkfs.ext4 -L my-root -O '^64bit' /dev/vdb1
 mount /dev/vdb1 /mnt
@@ -365,7 +365,7 @@ export GUIX_BUILD_OPTIONS=--no-grafts
 guix build isc-dhcp
 parted --script /dev/vda mklabel gpt \\
   mkpart primary ext2 1M 3M \\
-  mkpart primary ext2 3M 1.2G \\
+  mkpart primary ext2 3M 1.4G \\
   set 1 boot on \\
   set 1 bios_grub on
 mkfs.ext4 -L my-root /dev/vda2
