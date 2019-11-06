@@ -19765,6 +19765,17 @@ use the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{modules} (default: @code{'()})
+List of nginx dynamic modules to load.  This should be a list of file
+names of loadable modules, as in this example:
+
+@lisp
+(modules
+ (list
+  (file-append nginx-accept-language-module "\
+/etc/nginx/modules/ngx_http_accept_language_module.so")))
+@end lisp
+
 @item @code{extra-content} (default: @code{""})
 Extra content for the @code{http} block.  Should be string or a string
 valued G-expression.

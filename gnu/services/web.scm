@@ -9,6 +9,7 @@
 ;;; Copyright © 2018 Pierre-Antoine Rouby <pierre-antoine.rouby@inria.fr>
 ;;; Copyright © 2017, 2018, 2019 Christopher Baines <mail@cbaines.net>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,6 +96,7 @@
             nginx-configuration-upstream-blocks
             nginx-configuration-server-names-hash-bucket-size
             nginx-configuration-server-names-hash-bucket-max-size
+            nginx-configuration-modules
             nginx-configuration-extra-content
             nginx-configuration-file
 
@@ -522,6 +524,7 @@
                                  (default #f))
   (server-names-hash-bucket-max-size nginx-configuration-server-names-hash-bucket-max-size
                                      (default #f))
+  (modules nginx-configuration-modules (default '()))
   (extra-content nginx-configuration-extra-content
                  (default ""))
   (file          nginx-configuration-file         ;#f | string | file-like
@@ -541,6 +544,9 @@ of index files."
  (map (match-lambda
         ((? string? str) (list str " ")))
       names))
+
+(define (emit-load-module module)
+  (list "load_module " module ";\n"))
 
 (define emit-nginx-location-config
   (match-lambda
@@ -615,12 +621,14 @@ of index files."
                  server-blocks upstream-blocks
                  server-names-hash-bucket-size
                  server-names-hash-bucket-max-size
+                 modules
                  extra-content)
    (apply mixed-text-file "nginx.conf"
           (flatten
            "user nginx nginx;\n"
            "pid " run-directory "/pid;\n"
            "error_log " log-directory "/error.log info;\n"
+           (map emit-load-module modules)
            "http {\n"
            "    client_body_temp_path " run-directory "/client_body_temp;\n"
            "    proxy_temp_path " run-directory "/proxy_temp;\n"
