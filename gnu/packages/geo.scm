@@ -123,6 +123,12 @@ topology functions.")
      `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'install 'wrap
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out"))
@@ -152,8 +158,7 @@ topology functions.")
                                                  ,geocode-glib-path)))
                #t))))))
     (native-inputs
-     `(("gtk+" ,gtk+ "bin") ; gtk-update-icon-cache
-       ("gobject-introspection" ,gobject-introspection)
+     `(("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
