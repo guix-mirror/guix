@@ -760,7 +760,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
-  %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
