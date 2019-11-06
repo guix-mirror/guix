@@ -8318,6 +8318,11 @@ The returned source tarball is the result of applying any patches and
 code snippets specified in the package @code{origin} (@pxref{Defining
 Packages}).
 
+Note that @command{guix build -S} compiles the sources only of the
+specified packages.  They do not include the sources of statically
+linked dependencies and by themselves are insufficient for reproducing
+the packages.
+
 @item --sources
 Fetch and return the source of @var{package-or-derivation} and all their
 dependencies, recursively.  This is a handy way to obtain a local copy
