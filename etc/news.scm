@@ -22,12 +22,19 @@ Options\"}).  This is useful in particular to see the effect of the
 Befehlen gemeinsamen Umwandlungsoptionen (siehe @command{info \"(guix.de)
 Paketumwandlungsoptionen\"}).  Sie helfen insbesondere dabei, die Wirkung der
 Befehlszeilenoption @option{--with-input} zum Umschreiben des
-Abhängigkeitsgraphen zu sehen.")))
+Abhängigkeitsgraphen zu sehen.")
+         (es "La orden @command{guix graph} ahora implementa las opciones
+comunes de transformación de paquetes (véase @command{info \"(guix.es)
+Opciones de transformación de paquetes\"}). Esto es particularmente
+útil para comprobar el efecto de la opción de reescritura del grafo
+de dependencias @option{--with-input}.")))
 
  (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
         (title (en "@command{guix pull} now honors
 @file{/etc/guix/channels.scm}")
                (de "@command{guix pull} berücksichtigt nun
+@file{/etc/guix/channels.scm}")
+               (es "Ahora @command{guix pull} tiene en cuenta
 @file{/etc/guix/channels.scm}")
                (fr "@command{guix pull} lit maintenant
 @file{/etc/guix/channels.scm}"))
@@ -41,6 +48,11 @@ of multi-user systems to define site-wide defaults.")
 Benutzer keine @file{~/.config/guix/channels.scm} gibt.  Dadurch können
 Administratoren von Mehrbenutzersystemen systemweite Voreinstellungen
 vornehmen.")
+         (es "Ahora la orden @command{guix pull} lee el fichero
+@file{/etc/guix/channels.scm} si existe y el fichero personalizable
+@file{~/.config/guix/channels.scm} no está presente. Esto permite a quienes
+administran sistemas con múltiples usuarias definir valores predeterminados
+en el sistema.")
          (fr "La commande @command{guix pull} lira maintenant le fichier
 @file{/etc/guix/channels.scm} s'il existe et si le fichier
 @file{~/.config/guix/channels.scm} par utilisateur·rice n'est pas présent.
@@ -50,6 +62,7 @@ définir les canaux par défaut.")))
  (entry (commit "81c580c8664bfeeb767e2c47ea343004e88223c7")
         (title (en "Insecure @file{/var/guix/profiles/per-user} permissions (CVE-2019-18192)")
                (de "Sicherheitslücke in @file{/var/guix/profiles/per-user}-Berechtigungen (CVE-2019-18192)")
+               (es "Vulnerabilidad en los permisos de @file{/var/guix/profiles/per-user} (CVE-2019-18192)")
                (fr "Permissions laxistes pour @file{/var/guix/profiles/per-user} (CVE-2019-18192)")
                (nl "Onveilige @file{/var/guix/profiles/per-user}-rechten (CVE-2019-18192)"))
         (body
@@ -93,6 +106,25 @@ einer Fremddistribution führen Sie dazu @code{sudo guix pull} aus; auf einem
 Guix-System führen Sie @code{guix pull && sudo guix system reconfigure …}
 aus.  Achten Sie in beiden Fällen darauf, den Dienst mit @code{herd} oder
 @code{systemctl} neuzustarten.")
+         (es "El perfil predeterminado de la usuaria, @file{~/.guix-profile},
+apunta a @file{/var/guix/profiles/per-user/$USUARIA}.  Hasta ahora cualquiera
+podía escribir en @file{/var/guix/profiles/per-user}, lo cual permitía
+a la orden @command{guix} crear el subdirectorio @code{$USUARIA}.
+
+En un sistema con múltiples usuarias, esto permitiría a cualquiera con
+intención de causar daño crear ese subdirectorio @code{$USUARIA} con el nombre
+de alguien que no hubiese ingresado en el sistema. Puesto que ese
+subdirectorio @code{/var/@dots{}/$USUARIA} se encuentra en la ruta de binarios
+predeterminada @code{$PATH}, el objetivo del ataque podría ejecutar código
+proporcionado por la parte atacante. Véase
+@uref{https://issues.guix.gnu.org/issue/37744} para obtener más información.
+
+Se ha solucionando delegando en @command{guix-daemon} la creación de esos
+directorios y eliminando los permisos de escritura para todo el mundo en
+@code{per-user}. En sistemas con múltiples usuarias recomendamos actualizar
+cuanto antes el daemon. Para hacerlo ejecute @code{sudo guix pull} si se
+encuentra en una distribución distinta, o ejecute @code{guix pull && sudo guix system reconfigure @dots{}} en el sistema Guix. En ambos casos, asegurese de
+reiniciar el servicio tras ello, con @code{herd} o @code{systemctl}.")
          (fr "Le profil utilisateur par défaut, @file{~/.guix-profile},
 pointe vers @file{/var/guix/profiles/per-user/$USER}.  Jusqu'à
 maintenant, @file{/var/guix/profiles/per-user} était disponible en
@@ -136,6 +168,7 @@ met @code{sudo guix pull}.  Herstart vervolgens in beide gevallen
  (entry (commit "5f3f70391809f8791c55c05bd1646bc58508fa2c")
         (title (en "GNU C Library upgraded")
                (de "GNU-C-Bibliothek aktualisiert")
+               (es "Actualización de la biblioteca C de GNU")
                (fr "Mise à jour de la bibliothèque C de GNU")
                (nl "GNU C-bibliotheek bijgewerkt"))
         (body
@@ -162,6 +195,18 @@ guix install glibc-locales glibc-locales-2.28
 Auf Guix System genügt es, das @code{locale-libcs}-Feld Ihrer
 @code{operating-system}-Form anzupassen. Führen Sie @code{info \"(guix.de)
 Locales\"} aus, um weitere Informationen dazu zu erhalten.")
+         (es "Se ha actualizado la biblioteca de C de GNU (glibc) a la versión
+2.29. Para ejecutar programas instalados previamente que se encuentren
+enlazados con glibc 2.28, es necesario que instale los datos de localización
+de la versión 2.28 junto a los datos de localización de la versión 2.29:
+
+@example
+guix install glibc-locales glibc-locales-2.28
+@end example
+
+En el sistema Guix, puede ajustar el campo @code{locale-libcs} de su
+declaración @code{operating-system}. Ejecute @code{info \"(guix.es)
+Localizaciones\"} para obtener más información.")
          (fr "La bibliothèque C de GNU (glibc) a été mise à jour en version
 2.29.  Pour pouvoir lancer tes programmes déjà installés et liés à glibc 2.28,
 tu dois installer les données pour la version 2.28 en plus des données de
@@ -185,10 +230,11 @@ guix install glibc-locales glibc-locales-2.28
 
 Op Guix System kunt u het @code{locale-libcs}-veld van uw
 @code{operating-system}-vorm aanpassen.   Voer @code{info \"(guix) Locales\"}
-uit voor verdere uitleg." )))
+uit voor verdere uitleg.")))
  (entry (commit "cdd3bcf03883d129581a79e6d6611b2afd3b277b")
         (title (en "New reduced binary seed bootstrap")
                (de "Neues Bootstrapping mit kleinerem Seed")
+               (es "Nueva reducción de la semilla binaria para el lanzamiento inicial")
                (fr "Nouvel ensemble de binaires de bootstrap réduit")
                (nl "Nieuwe bootstrap met verkleinde binaire kiem"))
         (body
@@ -209,6 +255,12 @@ binaires à partir desquels les paquets sont construits pèse maintenant environ
 130 Mio, soit la moitié par rapport à l'ensemble précédent.  Tu peux lancer
 @code{info \"(guix) Bootstrapping\"} pour plus de détails, ou regarder la
 présentation sur @uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")
+         (es "El grafo de paquetes en x86_64 y i686 ahora tiene su raíz en un
+@dfn{conjunto reducido de semillas binarias}. El conjunto inicial de binarios
+desde el que se construyen los paquetes ahora tiene un tamaño aproximado de
+130_MiB , la mitad de su tamaño anterior. Ejecute @code{info \"(guix.es)
+Lanzamiento inicial\"} para aprender más, o puede ver la charla en inglés
+en@uref{https://archive.fosdem.org/2019/schedule/event/gnumes/}.")
          (nl "Het netwerk van pakketten voor x86_64 en i686 is nu geworteld in
 een @dfn{verkleinde verzameling van binaire kiemen}.  Die beginverzameling
 van binaire bestanden waaruit pakketten gebouwd worden is nu zo'n 130 MiB
@@ -219,6 +271,7 @@ Bootstrapping\"} uit voor meer details, of bekijk de presentatie op
  (entry (commit "dcc90d15581189dbc30e201db2b807273d6484f0")
         (title (en "New channel news mechanism")
                (de "Neuer Mechanismus, um Neuigkeiten über Kanäle anzuzeigen.")
+               (es "Nuevo mecanismo de noticias de los canales")
                (fr "Nouveau mécanisme d'information sur les canaux")
                (nl "Nieuw mechanisme voor nieuwsberichten per kanaal"))
         (body
@@ -232,6 +285,11 @@ Mechanismus können Kanalautoren Ihren Nutzern @dfn{Einträge zu
 Neuigkeiten} mitteilen, die diese sich mit @command{guix pull --news}
 anzeigen lassen können. Führen Sie @command{info \"(guix.de) Aufruf
 von guix pull\"} aus, um weitere Informationen zu erhalten.")
+         (es "Está leyendo este mensaje a través del mecanismo de noticias del
+canal, ¡enhorabuena! Este mecanismo permite a las autoras de canales
+proporcionar @dfn{entradas de noticias} que las usuarias pueden ver con
+@command{guix pull --news}. Ejecute @command{info \"(guix.es) Invocación de
+guix pull\"} para obtener más información.")
          (fr "Ce message t'arrive à travers le nouveau mécanisme d'information
 des canaux, bravo !  Ce mécanisme permet aux auteur·rice·s de canaux de
 fournir des informations qu'on peut visualiser avec @command{guix pull
