@@ -4487,6 +4487,14 @@ a secret password store, an adblocker, and a modern UI.")
      ;;   FAIL
      '(#:tests? #f
        #:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
@@ -4496,7 +4504,6 @@ a secret password store, an adblocker, and a modern UI.")
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-mkenums
-       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
