@@ -213,6 +213,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gl.scm				\
   %D%/packages/glib.scm				\
   %D%/packages/gnome.scm			\
+  %D%/packages/gnome-xyz.scm			\
   %D%/packages/gnu-doc.scm			\
   %D%/packages/gnucash.scm			\
   %D%/packages/gnunet.scm			\
