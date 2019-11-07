@@ -5916,27 +5916,15 @@ parsing (browser/HTTP) user agent strings.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.8")
+    (version "1.2.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vvvjmiwnc9cjlks3gcdk43ap7llhlpz7cm1wbw0nc2yfsxjpwdb"))))
+        (base32 "11nqk01iq5bx2llgb3ksknyinijdp29w4ndj210glm009ayjncyl"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda _
-            ;; XXX: For the missing '/etc/machine-id'.
-            (substitute* "test/run-test.sh"
-              (("DBUS_FATAL_WARNINGS=1")
-               "DBUS_FATAL_WARNINGS=0"))
-            #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
