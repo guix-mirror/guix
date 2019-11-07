@@ -58,3 +58,40 @@ date app icons.  It will stay optically close to the original Faenza icons,
 which haven't been updated for some years.  The new app icons are ported from
 the Obsidian icon theme.")
     (license license:gpl3)))
+
+(define-public gnome-shell-extension-dash-to-dock
+  (package
+    (name "gnome-shell-extension-dash-to-dock")
+    (version "65")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/micheleg/dash-to-dock.git")
+                    (commit (string-append "extensions.gnome.org-v"
+                                           version))))
+              (sha256
+               (base32
+                "0ln49l9s0yfl30pi77pz7xlmh63l9vjppi863kry5lay10dsvz47"))
+              (file-name (git-file-name name version))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (list (string-append "INSTALLBASE="
+                                         (assoc-ref %outputs "out")
+                                         "/share/gnome-shell/extensions"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'bootstrap)
+         (delete 'configure))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib" ,glib "bin")))
+    (synopsis "Transforms GNOME's dash into a dock")
+    (description "This extension moves the dash out of the
+overview, transforming it into a dock for easier application launching and
+faster window switching.")
+    (home-page "https://micheleg.github.io/dash-to-dock/")
+    (license license:gpl2+)))
