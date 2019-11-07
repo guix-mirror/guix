@@ -247,14 +247,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20191024")
+    (version "7.20191106")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "11n0wvw7i1rgrsmm2wkv01rfa0azgaw1ib7jbmy4fyg9pw0s27y1"))))
+        (base32 "1zvs011vqwyjk1xgz1c8gflih9903rjqg3l5km15p45lny8y8j4b"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
