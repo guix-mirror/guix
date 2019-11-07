@@ -562,7 +562,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 
 
 ;; qt used to refer to the monolithic Qt 5.x package
-(define-deprecated qt `qtbase qtbase)
+(define-deprecated qt qtbase qtbase)
 
 
 (define-public qtsvg
