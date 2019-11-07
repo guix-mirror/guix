@@ -4413,6 +4413,12 @@ almost all of them.")
      `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4435,8 +4441,7 @@ almost all of them.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")))
+       ("glib:bin" ,glib "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib-networking" ,glib-networking)
