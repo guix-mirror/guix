@@ -9,6 +9,15 @@
 (channel-news
  (version 0)
 
+ (entry (commit "3e962e59d849e4300e447d94487684102d9d412e")
+        (title (en "@command{guix graph} now supports package
+transformations"))
+        (body
+         (en "The @command{guix graph} command now supports the common package
+transformation options (see @command{info \"(guix) Package Transformation
+Options\"}).  This is useful in particular to see the effect of the
+@option{--with-input} dependency graph rewriting option.")))
+
  (entry (commit "49af34cfac89d384c46269bfd9388b2c73b1220a")
         (title (en "@command{guix pull} now honors
 @file{/etc/guix/channels.scm}")
