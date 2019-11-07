@@ -9907,7 +9907,18 @@ The package dependency graph is largely architecture-independent, but there
 are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
+On top of that, @command{guix graph} supports all the usual package
+transformation options (@pxref{Package Transformation Options}).  This
+makes it easy to view the effect of a graph-rewriting transformation
+such as @option{--with-input}.  For example, the command below outputs
+the graph of @code{git} once @code{openssl} has been replaced by
+@code{libressl} everywhere in the graph:
 
+@example
+guix graph git --with-input=openssl=libressl
+@end example
+
+So many possibilities, so much fun!
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}

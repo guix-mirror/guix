@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016, 2019 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -53,3 +53,9 @@ cmp "$tmpfile1" "$tmpfile2"
 guix graph -t derivation coreutils > "$tmpfile1"
 guix graph -t derivation `guix build -d coreutils` > "$tmpfile2"
 cmp "$tmpfile1" "$tmpfile2"
+
+# Try package transformation options.
+guix graph git | grep 'label = "openssl'
+guix graph git --with-input=openssl=libressl | grep 'label = "libressl'
+if guix graph git --with-input=openssl=libressl | grep 'label = "openssl'
+then false; else true; fi
