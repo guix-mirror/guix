@@ -7831,15 +7831,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.2.2")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "aa4fbd92bf338296c28e54710271ccab/"
+                           "08f973788c7ca46d9285eec2ac818edb/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1wz5fna24qr3v7h29ijwhdxza85r9srz9xsqz4f4df3p5f8rfyql"))))
+        (base32 "0hvq6m4i62i0m63bg4gzpfb9rv1fk6vq5jl2g3ppcgm4srmfm77j"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
