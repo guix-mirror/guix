@@ -95,3 +95,34 @@ overview, transforming it into a dock for easier application launching and
 faster window switching.")
     (home-page "https://micheleg.github.io/dash-to-dock/")
     (license license:gpl2+)))
+
+(define-public gnome-shell-extension-noannoyance
+  (package
+    (name "gnome-shell-extension-noannoyance")
+    (version "5")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/BjoernDaase/noannoyance.git")
+                    (commit "e37b5b3c31f577b4698bc6659bc9fec5ea9ac5d4")))
+              (sha256
+               (base32
+                "0fa8l3xlh8kbq07y4385wpb908zm6x53z81q16xlmin97dln32hh"))
+              (file-name (git-file-name name version))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((dst (string-append
+                     (assoc-ref %outputs "out")
+                     "/share/gnome-shell/extensions/"
+                     "noannoyance@daase.net")))
+           (mkdir-p dst)
+           (copy-recursively (assoc-ref %build-inputs "source") dst)))))
+    (synopsis "Removes 'Window is ready' annotation")
+    (description "One of the many extensions, that remove this message.
+It uses ES6 syntax and claims to be more actively maintained than others.")
+    (home-page "https://extensions.gnome.org/extension/2182/noannoyance/")
+    (license license:gpl2)))
