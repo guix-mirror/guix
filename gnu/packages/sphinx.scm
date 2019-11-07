@@ -541,3 +541,25 @@ and several other projects.")
 
 (define-public python2-sphinx-rtd-theme
   (package-with-python2 python-sphinx-rtd-theme))
+
+(define-public python-breathe
+  (package
+    (name "python-breathe")
+    (version "4.13.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "breathe" version))
+       (sha256
+        (base32
+         "1aw749n2ry27434qd7gr99dvsrs3x3chyi9aywmhjj1g4m2j6xf6"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-six" ,python-six)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/michaeljones/breathe")
+    (synopsis "ReStructuredText and Sphinx bridge to Doxygen")
+    (description "This package is an extension to reStructuredText and Sphinx
+to be able to read and render the Doxygen xml output.")
+    (license license:bsd-3)))
