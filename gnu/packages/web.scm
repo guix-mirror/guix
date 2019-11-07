@@ -35,6 +35,7 @@
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
+;;; Copyright © 2019 Florian Pelz <pelzflorian@pelzflorian.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -134,7 +135,8 @@
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages vim)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module ((srfi srfi-1) #:select (delete-duplicates)))
 
 (define-public httpd
   (package
@@ -394,6 +396,152 @@ documentation.")
       (description
        "This package provides HTML documentation for the nginx web server.")
       (license license:bsd-2))))
+
+(define-public nginx-accept-language-module
+  ;; Upstream has never made a release; use current commit instead.
+  (let ((commit "2f69842f83dac77f7d98b41a2b31b13b87aeaba7")
+        (revision "1"))
+    (package
+      (name "nginx-accept-language-module")
+      (version (git-version "0.0.0" ;upstream has no version number
+                            revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/giom/nginx_accept_language_module.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "1hjysrl15kh5233w7apq298cc2bp4q1z5mvaqcka9pdl90m0vhbw"))))
+      (build-system gnu-build-system)
+      (inputs `(("openssl" ,openssl)
+                ("pcre" ,pcre)
+                ("nginx-sources" ,(package-source nginx))
+                ("zlib" ,zlib)))
+      (arguments
+       `(#:tests? #f                      ; no test target
+         #:make-flags (list "modules")
+         #:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (ice-9 popen)
+                    (ice-9 regex)
+                    (ice-9 textual-ports))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-nginx-sources
+             (lambda* (#:key inputs native-inputs #:allow-other-keys)
+               (begin
+                 ;; The nginx source code is part of the module’s source.
+                 (format #t "decompressing nginx source code~%")
+                 (call-with-output-file "nginx.tar"
+                   (lambda (out)
+                     (let* ((gzip (assoc-ref inputs "gzip"))
+                            (nginx-srcs (assoc-ref inputs "nginx-sources"))
+                            (pipe (open-pipe* OPEN_READ
+                                              (string-append gzip "/bin/gzip")
+                                              "-cd"
+                                              nginx-srcs)))
+                       (dump-port pipe out)
+                       (unless (= (status:exit-val (close-pipe pipe)) 0)
+                         (error "gzip decompress failed")))))
+                 (invoke (string-append (assoc-ref inputs "tar") "/bin/tar")
+                         "xvf" "nginx.tar" "--strip-components=1")
+                 (delete-file "nginx.tar")
+                 #t)))
+           (add-after 'unpack 'convert-to-dynamic-module
+             (lambda _
+               (begin
+                 (with-atomic-file-replacement "config"
+                   (lambda (in out)
+                     ;; cf. https://www.nginx.com/resources/wiki/extending/new_config/
+                     (format out "ngx_module_type=HTTP~%")
+                     (format out "ngx_module_name=\
+ngx_http_accept_language_module~%")
+                     (let* ((str (get-string-all in))
+                            (rx (make-regexp
+                                 "NGX_ADDON_SRCS=\"\\$NGX_ADDON_SRCS (.*)\""))
+                            (m (regexp-exec rx str))
+                            (srcs (match:substring m 1)))
+                       (format out (string-append "ngx_module_srcs=\""
+                                                  srcs "\"~%")))
+                     (format out ". auto/module~%")
+                     (format out "ngx_addon_name=$ngx_module_name~%"))))))
+           (add-before 'configure 'patch-/bin/sh
+             (lambda _
+               (substitute* "auto/feature"
+                 (("/bin/sh") (which "sh")))
+               #t))
+           (replace 'configure
+             ;; This phase is largely copied from the nginx package.
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((flags
+                      (list ;; A copy of nginx’ flags follows, otherwise we
+                            ;; get a binary compatibility error.  FIXME: Code
+                            ;; duplication is bad.
+                       (string-append "--prefix=" (assoc-ref outputs "out"))
+                       "--with-http_ssl_module"
+                       "--with-http_v2_module"
+                       "--with-pcre-jit"
+                       "--with-debug"
+                       ;; Even when not cross-building, we pass the
+                       ;; --crossbuild option to avoid customizing for the
+                       ;; kernel version on the build machine.
+                       ,(let ((system "Linux")    ; uname -s
+                              (release "3.2.0")   ; uname -r
+                              ;; uname -m
+                              (machine (match (or (%current-target-system)
+                                                  (%current-system))
+                                         ("x86_64-linux"   "x86_64")
+                                         ("i686-linux"     "i686")
+                                         ("mips64el-linux" "mips64")
+                                         ;; Prevent errors when querying
+                                         ;; this package on unsupported
+                                         ;; platforms, e.g. when running
+                                         ;; "guix package --search="
+                                         (_                "UNSUPPORTED"))))
+                          (string-append "--crossbuild="
+                                         system ":" release ":" machine))
+                       ;; The following are the args decribed on
+                       ;; <https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus>.
+                       ;; Enabling --with-compat here and in the nginx package
+                       ;; would ensure binary compatibility even when using
+                       ;; different configure options from the main nginx
+                       ;; package.  This is not needed for Guix.
+                       ;; "--with-compat"
+                       "--add-dynamic-module=.")))
+                 (setenv "CC" "gcc")
+                 (format #t "environment variable `CC' set to `gcc'~%")
+                 (format #t "configure flags: ~s~%" flags)
+                 (apply invoke "./configure" flags)
+                 #t)))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (modules-dir (string-append out "/etc/nginx/modules"))
+                      (doc-dir (string-append
+                                out "/share/doc/nginx-accept-language-module")))
+                 (mkdir-p modules-dir)
+                 (copy-file "objs/ngx_http_accept_language_module.so"
+                            (string-append
+                             modules-dir "/ngx_http_accept_language_module.so"))
+                 (mkdir-p doc-dir)
+                 (copy-file "README.textile"
+                            (string-append doc-dir "/README.textile"))
+                 #t))))))
+      (home-page
+       "https://www.nginx.com/resources/wiki/modules/accept_language/")
+      (synopsis "Nginx module for parsing the Accept-Language HTTP header")
+      (description
+       "This nginx module parses the Accept-Language field in HTTP headers and
+chooses the most suitable locale for the user from the list of locales
+supported at your website.")
+      (license (delete-duplicates
+                (cons license:bsd-2 ;license of nginx-accept-language-module
+                      ;; The module’s code is linked statically with nginx,
+                      ;; therefore nginx’ other licenses may also apply to its
+                      ;; binary:
+                      (package-license nginx)))))))
 
 (define-public fcgi
   (package
