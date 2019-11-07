@@ -569,9 +569,17 @@ and keep up to date translations of documentation.")
                (base32
                 "1365fabz3q7n3bl775z82m1nzg18birxxyd7l2ssbbkqrx3h7wgi"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("docbook-xml" ,docbook-xml)
