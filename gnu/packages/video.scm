@@ -1862,8 +1862,8 @@ MPEG-2 stream containing VOB packets.")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
-                                  name "/" version "/"
-                                  name "-" version ".tar.bz2"))
+                                  "libdvdnav/" version "/"
+                                  "libdvdnav-" version ".tar.bz2"))
               (sha256
                (base32
                 "062njcksmpgw9yv3737qkf93r2pzhaxi9szqjabpa8d010dp38ph"))))
