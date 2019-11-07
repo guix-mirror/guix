@@ -4141,6 +4141,12 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                            (assoc-ref %outputs "out") "/lib/eog"))
       #:phases
       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
         (add-after 'install 'wrap-eog
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out               (assoc-ref outputs "out"))
@@ -4154,7 +4160,6 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
     `(("intltool" ,intltool)
       ("itstool" ,itstool)
       ("glib" ,glib "bin")
-      ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("xmllint" ,libxml2)))
