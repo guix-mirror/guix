@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
@@ -653,6 +655,49 @@ with password-store files.  Features configurable password generation,
 templates, clipboard handling, and per folder settings for multi-recipient
 encryption.")
     (license license:gpl3+)))
+
+(define-public rofi-pass
+  (package
+    (name "rofi-pass")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://raw.githubusercontent.com/carnager/rofi-pass/"
+                       version "/rofi-pass"))
+       (sha256
+        (base32 "0msldkndqp40nx1s5s7ggcr97ir4nshpmnyzvj5hqw1l7m3gvw6j"))
+       (file-name name)))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (string-append (assoc-ref %build-inputs "source")))
+               (script "rofi-pass")
+               (out (assoc-ref %outputs "out")))
+           (copy-file source script)
+           (chmod script #o555)
+           (install-file script (string-append out "/bin"))))))
+    (propagated-inputs
+     `(("password-store" ,password-store)
+       ("rofi" ,rofi)
+       ("xdotool" ,xdotool)))
+    (home-page "https://github.com/carnager/rofi-pass")
+    (synopsis "Rofi frontend for password-store")
+    (description "Rofi-pass provides a way to manipulate information stored
+using password-store through rofi interface:
+@enumerate
+@item open URLs of entries with hotkey;
+@item type any field from entry;
+@item auto-typing of user and/or password fields;
+@item auto-typing username based on path;
+@item auto-typing of more than one field, using the autotype entry;
+@item bookmarks mode (open stored URLs in browser, default: Alt+x).
+@end enumerate")
+    (license license:gpl3)))
 
 (define-public argon2
   (package
