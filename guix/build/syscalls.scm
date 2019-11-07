@@ -80,6 +80,7 @@
             lock-file
             unlock-file
             with-file-lock
+            with-file-lock/no-wait
 
             set-thread-name
             thread-name
@@ -1087,10 +1088,10 @@ exception if it's already taken."
           ;; Presumably we got EAGAIN or so.
           (throw 'flock-error err))))))
 
-(define (lock-file file)
+(define* (lock-file file #:key (wait? #t))
   "Wait and acquire an exclusive lock on FILE.  Return an open port."
   (let ((port (open-file file "w0")))
-    (fcntl-flock port 'write-lock)
+    (fcntl-flock port 'write-lock #:wait? wait?)
     port))
 
 (define (unlock-file port)
@@ -1119,9 +1120,39 @@ exception if it's already taken."
         (when port
           (unlock-file port))))))
 
+(define (call-with-file-lock/no-wait file thunk handler)
+  (let ((port (catch #t
+                (lambda ()
+                  (lock-file file #:wait? #f))
+                (lambda (key . args)
+                  (match key
+                    ('flock-error
+                     (handler args))
+                    ('system-error
+                      ;; When using the statically-linked Guile in the initrd,
+                      ;; 'fcntl-flock' returns ENOSYS unconditionally.  Ignore
+                      ;; that error since we're typically the only process running
+                      ;; at this point.
+                      (if (= ENOSYS (system-error-errno (cons key args)))
+                          #f
+                          (apply throw args)))
+                    (_ (apply throw key args)))))))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      thunk
+      (lambda ()
+        (when port
+          (unlock-file port))))))
+
 (define-syntax-rule (with-file-lock file exp ...)
   "Wait to acquire a lock on FILE and evaluate EXP in that context."
   (call-with-file-lock file (lambda () exp ...)))
+
+(define-syntax-rule (with-file-lock/no-wait file handler exp ...)
+  "Try to acquire a lock on FILE and evaluate EXP in that context.  Execute
+handler if the lock is already held by another process."
+  (call-with-file-lock/no-wait file (lambda () exp ...) handler))
 
 
 ;;;
