@@ -491,54 +491,83 @@ should only be used as part of the Guix cups-pk-helper service.")
                   (guix build utils)
                   ((guix build python-build-system) #:prefix python:))
 
-       #:phases (modify-phases %standard-phases
-                  (add-after 'unpack 'fix-hard-coded-file-names
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let ((out (assoc-ref outputs "out"))
-                            ;; FIXME: use merged ppds (I think actually only
-                            ;; drvs need to be merged).
-                            (cupsdir (assoc-ref inputs "cups-minimal")))
-                        (substitute* "base/g.py"
-                          (("'/usr/share;[^']*'")
-                           (string-append "'" cupsdir "/share'"))
-                          (("'/etc/hp/hplip.conf'")
-                           (string-append "'" out
-                                          "/etc/hp/hplip.conf" "'")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hard-coded-file-names
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   ;; FIXME: use merged ppds (I think actually only
+                   ;; drvs need to be merged).
+                   (cupsdir (assoc-ref inputs "cups-minimal")))
+               (substitute* "base/g.py"
+                 (("'/usr/share;[^']*'")
+                  (string-append "'" cupsdir "/share'"))
+                 (("'/etc/hp/hplip.conf'")
+                  (string-append "'" out
+                                 "/etc/hp/hplip.conf" "'")))
 
-                        (substitute* "Makefile.in"
-                          (("[[:blank:]]check-plugin\\.py[[:blank:]]") " ")
-                          ;; FIXME Use beginning-of-word in regexp.
-                          (("[[:blank:]]plugin\\.py[[:blank:]]") " ")
-                          (("/usr/include/libusb-1.0")
-                           (string-append (assoc-ref inputs "libusb")
-                                          "/include/libusb-1.0"))
-                          (("hplip_statedir =.*$")
-                           ;; Don't bail out while trying to create
-                           ;; /var/lib/hplip.  We can safely change its value
-                           ;; here because it's hard-coded in the code anyway.
-                           "hplip_statedir = $(prefix)\n")
-                          (("hplip_confdir = /etc/hp")
-                           ;; This is only used for installing the default config.
-                           (string-append "hplip_confdir = " out
-                                          "/etc/hp"))
-                          (("halpredir = /usr/share/hal/fdi/preprobe/10osvendor")
-                           ;; We don't use hal.
-                           (string-append "halpredir = " out
-                                          "/share/hal/fdi/preprobe/10osvendor"))
-                          (("rulesdir = /etc/udev/rules.d")
-                           ;; udev rules will be merged by base service.
-                           (string-append "rulesdir = " out
-                                          "/lib/udev/rules.d"))
-                          (("rulessystemdir = /usr/lib/systemd/system")
-                           ;; We don't use systemd.
-                           (string-append "rulessystemdir = " out
-                                          "/lib/systemd/system"))
-                          (("/etc/sane.d")
-                           (string-append out "/etc/sane.d"))))))
-
-                  ;; Wrap bin/* so that the Python libraries are found.
-                  (add-after 'install 'wrap-binaries
-                    (assoc-ref python:%standard-phases 'wrap)))))
+               (substitute* "Makefile.in"
+                 (("[[:blank:]]check-plugin\\.py[[:blank:]]") " ")
+                 ;; FIXME Use beginning-of-word in regexp.
+                 (("[[:blank:]]plugin\\.py[[:blank:]]") " ")
+                 (("/usr/include/libusb-1.0")
+                  (string-append (assoc-ref inputs "libusb")
+                                 "/include/libusb-1.0"))
+                 (("hplip_statedir =.*$")
+                  ;; Don't bail out while trying to create
+                  ;; /var/lib/hplip.  We can safely change its value
+                  ;; here because it's hard-coded in the code anyway.
+                  "hplip_statedir = $(prefix)\n")
+                 (("hplip_confdir = /etc/hp")
+                  ;; This is only used for installing the default config.
+                  (string-append "hplip_confdir = " out
+                                 "/etc/hp"))
+                 (("halpredir = /usr/share/hal/fdi/preprobe/10osvendor")
+                  ;; We don't use hal.
+                  (string-append "halpredir = " out
+                                 "/share/hal/fdi/preprobe/10osvendor"))
+                 (("rulesdir = /etc/udev/rules.d")
+                  ;; udev rules will be merged by base service.
+                  (string-append "rulesdir = " out
+                                 "/lib/udev/rules.d"))
+                 (("rulessystemdir = /usr/lib/systemd/system")
+                  ;; We don't use systemd.
+                  (string-append "rulessystemdir = " out
+                                 "/lib/systemd/system"))
+                 (("/etc/sane.d")
+                  (string-append out "/etc/sane.d"))))))
+         (add-after 'install 'wrap-binaries
+           ;; Scripts in /bin are all symlinks to .py files in /share/hplip.
+           ;; Symlinks are immune to the Python build system's 'WRAP phase,
+           ;; and the .py files can't be wrapped because they are reused as
+           ;; modules.  Replacing the symlinks in /bin with copies and
+           ;; wrapping them also doesn't work (“ModuleNotFoundError:
+           ;; No module named 'base'”).  Behold: a custom WRAP-PROGRAM.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (python (assoc-ref inputs "python")))
+               (with-directory-excursion bin
+                 (for-each (lambda (file)
+                             (let ((target (readlink file)))
+                               (delete-file file)
+                               (with-output-to-file file
+                                 (lambda _
+                                   (format #t
+                                           "#!~a~@
+                                           export PYTHONPATH=\"~a:~a\"~@
+                                           exec -a \"$0\" \"~a/~a\" \"$@\"~%"
+                                           (which "bash")
+                                           (string-append
+                                            out "/lib/python"
+                                            (python:python-version python)
+                                            "/site-packages")
+                                           (getenv "PYTHONPATH")
+                                           bin target)))
+                               (chmod file #o755)))
+                  (find-files "." (lambda (file stat)
+                                    (eq? 'symlink (stat:type stat)))))
+                 #t)))))))
 
     ;; Note that the error messages printed by the tools in the case of
     ;; missing dependencies are often downright misleading.
