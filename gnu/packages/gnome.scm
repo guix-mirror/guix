@@ -3472,12 +3472,20 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
                (base32
                 "036sddvhs0blqpc2ixmjdl9vxynvkn5jpgn0jxr1fxcm4rh3q07a"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin") ; for glib-mkmenus
-       ("gtk+:bin" ,gtk+ "bin")  ; for gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("amtk" ,amtk)
