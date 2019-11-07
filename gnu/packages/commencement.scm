@@ -2402,7 +2402,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; PKG-CONFIG.
   ;; TODO: Fix that on the next rebuild cycle.
   (let ((pkg-config (package
-                      (inherit pkg-config)
+                      (inherit %pkg-config)       ;the native pkg-config
                       (inputs `(("guile" ,guile-final)
                                 ,@(%boot5-inputs)))
                       (arguments
