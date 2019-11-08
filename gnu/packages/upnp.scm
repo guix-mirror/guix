@@ -47,7 +47,7 @@
      (origin
        (method url-fetch)
        (uri (string-append "https://miniupnp.tuxfamily.org/files/"
-                           name "-" version ".tar.gz"))
+                           "miniupnpc-" version ".tar.gz"))
        (sha256
         (base32 "0rg1i51lnyq8zgflhcg981kq4348vgq03ndmbgiv7knd1vmfzb8z"))))
     (build-system gnu-build-system)
