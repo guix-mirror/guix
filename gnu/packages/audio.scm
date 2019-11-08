@@ -3792,3 +3792,31 @@ stream to one or more IceCast and/or ShoutCast servers.")
 @dfn{Linear/Longitudinal Time Code} (LTC) data.")
     (home-page "https://x42.github.io/libltc/")
     (license license:lgpl3+)))
+
+(define-public redkite
+  (package
+    (name "redkite")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/geontime/redkite/-/archive/v"
+                           version "/redkite-v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qif1x3s96zi81zkg11zkszf2i5mvfyrg9b3z2lr0jpzihgblk7y"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests included
+    (inputs
+     `(("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (synopsis "Small GUI toolkit")
+    (description "Redkite is a small GUI toolkit developed in C++17 and
+inspired from other well known GUI toolkits such as Qt and GTK.  It is
+minimal on purpose and is intended to be statically linked to applications,
+therefore satisfying any requirements they may have to be self contained,
+as is the case with audio plugins.")
+    (home-page "https://gitlab.com/geontime/redkite")
+    (license license:gpl3+)))
