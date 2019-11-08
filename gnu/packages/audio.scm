@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -3765,3 +3767,28 @@ other Gnaural instances, allowing synchronous sessions between many users.")
 a sound card, encodes it into Ogg Vorbis and/or mp3, and sends the audio
 stream to one or more IceCast and/or ShoutCast servers.")
     (license license:gpl3+)))
+
+(define-public libltc
+  (package
+    (name "libltc")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/x42/libltc/releases/download/v"
+                       version "/libltc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "173h9dgmain3nyrwk6q2d7yl4fnh4vacag4s2p01n5b7nyrkxrjh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-tests? #f))           ;tests fail otherwise
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Encode or decode Linear/Longitudinal Time Code (LTC) audio")
+    (description "Libltc is a POSIX-C Library for handling
+@dfn{Linear/Longitudinal Time Code} (LTC) data.")
+    (home-page "https://x42.github.io/libltc/")
+    (license license:lgpl3+)))
