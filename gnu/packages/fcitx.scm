@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.fcitx-im.org/fcitx/"
-                                  name "-" version "_dict.tar.xz"))
+                                  "fcitx-" version "_dict.tar.xz"))
               (sha256
                (base32
                 "0hyrh3v82a32ylnlvzrp6cmq56x4p1a42q5xc6njmmj2msxm34x5"))))
