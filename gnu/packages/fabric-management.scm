@@ -195,6 +195,8 @@ testing InfiniBand networks.")
     (arguments
      '( ;; These are some of the flags found in 'contrib/configure-release'.
        #:configure-flags (list
+                          "--disable-static"
+
                           ;; XXX: Disable optimizations specific to the build
                           ;; machine (AVX, etc.)  There's apparently no way to
                           ;; have them picked up at load time.
