@@ -10,6 +10,7 @@
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Giacomo Leidi <goodoldpaul@autistici.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,6 +128,55 @@
 across a broad spectrum of applications.")
     (license (license:x11-style "https://www.boost.org/LICENSE_1_0.txt"
                                 "Some components have other similar licences."))))
+
+;; TODO: Merge with 'Boost' in the next rebuild cycle.
+(define-public boost-with-python3
+  (package
+    (inherit boost)
+    (name "boost-python3")
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python)
+       ("tcsh" ,tcsh)))
+    (arguments (substitute-keyword-arguments (package-arguments boost)
+                 ((#:phases phases)
+                  `(modify-phases ,phases
+                     (replace 'configure
+                       (lambda* (#:key inputs outputs #:allow-other-keys)
+                         (let ((icu (assoc-ref inputs "icu4c"))
+                               (python (assoc-ref inputs "python"))
+                               (out (assoc-ref outputs "out")))
+                           (substitute* '("libs/config/configure"
+                                          "libs/spirit/classic/phoenix/test/runtest.sh"
+                                          "tools/build/src/engine/execunix.c"
+                                          "tools/build/src/engine/Jambase"
+                                          "tools/build/src/engine/jambase.c")
+                             (("/bin/sh") (which "sh")))
+
+                           (setenv "SHELL" (which "sh"))
+                           (setenv "CONFIG_SHELL" (which "sh"))
+
+                           (substitute* "tools/build/src/tools/python.jam"
+                             (("include/python\\$\\(version\\)")
+                              "include/python$(version)m"))
+
+                           (invoke "./bootstrap.sh"
+                                   (string-append "--prefix=" out)
+                                   ;; Auto-detection looks for dependencies only
+                                   ;; in traditional install locations.
+                                   (string-append "--with-icu=" icu)
+                                   (string-append "--with-python=" python "/bin/python3")
+                                   (string-append "--with-python-root=" python)
+                                   "--with-python-version=3.7"
+                                   "--with-toolset=gcc"))))
+                     (replace 'provide-libboost_python
+                       (lambda* (#:key outputs #:allow-other-keys)
+                         (let ((out (assoc-ref outputs "out")))
+                           (with-directory-excursion (string-append out "/lib")
+                             (symlink "libboost_python37.so" "libboost_python.so")
+                             ;; Some packages also look for libboost_python3.so
+                             (symlink "libboost_python37.so" "libboost_python3.so"))
+                           #t)))))))))
 
 (define-public boost-for-mysql
   ;; Older version for MySQL 5.7.23.
