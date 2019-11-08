@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -341,14 +341,13 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
 (define-public python-mpi4py
   (package
     (name "python-mpi4py")
-    (version "3.0.2")
+    (version "3.0.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mpi4py" version))
-        (sha256
-          (base32
-            "1q28xl36difma1wq0acq111cqxjya32kn3lxp6fbidz3wg8jkmpq"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mpi4py" version))
+       (sha256
+        (base32 "07ssbhssv27rrjx1c5vd3vsr31vay5d8xcf4zh9yblcyidn72b81"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
