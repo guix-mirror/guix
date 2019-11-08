@@ -6591,6 +6591,7 @@ stripped.  As the result, this package has no dependencies.")
        (uri (string-append "https://hackage.haskell.org/package/"
                            "microlens-aeson/microlens-aeson-"
                            version ".tar.gz"))
+       (patches (search-patches "ghc-microlens-aeson-fix-tests.patch"))
        (sha256
         (base32
          "0w630kk5bnily1qh41081gqgbwmslrh5ad21899gwnb2r3jripyw"))))
