@@ -101,7 +101,7 @@ built-in.")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://download.fcitx-im.org/fcitx-configtool/"
-                  name "-" version ".tar.xz"))
+                                "fcitx-configtool-" version ".tar.xz"))
             (sha256
              (base32
               "1yyi9jhkwn49lx9a47k1zbvwgazv4y4z72gnqgzdpgdzfrlrgi5w"))))
