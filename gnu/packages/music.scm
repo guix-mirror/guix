@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4699,3 +4700,40 @@ You can also get metadata about the playing track such as the artist and title
 for integration into status line generators or other command-line tools.")
     (home-page "https://github.com/altdesktop/playerctl")
     (license license:lgpl3+)))
+
+(define-public artyfx
+  (package
+    (name "artyfx")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url
+                     "https://github.com/openAVproductions/openAV-ArtyFX.git")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "012hcy1mxl7gs2lipfcqp5x0xv1azb9hjrwf0h59yyxnzx96h7c9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                                ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-architecture-specific-flags
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("-msse2 -mfpmath=sse") ""))
+             #t)))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2" ,lv2)))
+    (home-page "http://openavproductions.com/artyfx/")
+    (synopsis "Audio effect LV2 plugin bundle")
+    (description "ArtyFX is an LV2 plugin bundle of artistic real-time audio
+effects.  It contains a bitcrusher, delay, distortion, equalizer, compressor,
+and reverb.")
+    (license license:gpl2+)))
