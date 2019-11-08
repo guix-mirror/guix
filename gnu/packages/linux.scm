@@ -100,6 +100,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
@@ -4306,7 +4307,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "22.3")
+    (version "26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -4314,15 +4315,20 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jgp1xh328x0kr6lkn4vq71cc627zd05wczr74b3j3151flhj828"))))
+                "14raqwx4pkzghiwkx1v0dq338f7xqqx8rnsxlpdnngvjy1p5l79j"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:tests? #f ; no tests
        ;; Upstream uses the "ninja" build system and encourage distros
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
        #:build-type "Release"
        #:configure-flags (list "-GNinja"
+
+                               (string-append "-DRST2MAN_EXECUTABLE="
+                                              (assoc-ref %build-inputs
+                                                         "python-docutils")
+                                              "/bin/rst2man.py")
 
                                ;; On some configurations, the
                                ;; IB_USER_MAD_REGISTER_AGENT ioctl, which is
@@ -4342,7 +4348,8 @@ The package provides additional NTFS tools.")
     (native-inputs
      `(("ninja" ,ninja)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-docutils" ,python-docutils)))     ;for 'rst2man'
     (inputs
      `(("libnl" ,libnl)
        ("udev" ,eudev)))
