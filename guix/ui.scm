@@ -44,7 +44,8 @@
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix serialization)
-  #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module ((guix licenses)
+                #:select (license? license-name license-uri))
   #:use-module ((guix build syscalls)
                 #:select (free-disk-space terminal-columns
                                           terminal-rows))
@@ -1315,7 +1316,11 @@ HYPERLINKS? is true, emit hyperlink escape sequences when appropriate."
              (string-join (map license-name licenses)
                           ", "))
             ((? license? license)
-             (license-name license))
+             (let ((text (license-name license))
+                   (uri  (license-uri license)))
+               (if (and hyperlinks? uri (string-prefix? "http" uri))
+                   (hyperlink uri text)
+                   text)))
             (x
              (G_ "unknown"))))
   (format port "synopsis: ~a~%"
