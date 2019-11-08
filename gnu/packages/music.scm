@@ -4961,3 +4961,47 @@ Soul Force), MVerb, Nekobi, and ProM.")
     ;; apply to different plugins. The root LICENSE file has a table with
     ;; license information for each plugin and paths to each license
     (license (list license:isc license:gpl3 license:lgpl3 license:expat license:gpl2))))
+
+(define-public avldrums-lv2
+  (package
+    (name "avldrums-lv2")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/x42/avldrums.lv2.git")
+             (commit (string-append "v" version))
+             ;; This plugin expects the robtk submodule's source files to be
+             ;; there in order to build.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1z70rcq6z3gkb4fm8dm9hs31bslwr97zdh2n012fzki9b9rdj5qv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dssi" ,dssi)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("pango" ,pango)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2" ,lv2)))
+    (home-page "https://x42-plugins.com/x42/x42-avldrums")
+    (synopsis "Drum sample player LV2 plugin dedicated to the AVLinux Drumkits")
+    (description "AVLdrums is a drum sample player LV2 plugin dedicated to Glen
+MacArthur's AVLdrums.  This plugin provides a convenient way to sequence and mix
+MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
+    (license license:gpl2+)))
