@@ -205,6 +205,10 @@ testing InfiniBand networks.")
                           "--disable-assertions"
                           "--disable-params-check"
 
+                          (string-append "--with-verbs="
+                                         (assoc-ref %build-inputs
+                                                    "rdma-core"))
+
                           (string-append "--with-rdmacm="
                                          (assoc-ref %build-inputs
                                                     "rdma-core")))
