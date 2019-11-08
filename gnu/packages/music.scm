@@ -4737,3 +4737,32 @@ for integration into status line generators or other command-line tools.")
 effects.  It contains a bitcrusher, delay, distortion, equalizer, compressor,
 and reverb.")
     (license license:gpl2+)))
+
+(define-public sherlock-lv2
+  (package
+    (name "sherlock-lv2")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://git.open-music-kontrollers.ch/lv2/"
+             "sherlock.lv2/snapshot/sherlock.lv2-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "1c5xajpss9h8lbyx160bbzg8va50n2d74qwnxig9sf468rzmha1y"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("sratom" ,sratom)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Investigative LV2 plugin bundle")
+    (description "The Sherlock plugin bundle contains LV2 plugins for
+visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
+and debugging of event signal flows inside plugin graphs.")
+    (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
+    (license license:artistic2.0)))
