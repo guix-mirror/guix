@@ -15251,13 +15251,13 @@ working with iterables.")
 (define-public python-latexcodec
   (package
     (name "python-latexcodec")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "latexcodec" version))
        (sha256
-        (base32 "0s4wdbg0w2l8pj3i0y4510i0s04p8nhxcsa2z41bjsv0k66npb81"))))
+        (base32 "0wnp3yqcgx0rpy8dz51vh75lbp2qif67da19zi7m3ca98n887hgb"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)))
