@@ -34,7 +34,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages datastructures)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages networking)
@@ -54,6 +57,7 @@
   #:use-module (gnu packages protobuf)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-xyz)
+  #:use-module (gnu packages sphinx)
   #:use-module (gnu packages swig)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
@@ -65,6 +69,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
   #:use-module (guix build-system trivial))
 
 (define-public dnsmasq
@@ -661,6 +666,73 @@ synthesis, and on-the-fly re-configuration.")
       license:lgpl2.0+              ; parts of scr/contrib/ucw
       license:public-domain         ; src/contrib/fnv and possibly murmurhash3
       license:gpl3+))))             ; everything else
+
+(define-public knot-resolver
+  (package
+    (name "knot-resolver")
+    (version "4.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://secure.nic.cz/files/knot-resolver/"
+                                  "knot-resolver-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0n0llpclhparq9wbcrymxkl5d03c4y4p3shcbdxfv6j22vzqvdh3"))))
+    (build-system meson-build-system)
+    (arguments
+     '(#:configure-flags
+       '("-Dmanaged_ta=disabled"    ; We'll manage the DNS root data ourself.
+         "-Ddoc=enabled")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-doc
+           (lambda _
+             (invoke "ninja" "doc")))
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lua-* (map cdr (filter
+                                     (lambda (input)
+                                       (string-prefix? "lua-" (car input)))
+                                     inputs)))
+                    (lua-path (lambda (p)
+                                (string-append p "/share/lua/5.1/?.lua")))
+                    (lua-cpath (lambda (p)
+                                 (string-append p "/lib/lua/5.1/?.so"))))
+               (wrap-program (string-append out "/sbin/kresd")
+                 `("LUA_PATH" ";" prefix ,(map lua-path lua-*))
+                 `("LUA_CPATH" ";" prefix ,(map lua-cpath lua-*)))
+               #t))))))
+    (native-inputs
+     `(("cmocka" ,cmocka)               ; for unit tests
+       ("doxygen" ,doxygen)
+       ("protobuf-c" ,protobuf-c)
+       ("pkg-config" ,pkg-config)
+       ("python-breathe" ,python-breathe)
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+    (inputs
+     `(("fstrm" ,fstrm)
+       ("gnutls" ,gnutls)
+       ("knot" ,knot)
+       ("libuv" ,libuv)
+       ("lmdb" ,lmdb)
+       ("luajit" ,luajit)
+       ;; TODO: Add optional lua modules: basexx, cqueues and psl.
+       ("lua-bitop" ,lua5.1-bitop)
+       ("lua-filesystem" ,lua5.1-filesystem)
+       ("lua-sec" ,lua5.1-sec)
+       ("lua-socket" ,lua5.1-socket)))
+    (home-page "https://www.knot-resolver.cz/")
+    (synopsis "Caching validating DNS resolver")
+    (description
+     "Knot Resolver is a caching full resolver implementation written in C and
+LuaJIT, both a resolver library and a daemon.")
+    (license (list license:gpl3+
+                   ;; Some 'contrib' files are under MIT, CC0 and LGPL2.
+                   license:expat
+                   license:cc0
+                   license:lgpl2.0))))
 
 (define-public ddclient
   (package
