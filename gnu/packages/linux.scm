@@ -4322,7 +4322,14 @@ The package provides additional NTFS tools.")
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
        #:build-type "Release"
-       #:configure-flags (list "-GNinja")
+       #:configure-flags (list "-GNinja"
+
+                               ;; On some configurations, the
+                               ;; IB_USER_MAD_REGISTER_AGENT ioctl, which is
+                               ;; used by default, would return ENODEV.  To
+                               ;; avoid that, use 'write' instead of ioctls,
+                               ;; as suggested in 'CMakeList.txt'.
+                               "-DIOCTL_MODE=write")
        #:phases
        (modify-phases %standard-phases
          (replace 'build
