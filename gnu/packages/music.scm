@@ -5047,3 +5047,62 @@ Soul Force), MVerb, Nekobi, and ProM.")
 MacArthur's AVLdrums.  This plugin provides a convenient way to sequence and mix
 MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
     (license license:gpl2+)))
+
+(define-public helm
+  (package
+    (name "helm")
+    (version "0.9.0")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/mtytel/helm.git")
+            (commit (string-append "v" version))))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "17ys2vvhncx9i3ydg3xwgz1d3gqv4yr5mqi7vr0i0ca6nad6x3d4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no "check" target
+       #:make-flags
+       (list (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+             "lv2" "standalone")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'include-pnglib-code-and-remove-usr-from-paths
+           (lambda _
+             (substitute* "standalone/builds/linux/Makefile"
+               (("JUCE_INCLUDE_PNGLIB_CODE=0")
+                "JUCE_INCLUDE_PNGLIB_CODE=1"))
+             (substitute* "builds/linux/LV2/Makefile"
+               (("JUCE_INCLUDE_PNGLIB_CODE=0")
+                "JUCE_INCLUDE_PNGLIB_CODE=1"))
+             (substitute* "Makefile"
+               (("/usr") ""))
+             #t))
+         (add-before 'reset-gzip-timestamps 'make-gz-files-writable
+           (lambda* (#:key outputs #:allow-other-keys)
+             (for-each make-file-writable
+                       (find-files (string-append (assoc-ref outputs "out"))
+                                   ".*\\.gz$"))
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("freetype2" ,freetype)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("libxcursor" ,libxcursor)
+       ("libxinerama", libxinerama)
+       ("jack", jack-1)
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2", lv2)))
+    (home-page "https://tytel.org/helm/")
+    (synopsis "Polyphonic synth with lots of modulation")
+    (description "Helm is a cross-platform polyphonic synthesizer available standalone
+and as an LV2 plugin.")
+    (license license:gpl3+)))
