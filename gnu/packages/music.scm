@@ -4766,3 +4766,57 @@ visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
 and debugging of event signal flows inside plugin graphs.")
     (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
     (license license:artistic2.0)))
+
+(define-public x42-plugins
+  (package
+    (name "x42-plugins")
+    (version "20191013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
+                       version ".tar.xz"))
+       (sha256
+        (base32
+         "18kn1bmc0s6dp834kc51ibifzzn3bxwya4p8s8yq9f4mpmkghi24"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "LIBZITACONVOLVER=-lzita-convolver"
+             (string-append "FONTFILE="
+                            (assoc-ref %build-inputs "font-dejavu")
+                            "/share/fonts/truetype/DejaVuSans-Bold.ttf"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fftwf" ,fftwf)
+       ("ftgl" ,ftgl)
+       ("glib" ,glib)
+       ("glu" ,glu)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)
+       ("libltc" ,libltc)
+       ("libsamplerate" ,libsamplerate)
+       ("libx11" ,libx11)
+       ("pango" ,pango)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("liblo" ,liblo)
+       ("lv2" ,lv2)
+       ("font-dejavu" ,font-dejavu)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Collection of LV2/JACK audio/MIDI processing plugins")
+    (description "x42-plugins is a collection of over 80 cross-platform LV2
+audio and MIDI plugins that can also run as standalone JACK applications.")
+    (home-page "https://x42-plugins.com/x42/")
+    (license license:gpl2+)))
