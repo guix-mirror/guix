@@ -12734,14 +12734,13 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
-        (base32
-         "0crfhpblcy5a6nh694hc2073gw389f01yilamzqi34si2skgp8q9"))))
+        (base32 "0fnibsl2cb5mvzbfm7sycj85smx48f8w8m7ks1sqlmpr9ps0gski"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
