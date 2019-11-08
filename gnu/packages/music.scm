@@ -4913,3 +4913,51 @@ of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
 It can also play and mix samples.")
     (home-page "https://gitlab.com/geontime/geonkick")
     (license license:gpl3+)))
+
+(define-public dpf-plugins
+  (package
+    (name "dpf-plugins")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/DISTRHO/DPF-Plugins.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hsfmpv3kvpiwk8nfw9xpaipzy0n27i83y2v1yr93lznwm5rqrbs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _ (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("liblo" ,liblo)                 ; for dssi plugins
+       ("jack" ,jack-1)                 ; for standalone applications
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("dssi" ,dssi)
+       ("lv2" ,lv2)))
+    (home-page "https://github.com/DISTRHO/DPF-Plugins")
+    (synopsis "Audio plugin collection")
+    (description "Collection of audio plugins built with the DISTRHO Plugin
+Framework (DPF) available in LADSPA, DSSI, LV2 and VST2 formats.  This
+package includes the following plugins: glBars, Kars, Max-Gen examples
+(MaBitcrush, MaFreeverb, MaGigaverb, MaPitchshift), Mini-Series (3BandEQ,
+3BandSplitter, PingPongPan), ndc-Plugs (Amplitude Imposer, Cycle Shifter,
+Soul Force), MVerb, Nekobi, and ProM.")
+    ;; This package consists of several plugins refactored to use the
+    ;; DISTHRO Plugin Framework (DPF). Different copyrights and licenses
+    ;; apply to different plugins. The root LICENSE file has a table with
+    ;; license information for each plugin and paths to each license
+    (license (list license:isc license:gpl3 license:lgpl3 license:expat license:gpl2))))
