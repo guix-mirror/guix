@@ -750,6 +750,8 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
                     (lib (string-append out "/lib")))
+               ;; Upstream tests and benchmarks with -O3.
+               (setenv "CXXFLAGS" "-O3")
                (invoke "python" "./configure.py"
                        (string-append "--prefix=" out)
                        ;; Otherwise, the `botan` executable cannot find
