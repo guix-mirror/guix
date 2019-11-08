@@ -757,7 +757,10 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
                        ;; Otherwise, the `botan` executable cannot find
                        ;; libbotan.
                        (string-append "--ldflags=-Wl,-rpath=" lib)
+
+                       "--with-os-feature=getentropy"
                        "--with-rst2man"
+
                        ;; Recommended by upstream
                        "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
          (replace 'check
