@@ -4820,3 +4820,55 @@ and debugging of event signal flows inside plugin graphs.")
 audio and MIDI plugins that can also run as standalone JACK applications.")
     (home-page "https://x42-plugins.com/x42/")
     (license license:gpl2+)))
+
+(define-public zam-plugins
+  (package
+    (name "zam-plugins")
+    (version "3.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/zamaudio/zam-plugins.git")
+         (commit version)
+         ;; Recursive to fetch the DISTRHO plugin framework. This
+         ;; framework is intended to be included in the sources
+         ;; and not to be used as a library.
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jlbxm0g93plgd3g4r9rsr0c7868ms49bs0ljpqb6kw6132hsapp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "HAVE_ZITA_CONVOLVER=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("jack" ,jack-1)                 ;for the standalone JACK application
+       ("liblo" ,liblo)
+       ("libsamplerate" ,libsamplerate)
+       ("mesa" ,mesa)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Collection of audio processing plugins")
+    (description
+     "Zam plugins is a collection of audio processing plugins in the LADSPA,
+LV2 and VST2 formats, as well as standalone JACK versions.  The collection
+includes ZaMaximX2, ZamAutoSat, ZamComp, ZamCompX2, ZamEQ2, ZamGEQ31,
+ZamHeadX2, ZamPhono, ZamGate, ZamGateX2, ZamTube, ZamDelay, ZamDynamicEQ,
+ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
+    (home-page "http://www.zamaudio.com/?p=976")
+    (license license:gpl2+)))
