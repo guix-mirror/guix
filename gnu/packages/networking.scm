@@ -1027,16 +1027,17 @@ reconfigured.")
 (define-public perl-danga-socket
   (package
     (name "perl-danga-socket")
-    (version "1.61")
+    (version "1.62")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/B/BR/BRADFITZ/"
+       (uri (string-append "mirror://cpan/authors/id/N/NM/NML/"
                            "Danga-Socket-" version ".tar.gz"))
        (sha256
-        (base32
-         "0nciapvxnc922ms304af0vavz1kgyr45ard8wc659k9srqar4hwf"))))
+        (base32 "0x4bvirmf0kphks19jwgva00zz73zx344218dfaiv8gigrw3yg4m"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-tcp" ,perl-test-tcp)))
     (propagated-inputs
      `(("perl-sys-syscall" ,perl-sys-syscall)))
     (home-page "https://metacpan.org/release/Danga-Socket")
