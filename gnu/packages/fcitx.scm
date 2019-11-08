@@ -30,20 +30,21 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public fcitx
   (package
     (name "fcitx")
-    (version "4.2.9.6")
+    (version "4.2.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.fcitx-im.org/fcitx/"
                                   "fcitx-" version "_dict.tar.xz"))
               (sha256
                (base32
-                "0hyrh3v82a32ylnlvzrp6cmq56x4p1a42q5xc6njmmj2msxm34x5"))))
+                "13vg7yzfq0vj2r8zdf9ly3n243nwwggkhd5qv3z6yqdyj0m3ncyg"))))
     (build-system cmake-build-system)
     (outputs '("out" "gtk2" "gtk3"))
     (arguments
@@ -81,6 +82,7 @@
        ("gtk3"             ,gtk+)
        ("icu4c"            ,icu4c)
        ("iso-codes"        ,iso-codes)
+       ("json-c"           ,json-c)
        ("libxkbfile"       ,libxkbfile)
        ("libxml2"          ,libxml2)
        ("xkeyboard-config" ,xkeyboard-config)))
