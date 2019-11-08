@@ -29,6 +29,7 @@
   #:use-module ((guix licenses)
                 #:hide (expat))
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -343,6 +344,57 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      ;; in the build environment than the package wants while testing.
      (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
      #t))
+
+(define-public intel-mpi-benchmarks
+  (package
+    (name "intel-mpi-benchmarks")
+    (version "2019.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/intel/mpi-benchmarks.git")
+                    (commit (string-append "IMB-v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0si5xi6ilhd3w0gbsg124589pvp094hvf366rvjjb9pi7pdk5p4i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (define (benchmark? file stat)
+                        (and (string-prefix? "IMB-" (basename file))
+                             (executable-file? file)))
+
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (for-each (lambda (file)
+                                    (install-file file bin))
+                                  (find-files "." benchmark?))
+                        #t))))
+
+       ;; The makefile doesn't express all the dependencies, it seems.
+       #:parallel-build? #t
+
+       #:make-flags (list (string-append "CC="
+                                         (assoc-ref %build-inputs "openmpi")
+                                         "/bin/mpicc")
+                          (string-append "CXX="
+                                         (assoc-ref %build-inputs "openmpi")
+                                         "/bin/mpicxx"))))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "https://github.com/intel/mpi-benchmarks")
+    (synopsis "Benchmarks for the Message Passing Interface (MPI)")
+    (description
+     "Intel MPI Benchmarks (IMB) provides a set of elementary benchmarks that
+conform with versions 1, 2, and 3 of the Message Passing Interface (MPI).")
+    (license
+     (fsf-free "https://directory.fsf.org/wiki/License:CPL-1.0"
+               "https://www.gnu.org/licenses/license-list.html#CommonPublicLicense10"))))
 
 (define-public python-mpi4py
   (package
