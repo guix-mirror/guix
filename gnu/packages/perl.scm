@@ -1768,18 +1768,18 @@ input.")
 (define-public perl-data-compare
   (package
     (name "perl-data-compare")
-    (version "1.25")
+    (version "1.27")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/D/DC/DCANTRELL/"
                            "Data-Compare-" version ".tar.gz"))
        (sha256
-        (base32
-         "0wzasidg9yjcfsi2gdiaw6726ikqda7n24n0v2ngpaazakdkcjqx"))))
+        (base32 "1gg8rqbv3x6a1lrpabv6vnlab53zxmpwz2ygad9fcx4gygqj12l1"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-file-find-rule" ,perl-file-find-rule)))
+     `(("perl-clone" ,perl-clone)
+       ("perl-file-find-rule" ,perl-file-find-rule)))
     (home-page "https://metacpan.org/release/Data-Compare")
     (synopsis "Compare Perl data structures")
     (description "This module compares arbitrary data structures to see if
