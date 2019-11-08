@@ -2944,7 +2944,7 @@ result.")
 (define-public zita-convolver
   (package
     (name "zita-convolver")
-    (version "3.1.0")
+    (version "4.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2954,31 +2954,33 @@ result.")
               (snippet
                ;; Don't optimize for a specific processor architecture.
                '(begin
-                  (substitute* "libs/Makefile"
+                  (substitute* "source/Makefile"
                     (("^CXXFLAGS \\+= -march=native") ""))
                   #t))
               (modules '((guix build utils)))
               (sha256
                (base32
-                "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
+                "0prji66p86z2bzminywkwchr5bfgxcg2i8y803pydd1hzf2198cs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile-and-enter-directory
            (lambda _
-             (substitute* "libs/Makefile"
+             (substitute* "source/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs")
+             (chdir "source")
              #t))
          (add-after 'install 'install-symlink
            (lambda _
              (symlink "libzita-convolver.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libzita-convolver.so.3"))
+                                     "/lib/libzita-convolver.so.4"))
              #t))
          ;; no configure script
          (delete 'configure))))
