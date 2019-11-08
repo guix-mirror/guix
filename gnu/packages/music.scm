@@ -4872,3 +4872,42 @@ ZamHeadX2, ZamPhono, ZamGate, ZamGateX2, ZamTube, ZamDelay, ZamDynamicEQ,
 ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
     (home-page "http://www.zamaudio.com/?p=976")
     (license license:gpl2+)))
+
+(define-public geonkick
+  (package
+    (name "geonkick")
+    (version "1.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gitlab.com/geontime/geonkick/-/archive/v"
+                           version "/geonkick-v" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wp8w5q69c1nrcc4qkcg0slakkpzp9ngw25iih8zhcl4hrjv42fd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests included
+       #:configure-flags
+       (list (string-append "-DGKICK_REDKITE_SDK_PATH="
+                            (assoc-ref %build-inputs "redkite"))
+             (string-append "-DCMAKE_INSTALL_PREFIX="
+                            (assoc-ref %outputs "out")))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)                 ;for the standalone JACK application
+       ("libsndfile" ,libsndfile)
+       ("libx11" ,libx11)
+       ("redkite" ,redkite)
+       ("rapidjson" ,rapidjson)))
+    (native-inputs
+     `(("lv2" ,lv2)
+       ("pkg-config" ,pkg-config)
+       ("sord" ,sord)))
+    (synopsis "Percussion synthesizer")
+    (description "Geonkick is a synthesizer that can synthesize elements
+of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
+It can also play and mix samples.")
+    (home-page "https://gitlab.com/geontime/geonkick")
+    (license license:gpl3+)))
