@@ -1167,27 +1167,16 @@ also play midifiles using a Soundfont.")
 (define-public faad2
   (package
     (name "faad2")
-    (version "2.7")
+    (version "2.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/faac/faad2-src/faad2-"
-                                  version "/faad2-" version ".zip"))
+                                  (version-major+minor version) ".0/"
+                                  "faad2-" version ".tar.gz"))
               (sha256
                (base32
-                "16f3l16c00sg0wkrkm3vzv0gy3g97x309vw788igs0cap2x1ak3z"))))
+                "089zqykqgmmysznvk0bi2pfvdqwclnn540d0zks83sv2pynpfjb5"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("unzip" ,unzip)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             (substitute* "bootstrap" (("\r\n") "\n"))
-             (invoke "sh" "bootstrap"))))))
     (home-page "http://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
