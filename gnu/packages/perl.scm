@@ -3542,7 +3542,7 @@ changes made to any file.")
 (define-public perl-file-configdir
   (package
     (name "perl-file-configdir")
-    (version "0.018")
+    (version "0.021")
     (source
      (origin
        (method url-fetch)
@@ -3550,11 +3550,12 @@ changes made to any file.")
                            "File-ConfigDir-" version ".tar.gz"))
        (sha256
         (base32
-         "1xpzrlya0gskk7lm6gppyfwbk0swv0n6ssgp629575dk5l49z2rf"))))
+         "1ihlhdbwaybyj3xqfxpx4ii0ypa41907b6zdh94rvr4wyqa5lh3b"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-file-homedir" ,perl-file-homedir)
-       ("perl-list-moreutils" ,perl-list-moreutils)))
+       ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (home-page "https://metacpan.org/release/File-ConfigDir")
     (synopsis "Get directories of configuration files")
     (description "This module is a helper for installing, reading and finding
