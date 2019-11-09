@@ -429,7 +429,7 @@ will eventually deliver a value of type @code{a}.")
 (define-public ghc-atomic-primops
   (package
     (name "ghc-atomic-primops")
-    (version "0.8.2")
+    (version "0.8.3")
     (source
      (origin
        (method url-fetch)
@@ -437,7 +437,7 @@ will eventually deliver a value of type @code{a}.")
                            "/atomic-primops-" version ".tar.gz"))
        (sha256
         (base32
-         "0cyr2x6xqz6s233znrz9rnrfj56m9bmnawwnka0lsqqy1hp8gy37"))))
+         "03n5dmyplrqgbyf8dr91izkxci7gkl3i3fnp82i5ld869zrgjfh0"))))
     (build-system haskell-build-system)
     (inputs `(("ghc-primitive" ,ghc-primitive)))
     (home-page "https://github.com/rrnewton/haskell-lockfree/wiki")
