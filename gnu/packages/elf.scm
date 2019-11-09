@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2017, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
@@ -31,6 +31,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -198,7 +199,7 @@ static analysis of the ELF binaries at hand.")
 (define-public patchelf
   (package
     (name "patchelf")
-    (version "0.8")
+    (version "0.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -207,28 +208,24 @@ static analysis of the ELF binaries at hand.")
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "1rqpg84wrd3fa16wa9vqdvasnc05yz49w207cz1l0wrl4k8q97y9"))
-             (patches (search-patches "patchelf-page-size.patch"))))
+               "1wzwvnlyf853hw9zgqq5522bvf8gqadk8icgqa41a5n7593csw7n"))))
     (build-system gnu-build-system)
-
-    ;; XXX: The upstream 'patchelf' doesn't support ARM.  The only available
-    ;;      patch makes significant changes to the algorithm, possibly
-    ;;      introducing bugs.  So, we apply the patch only on ARM systems.
-    (inputs
-     (if (target-arm32?)
-         `(("patch/rework-for-arm" ,(search-patch
-                                     "patchelf-rework-for-arm.patch")))
-         '()))
     (arguments
-     (if (target-arm32?)
-         `(#:phases
-           (modify-phases %standard-phases
-             (add-after 'unpack 'patch/rework-for-arm
-               (lambda* (#:key inputs #:allow-other-keys)
-                 (let ((patch-file (assoc-ref inputs "patch/rework-for-arm")))
-                   (invoke "patch" "--force" "-p1" "--input" patch-file))))))
-         '()))
-
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           ;; Our GCC code ensures that RUNPATH is never empty, it includes
+           ;; at least glibc/lib and gcc:lib/lib.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "tests/no-rpath.sh"
+               ;; Disable checking for an empty runpath:
+               (("^if test.*") "")
+               ;; Find libgcc_s.so, which is necessary for the test:
+               (("/xxxxxxxxxxxxxxx") (string-append (assoc-ref inputs "gcc:lib")
+                                                    "/lib")))
+             #t)))))
+    (native-inputs
+     `(("gcc:lib" ,gcc "lib")))
     (home-page "https://nixos.org/patchelf.html")
     (synopsis "Modify the dynamic linker and RPATH of ELF executables")
     (description

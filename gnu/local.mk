@@ -1205,8 +1205,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
-  %D%/packages/patches/patchelf-page-size.patch			\
-  %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
