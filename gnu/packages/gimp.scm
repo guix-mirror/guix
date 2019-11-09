@@ -29,6 +29,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system meson)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -49,22 +50,30 @@
 (define-public babl
   (package
     (name "babl")
-    (version "0.1.66")
+    (version "0.1.72")
     (source (origin
               (method url-fetch)
               (uri (list (string-append "https://download.gimp.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")
+                                        "/babl-" version ".tar.xz")
                          (string-append "https://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")
+                                        "/babl-" version ".tar.xz")
                          (string-append "ftp://ftp.gtk.org/pub/babl/"
                                         (version-major+minor version)
-                                        "/babl-" version ".tar.bz2")))
+                                        "/babl-" version ".tar.xz")))
               (sha256
                (base32
-                "0qx1dwbinxihwl2lmxi60qiqi402jlrdcnixx14kk6j88n9xi79n"))))
-    (build-system gnu-build-system)
+                "0hkagjrnza77aasa1kss5hvy37ndm50y6i7hkdn2z8hzgc4i3qb4"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "-Denable-gir=false")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; Propagated to satisfy ‘babl.pc’.
+     `(("lcms" ,lcms)))
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
