@@ -1049,13 +1049,22 @@ a webserver.")
 (define %hpcguix-web-activation
   (with-imported-modules '((guix build utils))
     #~(begin
-        (use-modules (guix build utils))
+        (use-modules (guix build utils)
+                     (ice-9 ftw))
 
         (let ((home-dir "/var/cache/guix/web")
               (user (getpwnam "hpcguix-web")))
           (mkdir-p home-dir)
           (chown home-dir (passwd:uid user) (passwd:gid user))
-          (chmod home-dir #o755)))))
+          (chmod home-dir #o755)
+
+          ;; Remove stale 'packages.json.lock' file (and other lock files, if
+          ;; any) since that would prevent 'packages.json' from being updated.
+          (for-each (lambda (lock)
+                      (delete-file (string-append home-dir "/" lock)))
+                    (scandir home-dir
+                             (lambda (file)
+                               (string-suffix? ".lock" file))))))))
 
 (define %hpcguix-web-log-file
   "/var/log/hpcguix-web.log")
