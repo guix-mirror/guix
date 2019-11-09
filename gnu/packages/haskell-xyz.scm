@@ -3203,21 +3203,20 @@ asynchronous exceptions.")
 (define-public ghc-equivalence
   (package
     (name "ghc-equivalence")
-    (version "0.3.2")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/equivalence"
                            "/equivalence-" version ".tar.gz"))
        (sha256
-        (base32 "0a85bdyyvjqs5z4kfhhf758210k9gi9dv42ik66a3jl0z7aix8kx"))))
+        (base32 "167njzd1cf32aa7br90rjafrxy6hw3fxkk8awifqbxjrcwm5maqp"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-stmonadtrans" ,ghc-stmonadtrans)
        ("ghc-transformers-compat" ,ghc-transformers-compat)
-       ("ghc-quickcheck" ,ghc-quickcheck)
-       ("ghc-test-framework" ,ghc-test-framework)
-       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+       ("ghc-fail" ,ghc-fail)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
     (home-page "https://github.com/pa-ba/equivalence")
     (synopsis "Maintaining an equivalence relation implemented as union-find")
     (description
