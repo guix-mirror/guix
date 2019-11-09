@@ -477,7 +477,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
   ;; the system's dynamically linked library.
   (package
     (name "monero")
-    (version "0.14.1.2")
+    (version "0.15.0.0")
     (source
      (origin
        (method git-fetch)
@@ -498,7 +498,7 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
            #t))
        (sha256
         (base32
-         "00zl883c7lcd9z7g4y3vv7rxmr7ppzrxdblnhk32r9l3qzyw55r6"))))
+         "19y4kcj4agws7swfa3draysb1y18c3xb13r8cg0faxx1dlm0zbnr"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -571,13 +571,18 @@ other machines/servers.  Electroncash does not download the Bitcoin Cash blockch
                (invoke "tests/unit_tests/unit_tests"
                        (string-append "--gtest_filter=-"
                                       excluded-unit-tests)))))
+         (add-after 'install 'install-librandomx
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (install-file "external/randomx/librandomx.a" lib)
+               #t)))
          (add-after 'install 'delete-dead-links
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
                (delete-file (string-append out "/lib/libprotobuf.so"))
                (delete-file (string-append out "/lib/libusb-1.0.so"))
                #t))))))
-    (home-page "https://getmonero.org/")
+    (home-page "https://web.getmonero.org/")
     (synopsis "Command-line interface to the Monero currency")
     (description
      "Monero is a secure, private, untraceable currency.  This package provides
