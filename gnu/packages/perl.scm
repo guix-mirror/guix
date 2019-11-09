@@ -6471,6 +6471,35 @@ takes additional parameters and uses @code{Getopt::Long::Descriptive} to
 generate a command line tool.")
     (license (package-license perl))))
 
+(define-public perl-moox-strictconstructor
+  (package
+    (name "perl-moox-strictconstructor")
+    (version "0.010")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/H/HA/HARTZELL/MooX-StrictConstructor-"
+               version
+               ".tar.gz"))
+        (sha256
+         (base32
+          "0vvjgz7xbfmf69yav7sxsxmvklqv835xvh7h47w0apxmlkm9fjgr"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)))
+    (propagated-inputs
+     `(("perl-class-method-modifiers" ,perl-class-method-modifiers)
+       ("perl-moo" ,perl-moo)
+       ("perl-strictures" ,perl-strictures)))
+    (home-page "https://metacpan.org/release/MooX-StrictConstructor")
+    (synopsis "Make Moo-based object constructors blow up on unknown attributes")
+    (description
+     "Loading @code{MooX::StrictConstructor} makes your constructors \"strict\".
+If your constructor is called with an attribute init argument that your class
+does not declare, then it dies.")
+    (license perl-license)))
+
 (define-public perl-moox-types-mooselike
   (package
     (name "perl-moox-types-mooselike")
