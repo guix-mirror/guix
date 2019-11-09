@@ -466,7 +466,7 @@ keys for controlling the audio volume.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+       (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
                            "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
                            "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
        (sha256
