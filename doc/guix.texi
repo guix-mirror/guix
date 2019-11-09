@@ -15753,6 +15753,41 @@ bluetooth keyboard or mouse.
 Users need to be in the @code{lp} group to access the D-Bus service.
 @end deffn
 
+@defvr {Scheme Variable} gnome-keyring-service-type
+This is the type of the service that adds the
+@uref{https://wiki.gnome.org/Projects/GnomeKeyring, GNOME Keyring}.  Its
+value is a @code{gnome-keyring-configuration} object (see below.)
+
+This service adds the @code{gnome-keyring} package to the system profile
+and extends PAM with entries using @code{pam_gnome_keyring.so}, unlocking
+a user's login keyring when they log in or setting its password with passwd.
+@end defvr
+
+@deftp {Data Type} gnome-keyring-configuration
+Configuration record for the GNOME Keyring service.
+
+@table @asis
+@item @code{keyring} (default: @code{gnome-keyring})
+The GNOME keyring package to use.
+
+@item @code{pam-services}
+A list of @code{(@var{service} . @var{kind})} pairs denoting PAM
+services to extend, where @var{service} is the name of an existing
+service to extend and @var{kind} is one of @code{login} or
+@code{passwd}.
+
+If @code{login} is given, it adds an optional
+@code{pam_gnome_keyring.so} to the auth block without arguments and to
+the session block with @code{auto_start}.  If @code{passwd} is given, it
+adds an optional @code{pam_gnome_keyring.so} to the password block
+without arguments.
+
+By default, this field contains ``gdm-password'' with the value @code{login}
+and ``passwd'' is with the value @code{passwd}.
+@end table
+@end deftp
+
+
 @node Sound Services
 @subsection Sound Services
 
