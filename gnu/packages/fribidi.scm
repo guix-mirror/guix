@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,10 +22,12 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (guix licenses)
+  #:use-module (gnu packages))
 
 (define-public fribidi
   (package
+    (replacement fribidi/fixed)
     (name "fribidi")
     (version "1.0.5")
     (source
@@ -45,3 +47,10 @@ Algorithm.  This algorithm is used to properly display text in left-to-right
 or right-to-left ordering as necessary.")
     (home-page "https://github.com/fribidi/fribidi")
     (license lgpl2.1+)))
+
+(define fribidi/fixed
+  (package
+    (inherit fribidi)
+    (source
+      (origin (inherit (package-source fribidi))
+              (patches (search-patches "fribidi-CVE-2019-18397.patch"))))))
