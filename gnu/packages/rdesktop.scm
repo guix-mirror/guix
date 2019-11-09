@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2019 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2019 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages tls)
@@ -46,7 +48,7 @@
 (define-public rdesktop
   (package
     (name "rdesktop")
-    (version "1.8.4")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rdesktop/rdesktop/"
@@ -54,32 +56,20 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bfd9nl2dfr1931fv6bpnrj5yf88ikijrs4s3nm96gm87bkvi64v"))))
+                "1222f2srlq16bydhy44gph997iajg39sl774xxh9jdwi4cqjyg27"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags (list (string-append "--with-openssl="
-                                              (assoc-ref %build-inputs
-                                                         "openssl"))
-
-                               ;; XXX: optional dependencies missing
+     `(#:configure-flags (list ;; XXX: optional dependencies missing
                                "--disable-credssp"
                                "--disable-smartcard")
-
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'install-license-files 'delete-extraneous-files
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (license-dir (string-append out "/share/doc/"
-                                                ,name "-" ,version)))
-               ;; XXX These files are installed erroneously.
-               (delete-file (string-append license-dir "/licence.c"))
-               (delete-file (string-append license-dir "/licence.o")))
-             #t)))
-       #:tests? #f))                              ;no 'check' target
+       #:tests? #f))                    ; No 'check' target
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("libx11" ,libx11)
-       ("openssl" ,openssl)))
+     `(("gnutls" ,gnutls)
+       ("libx11" ,libx11)
+       ("libxcursor" ,libxcursor)
+       ("nettle" ,nettle)))
     (home-page "https://www.rdesktop.org/")
     (synopsis "Client for Windows Terminal Services")
     (description
