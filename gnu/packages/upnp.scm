@@ -89,49 +89,6 @@ over IRC, instant messaging, network games, and most server software.")
     (license
      (x11-style "file://LICENSE" "See 'LICENSE' file in the distribution"))))
 
-(define-public monero-miniupnpc
-  ;; This package is the bundled version of miniupnpc used with monero.
-  ;; Monero-project has been maintaining its own version of the package since
-  ;; release 0.12.2.0.  It includes security fixes not included in upstream
-  ;; releases.
-  (let ((revision "0")
-        (commit "6a63f9954959119568fbc4af57d7b491b9428d87"))
-    (package
-      (inherit miniupnpc)
-      (name "miniupnpc-monero")
-      (version (string-append "2.1-monero-0.12.3.0-" revision "."
-                              (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "https://github.com/monero-project/miniupnp/")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0s67zcz978iapjlq30yy9dl8qda9xhrl3jdi5f99cnbglh5gy16a"))
-                (file-name (string-append name "-" version "-checkout"))
-                (modules '((guix build utils)))
-                (snippet
-                 '(begin
-                    ;; Delete miniupnp subprojects except for miniupnpc.
-                    (for-each
-                     delete-file-recursively
-                     '("minissdpd" "miniupnpc-async" "miniupnpc-libevent"
-                       "miniupnpd" ))
-                    #t))))
-      (arguments
-       (substitute-keyword-arguments (package-arguments miniupnpc)
-         ((#:phases phases)
-          `(modify-phases ,phases
-             (add-before 'build 'change-directory
-               (lambda _
-                 (chdir "miniupnpc")
-                 #t))
-             (add-after 'change-directory 'chmod-header-file
-               (lambda _
-                 (chmod "miniupnpc.h" #o644)
-                 #t)))))))))
-
 (define-public libupnp
   (package
     (name "libupnp")
