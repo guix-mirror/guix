@@ -1177,7 +1177,7 @@ also play midifiles using a Soundfont.")
                (base32
                 "089zqykqgmmysznvk0bi2pfvdqwclnn540d0zks83sv2pynpfjb5"))))
     (build-system gnu-build-system)
-    (home-page "http://www.audiocoding.com/faad2.html")
+    (home-page "https://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
      "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,
