@@ -7570,6 +7570,14 @@ DSLs, etc.")
         (base32
          "0qjs0v1ny52w51n5582d4z8wy9h6n0zw1xb5dh686ff5wadflgi8"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "options.cabal"
+               (("chell >= 0\\.4 && < 0\\.5") "chell >= 0.4 && < 0.6"))
+             #t)))))
     (inputs
      `(("ghc-monads-tf" ,ghc-monads-tf)
        ("ghc-chell" ,ghc-chell)
