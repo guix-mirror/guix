@@ -10367,6 +10367,15 @@ occurrences of a substring (the first in case of overlaps) with another.")
           (base32
             "1ls11fdx6snvfx8yykpidz142zzxwi5bazl49hgfqlwx50rqcp7w"))))
     (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'update-constraints
+           (lambda _
+             (substitute* "stylish-haskell.cabal"
+               (("haskell-src-exts >= 1\\.18   && < 1\\.21,")
+                "haskell-src-exts >= 1.18   && < 1.22,"))
+             #t)))))
     (inputs
       `(("ghc-aeson" ,ghc-aeson)
         ("ghc-file-embed" ,ghc-file-embed)
