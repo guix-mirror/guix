@@ -4862,7 +4862,7 @@ descriptions.")
 (define-public ghc-hindent
   (package
     (name "ghc-hindent")
-    (version "5.3.0")
+    (version "5.3.1")
     (source
      (origin
        (method url-fetch)
@@ -4872,7 +4872,7 @@ descriptions.")
              ".tar.gz"))
        (sha256
         (base32
-         "0wkfik7mvqskk23kyh7ybgnlh3j9j1ym7d3ncahsbli9w654b7xg"))))
+         "008s8zm9qs972b7v5kkmr8l3i9kc6zm7yj33mkw6dv69b7h3c01l"))))
     (build-system haskell-build-system)
     (arguments
      `(#:modules ((guix build haskell-build-system)
