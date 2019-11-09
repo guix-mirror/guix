@@ -592,7 +592,7 @@ the Monero command line client and daemon.")
 (define-public monero-gui
   (package
     (name "monero-gui")
-    (version "0.14.1.2")
+    (version "0.15.0.0")
     (source
      (origin
        (method git-fetch)
@@ -602,7 +602,7 @@ the Monero command line client and daemon.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1rm043r6y2mzy8pclnzbjjfxgps8pkfa2b92p66k8y8rdmgq6m1k"))))
+         "1shpnly2dym5jhvk8zk10p69mz062dihx979djg74q6hgkhhhqsh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -704,7 +704,7 @@ the Monero command line client and daemon.")
              (let ((out (assoc-ref outputs "out")))
                (wrap-qt-program out "monero-wallet-gui"))
              #t)))))
-    (home-page "https://getmonero.org/")
+    (home-page "https://web.getmonero.org/")
     (synopsis "Graphical user interface for the Monero currency")
     (description
      "Monero is a secure, private, untraceable currency.  This package provides
