@@ -1551,7 +1551,7 @@ backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
 (define-public ghc-chart-cairo
   (package
     (name "ghc-chart-cairo")
-    (version "1.9")
+    (version "1.9.1")
     (source
      (origin
        (method url-fetch)
@@ -1559,7 +1559,7 @@ backends provided by the @code{Cairo} and @code{Diagrams} libraries.")
                            "Chart-cairo-" version ".tar.gz"))
        (sha256
         (base32
-         "0iany6lfyfb1cw0pxfs5aw5k0a6x41m6ql9ad9w59biwdckbsyqr"))))
+         "0hknj4rsjf2m8p5pyq5zff8ai7v80yvmxb5c6n0bkgxs4317nbl9"))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-old-locale" ,ghc-old-locale)
