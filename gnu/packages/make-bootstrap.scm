@@ -125,19 +125,19 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   "Return a variant of P that uses the libc as defined by
 `glibc-for-bootstrap'."
 
-  (define (cross-bootstrap-libc)
-    (let ((target (%current-target-system)))
-      (glibc-for-bootstrap
-       ;; `cross-libc' already returns a cross libc, so clear
-       ;; %CURRENT-TARGET-SYSTEM.
-       (parameterize ((%current-target-system #f))
-         (cross-libc target)))))
+  (define (cross-bootstrap-libc target)
+    (glibc-for-bootstrap
+     ;; `cross-libc' already returns a cross libc, so clear
+     ;; %CURRENT-TARGET-SYSTEM.
+     (parameterize ((%current-target-system #f))
+       (cross-libc target))))
 
   ;; Standard inputs with the above libc and corresponding GCC.
 
   (define (inputs)
     (if (%current-target-system)                ; is this package cross built?
-        `(("cross-libc" ,(cross-bootstrap-libc)))
+        `(("cross-libc"
+           ,(cross-bootstrap-libc (%current-target-system))))
         '()))
 
   (define (native-inputs)
@@ -146,7 +146,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                (xgcc (cross-gcc
                       target
                       #:xbinutils (cross-binutils target)
-                      #:libc (cross-bootstrap-libc))))
+                      #:libc (cross-bootstrap-libc target))))
           `(("cross-gcc" ,(package
                             (inherit xgcc)
                             (search-paths
