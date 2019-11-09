@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015, 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016, 2017, 2018, 2019 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016, 2017, 2018 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2017 Christopher Baines <mail@cbaines.net>
@@ -1047,13 +1047,15 @@ a webserver.")
          (shell (file-append shadow "/sbin/nologin")))))
 
 (define %hpcguix-web-activation
-  #~(begin
-      (use-modules (guix build utils))
-      (let ((home-dir "/var/cache/guix/web")
-            (user (getpwnam "hpcguix-web")))
-        (mkdir-p home-dir)
-        (chown home-dir (passwd:uid user) (passwd:gid user))
-        (chmod home-dir #o755))))
+  (with-imported-modules '((guix build utils))
+    #~(begin
+        (use-modules (guix build utils))
+
+        (let ((home-dir "/var/cache/guix/web")
+              (user (getpwnam "hpcguix-web")))
+          (mkdir-p home-dir)
+          (chown home-dir (passwd:uid user) (passwd:gid user))
+          (chmod home-dir #o755)))))
 
 (define %hpcguix-web-log-file
   "/var/log/hpcguix-web.log")
