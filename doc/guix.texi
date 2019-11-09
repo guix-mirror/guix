@@ -21086,6 +21086,44 @@ The list of knot-zone-configuration used by this configuration.
 @end table
 @end deftp
 
+@subsubheading Knot Resolver Service
+
+@deffn {Scheme Variable} knot-resolver-service-type
+This this the type of the knot resolver service, whose value should be
+an @code{knot-resolver-configuration} object as in this example:
+
+@lisp
+(service knot-resolver-service-type
+         (knot-resolver-configuration
+           (kresd-config-file (plain-file "kresd.conf" "
+net.listen('192.168.0.1', 5353)
+user('knot-resolver', 'knot-resolver')
+modules = @{ 'hints > iterate', 'stats', 'predict' @}
+cache.size = 100 * MB
+"))))
+@end lisp
+
+For more information, refer its @url{https://knot-resolver.readthedocs.org/en/stable/daemon.html#configuration, manual}.
+@end deffn
+
+@deftp {Data Type} knot-resolver-configuration
+Data type representing the configuration of knot-resolver.
+
+@table @asis
+@item @code{package} (default: @var{knot-resolver})
+Package object of the knot DNS resolver.
+
+@item @code{kresd-config-file} (default: %kresd.conf)
+File-like object of the kresd configuration file to use, by default it
+will listen on @code{127.0.0.1} and @code{::1}.
+
+@item @code{garbage-collection-interval} (default: 1000)
+Number of milliseconds for @code{kres-cache-gc} to periodically trim the cache.
+
+@end table
+@end deftp
+
+
 @subsubheading Dnsmasq Service
 
 @deffn {Scheme Variable} dnsmasq-service-type
