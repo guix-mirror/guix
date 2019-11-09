@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,8 +24,57 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
 
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config))
+
+(define-public matcha-theme
+  (package
+    (name "matcha-theme")
+    (version "2019-11-02")
+    (source
+      (origin
+        (method git-fetch)
+        (uri
+          (git-reference
+            (url "https://github.com/vinceliuice/matcha")
+            (commit version)))
+        (file-name (git-file-name name version))
+        (sha256
+          (base32
+            "0wci9ahap8kynq8cbyxr7aba9ndb1d4kiq42xvzr34vw1rhcahrr"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out (assoc-ref %outputs "out"))
+                (source (assoc-ref %build-inputs "source"))
+                (bash (assoc-ref %build-inputs "bash"))
+                (coreutils (assoc-ref %build-inputs  "coreutils"))
+                (themesdir (string-append out "/share/themes")))
+           (setenv "PATH"
+                   (string-append coreutils "/bin:"
+                                  (string-append bash "/bin:")))
+           (copy-recursively source (getcwd))
+           (patch-shebang "Install")
+           (mkdir-p themesdir)
+           (invoke "./Install" "-d" themesdir)
+           #t))))
+    (inputs
+     `(("gtk-engines" ,gtk-engines)))
+    (native-inputs
+     `(("bash" ,bash)
+       ("coreutils" ,coreutils)))
+    (synopsis "Flat design theme for GTK 3, GTK 2 and GNOME-Shell")
+    (description "Matcha is a flat Design theme for GTK 3, GTK 2 and
+Gnome-Shell which supports GTK 3 and GTK 2 based desktop environments
+like Gnome, Unity, Budgie, Pantheon, XFCE, Mate and others.")
+    (home-page "https://github.com/vinceliuice/matcha")
+    (license license:gpl3+)))
 
 (define-public delft-icon-theme
   (package
