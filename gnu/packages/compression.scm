@@ -1652,7 +1652,9 @@ recreates the stored directory structure by default.")
     (native-inputs
      `(("perl" ,perl)))
     (inputs
-     `(("zlib" ,zlib)))
+     `(("gnutls" ,gnutls)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (build-system cmake-build-system)
     (home-page "https://libzip.org")
     (synopsis "C library for reading, creating, and modifying zip archives")
