@@ -1936,7 +1936,7 @@ different kinds of sliders, and much more.")
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/annulen/webkit/releases/download/"
-                            name "-" version "/" name "-" version ".tar.xz"))
+                            "qtwebkit-" version "/qtwebkit-" version ".tar.xz"))
         (sha256
          (base32
           "05syvwi3jw9abwsc93rmjkna0vyh6bkfrsqhwir48ms54icfwzim"))
