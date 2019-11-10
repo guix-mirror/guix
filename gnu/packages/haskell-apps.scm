@@ -564,7 +564,7 @@ Wayland, and Linux console environments alike.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+       (uri (string-append "mirror://hackage/package/Raincat/"
                            "Raincat-" version ".tar.gz"))
        (sha256
         (base32
