@@ -460,6 +460,7 @@ including CBZ, CB7, CBT, LHA.")
               (uri (git-reference
                     (url "https://github.com/jurplel/qView.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1s29hz44rb5dwzq8d4i4bfg77dr0v3ywpvidpa6xzg7hnnv3mhi5"))))

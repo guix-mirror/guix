@@ -952,6 +952,7 @@ utility/testing functions.")
               (uri (git-reference
                      (url "https://github.com/vstakhov/hpenc")
                      (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1fb5yi3d2k8kd4zm7liiqagpz610y168xrr1cvn7cbq314jm2my1"))))

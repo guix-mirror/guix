@@ -1599,6 +1599,7 @@ system is under heavy load.")
               (uri (git-reference
                     (url "https://github.com/dharple/detox.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1dd608c7g65s5lj02cddvani3q9kzirddgkjqa22ap9d4f8b9xgr"))))
@@ -2834,6 +2835,7 @@ tool for remote execution and deployment.")
               (uri (git-reference
                     (url "https://github.com/dylanaraps/neofetch")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "022xzn9jk18k2f4b6011d8jk5nbl84i3mw3inlz4q52p2hvk8fch"))))

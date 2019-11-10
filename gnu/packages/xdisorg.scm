@@ -737,6 +737,7 @@ to find buttons, etc, on the screen to click on.")
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
@@ -1458,6 +1459,7 @@ XCB util-xrm module provides the following libraries:
               (uri (git-reference
                     (url home-page)
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))

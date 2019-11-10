@@ -321,6 +321,7 @@ use with Clang, targeting C++11, C++14 and above.")
        (uri (git-reference
              (url "https://github.com/llvm/llvm-project.git")
              (commit (string-append "llvmorg-" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "052h16wjcnqginzp7ki4il2xmm25v9nyk0wcz7cg03gbryhl7aqa"))))

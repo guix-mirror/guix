@@ -779,6 +779,7 @@ messaging library.")
          (uri (git-reference
                (url "https://github.com/jerry40/guile-kernel")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0aj04853bqm47ivfcmrgpb7w3wkis847kc7qrwsa5zcn9h38qh2f"))))
@@ -1975,6 +1976,7 @@ format is also supported.")
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-picture-language.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
@@ -2005,6 +2007,7 @@ The picture values can directly be displayed in Geiser.")
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-studio.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0rxl5gv2mavycwkl33lcwyb3z71j2f4zyzk60k7vl3hzszpr08iq"))))

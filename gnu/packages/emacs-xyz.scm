@@ -621,6 +621,7 @@ handful of functions that are not resource-specific.")
                 (uri (git-reference
                       (url "https://github.com/emacs-pe/scribble-mode.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1s5ccw1a5ack01wd94ywfcrar9j98agchwdh30q7iyxr0d2z4sii"))))
@@ -4818,6 +4819,7 @@ package provides a light and a dark variant.")
          (uri (git-reference
                (url "https://github.com/kunalb/poet.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0a84jdaj619mb59a46dmkk2sfs42rylqk9ryl1drgs8d3lia79mz"))))
@@ -8899,6 +8901,7 @@ actually changing the buffer's text.")
        (uri (git-reference
              (url "https://github.com/dgutov/diff-hl")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1xlsg728mz3cwhrsqvisa0aidic67nymd9g7h4c1h3q63j39yb2s"))))
@@ -10519,6 +10522,7 @@ It supports dired buffers and opens them in tree mode at destination.")
          (uri (git-reference
                (url "https://github.com/abo-abo/tiny.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1498j392ap2mk4zmsm2id16pfgvj78r428da9vw7hdrzzibai2cx"))))
@@ -10574,6 +10578,7 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
          (uri (git-reference
                (url "https://github.com/abo-abo/make-it-so")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0p6xhyinzzkrwzbpxqfm8hlii0ikvmmylya240bwsa77w0g1k6xq"))))
@@ -10603,6 +10608,7 @@ included by default, and more can be readily added.")
          (uri (git-reference
                (url "https://github.com/sindikat/unidecode")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "03x3nakbhmakwm977mwrf8jifvjnfwzpjv6wrwpizbqjnkgfchmn"))))
@@ -11449,6 +11455,7 @@ functionality is inherited from @code{hcl-mode}.")
        (uri (git-reference
              (url "https://github.com/purcell/exec-path-from-shell")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
@@ -11529,6 +11536,7 @@ to with quicklink-style selections.")
        (uri (git-reference
              (url "https://github.com/jrblevin/deft.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0z7cilgiz6krvl5h2z72hkch43qxmypb0k6p5vxn5lx1p6v0mrf2"))))
@@ -11618,6 +11626,7 @@ used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
          (uri (git-reference
                (url "https://github.com/ergoemacs/ergoemacs-mode.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1s3b9bridl78hh1mxmdk9nqlmqhibbaxk0a1cixmsf23s06w8w6l"))))
@@ -15177,6 +15186,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
          (uri (git-reference
                (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "19xqi5mgalnnhb4hw0fh7py2s2dllldx1xxbhwhknkdpifai8hl8"))))
@@ -15333,6 +15343,7 @@ from @code{emms-source-file-default-directory}.")
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-exwm.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "064ziinqa5sdv7rfjn0y278l12kld176fr88k4h78pgf2f2n7cd8"))))
       (build-system emacs-build-system)
@@ -15423,6 +15434,7 @@ projects unrelated to current-buffer.
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-mu.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1lh0ahxdc5b2z18m9p30gwg8sbg33sjwkjr38p7h5xsm5fm7i0fz"))))
       (build-system emacs-build-system)

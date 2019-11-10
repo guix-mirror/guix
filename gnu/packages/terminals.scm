@@ -219,6 +219,7 @@ text-based approach to terminal recording.")
                 (uri (git-reference
                       (url (string-append "https://github.com/Aetf/" name))
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0mwn91i5h5d518i1s05y7hzv6bc13vzcvxszpfh77473iwg4wprx"))))

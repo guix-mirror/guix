@@ -1166,6 +1166,7 @@ GNU extensions} to the POSIX recommendations for command-line options.")
        (uri (git-reference
              (url "https://github.com/sirupsen/logrus.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0g5z7al7kky11ai2dhac6gkp3b5pxsvx72yj3xg4wg3265gbn7yz"))))
@@ -3022,6 +3023,7 @@ a cron spec parser and job runner.")
                 (uri (git-reference
                        (url "https://github.com/shirou/gopsutil")
                        (commit commit))) ; XXX
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0x1g4r32q4201nr2b754xnrrndmwsrhfr7zg37spya86qrmijnws"))))

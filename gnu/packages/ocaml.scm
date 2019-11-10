@@ -1115,6 +1115,7 @@ files in these formats.")
               (uri (git-reference
                      (url "https://github.com/ocaml/Zarith")
                      (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0hv5ywz1q2cgn8apfz490clwk5hcynr937g2v8i13x2ax4bnv0lz"))))
@@ -2645,6 +2646,7 @@ big- and little-endian, with their unsafe counter-parts.")
               (uri (git-reference
                      (url "https://github.com/mirage/ocaml-cstruct")
                      (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0m4bz0digcsc8l2msfikwcbi1y371kccx6xnkwrz212mf5mp98bv"))))

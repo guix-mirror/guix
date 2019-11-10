@@ -187,6 +187,7 @@ windows in a terminal, colorize, filter and merge.")
        (uri (git-reference
              (url "https://github.com/gabime/spdlog.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1rd4zmrlkcdjx0m0wpmjm1g9srj7jak6ai08qkhbn2lsn0niifzd"))))

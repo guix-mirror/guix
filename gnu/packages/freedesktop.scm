@@ -617,6 +617,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page) (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "16h57hzd688664qcyznzhjp3hxipdkzgv46x82yhkww24av8b55n"))))

@@ -201,6 +201,7 @@ the real span of the lattice.")
        (uri (git-reference
              (url "https://github.com/fplll/fpylll.git")
              (commit (string-append version "dev"))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "01x2sqdv0sbjj4g4waj0hj4rcn4bq7h17442xaqwbznym9azmn9w"))))

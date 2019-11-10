@@ -1986,6 +1986,7 @@ editors.")
               (uri (git-reference
                     (url "https://github.com/markwal/GPX.git")
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1yab269x8qyf7rd04vaxyqyjv4pzz9lp4sc4dwh927k23avr3rw5"))))
