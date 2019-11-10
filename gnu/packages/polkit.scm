@@ -142,8 +142,8 @@ for unprivileged applications.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://download.kde.org/stable/apps/KDE4.x/admin/"
-                   name "-" version ".tar.bz2"))
+                   "mirror://kde//stable/apps/KDE4.x/admin/"
+                   "polkit-qt-" version ".tar.bz2"))
              (sha256
               (base32
                "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
