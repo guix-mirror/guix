@@ -28,7 +28,7 @@
 (define-public fribidi
   (package
     (name "fribidi")
-    (version "1.0.5")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -37,7 +37,7 @@
                         "/download/v" version "/fribidi-" version
                          ".tar.bz2"))
         (sha256
-         (base32 "1kp4b1hpx2ky20ixgy2xhj5iygfl7ps5k9kglh1z5i7mhykg4r3a"))
+         (base32 "0pckda4fcn0aw32lpycwdp25r2m7vca8zspq815ppi9gkwgg5das"))
         (patches (search-patches "fribidi-CVE-2019-18397.patch"))))
     (build-system gnu-build-system)
     (synopsis "Implementation of the Unicode bidirectional algorithm")
