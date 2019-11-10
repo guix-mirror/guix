@@ -30,6 +30,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages boost)
@@ -470,7 +471,7 @@ cards.")
 (define-public kpmcore
   (package
     (name "kpmcore")
-    (version "3.3.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -479,20 +480,19 @@ cards.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0s6v0jfrhjg31ri5p6h9n4w29jvasf5dj954j3vfpzl91lygmmmq"))))
+                "1sslkwcj2cyrn7bpjdjdwikp1q8wrsxpsg2sxxd8hsairgy7ygh3"))
+              (patches (search-patches "kpmcore-fix-tests.patch"
+                                       "kpmcore-remove-broken-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("kconfigwidgets" ,kconfigwidgets)
-       ("kiconthemes" ,kiconthemes)
        ("kio" ,kio)
        ("ki18n" ,ki18n)
-       ("kservice" ,kservice)
-       ("libatasmart" ,libatasmart)
-       ("parted" ,parted)
        ("qtbase" ,qtbase)
+       ("qca" ,qca)
        ("util-linux" ,util-linux)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Library for managing partitions")
