@@ -36,6 +36,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
@@ -101,7 +102,7 @@
                (with "--with-jpeg-dir" "libjpeg")
                (with "--with-ldap" "openldap")
                (with "--with-ldap-sasl" "cyrus-sasl")
-               (with "--with-libzip" "zip")
+               (with "--with-libzip" "libzip")
                (with "--with-libxml-dir" "libxml2")
                (with "--with-onig" "oniguruma")
                (with "--with-pcre-dir" "pcre")
@@ -136,9 +137,11 @@
                "--enable-fpm"
                "--enable-ftp"
                "--enable-inifile"
+               "--enable-intl"
                "--enable-mbstring"
                "--enable-pcntl"
-               "--enable-sockets"))
+               "--enable-sockets"
+               "--enable-zip"))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'do-not-record-build-flags
@@ -356,6 +359,7 @@
        ("glibc" ,glibc)
        ("gmp" ,gmp)
        ("gnutls" ,gnutls)
+       ("icu4c" ,icu4c)
        ("libgcrypt" ,libgcrypt)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
@@ -364,6 +368,7 @@
        ("libxpm" ,libxpm)
        ("libxslt" ,libxslt)
        ("libx11" ,libx11)
+       ("libzip" ,libzip)
        ("oniguruma" ,oniguruma)
        ("openldap" ,openldap)
        ("openssl" ,openssl)
@@ -372,7 +377,6 @@
        ("readline" ,readline)
        ("sqlite" ,sqlite)
        ("tidy" ,tidy)
-       ("zip" ,zip)
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
