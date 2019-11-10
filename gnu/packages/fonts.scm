@@ -27,6 +27,7 @@
 ;;; Copyright © 2019 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2019 Baptiste Strazzulla <bstrazzull@hotmail.fr>
 ;;; Copyright © 2019 Alva <alva@skogen.is>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1523,4 +1524,44 @@ For this reason, Hermit is coherent and regular.
 Symbols stand out from common text.  Dots and commas are easily seen, and
 operators are clear even when not surrounded by spaces.  Similar characters
 have been designed to be very distinguishable from each other.")
+    (license license:silofl1.1)))
+
+(define-public font-dseg
+  (package
+    (name "font-dseg")
+    (version "0.45")
+    (source
+      (origin
+        (method url-fetch/zipbomb)
+        (uri
+          (string-append "https://github.com/keshikan/DSEG/"
+                         "releases/download/v" version
+                         "/fonts-DSEG_v"
+                         (string-concatenate (string-split version #\.))
+                         ".zip"))
+        (sha256
+          (base32
+            "0v8sghh4vl286faf8pvi74znz07pyf0qii8z4wjllisqwc35sx72"))))
+    (build-system font-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (font-dir (string-append out "/share/fonts"))
+                    (truetype-dir (string-append font-dir "/truetype")))
+               (with-directory-excursion
+                 (string-append "fonts-DSEG_v"
+                                (apply string-append (string-split ,version
+                                                                   #\.)))
+                 (for-each (lambda (f) (install-file f truetype-dir))
+                           (find-files "." "\\.ttf$"))
+               #t)))))))
+    (home-page "https://www.keshikan.net/fonts-e.html")
+    (synopsis "DSEG: 7-segment and 14-segment fonts")
+    (description
+     "DSEG is a font family that imitates seven- and fourteen-segment LCD
+displays (7SEG, 14SEG).  DSEG includes the roman alphabet and symbol glyphs.
+This package provides the TrueType fonts.")
     (license license:silofl1.1)))
