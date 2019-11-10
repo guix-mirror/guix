@@ -291,7 +291,7 @@ more.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.8.1")
+    (version "4.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -299,14 +299,10 @@ more.")
                     "CGAL-" version "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "1c41yzl2jg3d6zx5k0iccwqwibp950q7dr7z7pp4xi9wlph3c87s"))))
+                "08lrp3hfwdypggz4138bnkh6bjxn441zg2y9xnq5mrjfc5ini6w1"))))
     (build-system cmake-build-system)
     (arguments
-     '(;; "RelWithDebInfo" is not supported.
-       #:build-type "Release"
-
-       ;; No 'test' target.
-       #:tests? #f))
+     '(#:tests? #f))                    ; no test target
     (inputs
      `(("mpfr" ,mpfr)
        ("gmp" ,gmp)
