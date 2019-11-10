@@ -515,15 +515,13 @@ required structures.")
                            ;; Provide a TLS-enabled netcat.
                            "--enable-nc")))
     (native-search-paths
-      ;; FIXME: These two variables must designate a single file or directory
-      ;; and are not actually "search paths."  In practice it works OK in
-      ;; user profiles because there's always just one item that matches the
-      ;; specification.
      (list (search-path-specification
             (variable "SSL_CERT_DIR")
+            (separator #f)              ;single entry
             (files '("etc/ssl/certs")))
            (search-path-specification
             (variable "SSL_CERT_FILE")
+            (separator #f)              ;single entry
             (files '("etc/ssl/certs/ca-certificates.crt")))))
     (home-page "https://www.libressl.org/")
     (synopsis "SSL/TLS implementation")
