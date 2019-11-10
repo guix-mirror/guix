@@ -311,7 +311,7 @@ more.")
      `(("mpfr" ,mpfr)
        ("gmp" ,gmp)
        ("boost" ,boost)))
-    (home-page "http://cgal.org/")
+    (home-page "https://www.cgal.org/")
     (synopsis "Computational geometry algorithms library")
     (description
      "CGAL provides easy access to efficient and reliable geometric algorithms
