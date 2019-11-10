@@ -161,7 +161,7 @@ for unprivileged applications.")
                                               (assoc-ref %outputs "out")
                                               "/lib64"))
        #:tests? #f)) ; there is a test subdirectory, but no test target
-    (home-page "http://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
+    (home-page "https://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
     (synopsis "Qt frontend to the polkit library")
     (description "Polkit-qt is a library that lets developers use the
 PolicyKit API through a Qt-styled API.  It is mainly a wrapper around
