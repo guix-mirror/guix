@@ -10133,7 +10133,7 @@ of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
 @code{guix-publish-service-type}}).
 
 If you are instead running Guix on a ``foreign distro'', follow these
-instructions:”
+instructions:
 
 @itemize
 @item
