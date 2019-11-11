@@ -6232,7 +6232,7 @@ and Karl Berry.")
     (version "2.3.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
+              (uri (string-append "https://ftp.lyx.org/pub/lyx/stable/"
                                   (version-major+minor version) ".x/"
                                   "lyx-" version ".tar.gz"))
               (sha256
