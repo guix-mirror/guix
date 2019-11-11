@@ -6303,17 +6303,14 @@ and Karl Berry.")
        ("hunspell" ,hunspell)           ; Note: Could also use aspell instead.
        ("libx11" ,libx11)
        ("mythes" ,mythes)
-       ("python" ,python-2)
+       ("python" ,python)
        ("qtbase" ,qtbase)
        ("qtsvg" ,qtsvg)
        ("zlib" ,zlib)))
     (propagated-inputs
      `(("texlive" ,(texlive-union (list texlive-fonts-ec)))))
-    ;; FIXME: Python 3.7.0 cannot be used because the test infrastructure
-    ;; "requires a bytes-like object, not 'str'".  This may be fixed with
-    ;; upgrades to Python.
     (native-inputs
-     `(("python-2" ,python-2)
+     `(("python" ,python)
        ("pkg-config" ,pkg-config)))
     (home-page "https://www.lyx.org/")
     (synopsis "Document preparation system with GUI")
