@@ -56,6 +56,7 @@
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
 ;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4877,6 +4878,30 @@ mode switching in the way of solarized.  The main focus when developing gruvbox
 is to keep colors easily distinguishable, contrast enough and still pleasant
 for the eyes.")
     (license license:expat))) ; MIT license
+
+(define-public emacs-spacegray-theme
+  (let ((commit "9826265c2bceb2ebc1c5e16a45021da0253ace97")
+        (revision "0"))
+    (package
+      (name "emacs-spacegray-theme")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bruce/emacs-spacegray-theme.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0aplwmm17ypbns5blc4rf5rr6dasj0zp5ibykpfl43fh4bd8z89n"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/bruce/emacs-spacegray-theme")
+      (synopsis "Port of Sublime Text's Spacegray theme for Emacs")
+      (description
+       "@code{spacegray-theme} is an Emacs port of the Spacegray theme from
+Sublime Text.  It features a dark blue/gray background and soft blue, green,
+orange and red as accent colors.")
+      (license license:expat)))) ; MIT license
 
 (define-public emacs-2048-game
   (package
