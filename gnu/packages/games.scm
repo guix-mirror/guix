@@ -4733,7 +4733,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.23.2")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4746,7 +4746,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32 "1hw10hqhh688mrqs9vxrl17y1dzfjzsmxz6izg1a9dzmjlhrc01a"))
+        (base32 "0kdq6s12myxfdg75ma9x3ys2nd0xwb3xm2ynlmhg4628va0pnixr"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs
