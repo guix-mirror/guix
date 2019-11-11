@@ -4309,14 +4309,13 @@ operators such as union, intersection, and difference.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
-        (base32
-         "1df113c9i6vazsn6y3n9wc22jh737z1g7dmx3mypkdwpdnscyhr6"))))
+        (base32 "192d8dsybvhv19igkrsafbdafx198nz7pibkjgrqjhlr66s3jfd0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
