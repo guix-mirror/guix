@@ -8,6 +8,7 @@
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -222,7 +223,7 @@ and the GTK+ toolkit.")
                      ("perl" ,perl)))
     (inputs `(("ncurses" ,ncurses)
               ("libidn" ,libidn)
-              ("gnutls" ,gnutls)
+              ("openssl" ,openssl)
               ("libgcrypt" ,libgcrypt)
               ("unzip" ,unzip)
               ("zlib" ,zlib)
@@ -230,12 +231,12 @@ and the GTK+ toolkit.")
               ("bzip2" ,bzip2)))
     (arguments
      `(#:configure-flags
-       (let ((gnutls (assoc-ref %build-inputs "gnutls")))
+       (let ((openssl (assoc-ref %build-inputs "openssl")))
          `("--with-pkg-config"
            "--with-screen=ncurses"
            "--with-zlib"
            "--with-bzlib"
-           ,(string-append "--with-gnutls=" gnutls)
+           ,(string-append "--with-ssl=" openssl)
            ;; "--with-socks5"    ; XXX TODO
            "--enable-widec"
            "--enable-ascii-ctypes"
