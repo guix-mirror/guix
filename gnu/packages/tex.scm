@@ -6234,7 +6234,7 @@ and Karl Berry.")
               (method url-fetch)
               (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
                                   (version-major+minor version) ".x/"
-                                  name "-" version ".tar.gz"))
+                                  "lyx-" version ".tar.gz"))
               (sha256
                (base32
                 "0vr0qwis6rhind6azfa270hqxci7rj8qb1kk5x6lm80mc34nvrqi"))
