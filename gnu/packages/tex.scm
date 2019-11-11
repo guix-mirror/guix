@@ -6229,7 +6229,7 @@ and Karl Berry.")
 (define-public lyx
   (package
     (name "lyx")
-    (version "2.3.2-2")
+    (version "2.3.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.lyx.org/pub/lyx/stable/"
@@ -6237,7 +6237,7 @@ and Karl Berry.")
                                   "lyx-" version ".tar.gz"))
               (sha256
                (base32
-                "0vr0qwis6rhind6azfa270hqxci7rj8qb1kk5x6lm80mc34nvrqi"))
+                "0j3xincwmsscfgv13g3z6h4kx1qfzgg8x71fs393akcdxsh2g07c"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -6313,9 +6313,8 @@ and Karl Berry.")
     ;; "requires a bytes-like object, not 'str'".  This may be fixed with
     ;; upgrades to Python.
     (native-inputs
-     `(("python" ,python-2)
-       ("pkg-config" ,pkg-config)
-       ("bc" ,bc)))
+     `(("python-2" ,python-2)
+       ("pkg-config" ,pkg-config)))
     (home-page "https://www.lyx.org/")
     (synopsis "Document preparation system with GUI")
     (description "LyX is a document preparation system.  It excels at letting
