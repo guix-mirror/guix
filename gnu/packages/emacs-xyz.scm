@@ -17823,7 +17823,7 @@ a suffix) we prefer to call it just a \"transient\".")
                    (invoke "makeinfo" "forge.texi")
                    (install-file "forge.info" info)
                    #t)))))))
-      (home-page "https://github.com/magit/ghub/")
+      (home-page "https://github.com/magit/forge/")
       (synopsis "Access Git forges from Magit")
       (description
        "Work with Git forges, such as Github and Gitlab, from the comfort of
