@@ -3,7 +3,7 @@
 ;;; Copyright © 2016, 2017, 2018 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2017 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2019 Meiyo Peng <meiyo@riseup.net>
 ;;;
@@ -142,15 +142,14 @@ commands, displaying the results via a web interface.")
 (define-public multitail
   (package
     (name "multitail")
-    (version "6.4.2")
+    (version "6.5.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "https://vanheusden.com/multitail/multitail-"
                           version ".tgz"))
       (sha256
-       (base32
-        "1zd1r89xkxngl1pdrvsc877838nwkfqkbcgfqm3vglwalxc587dg"))))
+       (base32 "1vd9vdxyxsccl64ilx542ya5vlw2bpg6gnkq1x8cfqy6vxvmx7dj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
