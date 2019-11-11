@@ -2268,14 +2268,14 @@ time before its creation (in 1582).")
 (define-public perl-datetime-calendar-julian
   (package
     (name "perl-datetime-calendar-julian")
-    (version "0.100")
+    (version "0.102")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/W/WY/WYANT/"
                            "DateTime-Calendar-Julian-" version ".tar.gz"))
        (sha256
-        (base32 "0gbw7rh706qk5jlmmz3yzsm0ilzp39kyar28g4j6d57my8cwaipx"))))
+        (base32 "0j95dhma66spjyb04zi6rwy7l33hibnrx02mn0znd9m89aiq52s6"))))
     (build-system perl-build-system)
     ;; Only needed for tests
     (native-inputs
