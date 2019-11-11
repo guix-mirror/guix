@@ -5154,14 +5154,13 @@ using modular prediction and response module classes.")
 (define-public r-quantreg
   (package
     (name "r-quantreg")
-    (version "5.51")
+    (version "5.52")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "quantreg" version))
        (sha256
-        (base32
-         "1cdx51a9g6fjq2g9arr6wp6ghkyl2m6bs2dj4kcycvpn8p9304yz"))))
+        (base32 "0rq9as31wiz41lmi9hmdq3gknpcbpwqzfcn065ysjdxzjdb57dcy"))))
     (build-system r-build-system)
     (native-inputs
      `(("gfortran" ,gfortran)))
