@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2017, 2018 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Meiyo Peng <meiyo@disroot.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -179,7 +179,7 @@ may also simplify input method development.")
 (define-public ibus-libpinyin
   (package
     (name "ibus-libpinyin")
-    (version "1.11.0")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libpinyin/ibus-libpinyin/"
@@ -187,7 +187,7 @@ may also simplify input method development.")
                                   "/ibus-libpinyin-" version ".tar.gz"))
               (sha256
                (base32
-                "1sypbr5n96sf7mgqhxrwbawdmszgb6yi28iqkmfmb8xr93pwq7fq"))))
+                "1bl1cgicd2df797dx1x0q904438bsn8i23djzcfcai4dp3631xc0"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
