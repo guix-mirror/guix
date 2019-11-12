@@ -1851,7 +1851,7 @@ projects.")
 (define-public openvr
   (package
     (name "openvr")
-    (version "1.4.18")
+    (version "1.8.19")
     (home-page "https://github.com/ValveSoftware/openvr/")
     (source
      (origin
@@ -1861,8 +1861,7 @@ projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0m92634j6g0f2xybbzklm79cnq20vidbk1jc62pnz12aabwixvyh"))))
+        (base32 "1b8cppvw6ib0kvx0vjq7jsk3plg1vh171w8xr230vjn05381wp52"))))
     (build-system cmake-build-system)
     (arguments
      ;; No tests.
