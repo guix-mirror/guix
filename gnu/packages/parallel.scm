@@ -154,6 +154,7 @@ and they are executed on lists of files, hosts, users or other items.")
    (arguments
     `(#:configure-flags
       (list "--enable-pam" "--sysconfdir=/etc/slurm"
+            "--disable-static"
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))
