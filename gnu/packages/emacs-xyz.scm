@@ -19811,3 +19811,28 @@ such as:
 - swap windows à-la @code{windmove}.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-flycheck-cpplint
+  (let ((commit "1d8a090861572258ab704915263feeb3a436c3d2")
+        (revision "1"))
+    (package
+      (name "emacs-flycheck-cpplint")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck-google-cpplint")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l6sg83f6z8x2alnblpv03rj442sbnkkkcbf8i0agjmx3713a5yx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Google C++ checker for Flycheck")
+      (description "This package provides a interface for @code{cpplint} over
+Flycheck plugin.  @code{cpplint} is a static code checker for C++, following
+Google guidelines.")
+      (home-page "https://github.com/flycheck/flycheck-google-cpplint")
+      (license license:gpl3+))))
