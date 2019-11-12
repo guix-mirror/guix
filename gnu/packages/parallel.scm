@@ -105,7 +105,7 @@ and they are executed on lists of files, hosts, users or other items.")
 (define-public slurm
   (package
    (name "slurm")
-   (version "17.11.3")
+   (version "19.05.3-2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -113,13 +113,27 @@ and they are executed on lists of files, hosts, users or other items.")
                   version ".tar.bz2"))
             (sha256
              (base32
-              "1x3i6z03d9m46fvj1cslrapm1drvgyqch9pn4xf23kvbz4gkhaps"))
+              "0qj4blfymrd2ry2qmb58l3jbr4jwygc3adcfw7my27rippcijlyc"))
             (modules '((guix build utils)))
             (snippet
              '(begin
+                ;; According to
+                ;; <https://lists.gnu.org/archive/html/guix-devel/2016-02/msg00534.html>
+                ;; there are non-free bits under contribs/, though it's not
+                ;; clear which ones.  libpmi is clearly free (it used to be
+                ;; under src/api/), so remove all of contribs/ except
+                ;; contribs/pmi/.
                 (substitute* "configure.ac"
-                  (("^[[:space:]]+contribs/.*$") ""))
+                  (("^[[:space:]]+contribs/(.*)$" all directory)
+                   (if (and (string-prefix? "pmi" directory)
+                            (not (string-prefix? "pmi2" directory)))
+                       all
+                       "")))
+
+                (rename-file "contribs/pmi" "tmp-pmi")
                 (delete-file-recursively "contribs")
+                (mkdir "contribs")
+                (rename-file "tmp-pmi" "contribs/pmi")
                 #t))))
    ;; FIXME: More optional inputs could be added,
    ;; in particular mysql and gtk+.
@@ -130,7 +144,6 @@ and they are executed on lists of files, hosts, users or other items.")
              ("linux-pam" , linux-pam)
              ("munge" ,munge)
              ("numactl" ,numactl)
-             ("openssl" ,openssl)
              ("perl" ,perl)
              ("python" ,python-wrapper)
              ("readline" ,readline)))
@@ -144,12 +157,15 @@ and they are executed on lists of files, hosts, users or other items.")
             (string-append "--with-freeipmi=" (assoc-ref %build-inputs "freeipmi"))
             (string-append "--with-hwloc=" (assoc-ref %build-inputs "hwloc"))
             (string-append "--with-json=" (assoc-ref %build-inputs "json-c"))
-            (string-append "--with-munge=" (assoc-ref %build-inputs "munge"))
-            (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl")))
+            (string-append "--with-munge=" (assoc-ref %build-inputs "munge")))
       #:phases
       (modify-phases %standard-phases
         (add-after 'unpack 'autoconf
-          (lambda _ (invoke "autoconf")))))) ; configure.ac was patched
+          (lambda _ (invoke "autoconf")))         ;configure.ac was patched
+        (add-after 'install 'install-libpmi
+          (lambda _
+            ;; Open MPI expects libpmi to be provided by Slurm so install it.
+            (invoke "make" "install" "-C" "contribs/pmi"))))))
    (home-page "https://slurm.schedmd.com/")
    (synopsis "Workload manager for cluster computing")
    (description
