@@ -6133,7 +6133,7 @@ features (e.g.  genes, microRNAs).")
     (home-page "https://bioconductor.org/packages/unifiedWMWqPCR")
     (synopsis "Unified Wilcoxon-Mann Whitney Test for differential expression in qPCR data")
     (description
-     "This packages implements the unified Wilcoxon-Mann-Whitney Test for qPCR
+     "This package implements the unified Wilcoxon-Mann-Whitney Test for qPCR
 data.  This modified test allows for testing differential expression in qPCR
 data.")
     (license license:gpl2+)))
