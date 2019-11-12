@@ -312,7 +312,7 @@ back-end for the LLVM compiler framework.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("clang" ,clang)
-       ("hwloc" ,hwloc-2.0 "lib")
+       ("hwloc" ,hwloc-2 "lib")
        ("llvm" ,llvm-8)
        ("ocl-icd" ,ocl-icd)))
     (arguments

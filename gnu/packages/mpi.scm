@@ -31,6 +31,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -130,11 +131,11 @@ a powerful programming interface to gather information about the hardware,
 bind processes, and much more.")
     (license bsd-3)))
 
-(define-public hwloc-2.0
+(define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
   (package
     (inherit hwloc)
-    (version "2.0.3")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -142,7 +143,7 @@ bind processes, and much more.")
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "09f7ajak8wv5issr0hw72vs3jkldc7crcc7z5fd34sspkvrsm4z3"))))
+                "0qh8s7pphz0m5cwb7liqmc17xzfs23xhz5wn24r6ikvjyx99fhhr"))))
 
     ;; libnuma is no longer needed.
     (inputs (alist-delete "numactl" (package-inputs hwloc)))
@@ -158,6 +159,9 @@ bind processes, and much more.")
                  (("numa_available\\(\\)")
                   "-1"))
                #t))))))))
+
+(define-deprecated hwloc-2.0 'hwloc-2
+  hwloc-2)
 
 (define-public openmpi
   (package
