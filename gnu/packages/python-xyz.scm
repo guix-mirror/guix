@@ -9020,14 +9020,14 @@ servers.")
 (define-public python-jmespath
   (package
    (name "python-jmespath")
-   (version "0.9.3")
+   (version "0.9.4")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "jmespath" version))
      (sha256
       (base32
-       "0r7wc7fsxmlwzxx9j1j7rms06c6xs6d4sysirdhz1jk2mb4x90ba"))))
+       "0k0765x1mybcrzajh3hiqkl8sy9hs0bmn4900frxy0j3ykvaxqmx"))))
    (build-system python-build-system)
    (native-inputs
     `(("python-nose" ,python-nose)))
