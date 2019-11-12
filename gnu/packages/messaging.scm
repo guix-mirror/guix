@@ -1589,7 +1589,7 @@ manual SSL certificate verification.")
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/strophe/libstrophe/archive/"
@@ -1597,7 +1597,7 @@ manual SSL certificate verification.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vxfcyfnhnlaj6spm2b0ljw5i3knbphy6mvzpl5zv9b52ny4b08m"))))
+                "1zm4a7009lshwgj5x11vslrxj2zjgwshhhad3p05kvbp47v7jfwa"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1612,7 +1612,7 @@ manual SSL certificate verification.")
 almost no external dependencies, only an XML parsing library (expat or libxml
 are both supported).")
     (home-page "http://strophe.im/libstrophe")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public profanity
