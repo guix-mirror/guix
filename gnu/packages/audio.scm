@@ -3687,7 +3687,7 @@ library.")
        (uri (git-reference
              (url "https://github.com/FNA-XNA/FAudio.git")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "0ckpr6ffz8ssfh1y850dhip5s5jv0j6n90qz5yx1v9d6gpwf08rp"))))
     (arguments
