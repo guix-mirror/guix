@@ -4960,7 +4960,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.2")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -4968,7 +4968,7 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
                      version ".tar.gz"))
               (sha256
                (base32
-                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
+                "14vj7v3mffpp0298vnzymp8ndasa0p3qv8i6iq3f4gc1717yglak"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
