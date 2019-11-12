@@ -28,6 +28,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,8 +62,10 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages c)
   #:use-module (gnu packages check)
   #:use-module (gnu packages crypto)
+  #:use-module (gnu packages cryptsetup)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dns)
   #:use-module (gnu packages file)
@@ -3513,3 +3516,68 @@ IGMP and Raw, across a wide variety of interface types, and understands BPF
 filter logic in the same fashion as more common packet sniffing tools, such as
 tcpdump and snoop.")
     (license license:bsd-3)))
+
+(define-public pam-mount
+  (package
+    (name "pam-mount")
+    (version "2.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pam-mount/pam_mount/"
+                           version "/pam_mount-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1rvi4irb7ylsbhvx1cr6islm2xxw1a4b19q6z4a9864ndkm0f0mf"))
+       (patches
+        ;; Patch adding support for encrypted volumes in LUKS2 format.
+        ;; It comes from the Gentoo package definition for sys-auth/pam_mount.
+        (search-patches "pam-mount-luks2-support.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cryptsetup" ,cryptsetup)
+       ("libhx" ,libhx)
+       ("libxml2" ,libxml2)
+       ("linux-pam" ,linux-pam)
+       ("lvm2" ,lvm2)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-slibdir=" %output "/lib")
+             (string-append "--with-ssbindir=" %output "/sbin"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-program-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((util-linux (assoc-ref inputs "util-linux"))
+                   (out (assoc-ref outputs "out")))
+               (substitute* "src/mtcrypt.c"
+                 (("\"mount\";")
+                  (string-append "\"" util-linux "/bin/mount\";"))
+                 (("\"umount\";")
+                  (string-append "\"" util-linux "/bin/umount\";"))
+                 (("\"fsck\",")
+                  (string-append "\"" util-linux "/sbin/fsck\",")))
+               (substitute* "src/rdconf1.c"
+                 (("\"mount\", \"")
+                  (string-append "\"" util-linux "/bin/mount\", \""))
+                 (("\"umount\", \"")
+                  (string-append "\"" util-linux "/bin/umount\", \""))
+                 (("\"fsck\", \"")
+                  (string-append "\"" util-linux "/sbin/fsck\", \""))
+                 (("\"pmvarrun\", \"")
+                  (string-append "\"" out "/sbin/pmvarrun\", \""))))
+             #t)))))
+    (home-page "http://pam-mount.sourceforge.net")
+    (synopsis "PAM module to mount volumes for a user session")
+    (description
+     "Pam-mount is a PAM module that can mount volumes when a user logs in.
+It supports mounting local filesystems of any kind the normal mount utility
+supports.  It can also mount encrypted LUKS volumes using the password
+supplied by the user when logging in.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
