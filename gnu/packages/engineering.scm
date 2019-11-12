@@ -2407,7 +2407,7 @@ or the official 3dxserv, as if they were using the magellan SDK.
 
 Also, libspnav provides a magellan API wrapper on top of the new API.  So, any
 applications that were using the magellan library, can switch to libspnav
-without any changes.  And programmers that are familliar with the magellan API
+without any changes.  And programmers that are familiar with the magellan API
 can continue using it with a free library without the restrictions of the
 official SDK.")
     (license license:bsd-3)))
