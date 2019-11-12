@@ -1088,5 +1088,5 @@ with state-tracking and configuration abstractions.")
     (description
      "This is a set of python bindings for keyutils, a key management suite
 that leverages the infrastructure provided by the Linux kernel for safely
-storing and retrieving sensitive infromation in your programs.")
+storing and retrieving sensitive information in your programs.")
     (license license:asl2.0)))
