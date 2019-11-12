@@ -1559,7 +1559,7 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1568,7 +1568,7 @@ is also scriptable and extensible via Guile.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06f5nfaypvxrbsinxa1k2vrxrs7kqmg38g4wwwk5d63hpn1pj8ak"))))
+                "0xzfg1xx88cn36352nnjlb1p7xyw32yqkhjzq10px88iaaqz1vv0"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1583,7 +1583,7 @@ is also scriptable and extensible via Guile.")
 XMPP Client.  In particular, libmesode provides extra TLS functionality such as
 manual SSL certificate verification.")
     (home-page "https://github.com/boothj5/libmesode")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public libstrophe
