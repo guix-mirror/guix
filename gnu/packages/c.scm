@@ -4,6 +4,7 @@
 ;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -281,3 +282,25 @@ Its three main components are:
      "The purpose of libfixposix is to offer replacements for parts of POSIX
 whose behaviour is inconsistent across *NIX flavours.")
     (license license:boost1.0)))
+
+(define-public libhx
+  (package
+    (name "libhx")
+    (version "3.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/libhx/libHX/"
+                           "libHX-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0i8v2464p830c15myknvvs6bhxaf663lrqgga95l94ygfynkw6x5"))))
+    (build-system gnu-build-system)
+    (home-page "http://libhx.sourceforge.net")
+    (synopsis "C library with common data structures and functions")
+    (description
+     "This is a C library (with some C++ bindings available) that provides data
+structures and functions commonly needed, such as maps, deques, linked lists,
+string formatting and autoresizing, option and config file parsing, type
+checking casts and more.")
+    (license license:lgpl2.1+)))
