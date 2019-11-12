@@ -177,7 +177,7 @@ bind processes, and much more.")
        (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("hwloc" ,hwloc "lib")
+     `(("hwloc" ,hwloc-2 "lib")
        ("gfortran" ,gfortran)
        ("libfabric" ,libfabric)
        ("libevent" ,libevent)

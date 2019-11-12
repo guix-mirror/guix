@@ -139,7 +139,7 @@ and they are executed on lists of files, hosts, users or other items.")
    ;; in particular mysql and gtk+.
    (inputs `(("expect" ,expect)
              ("freeipmi" ,freeipmi)
-             ("hwloc" ,hwloc "lib")
+             ("hwloc" ,hwloc-2 "lib")
              ("json-c" ,json-c)
              ("linux-pam" , linux-pam)
              ("munge" ,munge)
