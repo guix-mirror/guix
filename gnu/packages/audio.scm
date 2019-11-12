@@ -1572,17 +1572,17 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jalv
   (package
     (name "jalv")
-    (version "1.6.0")
+    (version "1.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1x2wpzzx2cgvz3dgdcgsj8dr0w3zsasy62mvl199bsdj5fbjaili"))))
+                "1wwfn7yzbs37s2rdlfjgks63svd5g14yyzd2gdl7h0z12qncwsy2"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:python ,python-2))
     (inputs
      `(("lv2" ,lv2)
