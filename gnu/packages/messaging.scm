@@ -1590,14 +1590,15 @@ manual SSL certificate verification.")
   (package
     (name "libstrophe")
     (version "0.9.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/strophe/libstrophe/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1zm4a7009lshwgj5x11vslrxj2zjgwshhhad3p05kvbp47v7jfwa"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/strophe/libstrophe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g1l0w9z9hdy5ncdvd9097gi7k7783did6py5h9camlpb2fnk5mk"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
