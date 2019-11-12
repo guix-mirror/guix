@@ -2700,17 +2700,17 @@ particular command is available.")
 (define-public perl-devel-checklib
   (package
     (name "perl-devel-checklib")
-    (version "1.13")
+    (version "1.14")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/M/MA/MATTN/Devel-CheckLib-"
              version ".tar.gz"))
        (sha256
-        (base32 "1a19qkwxwz3wqb16cdabymfbf9kiydiifw90nd5srpq5hy8gvb94"))))
+        (base32 "15621qh5gaan1sgmk9y9svl70nm8viw17x5h1kf0zknkk8lmw77j"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-captureoutput" ,perl-io-captureoutput)
+     `(("perl-capture-tiny" ,perl-capture-tiny)
        ("perl-mock-config" ,perl-mock-config)))
     (home-page "https://metacpan.org/release/Devel-CheckLib")
     (synopsis "Check that a library is available")
