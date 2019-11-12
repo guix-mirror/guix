@@ -158,12 +158,12 @@
     (name "emacs-geiser")
     (version "0.10")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://savannah/geiser/" version
-                                 "/geiser-" version ".tar.gz"))
-             (sha256
-              (base32
-               "0pj3l7p8d60c9b4vfprnv6g5l61d74pls4b5dvd84cn4ky9mzwjv"))))
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/geiser/" version
+                                  "/geiser-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pj3l7p8d60c9b4vfprnv6g5l61d74pls4b5dvd84cn4ky9mzwjv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -226,8 +226,8 @@ when typing parentheses directly or commenting out code line by line.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/magit/git-modes")
-                     (commit version)))
+                    (url "https://github.com/magit/git-modes")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -544,33 +544,33 @@ clojure.walk and clojure.zip respectively.")
 
 (define-public emacs-graphql
   (package
-   (name "emacs-graphql")
-   (version "0.1.1")
-   (source (origin
-             (modules '((guix build utils)))
-             ;; Remove examples file with references to external packages as
-             ;; they do not exist at compilation time.
-             (snippet
-              '(begin (delete-file "examples.el")
-                 #t))
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/vermiculus/graphql.el.git")
-                   (commit version)))
+    (name "emacs-graphql")
+    (version "0.1.1")
+    (source (origin
+              (modules '((guix build utils)))
+              ;; Remove examples file with references to external packages as
+              ;; they do not exist at compilation time.
+              (snippet
+               '(begin (delete-file "examples.el")
+                       #t))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/vermiculus/graphql.el.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
                 "0sp0skc1rnhi39szfbq1i99pdgd3bhn4c15cff05iqhjy2d4hniw"))))
-   (build-system emacs-build-system)
-   (home-page
-    "https://github.com/vermiculus/graphql.el")
-   (synopsis "GraphQL utilities")
-   (description
-    "GraphQL.el provides a generally-applicable domain-specific language for
+    (build-system emacs-build-system)
+    (home-page
+     "https://github.com/vermiculus/graphql.el")
+    (synopsis "GraphQL utilities")
+    (description
+     "GraphQL.el provides a generally-applicable domain-specific language for
 creating and executing GraphQL queries against your favorite web services.
 GraphQL is a data query language and runtime designed and used to request and
 deliver data to mobile and web apps.")
-   (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-ghub
   ;; We need a newer commit to avoid problems in emacs-forge.
@@ -707,8 +707,8 @@ replacement.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/haskell/haskell-mode")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/haskell/haskell-mode")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32 "1qk36y0v9fzass6785il65c6wb5cfj4ihhwkvgnzmbafpa8p4dvq"))
@@ -736,47 +736,47 @@ replacement.")
        (modify-phases %standard-phases
          (delete 'configure)
          (add-before
-          'build 'pre-build
-          (lambda* (#:key inputs #:allow-other-keys)
-            (define (el-dir store-dir)
-              (match (find-files store-dir "\\.el$")
-                ((f1 f2 ...) (dirname f1))
-                (_ "")))
+             'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (define (el-dir store-dir)
+               (match (find-files store-dir "\\.el$")
+                 ((f1 f2 ...) (dirname f1))
+                 (_ "")))
 
-            (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
-              (define emacs-prefix? (cut string-prefix? "emacs-" <>))
+             (let ((sh (string-append (assoc-ref inputs "bash") "/bin/sh")))
+               (define emacs-prefix? (cut string-prefix? "emacs-" <>))
 
-              (setenv "SHELL" "sh")
-              (setenv "EMACSLOADPATH"
-                      (string-concatenate
-                       (map (match-lambda
-                              (((? emacs-prefix? name) . dir)
-                               (string-append (el-dir dir) ":"))
-                              (_ ""))
-                            inputs)))
-              (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
-              ;; embed filename to fix test failure
-              (let ((file "tests/haskell-cabal-tests.el"))
-                (substitute* file
-                  (("\\(buffer-file-name\\)")
-                   (format #f "(or (buffer-file-name) ~s)" file))))
-              #t)))
+               (setenv "SHELL" "sh")
+               (setenv "EMACSLOADPATH"
+                       (string-concatenate
+                        (map (match-lambda
+                               (((? emacs-prefix? name) . dir)
+                                (string-append (el-dir dir) ":"))
+                               (_ ""))
+                             inputs)))
+               (substitute* (find-files "." "\\.el") (("/bin/sh") sh))
+               ;; embed filename to fix test failure
+               (let ((file "tests/haskell-cabal-tests.el"))
+                 (substitute* file
+                   (("\\(buffer-file-name\\)")
+                    (format #f "(or (buffer-file-name) ~s)" file))))
+               #t)))
          (replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (el-dir (string-append out "/share/emacs/site-lisp"))
-                   (doc (string-append
-                         out "/share/doc/haskell-mode-" ,version))
-                   (info (string-append out "/share/info")))
-              (define (copy-to-dir dir files)
-                (for-each (lambda (f)
-                            (install-file f dir))
-                          files))
+             'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (el-dir (string-append out "/share/emacs/site-lisp"))
+                    (doc (string-append
+                          out "/share/doc/haskell-mode-" ,version))
+                    (info (string-append out "/share/info")))
+               (define (copy-to-dir dir files)
+                 (for-each (lambda (f)
+                             (install-file f dir))
+                           files))
 
-              (with-directory-excursion "doc"
-                (invoke "makeinfo" "haskell-mode.texi")
-                (install-file "haskell-mode.info" info))
+               (with-directory-excursion "doc"
+                 (invoke "makeinfo" "haskell-mode.texi")
+                 (install-file "haskell-mode.info" info))
                (copy-to-dir doc '("CONTRIBUTING.md" "NEWS" "README.md"))
                (copy-to-dir el-dir (find-files "." "\\.elc?"))
                ;; These are part of other packages.
@@ -1009,14 +1009,14 @@ and reused.")
     (version "0.4")
     (source
      (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/purcell/reformatter.el.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32
-        "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/purcell/reformatter.el.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0hhy6x1bkwlhdlarsgm06g3am4yh02yqv8qs34szpzgy53x84qah"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/purcell/reformatter.el")
     (synopsis "Define commands which run reformatters on the current buffer")
@@ -1172,11 +1172,11 @@ or unexpected behavior inside an elisp configuration file (typically
     (name "emacs-wget")
     (version "0.5.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
-                                 version ".orig.tar.gz"))
-             (sha256
-              (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
+              (method url-fetch)
+              (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
     (inputs `(("wget" ,wget)))
     (native-inputs `(("emacs" ,emacs-minimal)))
@@ -1371,8 +1371,8 @@ light user interface.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/momomo5717/emms-mode-line-cycle")
-              (commit version)))
+             (url "https://github.com/momomo5717/emms-mode-line-cycle")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -1517,8 +1517,8 @@ links.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/Wilfred/ag.el.git")
-                     (commit version)))
+                    (url "https://github.com/Wilfred/ag.el.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -1616,8 +1616,8 @@ or XEmacs.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/sebastiansturm/autothemer.git")
-              (commit version)))
+             (url "https://github.com/sebastiansturm/autothemer.git")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -1677,8 +1677,8 @@ searches.  Unlike code@{emacs-wiki.el}, it can be combined with any format.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/kiwanami/emacs-calfw.git")
-              (commit (string-append "v" version))))
+             (url "https://github.com/kiwanami/emacs-calfw.git")
+             (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -1701,8 +1701,8 @@ Emacs buffer.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/wbolster/emacs-direnv.git")
-              (commit version)))
+             (url "https://github.com/wbolster/emacs-direnv.git")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -1816,8 +1816,8 @@ written in the Go programming language.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/jd/google-maps.el.git")
-                     (commit version)))
+                    (url "https://github.com/jd/google-maps.el.git")
+                    (commit version)))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -1886,8 +1886,8 @@ diagrams.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/purcell/mmm-mode.git")
-              (commit version)))
+             (url "https://github.com/purcell/mmm-mode.git")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -1912,8 +1912,8 @@ single buffer.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                     (url "https://github.com/politza/tablist.git")
-                     (commit (string-append "v" version))))
+                    (url "https://github.com/politza/tablist.git")
+                    (commit (string-append "v" version))))
               (file-name (git-file-name name version))
               (sha256
                (base32
@@ -2201,13 +2201,13 @@ running Extempore process, and more.")
     (name "emacs-keyfreq")
     (version "20160516.716")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "http://melpa.org/packages/keyfreq-"
-               version ".el"))
-        (sha256
-          (base32
-            "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://melpa.org/packages/keyfreq-"
+                           version ".el"))
+       (sha256
+        (base32
+         "008hd7d06qskc3mx0bbdgpgy2pwxr8185fzlyqf9qjg49y74p6g8"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/dacap/keyfreq")
     (synopsis "Track Emacs command frequencies")
@@ -3636,12 +3636,12 @@ These are distributed in separate files and can be used individually.")
     (arguments `(#:phases
                  (modify-phases %standard-phases
                    (add-after 'unpack 'configure
-                        (lambda* (#:key inputs #:allow-other-keys)
-                          (chmod "irony.el" #o644)
-                          (emacs-substitute-variables "irony.el"
-                            ("irony-server-install-prefix"
-                             (assoc-ref inputs "server")))
-                          #t)))))
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (chmod "irony.el" #o644)
+                       (emacs-substitute-variables "irony.el"
+                         ("irony-server-install-prefix"
+                          (assoc-ref inputs "server")))
+                       #t)))))
     (synopsis "C/C++/ObjC Code completion and syntax checks for Emacs")
     (description "Irony-mode provides Clang-assisted syntax checking and
 completion for C, C++, and ObjC in GNU Emacs.  Using @code{libclang} it can
@@ -3653,20 +3653,20 @@ described on the homepage.")
 
 (define-public emacs-irony-mode-server
   (package (inherit emacs-irony-mode)
-    (name "emacs-irony-mode-server")
-    (inputs
-     `(("clang" ,clang)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (invoke "cmake"
-                       "server"
-                       (string-append "-DCMAKE_INSTALL_PREFIX=" out)) #t))))))
-    (build-system cmake-build-system)
-    (synopsis "Server for the Emacs @dfn{irony mode}")))
+           (name "emacs-irony-mode-server")
+           (inputs
+            `(("clang" ,clang)))
+           (arguments
+            `(#:phases
+              (modify-phases %standard-phases
+                (replace 'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (invoke "cmake"
+                              "server"
+                              (string-append "-DCMAKE_INSTALL_PREFIX=" out)) #t))))))
+           (build-system cmake-build-system)
+           (synopsis "Server for the Emacs @dfn{irony mode}")))
 
 (define-public emacs-company-irony
   (package
@@ -4723,22 +4723,22 @@ to their corresponding tangled blocks.")
   (let ((commit "1f1185bf667a38d3d0d180ce85fd4c131818aae2")
         (revision "0"))
     (package
-     (name "emacs-atom-one-dark-theme")
-     (version (git-version "0.4.0" revision commit))
-     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/jonathanchu/atom-one-dark-theme.git")
-                    (commit commit)))
-              (sha256
-               (base32
-                "1alma16hg3mfjly8a9s3mrswkjjx4lrpdnf43869hn2ibkn7zx9z"))
-              (file-name (git-file-name name version))))
-     (build-system emacs-build-system)
-     (home-page "https://github.com/jonathanchu/atom-one-dark-theme")
-     (synopsis "Atom One Dark color theme for Emacs")
-     (description "An Emacs port of the Atom One Dark theme from Atom.io.")
-     (license license:gpl3+))))
+      (name "emacs-atom-one-dark-theme")
+      (version (git-version "0.4.0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/jonathanchu/atom-one-dark-theme.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1alma16hg3mfjly8a9s3mrswkjjx4lrpdnf43869hn2ibkn7zx9z"))
+                (file-name (git-file-name name version))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/jonathanchu/atom-one-dark-theme")
+      (synopsis "Atom One Dark color theme for Emacs")
+      (description "An Emacs port of the Atom One Dark theme from Atom.io.")
+      (license license:gpl3+))))
 
 (define-public emacs-zenburn-theme
   (package
@@ -4900,7 +4900,7 @@ for the eyes.")
      "This program is an implementation of 2048 for Emacs.
 The goal of this game is to create a tile with value 2048.  The size of the
 board and goal value can be customized.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-base16-theme
   (package
@@ -5292,8 +5292,8 @@ fully-functional one.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/abo-abo/hydra")
-              (commit version)))
+             (url "https://github.com/abo-abo/hydra")
+             (commit version)))
        (file-name (git-file-name name version))
        (sha256
         (base32
@@ -6555,7 +6555,7 @@ indentation guides in Emacs:
              ;; Move .info file at the root so that it can installed by the
              ;; 'move-doc phase.
              (rename-file "docs/_build/texinfo/Elpy.info" "Elpy.info")
-              #t))
+             #t))
          (add-after 'build-doc 'install-manpage
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -6756,7 +6756,7 @@ Emacs completion function instead.")
     (description
      "Ido-ubiquitous enables ido-style completion for almost every function
 that uses the standard completion function completing-read.")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-yaml-mode
   (package
@@ -8381,7 +8381,7 @@ mode-line.")
       (home-page "https://gitlab.com/wavexx/mu4e-jump-to-list.el")
       (synopsis "Select and view mailing lists in mu4e")
       (description
-        "@code{mu4e-jump-to-list} allows you to select and view mailing lists
+       "@code{mu4e-jump-to-list} allows you to select and view mailing lists
 automatically using existing List-ID headers in your mu database.  Just press
 \"l\" in the headers view and any mailing list you've subscribed to will be
 automatically discovered and presented in recency order.")
@@ -8408,7 +8408,7 @@ automatically discovered and presented in recency order.")
       (home-page "https://github.com/seanfarley/mu4e-patch")
       (synopsis "Colorize patch-like emails in mu4e")
       (description
-        "Extension for mu4e to colorize patch-like emails with diff-mode.
+       "Extension for mu4e to colorize patch-like emails with diff-mode.
 This is based on Frank Terbeck's @code{gnus-article-treat-patch.el} but has
 been adapted to work with mu4e.")
       (license license:gpl3+))))
@@ -9807,7 +9807,7 @@ Emacs.")
              (lambda* (#:key inputs outputs #:allow-other-keys)
                (let ((out (assoc-ref outputs "out"))
                      (source-directory (string-append
-                                  (getenv "TMPDIR") "/source")))
+                                        (getenv "TMPDIR") "/source")))
                  (substitute* "bin/ert-runner"
                    (("ERT_RUNNER=\"\\$\\(dirname \\$\\(dirname \\$0\\)\\)")
                     (string-append "ERT_RUNNER=\"" out
@@ -10814,38 +10814,38 @@ messaging service.")
 
 (define-public emacs-bash-completion
   (package
-   (name "emacs-bash-completion")
-   (version "2.1.0")
-   (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/szermatt/emacs-bash-completion.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
-       (base32 "1a1wxcqzh0javjmxwi3lng5i99xiylm8lm04kv4q1lh9bli6vmv0"))))
-   (inputs `(("bash" ,bash)))
-   (build-system emacs-build-system)
-   (arguments
-    `(#:phases
-      (modify-phases %standard-phases
-        (add-after 'unpack 'make-git-checkout-writable
-          (λ _
-            (for-each make-file-writable (find-files "."))
-            #t))
-        (add-before 'install 'configure
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((bash (assoc-ref inputs "bash")))
-              (emacs-substitute-variables "bash-completion.el"
-                ("bash-completion-prog" (string-append bash "/bin/bash"))))
-            #t)))))
-   (home-page "https://github.com/szermatt/emacs-bash-completion")
-   (synopsis "Bash completion for the shell buffer")
-   (description
-    "@code{bash-completion} defines dynamic completion hooks for shell-mode
+    (name "emacs-bash-completion")
+    (version "2.1.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/szermatt/emacs-bash-completion.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1a1wxcqzh0javjmxwi3lng5i99xiylm8lm04kv4q1lh9bli6vmv0"))))
+    (inputs `(("bash" ,bash)))
+    (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (λ _
+             (for-each make-file-writable (find-files "."))
+             #t))
+         (add-before 'install 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((bash (assoc-ref inputs "bash")))
+               (emacs-substitute-variables "bash-completion.el"
+                 ("bash-completion-prog" (string-append bash "/bin/bash"))))
+             #t)))))
+    (home-page "https://github.com/szermatt/emacs-bash-completion")
+    (synopsis "Bash completion for the shell buffer")
+    (description
+     "@code{bash-completion} defines dynamic completion hooks for shell-mode
 and shell-command prompts that are based on Bash completion.")
-   (license license:gpl2+)))
+    (license license:gpl2+)))
 
 (define-public emacs-easy-kill
   (package
@@ -11794,28 +11794,28 @@ match and total match information in the mode-line in various search modes.")
 
 (define-public emacs-finalize
   (package
-  (name "emacs-finalize")
-  (version "2.0.0")
-  (source
-    (origin
-      (method git-fetch)
-      (uri (git-reference
-            (url "https://github.com/skeeto/elisp-finalize.git")
-            (commit version)))
-      (file-name (git-file-name name version))
-      (sha256
+    (name "emacs-finalize")
+    (version "2.0.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/skeeto/elisp-finalize.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
         (base32 "1gvlm4i62af5jscwz0jccc8ra0grprxpg2rlq91d5nn8dn5lpy79"))))
-  (build-system emacs-build-system)
-  (propagated-inputs
-    `(("emacs-cl-generic" ,emacs-cl-generic)))
-  (home-page "https://github.com/skeeto/elisp-finalize")
-  (synopsis "Finalizers for Emacs Lisp")
-  (description
-    "This package will allows to immediately run a callback (a finalizer)
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-cl-generic" ,emacs-cl-generic)))
+    (home-page "https://github.com/skeeto/elisp-finalize")
+    (synopsis "Finalizers for Emacs Lisp")
+    (description
+     "This package will allows to immediately run a callback (a finalizer)
 after its registered lisp object has been garbage collected.  This allows for
 extra resources, such as buffers and processes, to be cleaned up after the
 object has been freed.")
-  (license license:unlicense)))
+    (license license:unlicense)))
 
 (define-public emacs-emacsql
   (package
@@ -15304,7 +15304,7 @@ type @code{C-h b}, or any incomplete key sequence plus @code{C-h}, to run
 @code{helm-descbinds}.  The bindings are presented in a similar way as
 @code{describe-bindings} does, but you can use completion to find the command
 you searched for and execute it, or view its documentation.")
-    (license license:gpl3+))))
+      (license license:gpl3+))))
 
 (define-public emacs-helm-emms
   (let ((commit "b785cb845a98a643eba9d5d53c9c0b4e6810a3cd"))
@@ -16961,27 +16961,27 @@ or a window into some windows according to a layout recipe.")
 
 (define-public emacs-e2wm
   (package
-      (name "emacs-e2wm")
-      (version "1.4")
-      (home-page "https://github.com/kiwanami/emacs-window-manager")
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url home-page)
-                      (commit (string-append "v" version))))
-                (sha256
-                 (base32
-                  "12midsrx07pdrsr1qbl2rpi7xyhxqx08bkz7n7gf8vsmqkpfp56s"))
-                (file-name (git-file-name name version))))
-      (build-system emacs-build-system)
-      (propagated-inputs
-       `(("emacs-window-layout" ,emacs-window-layout)))
-      (synopsis "Equilibrium Emacs Window Manager")
-      (description "E2WM is a window manager for Emacs.  It enables to
+    (name "emacs-e2wm")
+    (version "1.4")
+    (home-page "https://github.com/kiwanami/emacs-window-manager")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "12midsrx07pdrsr1qbl2rpi7xyhxqx08bkz7n7gf8vsmqkpfp56s"))
+              (file-name (git-file-name name version))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-window-layout" ,emacs-window-layout)))
+    (synopsis "Equilibrium Emacs Window Manager")
+    (description "E2WM is a window manager for Emacs.  It enables to
 customize the place of pop-up window, how the windows are split, how the
 buffers are located in the windows, keybinds to manipulate windows and
 buffers, etc.  It also has plug-ins to help your Emacs life.")
-      (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-ctable
   (let ((commit "b8830d1ca95abb100a81bc32011bd17d5ecba000"))
@@ -18894,26 +18894,26 @@ and article extracts for Wikipedia.")
 
 (define-public emacs-webfeeder
   (package
-  (name "emacs-webfeeder")
-  (version "1.0.0")
-  (source
-    (origin
-      (method url-fetch)
-      (uri (string-append
+    (name "emacs-webfeeder")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
              "https://elpa.gnu.org/packages/webfeeder-"
              version
              ".tar"))
-      (sha256
+       (sha256
         (base32
-          "06y5vxw9m6pmbrzb8v2i3w9dnhgqxz06vyx1knmgi9cczlrj4a64"))))
-  (build-system emacs-build-system)
-  (home-page "https://gitlab.com/Ambrevar/emacs-webfeeder")
-  (synopsis "Build RSS and Atom webfeeds from HTML files")
-  (description
-    "Webfeeder is an Emacs library to generate RSS and Atom feeds from HTML
+         "06y5vxw9m6pmbrzb8v2i3w9dnhgqxz06vyx1knmgi9cczlrj4a64"))))
+    (build-system emacs-build-system)
+    (home-page "https://gitlab.com/Ambrevar/emacs-webfeeder")
+    (synopsis "Build RSS and Atom webfeeds from HTML files")
+    (description
+     "Webfeeder is an Emacs library to generate RSS and Atom feeds from HTML
 files.  The various elements of the HTML input are parsed with customizable
 functions (e.g. @code{webfeeder-title-function}).")
-  (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-evil-numbers
   (let ((commit "6ea1c8c3a9b37bed63d48f1128e9a4910e68187e"))
@@ -19075,15 +19075,15 @@ text-property translator.")
     (name "emacs-org-noter")
     (version "1.3.0")
     (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://stable.melpa.org/packages/org-noter-"
-               version
-               ".el"))
-        (sha256
-          (base32
-            "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://stable.melpa.org/packages/org-noter-"
+             version
+             ".el"))
+       (sha256
+        (base32
+         "1hczwva73gsyanl1ldhdvql01gy0hy2g861yzkaklyb763sx58x4"))))
     (build-system emacs-build-system)
     (propagated-inputs `(("emacs-org" ,emacs-org)))
     (home-page "https://github.com/weirdNox/org-noter")
@@ -19478,30 +19478,30 @@ contains a track position, playback will start at the specified position.")
 
 (define-public emacs-org-jira
   (package
-   (name "emacs-org-jira")
-   (version "4.3.1")
-   (source
-    (origin
-     (method git-fetch)
-     (uri (git-reference
-           (url "https://github.com/ahungry/org-jira.git")
-           (commit version)))
-     (file-name (git-file-name name version))
-     (sha256
-      (base32
-       "1l80r2a9zzbfk2c78i40h0ww79vm9v4j6xi2h5i4w9kqh10rs6h2"))))
-   (build-system emacs-build-system)
-   (propagated-inputs
-    `(("emacs-request" ,emacs-request)
-      ("emacs-s" ,emacs-s)
-      ("emacs-dash" ,emacs-dash)
-      ("emacs-org" ,emacs-org)))
-   (home-page "https://github.com/ahungry/org-jira")
-   (synopsis "Syncing between Jira and Org-mode")
-   (description
-    "This package provides an extension to org-mode for syncing issues with
+    (name "emacs-org-jira")
+    (version "4.3.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ahungry/org-jira.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1l80r2a9zzbfk2c78i40h0ww79vm9v4j6xi2h5i4w9kqh10rs6h2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-request" ,emacs-request)
+       ("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-org" ,emacs-org)))
+    (home-page "https://github.com/ahungry/org-jira")
+    (synopsis "Syncing between Jira and Org-mode")
+    (description
+     "This package provides an extension to org-mode for syncing issues with
 JIRA issue servers.")
-   (license license:gpl3+)))
+    (license license:gpl3+)))
 
 (define-public emacs-systemd-mode
   (package
@@ -19811,3 +19811,28 @@ such as:
 - swap windows à-la @code{windmove}.
 @end itemize\n")
     (license license:gpl3+)))
+
+(define-public emacs-flycheck-cpplint
+  (let ((commit "1d8a090861572258ab704915263feeb3a436c3d2")
+        (revision "1"))
+    (package
+      (name "emacs-flycheck-cpplint")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck-google-cpplint")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l6sg83f6z8x2alnblpv03rj442sbnkkkcbf8i0agjmx3713a5yx"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Google C++ checker for Flycheck")
+      (description "This package provides a interface for @code{cpplint} over
+Flycheck plugin.  @code{cpplint} is a static code checker for C++, following
+Google guidelines.")
+      (home-page "https://github.com/flycheck/flycheck-google-cpplint")
+      (license license:gpl3+))))
