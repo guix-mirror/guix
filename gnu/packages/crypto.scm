@@ -339,14 +339,15 @@ no man page, refer to the home page for usage details.")
 (define-public tomb
   (package
     (name "tomb")
-    (version "2.6")
+    (version "2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://files.dyne.org/tomb/"
                                   "Tomb-" version ".tar.gz"))
               (sha256
                (base32
-                "1sr3jcn96mciyn8xd0amd1jzamxxzpybakf8an7laf26gjim1dh2"))))
+                "0x3al02796vx1cvy6y6h685c367qx70dwv471g0hmks2gr10f0cn"))
+              (patches (search-patches "tomb-fix-errors-on-open.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("sudo" ,sudo)))   ;presence needed for 'check' phase
     (inputs
