@@ -1452,7 +1452,7 @@ performance (bytes transferred per second).")
        ("gtk+-2" ,gtk+-2)))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-embed-plugin")
-    (synopsis "Embed arbitary applications inside the Xfce panel")
+    (synopsis "Embed arbitrary applications inside the Xfce panel")
     (description "This plugin enables the embedding of arbitrary
 application windows into the Xfce panel.  The window is resized into
 the panel space available, and the associated program can be
