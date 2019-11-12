@@ -4961,15 +4961,15 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
   (package
     (name "light")
     (version "1.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/haikarainen/light/archive/v"
-                     version ".tar.gz"))
-              (sha256
-               (base32
-                "14vj7v3mffpp0298vnzymp8ndasa0p3qv8i6iq3f4gc1717yglak"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/haikarainen/light.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
