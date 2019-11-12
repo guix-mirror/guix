@@ -21,6 +21,7 @@
   #:use-module (guix scripts)
   #:use-module (guix inferior)
   #:use-module (guix channels)
+  #:use-module (guix store)
   #:use-module ((guix scripts pull) #:select (channel-list))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -97,6 +98,7 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
            (channels     (channel-list opts))
            (command-line (assoc-ref opts 'exec)))
       (when command-line
-        (let* ((directory  (cached-channel-instance channels))
+        (let* ((directory  (with-store store
+                             (cached-channel-instance store channels)))
                (executable (string-append directory "/bin/guix")))
           (apply execl (cons* executable executable command-line)))))))

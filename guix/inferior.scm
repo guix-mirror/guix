@@ -636,58 +636,57 @@ failing when GUIX is too old and lacks the 'guix repl' command."
   (make-parameter (string-append (cache-directory #:ensure? #f)
                                  "/inferiors")))
 
-(define* (cached-channel-instance channels
+(define* (cached-channel-instance store
+                                  channels
                                   #:key
                                   (cache-directory (%inferior-cache-directory))
                                   (ttl (* 3600 24 30)))
   "Return a directory containing a guix filetree defined by CHANNELS, a list of channels.
 The directory is a subdirectory of CACHE-DIRECTORY, where entries can be reclaimed after TTL seconds.
 This procedure opens a new connection to the build daemon."
-  (with-store store
-    (let ()
-      (define instances
-        (latest-channel-instances store channels))
+  (define instances
+    (latest-channel-instances store channels))
 
-      (define key
-        (bytevector->base32-string
-         (sha256
-          (string->utf8
-           (string-concatenate (map channel-instance-commit instances))))))
+  (define key
+    (bytevector->base32-string
+     (sha256
+      (string->utf8
+       (string-concatenate (map channel-instance-commit instances))))))
 
-      (define cached
-        (string-append cache-directory "/" key))
+  (define cached
+    (string-append cache-directory "/" key))
 
-      (define (base32-encoded-sha256? str)
-        (= (string-length str) 52))
+  (define (base32-encoded-sha256? str)
+    (= (string-length str) 52))
 
-      (define (cache-entries directory)
-        (map (lambda (file)
-               (string-append directory "/" file))
-             (scandir directory base32-encoded-sha256?)))
+  (define (cache-entries directory)
+    (map (lambda (file)
+           (string-append directory "/" file))
+         (scandir directory base32-encoded-sha256?)))
 
-      (define symlink*
-        (lift2 symlink %store-monad))
+  (define symlink*
+    (lift2 symlink %store-monad))
 
-      (define add-indirect-root*
-        (store-lift add-indirect-root))
+  (define add-indirect-root*
+    (store-lift add-indirect-root))
 
-      (mkdir-p cache-directory)
-      (maybe-remove-expired-cache-entries cache-directory
-                                          cache-entries
-                                          #:entry-expiration
-                                          (file-expiration-time ttl))
+  (mkdir-p cache-directory)
+  (maybe-remove-expired-cache-entries cache-directory
+                                      cache-entries
+                                      #:entry-expiration
+                                      (file-expiration-time ttl))
 
-      (if (file-exists? cached)
-          cached
-          (run-with-store store
-            (mlet %store-monad ((profile
-                                 (channel-instances->derivation instances)))
-              (mbegin %store-monad
-                (show-what-to-build* (list profile))
-                (built-derivations (list profile))
-                (symlink* (derivation->output-path profile) cached)
-                (add-indirect-root* cached)
-                (return cached))))))))
+  (if (file-exists? cached)
+      cached
+      (run-with-store store
+        (mlet %store-monad ((profile
+                             (channel-instances->derivation instances)))
+          (mbegin %store-monad
+            (show-what-to-build* (list profile))
+            (built-derivations (list profile))
+            (symlink* (derivation->output-path profile) cached)
+            (add-indirect-root* cached)
+            (return cached))))))
 
 (define* (inferior-for-channels channels
                                 #:key
@@ -700,7 +699,9 @@ procedure opens a new connection to the build daemon.
 This is a convenience procedure that people may use in manifests passed to
 'guix package -m', for instance."
   (define cached
-    (cached-channel-instance channels
-                             #:cache-directory cache-directory
-                             #:ttl ttl))
+    (with-store store
+      (cached-channel-instance store
+                               channels
+                               #:cache-directory cache-directory
+                               #:ttl ttl)))
   (open-inferior cached))
