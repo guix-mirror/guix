@@ -1426,7 +1426,7 @@ governor and frequencies supported and used by your system.")
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-diskperf-plugin")
     (synopsis "Display disk performance in the Xfce panel")
     (description "This Xfce panel plugin displays instant disk/partition
-performance (bytes transfered per second).")
+performance (bytes transferred per second).")
     (license gpl2+)))
 
 (define-public xfce4-embed-plugin
