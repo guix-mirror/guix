@@ -4329,12 +4329,14 @@ DAV, and others.")
     (name "gusb")
     (version "0.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hughsie/libgusb/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hughsie/libgusb.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wa9787ww7s1kl9jml6kiyrjgimlgagq4jmgdj7xcpsx83w10qxk"))))
+                "002pg0p4qzzk5dkyiynm483ir26zxrn4k71c7f6j85mfsdzbgli7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
