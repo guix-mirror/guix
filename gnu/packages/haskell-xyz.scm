@@ -2804,6 +2804,36 @@ related modules split from the statistics library.")
 and parsers with useful semantics.")
     (license license:bsd-3)))
 
+(define-public ghc-diagrams-core
+  (package
+    (name "ghc-diagrams-core")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "diagrams-core/diagrams-core-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0qgb43vy23g4fxh3nmxfq6jyp34imqvkhgflaa6rz0iq6d60gl43"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-monoid-extras" ,ghc-monoid-extras)
+       ("ghc-dual-tree" ,ghc-dual-tree)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-linear" ,ghc-linear)
+       ("ghc-adjunctions" ,ghc-adjunctions)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-profunctors" ,ghc-profunctors)))
+    (home-page "https://archives.haskell.org/projects.haskell.org/diagrams/")
+    (synopsis "Core libraries for diagrams embedded domain-specific language")
+    (description "This package provides the core modules underlying
+diagrams, an embedded domain-specific language for compositional,
+declarative drawing.")
+    (license license:bsd-3)))
+
 (define-public ghc-dictionary-sharing
   (package
     (name "ghc-dictionary-sharing")
