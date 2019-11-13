@@ -28,11 +28,8 @@
 #include <sys/mount.h>
 #endif
 
-#if HAVE_LINUX_FS_H
-#include <linux/fs.h>
 #include <sys/ioctl.h>
 #include <errno.h>
-#endif
 
 #include <sqlite3.h>
 
