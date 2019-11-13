@@ -2013,13 +2013,14 @@ time Web content can be enhanced with native controls.")
     (version "0.6.3")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/filcuc/DOtherSide/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/filcuc/DOtherSide")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0azq7qlsrfdwbd6qsi7d3c1knn42qw0r47g43xf7clwbinapswpz"))))
+         "0r3nh02j2wk0w8pcjnd6myygq7iz0pbpgniv36sjj4k03zag65xn"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
