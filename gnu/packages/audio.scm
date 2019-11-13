@@ -2396,7 +2396,8 @@ input/output.")
                "0vh0biy3ngpzzgdml309c2mqz8xq9q0hlblczb4c6alhp0a8yv0l"))))
     (build-system waf-build-system)
     (arguments `(#:tests? #f))          ; no check target
-    (inputs
+    (propagated-inputs
+     ;; In Requires of sratom-0.pc.
      `(("lv2" ,lv2)
        ("serd" ,serd)
        ("sord" ,sord)))
