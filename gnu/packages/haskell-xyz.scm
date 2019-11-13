@@ -2804,6 +2804,29 @@ related modules split from the statistics library.")
 and parsers with useful semantics.")
     (license license:bsd-3)))
 
+(define-public ghc-dictionary-sharing
+  (package
+    (name "ghc-dictionary-sharing")
+    (version "0.1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/"
+                            "dictionary-sharing/dictionary-sharing-"
+                            version ".tar.gz"))
+        (sha256
+          (base32
+            "00aspv943qdqhlk39mbk00kb1dsa5r0caj8sslrn81fnsn252fwc"))))
+    (build-system haskell-build-system)
+    (arguments
+      `(#:cabal-revision
+        ("3" "1mn7jcc7h3b8f1pn9zigqp6mc2n0qb66lms5qnrx4zswdv5w9439")))
+    (home-page "https://hackage.haskell.org/package/dictionary-sharing")
+    (synopsis "Sharing/memoization of class members")
+    (description "This library provides tools for ensuring that class
+members are shared.")
+    (license license:bsd-3)))
+
 (define-public ghc-diff
   (package
     (name "ghc-diff")
