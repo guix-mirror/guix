@@ -707,16 +707,15 @@ shell services and remote host selection.")
 (define-public clustershell
   (package
     (name "clustershell")
-    (version "1.8")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/cea-hpc/clustershell/archive/v"
-                           version
-                           ".tar.gz"))
+       (uri (string-append "https://github.com/cea-hpc/clustershell/releases"
+                           "/download/v" version
+                           "/ClusterShell-" version ".tar.gz"))
        (sha256
-        (base32 "1qyf6zp5ikk8rk7zvx5ssbgr9si2bqv3a3415590kd07s7i16nmd"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "1gz2g85wpk35n1fp31q753w01y3p8abm7dnbas28q4yjyvikqw75"))))
     (build-system python-build-system)
     (inputs `(("openssh" ,openssh)))
     (propagated-inputs `(("python-pyyaml" ,python-pyyaml)))
