@@ -10697,6 +10697,35 @@ preserved.  It also provides features for random access to archive content using
 an index.")
     (license license:bsd-3)))
 
+(define-public ghc-tar-conduit
+  (package
+    (name "ghc-tar-conduit")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "tar-conduit/tar-conduit-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0bgn3hyf20g1gfnzy8f41s7nj54kfcyjk2izw99svrw8f3dphi80"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
+       ("ghc-safe-exceptions" ,ghc-safe-exceptions)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-conduit-extra" ,ghc-conduit-extra)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-weigh" ,ghc-weigh)))
+    (home-page "https://github.com/snoyberg/tar-conduit#readme")
+    (synopsis "Extract and create tar files using conduit for streaming")
+    (description "This library provides a conduit-based, streaming
+interface for extracting and creating tar files.")
+    (license license:expat)))
+
 (define-public ghc-temporary
   (package
     (name "ghc-temporary")
