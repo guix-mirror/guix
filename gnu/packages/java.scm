@@ -9,7 +9,7 @@
 ;;; Copyright © 2017, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018, 2019 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018 Chris Marusich <cmmarusich@gmail.com>
-;;; Copyright © 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -10821,12 +10821,14 @@ OSGi Service Registry is a goal of this project.")
     (name "java-eclipse-sisu-plexus")
     (version "0.3.3")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/eclipse/sisu.plexus/"
-                                  "archive/releases/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/eclipse/sisu.plexus.git")
+                     (commit (string-append "releases/" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0lbj7nxy5j0z71k407zbb82icfqh7midrfk0fb3fa3jzdjz0d9d9"))
+                "1nvxky49v4h724wkfn842n68gj70zinidn1cmhvbb31j1zp6wf8p"))
               (modules '((guix build utils)))
               (snippet
                '(begin
