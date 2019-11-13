@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2016, 2018 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2018, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
@@ -117,12 +117,13 @@ handy front-end to the library.")
     (version "1.19")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://github.com/nijel/enca/archive/" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/nijel/enca")
+              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "099z526i7qgij7q1w3lvhl88iv3jc3nqxca2i09h6s08ghyrmzf4"))
-       (file-name (string-append name "-" version ".tar.gz"))))
+        (base32 "19q7cwwxmmk5j9438bsqdpjvdjawsd3zmw1zyqgi7s4m0rasr3ah"))))
     (build-system gnu-build-system)
     ;; enca-1.19 tests fail with recent recode.
     ;(inputs `(("recode" ,recode)))
