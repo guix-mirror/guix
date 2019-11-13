@@ -2388,14 +2388,14 @@ input/output.")
     (name "sratom")
     (version "0.6.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.drobilla.net/sratom-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0vh0biy3ngpzzgdml309c2mqz8xq9q0hlblczb4c6alhp0a8yv0l"))))
+              (method url-fetch)
+              (uri (string-append "https://download.drobilla.net/sratom-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0vh0biy3ngpzzgdml309c2mqz8xq9q0hlblczb4c6alhp0a8yv0l"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f))          ; no check target
+    (arguments `(#:tests? #f))          ;no check target
     (propagated-inputs
      ;; In Requires of sratom-0.pc.
      `(("lv2" ,lv2)
