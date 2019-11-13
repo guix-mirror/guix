@@ -2010,7 +2010,7 @@ time Web content can be enhanced with native controls.")
 (define-public dotherside
   (package
     (name "dotherside")
-    (version "0.6.3")
+    (version "0.6.4")
     (source
      (origin
        (method git-fetch)
@@ -2020,7 +2020,7 @@ time Web content can be enhanced with native controls.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0r3nh02j2wk0w8pcjnd6myygq7iz0pbpgniv36sjj4k03zag65xn"))))
+         "09fz6v8rp28997f235yaifj8p4vvsyv45knc1iivgdvx7msgcd0m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qttools" ,qttools)))
