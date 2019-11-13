@@ -3799,12 +3799,14 @@ stream to one or more IceCast and/or ShoutCast servers.")
     (version "0.6.2")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://gitlab.com/geontime/redkite/-/archive/v"
-                           version "/redkite-v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/geontime/redkite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0qif1x3s96zi81zkg11zkszf2i5mvfyrg9b3z2lr0jpzihgblk7y"))))
+         "1i874izajbdhlfacwwj84qrsxf7g4y6nblzxalrkzaap9sa7d1r6"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ;no tests included
