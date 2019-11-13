@@ -10,6 +10,7 @@
 ;;; Copyright © 2017, 2018 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Tonton <tonton@riseup.net>
 ;;; Copyright © 2018 Arun Isaac <arunisaac@systemreboot.net>
+;;; Copyright © 2019 Timothy Sample <samplet@ngyro.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -912,3 +913,26 @@ To get started quickly, see the examples:
 configuration.  This library provides the common bits for writing custom
 @file{Setup.hs} files.")
     (license license:bsd-3)))
+
+(define-public ghc-testing-type-modifiers
+  (package
+    (name "ghc-testing-type-modifiers")
+    (version "0.1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/"
+                            "testing-type-modifiers/testing-type-modifiers-"
+                            version ".tar.gz"))
+        (sha256
+          (base32
+            "1wh2n95n39ivv6kbqn42vbzrj8zagsmk6f2al2qj40bg5kgdl2q5"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/testing-type-modifiers")
+    (synopsis "Data type modifiers for property based testing")
+    (description "Property based testing libraries such as QuickCheck tend to
+include type modifiers.  Most of them are used to quantify over subsets of a
+type.  This library is intended to supply these modifiers to be used by
+testing libraries, in an effort to make properties more portable between
+testing frameworks.")
+    (license license:unlicense)))
