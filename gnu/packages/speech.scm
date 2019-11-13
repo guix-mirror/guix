@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -199,13 +200,14 @@ stable and well documented interface.")
     (name "sonic")
     (version "0.2.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/waywardgeek/sonic/archive/"
-                                 "release-" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/waywardgeek/sonic")
+                    (commit (string-append "release-" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "11a0q9wkgbb9ymf52v7dvybfhj8hprgr67zs1xcng143fvjpr0n7"))))
+               "08xwnpw9cnaix1n1i7gvpq5hrfrqc2z1snjhjapfam506hrc77g4"))))
     (build-system gnu-build-system)
     (arguments
       `(#:tests? #f ; No test suite.
