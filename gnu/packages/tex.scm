@@ -7222,6 +7222,7 @@ are part of the LaTeX required tools distribution, comprising the packages:
     (source (origin
               (method svn-fetch)
               (uri (texlive-ref "latex" "xkeyval"))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0wancavix39j240pd8m9cgmwsijwx6jd6n54v8wg0x2rk5m44myp"))))
