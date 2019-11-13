@@ -2864,6 +2864,37 @@ diagrams, an embedded domain-specific language for compositional,
 declarative drawing.")
     (license license:bsd-3)))
 
+(define-public ghc-diagrams-solve
+  (package
+    (name "ghc-diagrams-solve")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "diagrams-solve/diagrams-solve-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "17agchqkmj14b17sw50kzxq4hm056g5d8yy0wnqn5w8h1d0my7x4"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("5" "1yl8cs05fzqcz49p601am1ij66m9pa70yamhfxgcvya2pf8nimlf")))
+    (home-page "https://archives.haskell.org/projects.haskell.org/diagrams/")
+    (synopsis "Pure Haskell solver routines used by diagrams")
+    (description "This library provides Pure Haskell solver routines for
+use by the
+@url{https://archives.haskell.org/projects.haskell.org/diagrams/,
+diagrams framework}.  It currently includes routines for finding real
+roots of low-degree (@math{n < 5}) polynomials, and solving tridiagonal
+and cyclic tridiagonal linear systems.")
+    (license license:bsd-3)))
+
 (define-public ghc-dictionary-sharing
   (package
     (name "ghc-dictionary-sharing")
