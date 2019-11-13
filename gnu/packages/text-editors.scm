@@ -66,12 +66,12 @@
     (version "0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/martanne/"
-                                  name "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/martanne/vis/releases"
+                                  "/download/v" version
+                                  "/vis-v" version ".tar.gz"))
               (sha256
                (base32
-                "1xbxb3q963s6sav63yw0x30lm0wvxsrzb7hr6a7dh4f8r7mp1skp"))))
+                "0aw35n8xk7ir84ckvczc6yshj9ynishrlz0qlv4yc1afbra1gxmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
