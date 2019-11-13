@@ -213,14 +213,14 @@ the entire VPN in a network namespace accessible only through SSH.")
     (name "ocproxy")
     (version "1.60")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cernekee/ocproxy/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cernekee/ocproxy.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b4rg3xq5jnrp2l14sw0msan8kqhdxmsd7gpw9lkiwvxy13pcdm7"))))
+                "03323nnhb4y9nzwva04mq7xg03dvdrgp689g89f69jqc261skcqx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
