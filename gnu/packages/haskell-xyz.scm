@@ -7185,6 +7185,34 @@ you are used to, it adds on an IsSequence typeclass and has code for marking
 data structures as non-empty.")
     (license license:expat)))
 
+(define-public ghc-monoid-extras
+  (package
+    (name "ghc-monoid-extras")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "monoid-extras/monoid-extras-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xfrkgqn9d31z54l617m3w3kkd5m9vjb4yl247r3zzql3mpb1f37"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-groups" ,ghc-groups)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "0b8x5d6vh7mpigvjvcd8f38a1nyzn1vfdqypslw7z9fgsr742913")))
+    (home-page "https://hackage.haskell.org/package/monoid-extras")
+    (synopsis "Various extra monoid-related definitions and utilities")
+    (description "This package provides various extra monoid-related
+definitions and utilities, such as monoid actions, monoid coproducts,
+semi-direct products, \"deletable\" monoids, \"split\" monoids, and
+\"cut\" monoids.")
+    (license license:bsd-3)))
+
 (define-public ghc-murmur-hash
   (package
     (name "ghc-murmur-hash")
