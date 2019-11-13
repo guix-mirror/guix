@@ -7002,6 +7002,7 @@ effects, varying slide transitions and animations.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "xmpincl"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0lq3dfb4fsw955gjwllnk7cg00ciq5mva64mlpbva6g2jz117734"))))
