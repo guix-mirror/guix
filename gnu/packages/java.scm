@@ -10819,7 +10819,7 @@ OSGi Service Registry is a goal of this project.")
 (define-public java-eclipse-sisu-plexus
   (package
     (name "java-eclipse-sisu-plexus")
-    (version "0.3.3")
+    (version "0.3.4")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -10828,7 +10828,7 @@ OSGi Service Registry is a goal of this project.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1nvxky49v4h724wkfn842n68gj70zinidn1cmhvbb31j1zp6wf8p"))
+                "17mjlajnsqnk07cc58h1qpxrif85yb2m2y0pyba48yjjgikk8r9f"))
               (modules '((guix build utils)))
               (snippet
                '(begin
