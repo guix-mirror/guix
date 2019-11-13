@@ -3017,6 +3017,35 @@ It is modeled after doctest for Python, see
 between double precision floating point and text.")
     (license license:bsd-3)))
 
+(define-public ghc-dual-tree
+  (package
+    (name "ghc-dual-tree")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "dual-tree/dual-tree-" version ".tar.gz"))
+       (sha256
+        (base32
+         "17kdfnf0df0z5pkiifxrlmyd1xd7hjjaazd2kzyajl0gd00vbszx"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-newtype-generics" ,ghc-newtype-generics)
+       ("ghc-monoid-extras" ,ghc-monoid-extras)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-testing-feat" ,ghc-testing-feat)))
+    (home-page "https://hackage.haskell.org/package/dual-tree")
+    (synopsis "Rose trees with cached and accumulating monoidal annotations")
+    (description "Rose (@math{n}-ary) trees with both upwards- (i.e.
+cached) and downwards-traveling (i.e. accumulating) monoidal
+annotations.  This is used as the core data structure underlying the
+@url{https://archives.haskell.org/projects.haskell.org/diagrams/,
+diagrams framework}, but potentially has other applications as well.")
+    (license license:bsd-3)))
+
 (define-public ghc-easy-file
   (package
     (name "ghc-easy-file")
