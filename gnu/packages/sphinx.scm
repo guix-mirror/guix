@@ -30,6 +30,7 @@
 (define-module (gnu packages sphinx)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system python)
   #:use-module ((guix licenses) #:prefix license:)
@@ -375,13 +376,14 @@ integrate Sphinx documents in web templates and to handle searches.")
     (name "python-sphinx-gallery")
     (version "0.1.13")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/sphinx-gallery/sphinx-gallery"
-                                  "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/sphinx-gallery/sphinx-gallery")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "03fs99mcb1r7qp0xixqv07vcz98sk21yq19ffdysi0infdcpzfkd"))))
+                "14nbqh9krx2l2y2ylbln6l6w8iak3wac1lngvaf278y1cx7685kg"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: Tests attempt to download <https://docs.python.org/3/objects.inv>,
