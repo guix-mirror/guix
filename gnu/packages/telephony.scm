@@ -243,13 +243,14 @@ internet.")
     (name "libsrtp")
     (version "2.2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cisco/libsrtp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "02x5l5h2nq6f9gq1bmgz5v9jmnqaab51p8aldglng1z7pjbp9za4"))))
+                "1ac7xs1djb03j131f1gmqyfmrplblid9qqyxahs0shdy707r5ll6"))))
     (native-inputs
      `(("psmisc" ,psmisc)               ;some tests require 'killall'
        ("procps" ,procps)))
