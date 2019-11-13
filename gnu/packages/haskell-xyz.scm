@@ -7578,6 +7578,26 @@ class, and a lazy number type for non-negative numbers (a generalization
 of Peano numbers).")
     (license license:gpl3+)))
 
+(define-public ghc-numeric-extras
+  (package
+    (name "ghc-numeric-extras")
+    (version "0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "numeric-extras/numeric-extras-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1mk11c0gz1yjy5b8dvq6czfny57pln0bs7x28fz38qyr44872067"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/ekmett/numeric-extras")
+    (synopsis "Useful tools from the C standard library")
+    (description "This library provides some useful tools from the C
+standard library.")
+    (license license:bsd-3)))
+
 (define-public ghc-objectname
   (package
     (name "ghc-objectname")
