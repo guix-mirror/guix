@@ -7302,6 +7302,7 @@ keys.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "standalone"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "192ydxcn8ir96q8qwvnppksmqf5i0p50i0wz6iqazbwmh3dqxpx4"))))
