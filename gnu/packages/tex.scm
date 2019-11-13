@@ -1002,6 +1002,7 @@ symbol fonts.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "mflogo"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "15i2ib6nvhf31g1b92c6njf7n0g29znlq7hbfp9ii7qabhcwwvrj"))))
