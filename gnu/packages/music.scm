@@ -4879,12 +4879,14 @@ ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
     (version "1.9.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://gitlab.com/geontime/geonkick/-/archive/v"
-                           version "/geonkick-v" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/geontime/geonkick.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wp8w5q69c1nrcc4qkcg0slakkpzp9ngw25iih8zhcl4hrjv42fd"))))
+         "17mwxnmxszdm2wjbigciwh8qx0487q9qhf4sl92y6nqdb0dlghnl"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ;no tests included
