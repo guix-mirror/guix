@@ -577,14 +577,14 @@ spreadsheets and outputs it in comma-separated-value format, and
     (name "utfcpp")
     (version "2.3.5")
     (source (origin
-              (method url-fetch)
-              (uri
-               (string-append "https://github.com/nemtrif/utfcpp/archive/v"
-                              version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/nemtrif/utfcpp")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0gcqcfw19kfim8xw29xdp91l310yfjyrqdj2zsx8xx02dkpy1zzk"))))
+                "1gr98d826z6wa58r1s5i7rz7q2x3r31v7zj0pjjlrc7gfxwklr4s"))))
     (build-system cmake-build-system)
     (arguments
      `(#:out-of-source? #f
