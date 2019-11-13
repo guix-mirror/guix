@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
@@ -147,13 +147,14 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     (name "luakit")
     (version "2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/luakit/luakit/archive/" version
-                                  ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/luakit/luakit.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09kgsm2w2xa4xwylsi0bwjvdl9k6hkyjyyrq2i3l8bvi2qrs5gzc"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1qa90caxv1k6ak88fn0a7n7h0c4iv8szw6zn2axch8ig83i86az2"))))
     (inputs
      `(("lua-5.1" ,lua-5.1)
        ("gtk+" ,gtk+)
