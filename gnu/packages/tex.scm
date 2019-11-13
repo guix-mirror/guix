@@ -7025,6 +7025,7 @@ the file to which it applies.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "pdfx"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "0ikxg8yzq78hy5b9x13d4nah46d0yvmwlqmdri06pygbx116dcac"))))
