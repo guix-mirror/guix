@@ -6742,14 +6742,16 @@ import org.antlr.grammar.v3.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"tool/src/main/resources\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
@@ -6855,14 +6857,16 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"tool/src/main/resources\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)
@@ -6874,7 +6878,7 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
        ("antlr" ,antlr2)
        ("antlr3" ,antlr3-3.1)))))
 
-(define antlr3-3.1
+(define-public antlr3-3.1
   (package
     (inherit antlr3)
     (version "3.1")
@@ -6932,14 +6936,16 @@ import org.antlr.grammar.v2.ANTLRTreePrinter;"))
          (add-before 'build 'fix-build-xml
            (lambda _
              (substitute* "build.xml"
-               (("<exec") "<copy todir=\"${classes.dir}\">
+               (("target name=\"compile\">")
+                "target name=\"compile\">
+<copy todir=\"${classes.dir}\">
 <fileset dir=\"src\">
 <include name=\"**/*.stg\"/>
 <include name=\"**/*.st\"/>
 <include name=\"**/*.sti\"/>
 <include name=\"**/STLexer.tokens\"/>
 </fileset>
-</copy><exec"))
+</copy>"))
              #t)))))
     (native-inputs
      `(("antlr" ,antlr2)))
