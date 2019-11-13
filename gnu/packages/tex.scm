@@ -6470,6 +6470,7 @@ page, a new page will be started.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "changepage"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "1rpw8xg5p4jsyh236jma9dz3l29wjx4062f154b3wak5yjcxyxyb"))))
