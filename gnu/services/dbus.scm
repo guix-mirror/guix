@@ -229,7 +229,10 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                             (append (dbus-configuration-services config)
                                     services)))))
 
-                (default-value (dbus-configuration))))
+                (default-value (dbus-configuration))
+                (description "Run the system-wide D-Bus inter-process message
+bus.  It allows programs and daemons to communicate and is also responsible
+for spawning (@dfn{activating}) D-Bus services on demand.")))
 
 (define* (dbus-service #:key (dbus dbus) (services '()))
   "Return a service that runs the \"system bus\", using @var{dbus}, with
