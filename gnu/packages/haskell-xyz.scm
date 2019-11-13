@@ -129,6 +129,36 @@ of @code{Par} functionality.  See the @code{Control.Monad.Par.Class}
 module for more details.")
     (license license:bsd-3)))
 
+(define-public ghc-active
+  (package
+    (name "ghc-active")
+    (version "0.2.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "active/active-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0x3b4ln6csa554qls28wbxvclkbdz3yi60i1m0q5ing0cs16fifz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-vector" ,ghc-vector)
+       ("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-semigroupoids" ,ghc-semigroupoids)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-linear" ,ghc-linear)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/active")
+    (synopsis "Abstractions for animation")
+    (description "This package defines an @code{Active} abstraction for
+time-varying values with finite start and end times.  It is used for
+describing animations within the
+@url{https://archives.haskell.org/projects.haskell.org/diagrams/,
+diagrams framework}.")
+    (license license:bsd-3)))
+
 (define-public ghc-adjunctions
   (package
     (name "ghc-adjunctions")
