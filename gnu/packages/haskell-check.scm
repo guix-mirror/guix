@@ -936,3 +936,30 @@ type.  This library is intended to supply these modifiers to be used by
 testing libraries, in an effort to make properties more portable between
 testing frameworks.")
     (license license:unlicense)))
+
+(define-public ghc-testing-feat
+  (package
+    (name "ghc-testing-feat")
+    (version "1.1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/"
+                            "testing-feat/testing-feat-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1v2qzzpf1s008g7q6q67glf7vbm1pkpq4rc3ii74f4g6vhfx610r"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-quickcheck" ,ghc-quickcheck)
+        ("ghc-size-based" ,ghc-size-based)
+        ("ghc-testing-type-modifiers" ,ghc-testing-type-modifiers)
+        ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "https://github.com/JonasDuregard/testing-feat")
+    (synopsis "Functional Enumeration of Algebraic Types")
+    (description "Feat (Functional Enumeration of Algebraic Types)
+provides enumerations as functions from natural numbers to
+values (similar to @code{toEnum} but for any algebraic data type).  This
+can be used for SmallCheck-style systematic testing, QuickCheck-style
+random testing, and hybrids of the two.")
+    (license license:bsd-3)))
