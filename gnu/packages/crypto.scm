@@ -47,6 +47,7 @@
   #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
@@ -356,6 +357,7 @@ no man page, refer to the home page for usage details.")
        ("cryptsetup" ,cryptsetup)
        ("e2fsprogs" ,e2fsprogs)         ;for mkfs.ext4
        ("gettext" ,gettext-minimal)     ;used at runtime
+       ("lsof" ,lsof)
        ("mlocate" ,mlocate)
        ("pinentry" ,pinentry)
        ("qrencode" ,qrencode)
@@ -382,7 +384,7 @@ no man page, refer to the home page for usage details.")
                              (or (and=> (which program) dirname)
                                  (error "program not found:" program)))
                            '("seq" "mkfs.ext4" "pinentry" "sudo"
-                             "gpg" "cryptsetup" "gettext"
+                             "gpg" "cryptsetup" "gettext" "lsof"
                              "qrencode" "steghide" "findmnt")))))
                #t)))
          (delete 'check)
