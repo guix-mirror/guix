@@ -10797,6 +10797,32 @@ default)
 @end itemize")
     (license license:bsd-3)))
 
+(define-public ghc-svg-builder
+  (package
+    (name "ghc-svg-builder")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "svg-builder/svg-builder-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k420f497lzkymmxin88ql6ib8dziic43avykv31yq65rgrf7l2g"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "1bhp9gvid2iis411k1vvyj5krzc4ahxcqcd9cwx9h37jxg180xw1")))
+    (home-page "https://github.com/diagrams/svg-builder.git")
+    (synopsis "Domain-specific language for building Scalable Vector Graphics")
+    (description "Easy-to-write domain-specific language (DSL) for
+building Scalable Vector Graphics (SVG).")
+    (license license:bsd-3)))
+
 (define-public ghc-syb
   (package
     (name "ghc-syb")
