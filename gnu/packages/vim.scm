@@ -234,13 +234,14 @@ with the editor vim.")))
     (version "2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Shougo/neocomplete.vim/"
-                           "archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Shougo/neocomplete.vim")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1307gbrdwam2akq9w2lpijc41740i4layk2qkd9sjkqxfch5lni2"))))
+         "1h6sci5mhdfg6sjsjpi8l5li02hg858zcayiwl60y9j2gqnd18lv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
