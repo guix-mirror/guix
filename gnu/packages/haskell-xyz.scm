@@ -2949,6 +2949,42 @@ roots of low-degree (@math{n < 5}) polynomials, and solving tridiagonal
 and cyclic tridiagonal linear systems.")
     (license license:bsd-3)))
 
+(define-public ghc-diagrams-svg
+  (package
+    (name "ghc-diagrams-svg")
+    (version "1.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "diagrams-svg/diagrams-svg-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1lnyxx45yawqas7hmvvannwaa3ycf1l9g40lsl2m8sl2ja6vcmal"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-diagrams-core" ,ghc-diagrams-core)
+       ("ghc-diagrams-lib" ,ghc-diagrams-lib)
+       ("ghc-monoid-extras" ,ghc-monoid-extras)
+       ("ghc-svg-builder" ,ghc-svg-builder)
+       ("ghc-juicypixels" ,ghc-juicypixels)
+       ("ghc-split" ,ghc-split)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (arguments
+     `(#:cabal-revision
+       ("2" "15sn85xaachw4cj56w61bjcwrbf4qmnkfl8mbgdapxi5k0y4f2qv")))
+    (home-page "https://archives.haskell.org/projects.haskell.org/diagrams/")
+    (synopsis "Scalable Vector Grpahics backend for the diagrams framework")
+    (description "This package provides a modular backend for rendering
+diagrams created with the diagrams embedded domain-specific
+language (EDSL) to Scalable Vector Graphics (SVG) files.")
+    (license license:bsd-3)))
+
 (define-public ghc-dictionary-sharing
   (package
     (name "ghc-dictionary-sharing")
