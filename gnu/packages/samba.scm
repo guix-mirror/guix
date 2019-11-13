@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015, 2017 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016, 2017, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Adonay "adfeno" Felipe Nogueira <https://libreplanet.org/wiki/User:Adfeno> <adfeno@openmailbox.org>
 ;;; Copyright © 2017 Thomas Danckaert <post@thomasdanckaert.be>
 ;;; Copyright © 2017, 2018 Marius Bakke <mbakke@fastmail.com>
@@ -27,6 +27,7 @@
 (define-module (gnu packages samba)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (guix utils)
@@ -99,13 +100,14 @@ the Linux kernel CIFS client.")
     (name "iniparser")
     (version "4.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/ndevilla/iniparser/archive/v"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+             (method git-fetch)
+             (uri (git-reference
+                    (url "https://github.com/ndevilla/iniparser")
+                    (commit (string-append "v" version))))
+             (file-name (git-file-name name version))
              (sha256
               (base32
-               "1bpk8dj9d5cl64lg6jsk0qlzrpg848nymwxc3fx707fk1n0al3cn"))))
+               "0dhab6pad6wh816lr7r3jb6z273njlgw2vpw8kcfnmi7ijaqhnr5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
