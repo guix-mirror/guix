@@ -195,10 +195,10 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
      (list (shepherd-service
             (documentation "Run the D-Bus system daemon.")
             (provision '(dbus-system))
-            (requirement '(user-processes))
+            (requirement '(user-processes syslogd))
             (start #~(make-forkexec-constructor
                       (list (string-append #$dbus "/bin/dbus-daemon")
-                            "--nofork" "--system")
+                            "--nofork" "--system" "--syslog-only")
                       #:pid-file "/var/run/dbus/pid"))
             (stop #~(make-kill-destructor)))))))
 
