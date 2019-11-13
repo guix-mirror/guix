@@ -2864,6 +2864,60 @@ diagrams, an embedded domain-specific language for compositional,
 declarative drawing.")
     (license license:bsd-3)))
 
+(define-public ghc-diagrams-lib
+  (package
+    (name "ghc-diagrams-lib")
+    (version "1.4.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "diagrams-lib/diagrams-lib-" version ".tar.gz"))
+       (sha256
+        (base32
+         "175yzi5kw4yd8ykdkpf64q85c7j3p89l90m3h6qcsx9ipv6av9r5"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-monoid-extras" ,ghc-monoid-extras)
+       ("ghc-dual-tree" ,ghc-dual-tree)
+       ("ghc-diagrams-core" ,ghc-diagrams-core)
+       ("ghc-diagrams-solve" ,ghc-diagrams-solve)
+       ("ghc-active" ,ghc-active)
+       ("ghc-colour" ,ghc-colour)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-fingertree" ,ghc-fingertree)
+       ("ghc-intervals" ,ghc-intervals)
+       ("ghc-lens" ,ghc-lens)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-juicypixels" ,ghc-juicypixels)
+       ("ghc-hashable" ,ghc-hashable)
+       ("ghc-linear" ,ghc-linear)
+       ("ghc-adjunctions" ,ghc-adjunctions)
+       ("ghc-distributive" ,ghc-distributive)
+       ("ghc-fsnotify" ,ghc-fsnotify)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-profunctors" ,ghc-profunctors)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-cereal" ,ghc-cereal)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-numeric-extras" ,ghc-numeric-extras)))
+    (arguments
+     `(#:cabal-revision
+       ("3" "157y2qdsh0aczs81vzlm377mks976mpv6y3aqnchwsnr7apzp8ai")))
+    (home-page "https://archives.haskell.org/projects.haskell.org/diagrams/")
+    (synopsis "Embedded domain-specific language for declarative graphics")
+    (description "Diagrams is a flexible, extensible embedded
+domain-specific language (EDSL) for creating graphics of many types.
+Graphics can be created in arbitrary vector spaces and rendered with
+multiple backends.  This package provides a standard library of
+primitives and operations for creating diagrams.")
+    (license license:bsd-3)))
+
 (define-public ghc-diagrams-solve
   (package
     (name "ghc-diagrams-solve")
