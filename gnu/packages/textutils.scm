@@ -450,13 +450,14 @@ application code.")
     (name "pfff")
     (version "1.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/pfff/pfff/archive/v"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/pfff/pfff")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "00m553aa277iarxj6dalmklyb64r7ias49bfwzbacsfg8h3kar8m"))))
+                "1nxkfm7zliq3rmr7yp871sppwfnz71iz364m2sgazny71pzykggc"))))
     (build-system cmake-build-system)
     (home-page "http://biit.cs.ut.ee/pfff/")
     (synopsis "Probabilistic fast file fingerprinting tool")
