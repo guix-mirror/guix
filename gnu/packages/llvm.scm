@@ -11,6 +11,7 @@
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
+;;; Copyright © 2019 David Truby <David.Truby@arm.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -202,6 +203,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                    (lambda* (#:key inputs #:allow-other-keys)
                      (let ((libc (assoc-ref inputs "libc"))
                            (compiler-rt (assoc-ref inputs "clang-runtime"))
+                           (gcc (assoc-ref inputs "gcc"))
                            (version
                             (string->number
                              ,(version-major (package-version clang-runtime)))))
@@ -217,6 +219,12 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
                           (substitute* "lib/Driver/ToolChains/Linux.cpp"
                             (("(^[[:blank:]]+LibDir = ).*" _ declaration)
                              (string-append declaration "\"" libc "/lib\";\n"))
+
+                            ;; Make clang look for libstdc++ in the right
+                            ;; location.
+                            (("LibStdCXXIncludePathCandidates\\[\\] = \\{")
+                             (string-append
+                              "LibStdCXXIncludePathCandidates[] = { \"" gcc "/include/c++\","))
 
                             ;; Make sure libc's libdir is on the search path, to
                             ;; allow crt1.o & co. to be found.
