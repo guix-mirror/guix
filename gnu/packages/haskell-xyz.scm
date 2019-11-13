@@ -4379,6 +4379,25 @@ and edge labels with positional information, etc.
 @end enumerate\n")
     (license license:bsd-3)))
 
+(define-public ghc-groups
+  (package
+    (name "ghc-groups")
+    (version "0.4.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://hackage.haskell.org/package/"
+                            "groups/groups-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0ggkygkyxw5ga4cza82bjvdraavl294k0h6b62d2px7z3nvqhifx"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/groups")
+    (synopsis "Haskell 98 groups")
+    (description "This package provides Haskell 98 groups.  A group is a
+monoid with invertibility.")
+    (license license:bsd-3)))
+
 (define-public ghc-gtk2hs-buildtools
   (package
     (name "ghc-gtk2hs-buildtools")
