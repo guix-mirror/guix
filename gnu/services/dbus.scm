@@ -176,18 +176,9 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
 
       (unless (file-exists? "/etc/machine-id")
         (format #t "creating /etc/machine-id...~%")
-        (let ((prog (string-append #$(dbus-configuration-dbus config)
-                                   "/bin/dbus-uuidgen")))
-          ;; XXX: We can't use 'system' because the initrd's
-          ;; guile system(3) only works when 'sh' is in $PATH.
-          (let ((pid (primitive-fork)))
-            (if (zero? pid)
-                (call-with-output-file "/etc/machine-id"
-                  (lambda (port)
-                    (close-fdes 1)
-                    (dup2 (port->fdes port) 1)
-                    (execl prog)))
-                (waitpid pid)))))))
+        (invoke (string-append #$(dbus-configuration-dbus config)
+                               "/bin/dbus-uuidgen")
+                "--ensure=/etc/machine-id"))))
 
 (define dbus-shepherd-service
   (match-lambda
