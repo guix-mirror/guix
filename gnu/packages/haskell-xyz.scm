@@ -5784,6 +5784,35 @@ search for all keys containing a point or overlapping an interval.  See the
 example code on the home page for a quick introduction.")
     (license license:bsd-3)))
 
+(define-public ghc-intervals
+  (package
+    (name "ghc-intervals")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "intervals/intervals-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00vyxf3ba9d7aas3npfapr53w71fslgh69fczjb25axr66fvzqww"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-distributive" ,ghc-distributive)))
+    (native-inputs
+     `(("cabal-doctest" ,cabal-doctest)
+       ("ghc-doctest" ,ghc-doctest)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (arguments
+     `(#:cabal-revision
+       ("4" "1qx3q0v13l1zaln9zdk8chxpxhshbz5x0vqm0qda7d1kpv7h6a7r")))
+    (home-page "https://github.com/ekmett/intervals")
+    (synopsis "Interval arithmetic")
+    (description "This library provides
+@code{Numeric.Interval.Interval}, which represets a closed, convex set
+of floating point values.")
+    (license license:bsd-3)))
+
 (define-public ghc-invariant
   (package
     (name "ghc-invariant")
