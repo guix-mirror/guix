@@ -7369,6 +7369,7 @@ package to handle all of the possible unit-related needs of LaTeX users.")
      (origin
        (method svn-fetch)
        (uri (texlive-ref "latex" "booktabs"))
+       (file-name (string-append name "-" version "-checkout"))
        (sha256
         (base32
          "1dqid48vgh25wmw8xzmx6x3pfgz1y9f0r8aza1yxq2mjny5yf68x"))))
