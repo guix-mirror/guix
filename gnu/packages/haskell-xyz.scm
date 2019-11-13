@@ -9830,6 +9830,32 @@ them.")
 are the bottleneck of web servers.")
     (license license:bsd-3)))
 
+(define-public ghc-size-based
+  (package
+    (name "ghc-size-based")
+    (version "0.1.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://hackage.haskell.org/package/"
+                           "size-based/size-based-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06hmlic0n73ncwlkpx49xlv09bzsrr27ncnp5byhzlknak2gd7vp"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-dictionary-sharing" ,ghc-dictionary-sharing)
+       ("ghc-testing-type-modifiers" ,ghc-testing-type-modifiers)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (arguments
+     `(#:cabal-revision
+       ("1" "0kax1ypjyglkn6iff1x4yz12y7f2n249m95xvdhrc63hsa4xlcqv")))
+    (home-page "https://hackage.haskell.org/package/size-based")
+    (synopsis "Sized functors for size-based enumerations")
+    (description "This library provides a framework for size-based
+enumerations.")
+    (license license:bsd-3)))
+
 (define-public ghc-skylighting-core
   (package
     (name "ghc-skylighting-core")
