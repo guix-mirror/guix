@@ -806,13 +806,14 @@ mainly implemented in user space.")
     (name "qmpbackup")
     (version "0.2")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/abbbi/qmpbackup/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/abbbi/qmpbackup.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "10k9mnb1yrg4gw1rvz4kw4dxc4aajl8gnjrpm3axqkg63qmxj3qn"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "0swhp5byz44brhyis1a39p11fyn9q84xz5q6v2fah29r7d71kmmx"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
