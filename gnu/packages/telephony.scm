@@ -897,7 +897,7 @@ This package provides a library common to all Jami clients.")
        ("glib:bin" ,glib "bin")
        ("doxygen" ,doxygen)))
     (propagated-inputs
-     `(("libring" ,libring)             ; Contains `dring', the daemon, which is automatically by d-bus.
+     `(("libring" ,libring) ; Contains `dring', the daemon, which is automatically by d-bus.
        ("adwaita-icon-theme" ,adwaita-icon-theme)
        ("evolution-data-server" ,evolution-data-server)))
     (arguments
@@ -912,10 +912,10 @@ This package provides a library common to all Jami clients.")
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (path (string-append (assoc-ref inputs "sqlite") "/lib")))
-               (wrap-program (string-append out "/bin/gnome-ring")
+               (wrap-program (string-append out "/bin/jami-gnome")
                  `("LD_LIBRARY_PATH" ":" prefix (,path))))
              #t)))))
-    (synopsis "Distributed multimedia communications platform")
+    (synopsis "Distributed, privacy-respecting communication program")
     (description "Jami (formerly GNU Ring) is a secure and distributed voice,
 video and chat communication platform that requires no centralized server and
 leaves the power of privacy in the hands of the user.  It supports the SIP and
