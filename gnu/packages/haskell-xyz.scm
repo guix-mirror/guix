@@ -11133,6 +11133,35 @@ data types and functions for enhanced processing of timezones.  For one way to
 create timezone series, see the ghc-timezone-olson package.")
    (license license:bsd-3)))
 
+(define-public ghc-timezone-olson
+  (package
+   (name "ghc-timezone-olson")
+   (version "0.1.9")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append
+       "mirror://hackage/package/timezone-olson/timezone-olson-"
+       version ".tar.gz"))
+     (sha256
+      (base32
+       "05abywx1nrcaz0nqzfy4zw62bc5qd7pdfnjvv4drxkwv084ha8rj"))))
+   (build-system haskell-build-system)
+   (inputs
+    `(("ghc-timezone-series" ,ghc-timezone-series)
+      ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)))
+   (home-page "https://archives.haskell.org/projects.haskell.org/time-ng/")
+   (synopsis "Parser and renderer for binary Olson timezone files")
+   (description
+    "A parser and renderer for binary Olson timezone files whose format
+is specified by the tzfile(5) man page on Unix-like systems.  For more
+information about this format, see
+@url{http://www.iana.org/time-zones/repository/tz-link.html}.  Functions
+are provided for converting the parsed data into @code{TimeZoneSeries}
+objects from the timezone-series package.")
+   (license license:bsd-3)))
+
 (define-public ghc-tldr
   (package
     (name "ghc-tldr")
