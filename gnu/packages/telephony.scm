@@ -553,29 +553,32 @@ calls and messages")
 (define-public pjproject
   (package
     (name "pjproject")
-    (version "2.7.2")
+    (version "2.9")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append
-             "http://www.pjsip.org/release/" ;
-             version "/" name "-" version ".tar.bz2"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pjsip/pjproject.git")
+             (commit "5dfa75be7d69047387f9b0436dd9492bbbf03fe4")))
        (modules '((guix build utils)))
        (snippet
         '(begin
            (let ((third-party-directories
-                  (list "BaseClasses" "bdsound" "bin" "g7221" "gsm"
-                        "ilbc" "lib" "milenage" "mp3" "speex" "srtp"
-                        "resample"
+                  ;; Things we don't need:
+                  ;; BaseClasses - contains libraries from Windows SDK
+                  ;; we don't need it, at least not now.
+                  (list "BaseClasses" "g7221" "ilbc" "milenage"
+                        "speex" "threademulation" "yuv" "bdsound"
+                        "gsm" "mp3" "resample" "srtp" "webrtc"
                         ;; Keep only resample, build and README.txt.
                         "build/baseclasses" "build/g7221" "build/gsm"
-                        "build/ilbc" "build/milenage" "build/samplerate"
-                        "build/speex" "build/srtp"
-                        "build/resample" "build/yuv")))
+                        "build/ilbc" "build/milenage" "build/resample"
+                        "build/samplerate" "build/speex" "build/srtp"
+                        "build/webrtc" "build/yuv")))
              ;; Keep only Makefiles related to resample.
-             (for-each (lambda (file)
+             (for-each (lambda (directory)
                          (delete-file-recursively
-                          (string-append "third_party/" file)))
+                          (string-append "third_party/" directory)))
                        third-party-directories)
              #t)
            (let ((third-party-dirs
@@ -586,9 +589,10 @@ calls and messages")
                 (substitute* "third_party/build/os-linux.mak"
                   (((string-append "DIRS += " dirs)) "")))
               third-party-dirs))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0wiph6g51wanzwjjrpwsz63amgvly8g08jz033gnwqmppa584b4w"))))
+         "1ayj6n7zd5wvd1nzj2k9s57fb4ckc2fv92k5sjvhd87yg69k3393"))))
     (build-system gnu-build-system)
     (inputs
      `(("portaudio" ,portaudio)))
@@ -598,6 +602,7 @@ calls and messages")
      `(("speex" ,speex)
        ("libsrtp" ,libsrtp)
        ("gnutls" ,gnutls)
+       ("resample", resample)
        ("util-linux" ,util-linux)))
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -615,7 +620,7 @@ calls and messages")
            (lambda _ (invoke "make" "dep")))
          (add-before 'patch-source-shebangs 'autoconf
            (lambda _
-             (invoke "autoconf" "-vfi" "-o"
+             (invoke "autoconf" "-v" "-f" "-i" "-o"
                      "aconfigure" "aconfigure.ac")))
          (add-before 'autoconf 'disable-some-tests
            ;; Three of the six test programs fail due to missing network
