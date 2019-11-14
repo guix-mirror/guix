@@ -451,6 +451,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                  ;; kernels that the glibc supports, including the RHEL6
                  ;; (2.6.32) and RHEL7 (3.10) kernels.
                  "-no-feature-getentropy"  ; requires Linux 3.17
+                 "-no-feature-renameat2"   ; requires Linux 3.16
 
                  ;; Do not build examples; if desired, these could go
                  ;; into a separate output, but for the time being, we
