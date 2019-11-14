@@ -94,14 +94,14 @@ older or slower computers and embedded systems.")
 (define-public links
   (package
     (name "links")
-    (version "2.20.1")
+    (version "2.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
-                (sha256
+              (sha256
                (base32
-                "0184g59cxxhg9dqg5gv66f30f1wg8sx957pp5rs7b8icnwnafa5v"))))
+                "097ll98ympzfx7qfdyhc52yzvsp167x5nnjs6v8ih496wv80fksb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
