@@ -102,8 +102,8 @@ generate such a compilation database.")
     (license license:gpl3+)))
 
 (define-public gn
-  (let ((commit "1ab6fa2cab7ec64840db720a56018ca8939329f9")
-        (revision "1530"))          ;as returned by `git describe`, used below
+  (let ((commit "6e5ba2e7210823cf7ccce3eb2a23336a4e7f1349")
+        (revision "1666"))          ;as returned by `git describe`, used below
     (package
       (name "gn")
       (version (git-version "0.0" revision commit))
@@ -113,7 +113,7 @@ generate such a compilation database.")
                 (uri (git-reference (url home-page) (commit commit)))
                 (sha256
                  (base32
-                  "06h974d1lag3wwsz6s5asmpv0njmf671ag4la2fpnbh494m97lfk"))
+                  "157ax65sixjm0i1j89wvny48v1mbsl4pbvv5vqinjc6r0fryaf2r"))
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
@@ -123,7 +123,6 @@ generate such a compilation database.")
                       (lambda _
                         (setenv "CC" "gcc") (setenv "CXX" "g++")
                         (setenv "AR" "ar")
-                        (setenv "LDFLAGS" "-pthread")
                         #t))
                     (replace 'configure
                       (lambda _
