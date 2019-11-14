@@ -5678,14 +5678,14 @@ and adds the annotation to the plot.")
 (define-public r-ggpubr
   (package
     (name "r-ggpubr")
-    (version "0.2.3")
+    (version "0.2.4")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggpubr" version))
        (sha256
         (base32
-         "0i81mmz4qn9yzcgfa6dhkcrx4ddlflkm2c3b40isc8all43rm8rn"))))
+         "0ln1gh3zlfx5s7zqcpvfdiksq74v1pma5kwkhc6r0riqnjjd19pf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-cowplot" ,r-cowplot)
