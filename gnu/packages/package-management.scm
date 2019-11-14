@@ -907,14 +907,14 @@ Microsoft cabinet (.@dfn{CAB}) files.")
 (define-public msitools
   (package
     (name "msitools")
-    (version "0.99")
+    (version "0.100")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/msitools/"
                                   version "/msitools-" version ".tar.xz"))
               (sha256
                (base32
-                "0d9nidn5zc81bc30w119933rn2g87mrsqyqkndg20srkbsd96xfl"))))
+                "1skq17qr2ic4qr3779j49byfm8rncwbsq9rj1a33ncn2m7isdwdv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
