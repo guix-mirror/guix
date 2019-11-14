@@ -11122,14 +11122,14 @@ putative directions).")
 (define-public r-rbamtools
   (package
     (name "r-rbamtools")
-    (version "2.16.11.2")
+    (version "2.16.17")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rbamtools" version))
        (sha256
         (base32
-         "0gzkb1xyrkriv45wq8gv7qfwjslnvwkfkk5jjc4wg5kmm0ydpdzj"))))
+         "0qj37ljdva3v29s01dkrbg31mcfzy3bl145cp40d54v4h9xhcghc"))))
     (build-system r-build-system)
     (inputs `(("zlib" ,zlib)))
     (propagated-inputs
