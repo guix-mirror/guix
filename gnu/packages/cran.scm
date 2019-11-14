@@ -5464,6 +5464,29 @@ user's computer should be used to save data, caches and logs.  It is a port of
 Python's @url{https://github.com/ActiveState/appdirs,Appdirs} to R.")
     (license license:expat)))
 
+(define-public r-renv
+  (package
+    (name "r-renv")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "renv" version))
+       (sha256
+        (base32
+         "0034jlaq7z40q3hcpkjlaff37dpn46kvxvzw4scbwlw4x9q8sx9j"))))
+    (properties `((upstream-name . "renv")))
+    (build-system r-build-system)
+    (home-page "https://rstudio.github.io/renv")
+    (synopsis "Project environments")
+    (description
+     "This package provides a dependency management toolkit for R.  Using
+renv, you can create and manage project-local R libraries, save the state of
+these libraries to a lockfile, and later restore your library as required.
+Together, these tools can help make your projects more isolated, portable, and
+reproducible.")
+    (license license:expat)))
+
 (define-public r-learnr
   (package
     (name "r-learnr")
