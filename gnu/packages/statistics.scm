@@ -3799,14 +3799,14 @@ and tidyr provides no margins or aggregation.")
 (define-public r-hexbin
   (package
     (name "r-hexbin")
-    (version "1.27.3")
+    (version "1.28.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "hexbin" version))
        (sha256
         (base32
-         "14f181lw6sj5xhfxbrpyyinsjfl0nzqilq6z80lgrhj2cnkj593y"))))
+         "0b58jb1kz39wzrnkv077cfzns889xly7psvhxnm3xmnx6yvd986d"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-lattice" ,r-lattice)))
