@@ -2665,6 +2665,55 @@ It includes hashing functions for all basic Haskell98 types.")
      "This module provides set and multiset operations on ordered lists.")
     (license license:bsd-3)))
 
+(define-public ghc-dbus
+  (package
+    (name "ghc-dbus")
+    (version "1.2.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+         (string-append
+          "mirror://hackage/package/dbus/dbus-"
+          version ".tar.gz"))
+        (sha256
+          (base32
+            "0ypkjlw9fn65g7p28kb3p82glk7qs7p7vyffccw7qxa3z57s12w5"))))
+    (build-system haskell-build-system)
+    (inputs
+      `(("ghc-cereal" ,ghc-cereal)
+        ("ghc-conduit" ,ghc-conduit)
+        ("ghc-exceptions" ,ghc-exceptions)
+        ("ghc-lens" ,ghc-lens)
+        ("ghc-network" ,ghc-network)
+        ("ghc-random" ,ghc-random)
+        ("ghc-split" ,ghc-split)
+        ("ghc-th-lift" ,ghc-th-lift)
+        ("ghc-vector" ,ghc-vector)
+        ("ghc-xml-conduit" ,ghc-xml-conduit)
+        ("ghc-xml-types" ,ghc-xml-types)))
+    (native-inputs
+      `(("ghc-extra" ,ghc-extra)
+        ("ghc-quickcheck" ,ghc-quickcheck)
+        ("ghc-resourcet" ,ghc-resourcet)
+        ("ghc-tasty" ,ghc-tasty)
+        ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+        ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    ;; FIXME - Some tests try to talk to network.
+    (arguments `(#:tests? #f))
+    (home-page "https://github.com/rblaze/haskell-dbus")
+    (synopsis "Client library for the D-Bus IPC system")
+    (description
+      "D-Bus is a simple, message-based protocol for inter-process
+communication, which allows applications to interact with other parts
+of the machine and the user's session using remote procedure
+calls.   D-Bus is a essential part of the modern Linux desktop, where
+it replaces earlier protocols such as CORBA and DCOP.  This library
+is an implementation of the D-Bus protocol in Haskell.  It can be used
+to add D-Bus support to Haskell applications, without the awkward
+interfaces common to foreign bindings.")
+    (license license:asl2.0)))
+
 (define-public ghc-deepseq-generics
   (package
     (name "ghc-deepseq-generics")
