@@ -11110,6 +11110,29 @@ timer manager.")
 used CPU time of monadic computation with an IO base.")
     (license license:bsd-3)))
 
+(define-public ghc-timezone-series
+  (package
+   (name "ghc-timezone-series")
+   (version "0.1.9")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append
+       "mirror://hackage/package/timezone-series/timezone-series-"
+       version ".tar.gz"))
+     (sha256
+      (base32
+       "1blwgnyzqn917rgqkl4dncv9whv3xmk0lav040qq0214vksmvlz5"))))
+   (build-system haskell-build-system)
+   (home-page "https://archives.haskell.org/projects.haskell.org/time-ng/")
+   (synopsis "Enhanced timezone handling for Time")
+   (description
+    "This package endows @code{Data.Time}, from the time package, with several
+data types and functions for enhanced processing of timezones.  For one way to
+create timezone series, see the ghc-timezone-olson package.")
+   (license license:bsd-3)))
+
 (define-public ghc-tldr
   (package
     (name "ghc-tldr")
