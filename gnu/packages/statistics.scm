@@ -2711,13 +2711,13 @@ certain criterion, e.g., it contains a certain regular file.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "1.16")
+    (version "1.17")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
-          (base32 "1p11g9lma604ndrhvyvriqxxp91lardc543nmvmr49n1m7309qvz"))))
+          (base32 "18dj6nr1m79pv1pv9w2n0rhiidwqjb2w8w1rnpcwijwbz4i8d3k2"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
