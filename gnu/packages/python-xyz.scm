@@ -10855,13 +10855,13 @@ it will manage (install/update) them for you.")
 (define-public python-lazy-object-proxy
   (package
     (name "python-lazy-object-proxy")
-    (version "1.4.2")
+    (version "1.4.3")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "lazy-object-proxy" version))
               (sha256
                (base32
-                "1wgl0fmddi0ind78a74yyk2qrr9pb5llvj1892cdpp6z6n6mn4zx"))))
+                "1w1aaay424ciz8fz3fkzxb0pxzfxn184f2whpyn4fx72bn50x47k"))))
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm-3.3)))
     (build-system python-build-system)
