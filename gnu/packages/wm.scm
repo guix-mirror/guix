@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Ingo Ruhnke <grumbel@gmail.com>
 ;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
+;;; Copyright © 2019 John Soo <jsoo1@asu.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -649,36 +650,45 @@ tiled on several screens.")
 (define-public xmobar
   (package
     (name "xmobar")
-    (version "0.28")
+    (version "0.31")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://hackage/package/xmobar/"
                                   "xmobar-" version ".tar.gz"))
               (sha256
                (base32
-                "1xh87asg8y35srvp7d3gyyy4bkxsw122liihxgzgm8pqv2z3h4zd"))))
+                "1sbxva4zaj060bigmxivpn4zlz0q1qbq2np8gljdqkjvysjzpbka"))))
     (build-system haskell-build-system)
     (native-inputs
      `(("ghc-hspec" ,ghc-hspec)
        ("hspec-discover" ,hspec-discover)))
     (inputs
-     `(("ghc-hinotify" ,ghc-hinotify)
+     `(("ghc-alsa-core" ,ghc-alsa-core)
+       ("ghc-alsa-mixer" ,ghc-alsa-mixer)
+       ("ghc-dbus" ,ghc-dbus)
+       ("ghc-hinotify" ,ghc-hinotify)
        ("ghc-http" ,ghc-http)
+       ("ghc-http-conduit" ,ghc-http-conduit)
+       ("ghc-http-types" ,ghc-http-types)
        ("ghc-iwlib" ,ghc-iwlib)
+       ("ghc-libmpd" ,ghc-libmpd)
+       ("ghc-old-locale" ,ghc-old-locale)
        ("ghc-parsec-numbers" ,ghc-parsec-numbers)
        ("ghc-regex-compat" ,ghc-regex-compat)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-timezone-olson" ,ghc-timezone-olson)
+       ("ghc-x11" ,ghc-x11)
        ("ghc-x11-xft" ,ghc-x11-xft)
        ("libxpm" ,libxpm)))
     (arguments
-     `(#:configure-flags
-       (list (string-append "--flags="
-                            (string-join (list "with_inotify"
-                                               "with_iwlib"
-                                               "with_utf8"
-                                               "with_weather"
-                                               "with_xft"
-                                               "with_xpm")
-                                         " ")))))
+     `(#:configure-flags (list "--flags=all_extensions")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-test-shebang
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "test/Xmobar/Plugins/Monitors/AlsaSpec.hs"
+               (("/bin/bash") (which "bash")))
+             #t)))))
     (home-page "http://xmobar.org")
     (synopsis "Minimalistic text based status bar")
     (description
