@@ -19858,3 +19858,28 @@ Flycheck plugin.  @code{cpplint} is a static code checker for C++, following
 Google guidelines.")
       (home-page "https://github.com/flycheck/flycheck-google-cpplint")
       (license license:gpl3+))))
+
+(define-public emacs-helm-fish-completion
+  (let ((commit "ef764dd123040fe67ef8b62a1c13842e940b0963")
+        (revision "1"))
+    (package
+      (name "emacs-helm-fish-completion")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/emacs-helm/helm-fish-completion")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0k80kpapwfq2rv1lb0r994d0w6czl92xrmnkmrg0a05f4b3q0lb4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("helm" ,emacs-helm)
+         ("fish-completion" ,emacs-fish-completion)))
+      (synopsis "Helm interface for Emacs fish-completion")
+      (description "Helm Fish Completion is a Helm interface for Emacs
+fish-completion.  It can be used in both Eshell and M-x shell.")
+      (license license:gpl3+))))
