@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Jovany Leandro G.C <bit4bit@riseup.net>
 ;;; Copyright © 2018 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -685,14 +686,20 @@ Initiation Protocol (SIP) and a multimedia framework.")
              "--disable-openh264"
              "--disable-resample"
              "--disable-libwebrtc"
-             ;; "-fPIC" is required for libring.  Bug?
-             "CFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
-             "CXXFLAGS=-fPIC -DPJ_ENABLE_EXTRA_CHECK=1 -DPJ_ICE_MAX_CAND=256 -DPJ_ICE_MAX_CHECKS=1024 -DPJ_ICE_COMP_BITS=2 -DPJ_ICE_MAX_STUN=3 -DPJSIP_MAX_PKT_LEN=8000 -DPJ_ICE_ST_MAX_CAND=32"
-             ;; Now deviating from the rules.mak file.
-             "--enable-ssl=gnutls"
-             "--with-external-srtp")
+             "--with-gnutls"
+             "--with-external-srtp"
+             ;; We need -fPIC or else we get the following error when linking
+             ;; against pjproject-jami:
+             ;;   relocation R_X86_64_32S against `.rodata' can not be used when
+             ;;   making a shared object;
+             "CFLAGS=-fPIC"
+             "CXXFLAGS=-fPIC")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'make-git-checkout-writable
+           (lambda _
+             (for-each make-file-writable (find-files "."))
+             #t))
          (add-after 'unpack 'apply-patches
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((savoir-faire-linux-patches-directory "Savoir-faire Linux patches")
@@ -700,19 +707,28 @@ Initiation Protocol (SIP) and a multimedia framework.")
                    ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
                    ;; WARNING: These amount for huge changes in pjproject.
                    (savoir-faire-linux-patches
-                    '("gnutls"
+                    '("fix_turn_alloc_failure"
                       "rfc2466"
                       "ipv6"
-                      "ice_config"
                       "multiple_listeners"
                       "pj_ice_sess"
                       "fix_turn_fallback"
                       "fix_ioqueue_ipv6_sendto"
                       "add_dtls_transport"
-                      "rfc6062")))
+                      "rfc6544"
+                      "ice_config"
+                      "sip_config"
+                      "fix_first_packet_turn_tcp"
+                      "fix_ebusy_turn"
+                      "ignore_ipv6_on_transport_check"
+                      "fix_turn_connection_failure"
+                      ;; "uwp_vs" ; for windows
+                      "disable_local_resolution")))
                (mkdir-p savoir-faire-linux-patches-directory)
                (invoke "tar" "-xvf" (assoc-ref inputs "savoir-faire-linux-patches")
-                       "-C" savoir-faire-linux-patches-directory "--strip-components=5" "ring-project/daemon/contrib/src/pjproject")
+                       "-C" savoir-faire-linux-patches-directory
+                       "--strip-components=5"
+                       "ring-project/daemon/contrib/src/pjproject")
                (for-each
                 (lambda (file)
                   (invoke "patch" "--force" "-p1" "-i"
