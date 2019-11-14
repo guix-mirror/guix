@@ -304,6 +304,29 @@ tool lex or flex for C/C++.")
 needed by both alsa-seq and alsa-pcm.")
     (license license:bsd-3)))
 
+(define-public ghc-alsa-mixer
+  (package
+   (name "ghc-alsa-mixer")
+   (version "0.3.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri
+      (string-append
+       "mirror://hackage/package/alsa-mixer/alsa-mixer-"
+       version ".tar.gz"))
+     (sha256
+      (base32
+       "00ny2p3276jilidjs44npc8zmbhynz3f2lpmlwwl6swwx5yijsnb"))))
+   (build-system haskell-build-system)
+   (inputs `(("ghc-alsa-core" ,ghc-alsa-core)))
+   (native-inputs `(("ghc-c2hs" ,ghc-c2hs)))
+   (home-page "https://github.com/ttuegel/alsa-mixer")
+   (synopsis "Bindings to the ALSA simple mixer API")
+   (description
+    "This package provides bindings to the ALSA simple mixer API.")
+   (license license:bsd-3)))
+
 (define-public ghc-annotated-wl-pprint
   (package
     (name "ghc-annotated-wl-pprint")
