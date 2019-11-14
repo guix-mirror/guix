@@ -13890,7 +13890,7 @@ datasets.")
 (define-public ngless
   (package
     (name "ngless")
-    (version "0.9.1")
+    (version "1.0.1")
     (source
      (origin
        (method git-fetch)
@@ -13900,7 +13900,7 @@ datasets.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "0mc2gi7h4lx74zylvyp76mvc0w6706j858ii9vlgzqsw6acpr117"))))
+         "06ygv8q2zjqsnrid1302yrlhhvb8ik48nq6n0higk3i1mdc8r0dg"))))
     (build-system haskell-build-system)
     (arguments
      `(#:haddock? #f ; The haddock phase fails with: NGLess/CmdArgs.hs:20:1:
@@ -13908,7 +13908,24 @@ datasets.")
                      ; import Options.Applicative
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'create-cabal-file
+         (add-after 'unpack 'create-Versions.hs
+           (lambda _
+             (substitute* "Makefile"
+               (("BWA_VERSION = .*")
+                (string-append "BWA_VERSION = "
+                               ,(package-version bwa) "\n"))
+               (("SAM_VERSION = .*")
+                (string-append "SAM_VERSION = "
+                               ,(package-version samtools) "\n"))
+               (("PRODIGAL_VERSION = .*")
+                (string-append "PRODIGAL_VERSION = "
+                               ,(package-version prodigal) "\n"))
+               (("MINIMAP2_VERSION = .*")
+                (string-append "MINIMAP2_VERSION = "
+                               ,(package-version minimap2) "\n")))
+             (invoke "make" "NGLess/Dependencies/Versions.hs")
+             #t))
+         (add-after 'create-Versions.hs 'create-cabal-file
            (lambda _ (invoke "hpack") #t))
          ;; These tools are expected to be installed alongside ngless.
          (add-after 'install 'link-tools
@@ -13937,15 +13954,15 @@ datasets.")
        ("ghc-async" ,ghc-async)
        ("ghc-atomic-write" ,ghc-atomic-write)
        ("ghc-bytestring-lexing" ,ghc-bytestring-lexing)
-       ("ghc-chart" ,ghc-chart)
-       ("ghc-chart-cairo" ,ghc-chart-cairo)
        ("ghc-conduit" ,ghc-conduit)
        ("ghc-conduit-algorithms" ,ghc-conduit-algorithms)
-       ("ghc-conduit-combinators" ,ghc-conduit-combinators)
        ("ghc-conduit-extra" ,ghc-conduit-extra)
        ("ghc-configurator" ,ghc-configurator)
        ("ghc-convertible" ,ghc-convertible)
        ("ghc-data-default" ,ghc-data-default)
+       ("ghc-diagrams-core" ,ghc-diagrams-core)
+       ("ghc-diagrams-lib" ,ghc-diagrams-lib)
+       ("ghc-diagrams-svg" ,ghc-diagrams-svg)
        ("ghc-double-conversion" ,ghc-double-conversion)
        ("ghc-edit-distance" ,ghc-edit-distance)
        ("ghc-either" ,ghc-either)
@@ -13966,6 +13983,7 @@ datasets.")
        ("ghc-safeio" ,ghc-safeio)
        ("ghc-strict" ,ghc-strict)
        ("ghc-tar" ,ghc-tar)
+       ("ghc-tar-conduit" ,ghc-tar-conduit)
        ("ghc-unliftio" ,ghc-unliftio)
        ("ghc-unliftio-core" ,ghc-unliftio-core)
        ("ghc-vector" ,ghc-vector)
