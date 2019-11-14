@@ -792,8 +792,9 @@ Initiation Protocol (SIP) and a multimedia framework.")
        ("libsecp256k1" ,libsecp256k1)
        ("python" ,python)
        ("python-wrapper" ,python-wrapper)
-       ("restbed" ,restbed)
+       ("restinio" ,restinio)
        ("libx11" ,libx11)
+       ("asio" ,asio)
        ;; TODO: Upstream seems to rely on a custom pjproject (a.k.a. pjsip) version.
        ;; See https://git.jami.net/savoirfairelinux/ring-daemon/issues/24.
        ("pjproject" ,pjproject-jami)))
