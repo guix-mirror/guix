@@ -5494,23 +5494,26 @@ reproducible.")
 (define-public r-learnr
   (package
     (name "r-learnr")
-    (version "0.9.2.1")
+    (version "0.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "learnr" version))
        (sha256
         (base32
-         "0jbk0g6fkw7zs8ykzhsvh9vvz8xmc4v03bqzjsa5mmpxpqan5vx5"))))
+         "0278q9nbkc4nb0rp930kjrwyidf0v7y38d1s187m4f4bs7ha82k6"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-evaluate" ,r-evaluate)
+     `(("r-checkmate" ,r-checkmate)
+       ("r-ellipsis" ,r-ellipsis)
+       ("r-evaluate" ,r-evaluate)
        ("r-htmltools" ,r-htmltools)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-jsonlite" ,r-jsonlite)
        ("r-knitr" ,r-knitr)
        ("r-markdown" ,r-markdown)
        ("r-rappdirs" ,r-rappdirs)
+       ("r-renv" ,r-renv)
        ("r-rmarkdown" ,r-rmarkdown)
        ("r-rprojroot" ,r-rprojroot)
        ("r-shiny" ,r-shiny)
