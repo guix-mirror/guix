@@ -12,6 +12,7 @@
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 David Truby <David.Truby@arm.com>
+;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,9 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
   #:use-module (gnu packages compression)
@@ -298,6 +301,51 @@ project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
     (license license:ncsa)))
 
+(define (make-clang-toolchain clang)
+  (package
+    (name (string-append (package-name clang) "-toolchain"))
+    (version (package-version clang))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (srfi srfi-26)
+                                (guix build union))
+
+                   (let ((out (assoc-ref %outputs "out")))
+
+                     (match %build-inputs
+                       (((names . directories) ...)
+                        (union-build out directories)))
+
+                     (union-build (assoc-ref %outputs "debug")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-debug")))
+                     (union-build (assoc-ref %outputs "static")
+                                  (list (assoc-ref %build-inputs
+                                                   "libc-static")))
+                     #t))))
+
+    (native-search-paths (package-native-search-paths clang))
+    (search-paths (package-search-paths clang))
+
+    (license (package-license clang))
+    (home-page "https://clang.llvm.org")
+    (synopsis "Complete Clang toolchain for C/C++ development")
+    (description "This package provides a complete Clang toolchain for C/C++
+development to be installed in user profiles.  This includes Clang, as well as
+libc (headers and binaries, plus debugging symbols in the @code{debug}
+output), and Binutils.")
+    (outputs '("out" "debug" "static"))
+    (inputs `(("clang" ,clang)
+              ("ld-wrapper" ,(car (assoc-ref (%final-inputs) "ld-wrapper")))
+              ("binutils" ,binutils)
+              ("libc" ,glibc)
+              ("libc-debug" ,glibc "debug")
+              ("libc-static" ,glibc "static")))))
+
 (define-public libcxx
   (package
     (name "libcxx")
@@ -407,6 +455,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    "0svk1f70hvpwrjp6x5i9kqwrqwxnmcrw5s7f4cxyd100mdd12k08"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
+(define-public clang-toolchain
+  (make-clang-toolchain clang))
+
 (define-public llvm-7
   (package
     (inherit llvm)
@@ -429,6 +480,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
                    "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4"
                    #:patches '("clang-7.0-libc-search-path.patch")))
 
+(define-public clang-toolchain-7
+  (make-clang-toolchain clang-7))
+
 (define-public llvm-6
   (package
     (inherit llvm)
@@ -450,6 +504,9 @@ with that of libgomp, the GNU Offloading and Multi Processing Library.")
   (clang-from-llvm llvm-6 clang-runtime
                    "0rxn4rh7rrnsqbdgp4gzc8ishbkryhpl1kd3mpnxzpxxhla3y93w"
                    #:patches '("clang-6.0-libc-search-path.patch")))
+
+(define-public clang-toolchain-6
+  (make-clang-toolchain clang-6))
 
 ;; Libcxx files specifically used by PySide2.
 (define-public libcxx-6
