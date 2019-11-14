@@ -636,12 +636,12 @@ calls and messages")
 Initiation Protocol (SIP) and a multimedia framework.")
     (license license:gpl2+)))
 
-(define %jami-version "20190319.4.a16a99f")
+(define %jami-version "20191101.3.67671e7")
 
 (define* (jami-source #:key without-daemon)
   (origin
     (method url-fetch)
-    (uri (string-append "http://dl.jami.net/ring-release/tarballs/ring_"
+    (uri (string-append "https://dl.jami.net/ring-release/tarballs/ring_"
                         %jami-version
                         ".tar.gz"))
     (modules '((guix build utils)))
@@ -652,7 +652,7 @@ Initiation Protocol (SIP) and a multimedia framework.")
        #f))
     (sha256
      (base32
-      "1c6n6sm7skw83v25g33g4jzbragz9j4przbzaz7asxw54jy33dwl"))))
+      "0kw172w2ccyz438kf5xqw14nhfm4xk6a2libnzib9j2wvhlpf4q0"))))
 
 (define-public pjproject-jami
   (package
@@ -699,7 +699,6 @@ Initiation Protocol (SIP) and a multimedia framework.")
                    ;; Comes from
                    ;; "ring-project/daemon/contrib/src/pjproject/rules.mak".
                    ;; WARNING: These amount for huge changes in pjproject.
-                   ;; Particularly, they add support for GnuTLS.
                    (savoir-faire-linux-patches
                     '("gnutls"
                       "rfc2466"
