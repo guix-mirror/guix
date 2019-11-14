@@ -6333,14 +6333,14 @@ functions.")
 (define-public r-flextable
   (package
     (name "r-flextable")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "flextable" version))
        (sha256
         (base32
-         "1q6x9mfk5gikqjbbra1dn8hs1rq5ws99jdjav3m113gx9f2j5yxh"))))
+         "1f869f2dfqkzhf6yix7xcbs8rn1nwq3sg623h74zg6h1pl6px66w"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
