@@ -33,6 +33,7 @@
 ;;; Copyright © 2019 Brice Waegeneire <brice@waegenei.re>
 ;;; Copyright © 2019 Tonton <tonton@riseup.net>
 ;;; Copyright © 2019 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2019 Jan Wielkiewicz <tona_kosmicznego_smiecia@interia.pl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages code)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages crypto)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dejagnu)
@@ -95,6 +97,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages perl-check)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pretty-print)
   #:use-module (gnu packages python)
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
@@ -2519,6 +2522,54 @@ model for building applications that require seamless and secure
 communication over HTTP.")
       (home-page "https://github.com/Corvusoft/restbed")
       (license license:agpl3+))))
+
+(define fmt-restinio
+  (package
+    (inherit fmt)
+    (arguments
+     '(#:configure-flags '("-DCMAKE_CXX_FLAGS=-fPIC")))))
+
+(define-public restinio
+  (package
+    (name "restinio")
+    (version "0.6.0.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/Stiffstream/restinio.git")
+                    (commit (string-append "v." version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "1c25kpx652nng8m1sqf5an2c3c4g3k6zj85mkkaxzk88iwfzq1s8"))))
+    (build-system cmake-build-system)
+    (inputs                             ; TODO: Need to force-keep references on some inputs, e.g. boost.
+     `(("zlib" ,zlib)
+       ("catch2" ,catch-framework2)
+       ("openssl" ,openssl)
+       ("boost" ,boost)
+       ("pcre" ,pcre)
+       ("pcre2" ,pcre2)
+       ("sobjectizer" ,sobjectizer)))
+    (propagated-inputs
+     `(("asio", asio)
+       ("fmt" ,fmt-restinio)
+       ("http-parser", http-parser)))
+    (arguments
+     `(#:configure-flags '("-DRESTINIO_INSTALL=on")
+       #:tests? #f ; TODO: The tests are called from the root CMakelist, need RESTINIO_TEST=on.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "dev/restinio")
+             #t)))))
+    (home-page "https://stiffstream.com/en/products/restinio.html")
+    (synopsis "C++14 library that gives you an embedded HTTP/Websocket server")
+    (description "RESTinio is a header-only C++14 library that gives you an embedded
+HTTP/Websocket server.  It is based on standalone version of ASIO
+and targeted primarily for asynchronous processing of HTTP-requests.")
+    (license license:bsd-3)))
 
 (define-public opendht
   (package
