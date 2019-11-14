@@ -9606,13 +9606,13 @@ manipulate tree data.")
 (define-public r-rvcheck
   (package
     (name "r-rvcheck")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "rvcheck" version))
        (sha256
-        (base32 "15222q3sglq0mad5q806p99fhrb96qizmpqw35fa1rb148f95paf"))))
+        (base32 "11n3qxapxcqsa0771s9q8n95kxmfyflya1d6wz4mm0lz0i6q55ia"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocmanager" ,r-biocmanager)
