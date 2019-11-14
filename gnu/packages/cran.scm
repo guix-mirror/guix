@@ -13443,13 +13443,13 @@ data manipulation and visualization.")
 (define-public r-kernlab
   (package
     (name "r-kernlab")
-    (version "0.9-28")
+    (version "0.9-29")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "kernlab" version))
        (sha256
-        (base32 "08kgiac7ml1z88lgvvciszrqfnarhizs9kp070k6mpkb0akxrnkz"))))
+        (base32 "0vqhndl4zm7pvkfvq0f6i9cbrm7pij6kmdp7d7w39pa100x6knn3"))))
     (build-system r-build-system)
     (home-page "https://cran.r-project.org/web/packages/kernlab")
     (synopsis "Kernel-based machine learning tools")
