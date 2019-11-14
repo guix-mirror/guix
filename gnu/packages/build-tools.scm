@@ -117,8 +117,7 @@ generate such a compilation database.")
                 (file-name (git-file-name name version))))
       (build-system gnu-build-system)
       (arguments
-       `(#:tests? #f                    ;FIXME: How to run?
-         #:phases (modify-phases %standard-phases
+       `(#:phases (modify-phases %standard-phases
                     (add-before 'configure 'set-build-environment
                       (lambda _
                         (setenv "CC" "gcc") (setenv "CXX" "g++")
@@ -142,6 +141,14 @@ generate such a compilation database.")
                       (lambda _
                         (invoke "ninja" "-C" "out" "gn"
                                 "-j" (number->string (parallel-job-count)))))
+                    (replace 'check
+                      (lambda* (#:key (tests? #t) #:allow-other-keys)
+                        (if tests?
+                            (lambda ()
+                              (invoke "ninja" "-C" "out" "gn_unittests"
+                                      "-j" (number->string (parallel-job-count)))
+                              (invoke "./out/gn_unittests"))
+                            (format #t "test suite not run~%"))))
                     (replace 'install
                       (lambda* (#:key outputs #:allow-other-keys)
                         (let ((out (assoc-ref outputs "out")))
