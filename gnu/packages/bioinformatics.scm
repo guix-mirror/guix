@@ -10031,14 +10031,14 @@ interval to data view, mismatch pileup, and several splicing summaries.")
 (define-public r-gprofiler
   (package
     (name "r-gprofiler")
-    (version "0.6.8")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "gProfileR" version))
        (sha256
         (base32
-         "05d6y6b7vkkzp2qhs1cwlvp02djij1b28dbwxnrms08f8qi35iaj"))))
+         "1h1v0kgpsn04ald2izznh7fr2riwisj5hcgz4k7h3qc931rf0r4k"))))
     (properties `((upstream-name . "gProfileR")))
     (build-system r-build-system)
     (propagated-inputs
@@ -12850,6 +12850,7 @@ HTML reports with interesting findings about your samples.")
               (uri (git-reference
                     (url "https://github.com/jsh58/Genrich.git")
                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0x0q6z0208n3cxzqjla4rgjqpyqgwpmz27852lcvzkzaigymq4zp"))))
@@ -14799,6 +14800,7 @@ and reflect the fast5 file schema, and tools to convert between
          (uri (git-reference
                (url "https://github.com/phoenixding/tbsp.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "025ym14x8gbd6hb55lsinqj6f5qzw36i10klgs7ldzxxd7s39ki1"))))

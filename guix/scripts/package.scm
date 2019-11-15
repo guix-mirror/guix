@@ -42,6 +42,8 @@
   #:autoload   (guix store roots) (gc-roots)
   #:use-module ((guix build utils)
                 #:select (directory-exists? mkdir-p))
+  #:use-module ((guix build syscalls)
+                #:select (with-file-lock/no-wait))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -876,36 +878,44 @@ processed, #f otherwise."
                      (package-version item)
                      (manifest-entry-version entry))))))
 
-  ;; First, process roll-backs, generation removals, etc.
-  (for-each (match-lambda
-              ((key . arg)
-               (and=> (assoc-ref %actions key)
-                      (lambda (proc)
-                        (proc store profile arg opts
-                              #:dry-run? dry-run?)))))
-            opts)
 
-  ;; Then, process normal package removal/installation/upgrade.
-  (let* ((manifest (profile-manifest profile))
-         (step1    (options->removable opts manifest
-                                       (manifest-transaction)))
-         (step2    (options->installable opts manifest step1))
-         (step3    (manifest-transaction
-                    (inherit step2)
-                    (install (map transform-entry
-                                  (manifest-transaction-install step2)))))
-         (new      (manifest-perform-transaction manifest step3)))
+  ;; First, acquire a lock on the profile, to ensure only one guix process
+  ;; is modifying it at a time.
+  (with-file-lock/no-wait (string-append profile ".lock")
+    (lambda (key . args)
+      (leave (G_ "profile ~a is locked by another process~%")
+                 profile))
 
-    (warn-about-old-distro)
+    ;; Then, process roll-backs, generation removals, etc.
+    (for-each (match-lambda
+                ((key . arg)
+                 (and=> (assoc-ref %actions key)
+                        (lambda (proc)
+                          (proc store profile arg opts
+                                #:dry-run? dry-run?)))))
+              opts)
 
-    (unless (manifest-transaction-null? step3)
-      (show-manifest-transaction store manifest step3
-                                 #:dry-run? dry-run?)
-      (build-and-use-profile store profile new
-                             #:allow-collisions? allow-collisions?
-                             #:bootstrap? bootstrap?
-                             #:use-substitutes? substitutes?
-                             #:dry-run? dry-run?))))
+    ;; Then, process normal package removal/installation/upgrade.
+    (let* ((manifest (profile-manifest profile))
+           (step1    (options->removable opts manifest
+                                         (manifest-transaction)))
+           (step2    (options->installable opts manifest step1))
+           (step3    (manifest-transaction
+                      (inherit step2)
+                      (install (map transform-entry
+                                    (manifest-transaction-install step2)))))
+           (new      (manifest-perform-transaction manifest step3)))
+
+      (warn-about-old-distro)
+
+      (unless (manifest-transaction-null? step3)
+        (show-manifest-transaction store manifest step3
+                                   #:dry-run? dry-run?)
+        (build-and-use-profile store profile new
+                               #:allow-collisions? allow-collisions?
+                               #:bootstrap? bootstrap?
+                               #:use-substitutes? substitutes?
+                               #:dry-run? dry-run?)))))
 
 
 ;;;

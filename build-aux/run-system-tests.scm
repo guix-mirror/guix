@@ -18,10 +18,15 @@
 
 (define-module (run-system-tests)
   #:use-module (gnu tests)
+  #:use-module (gnu packages package-management)
+  #:use-module ((gnu ci) #:select (channel-instance->package))
   #:use-module (guix store)
   #:use-module ((guix status) #:select (with-status-verbosity))
   #:use-module (guix monads)
+  #:use-module (guix channels)
   #:use-module (guix derivations)
+  #:use-module ((guix git-download) #:select (git-predicate))
+  #:use-module (guix utils)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
@@ -46,28 +51,48 @@
                 lst)
          (lift1 reverse %store-monad))))
 
-(define (run-system-tests . args)
-  (define tests
-    ;; Honor the 'TESTS' environment variable so that one can select a subset
-    ;; of tests to run in the usual way:
-    ;;
-    ;;   make check-system TESTS=installed-os
+(define (tests-for-channel-instance instance)
+  "Return a list of tests for perform, using Guix from INSTANCE, a channel
+instance."
+  ;; Honor the 'TESTS' environment variable so that one can select a subset
+  ;; of tests to run in the usual way:
+  ;;
+  ;;   make check-system TESTS=installed-os
+  (parameterize ((current-guix-package
+                  (channel-instance->package instance)))
     (match (getenv "TESTS")
       (#f
        (all-system-tests))
       ((= string-tokenize (tests ...))
        (filter (lambda (test)
                  (member (system-test-name test) tests))
-               (all-system-tests)))))
+               (all-system-tests))))))
 
-  (format (current-error-port) "Running ~a system tests...~%"
-          (length tests))
+
+
+(define (run-system-tests . args)
+  (define source
+    (string-append (current-source-directory) "/.."))
 
   (with-store store
     (with-status-verbosity 2
       (run-with-store store
-        (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
+        ;; Intern SOURCE so that 'build-from-source' in (guix channels) sees
+        ;; "fresh" file names and thus doesn't find itself loading .go files
+        ;; from ~/.cache/guile when it loads 'build-aux/build-self.scm'.
+        ;; XXX: It would be best to not do it upfront because we may need it.
+        (mlet* %store-monad ((source (interned-file source "guix-source"
+                                                    #:recursive? #t
+                                                    #:select?
+                                                    (or (git-predicate source)
+                                                        (const #t))))
+                             (instance -> (checkout->channel-instance source))
+                             (tests -> (tests-for-channel-instance instance))
+                             (drv (mapm %store-monad system-test-value tests))
                              (out -> (map derivation->output-path drv)))
+          (format (current-error-port) "Running ~a system tests...~%"
+                  (length tests))
+
           (mbegin %store-monad
             (show-what-to-build* drv)
             (set-build-options* #:keep-going? #t #:keep-failed? #t

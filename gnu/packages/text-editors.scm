@@ -66,12 +66,12 @@
     (version "0.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/martanne/"
-                                  name "/archive/v" version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/martanne/vis/releases"
+                                  "/download/v" version
+                                  "/vis-v" version ".tar.gz"))
               (sha256
                (base32
-                "1xbxb3q963s6sav63yw0x30lm0wvxsrzb7hr6a7dh4f8r7mp1skp"))))
+                "0aw35n8xk7ir84ckvczc6yshj9ynishrlz0qlv4yc1afbra1gxmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -444,7 +444,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
 (define-public scintilla
   (package
     (name "scintilla")
-    (version "4.2.0")
+    (version "4.2.1")
     (source (origin
               (method url-fetch)
               (uri (let ((v (apply string-append (string-split version #\.))))
@@ -452,7 +452,7 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                       "https://www.scintilla.org/scintilla" v ".tgz")))
               (sha256
                (base32
-                "02ymi86fpcypg6423vfr54lbkxbks046q02v3m3dypawcf3bqy42"))))
+                "0l52s39zg8l3fcj86nqm3hzh0sa4i981dasil54a40dvz3d3cvrx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "GTK3=1" "CC=gcc" "-Cgtk")
@@ -468,15 +468,6 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                 "$(CC) -shared $^ -o $@")
                (("\\$\\(RANLIB\\) \\$@") ""))
              #t))
-         (add-before 'build 'expand-C++-include-path
-           (lambda* (#:key inputs #:allow-other-keys)
-             ;; Make <gcc>/include/c++/ext/string_conversions.h find
-             ;; <stdlib.h>.
-             (let* ((path "CPLUS_INCLUDE_PATH")
-                    (gcc  (assoc-ref inputs "gcc"))
-                    (c++  (string-append gcc "/include/c++")))
-               (setenv path (string-append c++ ":" (getenv path))))
-             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -487,8 +478,8 @@ and Octave.  TeXmacs is completely extensible via Guile.")
                          (find-files "include/" "."))
                #t))))))
     (native-inputs
-     `(("gcc" ,gcc-7)                   ;require GCC 7.1+
-       ("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
     (inputs
      `(("gtk+" ,gtk+)))
     (home-page "https://www.scintilla.org/")
@@ -506,14 +497,14 @@ and multiple fonts.")
 (define-public geany
   (package
     (name "geany")
-    (version "1.35")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.geany.org/"
                                   "geany-" version ".tar.bz2"))
               (sha256
                (base32
-                "179xfnvhcxsv54v2mlrhykqv2j7klniln5sffvqqpjmdvwyivvim"))
+                "0gnm17cr4rf3pmkf0axz4a0fxwnvp55ji0q0lzy88yqbshyxv14i"))
               (modules '((guix build utils)))
               (snippet '(begin
                           (delete-file-recursively "scintilla")
@@ -546,6 +537,8 @@ and multiple fonts.")
                (("geany_LDFLAGS =" all) (string-append all " -lscintilla")))
              (substitute* "doc/Makefile.am"
                (("\\$\\(INSTALL_DATA\\) \\$\\(top_srcdir\\)/scintilla/License.txt \\$\\(DOCDIR\\)/ScintillaLicense.txt") ""))
+             (substitute* "tests/Makefile.am"
+               (("AM_LDFLAGS =" all) (string-append all " -lscintilla")))
              (for-each delete-file (list "autogen.sh" "configure" "Makefile.in"))
              #t)))))
     (home-page "https://www.geany.org")

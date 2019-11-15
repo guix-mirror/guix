@@ -590,15 +590,16 @@ mixed.")
 (define-public chibi-scheme
   (package
     (name "chibi-scheme")
-    (version "0.7.3")
+    (version "0.8")
+    (home-page "https://github.com/ashinn/chibi-scheme")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/ashinn/chibi-scheme/archive/"
-                           version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference (url home-page) (commit version)))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "16wppf4qzr0748iyp0m89gidsfgq9s6x3gw4xggym91waw4fh742"))
-       (file-name (string-append "chibi-scheme-" version ".tar.gz"))))
+        (base32
+         "0269d5fhaz7nqjb41vh7yz63mp5s4z08fn4sspwc06z32xksigw9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -610,7 +611,6 @@ mixed.")
                       (list (string-append "PREFIX=" out)
                             (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")))
        #:test-target "test"))
-    (home-page "https://github.com/ashinn/chibi-scheme")
     (synopsis "Small embeddable Scheme implementation")
     (description
      "Chibi-Scheme is a very small library with no external dependencies

@@ -32,6 +32,10 @@
   #:use-module (gnu packages)
   #:use-module (guix sets)
   #:use-module ((guix utils) #:select (location-file))
+  #:use-module ((guix scripts build)
+                #:select (show-transformation-options-help
+                          options->transformation
+                          %transformation-options))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -446,36 +450,38 @@ package modules, while attempting to retain user package modules."
 ;;;
 
 (define %options
-  (list (option '(#\t "type") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'node-type (lookup-node-type arg)
-                              result)))
-        (option '("list-types") #f #f
-                (lambda (opt name arg result)
-                  (list-node-types)
-                  (exit 0)))
-        (option '(#\b "backend") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'backend (lookup-backend arg)
-                              result)))
-        (option '("list-backends") #f #f
-                (lambda (opt name arg result)
-                  (list-backends)
-                  (exit 0)))
-        (option '(#\e "expression") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'expression arg result)))
-        (option '(#\s "system") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'system arg
-                              (alist-delete 'system result eq?))))
-        (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix edit")))))
+  (cons* (option '(#\t "type") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'node-type (lookup-node-type arg)
+                               result)))
+         (option '("list-types") #f #f
+                 (lambda (opt name arg result)
+                   (list-node-types)
+                   (exit 0)))
+         (option '(#\b "backend") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'backend (lookup-backend arg)
+                               result)))
+         (option '("list-backends") #f #f
+                 (lambda (opt name arg result)
+                   (list-backends)
+                   (exit 0)))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
+         (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix graph")))
+
+         %transformation-options))
 
 (define (show-help)
   ;; TRANSLATORS: Here 'dot' is the name of a program; it must not be
@@ -494,6 +500,8 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
   -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (G_ "
   -s, --system=SYSTEM    consider the graph for SYSTEM--e.g., \"i686-linux\""))
+  (newline)
+  (show-transformation-options-help)
   (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
@@ -514,21 +522,28 @@ Emit a representation of the dependency graph of PACKAGE...\n"))
 
 (define (guix-graph . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options
-                                         (list %default-options)
-                                         #:build-options? #f))
-           (backend  (assoc-ref opts 'backend))
-           (type     (assoc-ref opts 'node-type))
-           (items    (filter-map (match-lambda
-                                   (('argument . (? store-path? item))
-                                    item)
-                                   (('argument . spec)
-                                    (specification->package spec))
-                                   (('expression . exp)
-                                    (read/eval-package-expression exp))
-                                   (_ #f))
-                                 opts)))
-      (with-store store
+    (define opts
+      (parse-command-line args %options
+                          (list %default-options)
+                          #:build-options? #f))
+    (define backend
+      (assoc-ref opts 'backend))
+    (define type
+      (assoc-ref opts 'node-type))
+
+    (with-store store
+      (let* ((transform (options->transformation opts))
+             (items     (filter-map (match-lambda
+                                      (('argument . (? store-path? item))
+                                       item)
+                                      (('argument . spec)
+                                       (transform store
+                                                  (specification->package spec)))
+                                      (('expression . exp)
+                                       (transform store
+                                                  (read/eval-package-expression exp)))
+                                      (_ #f))
+                                    opts)))
         ;; Ask for absolute file names so that .drv file names passed from the
         ;; user to 'read-derivation' are absolute when it returns.
         (with-fluids ((%file-port-name-canonicalization 'absolute))

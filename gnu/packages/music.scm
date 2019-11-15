@@ -24,6 +24,7 @@
 ;;; Copyright © 2019 Jakob L. Kreuze <zerodaysfordays@sdf.lonestar.org>
 ;;; Copyright © 2019 raingloom <raingloom@protonmail.com>
 ;;; Copyright © 2019 David Wilson <david@daviwil.com>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1283,6 +1284,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                (("#include <QWidget>" m)
                 (string-append m "\n#include <QButtonGroup>\n#include <QAction>")))
              #t))
+         ;; FIXME: Finding RtMidi was fixed upstream so we should be able to
+         ;; remove this hack when a release is made.
+         ;; See https://github.com/powertab/powertabeditor/issues/255
+         (add-after 'unpack 'fix-rtmidi-header
+           (lambda _
+             (substitute* "source/audio/midioutputdevice.cpp"
+               (("#include <RtMidi.h>") "#include <rtmidi/RtMidi.h>"))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
@@ -1371,7 +1380,7 @@ users to select LV2 plugins and run them with jalv.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.9.8")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri
@@ -1379,7 +1388,7 @@ users to select LV2 plugins and run them with jalv.")
                               "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "15kabmxp38wqvavs5hr1dqasjjf1j977kzqggxfmzyi3y5fan3hj"))))
+                "116k2vca9dygvsd684wvxm61p0l1xrrgdph4qrrprlsr6vj0llgm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1403,7 +1412,7 @@ oscillators and stereo effects.")
 (define-public drumkv1
   (package
     (name "drumkv1")
-    (version "0.9.8")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri
@@ -1411,7 +1420,7 @@ oscillators and stereo effects.")
                               "/drumkv1-" version ".tar.gz"))
               (sha256
                (base32
-                "010p8nwnmqgj5mw324psig3hxi1g2gylxrigd6sj6sgcpy3kdm23"))))
+                "1wnjn175l0mz51k9pjf3pdzv54c4jlh63saavld9lm6zfgfs13d7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1436,7 +1445,7 @@ effects.")
 (define-public samplv1
   (package
     (name "samplv1")
-    (version "0.9.8")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri
@@ -1444,7 +1453,7 @@ effects.")
                               "/samplv1-" version ".tar.gz"))
               (sha256
                (base32
-                "138kd9szgn3b97s7crhsyj8pgwb0bn4l9knd4zliqjgj2f1bs9x0"))))
+                "17zs8kvvwqv00bm4lxpn09a5hxjlbz7k5mkl3k7jspw7rqn3djf2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -1469,7 +1478,7 @@ effects.")
 (define-public padthv1
   (package
     (name "padthv1")
-    (version "0.9.8")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri
@@ -1477,7 +1486,7 @@ effects.")
                               "/padthv1-" version ".tar.gz"))
               (sha256
                (base32
-                "1k4p2ir12qjcs62knvw2s6qyvb46203yx22fnwp341cjk171cxji"))))
+                "02yfwyirjqxa075yqdnci9b9k57kdmkjvn9gnpdbnjp887pds76g"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; there are no tests
@@ -2142,7 +2151,7 @@ capabilities, custom envelopes, effects, etc.")
 (define-public yoshimi
   (package
     (name "yoshimi")
-    (version "1.6.0.1")
+    (version "1.6.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/yoshimi/"
@@ -2150,7 +2159,7 @@ capabilities, custom envelopes, effects, etc.")
                                   "/yoshimi-" version ".tar.bz2"))
               (sha256
                (base32
-                "140f2k4akj39pny8c7i794q125415gyvmy4rday0il5ncp3glik4"))))
+                "1z2mnmm299ng6jcwa61dzr1ilwa5fjgsggxl2wa5smji6b4npmx7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f                      ; there are no tests
@@ -2344,14 +2353,14 @@ from the command line.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.9.6")
+    (version "0.9.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "06sa4wl8zr0k8dnjiil0gjwnhrkq95h50xv56ih1y8jgyzxchaxp"))))
+                "1482da0lr77i57jby80cnn4bb9ws3v1i1j6m2hbwdnvqab9csvnx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f))                    ; no "check" target
@@ -3707,7 +3716,7 @@ are a C compiler and glib.  Full API documentation and examples are included.")
 (define-public lmms
   (package
     (name "lmms")
-    (version "1.1.3")
+    (version "1.2.1")
     (source
      (origin
        (method git-fetch)
@@ -3717,12 +3726,23 @@ are a C compiler and glib.  Full API documentation and examples are included.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "03hhymc6d73fa3wbcqb7rm1l03zkw605k5i9kvkvjmv488bqh3pd"))))
+         "1gx730z361xx30iqbsm99aam1k2c8yf561gcay6sryyjksb4w1wy"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no tests
+       ;; Qt 5 support must be explicitly enabled in the 1.2 stable versions of
+       ;; LMMS, so try removing "-DWANT_QT5=ON" in later versions.
+       ;; Also, explicitly disabling VST support gets rid of the in-tree
+       ;; dependency on qt5-x11embed.
+       #:configure-flags '("-DWANT_QT5=ON"
+                           "-DWANT_VST=OFF")
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-rpmalloc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-recursively (assoc-ref inputs "rpmalloc")
+                               "src/3rdparty/rpmalloc/rpmalloc")
+             #t))
          (add-before 'configure 'set-ldflags
            (lambda* (#:key outputs #:allow-other-keys)
              (setenv "LDFLAGS"
@@ -3733,12 +3753,6 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                       (assoc-ref outputs "out") "/lib/lmms/ladspa"
                       "\""))
              #t))
-         (add-before 'configure 'remove-Werror
-           (lambda _
-             (substitute* "CMakeLists.txt"
-               (("SET\\(WERROR_FLAGS \"\\$\\{WERROR_FLAGS\\} -Werror")
-                "SET(WERROR_FLAGS \"${WERROR_FLAGS}"))
-             #t))
          (add-before 'reset-gzip-timestamps 'make-manpages-writable
            (lambda* (#:key outputs #:allow-other-keys)
              (map (lambda (file)
@@ -3748,14 +3762,30 @@ are a C compiler and glib.  Full API documentation and examples are included.")
                               ".*\\.gz$"))
              #t)))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
+       ;; rpmalloc is a public domain memory allocator. This version specified
+       ;; below is the version required by LMMS.
+       ;; To get the new commit of rpmalloc to use here, run
+       ;;   `git submodule--helper list | grep rpmalloc | cut -f2 -d' '`
+       ;; in the cloned LMMS repository.
+       ("rpmalloc"
+        ,(origin
+           (method git-fetch)
+           (uri (git-reference
+                 (url "https://github.com/mjansson/rpmalloc.git")
+                 (commit "b5bdc18051bb74a22f0bde4bcc90b01cf590b496")))
+           (sha256
+            (base32
+             "0g9pls46iggg7rdm65vzfj8nyr3v2n5xkp54c4qbh9hhalpsw4ay"))))))
     (inputs
      `(("sdl" ,sdl)
-       ("qt" ,qt-4)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("fltk" ,fltk)
        ("libogg" ,libogg)
        ("libsamplerate" ,libsamplerate)
-       ("fluidsynth" ,fluidsynth-1)         ;XXX: try using 2.x when updating
+       ("fluidsynth" ,fluidsynth)
        ("libvorbis" ,libvorbis)
        ("alsa-lib" ,alsa-lib)
        ("portaudio" ,portaudio)
@@ -3774,7 +3804,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
 (define-public musescore
   (package
     (name "musescore")
-    (version "3.2.3")
+    (version "3.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -3783,7 +3813,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "17wx1wl8ns2k31qvrr888dxnrsa13vazg04zh2sn2q4vzd869a7v"))
+                "15ckjwvp3xigjkzmp1ddzvlm4d0vlk9i1axyfxg3hr2sia84yxvi"))
               (modules '((guix build utils)))
               (snippet
                ;; Un-bundle OpenSSL and remove unused libraries.
@@ -3801,8 +3831,7 @@ audio samples and various soft sythesizers.  It can receive input from a MIDI ke
     (build-system cmake-build-system)
     (arguments
      `(#:configure-flags
-       `("-DBUILD_CRASH_REPORTER=OFF"
-         "-DBUILD_WEBENGINE=OFF"
+       `("-DBUILD_WEBENGINE=OFF"
          "-DDOWNLOAD_SOUNDFONT=OFF"
          "-DUSE_SYSTEM_FREETYPE=ON")
        ;; There are tests, but no simple target to run.  The command used to
@@ -4679,3 +4708,308 @@ You can also get metadata about the playing track such as the artist and title
 for integration into status line generators or other command-line tools.")
     (home-page "https://github.com/altdesktop/playerctl")
     (license license:lgpl3+)))
+
+(define-public artyfx
+  (package
+    (name "artyfx")
+    (version "1.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url
+                     "https://github.com/openAVproductions/openAV-ArtyFX.git")
+                    (commit (string-append "release-" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "012hcy1mxl7gs2lipfcqp5x0xv1azb9hjrwf0h59yyxnzx96h7c9"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                                ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-architecture-specific-flags
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("-msse2 -mfpmath=sse") ""))
+             #t)))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2" ,lv2)))
+    (home-page "http://openavproductions.com/artyfx/")
+    (synopsis "Audio effect LV2 plugin bundle")
+    (description "ArtyFX is an LV2 plugin bundle of artistic real-time audio
+effects.  It contains a bitcrusher, delay, distortion, equalizer, compressor,
+and reverb.")
+    (license license:gpl2+)))
+
+(define-public sherlock-lv2
+  (package
+    (name "sherlock-lv2")
+    (version "0.20.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://git.open-music-kontrollers.ch/lv2/"
+             "sherlock.lv2/snapshot/sherlock.lv2-"
+             version ".tar.xz"))
+       (sha256
+        (base32
+         "1c5xajpss9h8lbyx160bbzg8va50n2d74qwnxig9sf468rzmha1y"))))
+    (build-system meson-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("sratom" ,sratom)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Investigative LV2 plugin bundle")
+    (description "The Sherlock plugin bundle contains LV2 plugins for
+visualizing LV2 atom, MIDI and OSC events.  They can be used for monitoring
+and debugging of event signal flows inside plugin graphs.")
+    (home-page "https://open-music-kontrollers.ch/lv2/sherlock/")
+    (license license:artistic2.0)))
+
+(define-public x42-plugins
+  (package
+    (name "x42-plugins")
+    (version "20191013")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://gareus.org/misc/x42-plugins/x42-plugins-"
+                       version ".tar.xz"))
+       (sha256
+        (base32
+         "18kn1bmc0s6dp834kc51ibifzzn3bxwya4p8s8yq9f4mpmkghi24"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "LIBZITACONVOLVER=-lzita-convolver"
+             (string-append "FONTFILE="
+                            (assoc-ref %build-inputs "font-dejavu")
+                            "/share/fonts/truetype/DejaVuSans-Bold.ttf"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fftwf" ,fftwf)
+       ("ftgl" ,ftgl)
+       ("glib" ,glib)
+       ("glu" ,glu)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)
+       ("libltc" ,libltc)
+       ("libsamplerate" ,libsamplerate)
+       ("libx11" ,libx11)
+       ("pango" ,pango)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("help2man" ,help2man)
+       ("liblo" ,liblo)
+       ("lv2" ,lv2)
+       ("font-dejavu" ,font-dejavu)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Collection of LV2/JACK audio/MIDI processing plugins")
+    (description "x42-plugins is a collection of over 80 cross-platform LV2
+audio and MIDI plugins that can also run as standalone JACK applications.")
+    (home-page "https://x42-plugins.com/x42/")
+    (license license:gpl2+)))
+
+(define-public zam-plugins
+  (package
+    (name "zam-plugins")
+    (version "3.11")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/zamaudio/zam-plugins.git")
+         (commit version)
+         ;; Recursive to fetch the DISTRHO plugin framework. This
+         ;; framework is intended to be included in the sources
+         ;; and not to be used as a library.
+         (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0jlbxm0g93plgd3g4r9rsr0c7868ms49bs0ljpqb6kw6132hsapp"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             "HAVE_ZITA_CONVOLVER=true")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("fftwf" ,fftwf)
+       ("jack" ,jack-1)                 ;for the standalone JACK application
+       ("liblo" ,liblo)
+       ("libsamplerate" ,libsamplerate)
+       ("mesa" ,mesa)
+       ("zita-convolver" ,zita-convolver)))
+    (native-inputs
+     `(("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Collection of audio processing plugins")
+    (description
+     "Zam plugins is a collection of audio processing plugins in the LADSPA,
+LV2 and VST2 formats, as well as standalone JACK versions.  The collection
+includes ZaMaximX2, ZamAutoSat, ZamComp, ZamCompX2, ZamEQ2, ZamGEQ31,
+ZamHeadX2, ZamPhono, ZamGate, ZamGateX2, ZamTube, ZamDelay, ZamDynamicEQ,
+ZaMultiComp, ZaMultiCompX2 and ZamSynth.")
+    (home-page "http://www.zamaudio.com/?p=976")
+    (license license:gpl2+)))
+
+(define-public geonkick
+  (package
+    (name "geonkick")
+    (version "1.9.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/geontime/geonkick.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "17mwxnmxszdm2wjbigciwh8qx0487q9qhf4sl92y6nqdb0dlghnl"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests included
+       #:configure-flags
+       (list (string-append "-DGKICK_REDKITE_SDK_PATH="
+                            (assoc-ref %build-inputs "redkite"))
+             (string-append "-DCMAKE_INSTALL_PREFIX="
+                            (assoc-ref %outputs "out")))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("hicolor-icon-theme" ,hicolor-icon-theme)
+       ("jack" ,jack-1)                 ;for the standalone JACK application
+       ("libsndfile" ,libsndfile)
+       ("libx11" ,libx11)
+       ("redkite" ,redkite)
+       ("rapidjson" ,rapidjson)))
+    (native-inputs
+     `(("lv2" ,lv2)
+       ("pkg-config" ,pkg-config)
+       ("sord" ,sord)))
+    (synopsis "Percussion synthesizer")
+    (description "Geonkick is a synthesizer that can synthesize elements
+of percussion such as kicks, snares, hit-hats, shakers, claps and sticks.
+It can also play and mix samples.")
+    (home-page "https://gitlab.com/geontime/geonkick")
+    (license license:gpl3+)))
+
+(define-public dpf-plugins
+  (package
+    (name "dpf-plugins")
+    (version "1.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri
+        (git-reference
+         (url "https://github.com/DISTRHO/DPF-Plugins.git")
+         (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1hsfmpv3kvpiwk8nfw9xpaipzy0n27i83y2v1yr93lznwm5rqrbs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _ (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("liblo" ,liblo)                 ; for dssi plugins
+       ("jack" ,jack-1)                 ; for standalone applications
+       ("mesa" ,mesa)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("dssi" ,dssi)
+       ("lv2" ,lv2)))
+    (home-page "https://github.com/DISTRHO/DPF-Plugins")
+    (synopsis "Audio plugin collection")
+    (description "Collection of audio plugins built with the DISTRHO Plugin
+Framework (DPF) available in LADSPA, DSSI, LV2 and VST2 formats.  This
+package includes the following plugins: glBars, Kars, Max-Gen examples
+(MaBitcrush, MaFreeverb, MaGigaverb, MaPitchshift), Mini-Series (3BandEQ,
+3BandSplitter, PingPongPan), ndc-Plugs (Amplitude Imposer, Cycle Shifter,
+Soul Force), MVerb, Nekobi, and ProM.")
+    ;; This package consists of several plugins refactored to use the
+    ;; DISTHRO Plugin Framework (DPF). Different copyrights and licenses
+    ;; apply to different plugins. The root LICENSE file has a table with
+    ;; license information for each plugin and paths to each license
+    (license (list license:isc license:gpl3 license:lgpl3 license:expat license:gpl2))))
+
+(define-public avldrums-lv2
+  (package
+    (name "avldrums-lv2")
+    (version "0.4.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/x42/avldrums.lv2.git")
+             (commit (string-append "v" version))
+             ;; This plugin expects the robtk submodule's source files to be
+             ;; there in order to build.
+             (recursive? #t)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1z70rcq6z3gkb4fm8dm9hs31bslwr97zdh2n012fzki9b9rdj5qv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ; no "check" target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'set-CC-variable
+           (lambda _
+             (setenv "CC" "gcc") #t))
+         (delete 'configure))))
+    (inputs
+     `(("cairo" ,cairo)
+       ("dssi" ,dssi)
+       ("glu" ,glu)
+       ("mesa" ,mesa)
+       ("pango" ,pango)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("lv2" ,lv2)))
+    (home-page "https://x42-plugins.com/x42/x42-avldrums")
+    (synopsis "Drum sample player LV2 plugin dedicated to the AVLinux Drumkits")
+    (description "AVLdrums is a drum sample player LV2 plugin dedicated to Glen
+MacArthur's AVLdrums.  This plugin provides a convenient way to sequence and mix
+MIDI drums and comes as two separate drumkits: Black Pearl and Red Zeppelin.")
+    (license license:gpl2+)))

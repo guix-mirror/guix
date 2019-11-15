@@ -22,6 +22,7 @@
 # Copyright © 2018 Maxim Cournoyer <maxim.cournoyer@gmail.com>
 # Copyright © 2019 Guillaume Le Vaillant <glv@posteo.net>
 # Copyright © 2019 John Soo <jsoo1@asu.edu>
+# Copyright © 2019 Jonathan Brielmaier <jonathan.brielmaier@web.de>
 #
 # This file is part of GNU Guix.
 #
@@ -212,6 +213,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gl.scm				\
   %D%/packages/glib.scm				\
   %D%/packages/gnome.scm			\
+  %D%/packages/gnome-xyz.scm			\
   %D%/packages/gnu-doc.scm			\
   %D%/packages/gnucash.scm			\
   %D%/packages/gnunet.scm			\
@@ -759,7 +761,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/coda-use-system-libs.patch		\
   %D%/packages/patches/combinatorial-blas-awpm.patch		\
   %D%/packages/patches/combinatorial-blas-io-fix.patch		\
-  %D%/packages/patches/cpio-CVE-2016-2037.patch			\
   %D%/packages/patches/cpufrequtils-fix-aclocal.patch		\
   %D%/packages/patches/crawl-upgrade-saves.patch		\
   %D%/packages/patches/crda-optional-gcrypt.patch		\
@@ -781,6 +782,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/docbook-xsl-nonrecursive-string-subst.patch	\
   %D%/packages/patches/doc++-include-directives.patch		\
   %D%/packages/patches/doc++-segfault-fix.patch			\
+  %D%/packages/patches/docker-adjust-tests-for-changes-in-go.patch	\
   %D%/packages/patches/docker-engine-test-noinstall.patch	\
   %D%/packages/patches/docker-fix-tests.patch			\
   %D%/packages/patches/docker-use-fewer-modprobes.patch		\
@@ -836,6 +838,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/flint-ldconfig.patch			\
   %D%/packages/patches/foomatic-filters-CVE-2015-8327.patch	\
   %D%/packages/patches/foomatic-filters-CVE-2015-8560.patch	\
+  %D%/packages/patches/fribidi-CVE-2019-18397.patch		\
   %D%/packages/patches/freeimage-unbundle.patch		\
   %D%/packages/patches/fuse-overlapping-headers.patch				\
   %D%/packages/patches/gawk-shell.patch				\
@@ -997,11 +1000,13 @@ dist_patch_DATA =						\
   %D%/packages/patches/java-jeromq-fix-tests.patch		\
   %D%/packages/patches/java-powermock-fix-java-files.patch		\
   %D%/packages/patches/java-simple-xml-fix-tests.patch		\
+  %D%/packages/patches/java-svg-salamander-Fix-non-det.patch	\
   %D%/packages/patches/java-xerces-bootclasspath.patch	\
   %D%/packages/patches/java-xerces-build_dont_unzip.patch	\
   %D%/packages/patches/java-xerces-xjavac_taskdef.patch	\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/kdbusaddons-kinit-file-name.patch	\
+  %D%/packages/patches/libvirt-create-machine-cgroup.patch	\
   %D%/packages/patches/libziparchive-add-includes.patch		\
   %D%/packages/patches/localed-xorg-keyboard.patch		\
   %D%/packages/patches/kiki-level-selection-crash.patch		\
@@ -1189,6 +1194,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/opencv-rgbd-aarch64-test-fix.patch	\
   %D%/packages/patches/openfoam-4.1-cleanup.patch			\
   %D%/packages/patches/openjdk-10-idlj-reproducibility.patch	\
+  %D%/packages/patches/openmpi-psm2-priority.patch		\
   %D%/packages/patches/openocd-nrf52.patch			\
   %D%/packages/patches/opensmtpd-fix-crash.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
@@ -1204,8 +1210,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/p7zip-CVE-2016-9296.patch		\
   %D%/packages/patches/p7zip-CVE-2017-17969.patch		\
   %D%/packages/patches/p7zip-remove-unused-code.patch		\
-  %D%/packages/patches/patchelf-page-size.patch			\
-  %D%/packages/patches/patchelf-rework-for-arm.patch		\
   %D%/packages/patches/patchutils-test-perms.patch		\
   %D%/packages/patches/patch-hurd-path-max.patch		\
   %D%/packages/patches/pcre2-fix-jit_match-crash.patch		\
@@ -1273,6 +1277,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-faker-fix-build-32bit.patch	\
   %D%/packages/patches/python-keras-integration-test.patch	\
+  %D%/packages/patches/python-pep8-stdlib-tokenize-compat.patch \
   %D%/packages/patches/python-pyfakefs-remove-bad-test.patch	\
   %D%/packages/patches/python-flint-includes.patch		\
   %D%/packages/patches/python-libxml2-utf8.patch		\
@@ -1390,6 +1395,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tuxpaint-stamps-path.patch		\
   %D%/packages/patches/txr-shell.patch				\
   %D%/packages/patches/u-boot-fix-mkimage-header-verification.patch	\
+  %D%/packages/patches/udiskie-no-appindicator.patch		\
   %D%/packages/patches/unzip-CVE-2014-8139.patch		\
   %D%/packages/patches/unzip-CVE-2014-8140.patch		\
   %D%/packages/patches/unzip-CVE-2014-8141.patch		\
@@ -1415,6 +1421,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/vinagre-newer-freerdp.patch             \
   %D%/packages/patches/vinagre-newer-rdp-parameters.patch      \
   %D%/packages/patches/virglrenderer-CVE-2017-6386.patch 	\
+  %D%/packages/patches/vlc-fix-test_libvlc_slaves.patch \
   %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\

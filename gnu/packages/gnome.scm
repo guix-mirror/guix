@@ -569,9 +569,17 @@ and keep up to date translations of documentation.")
                (base32
                 "1365fabz3q7n3bl775z82m1nzg18birxxyd7l2ssbbkqrx3h7wgi"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")             ; gtk-update-icon-cache
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("docbook-xml" ,docbook-xml)
@@ -2062,14 +2070,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.45")
+    (version "0.10.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/goffice/"
                                   (version-major+minor version)  "/"
                                   "goffice-" version ".tar.xz"))
               (sha256
-               (base32 "0iqrygv2bh8kiw98kjx6ay6qdd288v91q5m8n7cvs2zcx5ksaavh"))))
+               (base32 "1a8kba36zwzr0ilafc0d1nsxxma1qibviiifd0jhbxp180x6v385"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                  ; 4.0 MiB of gtk-doc
@@ -2126,7 +2134,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.45")
+    (version "1.12.46")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gnumeric/"
@@ -2134,7 +2142,7 @@ Hints specification (EWMH).")
                                   "gnumeric-" version ".tar.xz"))
               (sha256
                (base32
-                "0c8dl1kvnj3g32qy3s92qpqpqfy0in59cx005gjvvzsflahav61h"))))
+                "1qdmw2dp7rmq8fmjapgwaks7ajh270wm6kyvlxlzwbgmg8vngp4z"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
@@ -3059,7 +3067,16 @@ keyboard shortcuts.")
              (substitute* "rules/meson.build"
                (("udev.get_pkgconfig_variable\\('udevdir'\\)")
                 (string-append "'" (assoc-ref outputs "out") "/lib/udev'")))
-             #t)))))
+             #t))
+         (add-before 'configure 'set-sqlite3-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; "colormgr dump" works by invoking the "sqlite3" command.
+             ;; Record its absolute file name.
+             (let ((sqlite (assoc-ref inputs "sqlite")))
+               (substitute* "client/cd-util.c"
+                 (("\"sqlite3\"")
+                  (string-append "\"" sqlite "/bin/sqlite3\"")))
+               #t))))))
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-compile-resources, etc.
        ("gobject-introspection" ,gobject-introspection)
@@ -3455,12 +3472,20 @@ both a traditional UI or a modern UI with a GtkHeaderBar.")
                (base32
                 "036sddvhs0blqpc2ixmjdl9vxynvkn5jpgn0jxr1fxcm4rh3q07a"))))
     (build-system meson-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (native-inputs
      `(("intltool" ,intltool)
        ("itstool" ,itstool)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin") ; for glib-mkmenus
-       ("gtk+:bin" ,gtk+ "bin")  ; for gtk-update-icon-cache
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("amtk" ,amtk)
@@ -3922,7 +3947,6 @@ for application developers.")
        ("desktop-file-utils" ,desktop-file-utils)
        ("gobject-introspection" ,gobject-introspection)
        ("glib:bin" ,glib "bin")                   ;for 'glib-mkenums'
-       ("gtk:bin" ,gtk+ "bin")                    ;for 'gtk-update-icon-cache'
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("xmllint" ,libxml2)))
@@ -3978,6 +4002,12 @@ for application developers.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-before
           'install 'disable-cache-generation
           (lambda _
@@ -4111,6 +4141,12 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                            (assoc-ref %outputs "out") "/lib/eog"))
       #:phases
       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
         (add-after 'install 'wrap-eog
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out               (assoc-ref outputs "out"))
@@ -4124,7 +4160,6 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
     `(("intltool" ,intltool)
       ("itstool" ,itstool)
       ("glib" ,glib "bin")
-      ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("xmllint" ,libxml2)))
@@ -4294,12 +4329,14 @@ DAV, and others.")
     (name "gusb")
     (version "0.3.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hughsie/libgusb/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/hughsie/libgusb.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1wa9787ww7s1kl9jml6kiyrjgimlgagq4jmgdj7xcpsx83w10qxk"))))
+                "002pg0p4qzzk5dkyiynm483ir26zxrn4k71c7f6j85mfsdzbgli7"))))
     (build-system meson-build-system)
     (native-inputs
      `(("gobject-introspection" ,gobject-introspection)
@@ -4378,6 +4415,12 @@ almost all of them.")
      `(#:glib-or-gtk? #t
        #:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t))
          (add-after 'wrap 'wrap-more
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out  (assoc-ref outputs "out"))
@@ -4400,8 +4443,7 @@ almost all of them.")
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
        ("python" ,python)
-       ("glib:bin" ,glib "bin")
-       ("gtk+" ,gtk+ "bin")))
+       ("glib:bin" ,glib "bin")))
     (inputs
      `(("gobject-introspection" ,gobject-introspection)
        ("glib-networking" ,glib-networking)
@@ -4447,6 +4489,14 @@ a secret password store, an adblocker, and a modern UI.")
      ;;   FAIL
      '(#:tests? #f
        #:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "post_install.py"
+               (("gtk-update-icon-cache") "true"))
+             #t)))
        #:configure-flags
        ;; Otherwise, the RUNPATH will lack the final 'epiphany' path component.
        (list (string-append "-Dc_link_args=-Wl,-rpath="
@@ -4456,7 +4506,6 @@ a secret password store, an adblocker, and a modern UI.")
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils) ; for update-desktop-database
        ("glib:bin" ,glib "bin") ; for glib-mkenums
-       ("gtk+:bin" ,gtk+ "bin") ; for gtk-update-icon-cache
        ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("pkg-config" ,pkg-config)
@@ -6672,6 +6721,7 @@ associations for GNOME.")
        ("gnome-default-applications" ,gnome-default-applications)
        ("gnome-keyring"             ,gnome-keyring)
        ("gnome-online-accounts"     ,gnome-online-accounts)
+       ("gnome-screenshot"          ,gnome-screenshot)
        ("gnome-session"             ,gnome-session)
        ("gnome-settings-daemon"     ,gnome-settings-daemon)
        ("gnome-shell"               ,gnome-shell)
@@ -7062,38 +7112,6 @@ GNOME Shell appearance and extension, etc.")
     (description "GNOME Shell extensions modify and extend GNOME Shell
 functionality and behavior.")
     (home-page "https://extensions.gnome.org/")
-    (license license:gpl3+)))
-
-(define-public numix-theme
-  (package
-    (name "numix-theme")
-    (version "2.6.7")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/numixproject/numix-gtk-theme.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "12mw0kr0kkvg395qlbsvkvaqccr90cmxw5rrsl236zh43kj8grb7"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:make-flags (list (string-append "DESTDIR=" (assoc-ref %outputs "out")))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (delete 'check))))
-    (native-inputs
-     `(("glib:bin" ,glib "bin")             ; for glib-compile-schemas
-       ("gnome-shell" ,gnome-shell)
-       ("gtk+" ,gtk+)
-       ("xmllint" ,libxml2)
-       ("ruby-sass" ,ruby-sass)))
-    (synopsis "Flat theme with light and dark elements")
-    (description "Numix is a modern flat theme with a combination of light and
-dark elements.  It supports GNOME, Unity, Xfce, and Openbox.")
-    (home-page "https://numixproject.github.io")
     (license license:gpl3+)))
 
 (define-public arc-theme
@@ -7784,15 +7802,15 @@ views can be printed as PDF or PostScript files, or exported to HTML.")
 (define-public lollypop
   (package
     (name "lollypop")
-    (version "1.2.2")
+    (version "1.2.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://gitlab.gnome.org/World/lollypop/uploads/"
-                           "aa4fbd92bf338296c28e54710271ccab/"
+                           "08f973788c7ca46d9285eec2ac818edb/"
                            "lollypop-" version ".tar.xz"))
        (sha256
-        (base32 "1wz5fna24qr3v7h29ijwhdxza85r9srz9xsqz4f4df3p5f8rfyql"))))
+        (base32 "0hvq6m4i62i0m63bg4gzpfb9rv1fk6vq5jl2g3ppcgm4srmfm77j"))))
     (build-system meson-build-system)
     (arguments
      `(#:imported-modules ((guix build python-build-system)
@@ -8398,6 +8416,73 @@ intefaces for mobile devices using GTK+.")
 access library.  It only implements the core plumbing functions, not really the
 higher level porcelain stuff.")
     (home-page "https://wiki.gnome.org/Projects/Libgit2-glib")
+    (license license:gpl2+)))
+
+(define-public gitg
+  (package
+    (name "gitg")
+    (version "3.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0npg4kqpwl992fgjd2cn3fh84aiwpdp9kd8z7rw2xaj2iazsm914"))))
+    (build-system meson-build-system)
+    (arguments
+     `(#:glib-or-gtk? #t
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-post-install-partially
+           (lambda _
+             (substitute* "meson_post_install.py"
+               (("'python'") ; there are no python sources to compile
+                (string-append "'" (which "true") "'"))
+               (("gtk-update-icon-cache") (which "true")))
+             #t))
+         (add-after 'unpack 'fix-test-sources
+           (lambda _
+             (substitute* "tests/libgitg/test-commit.vala"
+               (("/bin/bash") (which "bash")))
+             #t))
+         (add-after 'glib-or-gtk-wrap 'wrap-typelib
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((prog (string-append (assoc-ref outputs "out")
+                                        "/bin/gitg")))
+               (wrap-program prog
+                 `("GI_TYPELIB_PATH" = (,(getenv "GI_TYPELIB_PATH"))))
+               #t))))))
+    (inputs
+     `(("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("gtkspell3" ,gtkspell3)
+       ("gtksourceview" ,gtksourceview-3)
+       ("json-glib" ,json-glib)
+       ("libdazzle" ,libdazzle)
+       ("libgee" ,libgee)
+       ("libgit2" ,libgit2) ; propagated by libgit2-glib
+       ("libgit2-glib" ,libgit2-glib)
+       ("libpeas" ,libpeas)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gtk+:bin" ,gtk+ "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (synopsis "Graphical user interface for git")
+    (description
+     "gitg is a graphical user interface for git.  It aims at being a small,
+fast and convenient tool to visualize the history of git repositories.
+Besides visualization, gitg also provides several utilities to manage your
+repository and commit your work.")
+    (home-page "https://wiki.gnome.org/Apps/Gitg")
     (license license:gpl2+)))
 
 (define-public gnome-mahjongg

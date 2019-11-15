@@ -1208,7 +1208,7 @@ they can refer to each other."
 
 (define %module-cache
   ;; Map a list of modules to its 'imported+compiled-modules' result.
-  (make-weak-value-hash-table))
+  (make-hash-table))
 
 (define* (imported+compiled-modules store modules #:key
                                     (system (%current-system))

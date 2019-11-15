@@ -28,6 +28,7 @@
 ;;; Copyright © 2019 Wiktor Żelazny <wzelazny@vurv.cz>
 ;;; Copyright © 2019 Kyle Andrews <kyle.c.andrews@gmail.com>
 ;;; Copyright © 2019 Josh Holland <josh@inv.alid.pw>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -552,7 +553,7 @@ move windows, switch between desktops, etc.).")
 (define-public scrot
   (package
     (name "scrot")
-    (version "0.9")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -562,14 +563,17 @@ move windows, switch between desktops, etc.).")
          (commit version)))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1dg0pnmk09p7zlbyxv7d40vf54amrv73y976ds5p7096x6lmlndy"))))
+        (base32 "08gkdby0ysx2mki57z81zlm7vfnq9c1gq692xw67cg5vv2p3320w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
+       ("autoconf-archive" ,autoconf-archive)
        ("automake" ,automake)))
     (inputs
      `(("giblib" ,giblib)
-       ("libx11" ,libx11)))
+       ("libx11" ,libx11)
+       ("libXcursor" ,libxcursor)
+       ("libXfixes" ,libxfixes)))
     (home-page "https://github.com/resurrecting-open-source-projects/scrot")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
@@ -733,6 +737,7 @@ to find buttons, etc, on the screen to click on.")
               (method git-fetch)
               (uri (git-reference (url home-page)
                                   (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "0vp8ja68hpmqkl61zyjar3czhmny1hbm74m8f393incfz1ymr3i8"))))
@@ -1454,6 +1459,7 @@ XCB util-xrm module provides the following libraries:
               (uri (git-reference
                     (url home-page)
                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "05fzdjmhiafgi2jf0k41i3nm0837a78sb6yv59cwc23nla8g0bhr"))

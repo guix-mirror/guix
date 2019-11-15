@@ -242,14 +242,14 @@ seen in a terminal.")
 (define-public highlight
   (package
     (name "highlight")
-    (version "3.50")
+    (version "3.54")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.andre-simon.de/zip/highlight-"
                            version ".tar.bz2"))
        (sha256
-        (base32 "0frcq12zy3dqfhwwzylm10ydp7zp51w9jlijm23zvx09daslg1bl"))))
+        (base32 "1l6nxk3vwd7rkxpq9aqisjyps89r008wzn3abh4566q6jigahl4a"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests

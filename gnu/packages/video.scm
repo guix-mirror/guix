@@ -508,7 +508,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public x265
   (package
     (name "x265")
-    (version "3.2")
+    (version "3.2.1")
     (outputs '("out" "static"))
     (source
       (origin
@@ -518,7 +518,7 @@ H.264 (MPEG-4 AVC) video streams.")
                    (string-append "https://download.videolan.org/videolan/x265/"
                                   "x265_" version ".tar.gz")))
         (sha256
-         (base32 "0fqkhfhr22gzavxn60cpnj3agwdf5afivszxf3haj5k1sny7jk9n"))
+         (base32 "1k5vijsy6cgcghw69f5275xfmbjjx7js0nlbgxbd6krnjb7sv6zv"))
         (patches (search-patches "x265-arm-flags.patch"))
         (modules '((guix build utils)))
         (snippet '(begin
@@ -1088,20 +1088,26 @@ videoformats depend on the configuration flags of ffmpeg.")
     (name "vlc")
     (version "3.0.8")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "https://download.videolan.org/pub/videolan/vlc/"
-                   (car (string-split version #\-))
-                   "/vlc-" version ".tar.xz"))
-             (sha256
-              (base32
-               "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))))
+              (method url-fetch)
+              (uri (string-append
+                    "https://download.videolan.org/pub/videolan/vlc/"
+                    (car (string-split version #\-))
+                    "/vlc-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1xmxjpyzdhabchwncz6lvx3kzvl7fz9c42bkv3nbj68albs9w570"))
+              (patches
+               (search-patches
+                ;; TODO: The test "libvlc_slaves" fails.  Applied upstream as
+                ;; <https://git.videolan.org/?p=vlc.git;a=commit;h=4186c94104ee528abd6860611b49515f3e6ec644>.
+                ;; Try removing it in 3.0.9.
+                "vlc-fix-test_libvlc_slaves.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("flex" ,flex)
        ("bison" ,bison)
        ("gettext" ,gettext-minimal)
-       ("git" ,git) ; needed for a test
+       ("git" ,git)                     ; needed for a test
        ("pkg-config" ,pkg-config)))
     ;; FIXME: Add optional inputs once available.
     (inputs
@@ -1182,7 +1188,7 @@ videoformats depend on the configuration flags of ffmpeg.")
        `("BUILDCC=gcc"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
-                         "/lib"))                 ;needed for the tests
+                         "/lib"))       ;needed for the tests
 
        #:phases
        (modify-phases %standard-phases
@@ -1233,11 +1239,11 @@ videoformats depend on the configuration flags of ffmpeg.")
                (invoke cachegen plugindir))))
          (add-after 'install 'wrap-executable
            (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out"))
-                  (plugin-path (getenv "QT_PLUGIN_PATH")))
-              (wrap-program (string-append out "/bin/vlc")
-                `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
-            #t)))))
+             (let ((out (assoc-ref outputs "out"))
+                   (plugin-path (getenv "QT_PLUGIN_PATH")))
+               (wrap-program (string-append out "/bin/vlc")
+                 `("QT_PLUGIN_PATH" ":" prefix (,plugin-path))))
+             #t)))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
@@ -1491,7 +1497,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2019.10.29")
+    (version "2019.11.05")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ytdl-org/youtube-dl/"
@@ -1499,7 +1505,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1lq6ycjbx07831s24yx42q6m6svas4mf02vbszw0965dbbzs7vp4"))))
+                "129461i4103slqj3nq69djnlmgjj3lfgmazn41avc5g967w29b85"))))
     (build-system python-build-system)
     (arguments
      ;; The problem here is that the directory for the man page and completion
@@ -1796,7 +1802,7 @@ players, like VLC or MPlayer.")
 (define-public libdvdread
   (package
     (name "libdvdread")
-    (version "6.0.1")
+    (version "6.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
@@ -1804,7 +1810,7 @@ players, like VLC or MPlayer.")
                                   "libdvdread-" version ".tar.bz2"))
               (sha256
                (base32
-                "1gfmh8ii3s2fw1c8vn57piwxc0smd3va4h7xgp9s8g48cc04zki8"))))
+                "1c7yqqn67m3y3n7nfrgrnzz034zjaw5caijbwbfrq89v46ph257r"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-libdvdcss=yes")))
@@ -1852,15 +1858,15 @@ MPEG-2 stream containing VOB packets.")
 (define-public libdvdnav
   (package
     (name "libdvdnav")
-    (version "6.0.0")
+    (version "6.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.videolan.org/videolan/"
-                                  name "/" version "/"
-                                  name "-" version ".tar.bz2"))
+                                  "libdvdnav/" version "/"
+                                  "libdvdnav-" version ".tar.bz2"))
               (sha256
                (base32
-                "062njcksmpgw9yv3737qkf93r2pzhaxi9szqjabpa8d010dp38ph"))))
+                "0cv7j8irsv1n2dadlnhr6i1b8pann2ah6xpxic41f04my6ba6rp5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2048,7 +2054,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "37")
+    (version "48")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2057,7 +2063,7 @@ capabilities.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1ma2s7dxk6y6l04qj1jvgwia4xj7999ny3a1yx2vbk5l83giam2p"))))
+                "1i6163bidlp0p9zcnxpsphr44ayfzd51fig4ri7vbrbl9lw9jaih"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -2202,7 +2208,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "6.16.0")
+    (version "6.18.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2211,7 +2217,7 @@ from sites like Twitch.tv and pipes them into a video player of choice.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1362fv63p34kza9v4b71b6wakgvsa2vdx9y0g28x3yh4cp4k97kx"))))
+                "0iiqym15n8kbnjzj0asmm86gs23yykz0va5b475cc4v2vv5admgx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -2295,7 +2301,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "24.0.1")
+    (version "24.0.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -2304,7 +2310,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "056s0hs1ds3c57sc0gy39dxaxvwlakl3w25jxgawh0fs99211ar5"))))
+                "0g8nzs696f3myz4hvygav85b0jgjmn6dicy50axmapdv8miff9xa"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))                    ; no tests

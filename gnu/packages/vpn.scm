@@ -213,14 +213,14 @@ the entire VPN in a network namespace accessible only through SSH.")
     (name "ocproxy")
     (version "1.60")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/cernekee/ocproxy/archive/v"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/cernekee/ocproxy.git")
+                     (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1b4rg3xq5jnrp2l14sw0msan8kqhdxmsd7gpw9lkiwvxy13pcdm7"))))
+                "03323nnhb4y9nzwva04mq7xg03dvdrgp689g89f69jqc261skcqx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -273,7 +273,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.4.7")
+    (version "2.4.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -281,7 +281,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0j7na936isk9j8nsdrrbw7wmy09inmjqvsb8mw8az7k61xbm6bx4"))))
+                "149z3agjy03i66mcj5bplim2mh45s2ps1wmxbxczyzw0nxmsd37v"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
@@ -305,14 +305,14 @@ traversing network address translators (@dfn{NAT}s) and firewalls.")
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.35")
+    (version "1.0.36")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://tinc-vpn.org/packages/"
-                                  name "-" version ".tar.gz"))
+                                  "tinc-" version ".tar.gz"))
               (sha256
                (base32
-                "0pl92sdwrkiwgll78x0ww06hfljd07mkwm62g8x17qn3gha3pj0q"))))
+                "021i2sl2mjscbm8g59d7vs74iw3gf0m48wg7w3zhwj6czarkpxs0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

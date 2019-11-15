@@ -34,15 +34,14 @@
 (define-public perl-compress-raw-bzip2
   (package
     (name "perl-compress-raw-bzip2")
-    (version "2.084")
+    (version "2.090")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Bzip2-" version ".tar.gz"))
        (sha256
-        (base32
-         "0kwjrsl519bv48b7698a9anj6l0n3z1vrd1a7im2r1pbffxxw5kx"))))
+        (base32 "0yi972il6i0ya65qar0767mm3sb2wbsrllsgx6296s5myh2838p6"))))
     (build-system perl-build-system)
     ;; TODO: Use our bzip2 package.
     (home-page "https://metacpan.org/release/Compress-Raw-Bzip2")
@@ -54,15 +53,14 @@ compression library.")
 (define-public perl-compress-raw-zlib
   (package
     (name "perl-compress-raw-zlib")
-    (version "2.084")
+    (version "2.090")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "Compress-Raw-Zlib-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vv69a8kjx64cxhjgaccidy2yyij2j3aqlrv1r0dwa1fl9xijpim"))))
+        (base32 "0ndgkv7z4zi3ffail9abp02x62dx1j3pnxn3rjw91py7pjd4kj7j"))))
     (build-system perl-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -90,19 +88,19 @@ compression library.")
 (define-public perl-io-compress
   (package
     (name "perl-io-compress")
-    (version "2.084")
+    (version "2.090")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://cpan/authors/id/P/PM/PMQS/"
                            "IO-Compress-" version ".tar.gz"))
        (sha256
-        (base32
-         "1dbdsxhbikmbbfsdam3crv8474l8ax6d9d7r3s6safk4v8z51g8x"))))
+        (base32 "11z9jkcpqyd4d1kziiq8q4rmqax93jd3hryx8cnkg4zrhd5fa4jc"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)     ; >=2.081
-       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2))) ; >=2.081
+     ;; These two packages should be updated to this one's version first.
+     `(("perl-compress-raw-zlib" ,perl-compress-raw-zlib)
+       ("perl-compress-raw-bzip2" ,perl-compress-raw-bzip2)))
     (home-page "https://metacpan.org/release/IO-Compress")
     (synopsis "IO Interface to compressed files/buffers")
     (description "IO-Compress provides a Perl interface to allow reading and
@@ -133,7 +131,7 @@ type by using either Perl modules, or command-line tools on your system.")
 (define-public perl-archive-zip
   (package
     (name "perl-archive-zip")
-    (version "1.65")
+    (version "1.67")
     (source
      (origin
        (method url-fetch)
@@ -141,7 +139,7 @@ type by using either Perl modules, or command-line tools on your system.")
              "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-"
              version ".tar.gz"))
        (sha256
-        (base32 "116vcg8x7n92i7cn3bx0xck69mz9vjy0il9i8p7p7lk40kz7jcbl"))))
+        (base32 "0x17b7s5c3bqy9gx7psdqxbzkilylnwwd3c3i68vynbn9hs788my"))))
     (build-system perl-build-system)
     (native-inputs
      ;; For tests.

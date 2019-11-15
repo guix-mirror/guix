@@ -32,6 +32,7 @@
        (uri (git-reference
              (url "https://github.com/Cyan4973/xxHash")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32 "137hifc3f3cb4ib64rd6y83arc9hmbyncgrij2v8m94mx66g2aks"))))
     (build-system gnu-build-system)

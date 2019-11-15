@@ -11,7 +11,7 @@
 ;;; Copyright © 2017, 2018 Clément Lassieur <clement@lassieur.org>
 ;;; Copyright © 2017, 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2017 Jelle Licht <jlicht@fsfe.org>
-;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2017, 2019 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2017 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2017 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2017 Rutger Helling <rhelling@mykolab.com>
@@ -23,6 +23,7 @@
 ;;; Copyright © 2018 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2018, 2019 Tim Gesthuizen <tim.gesthuizen@yahoo.de>
 ;;; Copyright © 2019 Jens Mølgaard <jens@zete.tk>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix packages)
@@ -76,6 +78,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages security-token)
   #:use-module (gnu packages suckless)
   #:use-module (gnu packages tcl)
@@ -653,6 +656,49 @@ templates, clipboard handling, and per folder settings for multi-recipient
 encryption.")
     (license license:gpl3+)))
 
+(define-public rofi-pass
+  (package
+    (name "rofi-pass")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://raw.githubusercontent.com/carnager/rofi-pass/"
+                       version "/rofi-pass"))
+       (sha256
+        (base32 "0msldkndqp40nx1s5s7ggcr97ir4nshpmnyzvj5hqw1l7m3gvw6j"))
+       (file-name name)))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (string-append (assoc-ref %build-inputs "source")))
+               (script "rofi-pass")
+               (out (assoc-ref %outputs "out")))
+           (copy-file source script)
+           (chmod script #o555)
+           (install-file script (string-append out "/bin"))))))
+    (propagated-inputs
+     `(("password-store" ,password-store)
+       ("rofi" ,rofi)
+       ("xdotool" ,xdotool)))
+    (home-page "https://github.com/carnager/rofi-pass")
+    (synopsis "Rofi frontend for password-store")
+    (description "Rofi-pass provides a way to manipulate information stored
+using password-store through rofi interface:
+@enumerate
+@item open URLs of entries with hotkey;
+@item type any field from entry;
+@item auto-typing of user and/or password fields;
+@item auto-typing username based on path;
+@item auto-typing of more than one field, using the autotype entry;
+@item bookmarks mode (open stored URLs in browser, default: Alt+x).
+@end enumerate")
+    (license license:gpl3)))
+
 (define-public argon2
   (package
     (name "argon2")
@@ -734,7 +780,7 @@ between hosts and entries in the password store.")
     (license license:lgpl3+)))
 
 (define-public john-the-ripper-jumbo
-  (let ((official-version "1.8.0")
+  (let ((official-version "1.9.0")
         (jumbo-version "1"))
     (package
       (name "john-the-ripper-jumbo")
@@ -746,78 +792,86 @@ between hosts and entries in the password store.")
                              official-version "-jumbo-" jumbo-version ".tar.xz"))
          (sha256
           (base32
-           "08q92sfdvkz47rx6qjn7qv57cmlpy7i7rgddapq5384mb413vjds"))
-         (patches
-          (list (origin
-                  (method url-fetch)
-                  (uri (string-append "https://github.com/magnumripper/"
-                                      "JohnTheRipper/commit/"
-                                      "e2e868db3e153b3f959e119a51703d4afb99c624.patch"))
-                  (file-name "john-the-ripper-jumbo-gcc5-inline.patch")
-                  (sha256
-                   (base32
-                    "1shvcf1y2097115mxhzdkm64dr106a8zr6pqjqyh171q5ng5vfra")))
-                (origin
-                  (method url-fetch)
-                  (uri (string-append "https://github.com/magnumripper/"
-                                      "JohnTheRipper/commit/"
-                                      "480e95b0e449863be3e1a5b0bc634a67df28b618.patch"))
-                  (file-name "john-the-ripper-jumbo-non-x86.patch")
-                  (sha256
-                   (base32
-                    "1ffd9dvhk0sb6ss8dv5yalh01lz30i7rilqilf2xv68gax2hyjqx")))))))
+           "0fvz3v41hnaiv1ggpxanfykyfjq79cwp9qcqqn63vic357w27lgm"))))
       (build-system gnu-build-system)
+      (native-inputs
+       `(("perl" ,perl)))
       (inputs
        `(("gmp" ,gmp)
-         ("krb5" ,mit-krb5)
          ("libpcap" ,libpcap)
          ("nss" ,nss)
          ("openssl" ,openssl-1.0)
+         ("python" ,python-2)           ; For "python" and "python2" shebangs
+         ("ruby" ,ruby)                 ; For genincstats.rb
          ("zlib" ,zlib)))
       (arguments
        `(#:configure-flags
-         (list (string-append
-                "CFLAGS=-O2 -g "
-                "-DJOHN_SYSTEMWIDE=1 "
-                "-DJOHN_SYSTEMWIDE_EXEC='\"" %output "/libexec/john\"' "
-                "-DJOHN_SYSTEMWIDE_HOME='\"" %output "/share/john\"'")
-               ;; For now, do not test for instruction set in configure, and
-               ;; do not pass '-march=native' to gcc:
+         (list "--with-systemwide"
+               ;; Do not test for instruction set in configure, and do not
+               ;; pass '-march=native' to gcc:
                "--disable-native-tests"
-               "--disable-native-macro")
-         #:tests? #f ;tests try to create '.john' in the build user's $HOME
+               "--disable-native-march"
+               ,(string-append
+                 "--enable-simd="
+                 (let ((system (or (%current-target-system)
+                                   (%current-system))))
+                   (cond
+                    ((or (string-prefix? "x86_64" system)
+                         (string-prefix? "i686" system)) "sse2")
+                    ((string-prefix? "aarch" system) "neon")
+                    (else "no")))))
          #:phases
          (modify-phases %standard-phases
            (add-before 'configure 'chdir-src
-             (lambda _ (chdir "src")))
+             (lambda _ (chdir "src") #t))
            (replace 'install
              (lambda _
                (let ((bindir (string-append %output "/bin"))
                      (docdir (string-append %output "/share/doc/john"))
                      (execdir (string-append %output "/libexec/john"))
-                     (homedir (string-append %output "/share/john"))
+                     (datadir (string-append %output "/share/john"))
                      (install-file-to (lambda (dir)
                                         (lambda (f) (install-file f dir))))
                      (symlink? (lambda (_ s) (eq? (stat:type s) 'symlink))))
                  (with-directory-excursion "../run"
+                   (for-each (install-file-to bindir)
+                             (cons*
+                              "john" "makechr" "cprepair" "SIPdump" "tgtsnarf"
+                              "genmkvpwd" "mkvcalcproba" "calc_stat" "raw2dyna"
+                              (find-files "." "(to|2)?john(-[^.]*)?$")))
+                   (for-each (lambda (f) ; Install symlinked aliases
+                               (let ((tgt (string-append bindir "/" (basename f))))
+                                 ;; The use of install-file above dereferences
+                                 ;; symlinks.  We'd rather have the symlinks
+                                 ;; for clarity, so remove tgt before linking.
+                                 (when (file-exists? tgt) (delete-file tgt))
+                                 (symlink "john" tgt)))
+                             (find-files "." symlink?))
                    (for-each (install-file-to execdir)
-                             (cons* "mailer" "benchmark-unify"
-                                    (find-files "." ".*\\.(py|rb|pl)")))
-                   (for-each (install-file-to homedir)
+                             (cons* "mailer" "benchmark-unify" "relbench"
+                                    (find-files "." ".*\\.js")))
+                   (for-each (lambda (f)
+                               (let* ((base (basename f))
+                                      (name (substring base 0 (string-index base #\.)))
+                                      (link (string-append bindir "/" name)))
+                                 (install-file f execdir)
+                                 (when (and (executable-file? f)
+                                            (not (file-exists? link)))
+                                   (symlink (string-append execdir "/" base) link))))
+                             (find-files "." ".*\\.(pl|py|rb|lua)"))
+                   (for-each (install-file-to datadir)
                              (append (find-files "." "(stats|dictionary.*)")
                                      (find-files "." "(.*\\.chr|.*\\.lst)")
                                      (find-files "." ".*\\.conf")))
-                   (for-each (install-file-to bindir)
-                             '("tgtsnarf" "genmkvpwd" "mkvcalcproba"
-                               "raw2dyna" "luks2john" "vncpcap2john"
-                               "uaf2john" "calc_stat" "wpapcap2john"
-                               "cprepair" "relbench"  "SIPdump" "john"))
-                   (for-each (lambda (f) ;install symlinked aliases
-                               (symlink "john"
-                                        (string-append bindir "/" (basename f))))
-                             (find-files "." symlink?)))
+                   (copy-recursively "rules" (string-append datadir "/rules")))
                  (copy-recursively "../doc" docdir)
-                 #t))))))
+                 #t)))
+           (delete 'check) ; Tests need installed .conf files; move after install
+           (add-after 'install 'check
+             (lambda args
+               (setenv "HOME" "/tmp")   ; Some tests need to write to ~/.john
+               (setenv "OMP_NUM_THREADS" (number->string (parallel-job-count)))
+               (apply (assoc-ref %standard-phases 'check) args))))))
       (home-page "http://www.openwall.com/john/")
       (synopsis "Password cracker")
       (description "John the Ripper is a fast password cracker.  Its primary

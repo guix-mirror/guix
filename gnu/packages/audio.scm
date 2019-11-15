@@ -23,6 +23,7 @@
 ;;; Copyright © 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2019 Arun Isaac <arunisaac@systemreboot.net>
 ;;; Copyright © 2019 Mathieu Othacehe <m.othacehe@gmail.com>
+;;; Copyright © 2019 Alexandros Theodotou <alex@zrythm.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages dbm)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
@@ -1107,7 +1109,7 @@ follower.")
 (define-public fluidsynth
   (package
     (name "fluidsynth")
-    (version "2.0.8")
+    (version "2.0.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1116,7 +1118,7 @@ follower.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1s32c0jxjica2agy0mp36vgvpgj2vl5i5zvacd6igmbam0x4gs7c"))))
+                "08bhwv0gw7zq1z0b36m2dzxl6zcgvmvaa60nly2wif7rinkprp5n"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f                      ; no check target
@@ -1167,28 +1169,17 @@ also play midifiles using a Soundfont.")
 (define-public faad2
   (package
     (name "faad2")
-    (version "2.7")
+    (version "2.8.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/faac/faad2-src/faad2-"
-                                  version "/faad2-" version ".zip"))
+                                  (version-major+minor version) ".0/"
+                                  "faad2-" version ".tar.gz"))
               (sha256
                (base32
-                "16f3l16c00sg0wkrkm3vzv0gy3g97x309vw788igs0cap2x1ak3z"))))
+                "089zqykqgmmysznvk0bi2pfvdqwclnn540d0zks83sv2pynpfjb5"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("unzip" ,unzip)))
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (replace 'bootstrap
-           (lambda _
-             (substitute* "bootstrap" (("\r\n") "\n"))
-             (invoke "sh" "bootstrap"))))))
-    (home-page "http://www.audiocoding.com/faad2.html")
+    (home-page "https://www.audiocoding.com/faad2.html")
     (synopsis "MPEG-4 and MPEG-2 AAC decoder")
     (description
      "FAAD2 is an MPEG-4 and MPEG-2 AAC decoder supporting LC, Main, LTP, SBR,
@@ -1583,24 +1574,26 @@ synchronous execution of all clients, and low latency operation.")
 (define-public jalv
   (package
     (name "jalv")
-    (version "1.6.0")
+    (version "1.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/jalv-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1x2wpzzx2cgvz3dgdcgsj8dr0w3zsasy62mvl199bsdj5fbjaili"))))
+                "1wwfn7yzbs37s2rdlfjgks63svd5g14yyzd2gdl7h0z12qncwsy2"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f                      ; no check target
        #:python ,python-2))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
        ("suil" ,suil)
-       ("gtk" ,gtk+)
-       ("gtkmm" ,gtkmm)
+       ("gtk2" ,gtk+-2)
+       ("gtk3" ,gtk+)
+       ("gtkmm" ,gtkmm-2)
+       ("qtbase" ,qtbase)
        ("jack" ,jack-1)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1814,26 +1807,32 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
 (define-public lilv
   (package
     (name "lilv")
-    (version "0.24.4")
+    (version "0.24.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.drobilla.net/lilv-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0f24cd7wkk5l969857g2ydz2kjjrkvvddg1g87xzzs78lsvq8fy3"))))
+               "1p3hafsxgs5d4za7n66lf5nz74qssfqpmk520cm7iq2njvvlqm2z"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
-         (add-before
-          'configure 'set-ldflags
+         (add-before 'configure 'set-ldflags
           (lambda* (#:key outputs #:allow-other-keys)
             (setenv "LDFLAGS"
                     (string-append "-Wl,-rpath="
                                    (assoc-ref outputs "out") "/lib"))
-            #t)))))
+            #t))
+         (add-after 'unpack 'full-store-path-to-shared-library
+           (lambda* (#:key outputs #:allow-other-keys)
+             (with-directory-excursion "bindings/python"
+               (substitute* "lilv.py"
+                 (("liblilv-0.so") (string-append (assoc-ref outputs "out")
+                                                  "/lib/liblilv-0.so"))))
+             #t)))))
     ;; Required by lilv-0.pc.
     (propagated-inputs
      `(("lv2" ,lv2)
@@ -1841,8 +1840,9 @@ included are the command line utilities @code{send_osc} and @code{dump_osc}.")
        ("sord" ,sord)
        ("sratom" ,sratom)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (home-page "https://drobilla.net/software/lilv/")
+     `(("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://drobilla.net/software/lilv")
     (synopsis "Library to simplify use of LV2 plugins in applications")
     (description
      "Lilv is a C library to make the use of LV2 plugins as simple as possible
@@ -2341,33 +2341,22 @@ tempo and pitch of an audio recording independently of one another.")
 (define-public rtmidi
   (package
     (name "rtmidi")
-    (version "2.1.0")
+    (version "4.0.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/powertab/rtmidi.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://www.music.mcgill.ca/~gary/rtmidi"
+                                  "/release/rtmidi-" version ".tar.gz"))
+              (file-name (string-append "rtmidi-" version ".tar.gz"))
               (sha256
                (base32
-                "106v177y3nrjv2l1yskch4phpqd8h97b67zj0jiq9pc3c69jr1ay"))))
+                "1k962ljpnwyjw9jjiky2372khhri1wqvrj5qsalfpys31xqzw31p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-makefile
+         (add-before 'bootstrap 'noconfigure
            (lambda _
-             (substitute* "Makefile"
-               (("/bin/ln") "ln")
-               (("RtMidi.h RtError.h") "RtMidi.h"))
-             #t))
-         (add-before 'install 'make-target-dirs
-           (lambda _
-             (let ((out (assoc-ref %outputs "out")))
-               (mkdir-p (string-append out "/bin"))
-               (mkdir (string-append out "/lib"))
-               (mkdir (string-append out "/include")))
+             (setenv "NOCONFIGURE" "yes")
              #t)))))
     (inputs
      `(("jack" ,jack-1)
@@ -2377,7 +2366,7 @@ tempo and pitch of an audio recording independently of one another.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/powertab/rtmidi")
+    (home-page "https://www.music.mcgill.ca/~gary/rtmidi")
     (synopsis "Cross-platform MIDI library for C++")
     (description
      "RtMidi is a set of C++ classes (RtMidiIn, RtMidiOut, and API specific
@@ -2388,17 +2377,18 @@ input/output.")
 (define-public sratom
   (package
     (name "sratom")
-    (version "0.6.2")
+    (version "0.6.4")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.drobilla.net/sratom-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "0lz883ravxjf7r9wwbx2gx9m8vhyiavxrl9jdxfppjxnsralll8a"))))
+              (method url-fetch)
+              (uri (string-append "https://download.drobilla.net/sratom-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0vh0biy3ngpzzgdml309c2mqz8xq9q0hlblczb4c6alhp0a8yv0l"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
-    (inputs
+    (arguments `(#:tests? #f))          ;no check target
+    (propagated-inputs
+     ;; In Requires of sratom-0.pc.
      `(("lv2" ,lv2)
        ("serd" ,serd)
        ("sord" ,sord)))
@@ -2414,14 +2404,14 @@ the Turtle syntax.")
 (define-public suil
   (package
     (name "suil")
-    (version "0.10.4")
+    (version "0.10.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://download.drobilla.net/suil-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0ay7hl6nr6ip1nn9k2m8ri3b52b6sx9mhixmcy4fy3kr2a88ksd1"))))
+                "0z4v01pjw4wh65x38w6icn28wdwxz13ayl8hvn4p1g9kmamp1z06"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f))                    ;no check target
@@ -2946,7 +2936,7 @@ result.")
 (define-public zita-convolver
   (package
     (name "zita-convolver")
-    (version "3.1.0")
+    (version "4.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2956,31 +2946,33 @@ result.")
               (snippet
                ;; Don't optimize for a specific processor architecture.
                '(begin
-                  (substitute* "libs/Makefile"
+                  (substitute* "source/Makefile"
                     (("^CXXFLAGS \\+= -march=native") ""))
                   #t))
               (modules '((guix build utils)))
               (sha256
                (base32
-                "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
+                "0prji66p86z2bzminywkwchr5bfgxcg2i8y803pydd1hzf2198cs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
-       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             (string-append "SUFFIX="))
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-makefile-and-enter-directory
            (lambda _
-             (substitute* "libs/Makefile"
+             (substitute* "source/Makefile"
                (("ldconfig") "true")
                (("^LIBDIR =.*") "LIBDIR = lib\n"))
-             (chdir "libs")
+             (chdir "source")
              #t))
          (add-after 'install 'install-symlink
            (lambda _
              (symlink "libzita-convolver.so"
                       (string-append (assoc-ref %outputs "out")
-                                     "/lib/libzita-convolver.so.3"))
+                                     "/lib/libzita-convolver.so.4"))
              #t))
          ;; no configure script
          (delete 'configure))))
@@ -3680,16 +3672,16 @@ library.")
 (define-public faudio
   (package
     (name "faudio")
-    (version "19.09")
+    (version "19.11")
     (source
      (origin
        (method git-fetch)
        (uri (git-reference
              (url "https://github.com/FNA-XNA/FAudio.git")
              (commit version)))
-       (file-name (string-append name "-" version "-checkout"))
+       (file-name (git-file-name name version))
        (sha256
-        (base32 "0fagik55jmy3qmb27nhg0zxash1ahfkxphx8m8gs0pimqqrdrd9d"))))
+        (base32 "0ckpr6ffz8ssfh1y850dhip5s5jv0j6n90qz5yx1v9d6gpwf08rp"))))
     (arguments
      '(#:tests? #f                      ; No tests.
        #:configure-flags '("-DFFMPEG=ON")))
@@ -3763,4 +3755,59 @@ other Gnaural instances, allowing synchronous sessions between many users.")
     (description "DarkIce is a live audio streamer.  It takes audio input from
 a sound card, encodes it into Ogg Vorbis and/or mp3, and sends the audio
 stream to one or more IceCast and/or ShoutCast servers.")
+    (license license:gpl3+)))
+
+(define-public libltc
+  (package
+    (name "libltc")
+    (version "1.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/x42/libltc/releases/download/v"
+                       version "/libltc-" version ".tar.gz"))
+       (sha256
+        (base32
+         "173h9dgmain3nyrwk6q2d7yl4fnh4vacag4s2p01n5b7nyrkxrjh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-tests? #f))           ;tests fail otherwise
+    (native-inputs
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
+    (synopsis "Encode or decode Linear/Longitudinal Time Code (LTC) audio")
+    (description "Libltc is a POSIX-C Library for handling
+@dfn{Linear/Longitudinal Time Code} (LTC) data.")
+    (home-page "https://x42.github.io/libltc/")
+    (license license:lgpl3+)))
+
+(define-public redkite
+  (package
+    (name "redkite")
+    (version "0.6.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://gitlab.com/geontime/redkite.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1i874izajbdhlfacwwj84qrsxf7g4y6nblzxalrkzaap9sa7d1r6"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f))                    ;no tests included
+    (inputs
+     `(("cairo" ,cairo)))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (synopsis "Small GUI toolkit")
+    (description "Redkite is a small GUI toolkit developed in C++17 and
+inspired from other well known GUI toolkits such as Qt and GTK.  It is
+minimal on purpose and is intended to be statically linked to applications,
+therefore satisfying any requirements they may have to be self contained,
+as is the case with audio plugins.")
+    (home-page "https://gitlab.com/geontime/redkite")
     (license license:gpl3+)))

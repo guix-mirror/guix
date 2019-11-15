@@ -132,7 +132,7 @@ communication, encryption, decryption, signatures, etc.")
 (define-public signify
   (package
     (name "signify")
-    (version "26")
+    (version "27")
     (home-page "https://github.com/aperezdc/signify")
     (source (origin
               (method url-fetch)
@@ -140,7 +140,7 @@ communication, encryption, decryption, signatures, etc.")
                                   "/download/v" version "/signify-" version ".tar.xz"))
               (sha256
                (base32
-                "16sl1yq5bbsads5q4a0fbrf31b0x8r1hi4wagl90nbrhrca98baw"))))
+                "0ngjsqz95yb0knlw9zs02fnclif40s63r1mydgiv17ii3mds82df"))))
     (build-system gnu-build-system)
     ;; TODO Build with libwaive (described in README.md), to implement something
     ;; like OpenBSD's pledge().
@@ -734,14 +734,14 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
 (define-public botan
   (package
     (name "botan")
-    (version "2.7.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://botan.randombit.net/releases/"
-                                  "Botan-" version ".tgz"))
+                                  "Botan-" version ".tar.xz"))
               (sha256
                (base32
-                "142aqabwc266jxn8wrp0f1ffrmcvdxwvyh8frb38hx9iaqazjbg4"))))
+                "1ada3ga7b0z4m0vjmxlvfi4nsic2l8kjcy85jwss3z2i58a5y0vy"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -750,12 +750,17 @@ SHA256, SHA512, SHA3, AICH, ED2K, Tiger, DC++ TTH, BitTorrent BTIH, GOST R
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out (assoc-ref %outputs "out"))
                     (lib (string-append out "/lib")))
+               ;; Upstream tests and benchmarks with -O3.
+               (setenv "CXXFLAGS" "-O3")
                (invoke "python" "./configure.py"
                        (string-append "--prefix=" out)
                        ;; Otherwise, the `botan` executable cannot find
                        ;; libbotan.
                        (string-append "--ldflags=-Wl,-rpath=" lib)
+
+                       "--with-os-feature=getentropy"
                        "--with-rst2man"
+
                        ;; Recommended by upstream
                        "--with-zlib" "--with-bzip2" "--with-sqlite3"))))
          (replace 'check
@@ -947,6 +952,7 @@ utility/testing functions.")
               (uri (git-reference
                      (url "https://github.com/vstakhov/hpenc")
                      (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
                 "1fb5yi3d2k8kd4zm7liiqagpz610y168xrr1cvn7cbq314jm2my1"))))

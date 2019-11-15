@@ -142,8 +142,8 @@ for unprivileged applications.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://download.kde.org/stable/apps/KDE4.x/admin/"
-                   name "-" version ".tar.bz2"))
+                   "mirror://kde//stable/apps/KDE4.x/admin/"
+                   "polkit-qt-" version ".tar.bz2"))
              (sha256
               (base32
                "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
@@ -161,7 +161,7 @@ for unprivileged applications.")
                                               (assoc-ref %outputs "out")
                                               "/lib64"))
        #:tests? #f)) ; there is a test subdirectory, but no test target
-    (home-page "http://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
+    (home-page "https://api.kde.org/kdesupport-api/polkit-qt-1-apidocs/")
     (synopsis "Qt frontend to the polkit library")
     (description "Polkit-qt is a library that lets developers use the
 PolicyKit API through a Qt-styled API.  It is mainly a wrapper around

@@ -234,13 +234,14 @@ with the editor vim.")))
     (version "2.1")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/Shougo/neocomplete.vim/"
-                           "archive/ver." version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/Shougo/neocomplete.vim")
+              (commit (string-append "ver." version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1307gbrdwam2akq9w2lpijc41740i4layk2qkd9sjkqxfch5lni2"))))
+         "1h6sci5mhdfg6sjsjpi8l5li02hg858zcayiwl60y9j2gqnd18lv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -734,7 +735,7 @@ are detected, the user is notified.")))
 (define-public neovim
   (package
     (name "neovim")
-    (version "0.4.2")
+    (version "0.4.3")
     (source
      (origin
        (method git-fetch)
@@ -743,8 +744,7 @@ are detected, the user is notified.")))
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "13w446plvgl219lhj29jyimhiqvs1y1byrz4qpdmxgyddmx9xqss"))))
+        (base32 "03p7pic7hw9yxxv7fbgls1f42apx3lik2k6mpaz1a109ngyc5kaj"))))
     (build-system cmake-build-system)
     (arguments
      `(#:modules ((srfi srfi-26)

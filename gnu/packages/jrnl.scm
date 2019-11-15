@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <address@hidden>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
 (define-module (gnu packages jrnl)
   #:use-module (guix packages)
   #:use-module (guix licenses)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system python)
   #:use-module (gnu packages check)
   #:use-module (gnu packages python)
@@ -35,13 +36,13 @@
     (version "1.9.7")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://github.com/maebert/jrnl/archive/"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
-      (sha256
-       (base32
-        "0mfq7hhw5np2dj9jlxpyyk2cg9i0xgz2brb894d928hczszy97bq"))))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/maebert/jrnl.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1bjjyfc3fnsy0h299s3jj42wnigj43xdyp5ppi1cvkqbwl369935"))))
     (build-system python-build-system)
     (native-inputs
      `(("behave" ,behave)))

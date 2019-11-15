@@ -199,7 +199,10 @@ shared NFS home directories.")
       ("perl" ,perl)                              ; needed by GIO tests
       ("tzdata" ,tzdata-for-tests)))                  ; for tests/gdatetime.c
    (arguments
-    `(#:phases
+    `(;; TODO: Uncomment on the next rebuild cycle.
+      ;; #:disallowed-references (,tzdata-for-tests)
+
+      #:phases
       (modify-phases %standard-phases
         (add-before 'build 'pre-build
           (lambda* (#:key inputs outputs #:allow-other-keys)

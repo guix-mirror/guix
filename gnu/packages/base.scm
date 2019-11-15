@@ -981,18 +981,23 @@ with the Linux kernel.")
             (substitute-keyword-arguments
              (ensure-keyword-arguments (package-arguments base-gcc)
                                        '(#:implicit-inputs? #f))
-             ((#:make-flags flags)
-              `(let ((libc (assoc-ref %build-inputs "libc")))
-                 ;; FLAGS_FOR_TARGET are needed for the target libraries to receive
-                 ;; the -Bxxx for the startfiles.
-                 (cons (string-append "FLAGS_FOR_TARGET=-B" libc "/lib")
-                       ,flags)))))
+             ((#:phases phases)
+              `(modify-phases ,phases
+                 (add-before 'configure 'treat-glibc-as-system-header
+                   (lambda _
+                     (let ((libc (assoc-ref %build-inputs "libc")))
+                       ;; GCCs build processes requires that the libc
+                       ;; we're building against is on the system header
+                       ;; search path.
+                       (for-each (lambda (var)
+                                   (setenv var (string-append libc "/include")))
+                                 '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+                       #t)))))))
            (native-inputs
-            `(("libc" ,libc)
-              ("libc:static" ,libc "static")
-              ,@(append (package-inputs base-gcc)
-                        (fold alist-delete (%final-inputs) '("libc" "libc:static")))))
-           (inputs '())))
+            `(,@(package-native-inputs base-gcc)
+              ,@(append (fold alist-delete (%final-inputs) '("libc" "libc:static")))
+              ("libc" ,libc)
+              ("libc:static" ,libc "static")))))
 
 (define-public (make-glibc-locales glibc)
   (package

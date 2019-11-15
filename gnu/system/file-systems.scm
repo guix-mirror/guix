@@ -507,7 +507,10 @@ a bind mount."
                  ;; XXX: On some GNU/Linux systems, /etc/resolv.conf is a
                  ;; symlink to a file in a tmpfs which, for an unknown reason,
                  ;; cannot be bind mounted read-only within the container.
-                 (writable? (string=? file "/etc/resolv.conf"))))
+                 ;; The same goes with /var/run/nscd, as discussed in
+                 ;; <https://bugs.gnu.org/37967>.
+                 (writable? (or (string=? file "/etc/resolv.conf")
+                                (string=? file "/var/run/nscd")))))
               (cons "/var/run/nscd" %network-configuration-files)))
 
 (define (file-system-type-predicate type)

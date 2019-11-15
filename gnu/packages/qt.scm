@@ -38,6 +38,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix packages)
+  #:use-module (guix deprecation)
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -127,65 +128,26 @@ other text such as code.  The syntax uses the syntax of the Django template
 system, and the core design of Django is reused in Grantlee.")
     (license license:lgpl2.0+)))
 
-(define-public qt
+(define-public qt-4
   (package
     (name "qt")
-    (version "5.12.5")
-    (outputs '("out" "examples"))
+    (version "4.8.7")
     (source (origin
              (method url-fetch)
-             (uri
-               (string-append
-                 "http://download.qt.io/official_releases/qt/"
-                 (version-major+minor version)
-                 "/" version
-                 "/single/qt-everywhere-src-"
-                 version ".tar.xz"))
+             (uri (string-append "http://download.qt-project.org/official_releases/qt/"
+                                 (string-copy version 0 (string-rindex version #\.))
+                                 "/" version
+                                 "/qt-everywhere-opensource-src-"
+                                 version ".tar.gz"))
              (sha256
               (base32
-               "160jr7w39lpd7cwnlbgf5yj8halan7zpnxj2hbwwlrvpvchrwad2"))
+               "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
+             (patches (search-patches "qt4-ldflags.patch"))
              (modules '((guix build utils)))
              (snippet
-              '(begin
-                ;; Remove qtwebengine, which relies on a bundled copy of
-                ;; chromium. Not only does it fail compilation in qt 5.5:
-                ;;    3rdparty/chromium/ui/gfx/codec/jpeg_codec.cc:362:10:
-                ;;    error: cannot convert ‘bool’ to ‘boolean’ in return
-                ;; it might also pose security problems.
-                ;; Alternatively, we could use the "-skip qtwebengine"
-                ;; configuration option.
-                (delete-file-recursively "qtwebengine")
-                ;; The following snippets are copied from their mondular-qt counterparts.
-                (for-each
-                  (lambda (dir)
-                    (delete-file-recursively (string-append "qtbase/src/3rdparty/" dir)))
-                  (list "double-conversion" "freetype" "harfbuzz-ng"
-                        "libpng" "libjpeg" "pcre2" "sqlite" "xcb"
-                        "zlib"))
-                (for-each
-                  (lambda (dir)
-                    (delete-file-recursively dir))
-                  (list "qtimageformats/src/3rdparty"
-                        "qtmultimedia/examples/multimedia/spectrum/3rdparty"
-                        "qtwayland/examples"
-                        "qtscxml/tests/3rdparty"
-                        "qtcanvas3d/examples/canvas3d/3rdparty"))
-                ;; Tests depend on this example, which depends on the 3rd party code.
-                (substitute* "qtmultimedia/examples/multimedia/multimedia.pro"
-                  (("spectrum") "#"))
-                (substitute* "qtxmlpatterns/tests/auto/auto.pro"
-                  (("qxmlquery") "# qxmlquery")
-                  (("xmlpatterns ") "# xmlpatterns"))
-                (substitute* "qtwebglplugin/tests/plugins/platforms/platforms.pro"
-                  (("webgl") "# webgl"))
-                (substitute* "qtscxml/tests/auto/auto.pro"
-                  (("scion") "#"))
-                (substitute* "qtnetworkauth/tests/auto/auto.pro"
-                  (("oauth1 ") "# oauth1 "))
-                (substitute* "qtremoteobjects/tests/auto/qml/qml.pro"
-                  (("integration") "# integration")
-                  (("usertypes") "# usertypes"))
-                #t))))
+              ;; Remove webkit module, which is not built.
+              '(begin (delete-file-recursively "src/3rdparty/webkit")
+                      #t))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -201,11 +163,9 @@ system, and the core design of Django is reused in Grantlee.")
        ("glib" ,glib)
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
-       ("harfbuzz" ,harfbuzz)
        ("icu4c" ,icu4c)
        ("jasper" ,jasper)
        ("libinput" ,libinput-minimal)
-       ("libjpeg" ,libjpeg)
        ("libmng" ,libmng)
        ("libpci" ,pciutils)
        ("libpng" ,libpng)
@@ -228,7 +188,6 @@ system, and the core design of Django is reused in Grantlee.")
        ("mariadb" ,mariadb "lib")
        ("mariadb-dev" ,mariadb "dev")
        ("nss" ,nss)
-       ("openssl" ,openssl)
        ("postgresql" ,postgresql)
        ("pulseaudio" ,pulseaudio)
        ("pcre2" ,pcre2)
@@ -241,197 +200,7 @@ system, and the core design of Django is reused in Grantlee.")
        ("xcb-util-keysyms" ,xcb-util-keysyms)
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("bison" ,bison)
-       ("flex" ,flex)
-       ("gperf" ,gperf)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
-       ("ruby" ,ruby)
-       ("vulkan-headers" ,vulkan-headers)
-       ("which" ,(@ (gnu packages base) which))))
-    (arguments
-     `(#:parallel-build? #f ; Triggers race condition in qtbase module on Hydra.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'configure 'patch-bin-sh
-           (lambda _
-             (substitute* '("qtbase/configure"
-                            "qtbase/mkspecs/features/qt_functions.prf"
-                            "qtbase/qmake/library/qmakebuiltins.cpp")
-                          (("/bin/sh") (which "sh")))
-             #t))
-         (replace 'configure
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let ((out      (assoc-ref outputs "out"))
-                   (examples (assoc-ref outputs "examples")))
-               (substitute* '("configure" "qtbase/configure")
-                 (("/bin/pwd") (which "pwd")))
-               (substitute* "qtbase/src/corelib/global/global.pri"
-                 (("/bin/ls") (which "ls")))
-               ;; do not pass "--enable-fast-install", which makes the
-               ;; configure process fail
-               (invoke
-                 "./configure"
-                 "-verbose"
-                 "-prefix" out
-                 "-docdir" (string-append out "/share/doc/qt5")
-                 "-headerdir" (string-append out "/include/qt5")
-                 "-archdatadir" (string-append out "/lib/qt5")
-                 "-datadir" (string-append out "/share/qt5")
-                 "-examplesdir" (string-append
-                                  examples "/share/doc/qt5/examples") ; 151MiB
-                 "-opensource"
-                 "-confirm-license"
-
-                 ;; These features require higher versions of Linux than the
-                 ;; minimum version of the glibc.  See
-                 ;; src/corelib/global/minimum-linux_p.h.  By disabling these
-                 ;; features Qt5 applications can be used on the oldest
-                 ;; kernels that the glibc supports, including the RHEL6
-                 ;; (2.6.32) and RHEL7 (3.10) kernels.
-                 "-no-feature-getentropy"  ; requires Linux 3.17
-                 "-no-feature-renameat2"   ; requires Linux 3.16
-
-                 ;; Do not build examples; for the time being, we
-                 ;; prefer to save the space and build time.
-                 "-no-compile-examples"
-                 ;; Most "-system-..." are automatic, but some use
-                 ;; the bundled copy by default.
-                 "-system-sqlite"
-                 "-system-harfbuzz"
-                 "-system-pcre"
-                 ;; explicitly link with openssl instead of dlopening it
-                 "-openssl-linked"
-                 ;; explicitly link with dbus instead of dlopening it
-                 "-dbus-linked"
-                 ;; don't use the precompiled headers
-                 "-no-pch"
-                 ;; drop special machine instructions not supported
-                 ;; on all instances of the target
-                 ,@(if (string-prefix? "x86_64"
-                                       (or (%current-target-system)
-                                           (%current-system)))
-                       '()
-                       '("-no-sse2"))
-                 "-no-mips_dsp"
-                 "-no-mips_dspr2"))))
-           (add-after 'install 'patch-mkspecs
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (archdata (string-append out "/lib/qt5"))
-                      (mkspecs (string-append archdata "/mkspecs"))
-                      (qt_config.prf (string-append
-                                      mkspecs "/features/qt_config.prf")))
-                 ;; For each Qt module, let `qmake' uses search paths in the
-                 ;; module directory instead of all in QT_INSTALL_PREFIX.
-                 (substitute* qt_config.prf
-                   (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
-                    "$$clean_path($$replace(dir, mkspecs/modules, ../../include/qt5))")
-                   (("\\$\\$\\[QT_INSTALL_LIBS\\]")
-                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
-                   (("\\$\\$\\[QT_HOST_LIBS\\]")
-                    "$$clean_path($$replace(dir, mkspecs/modules, ../../lib))")
-                   (("\\$\\$\\[QT_INSTALL_BINS\\]")
-                    "$$clean_path($$replace(dir, mkspecs/modules, ../../bin))"))
-
-                 ;; Searches Qt tools in the current PATH instead of QT_HOST_BINS.
-                 (substitute* (string-append mkspecs "/features/qt_functions.prf")
-                   (("cmd = \\$\\$\\[QT_HOST_BINS\\]/\\$\\$2")
-                    "cmd = $$system(which $${2}.pl 2>/dev/null || which $${2})"))
-
-                 ;; Resolve qmake spec files within qtbase by absolute paths.
-                 (substitute*
-                     (map (lambda (file)
-                            (string-append mkspecs "/features/" file))
-                          '("device_config.prf" "moc.prf" "qt_build_config.prf"
-                            "qt_config.prf" "winrt/package_manifest.prf"))
-                   (("\\$\\$\\[QT_HOST_DATA/get\\]") archdata)
-                   (("\\$\\$\\[QT_HOST_DATA/src\\]") archdata))
-                 #t)))
-           (add-after 'unpack 'patch-paths
-             ;; Use the absolute paths for dynamically loaded libs, otherwise
-             ;; the lib will be searched in LD_LIBRARY_PATH which typically is
-             ;; not set in guix.
-             (lambda* (#:key inputs #:allow-other-keys)
-               ;; libresolve
-               (let ((glibc (assoc-ref inputs ,(if (%current-target-system)
-                                                   "cross-libc" "libc"))))
-                 (substitute* '("qtbase/src/network/kernel/qdnslookup_unix.cpp"
-                                "qtbase/src/network/kernel/qhostinfo_unix.cpp")
-                   (("^\\s*(lib.setFileName\\(QLatin1String\\(\")(resolv\"\\)\\);)" _ a b)
-                  (string-append a glibc "/lib/lib" b))))
-               ;; X11/locale (compose path)
-               (substitute* "qtbase/src/plugins/platforminputcontexts/compose/generator/qtablegenerator.cpp"
-                 ;; Don't search in /usr/…/X11/locale, …
-                 (("^\\s*m_possibleLocations.append\\(QStringLiteral\\(\"/usr/.*/X11/locale\"\\)\\);" line)
-                  (string-append "// " line))
-                 ;; … but use libx11's path
-                 (("^\\s*(m_possibleLocations.append\\(QStringLiteral\\()X11_PREFIX \"(/.*/X11/locale\"\\)\\);)" _ a b)
-                  (string-append a "\"" (assoc-ref inputs "libx11") b)))
-               ;; libGL
-               (substitute* "qtbase/src/plugins/platforms/xcb/gl_integrations/xcb_glx/qglxintegration.cpp"
-                 (("^\\s*(QLibrary lib\\(QLatin1String\\(\")(GL\"\\)\\);)" _ a b)
-                  (string-append a (assoc-ref inputs "mesa") "/lib/lib" b)))
-               ;; libXcursor
-               (substitute* "qtbase/src/plugins/platforms/xcb/qxcbcursor.cpp"
-                 (("^\\s*(QLibrary xcursorLib\\(QLatin1String\\(\")(Xcursor\"\\), 1\\);)" _ a b)
-                  (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b))
-                 (("^\\s*(xcursorLib.setFileName\\(QLatin1String\\(\")(Xcursor\"\\)\\);)" _ a b)
-                  (string-append a (assoc-ref inputs "libxcursor") "/lib/lib" b)))
-               #t)))))
-      (native-search-paths
-       (list (search-path-specification
-              (variable "QMAKEPATH")
-              (files '("lib/qt5")))
-             (search-path-specification
-              (variable "QML2_IMPORT_PATH")
-              (files '("lib/qt5/qml")))
-             (search-path-specification
-              (variable "QT_PLUGIN_PATH")
-              (files '("lib/qt5/plugins")))
-             (search-path-specification
-              (variable "XDG_DATA_DIRS")
-              (files '("share")))
-             (search-path-specification
-              (variable "XDG_CONFIG_DIRS")
-              (files '("etc/xdg")))))
-      (home-page "https://www.qt.io/")
-      (synopsis "Cross-platform GUI library")
-      (description "Qt is a cross-platform application and UI framework for
-  developers using C++ or QML, a CSS & JavaScript like language.")
-      (license (list license:lgpl2.1 license:lgpl3))
-
-    ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
-    ;; see <http://hydra.gnu.org/build/112828>.
-    ;; Qt 5: assembler error; see <http://hydra.gnu.org/build/112526>.
-    (supported-systems (delete "mips64el-linux" %supported-systems))))
-
-(define-public qt-4
-  (package (inherit qt)
-    (version "4.8.7")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "http://download.qt-project.org/official_releases/qt/"
-                                 (string-copy version 0 (string-rindex version #\.))
-                                 "/" version
-                                 "/qt-everywhere-opensource-src-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
-             (patches (search-patches "qt4-ldflags.patch"))
-             (modules '((guix build utils)))
-             (snippet
-              ;; Remove webkit module, which is not built.
-              '(begin (delete-file-recursively "src/3rdparty/webkit")
-                      #t))))
-    (inputs
-     `(,@(fold alist-delete
-               (package-inputs qt)
-               '("harfbuzz" "libjpeg" "openssl"))
+       ("zlib" ,zlib)
        ("libjpeg" ,libjpeg-8)
        ("libsm" ,libsm)
        ("openssl" ,openssl-1.0)))
@@ -440,10 +209,14 @@ system, and the core design of Django is reused in Grantlee.")
        ;; We could build it with -std=gnu++98, but then we'll get in trouble with
        ;; ICU later.  Just keep using GCC 5 for now.
        ("gcc" ,gcc-5)
-       ,@(fold alist-delete
-               (package-native-inputs qt)
-               '("vulkan-headers"))))
-
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("gperf" ,gperf)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("ruby" ,ruby)
+       ("which" ,(@ (gnu packages base) which))))
     ;; Note: there are 37 MiB of examples and a '-exampledir' configure flags,
     ;; but we can't make them a separate output because "out" and "examples"
     ;; would refer to each other.
@@ -521,7 +294,33 @@ system, and the core design of Django is reused in Grantlee.")
               ;; different "devices" due to bind-mounts.
               (copy-recursively olddoc docdir)
               (delete-file-recursively olddoc)
-              #t))))))))
+              #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QMAKEPATH")
+            (files '("lib/qt5")))
+           (search-path-specification
+            (variable "QML2_IMPORT_PATH")
+            (files '("lib/qt5/qml")))
+           (search-path-specification
+            (variable "QT_PLUGIN_PATH")
+            (files '("lib/qt5/plugins")))
+           (search-path-specification
+            (variable "XDG_DATA_DIRS")
+            (files '("share")))
+           (search-path-specification
+            (variable "XDG_CONFIG_DIRS")
+            (files '("etc/xdg")))))
+    (home-page "https://www.qt.io/")
+    (synopsis "Cross-platform GUI library")
+    (description "Qt is a cross-platform application and UI framework for
+developers using C++ or QML, a CSS & JavaScript like language.")
+    (license (list license:lgpl2.1 license:lgpl3))
+
+    ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
+    ;; see <http://hydra.gnu.org/build/112828>.
+    ;; Qt 5: assembler error; see <http://hydra.gnu.org/build/112526>.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define-public qtbase
   (package
@@ -762,6 +561,11 @@ system, and the core design of Django is reused in Grantlee.")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list license:lgpl2.1 license:lgpl3))))
+
+
+;; qt used to refer to the monolithic Qt 5.x package
+(define-deprecated qt qtbase qtbase)
+
 
 (define-public qtsvg
   (package (inherit qtbase)
@@ -1435,34 +1239,6 @@ Effects are visual items that can be added to Qt Quick user interface as UI
 components.  The API consists of over 20 effects provided as separate QML
 types.  The effects cover functional areas such as blending, masking, blurring,
 coloring, and many more.")))
-
-(define-public qtdeclarative-render2d
-  ;; As of Qt-5.8.0 this module has been merged into qtdeclarative
-  (package (inherit qtsvg)
-    (name "qtdeclarative-render2d")
-    (version "5.7.1")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://download.qt.io/official_releases/qt/"
-                                 (version-major+minor version) "/" version
-                                 "/submodules/" name "-everywhere-src-"
-                                 version ".tar.xz"))
-             (sha256
-              (base32
-               "0zwch9vn17f3bpy300jcfxx6cx9qymk5j7khx0x9k1xqid4166c3"))
-             (modules '((guix build utils)))
-             (snippet
-              '(begin
-                 (delete-file-recursively "tools/opengldummy/3rdparty")
-                 #t))))
-    (native-inputs `())
-    (inputs
-     `(("qtbase" ,qtbase)
-       ("qtdeclarative" ,qtdeclarative)))
-    (synopsis "Qt Declarative Render module")
-    (description "The Qt Declarative Render 2D module provides a Raster
-backend for QtQuick scene graph.")
-    (properties `((superseded . ,qtdeclarative)))))
 
 (define-public qtgamepad
   (package (inherit qtsvg)
@@ -2161,7 +1937,7 @@ different kinds of sliders, and much more.")
       (origin
         (method url-fetch)
         (uri (string-append "https://github.com/annulen/webkit/releases/download/"
-                            name "-" version "/" name "-" version ".tar.xz"))
+                            "qtwebkit-" version "/qtwebkit-" version ".tar.xz"))
         (sha256
          (base32
           "05syvwi3jw9abwsc93rmjkna0vyh6bkfrsqhwir48ms54icfwzim"))
@@ -2235,16 +2011,17 @@ time Web content can be enhanced with native controls.")
 (define-public dotherside
   (package
     (name "dotherside")
-    (version "0.6.3")
+    (version "0.6.4")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://github.com/filcuc/DOtherSide/"
-                           "archive/v" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+              (url "https://github.com/filcuc/DOtherSide")
+              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "0azq7qlsrfdwbd6qsi7d3c1knn42qw0r47g43xf7clwbinapswpz"))))
+         "09fz6v8rp28997f235yaifj8p4vvsyv45knc1iivgdvx7msgcd0m"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("qttools" ,qttools)))

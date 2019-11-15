@@ -324,7 +324,7 @@ ElasticSearch server")
      `(#:configure-flags '("-DBUILD_SHARED_LIBS=ON" "-DLEVELDB_BUILD_TESTS=ON")))
     (inputs
      `(("snappy" ,snappy)))
-    (home-page "http://leveldb.org/")
+    (home-page "https://github.com/google/leveldb")
     (synopsis "Fast key-value storage library")
     (description
      "LevelDB is a fast key-value storage library that provides an ordered
@@ -2376,7 +2376,7 @@ implementation for Python.")
        #:configure-flags '("--without-internal-zlib"
                            "--with-readline")))
     (inputs
-     `(("openssl" ,openssl)
+     `(("openssl" ,openssl-1.0)
        ("net-tools" ,net-tools)
        ("readline" ,readline)
        ("zlib" ,zlib)))

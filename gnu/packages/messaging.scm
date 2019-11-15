@@ -773,14 +773,14 @@ a graphical desktop environment like GNOME.")
 (define-public prosody
   (package
     (name "prosody")
-    (version "0.11.2")
+    (version "0.11.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://prosody.im/downloads/source/"
                                   "prosody-" version ".tar.gz"))
               (sha256
                (base32
-                "0ca8ivqb4hxqka08pwnaqi1bqxrdl8zw47g6z7nw9q5r57fgc4c9"))))
+                "11xz4milv2962qf75vrdwsvd8sy2332nf69202rmvz5989pvvnng"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ;tests require "busted"
@@ -1559,7 +1559,7 @@ is also scriptable and extensible via Guile.")
 (define-public libmesode
   (package
     (name "libmesode")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1568,7 +1568,7 @@ is also scriptable and extensible via Guile.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "06f5nfaypvxrbsinxa1k2vrxrs7kqmg38g4wwwk5d63hpn1pj8ak"))))
+                "0xzfg1xx88cn36352nnjlb1p7xyw32yqkhjzq10px88iaaqz1vv0"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1583,21 +1583,22 @@ is also scriptable and extensible via Guile.")
 XMPP Client.  In particular, libmesode provides extra TLS functionality such as
 manual SSL certificate verification.")
     (home-page "https://github.com/boothj5/libmesode")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public libstrophe
   (package
     (name "libstrophe")
-    (version "0.9.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/strophe/libstrophe/archive/"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0vxfcyfnhnlaj6spm2b0ljw5i3knbphy6mvzpl5zv9b52ny4b08m"))))
+    (version "0.9.3")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/strophe/libstrophe.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "1g1l0w9z9hdy5ncdvd9097gi7k7783did6py5h9camlpb2fnk5mk"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)
@@ -1612,7 +1613,7 @@ manual SSL certificate verification.")
 almost no external dependencies, only an XML parsing library (expat or libxml
 are both supported).")
     (home-page "http://strophe.im/libstrophe")
-    ;; Dual licensed.
+    ;; Dual-licensed.
     (license (list license:gpl3+ license:x11))))
 
 (define-public profanity
@@ -1843,7 +1844,7 @@ QMatrixClient project.")
        ("python-async-timeout" ,python-async-timeout)
        ("python-configargparse" ,python-configargparse)
        ("python-mechanicalsoup" ,python-mechanicalsoup)
-       ("python-protobuf" ,python-protobuf)
+       ("python-protobuf" ,python-protobuf-3.6)
        ("python-readlike" ,python-readlike)
        ("python-reparser" ,python-reparser)
        ("python-requests" ,python-requests)

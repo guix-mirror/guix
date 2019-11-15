@@ -1053,7 +1053,7 @@ emulation community.  It provides highly accurate emulation.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
      (origin
        (method git-fetch)
@@ -1062,7 +1062,7 @@ emulation community.  It provides highly accurate emulation.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "1mgszd8gb5nk08kfykap9b1l5rl4qfy39dbba8crjj0zkc4z1jga"))))
+        (base32 "0y7rcpz7psf8k3agsrq277jdm651vbnn9xpqvmj2in1a786idya7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                      ; no tests
@@ -1188,7 +1188,7 @@ play them on systems for which they were never designed!")
 (define-public mame
   (package
     (name "mame")
-    (version "0.214")
+    (version "0.215")
     (source
      (origin
        (method git-fetch)
@@ -1198,7 +1198,7 @@ play them on systems for which they were never designed!")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "129yk3ybcviscy2xk1mkkzxm4h4nh5p6ndfgqbmcx547p1s6hbja"))
+         "1fj2qahi0fpn41zxph06wdgjashy6vsgj0gqfly8hvcmv99r3d65"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled libraries.

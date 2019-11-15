@@ -1034,15 +1034,15 @@ Keybinder works with GTK-based applications using the X Window System.")
     (version "3.2.0")
     (source
      (origin
-       (method url-fetch)
-       (uri (let ((version-with-underscores
-                   (string-join (string-split version #\.) "_")))
-              (string-append "https://github.com/conformal/spectrwm/archive/"
-                             "SPECTRWM_" version-with-underscores ".tar.gz")))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/conformal/spectrwm.git")
+             (commit
+              (string-append "SPECTRWM_"
+                             (string-join (string-split version #\.) "_")))))
+       (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0z7gjmp1x6y8q3dnw6swvbv8x2wd4ykzjvi3ibk2sxhgc910907v"))))
+        (base32 "1dfqy5f0s1nv6rqkz9lj006vypmp4rwxd5vczfk3ndzqgnh19kw6"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (let ((pkg-config (lambda (flag)
@@ -1194,14 +1194,14 @@ its size
 (define-public polybar
   (package
     (name "polybar")
-    (version "3.4.0")
+    (version "3.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://github.com/polybar/polybar/releases/"
                            "download/" version "/polybar-" version ".tar"))
        (sha256
-        (base32 "06yd9ffak53qbhpw35xh422v2lhjh23zdbrh81cynwks5pr9i839"))))
+        (base32 "1sy4xnx9rnj5z22kca8al84ivjg4mkvb9wj68pqq2y02l54gldwy"))))
     (build-system cmake-build-system)
     (arguments
      ;; Test is disabled because it requires downloading googletest from the

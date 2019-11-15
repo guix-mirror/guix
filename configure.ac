@@ -280,9 +280,14 @@ dnl Documentation translation.
 AM_MISSING_PROG([PO4A_TRANSLATE], [po4a-translate])
 AM_MISSING_PROG([PO4A_UPDATEPO], [po4a-updatepo])
 
-dnl Emacs (optional), for 'etc/indent-package.el'.
-AC_PATH_PROG([EMACS], [emacs], [/usr/bin/emacs])
-AC_SUBST([EMACS])
+dnl Emacs (optional), for 'etc/indent-code.el'.
+AC_PATH_PROG([EMACS], [emacs])
+if test "x$EMACS" = x; then
+    AC_MSG_WARN([Please install GNU Emacs to use etc/indent-code.el.])
+else
+    AC_SUBST([EMACS])
+    AC_CONFIG_FILES([etc/indent-code.el], [chmod +x etc/indent-code.el])
+fi
 
 case "$storedir" in
   /gnu/store)
@@ -302,6 +307,5 @@ AC_CONFIG_FILES([Makefile
 AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
 AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
   [chmod +x pre-inst-env])
-AC_CONFIG_FILES([etc/indent-code.el], [chmod +x etc/indent-code.el])
 
 AC_OUTPUT

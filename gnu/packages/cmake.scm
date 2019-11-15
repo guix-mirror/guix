@@ -219,6 +219,22 @@ and workspaces that can be used in the compiler environment of your choice.")
                (append (search-patches "cmake-curl-certificates.patch")
                        (origin-patches (package-source cmake))))))))
 
+(define-public cmake-3.15.5
+  ;; CMake 3.15.5 fixes some issues, but declare another version to
+  ;; avoid triggering the rebuild of all CMake-based packages.
+  ;; See <https://issues.guix.gnu.org/issue/38060>.
+  (package
+    (inherit cmake)
+    (version "3.15.5")
+    (source (origin
+              (inherit (package-source cmake))
+              (uri (string-append "https://www.cmake.org/files/v"
+                                  (version-major+minor version)
+                                  "/cmake-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d5y8d92axcc6rfqlsxamayfs3fc1vdby91hn5mx1kn02ppprpgv"))))))
+
 (define-public emacs-cmake-mode
   (package
     (inherit cmake)

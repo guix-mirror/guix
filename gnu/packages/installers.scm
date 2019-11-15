@@ -28,7 +28,10 @@
   #:use-module (guix utils))
 
 (define (make-nsis machine target-arch nsis-target-type)
-  (let ((triplet (string-append machine "-" "w64-mingw32")))
+  (let* ((triplet (string-append machine "-" "w64-mingw32"))
+         (xbinutils (cross-binutils triplet))
+         (xlibc (cross-libc triplet))
+         (xgcc (cross-gcc triplet #:libc xlibc)))
     (package
       (name (string-append "nsis-" machine))
       (version "3.04")
@@ -41,13 +44,14 @@
                   "1xgllk2mk36ll2509hd31mfq6blgncmdzmwxj3ymrwshdh23d5b0"))
                 (patches (search-patches "nsis-env-passthru.patch"))))
       (build-system scons-build-system)
-      (native-inputs `(("xgcc" ,(cross-gcc triplet #:libc (cross-libc triplet)))
-                       ("xbinutils" ,(cross-binutils triplet))
-                       ("mingw-w64" ,(cross-libc triplet))))
+      (native-inputs `(("xgcc" ,xgcc)
+                       ("xbinutils" ,xbinutils)
+                       ("mingw-w64" ,xlibc)))
       (inputs `(("zlib" ,zlib)))
       (arguments
        `(#:scons ,scons-python2
          #:modules ((srfi srfi-1)
+                    (srfi srfi-26)
                     (guix build utils)
                     (guix build scons-build-system))
          #:tests? #f
@@ -92,7 +96,20 @@
                              ;; CROSS_-prefixed version of env vars
                              (setenv (string-append "CROSS_" env-name)
                                      (filter-delimited-string env-val mingw-path?))))
-                         '("CPLUS_INCLUDE_PATH" "LIBRARY_PATH" "C_INCLUDE_PATH"))))
+                         '("CPATH" "LIBRARY_PATH"))
+                        ;; Hack to place mingw-w64 path at the end of search
+                        ;; paths.  Could probably use a specfile and dirafter
+                        (setenv "CROSS_CPLUS_INCLUDE_PATH"
+                                (string-join
+                                 `(,@(map (cut string-append (assoc-ref %build-inputs "xgcc") <>)
+                                          `("/include/c++"
+                                            ,(string-append "/include/c++/" ,triplet)
+                                            "/include/c++/backward"
+                                            ,@(map (cut string-append "/lib/gcc/" ,triplet "/" ,(package-version xgcc) <>)
+                                                   '("/include"
+                                                     "/include-fixed"))))
+                                   ,(getenv "CROSS_CPATH"))
+                                 ":"))))
                     (add-before 'build 'fix-target-detection
                       (lambda _
                         ;; NSIS target detection is screwed up, manually

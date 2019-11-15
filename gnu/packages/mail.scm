@@ -28,6 +28,7 @@
 ;;; Copyright © 2018 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2018 Gábor Boskovits <boskovits@gmail.com>
 ;;; Copyright © 2018, 2019 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2019 Tanguy Le Carrour <tanguy@bioneland.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -399,101 +400,98 @@ operating systems.")
     (license gpl2+)))
 
 (define-public neomutt
-  (let ((tag "2019-10-25"))
-    (package
-      (name "neomutt")
-      ;; Upstream now uses YYYY-MM-DD instead of YYYYMMDD, but we're forever
-      ;; wed to the latter through ‘guix upgrade’.
-      (version (apply string-append (string-split tag #\-)))
-      (source
-       (origin
-         (method git-fetch)
-         (uri (git-reference
-               (url "https://github.com/neomutt/neomutt.git")
-               (commit tag)))
-         (file-name (git-file-name name version))
-         (sha256
-          (base32 "0hy6rxgm3acjqxpf4ss7391kps4g06fbjhbpgv1jdrj1y9kv0rm1"))))
-      (build-system gnu-build-system)
-      (inputs
-       `(("cyrus-sasl" ,cyrus-sasl)
-         ("gdbm" ,gdbm)
-         ("gpgme" ,gpgme)
-         ("ncurses" ,ncurses)
-         ("gnutls" ,gnutls)
-         ("openssl" ,openssl)           ; for S/MIME
-         ("perl" ,perl)
-         ("kyotocabinet" ,kyotocabinet)
-         ("libxslt" ,libxslt)
-         ("libidn2" ,libidn2)
-         ("libxml2" ,libxml2)
-         ("lmdb" ,lmdb)
-         ("notmuch" ,notmuch)))
-      (native-inputs
-       `(("automake" ,automake)
-         ("gettext-minimal" ,gettext-minimal)
-         ("pkg-config" ,pkg-config)
-         ("docbook-xsl" ,docbook-xsl)
-         ("docbook-xml" ,docbook-xml-4.2)
-         ("w3m" ,w3m)
-         ("tcl" ,tcl)))
-      (arguments
-       `(#:test-target "test"
-         #:configure-flags
-         (list "--gpgme"
+  (package
+    (name "neomutt")
+    (version "20191102")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/neomutt/neomutt.git")
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0x5f9zbvxsxg5y2ir4xq4xw1q2snaxkidhdyhcxw5ljw3qqwhlyq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("gdbm" ,gdbm)
+       ("gpgme" ,gpgme)
+       ("ncurses" ,ncurses)
+       ("gnutls" ,gnutls)
+       ("openssl" ,openssl)             ; for S/MIME
+       ("perl" ,perl)
+       ("kyotocabinet" ,kyotocabinet)
+       ("libxslt" ,libxslt)
+       ("libidn2" ,libidn2)
+       ("libxml2" ,libxml2)
+       ("lmdb" ,lmdb)
+       ("notmuch" ,notmuch)))
+    (native-inputs
+     `(("automake" ,automake)
+       ("gettext-minimal" ,gettext-minimal)
+       ("pkg-config" ,pkg-config)
+       ("docbook-xsl" ,docbook-xsl)
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("w3m" ,w3m)
+       ("tcl" ,tcl)))
+    (arguments
+     `(#:test-target "test"
+       #:configure-flags
+       (list "--gpgme"
 
-               ;; Database, implies header caching.
-               "--disable-tokyocabinet"
-               "--disable-qdbm"
-               "--disable-bdb"
-               "--lmdb"
-               "--kyotocabinet"
+             ;; Database, implies header caching.
+             "--disable-tokyocabinet"
+             "--disable-qdbm"
+             "--disable-bdb"
+             "--lmdb"
+             "--kyotocabinet"
 
-               "--gdbm"
+             "--gdbm"
 
-               "--gnutls"
-               "--disable-ssl"
-               "--sasl"
-               (string-append "--with-sasl="
-                              (assoc-ref %build-inputs "cyrus-sasl"))
+             "--gnutls"
+             "--disable-ssl"
+             "--sasl"
+             (string-append "--with-sasl="
+                            (assoc-ref %build-inputs "cyrus-sasl"))
 
 
-               "--smime"
-               "--notmuch"
-               "--disable-idn"
-               "--idn2"
+             "--smime"
+             "--notmuch"
+             "--disable-idn"
+             "--idn2"
 
-               ;; If we do not set this, neomutt wants to check
-               ;; whether the path exists, which it does not
-               ;; in the chroot.
-               "--with-mailpath=/var/mail"
+             ;; If we do not set this, neomutt wants to check
+             ;; whether the path exists, which it does not
+             ;; in the chroot.
+             "--with-mailpath=/var/mail"
 
-               "--with-ui=ncurses"
-               (string-append "--with-ncurses="
-                              (assoc-ref %build-inputs "ncurses"))
-               (string-append "--prefix="
-                              (assoc-ref %outputs "out"))
-               "--debug")
-         #:phases
-         (modify-phases %standard-phases
-           ;; TODO: autosetup is meant to be included in the source,
-           ;; but we should package autosetup and use our own version of it.
-           (replace 'configure
-             (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
-               (let* ((out (assoc-ref outputs "out"))
-                      (flags `(,@configure-flags))
-                      (bash (which "bash")))
-                 (setenv "SHELL" bash)
-                 (setenv "CONFIG_SHELL" bash)
-                 (apply invoke bash
-                        (string-append (getcwd) "/configure")
-                        flags)))))))
-      (home-page "https://www.neomutt.org/")
-      (synopsis "Command-line mail reader based on Mutt")
-      (description
-       "NeoMutt is a command-line mail reader which is based on mutt.
+             "--with-ui=ncurses"
+             (string-append "--with-ncurses="
+                            (assoc-ref %build-inputs "ncurses"))
+             (string-append "--prefix="
+                            (assoc-ref %outputs "out"))
+             "--debug")
+       #:phases
+       (modify-phases %standard-phases
+         ;; TODO: autosetup is meant to be included in the source,
+         ;; but we should package autosetup and use our own version of it.
+         (replace 'configure
+           (lambda* (#:key outputs inputs configure-flags #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (flags `(,@configure-flags))
+                    (bash (which "bash")))
+               (setenv "SHELL" bash)
+               (setenv "CONFIG_SHELL" bash)
+               (apply invoke bash
+                      (string-append (getcwd) "/configure")
+                      flags)))))))
+    (home-page "https://www.neomutt.org/")
+    (synopsis "Command-line mail reader based on Mutt")
+    (description
+     "NeoMutt is a command-line mail reader which is based on mutt.
 It adds a large amount of new and improved features to mutt.")
-      (license gpl2+))))
+    (license gpl2+)))
 
 (define-public gmime
   (package
@@ -1096,7 +1094,7 @@ compresses it.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.17.3")
+    (version "3.17.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1104,7 +1102,7 @@ compresses it.")
                     ".tar.xz"))
               (sha256
                (base32
-                "1wnj6c9cbmhphs2l6wfvndkk2g08rmxw0sl2c8k1k008dxd1ykjh"))))
+                "00mfhaac16sv67rwiq98hr4nl5zmd1h2afswwwksdcsi3q9x23jr"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -1293,7 +1291,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.3.7.2")
+    (version "2.3.8")
     (source
      (origin
        (method url-fetch)
@@ -1301,8 +1299,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            "dovecot-" version ".tar.gz"))
        (sha256
-        (base32
-         "0q0jgcv3ni2znkgyhc966ffphj1wk73y76wssh0yciqafs2f0v36"))))
+        (base32 "0jdng27hqqagjy6v7ymd0xflbv5dbc1rhh450nk39ar6pw1qsxy5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1830,13 +1827,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.13.0")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1lyjiskc6ckjjylzr04dnm66p3cnn7vlysw9c27qls3y3ywx14zw"))))
+                "18ba2xgfq8sw0bg6xmlfjpizid1hkzgswcfcc54gl21y2dwfda2w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -1847,6 +1844,8 @@ maintained.")
                     (doc (string-append out "/share/doc/khard")))
                (copy-recursively "misc/khard" doc)
                #t))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (propagated-inputs
      `(("python-atomicwrites" ,python-atomicwrites)
        ("python-configobj" ,python-configobj)
@@ -1927,7 +1926,7 @@ Authentication-Results header seen in the wild.")
 (define-public perl-mail-dkim
   (package
     (name "perl-mail-dkim")
-    (version "0.57")
+    (version "0.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1936,7 +1935,7 @@ Authentication-Results header seen in the wild.")
                      ".tar.gz"))
               (sha256
                (base32
-                "0fmfhwn4sh98w62rc8j584l23vlhr7vii8glm2njx14f81a56lvb"))))
+                "0cgkal65qqcy57b21lgij90ba36wl66byw9i76g5yhwaa8ms8hqa"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-crypt-openssl-rsa" ,perl-crypt-openssl-rsa)
@@ -2278,14 +2277,14 @@ e-mails with other systems speaking the SMTP protocol.")
 (define-public opensmtpd-next
   (package
     (name "opensmtpd-next")
-    (version "6.6.0p1")
+    (version "6.6.1p1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://www.opensmtpd.org/archives/"
                            "opensmtpd-" version ".tar.gz"))
        (sha256
-        (base32 "1sgwbvc28h9nyyj4lv8d9b4ilzz03p2j1j763yr759k336a2193m"))))
+        (base32 "1ngil8j13m2rq07g94j4yjr6zmaimzy8wbfr17shi7rxnazys6zb"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

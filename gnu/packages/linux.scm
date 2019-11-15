@@ -100,6 +100,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages python-xyz)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rrdtool)
   #:use-module (gnu packages samba)
@@ -351,42 +352,42 @@ corresponding UPSTREAM-SOURCE (an origin), using the given DEBLOB-SCRIPTS."
                         "linux-" version ".tar.xz"))
     (sha256 hash)))
 
-(define-public linux-libre-5.3-version "5.3.8")
+(define-public linux-libre-5.3-version "5.3.11")
 (define-public linux-libre-5.3-pristine-source
   (let ((version linux-libre-5.3-version)
-        (hash (base32 "0jb6yya9yx4z52p5m32dqj0kgc6aaz9df8mvq0hzy40bqb3czwvq")))
+        (hash (base32 "1dxfh0l4inpjd17pyxfsskjsphs43r8lg6nhhr3y4whxdna5cwbf")))
    (make-linux-libre-source version
                             (%upstream-linux-source version hash)
                             deblob-scripts-5.3)))
 
-(define-public linux-libre-4.19-version "4.19.81")
+(define-public linux-libre-4.19-version "4.19.84")
 (define-public linux-libre-4.19-pristine-source
   (let ((version linux-libre-4.19-version)
-        (hash (base32 "17g2wiaa7l7mxi72k79drxij2zqk3nsj8wi17bl4nfvb1ypc2gi9")))
+        (hash (base32 "0q06mhz170x1lkx6c6qdh82rcnsj03q6f2m28aqhmc4wc694m2w6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.19)))
 
-(define-public linux-libre-4.14-version "4.14.151")
+(define-public linux-libre-4.14-version "4.14.154")
 (define-public linux-libre-4.14-pristine-source
   (let ((version linux-libre-4.14-version)
-        (hash (base32 "1bizb1wwni5r4m5i0mrsqbc5qw73lwrfrdadm09vbfz9ir19qlgz")))
+        (hash (base32 "00q662s8mgnzqfgk5gkzqfv9ws3vryf28blbq1zxcy4s6wj4mpl6")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.14)))
 
-(define-public linux-libre-4.9-version "4.9.198")
+(define-public linux-libre-4.9-version "4.9.201")
 (define-public linux-libre-4.9-pristine-source
   (let ((version linux-libre-4.9-version)
-        (hash (base32 "1b05jra6q695s1d4rzdr39i6m8xsi5xjrdn73sgwzvx0dgxfnwlm")))
+        (hash (base32 "125xmh5h1zmfniidpjljny53qkl4phpxaali69i66lajscxx8grq")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.9)))
 
-(define-public linux-libre-4.4-version "4.4.198")
+(define-public linux-libre-4.4-version "4.4.201")
 (define-public linux-libre-4.4-pristine-source
   (let ((version linux-libre-4.4-version)
-        (hash (base32 "04pkryy1lc75c88vq5wcjjcxs43i7bb8hhplbfi6s204ipc0iy7c")))
+        (hash (base32 "120kci4kmc48zcw16lhxmh71kaxm9ac5qxik36q3a20czg28b2m7")))
     (make-linux-libre-source version
                              (%upstream-linux-source version hash)
                              deblob-scripts-4.4)))
@@ -1061,14 +1062,14 @@ at login.  Local and dynamic reconfiguration are its key features.")
 (define-public psmisc
   (package
     (name "psmisc")
-    (version "23.2")
+    (version "23.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
                           version ".tar.xz"))
       (sha256
-       (base32 "103qp3f8jvz07x8r8zgsqwyw84g5g92w6pdq97d78d1pr7yvyz2b"))))
+       (base32 "16i7qzjmm6g0lzha8yzpfrlcxnvkgh95hkq9gdjd4zmzb8d0wxa1"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://gitlab.com/psmisc/psmisc")
@@ -4306,7 +4307,7 @@ The package provides additional NTFS tools.")
 (define-public rdma-core
   (package
     (name "rdma-core")
-    (version "22.3")
+    (version "26.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/linux-rdma/rdma-core"
@@ -4314,15 +4315,27 @@ The package provides additional NTFS tools.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0jgp1xh328x0kr6lkn4vq71cc627zd05wczr74b3j3151flhj828"))))
+                "14raqwx4pkzghiwkx1v0dq338f7xqqx8rnsxlpdnngvjy1p5l79j"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f ; no tests
+     `(#:tests? #f ; no tests
        ;; Upstream uses the "ninja" build system and encourage distros
        ;; to do the same for consistency. They also recommend using the
        ;; "Release" build type.
        #:build-type "Release"
-       #:configure-flags (list "-GNinja")
+       #:configure-flags (list "-GNinja"
+
+                               (string-append "-DRST2MAN_EXECUTABLE="
+                                              (assoc-ref %build-inputs
+                                                         "python-docutils")
+                                              "/bin/rst2man.py")
+
+                               ;; On some configurations, the
+                               ;; IB_USER_MAD_REGISTER_AGENT ioctl, which is
+                               ;; used by default, would return ENODEV.  To
+                               ;; avoid that, use 'write' instead of ioctls,
+                               ;; as suggested in 'CMakeList.txt'.
+                               "-DIOCTL_MODE=write")
        #:phases
        (modify-phases %standard-phases
          (replace 'build
@@ -4335,7 +4348,8 @@ The package provides additional NTFS tools.")
     (native-inputs
      `(("ninja" ,ninja)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper)))
+       ("python" ,python-wrapper)
+       ("python-docutils" ,python-docutils)))     ;for 'rst2man'
     (inputs
      `(("libnl" ,libnl)
        ("udev" ,eudev)))
@@ -4414,7 +4428,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
   (package
     (name "rng-tools")
     (home-page "https://github.com/nhorman/rng-tools")
-    (version "6.7")
+    (version "6.8")
     (source (origin
               (method git-fetch)
               (uri (git-reference (url home-page)
@@ -4422,7 +4436,7 @@ The collection contains a set of bandwidth and latency benchmark such as:
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "19f75m6mzg8h7b4snzg7d6ypvkz6nq32lrpi9ja95gqz4wsd18a5"))))
+                "1clm9i9xg3j79q0d6vinn6dx0nwh1fvzcmkqpcbay7mwsgkknvw2"))))
     (build-system gnu-build-system)
     (arguments
      `(;; Avoid using OpenSSL, curl, and libxml2, reducing the closure by 166 MiB.
@@ -4960,16 +4974,16 @@ monitoring tools for Linux.  These include @code{mpstat}, @code{iostat},
 (define-public light
   (package
     (name "light")
-    (version "1.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                     "https://github.com/haikarainen/light/archive/v"
-                     version ".tar.gz"))
-              (sha256
-               (base32
-                "1gfvsw7gh5pis733l7j54vzp272pvjyzbg8a0pvapfmg0s7mip97"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (version "1.2.1")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/haikarainen/light.git")
+             (commit (string-append "v" version))))
+       (sha256
+        (base32 "0zrjipd392bzjvxx0rjrb0cgi0ix1d83fwgw1mcy8kc4d16cgyjg"))
+       (file-name (git-file-name name version))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -5523,6 +5537,7 @@ libraries, which are often integrated directly into libfabric.")
                  "psm-ldflags.patch"  ; build shared lib with LDFLAGS
                  "psm-repro.patch"))))  ; reproducibility
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (inputs `(("libuuid" ,util-linux)))
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="

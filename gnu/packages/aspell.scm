@@ -158,11 +158,20 @@ dictionaries, including personal ones.")
                       "1svls9p7rsfi3hs0afh0cssj006qb4v1ik2yzqgj8hm10c6as2sm")))
 
 (define-public aspell-dict-ca
-  (aspell-dictionary "ca" "Catalan"
-                     #:version "2.1.5-1"
-                     #:sha256
-                     (base32
-                      "1fb5y5kgvk25nlsfvc8cai978hg66x3pbp9py56pldc7vxzf9npb")))
+  (let ((version "2.5.0")
+        (sha256
+         (base32 "0kbi8fi7a1bys31kfqrlh332gyik0cfdmxgl7n15sa9c305rkgwq")))
+    (package
+      (inherit (aspell-dictionary "ca" "Catalan"
+                                  #:version version
+                                  #:sha256 sha256))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://www.softcatala.org/pub/softcatala/aspell/"
+                             version "/aspell6-ca-" version ".tar.bz2"))
+         (sha256 sha256)))
+      (home-page "https://www.softcatala.org/pub/softcatala/aspell/"))))
 
 (define-public aspell-dict-de
   (aspell-dictionary "de" "German"

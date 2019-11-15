@@ -15,7 +15,7 @@
 ;;; Copyright © 2017, 2019 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2019 Pierre Neidhardt <mail@ambrevar.xyz>
-;;; Copyright © 2019 Comrade Yuri <yuri@nijino>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1851,7 +1851,7 @@ projects.")
 (define-public openvr
   (package
     (name "openvr")
-    (version "1.4.18")
+    (version "1.8.19")
     (home-page "https://github.com/ValveSoftware/openvr/")
     (source
      (origin
@@ -1861,8 +1861,7 @@ projects.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32
-         "0m92634j6g0f2xybbzklm79cnq20vidbk1jc62pnz12aabwixvyh"))))
+        (base32 "1b8cppvw6ib0kvx0vjq7jsk3plg1vh171w8xr230vjn05381wp52"))))
     (build-system cmake-build-system)
     (arguments
      ;; No tests.

@@ -247,14 +247,14 @@ unique algebra of patches called @url{http://darcs.net/Theory,Patchtheory}.
 (define-public git-annex
   (package
     (name "git-annex")
-    (version "7.20191024")
+    (version "7.20191114")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://hackage.haskell.org/package/"
                            "git-annex/git-annex-" version ".tar.gz"))
        (sha256
-        (base32 "11n0wvw7i1rgrsmm2wkv01rfa0azgaw1ib7jbmy4fyg9pw0s27y1"))))
+        (base32 "1afrn5g3b80f3n6ncfph6pmf9jdpc7a6ay55k2pmkn96pyv4hfmm"))))
     (build-system haskell-build-system)
     (arguments
      `(#:configure-flags
@@ -564,7 +564,7 @@ Wayland, and Linux console environments alike.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://hackage.haskell.org/package/Raincat/"
+       (uri (string-append "mirror://hackage/package/Raincat/"
                            "Raincat-" version ".tar.gz"))
        (sha256
         (base32
@@ -598,6 +598,37 @@ play inspired from classics Lemmings and The Incredible Machine.  The project
 proved to be an excellent learning experience for the programmers.  Everything
 is programmed in Haskell.")
     (license license:bsd-3)))
+
+(define-public scroll
+  (package
+    (name "scroll")
+    (version "1.20180421")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://hackage.haskell.org/package/scroll/scroll-"
+               version ".tar.gz"))
+        (sha256
+         (base32
+          "0apzrvf99rskj4dbmn57jjxrsf19j436s8a09m950df5aws3a0wj"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-ifelse" ,ghc-ifelse)
+       ("ghc-monad-loops" ,ghc-monad-loops)
+       ("ghc-ncurses" ,ghc-ncurses)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-random" ,ghc-random)
+       ("ghc-vector" ,ghc-vector)))
+    (home-page "https://joeyh.name/code/scroll/")
+    (synopsis "scroll(6), a roguelike game")
+    (description
+     "You're a bookworm that's stuck on a scroll.  You have to dodge between
+words and use spells to make your way down the page as the scroll is read.  Go
+too slow and you'll get wound up in the scroll and crushed.")
+    (license license:gpl2)))
 
 (define-public shellcheck
   (package

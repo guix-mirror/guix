@@ -28,6 +28,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages check)
@@ -254,7 +255,7 @@ intuitive syntax and trivial integration.")
 (define-public xtl
   (package
     (name "xtl")
-    (version "0.6.7")
+    (version "0.6.8")
     (source (origin
               (method git-fetch)
               (uri
@@ -263,7 +264,7 @@ intuitive syntax and trivial integration.")
                 (commit version)))
               (sha256
                (base32
-                "0dds2fzyis42b1c3biqr3ir9l96csyyfkwrkm3fqjksdhgdklzmj"))
+                "13gm8vm1b9nzvlcc632f9khnjw1xdjqj6c7k51r173y1hlk0div7"))
               (file-name (git-file-name name version))))
     (native-inputs
      `(("googletest" ,googletest)
@@ -349,4 +350,28 @@ tools:
 @item heap checker,
 @item CPU checker.
 @end itemize\n")
+    (license license:bsd-3)))
+
+(define-public cpplint
+  (package
+    (name "cpplint")
+    (version "1.4.4")
+    (source
+     (origin
+       (method git-fetch)
+       ;; Fetch from github instead of pypi, since the test cases are not in
+       ;; the pypi archive.
+       (uri (git-reference
+             (url "https://github.com/cpplint/cpplint")
+             (commit version)))
+       (sha256
+        (base32 "1ns9wbizr10w7rpyp106d7ip68s5nyskr54vw9bij11sci9z0v3j"))
+       (file-name (git-file-name name version))))
+    (build-system python-build-system)
+    (home-page "https://github.com/cpplint/cpplint")
+    (synopsis "Static code checker for C++")
+    (description "@code{cpplint} is a command-line tool to check C/C++ files
+for style issues following Google’s C++ style guide.  While Google maintains
+it's own version of the tool, this is a fork that aims to be more responsive
+and make @code{cpplint} usable in wider contexts.")
     (license license:bsd-3)))

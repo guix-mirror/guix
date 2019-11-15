@@ -138,7 +138,7 @@
        ;; 'singularity exec' insists on having /bin/sh in the image.
        (profile  (profile-derivation (packages->manifest
                                       (list bash-minimal
-                                            guile-2.2 guile-json))
+                                            guile-2.2 guile-json-3))
                                      #:hooks '()
                                      #:locales? #f))
        (tarball  (squashfs-image "singularity-pack" profile

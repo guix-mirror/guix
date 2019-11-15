@@ -1,13 +1,14 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016, 2019 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kkebreau@posteo.net>
 ;;; Copyright © 2017 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Rutger Helling <rhelling@mykolab.com>
 ;;; Copyright © 2018 Timo Eisenmann <eisenmann@fn.de>
 ;;; Copyright © 2018 Pierre Neidhardt <mail@ambrevar.xyz>
+;;; Copyright © 2019 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,14 +94,14 @@ older or slower computers and embedded systems.")
 (define-public links
   (package
     (name "links")
-    (version "2.20.1")
+    (version "2.20.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   "links-" version ".tar.bz2"))
-                (sha256
+              (sha256
                (base32
-                "0184g59cxxhg9dqg5gv66f30f1wg8sx957pp5rs7b8icnwnafa5v"))))
+                "097ll98ympzfx7qfdyhc52yzvsp167x5nnjs6v8ih496wv80fksb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -146,13 +147,14 @@ features including, tables, builtin image display, bookmarks, SSL and more.")
     (name "luakit")
     (version "2.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/luakit/luakit/archive/" version
-                                  ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/luakit/luakit.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "09kgsm2w2xa4xwylsi0bwjvdl9k6hkyjyyrq2i3l8bvi2qrs5gzc"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1qa90caxv1k6ak88fn0a7n7h0c4iv8szw6zn2axch8ig83i86az2"))))
     (inputs
      `(("lua-5.1" ,lua-5.1)
        ("gtk+" ,gtk+)
@@ -222,7 +224,7 @@ and the GTK+ toolkit.")
                      ("perl" ,perl)))
     (inputs `(("ncurses" ,ncurses)
               ("libidn" ,libidn)
-              ("gnutls" ,gnutls)
+              ("openssl" ,openssl)
               ("libgcrypt" ,libgcrypt)
               ("unzip" ,unzip)
               ("zlib" ,zlib)
@@ -230,12 +232,12 @@ and the GTK+ toolkit.")
               ("bzip2" ,bzip2)))
     (arguments
      `(#:configure-flags
-       (let ((gnutls (assoc-ref %build-inputs "gnutls")))
+       (let ((openssl (assoc-ref %build-inputs "openssl")))
          `("--with-pkg-config"
            "--with-screen=ncurses"
            "--with-zlib"
            "--with-bzlib"
-           ,(string-append "--with-gnutls=" gnutls)
+           ,(string-append "--with-ssl=" openssl)
            ;; "--with-socks5"    ; XXX TODO
            "--enable-widec"
            "--enable-ascii-ctypes"

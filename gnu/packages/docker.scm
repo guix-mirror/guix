@@ -317,7 +317,8 @@ built-in registry server of Docker.")
        (patches
         (search-patches "docker-engine-test-noinstall.patch"
                         "docker-fix-tests.patch"
-                        "docker-use-fewer-modprobes.patch"))))
+                        "docker-use-fewer-modprobes.patch"
+                        "docker-adjust-tests-for-changes-in-go.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules

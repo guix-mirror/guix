@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix memoization)
   #:export (pkg-config))
 
 ;; This is the "primitive" pkg-config package.  People should use `pkg-config'
@@ -65,44 +66,46 @@ on where to find glib (or other libraries).  It is language-agnostic, so
 it can be used for defining the location of documentation tools, for
 instance.")))
 
-(define (cross-pkg-config target)
-  "Return a pkg-config for TARGET, essentially just a wrapper called
+(define cross-pkg-config
+  (mlambda (target)
+    "Return a pkg-config for TARGET, essentially just a wrapper called
 `TARGET-pkg-config', as `configure' scripts like it."
-  ;; See <http://www.flameeyes.eu/autotools-mythbuster/pkgconfig/cross-compiling.html>
-  ;; for details.
-  (package (inherit %pkg-config)
-    (name (string-append (package-name %pkg-config) "-" target))
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils))
+    ;; See <http://www.flameeyes.eu/autotools-mythbuster/pkgconfig/cross-compiling.html>
+    ;; for details.
+    (package
+      (inherit %pkg-config)
+      (name (string-append (package-name %pkg-config) "-" target))
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils))
 
-                   (let* ((in     (assoc-ref %build-inputs "pkg-config"))
-                          (out    (assoc-ref %outputs "out"))
-                          (bin    (string-append out "/bin"))
-                          (prog   (string-append ,target "-pkg-config"))
-                          (native (string-append in "/bin/pkg-config")))
+                     (let* ((in     (assoc-ref %build-inputs "pkg-config"))
+                            (out    (assoc-ref %outputs "out"))
+                            (bin    (string-append out "/bin"))
+                            (prog   (string-append ,target "-pkg-config"))
+                            (native (string-append in "/bin/pkg-config")))
 
-                     (mkdir-p bin)
+                       (mkdir-p bin)
 
-                     ;; Create a `TARGET-pkg-config' -> `pkg-config' symlink.
-                     ;; This satisfies the pkg.m4 macros, which use
-                     ;; AC_PROG_TOOL to determine the `pkg-config' program
-                     ;; name.
-                     (symlink native (string-append bin "/" prog))
+                       ;; Create a `TARGET-pkg-config' -> `pkg-config' symlink.
+                       ;; This satisfies the pkg.m4 macros, which use
+                       ;; AC_PROG_TOOL to determine the `pkg-config' program
+                       ;; name.
+                       (symlink native (string-append bin "/" prog))
 
-                     ;; Also make 'pkg.m4' available, some packages might
-                     ;; expect it.
-                     (mkdir-p (string-append out "/share"))
-                     (symlink (string-append in "/share/aclocal")
-                              (string-append out "/share/aclocal"))
-                     #t))))
-    (native-inputs `(("pkg-config" ,%pkg-config)))
+                       ;; Also make 'pkg.m4' available, some packages might
+                       ;; expect it.
+                       (mkdir-p (string-append out "/share"))
+                       (symlink (string-append in "/share/aclocal")
+                                (string-append out "/share/aclocal"))
+                       #t))))
+      (native-inputs `(("pkg-config" ,%pkg-config)))
 
-    ;; Ignore native inputs, and set `PKG_CONFIG_PATH' for target inputs.
-    (native-search-paths '())
-    (search-paths (package-native-search-paths %pkg-config))))
+      ;; Ignore native inputs, and set `PKG_CONFIG_PATH' for target inputs.
+      (native-search-paths '())
+      (search-paths (package-native-search-paths %pkg-config)))))
 
 (define (pkg-config-for-target target)
   "Return a pkg-config package for TARGET, which may be either #f for a native

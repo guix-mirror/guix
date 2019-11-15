@@ -146,14 +146,14 @@ as well as the classic centralized workflow.")
    (name "git")
    ;; XXX When updating Git, check if the special 'git-source' input to cgit
    ;; needs to be updated as well.
-   (version "2.23.0")
+   (version "2.24.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0rv0y45gcd3h191isppn77acih695v4pipdj031jvs9rd1ds0kr3"))))
+              "06rpakbwzck85ncfsgv4xmq3iwab9d4f5y6dqhl8nvb2fccxcwcz"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -166,7 +166,7 @@ as well as the classic centralized workflow.")
                 version ".tar.xz"))
           (sha256
            (base32
-            "0sllhyl0w29v4n303hqfmcc3apafnwk4sk78anyjjhpzd0zl6n4m"))))
+            "19h4bhk78rljxk921fcz5xy1z4ss75zw03n9nqf2r512dz0p5j5h"))))
       ;; For subtree documentation.
       ("asciidoc" ,asciidoc)
       ("docbook-xsl" ,docbook-xsl)
@@ -183,14 +183,17 @@ as well as the classic centralized workflow.")
       ;; a problem in 'patch-shebangs'; see <https://bugs.gnu.org/31952>.
       ("bash-for-tests" ,bash)
 
-      ;; For 'gitweb.cgi'
+      ;; For PCRE support in git grep (USE_LIBPCRE2).
+      ("pcre" ,pcre2)
+
+      ;; For 'gitweb.cgi'.
       ("perl-cgi" ,perl-cgi)
 
       ;; For 'git-svn'.
       ("subversion" ,subversion)
       ("perl-term-readkey" ,perl-term-readkey)
 
-      ;; For 'git-send-email'
+      ;; For 'git-send-email'.
       ("perl-authen-sasl" ,perl-authen-sasl)
       ("perl-net-smtp-ssl" ,perl-net-smtp-ssl)
       ("perl-io-socket-ssl" ,perl-io-socket-ssl)
@@ -215,6 +218,8 @@ as well as the classic centralized workflow.")
                      ,(string-append "TEST_SHELL_PATH="
                                      (assoc-ref %build-inputs "bash-for-tests")
                                      "/bin/bash")
+
+                     "USE_LIBPCRE2=yes"
 
                      ;; By default 'make install' creates hard links for
                      ;; things in 'libexec/git-core', which leads to huge
@@ -505,6 +510,8 @@ everything from small to very large projects with speed and efficiency.")
                  (delete-file-recursively
                   (string-append out "/share/gitweb"))
                  #t)))))
+       ((#:make-flags flags)
+        `(delete "USE_LIBPCRE2=yes" ,flags))
        ((#:configure-flags flags)
         ''())
        ((#:disallowed-references lst '())

@@ -1017,28 +1017,18 @@ Libxml2).")
     (name "minixml")
     (version "2.12")
     (source (origin
-              (method url-fetch/tarbomb)
+              (method url-fetch)
               (uri (string-append "https://github.com/michaelrsweet/mxml/"
                                   "releases/download/v" version
                                   "/mxml-" version ".tar.gz"))
               (sha256
                (base32
-                "1z8nqxa4pqdic8wpixkkgg1m2pak9wjikjjxnk3j5i0d29dbgmmg"))))
+                "0kq3wiycb40dcyswvajrqb1n5ffm5xcnsfxxaml92vhpl6x57yvb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-permissions
-           ;; FIXME: url-fetch/tarbomb resets all permissions to 555/444.
-           (lambda _
-             (for-each
-              (lambda (file)
-                (chmod file #o644))
-              (find-files "doc" "\\."))
-             #t)))
        #:tests? #f))                    ; tests are run during build
     (home-page "https://michaelrsweet.github.io/mxml")
     (synopsis "Small XML parsing library")

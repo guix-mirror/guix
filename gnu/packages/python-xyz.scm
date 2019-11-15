@@ -166,13 +166,13 @@
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "5.6.3")
+    (version "5.6.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
-        (base32 "1wv31zly44qj0rp2acg58xbnc7bf6ffyadasq093l455q30qafl6"))))
+        (base32 "0isil5jxwwd8awz54qk28rpgjg43i5l6yl70g40vxwa4r4m56lfh"))))
     (build-system python-build-system)
     (arguments
      ;; FIXME: some tests does not return and times out.
@@ -4309,14 +4309,13 @@ operators such as union, intersection, and difference.")
 (define-public python-scipy
   (package
     (name "python-scipy")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "scipy" version))
        (sha256
-        (base32
-         "1df113c9i6vazsn6y3n9wc22jh737z1g7dmx3mypkdwpdnscyhr6"))))
+        (base32 "192d8dsybvhv19igkrsafbdafx198nz7pibkjgrqjhlr66s3jfd0"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
@@ -4453,6 +4452,35 @@ as the original project seems to have been abandoned circa 2007.")
 
 (define-public python2-socksipy-branch
   (package-with-python2 python-socksipy-branch))
+
+(define-public python-socksipychain
+  (package
+    (name "python-socksipychain")
+    (version "2.0.15")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/pagekite/PySocksipyChain.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1pkljnh9hfwla8sg7mil4f9zrnsqj0dbhr3crxjw3k8dnjz70dvk"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests try to access the network.
+    (home-page "http://pagekite.net/wiki/Floss/PySocksipyChain/")
+    (synopsis "Python SOCKS module with chained proxies support")
+    (description
+     "SocksiPyChain is a modified version of the SocksiPy SOCKS module, which
+adds support for arbitrary chaining of proxy servers and various modes of
+TLS/SSL encryption.  It was developed for use in PageKite, and also includes
+a simple netcat replacement with chaining support.")
+    (license license:bsd-3)))
+
+(define-public python2-socksipychain
+  (package-with-python2 python-socksipychain))
 
 (define-public python-pycodestyle
   (package
@@ -5916,27 +5944,15 @@ parsing (browser/HTTP) user agent strings.")
 (define-public python-dbus
   (package
     (name "python-dbus")
-    (version "1.2.8")
+    (version "1.2.10")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://dbus.freedesktop.org/releases/dbus-python/"
                            "dbus-python-" version ".tar.gz"))
        (sha256
-        (base32
-         "0vvvjmiwnc9cjlks3gcdk43ap7llhlpz7cm1wbw0nc2yfsxjpwdb"))))
+        (base32 "11nqk01iq5bx2llgb3ksknyinijdp29w4ndj210glm009ayjncyl"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-before
-          'check 'pre-check
-          (lambda _
-            ;; XXX: For the missing '/etc/machine-id'.
-            (substitute* "test/run-test.sh"
-              (("DBUS_FATAL_WARNINGS=1")
-               "DBUS_FATAL_WARNINGS=0"))
-            #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -6065,14 +6081,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python-soupsieve
   (package
     (name "python-soupsieve")
-    (version "1.9.2")
+    (version "1.9.5")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "soupsieve" version))
        (sha256
         (base32
-         "0in9rc9q3h8w5b4qf7kvl3qxcvw6vrz35ckblchgf70hm6pg3dbj"))))
+         "1nhd0q0ifwva9wn645s6pn74p1rd97asn3qfg75nphx1wkgcbhg2"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))
     ;;XXX: 2 tests fail currently despite claming they were to be
@@ -9004,14 +9020,14 @@ servers.")
 (define-public python-jmespath
   (package
    (name "python-jmespath")
-   (version "0.9.3")
+   (version "0.9.4")
    (source
     (origin
      (method url-fetch)
      (uri (pypi-uri "jmespath" version))
      (sha256
       (base32
-       "0r7wc7fsxmlwzxx9j1j7rms06c6xs6d4sysirdhz1jk2mb4x90ba"))))
+       "0k0765x1mybcrzajh3hiqkl8sy9hs0bmn4900frxy0j3ykvaxqmx"))))
    (build-system python-build-system)
    (native-inputs
     `(("python-nose" ,python-nose)))
@@ -12746,14 +12762,13 @@ clone, while other processes access the original tree.")
 (define-public python-astroid
   (package
     (name "python-astroid")
-    (version "2.3.2")
+    (version "2.3.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "astroid" version))
        (sha256
-        (base32
-         "0crfhpblcy5a6nh694hc2073gw389f01yilamzqi34si2skgp8q9"))))
+        (base32 "0fnibsl2cb5mvzbfm7sycj85smx48f8w8m7ks1sqlmpr9ps0gski"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lazy-object-proxy" ,python-lazy-object-proxy)
@@ -15264,13 +15279,13 @@ working with iterables.")
 (define-public python-latexcodec
   (package
     (name "python-latexcodec")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "latexcodec" version))
        (sha256
-        (base32 "0s4wdbg0w2l8pj3i0y4510i0s04p8nhxcsa2z41bjsv0k66npb81"))))
+        (base32 "0wnp3yqcgx0rpy8dz51vh75lbp2qif67da19zi7m3ca98n887hgb"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)))

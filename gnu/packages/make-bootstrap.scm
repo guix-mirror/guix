@@ -88,23 +88,56 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
       ;; contain store file names, so the CRC changes at every rebuild.)
       (outputs (delete "debug" (package-outputs base))))))
 
+(define gcc-for-bootstrap
+  (mlambdaq (glibc)
+    "Return a variant of GCC that uses the bootstrap variant of GLIBC."
+    (package
+      (inherit gcc)
+      (outputs '("out")) ;all in one so libgcc_s is easily found
+      (native-search-paths
+       ;; Set CPLUS_INCLUDE_PATH so GCC is able to find the libc
+       ;; C++ headers.
+       (cons (search-path-specification
+              (variable "CPLUS_INCLUDE_PATH")
+              (files '("include")))
+             (package-native-search-paths gcc)))
+      (inputs
+       `( ;; Distinguish the name so we can refer to it below.
+         ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
+         ("libc:static" ,(glibc-for-bootstrap glibc) "static")
+         ,@(package-inputs gcc)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments gcc)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-before 'configure 'treat-glibc-as-system-header
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((libc (assoc-ref inputs "bootstrap-libc")))
+                   ;; GCCs build processes requires that the libc
+                   ;; we're building against is on the system header
+                   ;; search path.
+                   (for-each (lambda (var)
+                               (setenv var (string-append libc "/include")))
+                             '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
+                   #t))))))))))
+
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
 `glibc-for-bootstrap'."
 
-  (define (cross-bootstrap-libc)
-    (let ((target (%current-target-system)))
-      (glibc-for-bootstrap
-       ;; `cross-libc' already returns a cross libc, so clear
-       ;; %CURRENT-TARGET-SYSTEM.
-       (parameterize ((%current-target-system #f))
-         (cross-libc target)))))
+  (define (cross-bootstrap-libc target)
+    (glibc-for-bootstrap
+     ;; `cross-libc' already returns a cross libc, so clear
+     ;; %CURRENT-TARGET-SYSTEM.
+     (parameterize ((%current-target-system #f))
+       (cross-libc target))))
 
   ;; Standard inputs with the above libc and corresponding GCC.
 
   (define (inputs)
     (if (%current-target-system)                ; is this package cross built?
-        `(("cross-libc" ,(cross-bootstrap-libc)))
+        `(("cross-libc"
+           ,(cross-bootstrap-libc (%current-target-system))))
         '()))
 
   (define (native-inputs)
@@ -113,7 +146,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                (xgcc (cross-gcc
                       target
                       #:xbinutils (cross-binutils target)
-                      #:libc (cross-bootstrap-libc))))
+                      #:libc (cross-bootstrap-libc target))))
           `(("cross-gcc" ,(package
                             (inherit xgcc)
                             (search-paths
@@ -127,34 +160,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ,@(%final-inputs)))
         `(("libc" ,(glibc-for-bootstrap glibc))
           ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-          ("gcc" ,(package (inherit gcc)
-                    (outputs '("out"))  ;all in one so libgcc_s is easily found
-                    (native-search-paths
-                     ;; Set CPLUS_INCLUDE_PATH so GCC is able to find the libc
-                     ;; C++ headers.
-                     (cons (search-path-specification
-                            (variable "CPLUS_INCLUDE_PATH")
-                            (files '("include")))
-                           (package-native-search-paths gcc)))
-                    (inputs
-                     `(;; Distinguish the name so we can refer to it below.
-                       ("bootstrap-libc" ,(glibc-for-bootstrap glibc))
-                       ("libc:static" ,(glibc-for-bootstrap glibc) "static")
-                       ,@(package-inputs gcc)))
-                    (arguments
-                     (substitute-keyword-arguments (package-arguments gcc)
-                       ((#:phases phases)
-                        `(modify-phases ,phases
-                           (add-before 'configure 'treat-glibc-as-system-header
-                             (lambda* (#:key inputs #:allow-other-keys)
-                               (let ((libc (assoc-ref inputs "bootstrap-libc")))
-                                 ;; GCCs build processes requires that the libc
-                                 ;; we're building against is on the system header
-                                 ;; search path.
-                                 (for-each (lambda (var)
-                                             (setenv var (string-append libc "/include")))
-                                           '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
-                                 #t)))))))))
+          ("gcc" ,(gcc-for-bootstrap glibc))
           ,@(fold alist-delete (%final-inputs) '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs

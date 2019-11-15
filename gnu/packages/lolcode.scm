@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 ng0 <ng0@n0.is>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (guix build-system cmake)
-  #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages))
 
@@ -29,19 +30,20 @@
   (package
     (name "lci")
     (version "0.11.2")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/justinmeza/lci/archive/v"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1li7ikcrs7wqah7gqkirg0k61n6pm12w7pydin966x1sdn9na46b"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/justinmeza/lci.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0syw60b93iajgh91ffchirwwhm2kix2753ibx845kyrhzggmdh2l"))))
     (build-system cmake-build-system)
     (inputs
      `(("readline" ,readline)))
     (native-inputs
-     `(("python-2" ,python-2))) ; for the tests
+     `(("python-2" ,python-2)))         ; for the tests
     (synopsis "LOLCODE interpreter written in C")
     (description
      "@code{lci} is a LOLCODE interpreter written in C and is designed to be

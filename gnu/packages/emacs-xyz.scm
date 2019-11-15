@@ -55,6 +55,8 @@
 ;;; Copyright © 2019 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2019 Björn Höfling <bjoern.hoefling@bjoernhoefling.de>
 ;;; Copyright © 2019 Stephen Webber <montokapro@gmail.com>
+;;; Copyright © 2019 Leo Prikler <leo.prikler@student.tugraz.at>
+;;; Copyright © 2019 David Wilson <david@daviwil.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,6 +91,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
@@ -620,6 +623,7 @@ handful of functions that are not resource-specific.")
                 (uri (git-reference
                       (url "https://github.com/emacs-pe/scribble-mode.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1s5ccw1a5ack01wd94ywfcrar9j98agchwdh30q7iyxr0d2z4sii"))))
@@ -1219,14 +1223,14 @@ or unexpected behavior inside an elisp configuration file (typically
 (define-public emacs-emms
   (package
     (name "emacs-emms")
-    (version "5.2")
+    (version "5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0cvpfdkagkpi8g02w8f7wzrpdk2ihas0mn5m9fr882xjdfshl21z"))
+                "00hnv7jjgb2simgrf7gf2y1cyg2syk7kj1hkbac146hlgxk8ngj1"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1578,17 +1582,14 @@ as a library for other Emacs packages.")
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
-    (version "12.1.2")
+    (version "12.2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://elpa.gnu.org/packages/auctex-"
-             version
-             ".tar"))
+       (uri (string-append "https://elpa.gnu.org/packages/auctex-"
+                           version ".tar"))
        (sha256
-        (base32
-         "1yibg2anpmyr2a27wm4xqjsvsi9km2jzb56bf7cwyj8dnjfsd11n"))))
+        (base32 "0j919l3q5sq6h1k1kmk4kyv0vkzl4f98fxcd64v34x5q1ahjhg48"))))
     (build-system emacs-build-system)
     ;; We use 'emacs' because AUCTeX requires dbus at compile time
     ;; ('emacs-minimal' does not provide dbus).
@@ -4817,6 +4818,7 @@ package provides a light and a dark variant.")
          (uri (git-reference
                (url "https://github.com/kunalb/poet.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0a84jdaj619mb59a46dmkk2sfs42rylqk9ryl1drgs8d3lia79mz"))))
@@ -4877,6 +4879,30 @@ mode switching in the way of solarized.  The main focus when developing gruvbox
 is to keep colors easily distinguishable, contrast enough and still pleasant
 for the eyes.")
     (license license:expat))) ; MIT license
+
+(define-public emacs-spacegray-theme
+  (let ((commit "9826265c2bceb2ebc1c5e16a45021da0253ace97")
+        (revision "0"))
+    (package
+      (name "emacs-spacegray-theme")
+      (version (git-version "0" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bruce/emacs-spacegray-theme.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "0aplwmm17ypbns5blc4rf5rr6dasj0zp5ibykpfl43fh4bd8z89n"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/bruce/emacs-spacegray-theme")
+      (synopsis "Port of Sublime Text's Spacegray theme for Emacs")
+      (description
+       "@code{spacegray-theme} is an Emacs port of the Spacegray theme from
+Sublime Text.  It features a dark blue/gray background and soft blue, green,
+orange and red as accent colors.")
+      (license license:expat)))) ; MIT license
 
 (define-public emacs-2048-game
   (package
@@ -7439,8 +7465,8 @@ extensions.")
     (license license:gpl3+)))
 
 (define-public emacs-evil-collection
-  (let ((commit "38e916d5d56b391f1ad4c72ad3909491e86cda3c")
-        (revision "12"))
+  (let ((commit "eb36c82a84d313e961777dc78fd4ff1d718efdf6")
+        (revision "13"))
     (package
       (name "emacs-evil-collection")
       (version (git-version "0.0.3" revision commit))
@@ -7452,7 +7478,7 @@ extensions.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "00a1ya3c92ymhfj4ai1ygljnxa147d4cgi6jmvccngicphn99782"))))
+                  "0wi84x9176y4xjl7zpn882achfamx3a2ixlj4nvflxfh6q1qg7bz"))))
       (build-system emacs-build-system)
       (propagated-inputs
        `(("emacs-evil" ,emacs-evil)
@@ -8898,6 +8924,7 @@ actually changing the buffer's text.")
        (uri (git-reference
              (url "https://github.com/dgutov/diff-hl")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1xlsg728mz3cwhrsqvisa0aidic67nymd9g7h4c1h3q63j39yb2s"))))
@@ -8958,6 +8985,36 @@ abbreviation of the mode line displays (lighters) of minor modes.")
 configuration in your @file{.emacs} file in a way that is both
 performance-oriented and tidy.")
     (license license:gpl2+)))
+
+(define-public emacs-leaf
+  (package
+    (name "emacs-leaf")
+    (version "3.5.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/conao3/leaf.el.git")
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1rgd59146wad92yc64las0qgx67k2ifgsw1vwhp40xvkd7kb0r6d"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/conao3/leaf.el")
+    (arguments
+     `(#:tests? #t
+       #:test-command '("emacs" "--batch"
+                        "-l" "leaf-tests.el"
+                        "-f" "cort-test-run")))
+    (synopsis
+     "Simplify your init.el configuration, extended use-package")
+    (description
+     "This package provides macros that allows you to declaratively configure
+settings typical of an Elisp package with various keywords.  The syntax is
+similar, but not identical to use-package -- overall, leaf aims at a cleaner
+and more predictable implementation.")
+    (license license:agpl3+)))
 
 (define-public emacs-strace-mode
   (let* ((commit "6a69b4b06db6797af56f33eda5cb28af94e59f11")
@@ -10368,7 +10425,7 @@ the nick color and the background color
 (define-public emacs-engine-mode
   (package
     (name "emacs-engine-mode")
-    (version "2.0.0")
+    (version "2.1.1")
     (source
      (origin
        (method git-fetch)
@@ -10377,7 +10434,7 @@ the nick color and the background color
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "02xas46nl28mascqsyr1zcd4hn15bh0fjv2xlxv1kmrj0pis94ml"))))
+        (base32 "1xka8i4cdvp5r2v2mkli1zz17x1sdsnmszbhqav2rf94v656d91i"))))
     (build-system emacs-build-system)
     (synopsis "Minor mode for defining and querying search engines")
     (description "@code{engine-mode} is a global minor mode for Emacs.  It
@@ -10488,6 +10545,7 @@ It supports dired buffers and opens them in tree mode at destination.")
          (uri (git-reference
                (url "https://github.com/abo-abo/tiny.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1498j392ap2mk4zmsm2id16pfgvj78r428da9vw7hdrzzibai2cx"))))
@@ -10543,6 +10601,7 @@ well as Github-style emojis like @code{:smile:}.  It provides a minor mode
          (uri (git-reference
                (url "https://github.com/abo-abo/make-it-so")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0p6xhyinzzkrwzbpxqfm8hlii0ikvmmylya240bwsa77w0g1k6xq"))))
@@ -10572,6 +10631,7 @@ included by default, and more can be readily added.")
          (uri (git-reference
                (url "https://github.com/sindikat/unidecode")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "03x3nakbhmakwm977mwrf8jifvjnfwzpjv6wrwpizbqjnkgfchmn"))))
@@ -11418,6 +11478,7 @@ functionality is inherited from @code{hcl-mode}.")
        (uri (git-reference
              (url "https://github.com/purcell/exec-path-from-shell")
              (commit version)))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "1ga8bpxngd3ph2hdiik92c612ki71qxw818i6rgx6f6a5r0sbf3p"))))
@@ -11498,6 +11559,7 @@ to with quicklink-style selections.")
        (uri (git-reference
              (url "https://github.com/jrblevin/deft.git")
              (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
          "0z7cilgiz6krvl5h2z72hkch43qxmypb0k6p5vxn5lx1p6v0mrf2"))))
@@ -11587,6 +11649,7 @@ used with SGML-like languages: XML, HTML, XHTML, XSL, etc.")
          (uri (git-reference
                (url "https://github.com/ergoemacs/ergoemacs-mode.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "1s3b9bridl78hh1mxmdk9nqlmqhibbaxk0a1cixmsf23s06w8w6l"))))
@@ -15088,7 +15151,7 @@ cohesion with the Emacs Way.")
 (define-public emacs-fish-completion
   (package
     (name "emacs-fish-completion")
-    (version "1.1")
+    (version "1.2")
     (source
      (origin
        (method git-fetch)
@@ -15098,7 +15161,7 @@ cohesion with the Emacs Way.")
        (file-name (git-file-name name version))
        (sha256
         (base32
-         "1pjqnbyjmj64q5nwq1mrdxcls4fp5y0b6zqs785i0s6wdvrm4021"))))
+         "17lqip1i1rrsvxzz4bx9rqf1fvwd3hriwg3sj6qxmfc8pylnp37q"))))
     (build-system emacs-build-system)
     (inputs `(("fish" ,fish)))
     (arguments
@@ -15147,6 +15210,7 @@ try completing.  See @code{fish-completion-fallback-on-bash-p}.")
          (uri (git-reference
                (url "https://gitlab.com/Ambrevar/emacs-gif-screencast.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "19xqi5mgalnnhb4hw0fh7py2s2dllldx1xxbhwhknkdpifai8hl8"))))
@@ -15303,6 +15367,7 @@ from @code{emms-source-file-default-directory}.")
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-exwm.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "064ziinqa5sdv7rfjn0y278l12kld176fr88k4h78pgf2f2n7cd8"))))
       (build-system emacs-build-system)
@@ -15393,6 +15458,7 @@ projects unrelated to current-buffer.
          (uri (git-reference
                (url "https://github.com/emacs-helm/helm-mu.git")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32 "1lh0ahxdc5b2z18m9p30gwg8sbg33sjwkjr38p7h5xsm5fm7i0fz"))))
       (build-system emacs-build-system)
@@ -15870,13 +15936,41 @@ and 'text viewing modes' respectively.")
     (version "0.6.6")
     (source
      (origin
-       (method url-fetch)
-       (uri (string-append "https://stable.melpa.org/packages/adoc-mode-"
-                           version ".el"))
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/sensorflo/adoc-mode.git")
+             (commit (string-append "V" version))))
+       (file-name (git-file-name name version))
        (sha256
         (base32
-         "1c6hrgxxsnl2c19rgjykpm7r4xg9lp6bmk5z6bi7g8pqlrgwffcy"))))
+         "0kp2aafjhqxz3mjr9hkkss85r4n51chws5a2qj1xzb63dh36liwm"))))
     (build-system emacs-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; See: https://github.com/sensorflo/adoc-mode/issues/39.
+         (add-after 'unpack 'disable-failing-tests
+           (lambda _
+             (let-syntax
+                 ((disable-tests
+                   (syntax-rules ()
+                     ((_ file ())
+                      (syntax-error "test names list must not be empty"))
+                     ((_ file (test-name ...))
+                      (substitute* file
+                        (((string-append "^\\(ert-deftest " test-name ".*") all)
+                         (string-append all "(skip-unless nil)\n")) ...)))))
+               (disable-tests "adoc-mode-test.el"
+                              ("adoctest-test-tempo-delimited-blocks"
+                               "adoctest-test-tempo-macros"
+                               "adoctest-test-tempo-paragraphs"
+                               "adoctest-test-tempo-passthroug-macros"
+                               "adoctest-test-tempo-quotes")))
+             #t)))
+       #:tests? #t
+       #:test-command '("emacs" "-Q" "-batch"
+                        "-l" "adoc-mode-test.el"
+                        "-f" "ert-run-tests-batch-and-exit")))
     (propagated-inputs
      `(("emacs-markup-faces" ,emacs-markup-faces)))
     (home-page "https://github.com/sensorflo/adoc-mode/wiki")
@@ -17753,7 +17847,7 @@ a suffix) we prefer to call it just a \"transient\".")
                    (invoke "makeinfo" "forge.texi")
                    (install-file "forge.info" info)
                    #t)))))))
-      (home-page "https://github.com/magit/ghub/")
+      (home-page "https://github.com/magit/forge/")
       (synopsis "Access Git forges from Magit")
       (description
        "Work with Git forges, such as Github and Gitlab, from the comfort of
@@ -18671,6 +18765,29 @@ well as an option for visually flashing evaluated s-expressions.")
     (description "This package allows @code{ivy-mode} to display and filter
 SSH servers.")
     (license license:gpl3+)))
+
+(define-public emacs-tramp-auto-auth
+  (let ((commit "f15a12dfab651aff60f4a9d70f868030a12344ac"))
+    (package
+      (name "emacs-tramp-auto-auth")
+      (version (git-version "20191027" "1" commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/oitofelix/tramp-auto-auth.git")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32
+           "09nkjgwppjfgv04q0gv468qihgx4y3p39lpwbd6vbh3wgbccas9k"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/oitofelix/tramp-auto-auth")
+      (synopsis "TRAMP automatic authentication library")
+      (description "This package provides @code{tramp-auto-auth-mode} Emacs
+global minor mode whose purpose is to automatically feed TRAMP sub-processes
+with passwords for paths matching regexps.")
+      (license license:gpl3+))))
 
 (define-public emacs-eacl
   (package
@@ -19623,3 +19740,159 @@ minibuffer or an each area message).
 The contents and aspect is controlled by the @code{minibuffer-line-format}
 variable and the @code{minibuffer-line} face.")
     (license license:gpl3+)))
+
+(define-public emacs-eshell-prompt-extras
+  (package
+    (name "emacs-eshell-prompt-extras")
+    (version "1.0")
+    (home-page "https://github.com/zwild/eshell-prompt-extras")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0gb07mns23dgqqr6qfy7d6ndizy15sqgbgfaig6k5xbjnwi02v9g"))))
+    (build-system emacs-build-system)
+    (synopsis "Display extra information and color for your Eshell prompt")
+    (description "This library displays various customizable elements for
+@code{eshell} prompts: remote user, remote host, python virtual environment
+info, git branch, git dirty info and git unpushed number.  Multiple themes are
+available.")
+    (license license:gpl3+)))
+
+(define-public emacs-eshell-did-you-mean
+  (package
+    (name "emacs-eshell-did-you-mean")
+    (version "0.1")
+    (home-page "https://github.com/xuchunyang/eshell-did-you-mean")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit (string-append "v" version))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "0v0wshck5n4hspcv1zk1g2nm6xiigcjp16lx0dc8wzkl6ymljvbg"))))
+    (build-system emacs-build-system)
+    (synopsis "Display suggestions on 'command not found' in Eshell")
+    (description "This library adds a list of 'Did you mean...' suggestions
+when the command was not found in Eshell.  The suggestions are found after the
+commands that bear resemblance to the input command.")
+    (license license:gpl3+)))
+
+(define-public emacs-unfill
+  (package
+    (name "emacs-unfill")
+    (version "0.2")
+    (home-page "https://github.com/purcell/unfill")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0wyradin5igp25nsd3n22i2ppxhmy49ac1iq1w2715v8pfmiydnc"))))
+    (build-system emacs-build-system)
+    (synopsis "Inverse of Emacs' @code{fill-paragraph} and @code{fill-region}")
+    (description
+     "The functions in this package provide the inverse of Emacs'
+@code{fill-paragraph} and @code{fill-region}.")
+    (license license:gpl3+)))
+
+(define-public emacs-windower
+  (package
+    (name "emacs-windower")
+    (version "0.0.1")
+    (home-page "https://gitlab.com/ambrevar/emacs-windower")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url home-page)
+             (commit version)))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32 "0h24gb1ip0czfasxm8wwcc3v19g7mznzw2sxkmmfb5iis59p7dfy"))))
+    (build-system emacs-build-system)
+    (synopsis "Helper functions for window manipulation in Emacs")
+    (description
+     "This package provides helper functions for window manipulation in Emacs,
+such as:
+
+@itemize
+- switch to last buffer,
+- toggle single window display,
+- toggle between horizontal and vertical splits,
+- move borders more naturally,
+- swap windows à-la @code{windmove}.
+@end itemize\n")
+    (license license:gpl3+)))
+
+(define-public emacs-flycheck-cpplint
+  (let ((commit "1d8a090861572258ab704915263feeb3a436c3d2")
+        (revision "1"))
+    (package
+      (name "emacs-flycheck-cpplint")
+      (version (git-version "0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/flycheck/flycheck-google-cpplint")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0l6sg83f6z8x2alnblpv03rj442sbnkkkcbf8i0agjmx3713a5yx"))))
+      (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-cpplint-path
+             (lambda _
+               (substitute* "flycheck-google-cpplint.el"
+                 (("\"cpplint.py\"")
+                  (string-append "\"" (which "cpplint") "\"")))
+               #t)))))
+      (inputs
+       `(("cpplint" ,cpplint)))
+      (propagated-inputs
+       `(("flycheck-mode" ,emacs-flycheck)))
+      (synopsis "Google C++ checker for Flycheck")
+      (description "This package provides a interface for @code{cpplint} over
+Flycheck plugin.  @code{cpplint} is a static code checker for C++, following
+Google guidelines.")
+      (home-page "https://github.com/flycheck/flycheck-google-cpplint")
+      (license license:gpl3+))))
+
+(define-public emacs-helm-fish-completion
+  (let ((commit "ef764dd123040fe67ef8b62a1c13842e940b0963")
+        (revision "1"))
+    (package
+      (name "emacs-helm-fish-completion")
+      (version (git-version "0.1" revision commit))
+      (home-page "https://github.com/emacs-helm/helm-fish-completion")
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url home-page)
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0k80kpapwfq2rv1lb0r994d0w6czl92xrmnkmrg0a05f4b3q0lb4"))))
+      (build-system emacs-build-system)
+      (propagated-inputs
+       `(("helm" ,emacs-helm)
+         ("fish-completion" ,emacs-fish-completion)))
+      (synopsis "Helm interface for Emacs fish-completion")
+      (description "Helm Fish Completion is a Helm interface for Emacs
+fish-completion.  It can be used in both Eshell and M-x shell.")
+      (license license:gpl3+))))

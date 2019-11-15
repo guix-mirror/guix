@@ -36,22 +36,23 @@
   (ntp-server
    (type 'server)
    (address "some.ntp.server.org")
-   (options `(iburst (version 3) (maxpoll 16) prefer))))
+   ;; Using either strings or symbols for option names is accepted.
+   (options `("iburst" (version 3) (maxpoll 16) prefer))))
 
 (test-equal "ntp-server->string"
-  (ntp-server->string %ntp-server-sample)
-  "server some.ntp.server.org iburst version 3 maxpoll 16 prefer")
+  "server some.ntp.server.org iburst version 3 maxpoll 16 prefer"
+  (ntp-server->string %ntp-server-sample))
 
 (test-equal "ntp configuration servers deprecated form"
+  (ntp-configuration-servers
+   (ntp-configuration
+    (servers (list "example.pool.ntp.org"))))
   (ntp-configuration-servers
    (ntp-configuration
     (servers (list (ntp-server
                     (type 'server)
                     (address "example.pool.ntp.org")
-                    (options '()))))))
-  (ntp-configuration-servers
-   (ntp-configuration
-    (servers (list "example.pool.ntp.org")))))
+                    (options '())))))))
 
 
 ;;;
@@ -106,8 +107,8 @@ the sanity check:\n~a~%" config)
           #t))))
 
 (test-equal "openntpd generated config string ends with a newline"
+  "\n"
   (let ((config (openntpd-configuration->string %openntpd-conf-sample)))
-    (string-take-right config 1))
-  "\n")
+    (string-take-right config 1)))
 
 (test-end "networking")

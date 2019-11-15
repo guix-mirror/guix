@@ -779,6 +779,7 @@ messaging library.")
          (uri (git-reference
                (url "https://github.com/jerry40/guile-kernel")
                (commit commit)))
+         (file-name (git-file-name name version))
          (sha256
           (base32
            "0aj04853bqm47ivfcmrgpb7w3wkis847kc7qrwsa5zcn9h38qh2f"))))
@@ -1595,14 +1596,14 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "2.2")
+    (version "3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1wvggbr4xv8idh1hzd8caj4xfp4pln78a7w1wqzd4zgzwmnzxr2f"))))
+               "038xbffalhymg26lvmzgf7ljilxz2f2zmqg5r5nfzbipfbprwjhf"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.2)))
@@ -1857,11 +1858,14 @@ interface for reading articles in any format.")
     (version "1.3.0")
     (home-page "https://github.com/aconchillo/guile-redis")
     (source (origin
-              (method url-fetch)
-              (uri (string-append home-page "/archive/" version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url home-page)
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "1li70a2716my9q9zfq0qn2x5d1cir9k2vx0jm9glm464yaf1vj39"))))
+                "14izs8daxh7pb7vwpxi5g427qa31137jkaxrb1cy5rpjkwchy723"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1975,6 +1979,7 @@ format is also supported.")
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-picture-language.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "1ydvw9dvssdvlvhh1dr8inyzy2x6m41qgp8hsivca1xysr4gc23a"))))
@@ -2005,6 +2010,7 @@ The picture values can directly be displayed in Geiser.")
                 (uri (git-reference
                       (url "https://git.elephly.net/software/guile-studio.git")
                       (commit commit)))
+                (file-name (git-file-name name version))
                 (sha256
                  (base32
                   "0rxl5gv2mavycwkl33lcwyb3z71j2f4zyzk60k7vl3hzszpr08iq"))))

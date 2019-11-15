@@ -45,6 +45,9 @@
             zone-file
             zone-entry
 
+            knot-resolver-service-type
+            knot-resolver-configuration
+
             dnsmasq-service-type
             dnsmasq-configuration
 
@@ -636,6 +639,89 @@
                                            knot-activation)
                         (service-extension account-service-type
                                            (const %knot-accounts))))))
+
+
+;;;
+;;; Knot Resolver.
+;;;
+
+(define-record-type* <knot-resolver-configuration>
+  knot-resolver-configuration
+  make-knot-resolver-configuration
+  knot-resolver-configuration?
+  (package knot-resolver-configuration-package
+           (default knot-resolver))
+  (kresd-config-file knot-resolver-kresd-config-file
+                     (default %kresd.conf))
+  (garbage-collection-interval knot-resolver-garbage-collection-interval
+                               (default 1000)))
+
+(define %kresd.conf
+  (plain-file "kresd.conf" "-- -*- mode: lua -*-
+net = { '127.0.0.1', '::1' }
+user('knot-resolver', 'knot-resolver')
+modules = { 'hints > iterate', 'stats', 'predict' }
+cache.size = 100 * MB
+"))
+
+(define %knot-resolver-accounts
+  (list (user-group
+         (name "knot-resolver")
+         (system? #t))
+        (user-account
+         (name "knot-resolver")
+         (group "knot-resolver")
+         (system? #t)
+         (home-directory "/var/cache/knot-resolver")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define (knot-resolver-activation config)
+  #~(begin
+      (use-modules (guix build utils))
+      (let ((rundir "/var/cache/knot-resolver")
+            (owner (getpwnam "knot-resolver")))
+        (mkdir-p rundir)
+        (chown rundir (passwd:uid owner) (passwd:gid owner)))))
+
+(define knot-resolver-shepherd-services
+  (match-lambda
+    (($ <knot-resolver-configuration> package
+                                      kresd-config-file
+                                      garbage-collection-interval)
+     (list
+      (shepherd-service
+       (provision '(kresd))
+       (requirement '(networking))
+       (documentation "Run the Knot Resolver daemon.")
+       (start #~(make-forkexec-constructor
+                 '(#$(file-append package "/sbin/kresd")
+                   "-c" #$kresd-config-file "-f" "1"
+                   "/var/cache/knot-resolver")))
+       (stop #~(make-kill-destructor)))
+      (shepherd-service
+       (provision '(kres-cache-gc))
+       (requirement '(user-processes))
+       (documentation "Run the Knot Resolver Garbage Collector daemon.")
+       (start #~(make-forkexec-constructor
+                 '(#$(file-append package "/sbin/kres-cache-gc")
+                   "-d" #$(number->string garbage-collection-interval)
+                   "-c" "/var/cache/knot-resolver")
+                 #:user "knot-resolver"
+                 #:group "knot-resolver"))
+       (stop #~(make-kill-destructor)))))))
+
+(define knot-resolver-service-type
+  (service-type
+   (name 'knot-resolver)
+   (extensions
+    (list (service-extension shepherd-root-service-type
+                             knot-resolver-shepherd-services)
+          (service-extension activation-service-type
+                             knot-resolver-activation)
+          (service-extension account-service-type
+                             (const %knot-resolver-accounts))))
+   (default-value (knot-resolver-configuration))
+   (description "Run the Knot DNS Resolver.")))
 
 
 ;;;

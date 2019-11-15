@@ -5,7 +5,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2017 Dave Love <fx@gnu.org>
 ;;; Copyright © 2017 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2018 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2018, 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2018 Paul Garlick <pgarlick@tourbillion-technology.com>
 ;;; Copyright © 2019 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -29,7 +29,9 @@
   #:use-module ((guix licenses)
                 #:hide (expat))
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
+  #:use-module (guix deprecation)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -129,11 +131,11 @@ a powerful programming interface to gather information about the hardware,
 bind processes, and much more.")
     (license bsd-3)))
 
-(define-public hwloc-2.0
+(define-public hwloc-2
   ;; Note: 2.0 isn't the default yet, see above.
   (package
     (inherit hwloc)
-    (version "2.0.3")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
@@ -141,7 +143,7 @@ bind processes, and much more.")
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "09f7ajak8wv5issr0hw72vs3jkldc7crcc7z5fd34sspkvrsm4z3"))))
+                "0qh8s7pphz0m5cwb7liqmc17xzfs23xhz5wn24r6ikvjyx99fhhr"))))
 
     ;; libnuma is no longer needed.
     (inputs (alist-delete "numactl" (package-inputs hwloc)))
@@ -158,6 +160,9 @@ bind processes, and much more.")
                   "-1"))
                #t))))))))
 
+(define-deprecated hwloc-2.0 'hwloc-2
+  hwloc-2)
+
 (define-public openmpi
   (package
     (name "openmpi")
@@ -169,10 +174,11 @@ bind processes, and much more.")
                           (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
-       (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))))
+       (base32 "0ms0zvyxyy3pnx9qwib6zaljyp2b3ixny64xvq3czv3jpr8zf2wh"))
+      (patches (search-patches "openmpi-psm2-priority.patch"))))
     (build-system gnu-build-system)
     (inputs
-     `(("hwloc" ,hwloc "lib")
+     `(("hwloc" ,hwloc-2 "lib")
        ("gfortran" ,gfortran)
        ("libfabric" ,libfabric)
        ("libevent" ,libevent)
@@ -203,6 +209,12 @@ bind processes, and much more.")
                            "--with-valgrind"
                            "--with-hwloc=external"
                            "--with-libevent"
+
+                           ;; Make sure ./configure fails if one of these is
+                           ;; missing.
+                           "--with-ucx"
+                           "--with-psm"
+                           "--with-psm2"
 
                            ;; InfiniBand support
                            "--enable-openib-control-hdr-padding"
@@ -338,17 +350,67 @@ only provides @code{MPI_THREAD_FUNNELED}.")))
      (setenv "OMPI_MCA_rmaps_base_mapping_policy" "core:OVERSUBSCRIBE")
      #t))
 
+(define-public intel-mpi-benchmarks
+  (package
+    (name "intel-mpi-benchmarks")
+    (version "2019.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/intel/mpi-benchmarks.git")
+                    (commit (string-append "IMB-v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0si5xi6ilhd3w0gbsg124589pvp094hvf366rvjjb9pi7pdk5p4i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'check)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (define (benchmark? file stat)
+                        (and (string-prefix? "IMB-" (basename file))
+                             (executable-file? file)))
+
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (for-each (lambda (file)
+                                    (install-file file bin))
+                                  (find-files "." benchmark?))
+                        #t))))
+
+       ;; The makefile doesn't express all the dependencies, it seems.
+       #:parallel-build? #t
+
+       #:make-flags (list (string-append "CC="
+                                         (assoc-ref %build-inputs "openmpi")
+                                         "/bin/mpicc")
+                          (string-append "CXX="
+                                         (assoc-ref %build-inputs "openmpi")
+                                         "/bin/mpicxx"))))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "https://github.com/intel/mpi-benchmarks")
+    (synopsis "Benchmarks for the Message Passing Interface (MPI)")
+    (description
+     "Intel MPI Benchmarks (IMB) provides a set of elementary benchmarks that
+conform with versions 1, 2, and 3 of the Message Passing Interface (MPI).")
+    (license
+     (fsf-free "https://directory.fsf.org/wiki/License:CPL-1.0"
+               "https://www.gnu.org/licenses/license-list.html#CommonPublicLicense10"))))
+
 (define-public python-mpi4py
   (package
     (name "python-mpi4py")
-    (version "3.0.2")
+    (version "3.0.3")
     (source
-      (origin
-        (method url-fetch)
-        (uri (pypi-uri "mpi4py" version))
-        (sha256
-          (base32
-            "1q28xl36difma1wq0acq111cqxjya32kn3lxp6fbidz3wg8jkmpq"))))
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "mpi4py" version))
+       (sha256
+        (base32 "07ssbhssv27rrjx1c5vd3vsr31vay5d8xcf4zh9yblcyidn72b81"))))
     (build-system python-build-system)
     (arguments
      `(#:phases

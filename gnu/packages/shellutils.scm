@@ -279,13 +279,14 @@ below the current cursor position, scrolling the screen if necessary.")
     (name "hstr")
     (version "2.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/dvorka/" name "/archive/"
-                                  version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                     (url "https://github.com/dvorka/hstr.git")
+                     (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0yk2008bl48hv0v3c90ngq4y45h3nxif2ik6s3l7kag1zs5yv4wd"))
-              (file-name (string-append name "-" version ".tar.gz"))))
+                "1y9vsfbg07gbic0daqy569d9pb9i1d07fym3q7a0a99hbng85s20"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

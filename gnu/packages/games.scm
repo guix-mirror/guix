@@ -500,7 +500,7 @@ tired of cows, a variety of other ASCII-art messengers are available.")
 (define-public freedoom
   (package
     (name "freedoom")
-    (version "0.11.3")
+    (version "0.12.1")
     (source
      (origin
        (method git-fetch)
@@ -509,38 +509,19 @@ tired of cows, a variety of other ASCII-art messengers are available.")
              (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
-        (base32 "0k4dlgr82qk6i7dchp3nybq6awlfag2ivy3zzl1v6vhcrnbvssgl"))))
+        (base32 "1mq60lfwaaxmch7hsz8403pwafnlsmsd5z2df2j77ppwndwcrypb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags
        (list (string-append "prefix=" (assoc-ref %outputs "out")))
-       #:parallel-build? #f
        #:tests? #f                      ; no check target
        #:phases
        (modify-phases %standard-phases
          (delete 'bootstrap)
          (replace 'configure
            (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((dejavu (assoc-ref inputs "font-dejavu"))
-                    (freedoom (assoc-ref outputs "out"))
+             (let* ((freedoom (assoc-ref outputs "out"))
                     (wad-dir (string-append freedoom "/share/games/doom")))
-               ;; Replace the font-searching function in a shell
-               ;; script with a direct path to the required font.
-               ;; This is necessary because ImageMagick can only find the
-               ;; most basic fonts while in the build environment.
-               (substitute* "graphics/titlepic/create_caption"
-                 (("font=\\$\\(find_font.*$")
-                  (string-append
-                   "font=" dejavu
-                   "/share/fonts/truetype/DejaVuSansCondensed-Bold.ttf\n")))
-               ;; Make icon creation reproducible.
-               (substitute* "dist/Makefile"
-                 (("freedm.png")
-                  "-define png:exclude-chunks=date freedm.png")
-                 (("freedoom1.png")
-                  "-define png:exclude-chunks=date freedoom1.png")
-                 (("freedoom2.png")
-                  "-define png:exclude-chunks=date freedoom2.png"))
                ;; Make sure that the install scripts know where to find
                ;; the appropriate WAD files.
                (substitute* "dist/freedoom"
@@ -554,11 +535,8 @@ tired of cows, a variety of other ASCII-art messengers are available.")
     (native-inputs
      `(("asciidoc" ,asciidoc)
        ("deutex" ,deutex)
-       ("font-dejavu" ,font-dejavu)
-       ("imagemagick" ,imagemagick)
-       ("python" ,python-2)))
-    (inputs
-     `(("prboom-plus" ,prboom-plus)))
+       ("python" ,python)
+       ("python-pillow" ,python-pillow)))
     (home-page "https://freedoom.github.io/")
     (synopsis "Free content game based on the Doom engine")
     (native-search-paths
@@ -1438,14 +1416,23 @@ fight Morgoth, the Lord of Darkness.")
      (origin
        (method git-fetch)
        (uri (git-reference
-              (url "https://github.com/Pingus/pingus.git")
+              (url "https://gitlab.com/pingus/pingus.git")
               (commit (string-append "v" version))))
        (file-name (git-file-name name version))
        (sha256
         (base32
          "0wp06kcmknsnxz7bjnsndb8x062z7r23fb3yrnbfnj68qhz18y74"))
        (patches (search-patches "pingus-boost-headers.patch"
-                                "pingus-sdl-libs-config.patch"))))
+                                "pingus-sdl-libs-config.patch"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "src/pingus/screens/demo_session.cpp"
+             (("#include <iostream>")
+              ;; std::function moved to <functional> with C++ 11.
+              ;; Remove this for versions newer than 0.7.6.
+              "#include <iostream>\n#include <functional>"))
+           #t))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scons-python2" ,scons-python2)))
@@ -1855,7 +1842,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1864,7 +1851,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1hw3n7qqpasq6bivxhq01kr0d58w0gp46s0baxixp1fakd79p8a7"))))
+                "1r9fxz2j24q74a9injvbxbf2xk67fzabv616i676zw2cvgv9hn39"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)))
@@ -1889,7 +1876,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "5.0.1")
+    (version "5.1.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -1898,7 +1885,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "11i8fqjpdggqfdlx440k5758zy0nbf9phxan9r63mavc7mph88ay"))
+                "184n9gxfa7yr0j85z2x736maaymsnppd5jzm326wlqri3c0qqy3z"))
               (modules '((guix build utils)))
               (snippet
                 '(begin
@@ -4746,7 +4733,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
 (define-public crawl
   (package
     (name "crawl")
-    (version "0.23.2")
+    (version "0.24.0")
     (source
      (origin
        (method url-fetch)
@@ -4759,7 +4746,7 @@ fish.  The whole game is accompanied by quiet, comforting music.")
              (string-append "http://crawl.develz.org/release/stone_soup-"
                             version "-nodeps.tar.xz")))
        (sha256
-        (base32 "1hw10hqhh688mrqs9vxrl17y1dzfjzsmxz6izg1a9dzmjlhrc01a"))
+        (base32 "0kdq6s12myxfdg75ma9x3ys2nd0xwb3xm2ynlmhg4628va0pnixr"))
        (patches (search-patches "crawl-upgrade-saves.patch"))))
     (build-system gnu-build-system)
     (inputs

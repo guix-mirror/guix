@@ -462,15 +462,15 @@ keys for controlling the audio volume.")
 (define-public xfce4-whiskermenu-plugin
   (package
     (name "xfce4-whiskermenu-plugin")
-    (version "2.3.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
-                                  name "/" (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
-              (sha256
-               (base32
-                "0j0qmk372130avq8n07lfqrcm2al7n07l8gc06bbr1g6q57wrip0"))))
+    (version "2.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://archive.xfce.org/src/panel-plugins/"
+                           "xfce4-whiskermenu-plugin/" (version-major+minor version) "/"
+                           "xfce4-whiskermenu-plugin-" version ".tar.bz2"))
+       (sha256
+        (base32 "03jpcbdpkgg825g7mr630wxynachymsrnyhz32mkl0jsd4sxxlw4"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -645,15 +645,15 @@ like appearance, display, keyboard and mouse settings.")
 (define-public thunar
   (package
     (name "thunar")
-    (version "1.8.9")
+    (version "1.8.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/xfce/"
                                   "thunar/" (version-major+minor version) "/"
-                                  "Thunar-" version ".tar.bz2"))
+                                  "thunar-" version ".tar.bz2"))
               (sha256
                (base32
-                "1fah2d7v3a7fp28xa5wv896rap1iad9q9y04qchca09mq1x8wxbs"))))
+                "02g72bpbb8dkwspay9qii8bi99l87jn39gz6bamgp7p4q20qsi1x"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1047,15 +1047,15 @@ sending standard messages over D-Bus using the
 (define-public xfburn
   (package
     (name "xfburn")
-    (version "0.5.5")
+    (version "0.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/apps/xfburn/"
                                   (version-major+minor version) "/"
-                                  name "-" version ".tar.bz2"))
+                                  "xfburn-" version ".tar.bz2"))
               (sha256
                (base32
-                "1qdd8prnsfilsprg36p95cz3z50ffr9kgvka4d5pm260lsl3l5xa"))))
+                "0ydka5lf9n614gb5xc9bn9297nilgmkfqlb7q1y2yrc97882nxxk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
@@ -1067,7 +1067,7 @@ sending standard messages over D-Bus using the
        ("gst-plugins-good" ,gst-plugins-good)
        ("gst-plugins-ugly" ,gst-plugins-ugly)
        ("glib" ,glib)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libburn" ,libburn)
        ("libisofs" ,libisofs)
        ("libxfce4ui" ,libxfce4ui)))
@@ -1125,7 +1125,7 @@ of data to either CD/DVD/BD.")
 (define-public xfce4-screenshooter
   (package
    (name "xfce4-screenshooter")
-   (version "1.9.5")
+   (version "1.9.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://archive.xfce.org/src/apps/"
@@ -1135,7 +1135,7 @@ of data to either CD/DVD/BD.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "135kad07922jxjs05amn48sdgm2x1rh97wbzdmy9h85r5i1vaddz"))))
+              "1lbhl0sh0ayv3zhgzcd9hj9q9m3lnyv7vlglfqrl39i3782n2w8g"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
@@ -1426,7 +1426,7 @@ governor and frequencies supported and used by your system.")
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-diskperf-plugin")
     (synopsis "Display disk performance in the Xfce panel")
     (description "This Xfce panel plugin displays instant disk/partition
-performance (bytes transfered per second).")
+performance (bytes transferred per second).")
     (license gpl2+)))
 
 (define-public xfce4-embed-plugin
@@ -1452,7 +1452,7 @@ performance (bytes transfered per second).")
        ("gtk+-2" ,gtk+-2)))
     (home-page
      "https://goodies.xfce.org/projects/panel-plugins/xfce4-embed-plugin")
-    (synopsis "Embed arbitary applications inside the Xfce panel")
+    (synopsis "Embed arbitrary applications inside the Xfce panel")
     (description "This plugin enables the embedding of arbitrary
 application windows into the Xfce panel.  The window is resized into
 the panel space available, and the associated program can be
@@ -1852,7 +1852,7 @@ swap space and the system uptime in the Xfce4 panel.")
 (define-public xfce4-time-out-plugin
   (package
    (name "xfce4-time-out-plugin")
-   (version "1.0.3")
+   (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
@@ -1861,13 +1861,13 @@ swap space and the system uptime in the Xfce4 panel.")
                                   "/xfce4-time-out-plugin-" version ".tar.bz2"))
               (sha256
                (base32
-                "0sqggsnkj40337v0c9vgakyh1zjzri6if38l85gcrnc39rlx973z"))))
+                "068a8ck08g4g1msbr7hd5zzp6lsq2a1ry1r472x0rmbna2im2jpf"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("gtk+-2" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("libxfce4ui" ,libxfce4ui)
        ("xfce4-panel" ,xfce4-panel)))
     (home-page

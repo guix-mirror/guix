@@ -157,7 +157,7 @@ protocol.")
 (define-public mpd-mpc
   (package
     (name "mpd-mpc")
-    (version "0.32")
+    (version "0.33")
     (source (origin
               (method url-fetch)
               (uri
@@ -166,7 +166,7 @@ protocol.")
                               "/mpc-" version ".tar.xz"))
               (sha256
                (base32
-                "1irilgz64pny7b8zygy5i74nfmlhgsawz0djx9mrj6g0gidxjqbr"))))
+                "15hjpzqs83v1zx49x8nkpwy9hpl1jxd55z1w50vm82gm32zcqh2g"))))
     (build-system meson-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)))
     (native-inputs

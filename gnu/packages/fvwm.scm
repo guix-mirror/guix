@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2017 ng0 <ng0@n0.is>
+;;; Copyright © 2019 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,15 +36,15 @@
 (define-public fvwm
   (package
     (name "fvwm")
-    (version "2.6.8")
+    (version "2.6.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/fvwmorg/fvwm/releases/download/"
-                    version "/" name "-" version ".tar.gz"))
+                    version "/fvwm-" version ".tar.gz"))
               (sha256
                (base32
-                "0hgkkdzcqjnaabvv9cnh0bz90nnjskbhjg9qnzpi2x0mbliwjdpv"))))
+                "1bliqcnap7vb3m2rn8wvxyfhbf35h9x34s41fl4301yhrkrlrihv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

@@ -66,6 +66,8 @@ Copyright @copyright{} 2019 Josh Holland@*
 Copyright @copyright{} 2019 Diego Nicola Barbato@*
 Copyright @copyright{} 2019 Ivan Petkov@*
 Copyright @copyright{} 2019 Jakob L. Kreuze@*
+Copyright @copyright{} 2019 Kyle Andrews@*
+Copyright @copyright{} 2019 Alex Griffin@*
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -791,8 +793,9 @@ When configuring Guix on a system that already has a Guix installation,
 be sure to specify the same state directory as the existing installation
 using the @code{--localstatedir} option of the @command{configure}
 script (@pxref{Directory Variables, @code{localstatedir},, standards,
-GNU Coding Standards}).  The @command{configure} script protects against
-unintended misconfiguration of @var{localstatedir} so you do not
+GNU Coding Standards}).  Usually, this @var{localstatedir} option is
+set to the value @file{/var}.  The @command{configure} script protects
+against unintended misconfiguration of @var{localstatedir} so you do not
 inadvertently corrupt your store (@pxref{The Store}).
 
 @node Running the Test Suite
@@ -2110,7 +2113,7 @@ ifconfig -a
 @dots{} or, using the GNU/Linux-specific @command{ip} command:
 
 @example
-ip a
+ip address
 @end example
 
 @c https://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
@@ -2126,6 +2129,13 @@ To configure a wired network run the following command, substituting
 
 @example
 ifconfig @var{interface} up
+@end example
+
+@noindent
+@dots{} or, using the GNU/Linux-specific @command{ip} command:
+
+@example
+ip link set @var{interface} up
 @end example
 
 @item Wireless connection
@@ -8310,6 +8320,11 @@ The returned source tarball is the result of applying any patches and
 code snippets specified in the package @code{origin} (@pxref{Defining
 Packages}).
 
+Note that @command{guix build -S} compiles the sources only of the
+specified packages.  They do not include the sources of statically
+linked dependencies and by themselves are insufficient for reproducing
+the packages.
+
 @item --sources
 Fetch and return the source of @var{package-or-derivation} and all their
 dependencies, recursively.  This is a handy way to obtain a local copy
@@ -9899,7 +9914,18 @@ The package dependency graph is largely architecture-independent, but there
 are some architecture-dependent bits that this option allows you to visualize.
 @end table
 
+On top of that, @command{guix graph} supports all the usual package
+transformation options (@pxref{Package Transformation Options}).  This
+makes it easy to view the effect of a graph-rewriting transformation
+such as @option{--with-input}.  For example, the command below outputs
+the graph of @code{git} once @code{openssl} has been replaced by
+@code{libressl} everywhere in the graph:
 
+@example
+guix graph git --with-input=openssl=libressl
+@end example
+
+So many possibilities, so much fun!
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
@@ -10107,7 +10133,7 @@ of the @code{operating-system} declaration (@pxref{guix-publish-service-type,
 @code{guix-publish-service-type}}).
 
 If you are instead running Guix on a ``foreign distro'', follow these
-instructions:”
+instructions:
 
 @itemize
 @item
@@ -13953,6 +13979,52 @@ Package object of the Open vSwitch.
 @end table
 @end deftp
 
+@defvr {Scheme Variable} pagekite-service-type
+This is the service type for the @uref{https://pagekite.net, PageKite} service,
+a tunneling solution for making localhost servers publicly visible, even from
+behind NAT or restrictive firewalls.  The value for this service type is a
+@code{pagekite-configuration} record.
+
+Here's an example exposing the local HTTP and SSH daemons:
+
+@lisp
+(service pagekite-service-type
+         (pagekite-configuration
+           (kites '("http:@@kitename:localhost:80:@@kitesecret"
+                    "raw/22:@@kitename:localhost:22:@@kitesecret"))
+           (extra-file "/etc/pagekite.rc")))
+@end lisp
+@end defvr
+
+@deftp {Data Type} pagekite-configuration
+Data type representing the configuration of PageKite.
+
+@table @asis
+@item @code{package} (default: @var{pagekite})
+Package object of PageKite.
+
+@item @code{kitename} (default: @code{#f})
+PageKite name for authenticating to the frontend server.
+
+@item @code{kitesecret} (default: @code{#f})
+Shared secret for authenticating to the frontend server.  You should probably
+put this inside @code{extra-file} instead.
+
+@item @code{frontend} (default: @code{#f})
+Connect to the named PageKite frontend server instead of the
+@uref{https://pagekite.net,,pagekite.net} service.
+
+@item @code{kites} (default: @code{'("http:@@kitename:localhost:80:@@kitesecret")})
+List of service kites to use.  Exposes HTTP on port 80 by default. The format
+is @code{proto:kitename:host:port:secret}.
+
+@item @code{extra-file} (default: @code{#f})
+Extra configuration file to read, which you are expected to create manually.
+Use this to add additional options and manage shared secrets out-of-band.
+
+@end table
+@end deftp
+
 @node X Window
 @subsection X Window
 
@@ -15530,8 +15602,9 @@ notifications and ways to mount/unmount disks.  Programs that talk to UDisks
 include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
 @end deffn
 
-@deffn {Scheme Procedure} colord-service [#:colord @var{colord}]
-Return a service that runs @command{colord}, a system service with a D-Bus
+@deffn {Scheme Variable} colord-service-type
+This is the type of the service that runs @command{colord}, a system
+service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
 tool.  See @uref{https://www.freedesktop.org/software/colord/, the colord web
@@ -19745,6 +19818,17 @@ use the size of the processors cache line.
 @item @code{server-names-hash-bucket-max-size} (default: @code{#f})
 Maximum bucket size for the server names hash tables.
 
+@item @code{modules} (default: @code{'()})
+List of nginx dynamic modules to load.  This should be a list of file
+names of loadable modules, as in this example:
+
+@lisp
+(modules
+ (list
+  (file-append nginx-accept-language-module "\
+/etc/nginx/modules/ngx_http_accept_language_module.so")))
+@end lisp
+
 @item @code{extra-content} (default: @code{""})
 Extra content for the @code{http} block.  Should be string or a string
 valued G-expression.
@@ -21048,6 +21132,44 @@ The list of knot-zone-configuration used by this configuration.
 
 @end table
 @end deftp
+
+@subsubheading Knot Resolver Service
+
+@deffn {Scheme Variable} knot-resolver-service-type
+This this the type of the knot resolver service, whose value should be
+an @code{knot-resolver-configuration} object as in this example:
+
+@lisp
+(service knot-resolver-service-type
+         (knot-resolver-configuration
+           (kresd-config-file (plain-file "kresd.conf" "
+net.listen('192.168.0.1', 5353)
+user('knot-resolver', 'knot-resolver')
+modules = @{ 'hints > iterate', 'stats', 'predict' @}
+cache.size = 100 * MB
+"))))
+@end lisp
+
+For more information, refer its @url{https://knot-resolver.readthedocs.org/en/stable/daemon.html#configuration, manual}.
+@end deffn
+
+@deftp {Data Type} knot-resolver-configuration
+Data type representing the configuration of knot-resolver.
+
+@table @asis
+@item @code{package} (default: @var{knot-resolver})
+Package object of the knot DNS resolver.
+
+@item @code{kresd-config-file} (default: %kresd.conf)
+File-like object of the kresd configuration file to use, by default it
+will listen on @code{127.0.0.1} and @code{::1}.
+
+@item @code{garbage-collection-interval} (default: 1000)
+Number of milliseconds for @code{kres-cache-gc} to periodically trim the cache.
+
+@end table
+@end deftp
+
 
 @subsubheading Dnsmasq Service
 

@@ -514,12 +514,14 @@ Users need to be in the @code{lp} group to access the D-Bus service.
 
                        ;; It provides polkit "actions".
                        (service-extension polkit-service-type list)))
+                (default-value colord)
                 (description
                  "Run @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.")))
 
-(define* (colord-service #:key (colord colord))
+(define-deprecated (colord-service #:key (colord colord))
+  colord-service-type
   "Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as
 screens and scanners.  It is notably used by the GNOME Color Manager graphical
@@ -1094,7 +1096,7 @@ dispatches events from it.")))
          (service upower-service-type)
          (accountsservice-service)
          (service cups-pk-helper-service-type)
-         (colord-service)
+         (service colord-service-type)
          (geoclue-service)
          (service polkit-service-type)
          (elogind-service)
