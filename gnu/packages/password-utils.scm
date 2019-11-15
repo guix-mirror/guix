@@ -357,12 +357,12 @@ them out, at the source.")
     (source (origin
               (method url-fetch)
               (uri (list
-                    (string-append "https://github.com/" name "/" name
-                                   "/releases/download/" name  "-" version
-                                   "/" name "-" version ".tar.bz2")
+                    (string-append "https://github.com/libpwquality/libpwquality"
+                                   "/releases/download/libpwquality-" version
+                                   "/libpwquality-" version ".tar.bz2")
                     (string-append "https://launchpad.net/libpwquality/trunk/"
                                    version "/+download/"
-                                   name "-" version ".tar.bz2")))
+                                   "libpwquality-" version ".tar.bz2")))
               (sha256
                (base32
                 "0syyz8r54l8mqmbb0mw19qz4z2cx8gdgidicb8k2s5zjdh2gzrhx"))))
