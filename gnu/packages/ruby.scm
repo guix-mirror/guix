@@ -7568,13 +7568,13 @@ for the terminal.")
 (define-public ruby-command-line-reporter
   (package
     (name "ruby-command-line-reporter")
-    (version "4.0.0")
+    (version "4.0.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "command_line_reporter" version))
               (sha256
                (base32
-                "1qma35xrb772whxwy1rs9bicb9d6lvz0s2dd2dnn4fr6zcbcxc0a"))))
+                "1l0zxkh5n9dxfw46lpkg416ljpldlq1bgdhqh0d118dk338nz4ll"))))
     (build-system ruby-build-system)
     (arguments
      ;; No Rakefile
