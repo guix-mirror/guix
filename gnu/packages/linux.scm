@@ -5537,6 +5537,7 @@ libraries, which are often integrated directly into libfabric.")
                  "psm-ldflags.patch"  ; build shared lib with LDFLAGS
                  "psm-repro.patch"))))  ; reproducibility
     (build-system gnu-build-system)
+    (outputs '("out" "debug"))
     (inputs `(("libuuid" ,util-linux)))
     (arguments
      '(#:make-flags `("PSM_USE_SYS_UUID=1" "CC=gcc" "WERROR="
