@@ -210,12 +210,6 @@ bind processes, and much more.")
                            "--with-hwloc=external"
                            "--with-libevent"
 
-                           ;; Make sure ./configure fails if one of these is
-                           ;; missing.
-                           "--with-ucx"
-                           "--with-psm"
-                           "--with-psm2"
-
                            ;; InfiniBand support
                            "--enable-openib-control-hdr-padding"
                            "--enable-openib-dynamic-sl"
