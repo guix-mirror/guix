@@ -2341,33 +2341,22 @@ tempo and pitch of an audio recording independently of one another.")
 (define-public rtmidi
   (package
     (name "rtmidi")
-    (version "2.1.0")
+    (version "4.0.0")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/powertab/rtmidi.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
+              (method url-fetch)
+              (uri (string-append "https://www.music.mcgill.ca/~gary/rtmidi"
+                                  "/release/rtmidi-" version ".tar.gz"))
+              (file-name (string-append "rtmidi-" version ".tar.gz"))
               (sha256
                (base32
-                "106v177y3nrjv2l1yskch4phpqd8h97b67zj0jiq9pc3c69jr1ay"))))
+                "1k962ljpnwyjw9jjiky2372khhri1wqvrj5qsalfpys31xqzw31p"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-makefile
+         (add-before 'bootstrap 'noconfigure
            (lambda _
-             (substitute* "Makefile"
-               (("/bin/ln") "ln")
-               (("RtMidi.h RtError.h") "RtMidi.h"))
-             #t))
-         (add-before 'install 'make-target-dirs
-           (lambda _
-             (let ((out (assoc-ref %outputs "out")))
-               (mkdir-p (string-append out "/bin"))
-               (mkdir (string-append out "/lib"))
-               (mkdir (string-append out "/include")))
+             (setenv "NOCONFIGURE" "yes")
              #t)))))
     (inputs
      `(("jack" ,jack-1)
@@ -2377,7 +2366,7 @@ tempo and pitch of an audio recording independently of one another.")
        ("automake" ,automake)
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)))
-    (home-page "https://github.com/powertab/rtmidi")
+    (home-page "https://www.music.mcgill.ca/~gary/rtmidi")
     (synopsis "Cross-platform MIDI library for C++")
     (description
      "RtMidi is a set of C++ classes (RtMidiIn, RtMidiOut, and API specific

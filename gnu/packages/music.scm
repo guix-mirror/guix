@@ -1284,6 +1284,14 @@ add_library( rapidjson INTERFACE IMPORTED )"))
                (("#include <QWidget>" m)
                 (string-append m "\n#include <QButtonGroup>\n#include <QAction>")))
              #t))
+         ;; FIXME: Finding RtMidi was fixed upstream so we should be able to
+         ;; remove this hack when a release is made.
+         ;; See https://github.com/powertab/powertabeditor/issues/255
+         (add-after 'unpack 'fix-rtmidi-header
+           (lambda _
+             (substitute* "source/audio/midioutputdevice.cpp"
+               (("#include <RtMidi.h>") "#include <rtmidi/RtMidi.h>"))
+             #t))
          (add-before 'configure 'remove-third-party-libs
            (lambda* (#:key inputs #:allow-other-keys)
              ;; Link with required static libraries, because we're not
