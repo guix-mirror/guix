@@ -183,7 +183,7 @@ compiler while still keeping it small, simple, fast and understandable.")
 (define-public libbytesize
   (package
     (name "libbytesize")
-    (version "1.4")
+    (version "2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -191,52 +191,17 @@ compiler while still keeping it small, simple, fast and understandable.")
                     "download/" version "/libbytesize-" version ".tar.gz"))
               (sha256
                (base32
-                "0bbqzln1nhjxl71aydq9k4jg3hvki9lqsb4w10s1i27jgibxqkdv"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; This Makefile hard-codes MSGMERGE et al. instead of
-                  ;; honoring what 'configure' detected.  Fix that.
-                  (substitute* "po/Makefile.in"
-                    (("^MSGMERGE = msgmerge")
-                     "MSGMERGE = @MSGMERGE@\n"))
-                  #t))))
+                "1bpz9cpb8s47kqplkkiz6ryfahas2ma95g9rh2axnfjp6w1d9ixc"))))
     (build-system gnu-build-system)
     (arguments
-     ;; When running "make", the POT files are built with the build time as
-     ;; their "POT-Creation-Date".  Later on, "make" notices that .pot
-     ;; files were updated and goes on to run "msgmerge"; as a result, the
-     ;; non-deterministic POT-Creation-Date finds its way into .po files,
-     ;; and then in .gmo files.  To avoid that, simply make sure 'msgmerge'
-     ;; never runs.  See <https://bugs.debian.org/792687>.
-     '(#:configure-flags '("ac_cv_path_MSGMERGE=true")
-
-       #:phases (modify-phases %standard-phases
-                  (add-after 'configure 'create-merged-po-files
-                    (lambda _
-                      ;; Create "merged PO" (.mpo) files so that 'msgmerge'
-                      ;; doesn't need to run.
-                      (for-each (lambda (po-file)
-                                  (let ((merged-po
-                                         (string-append (dirname po-file) "/"
-                                                        (basename po-file
-                                                                  ".po")
-                                                        ".mpo")))
-                                    (copy-file po-file merged-po)))
-                                (find-files "po" "\\.po$"))
-                      #t)))
-
-       ;; One test fails because busctl (systemd only?) and python2-pocketlint
-       ;; are missing.  Should we fix it, we would need the "python-2" ,
-       ;; "python2-polib" and "python2-six" native-inputs.
-       #:tests? #f))
+     `(#:tests? #f))
     (native-inputs
      `(("gettext" ,gettext-minimal)
        ("pkg-config" ,pkg-config)
        ("python" ,python)))
     (inputs
      `(("mpfr" ,mpfr)
-       ("pcre" ,pcre)))
+       ("pcre2" ,pcre2)))
     (home-page "https://github.com/storaged-project/libbytesize")
     (synopsis "Tiny C library for working with arbitrary big sizes in bytes")
     (description
