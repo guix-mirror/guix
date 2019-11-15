@@ -4740,7 +4740,7 @@ Tor project}.")
 (define-public ghc-haddock-api
   (package
     (name "ghc-haddock-api")
-    (version "2.19.0.1")
+    (version "2.22.0")
     (source
      (origin
        (method url-fetch)
@@ -4748,9 +4748,10 @@ Tor project}.")
              "https://hackage.haskell.org/package/haddock-api/haddock-api-"
              version
              ".tar.gz"))
+       (patches (search-patches "ghc-haddock-api-fix-haddock.patch"))
        (sha256
         (base32
-         "0c6i7sljp7myz25d90gyw68a90i5jcrkajkxcciikp2hjirfaas3"))))
+         "149q4zlf4m7wcrr4af2n2flh0jxjsypshbc229vsj1m0kmz4z014"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
@@ -4758,10 +4759,10 @@ Tor project}.")
          (add-before 'configure 'update-constraints
            (lambda _
              (substitute* "haddock-api.cabal"
-               (("Cabal           \\^>= 2\\.0\\.0")
-                "Cabal           ^>= 2.2.0")
-               (("hspec           \\^>= 2\\.4\\.4")
-                "hspec            >= 2.4.4 && < 2.6")))))))
+               (("QuickCheck      \\^>= 2\\.11")
+                "QuickCheck      ^>= 2.13")
+               (("hspec           >= 2\\.4\\.4 && < 2\\.6")
+                "hspec           >= 2.4.4 && < 2.8")))))))
     (inputs
      `(("ghc-paths" ,ghc-paths)
        ("ghc-haddock-library" ,ghc-haddock-library)))
