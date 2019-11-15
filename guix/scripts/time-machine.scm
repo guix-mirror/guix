@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2019 Konrad Hinsen <konrad.hinsen@fastmail.net>
+;;; Copyright © 2019 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,8 +23,15 @@
   #:use-module (guix inferior)
   #:use-module (guix channels)
   #:use-module (guix store)
+  #:use-module (guix status)
+  #:use-module ((guix utils)
+                #:select (%current-system))
   #:use-module ((guix scripts pull)
                 #:select (with-git-error-handling channel-list))
+  #:use-module ((guix scripts build)
+                #:select (%standard-build-options
+                          show-build-options-help
+                          set-build-options-from-command-line))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -47,6 +55,9 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
       --commit=COMMIT    use the specified COMMIT"))
   (display (G_ "
       --branch=BRANCH    use the tip of the specified BRANCH"))
+  (newline)
+  (show-build-options-help)
+  (newline)
   (display (G_ "
   -h, --help             display this help and exit"))
   (display (G_ "
@@ -56,9 +67,9 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (list (option '(#\C "channels") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'channel-file arg result)))
+  (cons* (option '(#\C "channels") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'channel-file arg result)))
          (option '("url") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'repository-url arg
@@ -69,20 +80,35 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
          (option '("branch") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'ref `(branch . ,arg) result)))
-        (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix time-machine")))))
+         (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix time-machine")))
+
+         %standard-build-options))
+
+(define %default-options
+  ;; Alist of default option values.
+  `((system . ,(%current-system))
+    (substitutes? . #t)
+    (build-hook? . #t)
+    (print-build-trace? . #t)
+    (print-extended-build-trace? . #t)
+    (multiplexed-build-output? . #t)
+    (graft? . #t)
+    (debug . 0)
+    (verbosity . 1)))
 
 (define (parse-args args)
   "Parse the list of command line arguments ARGS."
   ;; The '--' token is used to separate the command to run from the rest of
   ;; the operands.
   (let-values (((args command) (break (cut string=? "--" <>) args)))
-    (let ((opts (parse-command-line args %options '(()) #:build-options? #f)))
+    (let ((opts (parse-command-line args %options
+                                    (list %default-options))))
       (match command
         (() opts)
         (("--") opts)
@@ -100,7 +126,10 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
             (channels     (channel-list opts))
             (command-line (assoc-ref opts 'exec)))
        (when command-line
-         (let* ((directory  (with-store store
-                              (cached-channel-instance store channels)))
+         (let* ((directory
+                 (with-store store
+                   (with-status-verbosity (assoc-ref opts 'verbosity)
+                     (set-build-options-from-command-line store opts)
+                     (cached-channel-instance store channels))))
                 (executable (string-append directory "/bin/guix")))
            (apply execl (cons* executable executable command-line))))))))

@@ -4222,6 +4222,10 @@ will thus build the package @code{hello} as defined in the master branch,
 which is in general a newer revison of Guix than you have installed.
 Time travel works in both directions!
 
+Note that @command{guix time-machine} can trigger builds of channels and
+their dependencies, and these are controlled by the standard build
+options (@pxref{Common Build Options}).
+
 @node Inferiors
 @section Inferiors
 
