@@ -353,7 +353,7 @@ them out, at the source.")
 (define-public libpwquality
   (package
     (name "libpwquality")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
               (method url-fetch)
               (uri (list
@@ -365,7 +365,7 @@ them out, at the source.")
                                    "libpwquality-" version ".tar.bz2")))
               (sha256
                (base32
-                "0syyz8r54l8mqmbb0mw19qz4z2cx8gdgidicb8k2s5zjdh2gzrhx"))))
+                "13hw532fmzc5xjpy75d74rlfdlxf2a8ibb4hyy9c0s92wsgf0qsj"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: have RUNPATH issue.
