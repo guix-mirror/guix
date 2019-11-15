@@ -365,6 +365,10 @@ no man page, refer to the home page for usage details.")
        ("util-linux" ,util-linux)))
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       ;; The "sudo" input is needed only to satisfy dependency checks in the
+       ;; 'check' phase.  The "sudo" used at runtime should come from the
+       ;; system's setuid-programs, so ensure no reference is kept.
+       #:disallowed-references (,sudo)
        ;; TODO: Build and install gtk and qt trays
        #:phases
        (modify-phases %standard-phases
@@ -383,7 +387,7 @@ no man page, refer to the home page for usage details.")
                     ,@(map (lambda (program)
                              (or (and=> (which program) dirname)
                                  (error "program not found:" program)))
-                           '("seq" "mkfs.ext4" "pinentry" "sudo"
+                           '("seq" "mkfs.ext4" "pinentry"
                              "gpg" "cryptsetup" "gettext" "lsof"
                              "qrencode" "steghide" "findmnt")))))
                #t)))
