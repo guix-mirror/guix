@@ -22,7 +22,8 @@
   #:use-module (guix inferior)
   #:use-module (guix channels)
   #:use-module (guix store)
-  #:use-module ((guix scripts pull) #:select (channel-list))
+  #:use-module ((guix scripts pull)
+                #:select (with-git-error-handling channel-list))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -94,11 +95,12 @@ Execute COMMAND ARGS... in an older version of Guix.\n"))
 
 (define (guix-time-machine . args)
   (with-error-handling
-    (let* ((opts         (parse-args args))
-           (channels     (channel-list opts))
-           (command-line (assoc-ref opts 'exec)))
-      (when command-line
-        (let* ((directory  (with-store store
-                             (cached-channel-instance store channels)))
-               (executable (string-append directory "/bin/guix")))
-          (apply execl (cons* executable executable command-line)))))))
+    (with-git-error-handling
+     (let* ((opts         (parse-args args))
+            (channels     (channel-list opts))
+            (command-line (assoc-ref opts 'exec)))
+       (when command-line
+         (let* ((directory  (with-store store
+                              (cached-channel-instance store channels)))
+                (executable (string-append directory "/bin/guix")))
+           (apply execl (cons* executable executable command-line))))))))
