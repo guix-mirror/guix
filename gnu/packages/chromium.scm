@@ -42,7 +42,6 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
-  #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
@@ -70,12 +69,11 @@
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xorg))
 
 (define %preserved-third-party-files
   '("base/third_party/cityhash" ;Expat
-    "base/third_party/dmg_fp" ;X11-style
+    "base/third_party/double_conversion" ;BSD-3
     "base/third_party/dynamic_annotations" ;BSD-2
     "base/third_party/icu" ;Unicode, X11-style
     "base/third_party/superfasthash" ;BSD-3
@@ -126,6 +124,7 @@
     "third_party/catapult/tracing/third_party/pako" ;Expat
     "third_party/ced" ;BSD-3
     "third_party/cld_3" ;ASL2.0
+    "third_party/closure_compiler" ;ASL2.0
     "third_party/crashpad" ;ASL2.0
     "third_party/crashpad/crashpad/third_party/lss" ;ASL2.0
     "third_party/crashpad/crashpad/third_party/zlib/zlib_crashpad.h" ;Zlib
@@ -133,6 +132,7 @@
     "third_party/cros_system_api" ;BSD-3
     "third_party/dav1d" ;BSD-2
     "third_party/dawn" ;ASL2.0
+    "third_party/depot_tools/owners.py" ;BSD-3
     "third_party/dom_distiller_js" ;BSD-3
     "third_party/emoji-segmenter" ;ASL2.0
     "third_party/flatbuffers" ;ASL2.0
@@ -170,7 +170,9 @@
     "third_party/nasm" ;BSD-2
     "third_party/node" ;Expat
     "third_party/node/node_modules/polymer-bundler/lib/third_party/UglifyJS2" ;BSD-2
+    "third_party/one_euro_filter" ;BSD-3
     "third_party/openscreen" ;BSD-3
+    "third_party/openscreen/src/third_party/tinycbor" ;Expat
     "third_party/ots" ;BSD-3
     "third_party/pdfium" ;BSD-3
     "third_party/pdfium/third_party/agg23" ;Expat
@@ -181,6 +183,7 @@
     "third_party/pffft" ;the "FFTPACK" license, similar to BSD-3
     "third_party/ply" ;BSD-3
     "third_party/polymer" ;BSD-3
+    "third_party/private-join-and-compute" ;ASL2.0
     "third_party/protobuf" ;BSD-3
     "third_party/protobuf/third_party/six" ;Expat
     "third_party/pyjson5" ;ASL2.0
@@ -239,9 +242,9 @@ from forcing GEXP-PROMISE."
                       #:system system
                       #:guile-for-build guile)))
 
-(define %chromium-version "76.0.3809.132")
-(define %ungoogled-revision "8eba5c0df1a318012e3deab39a9add252a0d56a3")
-(define %debian-revision "debian/76.0.3809.87-2")
+(define %chromium-version "78.0.3904.97")
+(define %ungoogled-revision "acaf16383f264d8a2f24142ad054c9b4355771d3")
+(define %debian-revision "e43d74632091324774a5049668782dba7b09cf72")
 (define package-revision "0")
 (define %package-version (string-append %chromium-version "-"
                                         package-revision "."
@@ -255,7 +258,7 @@ from forcing GEXP-PROMISE."
                         %chromium-version ".tar.xz"))
     (sha256
      (base32
-      "0hajwjf7swlgh1flpf8ljfrb2zhmcpzvrigvvxqd36g3nm04cknm"))))
+      "01wx5bi397d80za0sdfwgfbjj6n2ad2i31zmcrhm6wzryjwrmx6i"))))
 
 (define %ungoogled-origin
   (origin
@@ -266,7 +269,7 @@ from forcing GEXP-PROMISE."
                               (string-take %ungoogled-revision 7)))
     (sha256
      (base32
-      "08fd9whfc1qky44xqxbypr7jz1rg6cma017wj4b5c5b14grxz6k6"))))
+      "1gqbch6dnww3c3vn1i4nb07iz1f78mws9dsxscj3rsrkcgwhsdz8"))))
 
 (define %debian-origin
   (origin
@@ -280,7 +283,7 @@ from forcing GEXP-PROMISE."
                                   (string-take %debian-revision 7))))
     (sha256
      (base32
-      "1fjhpzrxmgjr7i31li1vsfmp0qkbi0cpyc7p1zjwvf2x4da0v907"))))
+      "1l1ajjkn1y7ql5w4zb3c3vw57hkydvy1mac7y81rycx4g5djasaz"))))
 
 (define (gentoo-patch name hash revision)
   (origin
@@ -289,20 +292,6 @@ from forcing GEXP-PROMISE."
                         "/www-client/chromium/files/" name "?id=" revision))
     (file-name name)
     (sha256 (base32 hash))))
-
-(define-syntax-rule (gentoo-patches (name hash) ...)
-  (list (gentoo-patch name hash "9fd80e7d75aa63843ec33c9d44fee32596ae8f25")
-        ...))
-
-(define %auxiliary-patches
-  ;; XXX: Debians "gcc/wrong-namespace.patch" and "fixes/inspector.patch" does
-  ;; not work for us, so we take these upstream fixes via Gentoo instead.
-  (gentoo-patches
-   ("chromium-76-quiche.patch" "1cs0y16jn7r1nxh0j36vqcsdvigl902kdcqfmyivnxgblrx66l2i")
-   ("chromium-76-gcc-blink-namespace1.patch"
-    "0k7nrn0dhvqxj4sg2gndzxih0l1f77h6pv7jhcdz7h69sm4xci2z")
-   ("chromium-76-gcc-blink-namespace2.patch"
-    "014y2d8ii9sr340sjbv1fhsjd5s3dl0vbmq5wzlkdjsp91dcn9ch")))
 
 ;; This is a "computed" origin that does the following:
 ;; *) Runs the Ungoogled scripts on a pristine Chromium tarball.
@@ -375,11 +364,18 @@ from forcing GEXP-PROMISE."
                                           ;; Skip the Debian-specific ones.
                                           (not (string-prefix? "debianization/" line))
                                           (not (string-prefix? "buster/" line))
-                                          ;; And those that conflict with Ungoogled.
                                           (not (any (cute string-suffix? <> line)
+                                                    ;; These conflict with Ungoogled.
                                                     '("widevine-buildflag.patch"
                                                       "signin.patch"
                                                       "third-party-cookies.patch"
+
+                                                      ;; Disable workarounds for the
+                                                      ;; Chromium "-lite" tarball.  We
+                                                      ;; use the "full" version and don't
+                                                      ;; need these patches.
+                                                      "closure.patch"
+                                                      "owners.patch"
 
                                                       ;; XXX: 'fixes/inspector.patch'
                                                       ;; makes v8 reuse the top-level
@@ -388,20 +384,11 @@ from forcing GEXP-PROMISE."
                                                       ;; but that does not work here for
                                                       ;; some reason.  Ignore that patch
                                                       ;; and those that depend on it.
-                                                      "wrong-namespace.patch"
-                                                      "explicit-specialization.patch"
                                                       "inspector.patch"))))
                                  (invoke "patch" "--force" "-p1" "--input"
                                          (string-append patches "/" line)
                                          "--no-backup-if-mismatch"))
                                (loop (read-line)))))))
-
-                     (format #t "Applying Guix-specific patches...~%")
-                     (force-output)
-                     (for-each (lambda (patch)
-                                 (invoke "patch" "--force" "-p1" "--input"
-                                         patch "--no-backup-if-mismatch"))
-                               '#+%auxiliary-patches)
 
                      (format #t "Pruning third party files...~%")
                      (force-output)
@@ -441,6 +428,21 @@ from forcing GEXP-PROMISE."
         ;; sizes.  Chromium requires that this is enabled.
         `(cons "--enable-custom-modes"
                ,flags))))))
+
+;; Chromium 78 requires libvpx features that are not in any release.
+(define libvpx/chromium
+  (package/inherit
+   libvpx
+   (version "m78-3904")
+   (source (origin
+             (inherit (package-source libvpx))
+             (uri (git-reference
+                   (url "https://chromium.googlesource.com/webm/libvpx")
+                   (commit version)))
+             (file-name (git-file-name "libvpx" version))
+             (sha256
+              (base32
+               "1pphjfmg0aqq93n5cq790884v1h84di8p9mk3r28sm053wszhm7g"))))))
 
 (define-public ungoogled-chromium
   (package
@@ -591,8 +593,14 @@ from forcing GEXP-PROMISE."
                 ;; TODO: Add ~/.guix-profile.
                 "/run/current-system/profile/share/chromium/extensions"))
 
+             ;; Many files try to include ICU headers from "third_party/icu/...".
+             ;; Remove the "third_party/" prefix to use system headers instead.
+             (substitute* (find-files "chrome" "\\.cc$")
+               (("third_party/icu/source/(common|i18n)/")
+                ""))
+
              ;; XXX: Should be unnecessary when use_system_lcms2=true.
-             (substitute* "third_party/pdfium/core/fxcodec/codec/ccodec_iccmodule.h"
+             (substitute* "third_party/pdfium/core/fxcodec/icc/iccmodule.h"
                (("include \"third_party/lcms/include/lcms2\\.h\"")
                 "include \"lcms2.h\""))
 
@@ -632,10 +640,6 @@ from forcing GEXP-PROMISE."
              ;; Prevent GCC from optimizing away null pointer safety checks.
              (setenv "CXXFLAGS" "-fno-delete-null-pointer-checks")
 
-             ;; Work around <https://bugs.gnu.org/30756>.
-             (unsetenv "C_INCLUDE_PATH")
-             (unsetenv "CPLUS_INCLUDE_PATH")
-
              ;; TODO: pre-compile instead. Avoids a race condition.
              (setenv "PYTHONDONTWRITEBYTECODE" "1")
 
@@ -658,6 +662,22 @@ from forcing GEXP-PROMISE."
                (invoke "gn" "args" "out/Release" "--list"))))
          (replace 'build
            (lambda* (#:key (parallel-build? #t) #:allow-other-keys)
+             ;; XXX: Chromiums linking step requires a lot of simultaneous file
+             ;; accesses.  Having a too low ulimit will result in bogus linker
+             ;; errors such as "foo.a: error adding symbols: malformed archive".
+
+             ;; Try increasing the soft resource limit of max open files to 4096,
+             ;; or equal to the hard limit, whichever is lower.
+             (call-with-values (lambda () (getrlimit 'nofile))
+               (lambda (soft hard)
+                 (when (and soft (< soft 4096))
+                   (if hard
+                       (setrlimit 'nofile (min hard 4096) hard)
+                       (setrlimit 'nofile 4096 #f))
+                   (format #t
+                           "increased maximum number of open files from ~d to ~d~%"
+                           soft (if hard (min hard 4096) 4096)))))
+
              (invoke "ninja" "-C" "out/Release"
                      "-j" (if parallel-build?
                               (number->string (parallel-job-count))
@@ -728,7 +748,7 @@ from forcing GEXP-PROMISE."
                       (mkdir-p icons)
                       (copy-file (string-append "product_logo_" size ".png")
                                  (string-append icons "/chromium.png"))))
-                  '("22" "24" "48" "64" "128" "256")))
+                  '("24" "48" "64" "128" "256")))
                #t))))))
     (native-inputs
      `(("bison" ,bison)
@@ -771,7 +791,7 @@ from forcing GEXP-PROMISE."
        ("libjpeg-turbo" ,libjpeg-turbo)
        ("libpng" ,libpng)
        ("libva" ,libva)
-       ("libvpx" ,libvpx)
+       ("libvpx" ,libvpx/chromium)
        ("libwebp" ,libwebp)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
@@ -807,10 +827,7 @@ from forcing GEXP-PROMISE."
 
     ;; Building Chromium takes ... a very long time.  On a single core, a busy
     ;; mid-end x86 system may need more than 24 hours to complete the build.
-    (properties '((timeout . 144000)    ;40 hours
-
-                  ;; Hide the package pending complete removal (see below).
-                  (hidden? . #t)))
+    (properties '((timeout . 144000)))  ;40 hours
 
     (home-page "https://github.com/Eloston/ungoogled-chromium")
     (description
@@ -836,12 +853,7 @@ disabled in order to protect the users privacy.")
     (inputs
      `(("wayland" ,wayland)
        ("wayland-protocols" ,wayland-protocols)
-       ;; Remove inputs only needed for X11.
-       ,@(fold alist-delete (package-inputs ungoogled-chromium)
-               '("libx11" "libxcb" "libxcomposite" "libxcursor"
-                 "libxdamage" "libxext" "libxfixes" "libxi"
-                 "libxrender" "libxtst" "libxext" "libxrandr"
-                 "libxscrnsaver"))))
+       ,@(package-inputs ungoogled-chromium)))
 
     (arguments
      (substitute-keyword-arguments (package-arguments ungoogled-chromium)
@@ -856,13 +868,3 @@ disabled in order to protect the users privacy.")
                                       (assoc-ref %build-inputs "wayland")
                                       "/bin/wayland-scanner\""))
                  (delete "use_vaapi=true" ,flags)))))))
-
-;; Ungoogled-Chromium has been deprecated because Debians patches are no
-;; longer updated.  If you would like to work on porting the required patches,
-;; please reach out to guix-devel@gnu.org.
-
-(define-public ungoogled-chromium-is-deprecated
-  (deprecated-package "ungoogled-chromium" icecat))
-
-(define-public ungoogled-chromium-wayland-is-deprecated
-  (deprecated-package "ungoogled-chromium-wayland" icecat))
