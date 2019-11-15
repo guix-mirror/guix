@@ -91,6 +91,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages code)
+  #:use-module (gnu packages cpp)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dictionaries)
@@ -19850,6 +19851,17 @@ such as:
          (sha256
           (base32 "0l6sg83f6z8x2alnblpv03rj442sbnkkkcbf8i0agjmx3713a5yx"))))
       (build-system emacs-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'set-cpplint-path
+             (lambda _
+               (substitute* "flycheck-google-cpplint.el"
+                 (("\"cpplint.py\"")
+                  (string-append "\"" (which "cpplint") "\"")))
+               #t)))))
+      (inputs
+       `(("cpplint" ,cpplint)))
       (propagated-inputs
        `(("flycheck-mode" ,emacs-flycheck)))
       (synopsis "Google C++ checker for Flycheck")
