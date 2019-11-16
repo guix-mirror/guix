@@ -4689,7 +4689,7 @@ Tor project}.")
 (define-public ghc-haddock
   (package
     (name "ghc-haddock")
-    (version "2.19.0.1")
+    (version "2.22.0")
     (source
      (origin
        (method url-fetch)
@@ -4699,16 +4699,15 @@ Tor project}.")
              ".tar.gz"))
        (sha256
         (base32
-         "1g1j9j0hf2yhyyh0gwz6bzbvfvliqz9x8a8hnkmwghm7w3xa6sb7"))))
+         "1k42z2zh550rl93c8pa9cg2xsanp6wvb031xvan6cmngnplmdib6"))))
     (build-system haskell-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         ;; There are four test suites that require the ghc-haddock-test
-         ;; package, which no longer builds with GHC 8.4.3.  This phase
-         ;; removes these four test suites from the Cabal file, so that we
-         ;; do not need ghc-haddock-test as an input.
-         (add-before 'configure 'remove-haddock-test-test-suites
+         ;; The release tarball for 2.22.0 is missing the test data for
+         ;; the Hoogle test, causing it to fail.  This is fixed in the
+         ;; next release, but for now we disable it.
+         (add-before 'configure 'remove-hoogle-test
            (lambda _
              (use-modules (ice-9 rdelim))
              (with-atomic-file-replacement "haddock.cabal"
@@ -4719,17 +4718,20 @@ Tor project}.")
                     ((string-every char-set:whitespace line)
                      (unless deleting? (display line out))
                      (loop (read-line in 'concat) #f))
-                    ((member line '("test-suite html-test\n"
-                                    "test-suite hypsrc-test\n"
-                                    "test-suite latex-test\n"
-                                    "test-suite hoogle-test\n"))
+                    ((string=? line "test-suite hoogle-test\n")
                      (loop (read-line in 'concat) #t))
                     (else
                      (unless deleting? (display line out))
-                     (loop (read-line in 'concat) deleting?)))))))))))
+                     (loop (read-line in 'concat) deleting?))))))))
+         (add-before 'check 'add-haddock-to-path
+           (lambda _
+             (setenv "PATH" (string-append (getcwd) "/dist/build/haddock"
+                                           ":" (getenv "PATH")))
+             #t)))))
     (inputs `(("ghc-haddock-api" ,ghc-haddock-api)))
     (native-inputs
-     `(("ghc-hspec" ,ghc-hspec)))
+     `(("ghc-haddock-test" ,ghc-haddock-test)
+       ("ghc-hspec" ,ghc-hspec)))
     (home-page "https://www.haskell.org/haddock/")
     (synopsis
      "Documentation-generation tool for Haskell libraries")
@@ -4818,6 +4820,39 @@ Please note that the API is likely to change so specify upper bounds in your
 project if you can't release often.  For interacting with Haddock itself, see
 the ‘haddock’ package.")
     (license license:bsd-3)))
+
+;; This package is needed for testing 'ghc-haddock'.  It is no longer
+;; published to Hackage, but it is maintained in the Haddock Git
+;; repository.
+(define ghc-haddock-test
+  (package
+    (name "ghc-haddock-test")
+    (version "2.22.0")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/haskell/haddock.git")
+             (commit (string-append "haddock-" version "-release"))))
+       (file-name (git-file-name name version))
+       (sha256
+        (base32
+         "1ywxmqqan10gs0ppybdmdgsmvkzkpw7yirj2rw4qylg3x49a9zca"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'change-directory
+           (lambda _
+             (chdir "haddock-test"))))))
+    (inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-xml" ,ghc-xml)))
+    (home-page "http://www.haskell.org/haddock/")
+    (synopsis "Test utilities for Haddock")
+    (description "This package provides test utilities for Haddock.")
+    (license license:bsd-3)
+    (properties '((hidden? #t)))))
 
 (define-public ghc-half
   (package
