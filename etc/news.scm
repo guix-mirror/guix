@@ -19,7 +19,7 @@ It can be used to install different versions of packages, and to
 re-create computational environments exactly as used in the past.")
               (de "Der neue Befehl @command{guix time-machine} vereinfacht
 den Zugriff auf ältere oder neuere Guix-Versionen als die installierte.
-Er kann zur Installation bestimmer Paketversionen verwendet werden, aber
+Er kann zur Installation bestimmter Paketversionen verwendet werden, aber
 auch zur Wiederherstellung von Entwicklungsumgebungen, wie sie in der
 Vergagngenheit verwendet wurden.")
               (fr "La nouvelle commande @command{guix time-machine}
