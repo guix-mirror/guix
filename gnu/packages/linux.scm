@@ -679,23 +679,26 @@ for ARCH and optionally VARIANT, or #f if there is no such configuration."
              #t))
          (replace 'configure
            (lambda* (#:key inputs native-inputs target #:allow-other-keys)
-             ;; Unset CROSS_CPATH to make sure that cross-libc is not
-             ;; found. Otherwise, some of its header would conflict with the
-             ;; one from linux (stdint.h and linux/types.h)
-             ,@(if (%current-target-system)
-                   '((unsetenv "CROSS_CPATH"))
-                   '())
-
-             ;; On AArch64 (at least), we need to remove glibc headers from CPATH
-             ;; (they are still available as "system headers"), so that the kernel
-             ;; can override uint64_t.  See <https://bugs.gnu.org/37593>.
-             (setenv "CPATH"
-                     (string-join
-                      (remove (cut string-prefix? (assoc-ref inputs "libc") <>)
-                              (string-split (getenv "CPATH") #\:))
-                      ":"))
-             (format #t "environment variable `CPATH' changed to `~a'~%"
-                     (getenv "CPATH"))
+             ;; On AArch64 (at least), we need to remove glibc headers from
+             ;; CPATH (they are still available as "system headers"), so that
+             ;; the kernel can override uint64_t.  See
+             ;; <https://bugs.gnu.org/37593>. This is also true when
+             ;; cross-compiling, except in that case, cross-libc must be
+             ;; removed from CROSS_CPATH.
+             (let ((var ,(if (%current-target-system)
+                             "CROSS_CPATH"
+                             "CPATH"))
+                   (libc ,(if (%current-target-system)
+                              "cross-libc"
+                              "libc")))
+               (setenv var
+                       (string-join
+                        (remove
+                         (cut string-prefix? (assoc-ref inputs libc) <>)
+                         (string-split (getenv var) #\:))
+                        ":"))
+               (format #t "environment variable `~a' changed to `~a'~%"
+                       var (getenv var)))
 
              ;; Avoid introducing timestamps
              (setenv "KCONFIG_NOTIMESTAMP" "1")
